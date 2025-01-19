@@ -11,7 +11,7 @@ export function SectionSelector({ sections, onSelectSection, onSelectRandom }: S
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-center">Select a Quiz Section</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 descktop:grid-cols-3">
         {sections.map((section) => (
           <Button
             key={section.id}
