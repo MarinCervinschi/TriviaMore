@@ -20,6 +20,7 @@ import html from "./html";
 import css from "./css";
 import webDinamico from "./web-dinamico";
 import javascript from "./javascript";
+import ajax from "./ajax";
 
 export const quizData: QuizSection[] = [
     {
@@ -61,6 +62,11 @@ export const quizData: QuizSection[] = [
         id: "javascript",
         name: "Javascript",
         questions: javascript
+    },
+    {
+        id: "ajax",
+        name: "AJAX",
+        questions: ajax
     }
 
 ];
