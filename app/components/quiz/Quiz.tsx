@@ -146,7 +146,7 @@ export function Quiz({ sections }: QuizProps) {
             {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
           </div>
           {selectedSection.questions.map((question, index) => (
-            <div key={question.id} className="mb-6">
+            <div key={`${question.section}-${question.id}`} className="mb-6">
               <p className="font-medium mb-2">{question.question}</p>
               <p className="text-sm text-gray-600 mb-2">Section: {question.section}</p>
               <p className="text-sm font-semibold mb-2">Your score: {scores[index].toFixed(2)}</p>
