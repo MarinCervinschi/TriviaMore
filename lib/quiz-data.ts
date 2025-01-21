@@ -23,6 +23,7 @@ import javascript from "./javascript";
 import ajax from "./ajax";
 import json from "./json";
 import webApplication from "./web-application";
+import react from "./react";
 
 export const quizData: QuizSection[] = [
     {
@@ -79,6 +80,11 @@ export const quizData: QuizSection[] = [
         id: "web-application",
         name: "Web Application",
         questions: webApplication
+    },
+    {
+        id: "react",
+        name: "React",
+        questions: react
     }
 
 ];
