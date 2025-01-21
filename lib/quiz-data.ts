@@ -25,6 +25,7 @@ import json from "./json";
 import webApplication from "./web-application";
 import react from "./react";
 import api from "./api";
+import semanticWeb from "./semantic-web";
 
 export const quizData: QuizSection[] = [
     {
@@ -91,6 +92,11 @@ export const quizData: QuizSection[] = [
         id: "api",
         name: "API",
         questions: api
+    },
+    {
+        id: "semantic-web",
+        name: "Semantic Web",
+        questions: semanticWeb
     }
 
 ];
