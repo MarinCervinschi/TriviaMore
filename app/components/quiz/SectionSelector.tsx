@@ -28,7 +28,7 @@ export function SectionSelector({ sections, onSelectSection, onSelectRandom }: S
           variant="default"
           className="h-auto py-4 text-lg col-span-full"
         >
-          Random Mix (20 Questions)
+          Random Mix (30 Questions)
         </Button>
       </div>
     </div>

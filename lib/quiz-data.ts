@@ -130,7 +130,7 @@ export const quizData: QuizSection[] = [
 
 ];
 
-export function getRandomQuestions(count: number = 20): QuizSection {
+export function getRandomQuestions(count: number = 30): QuizSection {
     const allQuestions = quizData.flatMap(section => section.questions);
     const shuffled = shuffleArray(allQuestions);
     const selected = shuffled.slice(0, count);
