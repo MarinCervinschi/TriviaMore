@@ -34,35 +34,43 @@ import { FaHtml5, FaCss3, FaJsSquare, FaReact, FaSyncAlt } from "react-icons/fa"
 import { LuFileJson2 } from "react-icons/lu";
 import { SiSemanticuireact } from "react-icons/si";
 
+function shuffleArray(array: QuizQuestion[]): QuizQuestion[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 export const quizData: QuizSection[] = [
     {
         id: "www",
         name: "WWW",
-        questions: www,
+        questions: shuffleArray(www),
         icon: TbWorldWww
     },
     {
         id: "tcp-ip",
         name: "TCP/IP",
-        questions: tcpIp,
+        questions: shuffleArray(tcpIp),
         icon: MdWeb
     },
     {
         id: "http",
         name: "HTTP",
-        questions: http,
+        questions: shuffleArray(http),
         icon: MdHttps
     },
     {
         id: "uri",
         name: "URI",
-        questions: uri,
+        questions: shuffleArray(uri),
         icon: MdLink
     },
     {
         id: "html",
         name: "HTML",
-        questions: html,
+        questions: shuffleArray(html),
         icon: FaHtml5
     },
     {
@@ -74,49 +82,49 @@ export const quizData: QuizSection[] = [
     {
         id: "web-dinamico",
         name: "Web Dinamico",
-        questions: webDinamico,
+        questions: shuffleArray(webDinamico),
         icon: MdOutlineDynamicForm
     },
     {
         id: "javascript",
         name: "Javascript",
-        questions: javascript,
+        questions: shuffleArray(javascript),
         icon: FaJsSquare
     },
     {
         id: "ajax",
         name: "AJAX",
-        questions: ajax,
+        questions: shuffleArray(ajax),
         icon: FaSyncAlt
     },
     {
         id: "json",
         name: "JSON",
-        questions: json,
+        questions: shuffleArray(json),
         icon: LuFileJson2
     },
     {
         id: "web-application",
         name: "Web Application",
-        questions: webApplication,
+        questions: shuffleArray(webApplication),
         icon: MdOutlineWeb
     },
     {
         id: "react",
         name: "React",
-        questions: react,
+        questions: shuffleArray(react),
         icon: FaReact
     },
     {
         id: "api",
         name: "API",
-        questions: api,
+        questions: shuffleArray(api),
         icon: TbApiApp
     },
     {
         id: "semantic-web",
         name: "Semantic Web",
-        questions: semanticWeb,
+        questions: shuffleArray(semanticWeb),
         icon: SiSemanticuireact
     }
 
@@ -124,7 +132,7 @@ export const quizData: QuizSection[] = [
 
 export function getRandomQuestions(count: number = 20): QuizSection {
     const allQuestions = quizData.flatMap(section => section.questions);
-    const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+    const shuffled = shuffleArray(allQuestions);
     const selected = shuffled.slice(0, count);
 
     return {
