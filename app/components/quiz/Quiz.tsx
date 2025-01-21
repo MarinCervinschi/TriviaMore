@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, createElement } from 'react'
 import { QuizSection, getRandomQuestions } from '@/lib/quiz-data'
 import { Checkbox } from '@components/ui/checkbox'
 import { Button } from '@components/ui/button'
@@ -116,7 +116,7 @@ export function Quiz({ sections }: QuizProps) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>{selectedSection.name} Quiz Results</CardTitle>
+          <CardTitle className='flex'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} Quiz Results</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-lg font-semibold mb-4">
@@ -161,7 +161,7 @@ export function Quiz({ sections }: QuizProps) {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
+        <CardTitle className='flex'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-lg font-medium mb-4">{question.question}</p>

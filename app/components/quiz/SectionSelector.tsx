@@ -1,3 +1,4 @@
+import { createElement } from "react"
 import { Button } from "@components/ui/button"
 import { QuizSection } from "@/lib/quiz-data"
 
@@ -19,7 +20,7 @@ export function SectionSelector({ sections, onSelectSection, onSelectRandom }: S
             variant="outline"
             className="h-auto py-4 text-lg"
           >
-            {section.name}
+            {section.icon && createElement(section.icon)}{section.name} 
           </Button>
         ))}
         <Button
