@@ -196,7 +196,7 @@ const react: QuizQuestion[] = [
     },
     {
         "id": 17,
-        "question": "Quale affermazione è vera riguardo ai componenti React?",
+        "question": "Quali affermazioni sono vere riguardo ai componenti React?",
         "options": [
             "Devono sempre restituire un singolo elemento radice.",
             "I nomi dei componenti devono iniziare con una lettera maiuscola.",
@@ -256,7 +256,7 @@ const react: QuizQuestion[] = [
     },
     {
         "id": 22,
-        "question": "Quale delle seguenti è una caratteristica delle Synthetic Events in React?",
+        "question": "Quali delle seguenti è una caratteristica delle Synthetic Events in React?",
         "options": [
             "Garantiscono compatibilità cross-browser.",
             "Sono meno efficienti degli eventi nativi.",
@@ -280,7 +280,7 @@ const react: QuizQuestion[] = [
     },
     {
         "id": 24,
-        "question": "Quale metodo viene utilizzato per ottenere dati da un'API in React?",
+        "question": "Quali metodi vengono utilizzati per ottenere dati da un'API in React?",
         "options": [
             "getAPI()",
             "fetch()",
