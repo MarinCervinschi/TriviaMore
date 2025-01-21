@@ -19,6 +19,8 @@ export function Quiz({ sections }: QuizProps) {
   const [showResults, setShowResults] = useState(false)
   const [scores, setScores] = useState<number[]>([])
   const [isTimerRunning, setIsTimerRunning] = useState(false)
+  const [startTime, setStartTime] = useState<number | null>(null)
+  const [totalTime, setTotalTime] = useState<number | null>(null)
 
   const handleSectionSelect = useCallback(
     (sectionId: string) => {
@@ -30,6 +32,8 @@ export function Quiz({ sections }: QuizProps) {
         setShowResults(false)
         setScores([])
         setIsTimerRunning(true)
+        setStartTime(Date.now())
+        setTotalTime(null)
       }
     },
     [sections],
@@ -43,6 +47,8 @@ export function Quiz({ sections }: QuizProps) {
     setShowResults(false)
     setScores([])
     setIsTimerRunning(true)
+    setStartTime(Date.now())
+    setTotalTime(null)
   }, [])
 
   const handleAnswerChange = (optionIndex: number) => {
@@ -69,6 +75,9 @@ export function Quiz({ sections }: QuizProps) {
       calculateScores()
       setShowResults(true)
       setIsTimerRunning(false)
+      if (startTime) {
+        setTotalTime(Math.floor((Date.now() - startTime) / 1000))
+      }
     }
   }
 
@@ -104,6 +113,8 @@ export function Quiz({ sections }: QuizProps) {
     setShowResults(false)
     setScores([])
     setIsTimerRunning(false)
+    setStartTime(null)
+    setTotalTime(null)
   }
 
   if (!selectedSection) {
@@ -125,12 +136,15 @@ export function Quiz({ sections }: QuizProps) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className='flex'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} Quiz Results</CardTitle>
+          <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} Quiz Results</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-lg font-semibold mb-4">
-            Your total score: {totalScore.toFixed(2)} out of {selectedSection.questions.length}
-          </p>
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-lg font-semibold">
+              Your total score: {totalScore.toFixed(2)} out of {selectedSection.questions.length}
+            </p>
+            {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
+          </div>
           {selectedSection.questions.map((question, index) => (
             <div key={question.id} className="mb-6">
               <p className="font-medium mb-2">{question.question}</p>
