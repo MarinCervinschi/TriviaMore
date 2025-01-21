@@ -1,11 +1,12 @@
-'use client'
+"use client"
 
-import { useState, useCallback, createElement } from 'react'
-import { QuizSection, getRandomQuestions } from '@/lib/quiz-data'
-import { Checkbox } from '@components/ui/checkbox'
-import { Button } from '@components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@components/ui/card'
-import { SectionSelector } from './SectionSelector'
+import { useState, useCallback, createElement } from "react"
+import { QuizSection, getRandomQuestions } from "@/lib/quiz-data"
+import { Checkbox } from "@components/ui/checkbox"
+import { Button } from "@components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@components/ui/card"
+import { SectionSelector } from "./SectionSelector"
+import { Timer } from "./Timer"
 
 interface QuizProps {
   sections: QuizSection[]
@@ -17,17 +18,22 @@ export function Quiz({ sections }: QuizProps) {
   const [userAnswers, setUserAnswers] = useState<number[][]>([])
   const [showResults, setShowResults] = useState(false)
   const [scores, setScores] = useState<number[]>([])
+  const [isTimerRunning, setIsTimerRunning] = useState(false)
 
-  const handleSectionSelect = useCallback((sectionId: string) => {
-    const section = sections.find(s => s.id === sectionId)
-    if (section) {
-      setSelectedSection(section)
-      setCurrentQuestion(0)
-      setUserAnswers(section.questions.map(() => []))
-      setShowResults(false)
-      setScores([])
-    }
-  }, [sections])
+  const handleSectionSelect = useCallback(
+    (sectionId: string) => {
+      const section = sections.find((s) => s.id === sectionId)
+      if (section) {
+        setSelectedSection(section)
+        setCurrentQuestion(0)
+        setUserAnswers(section.questions.map(() => []))
+        setShowResults(false)
+        setScores([])
+        setIsTimerRunning(true)
+      }
+    },
+    [sections],
+  )
 
   const handleRandomSelect = useCallback(() => {
     const randomSection = getRandomQuestions()
@@ -36,16 +42,17 @@ export function Quiz({ sections }: QuizProps) {
     setUserAnswers(randomSection.questions.map(() => []))
     setShowResults(false)
     setScores([])
+    setIsTimerRunning(true)
   }, [])
 
   const handleAnswerChange = (optionIndex: number) => {
     if (!selectedSection) return
 
-    setUserAnswers(prev => {
+    setUserAnswers((prev) => {
       const newAnswers = [...prev]
       const currentAnswers = newAnswers[currentQuestion]
       if (currentAnswers?.includes(optionIndex)) {
-        newAnswers[currentQuestion] = currentAnswers.filter(i => i !== optionIndex)
+        newAnswers[currentQuestion] = currentAnswers.filter((i) => i !== optionIndex)
       } else {
         newAnswers[currentQuestion] = [...currentAnswers, optionIndex]
       }
@@ -57,16 +64,17 @@ export function Quiz({ sections }: QuizProps) {
     if (!selectedSection) return
 
     if (currentQuestion < selectedSection.questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1)
+      setCurrentQuestion((prev) => prev + 1)
     } else {
       calculateScores()
       setShowResults(true)
+      setIsTimerRunning(false)
     }
   }
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1)
+      setCurrentQuestion((prev) => prev - 1)
     }
   }
 
@@ -76,16 +84,16 @@ export function Quiz({ sections }: QuizProps) {
     const newScores = selectedSection.questions.map((question, index) => {
       const userAnswer = userAnswers[index]
       const correctAnswers = question.correctAnswers
-      
-      const correctGuesses = userAnswer.filter(answer => correctAnswers.includes(answer)).length
-      const incorrectGuesses = userAnswer.filter(answer => !correctAnswers.includes(answer)).length
-      
+
+      const correctGuesses = userAnswer.filter((answer) => correctAnswers.includes(answer)).length
+      const incorrectGuesses = userAnswer.filter((answer) => !correctAnswers.includes(answer)).length
+
       const totalCorrectAnswers = correctAnswers.length
       const score = Math.max(0, (correctGuesses / totalCorrectAnswers) - (incorrectGuesses / totalCorrectAnswers))
-      
+
       return Math.round(score * 100) / 100 // Round to 2 decimal places
     })
-    
+
     setScores(newScores)
   }
 
@@ -95,14 +103,15 @@ export function Quiz({ sections }: QuizProps) {
     setUserAnswers([])
     setShowResults(false)
     setScores([])
+    setIsTimerRunning(false)
   }
 
   if (!selectedSection) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="pt-6">
-          <SectionSelector 
-            sections={sections} 
+          <SectionSelector
+            sections={sections}
             onSelectSection={handleSectionSelect}
             onSelectRandom={handleRandomSelect}
           />
@@ -128,21 +137,17 @@ export function Quiz({ sections }: QuizProps) {
               <p className="text-sm text-gray-600 mb-2">Section: {question.section}</p>
               <p className="text-sm font-semibold mb-2">Your score: {scores[index].toFixed(2)}</p>
               {question.options.map((option, optionIndex) => {
-                const isCorrect = question.correctAnswers.includes(optionIndex);
-                const isSelected = userAnswers[index].includes(optionIndex);
-                let textColorClass = '';
+                const isCorrect = question.correctAnswers.includes(optionIndex)
+                const isSelected = userAnswers[index].includes(optionIndex)
+                let textColorClass = "";
                 if (isSelected) {
-                  textColorClass = isCorrect ? 'text-green-600' : 'text-red-600';
+                  textColorClass = isCorrect ? "text-green-600" : "text-red-600"
                 }
                 return (
                   <div key={optionIndex} className={`flex items-center space-x-2 mb-1 ${textColorClass}`}>
-                    <span className="text-sm">
-                      {isSelected ? (isCorrect ? '✓' : '✗') : '○'}
-                    </span>
+                    <span className="text-sm">{isSelected ? (isCorrect ? "✓" : "✗") : "○"}</span>
                     <span className="text-sm">{option}</span>
-                    {isCorrect && !isSelected && (
-                      <span className="text-green-600 text-sm ml-2">(Correct)</span>
-                    )}
+                    {isCorrect && !isSelected && <span className="text-green-600 text-sm ml-2">(Correct)</span>}
                   </div>
                 );
               })}
@@ -160,14 +165,13 @@ export function Quiz({ sections }: QuizProps) {
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className='flex'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
+      <CardHeader className="flex flex-col items-center justify-between tablet:flex-row">
+        <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
+        <Timer isRunning={isTimerRunning} />
       </CardHeader>
       <CardContent>
         <p className="text-lg font-medium mb-4">{question.question}</p>
-        {selectedSection.id === 'random' && (
-          <p className="text-sm text-gray-600 mb-4">Section: {question.section}</p>
-        )}
+        {selectedSection.id === "random" && <p className="text-sm text-gray-600 mb-4">Section: {question.section}</p>}
         {question.options.map((option, index) => (
           <div key={index} className="flex items-center space-x-2 mb-2">
             <Checkbox
@@ -185,15 +189,11 @@ export function Quiz({ sections }: QuizProps) {
         ))}
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button 
-          onClick={handlePrevious} 
-          disabled={currentQuestion === 0}
-          variant="outline"
-        >
+        <Button onClick={handlePrevious} disabled={currentQuestion === 0} variant="outline">
           Previous
         </Button>
         <Button onClick={handleNext}>
-          {currentQuestion < selectedSection.questions.length - 1 ? 'Next' : 'Finish'}
+          {currentQuestion < selectedSection.questions.length - 1 ? "Next" : "Finish"}
         </Button>
       </CardFooter>
     </Card>
