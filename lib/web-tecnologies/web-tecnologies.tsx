@@ -1,3 +1,5 @@
+'use client'
+
 import www from "./sections/www";
 import tcpIp from "./sections/tcp-ip";
 import http from "./sections/http";
@@ -22,93 +24,92 @@ import { FaHtml5, FaCss3, FaJsSquare, FaReact, FaSyncAlt } from "react-icons/fa"
 import { LuFileJson2 } from "react-icons/lu";
 import { SiSemanticuireact } from "react-icons/si";
 
-export const webTecnologies: QuizSection[] = [
+const webTecnologies: QuizSection[] = [
     {
         id: "www",
         name: "WWW",
         questions: shuffleArray(www),
-        icon: TbWorldWww
+        icon: <TbWorldWww />
     },
     {
         id: "tcp-ip",
         name: "TCP/IP",
         questions: shuffleArray(tcpIp),
-        icon: MdWeb
+        icon: <MdWeb />
     },
     {
         id: "http",
         name: "HTTP",
         questions: shuffleArray(http),
-        icon: MdHttps
+        icon: <MdHttps />
     },
     {
         id: "uri",
         name: "URI",
         questions: shuffleArray(uri),
-        icon: MdLink
+        icon: <MdLink />
     },
     {
         id: "html",
         name: "HTML",
         questions: shuffleArray(html),
-        icon: FaHtml5
+        icon: <FaHtml5 />
     },
     {
         id: "css",
         name: "CSS",
         questions: css,
-        icon: FaCss3
+        icon: <FaCss3 />
     },
     {
         id: "web-dinamico",
         name: "Web Dinamico",
         questions: shuffleArray(webDinamico),
-        icon: MdOutlineDynamicForm
+        icon: <MdOutlineDynamicForm />
     },
     {
         id: "javascript",
         name: "Javascript",
         questions: shuffleArray(javascript),
-        icon: FaJsSquare
+        icon: <FaJsSquare />
     },
     {
         id: "ajax",
         name: "AJAX",
         questions: shuffleArray(ajax),
-        icon: FaSyncAlt
+        icon: <FaSyncAlt />
     },
     {
         id: "json",
         name: "JSON",
         questions: shuffleArray(json),
-        icon: LuFileJson2
+        icon: <LuFileJson2 />
     },
     {
         id: "web-application",
         name: "Web Application",
         questions: shuffleArray(webApplication),
-        icon: MdOutlineWeb
+        icon: <MdOutlineWeb />
     },
     {
         id: "react",
         name: "React",
         questions: shuffleArray(react),
-        icon: FaReact
+        icon: <FaReact />
     },
     {
         id: "api",
         name: "API",
         questions: shuffleArray(api),
-        icon: TbApiApp
+        icon: <TbApiApp />
     },
     {
         id: "semantic-web",
         name: "Semantic Web",
         questions: shuffleArray(semanticWeb),
-        icon: SiSemanticuireact
+        icon: <SiSemanticuireact />
     }
 
 ];
 
-
-
+export default webTecnologies;

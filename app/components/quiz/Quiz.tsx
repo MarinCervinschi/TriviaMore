@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, createElement } from "react"
+import { useState, useCallback } from "react"
 import QuizSection from "@/types/QuizSection"
 import { getRandomQuestions } from "@/lib/utils"
 import { Checkbox } from "@components/ui/checkbox"
@@ -137,7 +137,7 @@ export function Quiz({ sections }: QuizProps) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} Quiz Results</CardTitle>
+          <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon}&nbsp;{selectedSection.name} Quiz Results</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex justify-between items-center mb-4">
@@ -181,7 +181,7 @@ export function Quiz({ sections }: QuizProps) {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader className="flex flex-col items-center justify-between tablet:flex-row">
-        <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon && createElement(selectedSection.icon)}&nbsp;{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
+        <CardTitle className='flex text-xl items-center font-bold'>{selectedSection.icon}&nbsp;{selectedSection.name} - Question {currentQuestion + 1} of {selectedSection.questions.length}</CardTitle>
         <Timer isRunning={isTimerRunning} />
       </CardHeader>
       <CardContent>

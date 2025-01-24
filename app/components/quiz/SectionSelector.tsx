@@ -1,4 +1,3 @@
-import { createElement } from "react"
 import { Button } from "@components/ui/button"
 import SectionSelectorProps from "@/types/SectionSelectorProps"
 
@@ -14,7 +13,7 @@ export function SectionSelector({ sections, onSelectSection, onSelectRandom }: S
             variant="outline"
             className="h-auto py-4 text-lg"
           >
-            {section.icon && createElement(section.icon)}{section.name} 
+            {section.icon}{section.name} 
           </Button>
         ))}
         <Button
