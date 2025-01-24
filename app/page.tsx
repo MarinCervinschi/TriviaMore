@@ -1,16 +1,16 @@
 'use client'
 
-import { Quiz } from '@components/quiz/Quiz'
-import { quizData } from '@/lib/quiz-data'
+import DefaultLayout from "./components/Layouts/DefaultLayout"
+import ClassSelector from "@components/ClassSelector"
+import quizData from "@/lib/quiz-data"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-100">
-      <div className="flex items-center">
-        <button className="text-3xl" onClick={() => window.location.reload()}> 💻 </button>
-        <h1 className="text-2xl laptop:text-3xl font-bold my-5">&nbsp; Tecnologie Web Quiz</h1>
+    <DefaultLayout>
+      <div className="flex flex-col items-center justify-center p-4 space-y-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-9">Welcome to the Quiz App</h1>
+        <ClassSelector classes={quizData} />
       </div>
-      <Quiz sections={quizData} />
-    </div>
+    </DefaultLayout>
   )
 }

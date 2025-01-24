@@ -7,13 +7,6 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-  	screens: {
-  		phone: '320px',
-  		tablet: '696px',
-  		laptop: '1080px',
-  		notebook: '1366px',
-  		desktop: '1920px'
-  	},
   	extend: {
   		colors: {
   			'light-blue': '#2E8CAD',
