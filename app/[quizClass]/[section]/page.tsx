@@ -28,7 +28,7 @@ export default function QuizPage() {
         <DefaultLayout>
             <div className="flex flex-col items-center justify-center p-4 space-y-4">
                 <div className="flex items-center justify-center space-x-4">
-                    <Link href={`/${params.quizClass}`} className="text-3xl">
+                    <Link href={`/${params.quizClass}`} className="text-3xl hover:scale-110 active:text-red-600">
                         <BiLogOut/>
                     </Link>
                     <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
