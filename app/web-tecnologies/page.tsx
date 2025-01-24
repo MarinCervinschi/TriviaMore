@@ -1,6 +1,6 @@
 import { Quiz } from '@components/quiz/Quiz'
 import DefaultLayout from '../components/Layouts/DefaultLayout'
-import webTecnologies from '@/lib/web-tecnologies/web-tecnologies'
+import webTecnologies from '@/lib/web-tecnologies'
 
 export default function WebTecnologies() {
     return (
