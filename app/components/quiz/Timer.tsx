@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react"
-
-interface TimerProps {
-  isRunning: boolean
-  totalTime?: number
-}
+import TimerProps from "@/types/TimerProps"
 
 export function Timer({ isRunning, totalTime }: TimerProps) {
   const [time, setTime] = useState(0)

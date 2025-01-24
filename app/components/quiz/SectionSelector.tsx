@@ -1,12 +1,6 @@
 import { createElement } from "react"
 import { Button } from "@components/ui/button"
-import QuizSection from "@/types/QuizSection"
-
-interface SectionSelectorProps {
-  sections: QuizSection[];
-  onSelectSection: (sectionId: string) => void;
-  onSelectRandom: () => void;
-}
+import SectionSelectorProps from "@/types/SectionSelectorProps"
 
 export function SectionSelector({ sections, onSelectSection, onSelectRandom }: SectionSelectorProps) {
   return (
