@@ -1,7 +1,7 @@
 'use client'
 
 import { Quiz } from '@components/quiz/Quiz'
-import { quizData } from '@/lib/quiz-data'
+import { webTecnologies } from '@/lib/web-tecnologies/web-tecnologies'
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         <button className="text-3xl" onClick={() => window.location.reload()}> 💻 </button>
         <h1 className="text-2xl laptop:text-3xl font-bold my-5">&nbsp; Tecnologie Web Quiz</h1>
       </div>
-      <Quiz sections={quizData} />
+      <Quiz sections={webTecnologies} />
     </div>
   )
 }

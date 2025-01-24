@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useCallback, createElement } from "react"
-import { QuizSection, getRandomQuestions } from "@/lib/quiz-data"
+import QuizSection from "@/types/QuizSection"
+import { getRandomQuestions } from "@/lib/utils"
 import { Checkbox } from "@components/ui/checkbox"
 import { Button } from "@components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@components/ui/card"
@@ -40,7 +41,7 @@ export function Quiz({ sections }: QuizProps) {
   )
 
   const handleRandomSelect = useCallback(() => {
-    const randomSection = getRandomQuestions()
+    const randomSection = getRandomQuestions(30, sections)
     setSelectedSection(randomSection)
     setCurrentQuestion(0)
     setUserAnswers(randomSection.questions.map(() => []))

@@ -1,6 +1,6 @@
 import { createElement } from "react"
 import { Button } from "@components/ui/button"
-import { QuizSection } from "@/lib/quiz-data"
+import QuizSection from "@/types/QuizSection"
 
 interface SectionSelectorProps {
   sections: QuizSection[];

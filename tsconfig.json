@@ -21,6 +21,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@types/*": ["./types/*"],
       "@components/*": ["./app/components/*"],
       "@atoms/*": ["./app/components/atoms/*"],
       "@molecules/*": ["./app/components/molecules/*"],

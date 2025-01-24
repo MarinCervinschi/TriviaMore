@@ -1,32 +1,20 @@
-export interface QuizQuestion {
-    id: number;
-    question: string;
-    options: string[];
-    correctAnswers: number[];
-    section: string;
-}
+import www from "./sections/www";
+import tcpIp from "./sections/tcp-ip";
+import http from "./sections/http";
+import uri from "./sections/uri";
+import html from "./sections/html";
+import css from "./sections/css";
+import webDinamico from "./sections/web-dinamico";
+import javascript from "./sections/javascript";
+import ajax from "./sections/ajax";
+import json from "./sections/json";
+import webApplication from "./sections/web-application";
+import react from "./sections/react";
+import api from "./sections/api";
+import semanticWeb from "./sections/semantic-web";
 
-export interface QuizSection {
-    id: string;
-    name: string;
-    questions: QuizQuestion[];
-    icon?: React.ComponentType;
-}
-
-import www from "./www";
-import tcpIp from "./tcp-ip";
-import http from "./http";
-import uri from "./uri";
-import html from "./html";
-import css from "./css";
-import webDinamico from "./web-dinamico";
-import javascript from "./javascript";
-import ajax from "./ajax";
-import json from "./json";
-import webApplication from "./web-application";
-import react from "./react";
-import api from "./api";
-import semanticWeb from "./semantic-web";
+import QuizSection from "@/types/QuizSection";
+import { shuffleArray } from "../utils";
 
 import { TbWorldWww, TbApiApp } from "react-icons/tb";
 import { MdWeb, MdHttps, MdLink, MdOutlineDynamicForm, MdOutlineWeb } from "react-icons/md";
@@ -34,15 +22,7 @@ import { FaHtml5, FaCss3, FaJsSquare, FaReact, FaSyncAlt } from "react-icons/fa"
 import { LuFileJson2 } from "react-icons/lu";
 import { SiSemanticuireact } from "react-icons/si";
 
-function shuffleArray(array: QuizQuestion[]): QuizQuestion[] {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-export const quizData: QuizSection[] = [
+export const webTecnologies: QuizSection[] = [
     {
         id: "www",
         name: "WWW",
@@ -130,15 +110,5 @@ export const quizData: QuizSection[] = [
 
 ];
 
-export function getRandomQuestions(count: number = 30): QuizSection {
-    const allQuestions = quizData.flatMap(section => section.questions);
-    const shuffled = shuffleArray(allQuestions);
-    const selected = shuffled.slice(0, count);
 
-    return {
-        id: "random",
-        name: "Random Mix",
-        questions: selected
-    };
-}
 

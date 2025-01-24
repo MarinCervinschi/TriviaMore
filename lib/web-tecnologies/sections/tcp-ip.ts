@@ -1,5 +1,4 @@
-
-import { QuizQuestion } from "./quiz-data";
+import QuizQuestion from "@/types/QuizQuestion";
 
 const tcpIp: QuizQuestion[] = [
     {
