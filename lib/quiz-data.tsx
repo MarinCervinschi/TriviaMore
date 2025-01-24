@@ -1,11 +1,15 @@
+'use client'
+
 import QuizClass from "@/types/QuizClass"
 import webTecnologies from "./web-tecnologies"
+import { TbWorldCode } from "react-icons/tb";
 
 const quizData: QuizClass[] = [
     {
         id: "web-tecnologies",
         name: "Tecnologie Web",
-        sections: webTecnologies
+        sections: webTecnologies,
+        icon: <TbWorldCode />
     }
 ]
 

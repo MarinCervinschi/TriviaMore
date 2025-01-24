@@ -1,13 +1,15 @@
+'use client'
+
 import DefaultLayout from "./components/Layouts/DefaultLayout"
-import Link from 'next/link'
+import ClassSelector from "@components/ClassSelector"
+import quizData from "@/lib/quiz-data"
 
 export default function Home() {
   return (
     <DefaultLayout>
-      <div className="flex flex-col justify-center p-4 space-y-4">
-        <h1 className="text-3xl font-bold text-center">Welcome to the Quiz App</h1>
-        <p className="text-center">Select a quiz section to start</p>
-        <Link href="/web-tecnologies" className="text-2xl font-bold text-center">Web Technologies</Link>
+      <div className="flex flex-col items-center justify-center p-4 space-y-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-9">Welcome to the Quiz App</h1>
+        <ClassSelector classes={quizData} />
       </div>
     </DefaultLayout>
   )

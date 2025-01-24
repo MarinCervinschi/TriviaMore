@@ -37,7 +37,7 @@ export default function DefaultLayout({
         {/* <!-- ===== Header End ===== --> */}
 
         {/* <!-- ===== Main Content Start ===== --> */}
-        <main className="flex-grow flex flex-col justify-center items-center">
+        <main className="flex-grow flex flex-col justify-center items-center my-8">
           {children}
           {showScrollArrow && (
             <BsArrowUpCircleFill onClick={scrollToTop} className="fixed animate-bounce bottom-5 cursor-pointer right-5 text-primary hover:text-meta-3 text-[40px] " aria-label="Scroll to top" />
