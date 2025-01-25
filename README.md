@@ -44,7 +44,7 @@ npm run dev
 
 ## Software Engineering
 - Software Engineering Introduction --> (done)
-- Requirements Engineering --> (in progress)
+- Requirements Engineering --> (done)
 - Software Design --> (in progress)
 - Software Implementation --> (in progress)
 - Software Testing --> (in progress)
