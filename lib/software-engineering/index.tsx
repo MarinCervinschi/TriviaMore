@@ -3,9 +3,14 @@
 import QuizSection from "@/types/QuizSection";
 import { shuffleArray } from "../utils";
 
-const softwareEngineering: QuizSection[] = [
-    // insert sections here
+import softwareEng from "./sections/software-engineering";
 
+const softwareEngineering: QuizSection[] = [
+    {
+        id: "software-engineering",
+        name: "Software Engineering",
+        questions: shuffleArray(softwareEng)
+    }
 ];
 
 export default softwareEngineering;
