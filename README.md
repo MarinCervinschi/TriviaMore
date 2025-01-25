@@ -42,4 +42,12 @@ npm run dev
 - API
 - Semantic Web
 
+## Software Engineering
+- Software Engineering Introduction --> (done)
+- Requirements Engineering --> (in progress)
+- Software Design --> (in progress)
+- Software Implementation --> (in progress)
+- Software Testing --> (in progress)
+- Software Maintenance --> (in progress)
+
 ... and more to come
