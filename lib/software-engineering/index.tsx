@@ -6,14 +6,12 @@ import { shuffleArray } from "../utils";
 import softwareEng from "./sections/software-engineering";
 import requirements from "./sections/requirements";
 import design from "./sections/design";
+import implementation from "./sections/implementation";
 
 import { FaGears } from "react-icons/fa6";
 import { GrNotes } from "react-icons/gr";
 import { CgIfDesign } from "react-icons/cg";
-
-
-
-
+import { MdEngineering } from "react-icons/md";
 
 const softwareEngineering: QuizSection[] = [
     {
@@ -33,6 +31,12 @@ const softwareEngineering: QuizSection[] = [
         name: "Design",
         questions: shuffleArray(design),
         icon: <CgIfDesign />
+    },
+    {
+        id: "implementation",
+        name: "Implementation",
+        questions: shuffleArray(implementation),
+        icon: <MdEngineering />
     }
 ];
 
