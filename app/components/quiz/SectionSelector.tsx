@@ -11,7 +11,7 @@ export default function SectionSelector({ sections, quizClassId }: SectionSelect
         <CardTitle className="text-2xl font-bold text-center">Select a Quiz Section</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${sections.length > 9 ? 'lg:grid-cols-3' : ''}`}>
           {sections.map((section) => (
             <Button key={section.id} asChild variant="outline" className="h-auto py-4 text-lg active:text-green-600">
               <Link href={`/${quizClassId}/${section.id}`}>{section.icon}{section.name}</Link>

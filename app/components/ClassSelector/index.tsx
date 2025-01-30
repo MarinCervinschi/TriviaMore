@@ -14,7 +14,7 @@ export default function ClassSelector({ classes }: ClassSelectorProps) {
                 <CardTitle className="text-2xl font-bold text-center">Select a Quiz Class</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 ">
                     {classes.map((quizClass) => (
                         <Button key={quizClass.id} asChild variant="outline" className="h-auto py-4 text-lg active:text-green-600">
                             <Link href={`/${quizClass.id}`}>{quizClass.icon}{quizClass.name}</Link>
