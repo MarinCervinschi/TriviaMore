@@ -43,11 +43,11 @@ npm run dev
 - Semantic Web
 
 ## Software Engineering
-- Software Engineering Introduction --> (done)
-- Requirements Engineering --> (done)
-- Software Design --> (done)
-- Software Implementation --> (done)
-- Software Testing --> (done)
-- Software Maintenance --> (in progress)
+- Software Engineering Introduction
+- Requirements Engineering
+- Software Design
+- Software Implementation
+- Software Testing
+- Software Maintenance
 
 ... and more to come

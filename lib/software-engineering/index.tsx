@@ -8,12 +8,14 @@ import requirements from "./sections/requirements";
 import design from "./sections/design";
 import implementation from "./sections/implementation";
 import testing from "./sections/testing";
+import maintenance from "./sections/maintenance";
 
 import { FaGears } from "react-icons/fa6";
 import { GrNotes } from "react-icons/gr";
 import { CgIfDesign } from "react-icons/cg";
 import { MdEngineering } from "react-icons/md";
 import { GrDocumentTest } from "react-icons/gr";
+import { GrConfigure } from "react-icons/gr";
 
 const softwareEngineering: QuizSection[] = [
     {
@@ -45,6 +47,12 @@ const softwareEngineering: QuizSection[] = [
         name: "Testing",
         questions: shuffleArray(testing),
         icon: <GrDocumentTest />
+    },
+    {
+        id: "maintenance",
+        name: "Maintenance",
+        questions: shuffleArray(maintenance),
+        icon: <GrConfigure />
     }
 ];
 
