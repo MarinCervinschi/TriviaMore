@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import QuizSection from "@/types/QuizSection"
+import QuizQuestion from "@/types/QuizQuestion"
 import { Checkbox } from "@components/ui/checkbox"
 import { Button } from "@components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@components/ui/card"
@@ -10,12 +11,13 @@ import Link from "next/link"
 
 interface QuizProps {
   section: QuizSection
+  questions: QuizQuestion[]
   quizClassId: string
 }
 
-export function Quiz({ section, quizClassId }: QuizProps) {
+export function Quiz({ section, questions, quizClassId }: QuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [userAnswers, setUserAnswers] = useState<number[][]>(section.questions.map(() => []))
+  const [userAnswers, setUserAnswers] = useState<number[][]>(questions.map(() => []))
   const [showResults, setShowResults] = useState(false)
   const [scores, setScores] = useState<number[]>([])
   const [isTimerRunning, setIsTimerRunning] = useState(true)
@@ -36,7 +38,7 @@ export function Quiz({ section, quizClassId }: QuizProps) {
   }
 
   const handleNext = () => {
-    if (currentQuestion < section.questions.length - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
       calculateScores()
@@ -53,7 +55,7 @@ export function Quiz({ section, quizClassId }: QuizProps) {
   }
 
   const calculateScores = () => {
-    const newScores = section.questions.map((question, index) => {
+    const newScores = questions.map((question, index) => {
       const userAnswer = userAnswers[index]
       const correctAnswers = question.correctAnswers
 
@@ -79,11 +81,11 @@ export function Quiz({ section, quizClassId }: QuizProps) {
         <CardContent>
           <div className="flex justify-between items-center mb-4">
             <p className="text-lg font-semibold">
-              Your total score: {totalScore.toFixed(2)} out of {section.questions.length}
+              Your total score: {totalScore.toFixed(2)} out of {questions.length}
             </p>
             {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
           </div>
-          {section.questions.map((question, index) => (
+          {questions.map((question, index) => (
             <div key={`${question.section}-${question.id}`} className="mb-6">
               <p className="font-medium mb-2">{question.question}</p>
               <p className="text-sm text-gray-600 mb-2">Section: {question.section}</p>
@@ -115,14 +117,14 @@ export function Quiz({ section, quizClassId }: QuizProps) {
     )
   }
 
-  const question = section.questions[currentQuestion]
+  const question = questions[currentQuestion]
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader className="flex flex-col items-center justify-between sm:flex-row space-x-9">
         <CardTitle className='flex text-xl items-center font-bold '>
           {section.icon} &nbsp;
-          {section.name} - Question {currentQuestion + 1} of {section.questions.length}
+          {section.name} - Question {currentQuestion + 1} of {questions.length}
         </CardTitle>
         <Timer isRunning={isTimerRunning} />
       </CardHeader>
@@ -149,7 +151,7 @@ export function Quiz({ section, quizClassId }: QuizProps) {
         <Button onClick={handlePrevious} disabled={currentQuestion === 0} variant="outline">
           Previous
         </Button>
-        <Button onClick={handleNext}>{currentQuestion < section.questions.length - 1 ? "Next" : "Finish"}</Button>
+        <Button onClick={handleNext}>{currentQuestion < questions.length - 1 ? "Next" : "Finish"}</Button>
       </CardFooter>
     </Card>
   )
