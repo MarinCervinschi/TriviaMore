@@ -1,8 +1,8 @@
-import QuizQuestion from '@/types/QuizQuestion';
+import QuizQuestion from './QuizQuestion';
 
 export default interface QuizSection {
     id: string;
     name: string;
-    questions: QuizQuestion[];
+    get questions(): QuizQuestion[];
     icon?: React.ReactNode;
 }

@@ -28,85 +28,113 @@ const webTecnologies: QuizSection[] = [
     {
         id: "www",
         name: "WWW",
-        questions: shuffleArray(www),
+        get questions() {
+            return shuffleArray(www);
+        },
         icon: <TbWorldWww />
     },
     {
         id: "tcp-ip",
         name: "TCP/IP",
-        questions: shuffleArray(tcpIp),
+        get questions() {
+            return shuffleArray(tcpIp);
+        },
         icon: <MdWeb />
     },
     {
         id: "http",
         name: "HTTP",
-        questions: shuffleArray(http),
+        get questions() {
+            return shuffleArray(http);
+        },
         icon: <MdHttps />
     },
     {
         id: "uri",
         name: "URI",
-        questions: shuffleArray(uri),
+        get questions() {
+            return shuffleArray(uri);
+        },
         icon: <MdLink />
     },
     {
         id: "html",
         name: "HTML",
-        questions: shuffleArray(html),
+        get questions() {
+            return shuffleArray(html);
+        },
         icon: <FaHtml5 />
     },
     {
         id: "css",
         name: "CSS",
-        questions: css,
+        get questions() {
+            return shuffleArray(css);
+        },
         icon: <FaCss3 />
     },
     {
         id: "web-dinamico",
         name: "Web Dinamico",
-        questions: shuffleArray(webDinamico),
+        get questions() {
+            return shuffleArray(webDinamico);
+        },
         icon: <MdOutlineDynamicForm />
     },
     {
         id: "javascript",
         name: "Javascript",
-        questions: shuffleArray(javascript),
+        get questions() {
+            return shuffleArray(javascript);
+        },
         icon: <FaJsSquare />
     },
     {
         id: "ajax",
         name: "AJAX",
-        questions: shuffleArray(ajax),
+        get questions() {
+            return shuffleArray(ajax);
+        },
         icon: <FaSyncAlt />
     },
     {
         id: "json",
         name: "JSON",
-        questions: shuffleArray(json),
+        get questions() {
+            return shuffleArray(json);
+        },
         icon: <LuFileJson2 />
     },
     {
         id: "web-application",
         name: "Web Application",
-        questions: shuffleArray(webApplication),
+        get questions() {
+            return shuffleArray(webApplication);
+        },
         icon: <MdOutlineWeb />
     },
     {
         id: "react",
         name: "React",
-        questions: shuffleArray(react),
+        get questions() {
+            return shuffleArray(react);
+        },
         icon: <FaReact />
     },
     {
         id: "api",
         name: "API",
-        questions: shuffleArray(api),
+        get questions() {
+            return shuffleArray(api);
+        },
         icon: <TbApiApp />
     },
     {
         id: "semantic-web",
         name: "Semantic Web",
-        questions: shuffleArray(semanticWeb),
+        get questions() {
+            return shuffleArray(semanticWeb);
+        },
         icon: <SiSemanticuireact />
     }
 
