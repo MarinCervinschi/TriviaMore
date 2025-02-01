@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 export default function QuizClassPage() {
     const params = useParams()
-    const quizClass = quizData.find((c) => c.id === params.quizClass)
+    const quizClass = quizData.find((c) => c.id === params?.quizClass)
     if (!quizClass) {
         notFound()
     }
