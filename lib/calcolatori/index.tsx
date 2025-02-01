@@ -6,7 +6,7 @@ import calcolatoriElettronici from "./sections/calcolatori";
 const calcolatori: QuizSection[] = [
     {
         id: "calcolatori",
-        name: "calcolatori",
+        name: "Calcolatori Elettronici",
         questions: shuffleArray(calcolatoriElettronici),
         icon: <Computer />
     },
