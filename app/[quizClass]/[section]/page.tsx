@@ -11,6 +11,9 @@ import { BiLogOut } from "react-icons/bi";
 
 export default function QuizPage() {
     const params = useParams()
+    if (!params?.quizClass || !params?.section) {
+        return notFound()
+    }
     const quizClass = quizData.find((c) => c.id === params.quizClass)
     const section = quizClass?.sections.find((s) => s.id === params.section)
 
