@@ -300,8 +300,43 @@ const calcolatoriElettronici: QuizQuestion[] = [
         ],
         "correctAnswers": [1],
         "section": "calcolatore"
+    },
+    {
+        "id": 26,
+        "question": "Cosa è la descrizione comportamentale di un sistema",
+        "options": [
+            "È la descrizione fisica della struttura hardware del sistema",
+            "È la descrizione funzionale come corrispondenza tra le uscite e gli ingressi del sistema",
+            "È l'insieme delle specifiche tecniche di un processore",
+            "È la rappresentazione grafica del flusso dei dati nel sistema"
+        ],
+        "correctAnswers": [1],
+        "section": "calcolatore"
+    },
+    {
+        "id": 27,
+        "question": "Perché nelle macchine CISC il numero di istruzioni è diventato elevato?",
+        "options": [
+            "Per ridurre il numero di operazioni aritmetiche necessarie",
+            "Per aumentare la velocità di esecuzione delle istruzioni",
+            "Per abbattere il gap semantico tra linguaggio di alto livello e linguaggio macchina",
+            "Per migliorare la gestione della memoria cache"
+        ],
+        "correctAnswers": [2],
+        "section": "calcolatore"
+    },
+    {
+        "id": 28,
+        "question": "1 EB corrisponde in byte a:",
+        "options": [
+            "2^20",
+            "2^30",
+            "2^50",
+            "2^60"
+        ],
+        "correctAnswers": [3],
+        "section": "calcolatore"
     }
-    
 ]
 
 export default calcolatoriElettronici;
