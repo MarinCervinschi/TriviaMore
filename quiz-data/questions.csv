@@ -1,0 +1,11 @@
+id,question,options,correctAnswers,section
+1,"Quali sono i vantaggi principali del formato JSON rispetto a XML?","Leggerezza|Maggiore sicurezza|Facilità di lettura|Migliore modularità","0|2",json
+2,"Quale dei seguenti esempi rappresenta una dichiarazione corretta di un oggetto JSON?","{'Nome': 'Paul', 'Età': 30}|{\"Nome\": \"Paul\", \"Età\": 30}|var person = {Nome: 'Paul', Età: 30};|{Nome: 'Paul', Età: 30}","1",json
+3,"Quale metodo JavaScript consente di convertire una stringa JSON in un oggetto JavaScript in modo sicuro?","eval()|JSON.parse()|toJson()|fromJson()","1",json
+4,"Quale libreria Java è comunemente utilizzata per il parsing JSON?","Jackson|Jabsorb|Gson|JQuery","2",json
+5,"Quali delle seguenti istruzioni creano correttamente un array di oggetti JSON?","var bands = [{'Nome': 'Queen', 'Anno': 1970}, {'Nome': 'Beatles', 'Anno': 1960}];|var bands = {['Nome': 'Queen', 'Anno': 1970], ['Nome': 'Beatles', 'Anno': 1960]};|var bands = [{\"Nome\": \"Queen\", \"Anno\": 1970}, {\"Nome\": \"Beatles\", \"Anno\": 1960}];|var bands = {Nome: \"Queen\", Anno: 1970, Nome: \"Beatles\", Anno: 1960};","0|2",json
+6,"Quali metodi fornisce la libreria Gson per la gestione di JSON in Java?","JSON.parse()|toJson()|fromJson()|JSON.stringify()","1|2",json
+7,"Quale dei seguenti è un formato di dati valido per JSON?","Array|Oggetto|Funzione|Stringa","0|1|3",json
+8,"Quali sono i metodi per convertire un oggetto JavaScript in una stringa JSON?","JSON.stringify()|JSON.parse()|eval()|toJson()","0",json
+9,"In JavaScript, come si accede alla proprietà 'Paese' di un oggetto JSON?","obj.getPaese()|obj['Paese']|obj.Paese|obj->Paese","1|2",json
+10,"Quale vantaggio offre JSON rispetto ad altri formati di scambio dati?","Maggiore sicurezza|Maggiore leggibilità|Facilità di parsing|Minor consumo di banda","1|2|3",json

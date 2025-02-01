@@ -1,0 +1,22 @@
+id,name,quizClass,icon
+software-engineering,Software Engineering,software-engineering,FaGears
+requirements,Requirements,software-engineering,GrNotes
+design,Design,software-engineering,CgIfDesign
+implementation,Implementation,software-engineering,MdEngineering
+testing,Testing,software-engineering,GrDocumentTest
+maintenance,Maintenance,software-engineering,GrConfigure
+www,WWW,web-tecnologies,TbWorldWww
+tcp-ip,TCP/IP,web-tecnologies,MdWeb
+http,HTTP,web-tecnologies,MdHttps
+uri,URI,web-tecnologies,MdLink
+html,HTML,web-tecnologies,FaHtml5
+css,CSS,web-tecnologies,FaCss3
+web-dinamico,Web Dinamico,web-tecnologies,MdOutlineDynamicForm
+javascript,Javascript,web-tecnologies,FaJsSquare
+ajax,AJAX,web-tecnologies,FaSyncAlt
+json,JSON,web-tecnologies,LuFileJson2
+web-application,Web Application,web-tecnologies,MdOutlineWeb
+react,React,web-tecnologies,FaReact
+api,API,web-tecnologies,TbApiApp
+semantic-web,Semantic Web,web-tecnologies,SiSemanticuireact
+calcolatori,Calcolatori,calcolatori,Computer

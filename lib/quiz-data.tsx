@@ -9,23 +9,26 @@ import { TbWorldCode } from "react-icons/tb";
 import { Computer } from "lucide-react";
 import { PiTreeStructureBold } from "react-icons/pi";
 
+export const iconMap: { [key: string]: JSX.Element } = {
+    TbWorldCode: <TbWorldCode />,
+    PiTreeStructureBold: <PiTreeStructureBold />,
+    Computer: <Computer />
+};
+
 const quizData: QuizClass[] = [
     {
         id: "web-tecnologies",
         name: "Tecnologie Web",
-        sections: webTecnologies,
         icon: <TbWorldCode />
     },
     {
         id: "software-engineering",
         name: "Ingegneria del Software",
-        sections: softwareEngineering,
         icon: <PiTreeStructureBold />
     },
     {
         id: "calcolatori",
         name: "Calcolatori Elettronici",
-        sections: calcolatori,
         icon: <Computer />
     }
 ]
