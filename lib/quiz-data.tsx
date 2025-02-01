@@ -13,19 +13,25 @@ const quizData: QuizClass[] = [
     {
         id: "web-tecnologies",
         name: "Tecnologie Web",
-        sections: webTecnologies,
+        get sections() {
+            return webTecnologies
+        },
         icon: <TbWorldCode />
     },
     {
         id: "software-engineering",
         name: "Ingegneria del Software",
-        sections: softwareEngineering,
+        get sections() {
+            return softwareEngineering
+        },
         icon: <PiTreeStructureBold />
     },
     {
         id: "calcolatori",
         name: "Calcolatori Elettronici",
-        sections: calcolatori,
+        get sections() {
+            return calcolatori
+        },
         icon: <Computer />
     }
 ]

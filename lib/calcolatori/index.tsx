@@ -7,7 +7,9 @@ const calcolatori: QuizSection[] = [
     {
         id: "calcolatori",
         name: "Calcolatori Elettronici",
-        questions: shuffleArray(calcolatoriElettronici),
+        get questions() {
+            return shuffleArray(calcolatoriElettronici);
+        },
         icon: <Computer />
     },
 ];

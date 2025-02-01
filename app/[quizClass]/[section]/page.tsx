@@ -33,7 +33,7 @@ export default function QuizPage() {
                     </Link>
                     <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
                 </div>
-                <Quiz section={quizSection} quizClassId={quizClass.id} />
+                <Quiz section={quizSection} questions={quizSection.questions} quizClassId={quizClass.id} />
             </div>
         </DefaultLayout>
     )

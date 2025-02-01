@@ -21,37 +21,49 @@ const softwareEngineering: QuizSection[] = [
     {
         id: "software-engineering",
         name: "Software Engineering",
-        questions: shuffleArray(softwareEng),
+        get questions() {
+            return shuffleArray(softwareEng);
+        },
         icon: <FaGears />
     },
     {
         id: "requirements",
         name: "Requirements",
-        questions: shuffleArray(requirements),
+        get questions() {
+            return shuffleArray(requirements);
+        },
         icon: <GrNotes />
     },
     {
         id: "design",
         name: "Design",
-        questions: shuffleArray(design),
+        get questions() {
+            return shuffleArray(design);
+        },
         icon: <CgIfDesign />
     },
     {
         id: "implementation",
         name: "Implementation",
-        questions: shuffleArray(implementation),
+        get questions() {
+            return shuffleArray(implementation);
+        },
         icon: <MdEngineering />
     },
     {
         id: "testing",
         name: "Testing",
-        questions: shuffleArray(testing),
+        get questions() {
+            return shuffleArray(testing);
+        },
         icon: <GrDocumentTest />
     },
     {
         id: "maintenance",
         name: "Maintenance",
-        questions: shuffleArray(maintenance),
+        get questions() {
+            return shuffleArray(maintenance);
+        },
         icon: <GrConfigure />
     }
 ];
