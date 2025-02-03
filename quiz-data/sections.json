@@ -113,8 +113,18 @@
     "calcolatori": [
         {
             "id": "calcolatori",
-            "name": "calcolatori",
+            "name": "Calcolatori Elettronici",
             "icon": "Computer"
+        },
+        {
+            "id": "prestazioni",
+            "name": "Prestazioni",
+            "icon": "MdSpeed"
+        },
+        {
+            "id": "reti-logiche",
+            "name": "Reti Logiche",
+            "icon": "TbLogicXor"
         }
     ]
 }
