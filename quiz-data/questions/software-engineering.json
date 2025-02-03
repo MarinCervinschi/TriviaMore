@@ -1,0 +1,1413 @@
+{
+    "design": [
+        {
+            "id": 1,
+            "question": "Quali sono le due principali fasi del design software?",
+            "options": [
+                "Fase di design architettonico e fase di design dettagliato",
+                "Fase di implementazione e fase di testing",
+                "Fase di raccolta requisiti e fase di manutenzione",
+                "Fase di sviluppo e fase di rilascio"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 2,
+            "question": "Quale principio SOLID afferma che una classe dovrebbe avere una sola ragione per cambiare?",
+            "options": [
+                "Open-Closed Principle (OCP)",
+                "Liskov Substitution Principle (LSP)",
+                "Single Responsibility Principle (SRP)",
+                "Interface Segregation Principle (ISP)"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 3,
+            "question": "Cosa afferma il principio Open-Closed (OCP)?",
+            "options": [
+                "Le classi devono essere chiuse alla modifica ma aperte all'estensione",
+                "Le classi devono essere aperte alla modifica e chiuse all'estensione",
+                "Le classi dovrebbero avere una sola responsabilità",
+                "Le interfacce devono essere segregate per evitare dipendenze inutili"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 4,
+            "question": "Secondo il principio di sostituzione di Liskov (LSP), cosa devono poter fare le classi derivate?",
+            "options": [
+                "Aggiungere nuove funzionalità senza modificarne il comportamento",
+                "Sostituire le classi base senza alterare il comportamento del programma",
+                "Essere specializzate per casi d'uso specifici",
+                "Essere indipendenti dalle classi base"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 5,
+            "question": "Quale principio di coesione afferma che un componente dovrebbe essere riutilizzabile e rilasciabile come unità coesa?",
+            "options": [
+                "Common Reuse Principle (CRP)",
+                "Reuse/Release Equivalence Principle (REP)",
+                "Common Closure Principle (CCP)",
+                "Stable Abstraction Principle (SAP)"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 6,
+            "question": "Cosa rappresenta il Fan-in nella misurazione della qualità del design dei componenti?",
+            "options": [
+                "Il numero di dipendenze in uscita da un componente",
+                "Il numero di classi che dipendono da un determinato componente",
+                "Il rapporto tra le dipendenze in ingresso e uscita",
+                "Il numero di classi astratte in un componente"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 7,
+            "question": "Cosa si intende per decoupling layers nell'architettura Clean?",
+            "options": [
+                "Separare i vari strati orizzontali di un sistema per ridurre le dipendenze",
+                "Separare i diversi casi d'uso in moduli indipendenti",
+                "Utilizzare servizi di terze parti per ridurre la complessità",
+                "Evitare la duplicazione del codice tra componenti"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 8,
+            "question": "Qual è lo scopo principale del livello 'Entities' nell'architettura Clean?",
+            "options": [
+                "Gestire le interazioni utente",
+                "Definire le regole di business fondamentali e i dati critici",
+                "Connettere il sistema al database",
+                "Fornire interfacce utente intuitive"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 9,
+            "question": "Quale componente nell'architettura Clean si occupa di tradurre i dati tra formati interni ed esterni?",
+            "options": [
+                "Entities",
+                "Use Cases",
+                "Interface Adapters",
+                "Frameworks & Drivers"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 10,
+            "question": "Quale principio afferma che le dipendenze tra i componenti devono formare un grafo aciclico?",
+            "options": [
+                "Stable Dependencies Principle (SDP)",
+                "Acyclic Dependencies Principle (ADP)",
+                "Stable Abstraction Principle (SAP)",
+                "Common Closure Principle (CCP)"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 11,
+            "question": "Qual è l'obiettivo principale dell'architettura software?",
+            "options": [
+                "Facilitare lo sviluppo, il deployment, l'operazione e la manutenzione del software",
+                "Minimizzare il numero di componenti del sistema",
+                "Massimizzare il numero di funzionalità indipendenti",
+                "Eliminare del tutto le dipendenze tra componenti"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 12,
+            "question": "Quale delle seguenti opzioni descrive una caratteristica architetturale?",
+            "options": [
+                "Una decisione sulla scelta del framework di sviluppo",
+                "Un requisito non funzionale come la scalabilità o la testabilità",
+                "Una directory che contiene componenti logici",
+                "Un'implementazione specifica di un servizio"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 13,
+            "question": "Cosa rappresentano i componenti logici in un'architettura software?",
+            "options": [
+                "Le unità di deployment dell'applicazione",
+                "Le funzionalità principali organizzate in directory",
+                "Le librerie di terze parti utilizzate dal sistema",
+                "I database utilizzati per la persistenza dei dati"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 14,
+            "question": "Quale dei seguenti stili architetturali è basato sulla separazione dei componenti in livelli tecnici distinti?",
+            "options": [
+                "Microkernel Architecture",
+                "Event-Driven Architecture",
+                "Layered Architecture",
+                "Microservices Architecture"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 15,
+            "question": "Quale principio dell'architettura Clean suggerisce la separazione dei vari strati orizzontali del sistema?",
+            "options": [
+                "Decoupling Layers",
+                "Dependency Inversion Principle",
+                "Common Closure Principle",
+                "Stable Dependencies Principle"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 16,
+            "question": "In un'architettura a microservizi, quale approccio consente di coordinare il flusso dei servizi tramite un componente centrale?",
+            "options": [
+                "Coreografia",
+                "Orchestrazione",
+                "Broker topology",
+                "Mediator topology"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 17,
+            "question": "Quale formula viene utilizzata per calcolare la stabilità di un componente software?",
+            "options": [
+                "I = Fan-out / (Fan-in + Fan-out)",
+                "I = Fan-in / (Fan-in + Fan-out)",
+                "I = Fan-out * Fan-in",
+                "I = (Fan-in + Fan-out) / Fan-out"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 18,
+            "question": "Cosa rappresentano le entità nell'architettura Clean?",
+            "options": [
+                "Componenti che gestiscono la logica di presentazione",
+                "Unità di persistenza per i dati di basso livello",
+                "Regole aziendali fondamentali indipendenti dai dettagli implementativi",
+                "Interfacce usate per la comunicazione con altri servizi"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 19,
+            "question": "Quale principio di coesione suggerisce che le classi che cambiano per gli stessi motivi dovrebbero essere raggruppate?",
+            "options": [
+                "Common Closure Principle (CCP)",
+                "Stable Abstraction Principle (SAP)",
+                "Common Reuse Principle (CRP)",
+                "Reuse/Release Equivalence Principle (REP)"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 20,
+            "question": "In quale stile architetturale i servizi comunicano rispondendo a eventi in modo asincrono?",
+            "options": [
+                "Microservices Architecture",
+                "Event-Driven Architecture",
+                "Layered Architecture",
+                "Microkernel Architecture"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design"
+        },
+        {
+            "id": 21,
+            "question": "Quale tra le seguenti affermazioni descrive meglio la coerenza nella progettazione del software?",
+            "options": [
+                "Garantisce uniformità nell'aspetto estetico del software",
+                "Assicura che il design copra tutti i requisiti identificati",
+                "Garantisce uniformità nel flusso logico e nelle interfacce",
+                "Migliora le prestazioni del software"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Design Characteristics"
+        },
+        {
+            "id": 22,
+            "question": "Quale delle seguenti NON è una categoria di metriche software?",
+            "options": [
+                "Metriche di prodotto",
+                "Metriche di processo",
+                "Metriche di manutenzione",
+                "Metriche di progetto"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Software Metrics"
+        },
+        {
+            "id": 23,
+            "question": "Quale delle seguenti è una limitazione nell'uso delle metriche software?",
+            "options": [
+                "Possono essere interpretate universalmente in tutti i progetti",
+                "Possono portare a comportamenti opportunistici",
+                "Garantiscono sempre la qualità del software",
+                "Sono prive di errori di valutazione"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Software Metrics Limitations"
+        },
+        {
+            "id": 24,
+            "question": "Quale delle seguenti metriche è utilizzata nell'analisi statica del software?",
+            "options": [
+                "Code Coverage",
+                "Bugs-per-Line-of-Code",
+                "Cyclomatic Complexity",
+                "Feature Usage"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Static vs Dynamic Analysis"
+        },
+        {
+            "id": 25,
+            "question": "Come viene calcolata la complessità ciclomatica di McCabe?",
+            "options": [
+                "E - N + 2P",
+                "Numero di linee di codice / numero di metodi",
+                "Somma di operatori e operandi distinti",
+                "Fan-in * Fan-out"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Code Complexity Metrics"
+        },
+        {
+            "id": 26,
+            "question": "Quale problema principale deriva dalla duplicazione del codice?",
+            "options": [
+                "Maggiore riusabilità del codice",
+                "Difficoltà di manutenzione e aggiornamento",
+                "Aumento delle prestazioni",
+                "Migliore leggibilità del codice"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Code Duplication Issues"
+        },
+        {
+            "id": 27,
+            "question": "Quale delle seguenti metriche misura il numero di connessioni tra una classe e le altre in OOP?",
+            "options": [
+                "WMC (Weighted Methods per Class)",
+                "DIT (Depth of Inheritance Tree)",
+                "CBO (Coupling Between Object Classes)",
+                "RFC (Response for a Class)"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Object-Oriented Metrics (CK Metrics)"
+        },
+        {
+            "id": 28,
+            "question": "Quale di questi elementi è un indicatore di elevato accoppiamento tra moduli software?",
+            "options": [
+                "I moduli condividono solo i dati necessari",
+                "I moduli sono altamente indipendenti",
+                "Un cambiamento in un modulo richiede modifiche in molti altri",
+                "I moduli contengono elementi strettamente correlati"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Coupling and Cohesion"
+        }
+    ],
+    "requirements": [
+        {
+            "id": 1,
+            "question": "Quali sono le principali fasi del Requirement Engineering?",
+            "options": [
+                "Elicitation",
+                "Specification",
+                "Testing",
+                "Review and validation"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 2,
+            "question": "Quale fase del processo di specifica dei requisiti riguarda la formalizzazione e la descrizione dei requisiti raccolti?",
+            "options": [
+                "Elicitation",
+                "Documentation and definition",
+                "Prototyping",
+                "Analysis"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 3,
+            "question": "Cosa caratterizza l'elicitation dei requisiti ad alto livello?",
+            "options": [
+                "Si concentra sugli obiettivi strategici e la logica aziendale",
+                "Definisce dettagli operativi per gli utenti finali",
+                "Considera vincoli come budget e tempi",
+                "Analizza i formati di input e output del sistema"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 4,
+            "question": "Quali attività caratterizzano l'elicitation a livello di dettaglio?",
+            "options": [
+                "Analisi delle esigenze specifiche degli utenti finali",
+                "Identificazione dei vincoli di business",
+                "Progettazione delle interfacce utente",
+                "Definizione degli obiettivi aziendali"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 5,
+            "question": "Qual è la differenza principale tra elicitation e analisi dei requisiti?",
+            "options": [
+                "L'elicitation raccoglie le necessità, l'analisi le organizza e dettaglia",
+                "L'analisi precede sempre l'elicitation",
+                "L'analisi si concentra solo sui requisiti non funzionali",
+                "L'elicitation è un processo interno al team di sviluppo"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 6,
+            "question": "Quali attività fanno parte dell'analisi dei requisiti?",
+            "options": [
+                "Clustering",
+                "Prioritizing",
+                "Prototyping",
+                "Elicitation"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 7,
+            "question": "Cosa rappresentano i diagrammi UML di tipo Use Case?",
+            "options": [
+                "Le interazioni tra gli utenti e il sistema",
+                "Le relazioni gerarchiche tra moduli software",
+                "I flussi di dati interni al sistema",
+                "Le fasi di sviluppo di un software"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 8,
+            "question": "Quali informazioni sono rappresentate nei diagrammi UML Use Case?",
+            "options": [
+                "Gli attori che interagiscono con il sistema",
+                "I casi d'uso che rappresentano gli obiettivi degli utenti",
+                "Le specifiche dettagliate delle funzionalità interne",
+                "I vincoli di budget e tempi di sviluppo"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 9,
+            "question": "Quali degli strumenti seguenti vengono utilizzati per rappresentare i requisiti?",
+            "options": [
+                "Use Case Diagram",
+                "Activity Diagram",
+                "Gantt Chart",
+                "ER Diagram"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Requirements"
+        },
+        {
+            "id": 10,
+            "question": "Quali sono gli scopi principali della prototipazione dei requisiti?",
+            "options": [
+                "Verificare e validare i requisiti",
+                "Ridurre i costi di sviluppo",
+                "Fornire un modello visivo del sistema",
+                "Definire i ruoli del team di sviluppo"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Requirements"
+        }
+    ],
+    "implementation": [
+        {
+            "id": 1,
+            "question": "Quali attività sono incluse nella fase di implementazione?",
+            "options": [
+                "Scrittura del codice sorgente",
+                "Compilazione e testing",
+                "Progettazione del software",
+                "Debugging"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 2,
+            "question": "Quali caratteristiche migliorano la qualità del codice durante l'implementazione?",
+            "options": [
+                "Leggibilità",
+                "Manutenibilità",
+                "Correttezza",
+                "Prestazioni"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 3,
+            "question": "Quali sono i potenziali rischi di un'eccessiva ottimizzazione del codice?",
+            "options": [
+                "Maggiore leggibilità del codice",
+                "Compromissione della manutenibilità",
+                "Miglioramento delle prestazioni",
+                "Aumento della complessità del codice"
+            ],
+            "correctAnswers": [
+                1,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 4,
+            "question": "Quali misure possono essere valutate secondo lo standard ISO/IEC 25010?",
+            "options": [
+                "Misure esterne del software",
+                "Misure interne del software",
+                "Analisi degli stili di programmazione",
+                "Conformità alla sicurezza hardware"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 5,
+            "question": "Quali tecniche sono considerate best practice nello sviluppo del codice?",
+            "options": [
+                "Scrivere unità di codice brevi",
+                "Mantenere codice duplicato per sicurezza",
+                "Limitare il numero di parametri per metodo",
+                "Separare le preoccupazioni nei moduli"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 6,
+            "question": "Quali fasi fanno parte del debugging?",
+            "options": [
+                "Stabilizzazione",
+                "Localizzazione",
+                "Correzione",
+                "Progettazione del sistema"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 7,
+            "question": "Quali vantaggi offre il refactoring del codice?",
+            "options": [
+                "Migliora la leggibilità e la manutenibilità",
+                "Riduce la duplicazione del codice",
+                "Modifica il comportamento funzionale",
+                "Facilita il testing del codice"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 8,
+            "question": "Quale tecnica di refactoring consiste nell'estrazione di un metodo dal codice originale?",
+            "options": [
+                "Extract Method",
+                "Replace Conditional with Polymorphism",
+                "Extract Superclass",
+                "Replace Method with Method Object"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 9,
+            "question": "In cosa consiste la tecnica 'Replace Nested Conditional with Guard Clauses'?",
+            "options": [
+                "Ridurre la complessità dei blocchi condizionali",
+                "Utilizzare polimorfismo per sostituire switch e if-else",
+                "Inserire condizioni di uscita anticipata",
+                "Rimuovere tutti i blocchi condizionali dal codice"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 10,
+            "question": "Qual è l'obiettivo della programmazione per asserzioni?",
+            "options": [
+                "Garantire precondizioni e postcondizioni corrette",
+                "Rendere il codice più veloce",
+                "Prevenire la duplicazione del codice",
+                "Rilevare e segnalare violazioni delle condizioni previste"
+            ],
+            "correctAnswers": [
+                0,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 11,
+            "question": "Quali caratteristiche definiscono un buon stile di programmazione?",
+            "options": [
+                "Denominazione chiara e coerente delle entità",
+                "Utilizzo eccessivo di commenti",
+                "Separazione delle parole e uso corretto della capitalizzazione",
+                "Dimensioni ridotte dei metodi"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 12,
+            "question": "Quali vantaggi offre il mantenimento di una base di codice piccola?",
+            "options": [
+                "Facilità di analisi e manutenzione",
+                "Riduzione dei test necessari",
+                "Migliore produttività nella manutenzione",
+                "Rimozione completa dei bug"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 13,
+            "question": "In che modo la leggibilità del codice influisce sulla sua qualità?",
+            "options": [
+                "Rende più facile la verifica e la correzione degli errori",
+                "Complica la manutenibilità del software",
+                "Facilita il lavoro di team di sviluppo",
+                "Migliora automaticamente le prestazioni del codice"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 14,
+            "question": "Quali sono le funzionalità offerte da JUnit per il debugging del software?",
+            "options": [
+                "Supporto per test automatici",
+                "Esecuzione di test con configurazioni diverse",
+                "Identificazione rapida dei punti critici del codice",
+                "Compilazione del codice sorgente"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 15,
+            "question": "Quali caratteristiche ha il debugging?",
+            "options": [
+                "È un processo strutturato con fasi definite",
+                "Si basa solo sull'intuito del programmatore",
+                "Comprende la correzione e la verifica degli errori",
+                "Può essere completamente automatizzato"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 16,
+            "question": "Quali condizioni devono essere sempre verificate nella programmazione per asserzioni?",
+            "options": [
+                "Precondizioni",
+                "Postcondizioni",
+                "Invarianti",
+                "Ordine alfabetico delle classi"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 17,
+            "question": "Quali tecniche sono associate alla programmazione difensiva?",
+            "options": [
+                "Validazione degli input",
+                "Utilizzo di asserzioni per verificare condizioni",
+                "Analisi dello stile di programmazione personale",
+                "Ignorare gli errori di input"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 18,
+            "question": "Qual è l'obiettivo principale del refactoring del codice?",
+            "options": [
+                "Aumentare la complessità del codice",
+                "Rendere il codice più leggibile e manutenibile",
+                "Modificare il comportamento funzionale",
+                "Eliminare tutte le dipendenze esterne"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 19,
+            "question": "Quando è opportuno applicare il 'Extract Method' nel refactoring?",
+            "options": [
+                "Quando un metodo è troppo complesso",
+                "Quando il codice non ha blocchi condizionali",
+                "Per separare le responsabilità in unità più semplici",
+                "Solo se il progetto è completato"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Implementation"
+        },
+        {
+            "id": 20,
+            "question": "Cosa si intende per 'Replace Method with Method Object' nel refactoring?",
+            "options": [
+                "Isolare un metodo complesso in una classe separata",
+                "Trasformare variabili locali in campi della classe",
+                "Eliminare il metodo complesso",
+                "Sostituire il metodo con un'interfaccia esterna"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Implementation"
+        }
+    ],
+    "testing": [
+        {
+            "id": 1,
+            "question": "Qual è la differenza tra verifica e validazione nel processo di testing del software?",
+            "options": [
+                "La verifica controlla che il software soddisfi i requisiti tecnici, mentre la validazione verifica che soddisfi le esigenze degli utenti.",
+                "La validazione si concentra solo sulla documentazione, mentre la verifica si occupa del codice.",
+                "La verifica è svolta dai tester dopo lo sviluppo, mentre la validazione avviene durante la progettazione.",
+                "La verifica e la validazione sono sinonimi e si riferiscono allo stesso processo."
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 2,
+            "question": "Quale tra le seguenti attività fa parte del Controllo della Qualità (Quality Control)?",
+            "options": [
+                "Definizione delle strategie di sviluppo",
+                "Esecuzione di casi di test per identificare difetti",
+                "Monitoraggio del processo produttivo",
+                "Valutazione delle competenze del team di sviluppo"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 3,
+            "question": "Quale livello di testing si concentra sulla verifica delle interazioni tra componenti software?",
+            "options": [
+                "Acceptance Test",
+                "Unit Test",
+                "Integration Test",
+                "System Test"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 4,
+            "question": "Cosa caratterizza il testing funzionale?",
+            "options": [
+                "Verifica la stabilità del sistema sotto carico",
+                "Analizza il comportamento del software rispetto alle specifiche funzionali",
+                "Valuta la manutenibilità del codice",
+                "Conferma che il codice segua standard aziendali"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 5,
+            "question": "Quale tecnica si utilizza nel Black-box testing per testare i valori limite?",
+            "options": [
+                "Equivalence Partitioning",
+                "Boundary Value Analysis",
+                "Path Testing",
+                "Error Guessing"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 6,
+            "question": "Chi esegue generalmente l'Acceptance Test?",
+            "options": [
+                "Sviluppatori",
+                "Tester professionisti",
+                "Stakeholder e utenti finali",
+                "Project manager"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 7,
+            "question": "Qual è l'obiettivo principale del Regression Testing?",
+            "options": [
+                "Garantire che nuove funzionalità non abbiano introdotto difetti in funzioni già esistenti",
+                "Ottimizzare le performance del software",
+                "Verificare che l'interfaccia utente sia conforme agli standard",
+                "Analizzare il codice sorgente senza eseguirlo"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 8,
+            "question": "In cosa consiste l'Equivalence Partitioning nel Black-box testing?",
+            "options": [
+                "Testare tutti i percorsi del codice sorgente",
+                "Dividere gli input in classi equivalenti e testare un rappresentante per ogni classe",
+                "Identificare errori comuni basandosi sull'intuito",
+                "Verificare la sicurezza del sistema in situazioni anomale"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 9,
+            "question": "Qual è il livello di testing che verifica singoli componenti o moduli del software?",
+            "options": [
+                "Unit Test",
+                "Integration Test",
+                "System Test",
+                "Acceptance Test"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 10,
+            "question": "Quale fase del processo di testing prevede la definizione dei test case e la preparazione dell'ambiente?",
+            "options": [
+                "Esecuzione",
+                "Progettazione",
+                "Analisi",
+                "Completion"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 11,
+            "question": "Qual è l'obiettivo principale della Statement Coverage?",
+            "options": [
+                "Verificare che ogni decisione sia valutata come vera e falsa",
+                "Assicurare che ogni riga di codice venga eseguita almeno una volta",
+                "Testare condizioni atomiche nelle decisioni",
+                "Verificare il comportamento dei cicli in vari scenari"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 12,
+            "question": "Quale tecnica di testing verifica che ogni decisione venga valutata sia come vera che come falsa?",
+            "options": [
+                "Statement Coverage",
+                "Decision Coverage",
+                "Condition Coverage",
+                "Loop Coverage"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 13,
+            "question": "Qual è uno scenario fondamentale da testare nella Loop Coverage?",
+            "options": [
+                "Ogni riga di codice deve essere eseguita almeno una volta",
+                "Verificare che ogni decisione sia valutata sia come vera che come falsa",
+                "Zero iterazioni, una sola iterazione e numero massimo di iterazioni",
+                "Solo testare il massimo numero di iterazioni"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 14,
+            "question": "La Condition Coverage si concentra su:",
+            "options": [
+                "Verificare che ogni ciclo venga eseguito almeno una volta",
+                "Assicurare che ogni condizione atomica sia testata sia come TRUE che FALSE",
+                "Analizzare il flusso complessivo del programma",
+                "Verificare ogni percorso di esecuzione"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 15,
+            "question": "Quale affermazione è vera per la Modified Condition/Decision Coverage (MC/DC)?",
+            "options": [
+                "Ogni ciclo deve essere eseguito almeno una volta",
+                "Ogni condizione atomica deve essere valutata sia come TRUE che FALSE, e deve esserci almeno un test in cui una specifica condizione influenza il risultato del predicato",
+                "Assicura solo la copertura delle decisioni",
+                "Analizza esclusivamente la copertura delle dichiarazioni"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 16,
+            "question": "Qual è l'obiettivo principale del Path Testing?",
+            "options": [
+                "Verificare ogni decisione come vera e falsa",
+                "Assicurare la copertura di tutte le condizioni atomiche",
+                "Esplorare e testare tutte le possibili sequenze nel flusso di esecuzione del codice",
+                "Assicurare che ogni ciclo venga eseguito almeno una volta"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 17,
+            "question": "Qual è la principale differenza tra ispezioni e review?",
+            "options": [
+                "Le ispezioni sono meno formali rispetto alle review",
+                "Le review si concentrano solo sul codice sorgente",
+                "Le ispezioni sono un processo formale e strutturato, mentre le review sono meno formali",
+                "Entrambe sono ugualmente formali e non differiscono"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 18,
+            "question": "Qual è uno dei vantaggi principali delle tecniche automatizzate nel testing?",
+            "options": [
+                "Aumentano il tempo di sviluppo del software",
+                "Riducono la ripetibilità dei test",
+                "Consentono di eseguire test su un ampio spettro di scenari in tempi brevi",
+                "Sono meno affidabili dei test manuali"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 19,
+            "question": "Quale affermazione è vera riguardo a FindBugs?",
+            "options": [
+                "Esegue il codice per identificare errori",
+                "Analizza il codice sorgente Java senza eseguirlo per rilevare potenziali problemi",
+                "È uno strumento esclusivamente per il testing manuale",
+                "Si utilizza solo per verificare la copertura delle decisioni"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        },
+        {
+            "id": 20,
+            "question": "Qual è uno dei vantaggi principali del Continuous Integration?",
+            "options": [
+                "Riduce la necessità di test automatizzati",
+                "Consente di rilevare errori di integrazione in fasi avanzate dello sviluppo",
+                "Aumenta il tempo di rilascio del software",
+                "Non è compatibile con lo sviluppo Agile"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Testing"
+        }
+    ],
+    "maintenance": [
+        {
+            "id": 1,
+            "question": "Qual è l'obiettivo principale del Software Configuration Management (SCM)?",
+            "options": [
+                "Garantire che il software sia sviluppato rapidamente",
+                "Assicurare il controllo, il tracciamento e la manutenzione organizzata dei componenti software",
+                "Ridurre i costi del progetto senza alterare le specifiche",
+                "Ottimizzare le performance del software durante l'esecuzione"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 2,
+            "question": "Quali delle seguenti attività fanno parte del processo di Software Configuration Management?",
+            "options": [
+                "Definizione del framework di gestione",
+                "Scrittura del codice sorgente",
+                "Formazione e applicazione del processo di gestione",
+                "Compilazione del codice"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 3,
+            "question": "Cosa influenza la scelta degli strumenti software per il Software Configuration Management?",
+            "options": [
+                "Il tipo di processo di sviluppo adottato dall'organizzazione",
+                "Il numero di sviluppatori impiegati",
+                "Il budget del progetto",
+                "Il livello di dettaglio nella gestione degli artefatti"
+            ],
+            "correctAnswers": [
+                0,
+                3
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 4,
+            "question": "Quali sono le principali fasi del processo di build?",
+            "options": [
+                "Compilazione",
+                "Testing automatico",
+                "Linking",
+                "Validazione utente"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 5,
+            "question": "Quali funzioni supportano lo storage degli artefatti software?",
+            "options": [
+                "Creare nuovi artefatti",
+                "Eliminare artefatti obsoleti",
+                "Modificare gli artefatti con controllo delle versioni",
+                "Eseguire il deployment su ambiente di produzione"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 6,
+            "question": "Perché è importante stimare il tasso di notifica di problemi del software?",
+            "options": [
+                "Per capire se il software è esente da problemi",
+                "Per verificare la qualità del software dopo il rilascio",
+                "Per stimare la durata del ciclo di vita del software",
+                "Per ottenere un feedback rapido sugli errori"
+            ],
+            "correctAnswers": [
+                1,
+                3
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 7,
+            "question": "Quali ruoli sono presenti in un centro di supporto?",
+            "options": [
+                "Rappresentanti del supporto clienti",
+                "Team tecnico per la risoluzione approfondita",
+                "Project Manager",
+                "Supervisore del flusso delle richieste"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Maintenance"
+        },
+        {
+            "id": 8,
+            "question": "Quali problemi possono sorgere durante la distribuzione e installazione delle patch?",
+            "options": [
+                "Incompatibilità tra patch regolari ed emergenziali",
+                "Tempi di inattività lunghi per il recupero delle patch precedenti",
+                "Rimozione di tutte le configurazioni degli utenti",
+                "Diffidenza degli utenti nell'installare nuove patch"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Maintenance"
+        }
+    ],
+    "software-engineering": [
+        {
+            "id": 1,
+            "question": "Quale tra le seguenti affermazioni è vera riguardo la programmazione di un software di piccole dimensioni?",
+            "options": [
+                "Richiede una gestione altamente strutturata",
+                "Ha requisiti generalmente chiari e ben definiti",
+                "Richiede un intenso coordinamento tra sviluppatori",
+                "Presenta elevati costi di manutenzione"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 2,
+            "question": "Quali problemi aumentano con l'aumento delle dimensioni di un software complesso?",
+            "options": [
+                "Problemi di ampiezza dovuti all'aumento delle funzionalità",
+                "Problemi di profondità legati alle relazioni tra elementi",
+                "Riduzione della complessità del testing",
+                "Diminuzione della necessità di documentazione"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 3,
+            "question": "Quali delle seguenti attività fanno parte del processo di produzione di un software?",
+            "options": [
+                "Analisi dei requisiti",
+                "Progettazione",
+                "Marketing",
+                "Testing"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 4,
+            "question": "Quali sono gli obiettivi principali dell'ingegneria del software?",
+            "options": [
+                "Garantire l'affidabilità e la qualità del software",
+                "Minimizzare i costi di produzione e manutenzione",
+                "Evitare completamente la fase di testing",
+                "Coordinare il lavoro in team"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 5,
+            "question": "Quale delle seguenti affermazioni descrive correttamente il testing di un software complesso?",
+            "options": [
+                "È sufficiente testare solo le singole componenti",
+                "Bisogna verificare l'intero sistema e l'interazione tra moduli",
+                "Il testing è meno importante rispetto alla codifica",
+                "Non è necessario considerare casi limite e situazioni di errore"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 6,
+            "question": "Quale fase del processo di produzione del software riguarda la traduzione della progettazione in codice sorgente?",
+            "options": [
+                "Analisi dei requisiti",
+                "Progettazione",
+                "Coding",
+                "Testing"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 7,
+            "question": "Cosa caratterizza principalmente un software complesso rispetto a uno di piccole dimensioni?",
+            "options": [
+                "Maggiore necessità di coordinamento tra sviluppatori",
+                "Minori requisiti di documentazione",
+                "Minor numero di casi limite da considerare",
+                "Architettura semplificata e meno strutturata"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 8,
+            "question": "Quale tra le seguenti è una caratteristica attesa dal software prodotto?",
+            "options": [
+                "Deve essere efficiente",
+                "Deve essere affidabile",
+                "Non deve necessitare di manutenzione",
+                "Deve soddisfare i requisiti definiti"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 9,
+            "question": "Quale aspetto è fondamentale nella gestione delle relazioni tra elementi in un software complesso?",
+            "options": [
+                "Condivisione dei dati",
+                "Presenza di relazioni gerarchiche o ricorsive",
+                "Eliminazione della documentazione",
+                "Semplificazione eccessiva delle architetture"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "Software Engineering"
+        },
+        {
+            "id": 10,
+            "question": "Quale attività non rientra nelle fasi del ciclo di sviluppo software?",
+            "options": [
+                "Progettazione",
+                "Analisi dei requisiti",
+                "Produzione fisica del software",
+                "Testing"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "Software Engineering"
+        }
+    ]
+}

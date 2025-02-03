@@ -24,6 +24,8 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
   const [startTime, setStartTime] = useState<number>(Date.now())
   const [totalTime, setTotalTime] = useState<number | null>(null)
 
+  console.log(section);
+
   const handleAnswerChange = (optionIndex: number) => {
     setUserAnswers((prev) => {
       const newAnswers = [...prev]
