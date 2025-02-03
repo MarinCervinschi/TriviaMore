@@ -23,7 +23,6 @@ export default function RootLayout({
       <head>
         <title>Quiz App</title>
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
       </head>
       <body className={inter.className}>
         {loading ? <Loader /> : children}

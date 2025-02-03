@@ -1,61 +1,60 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Quiz } from "@components/quiz/Quiz"
-import { useParams } from "next/navigation"
-import { notFound } from "next/navigation"
-import DefaultLayout from "@components/Layouts/DefaultLayout"
-import Link from 'next/link'
+import { notFound, useParams } from "next/navigation"
 import { BiLogOut } from "react-icons/bi";
+import Link from 'next/link'
+
+import { Quiz } from "@components/quiz/Quiz"
+import DefaultLayout from "@components/Layouts/DefaultLayout"
+import Loader from '@components/Loader'
+
+import iconMap from '@/lib/iconMap'
 import QuizSection from "@/types/QuizSection"
 import QuizClass from "@/types/QuizClass"
 import QuizQuestion from '@/types/QuizQuestion'
-import iconMap from '@/lib/iconMap'
-import Loader from '@components/Loader'
 
 export default function QuizPage() {
     const params = useParams()
-    if (!params?.quizClass || !params?.section) {
-        return notFound()
-    }
     const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [section, setSection] = useState<QuizSection>({} as QuizSection);
-    const [questions, setQuestions] = useState([] as QuizQuestion[]);
-
-    const fetchData = async (quizClassId: string, sectionId: string) => {
-        try {
-            const response = await fetch(`/api/class/${quizClassId}/section/${sectionId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || response.statusText);
-            }
-
-            const data = await response.json();
-            console.log(data.section);
-            const formattedData = {
-                ...data.section,
-                icon: iconMap[data.section.icon]
-            };
-            console.log(data.section);
-            console.log(iconMap[data.section.icon]);
-
-            setQuizClass(data.quizClass);
-            setSection(formattedData);
-            setQuestions(data.questions);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
     useEffect(() => {
+        if (!params?.quizClass || !params?.section) {
+            notFound();
+        }
+
+        const fetchData = async (quizClassId: string, sectionId: string) => {
+            try {
+                const response = await fetch(`/api/class/${quizClassId}/section/${sectionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || response.statusText);
+                }
+
+                const data = await response.json();
+                const formattedData = {
+                    ...data.section,
+                    icon: iconMap[data.section.icon]
+                };
+
+                setQuizClass(data.quizClass);
+                setSection(formattedData);
+                setQuestions(data.questions);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
         fetchData(params.quizClass as string, params.section as string);
-    }, []);
+    }, [params]);
 
     if (!section || !questions.length) {
         return <Loader />;

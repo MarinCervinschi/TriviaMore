@@ -1,54 +1,55 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import SectionSelector from "@components/quiz/SectionSelector"
-import DefaultLayout from "../components/Layouts/DefaultLayout"
-import { notFound } from "next/navigation"
-import { useParams } from "next/navigation"
+import { notFound, useParams } from "next/navigation"
 import { BiLogOut } from "react-icons/bi";
 import Link from 'next/link'
+
+import SectionSelector from "@components/quiz/SectionSelector"
+import DefaultLayout from "@components/Layouts/DefaultLayout"
+import Loader from '@components/Loader'
 import iconMap from '@/lib/iconMap'
+
 import QuizClass from '@/types/QuizClass'
-import Loader from '../components/Loader'
+import QuizSection from '@/types/QuizSection'
 
 export default function QuizClassPage() {
     const params = useParams();
-    if (!params?.quizClass) {
-        return notFound();
-    }
-    const [quizClass, setQuizClass] = useState<QuizClass>({ id: '', name: '' });
-    const [sections, setSections] = useState([]);
-
-    const fetchSections = async (quizClassId: string) => {
-        try {
-            const response = await fetch(`/api/class/${quizClassId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || response.statusText);
-            }
-
-            const data = await response.json();
-            const formattedData = data.sections.map((row: any) => ({
-                ...row,
-                icon: iconMap[row.icon]
-            }));
-
-            setQuizClass({ id: data.class.id, name: data.class.name });
-            setSections(formattedData);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
+    const [sections, setSections] = useState<QuizSection[]>([] as QuizSection[]);
 
     useEffect(() => {
+        if (!params?.quizClass) {
+            notFound();
+        }
+        const fetchSections = async (quizClassId: string) => {
+            try {
+                const response = await fetch(`/api/class/${quizClassId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || response.statusText);
+                }
+
+                const data = await response.json();
+                const formattedData = data.sections.map((row: any) => ({
+                    ...row,
+                    icon: iconMap[row.icon]
+                }));
+
+                setQuizClass(data.class);
+                setSections(formattedData);
+            } catch (error) {
+                console.error(error);
+            }
+        }
         fetchSections(params.quizClass as string);
-    }, []);
+    }, [params]);
 
     if (!sections.length) {
         return <Loader />;
