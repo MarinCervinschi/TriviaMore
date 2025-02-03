@@ -1,0 +1,3799 @@
+{
+    "ajax": [
+        {
+            "id": 0,
+            "question": "Quale tecnologia permette di inviare e ricevere dati dal server in modo asincrono senza ricaricare la pagina?",
+            "options": [
+                "XML",
+                "DHTML",
+                "AJAX",
+                "CSS"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 1,
+            "question": "Quale oggetto JavaScript viene utilizzato per inviare richieste HTTP asincrone al server?",
+            "options": [
+                "fetch",
+                "XMLHttpRequest",
+                "HTTPrequest",
+                "requestAPI"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 2,
+            "question": "Qual è uno dei principali vantaggi della comunicazione asincrona in AJAX?",
+            "options": [
+                "Blocca l'interazione con la pagina fino alla risposta del server",
+                "Consente di aggiornare dinamicamente i contenuti senza ricaricare la pagina",
+                "Richiede il ricaricamento della pagina ad ogni richiesta",
+                "Riduce il carico del server eliminando completamente le richieste"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 3,
+            "question": "Qual è la sequenza corretta degli eventi in un'operazione AJAX?",
+            "options": [
+                "Esecuzione funzione JavaScript → Evento utente → Configurazione XMLHttpRequest → Risposta del server",
+                "Evento utente → Esecuzione funzione JavaScript → Istanziazione XMLHttpRequest → Configurazione XMLHttpRequest → Chiamata al server → Risposta del server → Aggiornamento del DOM",
+                "Chiamata al server → Evento utente → Risposta del server → Configurazione XMLHttpRequest → Aggiornamento del DOM",
+                "Aggiornamento del DOM → Istanziazione XMLHttpRequest → Configurazione XMLHttpRequest → Evento utente"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 4,
+            "question": "Quale metodo di richiesta AJAX invia dati nel corpo della richiesta?",
+            "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 5,
+            "question": "Quale tra le seguenti affermazioni è vera riguardo XMLHttpRequest?",
+            "options": [
+                "Sostituisce sempre l'URI corrente",
+                "Non può inviare parametri al server",
+                "Può essere utilizzato solo per richieste nello stesso dominio per motivi di sicurezza",
+                "Supporta solo richieste di tipo GET"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 6,
+            "question": "Come si crea un'istanza di XMLHttpRequest nei browser moderni?",
+            "options": [
+                "var xhr = new XMLHttpRequest();",
+                "var xhr = XMLHttpRequest.create();",
+                "var xhr = new requestXML();",
+                "var xhr = new HttpRequest();"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 7,
+            "question": "Cosa rappresenta il termine 'postback' nelle applicazioni web tradizionali?",
+            "options": [
+                "Una tecnica per inviare dati al server e aggiornare la pagina senza ricaricarla",
+                "Un'operazione in cui la pagina viene ricaricata dopo aver inviato dati al server",
+                "Un metodo per gestire gli eventi a livello di client senza interagire con il server",
+                "Una funzione JavaScript per inviare dati a server esterni"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 8,
+            "question": "Quale tecnologia combina JavaScript, DOM e CSS per creare pagine web dinamiche?",
+            "options": [
+                "AJAX",
+                "DHTML",
+                "XML",
+                "JSON"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 9,
+            "question": "Cosa significa che una richiesta AJAX è asincrona?",
+            "options": [
+                "L'esecuzione del codice viene bloccata fino alla risposta del server",
+                "Il codice continua a essere eseguito mentre si attende la risposta dal server",
+                "La richiesta viene inviata più volte per assicurare la ricezione della risposta",
+                "La richiesta può essere effettuata solo dopo aver ricevuto una risposta precedente"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 10,
+            "question": "Quale metodo di XMLHttpRequest viene utilizzato per inizializzare una richiesta?",
+            "options": [
+                "setRequestHeader()",
+                "open()",
+                "send()",
+                "abort()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 11,
+            "question": "Qual è il parametro che deve essere impostato su 'true' per garantire un'esecuzione asincrona della richiesta?",
+            "options": [
+                "method",
+                "uri",
+                "async",
+                "status"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 12,
+            "question": "Quale metodo viene utilizzato per impostare gli header HTTP di una richiesta XMLHttpRequest?",
+            "options": [
+                "setRequestHeader()",
+                "open()",
+                "send()",
+                "getResponseHeader()"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 13,
+            "question": "Quale metodo di XMLHttpRequest invia la richiesta al server?",
+            "options": [
+                "open()",
+                "send()",
+                "setRequestHeader()",
+                "abort()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 14,
+            "question": "Quale proprietà di XMLHttpRequest contiene il codice di stato della risposta HTTP?",
+            "options": [
+                "status",
+                "readyState",
+                "responseText",
+                "responseXML"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 15,
+            "question": "Quale valore della proprietà readyState indica che l'operazione è stata completata?",
+            "options": [
+                "0",
+                "2",
+                "3",
+                "4"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 16,
+            "question": "In quale stato di readyState è possibile leggere in modo sicuro la risposta completa del server?",
+            "options": [
+                "0",
+                "1",
+                "3",
+                "4"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 17,
+            "question": "Quale metodo di XMLHttpRequest consente di interrompere immediatamente una richiesta in corso?",
+            "options": [
+                "abort()",
+                "close()",
+                "terminate()",
+                "stop()"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 18,
+            "question": "Quale funzione viene utilizzata per registrare una callback da eseguire quando cambia lo stato di una richiesta XMLHttpRequest?",
+            "options": [
+                "onreadystatechange",
+                "callbackFunction",
+                "requestState",
+                "setCallback"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 19,
+            "question": "Quale proprietà di XMLHttpRequest contiene i dati restituiti dal server come stringa?",
+            "options": [
+                "responseXML",
+                "responseText",
+                "statusText",
+                "responseBody"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 20,
+            "question": "Qual è l'unico codice di stato HTTP che garantisce il successo di una richiesta AJAX?",
+            "options": [
+                "200",
+                "403",
+                "404",
+                "500"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 21,
+            "question": "Quale formato di dati è comunemente utilizzato per scambiare informazioni tra client e server in AJAX?",
+            "options": [
+                "HTML",
+                "CSS",
+                "JSON",
+                "PHP"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 22,
+            "question": "Quale metodo di XMLHttpRequest consente di ottenere il valore di uno specifico header di risposta?",
+            "options": [
+                "getResponseHeader()",
+                "getAllResponseHeaders()",
+                "setRequestHeader()",
+                "fetchHeader()"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 23,
+            "question": "Qual è una delle principali criticità dello sviluppo con AJAX?",
+            "options": [
+                "Tempi di risposta troppo veloci",
+                "Difficoltà di debugging e mantenimento",
+                "Mancanza di interattività",
+                "Necessità di ricaricare la pagina"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 24,
+            "question": "Quale tra questi è un vantaggio dell'uso di AJAX nelle applicazioni web?",
+            "options": [
+                "Maggiore interattività senza ricaricare la pagina",
+                "Maggiore complessità per l'utente",
+                "Necessità di aggiornamenti costanti del browser",
+                "Aumento del traffico di rete"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        },
+        {
+            "id": 25,
+            "question": "Cosa si consiglia di fare per migliorare l'interazione utente durante le richieste AJAX?",
+            "options": [
+                "Utilizzare indicatori di caricamento",
+                "Evitare richieste asincrone",
+                "Limitare il numero di richieste a una sola",
+                "Nascondere gli errori all'utente"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "ajax"
+        }
+    ],
+    "api": [
+        {
+            "id": 1,
+            "question": "Cos'è un'API?",
+            "options": [
+                "Un insieme di regole che permette la comunicazione tra applicazioni software",
+                "Un tipo di linguaggio di programmazione",
+                "Un sistema di gestione del database",
+                "Un protocollo di comunicazione via email"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        },
+        {
+            "id": 2,
+            "question": "Quale metodo HTTP viene comunemente utilizzato per ottenere dati da un server?",
+            "options": [
+                "POST",
+                "GET",
+                "PUT",
+                "DELETE"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "api"
+        },
+        {
+            "id": 3,
+            "question": "Quale di queste pratiche è fondamentale per garantire la sicurezza di un'API?",
+            "options": [
+                "L'uso di HTTPS",
+                "L'implementazione di rate limiting",
+                "La validazione degli input",
+                "L'uso di linguaggi di programmazione compilati"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "api"
+        },
+        {
+            "id": 4,
+            "question": "Qual è la funzione principale di un server in una comunicazione API?",
+            "options": [
+                "Inviare richieste al client",
+                "Restituire dati o risultati di operazioni al client",
+                "Creare nuove API",
+                "Autenticare il client"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "api"
+        },
+        {
+            "id": 5,
+            "question": "Cosa sono le API REST?",
+            "options": [
+                "Interfacce che seguono i principi dell'architettura REST",
+                "API che utilizzano il protocollo FTP",
+                "Interfacce che comunicano solo tramite WebSocket",
+                "Un tipo di API che si basa su una struttura di database"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        },
+        {
+            "id": 6,
+            "question": "Quale di queste è una pratica corretta nella gestione delle credenziali di accesso per le API?",
+            "options": [
+                "Inserirle direttamente nel codice sorgente",
+                "Memorizzarle in variabili di ambiente",
+                "Condividerle pubblicamente per scopi di debugging",
+                "Utilizzare credenziali deboli per testare"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "api"
+        },
+        {
+            "id": 7,
+            "question": "Qual è il significato di 'Rate Limiting' in relazione alla sicurezza delle API?",
+            "options": [
+                "Limitare il numero di richieste che un client può fare in un determinato periodo di tempo",
+                "Bloccare tutte le richieste provenienti da IP sconosciuti",
+                "Aumentare il numero di richieste che un client può fare",
+                "Bloccare il traffico HTTPS"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        },
+        {
+            "id": 8,
+            "question": "Cosa significa 'Autenticazione a due fattori' per le API?",
+            "options": [
+                "Richiedere due passaggi di autenticazione per accedere a risorse protette",
+                "Consentire solo accesso tramite due dispositivi diversi",
+                "Autenticare un client e un server tramite due metodi di crittografia",
+                "Consentire accesso solo a due utenti simultaneamente"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        },
+        {
+            "id": 9,
+            "question": "Quali sono i metodi HTTP principali utilizzati nelle API REST?",
+            "options": [
+                "GET, POST, PUT, PATCH, DELETE",
+                "FETCH, PUT, REMOVE",
+                "POST, SELECT, INSERT",
+                "GET, SEND, DELETE"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        },
+        {
+            "id": 10,
+            "question": "Cos'è un token JWT (JSON Web Token) in relazione alla sicurezza delle API?",
+            "options": [
+                "Un metodo di autenticazione sicuro basato su token",
+                "Un metodo di crittografia delle richieste",
+                "Un formato per il trasferimento di dati tra server",
+                "Un tipo di database utilizzato per memorizzare le credenziali"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "api"
+        }
+    ],
+    "css": [
+        {
+            "id": 1,
+            "question": "Qual è lo scopo principale dei fogli di stile CSS?",
+            "options": [
+                "Definire il contenuto di una pagina web",
+                "Definire come il contenuto deve essere presentato all'utente",
+                "Gestire le connessioni tra server e client",
+                "Archiviare dati su server remoti"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 2,
+            "question": "Qual è il principale vantaggio dell'uso di file CSS esterni?",
+            "options": [
+                "Consentono stili personalizzati per singoli elementi",
+                "Facilitano l'applicazione degli stili a più pagine",
+                "Evitano la necessità di dichiarare classi in HTML",
+                "Consentono agli utenti di modificare direttamente lo stile dal browser"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 3,
+            "question": "Qual è la sintassi corretta per definire una regola CSS?",
+            "options": [
+                "selettore { proprietà: valore; }",
+                "proprietà { valore: selettore; }",
+                "selettore ( proprietà: valore )",
+                "valore: proprietà { selettore }"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "css"
+        },
+        {
+            "id": 4,
+            "question": "Come si applica uno stile a tutti i paragrafi di una pagina HTML?",
+            "options": [
+                "* { color: red; }",
+                "p { color: red; }",
+                ".p { color: red; }",
+                "#p { color: red; }"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 5,
+            "question": "Qual è l'ordine di priorità nella risoluzione dei conflitti CSS?",
+            "options": [
+                "Stili inline, stili esterni, stili predefiniti del browser",
+                "Stili predefiniti del browser, stili esterni, stili inline",
+                "Stili esterni, stili inline, stili predefiniti del browser",
+                "Stili esterni, stili predefiniti del browser, stili inline"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "css"
+        },
+        {
+            "id": 6,
+            "question": "Quale dichiarazione CSS assegna priorità assoluta a una regola?",
+            "options": [
+                "specificità",
+                "!important",
+                "inline",
+                "media query"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 7,
+            "question": "Quale selettore CSS seleziona tutti gli elementi con l'attributo class=\"header\"?",
+            "options": [
+                "#header",
+                ".header",
+                "header",
+                "*header"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 8,
+            "question": "Quale selettore viene usato per selezionare un elemento con id=\"main\"?",
+            "options": [
+                "#main",
+                ".main",
+                "main",
+                "*main"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "css"
+        },
+        {
+            "id": 9,
+            "question": "Quale proprietà CSS è usata per cambiare il colore del testo?",
+            "options": [
+                "text-color",
+                "font-color",
+                "color",
+                "text-style"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "css"
+        },
+        {
+            "id": 10,
+            "question": "Quale proprietà CSS definisce lo spazio interno di un elemento?",
+            "options": [
+                "margin",
+                "border",
+                "padding",
+                "content"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "css"
+        },
+        {
+            "id": 11,
+            "question": "Qual è la funzione principale di una media query in CSS?",
+            "options": [
+                "Caricare file CSS diversi per dispositivi mobili",
+                "Applicare stili specifici in base alle caratteristiche del dispositivo",
+                "Definire una struttura flessibile per i layout",
+                "Ottimizzare il caricamento delle immagini"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 12,
+            "question": "Qual è la differenza tra padding e margin?",
+            "options": [
+                "Il padding controlla lo spazio tra il contenuto e il bordo, il margin lo spazio esterno",
+                "Il margin controlla lo spazio tra il contenuto e il bordo, il padding lo spazio esterno",
+                "Entrambi controllano lo spazio interno di un elemento",
+                "Padding e margin sono usati per creare layout flessibili"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "css"
+        },
+        {
+            "id": 13,
+            "question": "Quale regola CSS consente di selezionare il terzo elemento di una lista ordinata?",
+            "options": [
+                "ol li:nth-child(3)",
+                "ol li:third",
+                "ol li::nth(3)",
+                "ol li:nth-of-type(3)"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "css"
+        },
+        {
+            "id": 14,
+            "question": "Quale unità di misura è relativa alla dimensione del carattere corrente?",
+            "options": [
+                "px",
+                "em",
+                "cm",
+                "pt"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        },
+        {
+            "id": 15,
+            "question": "Quale proprietà CSS permette di aggiungere un'ombreggiatura al testo?",
+            "options": [
+                "text-outline",
+                "text-shadow",
+                "font-shadow",
+                "box-shadow"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "css"
+        }
+    ],
+    "html": [
+        {
+            "id": 1,
+            "question": "Qual è il linguaggio standard per creare e strutturare pagine web?",
+            "options": [
+                "CSS",
+                "JavaScript",
+                "HTML",
+                "Python"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 2,
+            "question": "Cosa utilizza HTML per definire elementi come titoli, paragrafi e link?",
+            "options": [
+                "Codici binari",
+                "Script",
+                "Tag",
+                "Foglio di stile"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 3,
+            "question": "Qual è il principale sistema di codifica progettato per rappresentare tutti i caratteri dei principali sistemi di scrittura del mondo?",
+            "options": [
+                "ASCII",
+                "ISO 8859",
+                "Unicode",
+                "MIME"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 4,
+            "question": "Quale caratteristica principale ha Unicode?",
+            "options": [
+                "Supporta solo caratteri alfanumerici",
+                "È progettato per una sola lingua",
+                "Consente di rappresentare caratteri di lingue diverse in modo uniforme",
+                "Non è compatibile con altre codifiche"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 5,
+            "question": "Qual è un esempio di linguaggio dichiarativo o descrittivo?",
+            "options": [
+                "HTML",
+                "Python",
+                "Tex",
+                "Java"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 6,
+            "question": "Cosa specifica un linguaggio procedurale o imperativo?",
+            "options": [
+                "La struttura di un documento",
+                "Le operazioni che un programma deve compiere per presentare un documento",
+                "La semantica di un documento",
+                "L'encoding di un testo"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 7,
+            "question": "SGML è:",
+            "options": [
+                "Un framework per strutturare logicamente i documenti elettronici",
+                "Un linguaggio di programmazione",
+                "Una libreria per HTML",
+                "Un sistema operativo"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 8,
+            "question": "Qual è la differenza principale tra HTML5 e HTML4.01?",
+            "options": [
+                "HTML5 non è retrocompatibile",
+                "HTML4.01 supporta contenuti multimediali avanzati",
+                "HTML5 estende le funzionalità di HTML4.01 con nuove API e supporto multimediale",
+                "HTML4.01 utilizza tag case-sensitive"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 9,
+            "question": "Quale elemento HTML5 permette di disegnare direttamente sulla pagina?",
+            "options": [
+                "<svg>",
+                "<canvas>",
+                "<video>",
+                "<img>"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 10,
+            "question": "Quale attributo nel tag <body> specifica il colore del testo?",
+            "options": [
+                "background",
+                "bgcolor",
+                "lang",
+                "text"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "html"
+        },
+        {
+            "id": 11,
+            "question": "Quale standard MIME è utilizzato per definire il tipo di contenuto di un messaggio?",
+            "options": [
+                "Unicode",
+                "ASCII",
+                "ISO 8859",
+                "MIME"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "html"
+        },
+        {
+            "id": 12,
+            "question": "Cosa definisce il DTD in un documento HTML?",
+            "options": [
+                "La lingua usata nella pagina",
+                "La struttura del documento e le regole per interpretarlo",
+                "Gli stili grafici della pagina",
+                "Le regole di interazione degli script"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 13,
+            "question": "Quale elemento nel tag <head> specifica il titolo della pagina visualizzato nella scheda del browser?",
+            "options": [
+                "<meta>",
+                "<title>",
+                "<link>",
+                "<style>"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 14,
+            "question": "Quale elemento HTML viene utilizzato per creare un link ipertestuale?",
+            "options": [
+                "<a>",
+                "<link>",
+                "<href>",
+                "<anchor>"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 15,
+            "question": "Quale tag HTML viene usato per creare una lista ordinata?",
+            "options": [
+                "<ol>",
+                "<ul>",
+                "<li>",
+                "<list>"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 16,
+            "question": "Quale attributo HTML è usato per specificare un ID univoco per un elemento?",
+            "options": [
+                "class",
+                "id",
+                "name",
+                "key"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 17,
+            "question": "Qual è la sintassi corretta per aggiungere un commento in HTML?",
+            "options": [
+                "// Questo è un commento",
+                "/* Questo è un commento */",
+                "<!-- Questo è un commento -->",
+                "# Questo è un commento"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 18,
+            "question": "Quale attributo viene usato per specificare un testo alternativo per un'immagine?",
+            "options": [
+                "title",
+                "alt",
+                "src",
+                "description"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 19,
+            "question": "Quale attributo del tag <form> specifica l'URL dove inviare i dati del modulo?",
+            "options": [
+                "action",
+                "method",
+                "type",
+                "target"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 20,
+            "question": "Quale valore dell'attributo 'method' viene utilizzato per inviare i dati del modulo senza che siano visibili nell'URL?",
+            "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "HIDE"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 21,
+            "question": "Quale elemento HTML è usato per definire una cella di intestazione in una tabella?",
+            "options": [
+                "<th>",
+                "<td>",
+                "<tr>",
+                "<table>"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 22,
+            "question": "Quale attributo viene utilizzato per aprire un link in una nuova scheda del browser?",
+            "options": [
+                "target='_self'",
+                "target='_blank'",
+                "rel='new'",
+                "rel='external'"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "html"
+        },
+        {
+            "id": 23,
+            "question": "Quale tag HTML5 è usato per specificare un contenuto autonomo e contestualmente rilevante?",
+            "options": [
+                "<section>",
+                "<div>",
+                "<article>",
+                "<main>"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "html"
+        },
+        {
+            "id": 24,
+            "question": "Quale attributo HTML specifica il carattere e la codifica da usare nella pagina?",
+            "options": [
+                "<meta charset>",
+                "<head charset>",
+                "<title charset>",
+                "<html charset>"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        },
+        {
+            "id": 25,
+            "question": "Quale tag HTML5 è utilizzato per definire una barra di navigazione?",
+            "options": [
+                "<nav>",
+                "<menu>",
+                "<header>",
+                "<footer>"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "html"
+        }
+    ],
+    "http": [
+        {
+            "id": 1,
+            "question": "Qual è il ruolo principale del protocollo HTTP?",
+            "options": [
+                "Trasferire risorse Web da server a client",
+                "Gestire l'instradamento dei pacchetti",
+                "Fornire connessioni sicure tra server e client",
+                "Archiviare dati su server remoti"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "http"
+        },
+        {
+            "id": 2,
+            "question": "Quali caratteristiche sono associate a HTTP/1.0?",
+            "options": [
+                "Protocollo stateless",
+                "Connessioni non persistenti",
+                "Request-response one-shot",
+                "Multiplexing delle richieste"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Quali miglioramenti introduce HTTP/1.1 rispetto a HTTP/1.0?",
+            "options": [
+                "Connessioni persistenti",
+                "Pipelining delle richieste",
+                "Uso del protocollo QUIC",
+                "Compressione degli header"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 4,
+            "question": "Quali caratteristiche chiave sono introdotte in HTTP/2?",
+            "options": [
+                "Request-response multiplexing",
+                "Compressione degli header",
+                "Server push",
+                "Controllo di flusso per-stream"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 5,
+            "question": "Qual è il principale vantaggio di HTTP/3 rispetto a HTTP/2?",
+            "options": [
+                "Riduzione della latenza",
+                "Compressione degli header",
+                "Utilizzo del protocollo QUIC",
+                "Compatibilità con HTTP/1.0"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                2
+            ]
+        },
+        {
+            "id": 6,
+            "question": "Quali sono fattori che influenzano la latenza?",
+            "options": [
+                "Distanza fisica tra client e server",
+                "Congestione della rete",
+                "Qualità della connessione",
+                "Tipo di contenuto richiesto"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 7,
+            "question": "Quali sono i metodi HTTP principali?",
+            "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "HEAD",
+                "OPTIONS",
+                "TRACE"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        },
+        {
+            "id": 8,
+            "question": "Qual è lo scopo del metodo GET?",
+            "options": [
+                "Richiedere risorse dal server",
+                "Verificare un URL",
+                "Cancellare risorse dal server",
+                "Inviare dati al server"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 9,
+            "question": "Quali affermazioni sono vere sul metodo POST?",
+            "options": [
+                "Invia dati al server nel body del messaggio",
+                "Ha un limite di lunghezza per i parametri",
+                "È utilizzato per creare o aggiornare risorse",
+                "Può trasmettere dati senza limiti di lunghezza"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                3
+            ]
+        },
+        {
+            "id": 10,
+            "question": "Qual è la funzione del metodo HEAD?",
+            "options": [
+                "Richiedere l'intestazione di una risorsa senza il body",
+                "Verificare l'accessibilità di un URL",
+                "Cancellare risorse su un server",
+                "Invocare il loopback remoto di un messaggio"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 11,
+            "question": "Quali codici di stato HTTP indicano un successo?",
+            "options": [
+                "1xx",
+                "2xx",
+                "3xx",
+                "4xx",
+                "5xx"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 12,
+            "question": "Cosa rappresenta il codice di stato 404?",
+            "options": [
+                "Richiesta riuscita",
+                "Risorsa non trovata",
+                "Errore del server",
+                "Reindirizzamento"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 13,
+            "question": "Quali sono caratteristiche degli header HTTP?",
+            "options": [
+                "Sono coppie nome-valore",
+                "Specifica il formato dei dati nel body",
+                "Indicano la versione del protocollo",
+                "Servono solo per richieste GET"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 14,
+            "question": "Quali sono i tre componenti principali di un messaggio HTTP?",
+            "options": [
+                "Request line o status line",
+                "Headers",
+                "Body",
+                "Trailers"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 15,
+            "question": "Quale protocollo viene utilizzato da HTTP/3 per ridurre la latenza?",
+            "options": [
+                "TCP",
+                "UDP",
+                "QUIC",
+                "SPDY"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                2
+            ]
+        },
+        {
+            "id": 16,
+            "question": "Quali sono le classi principali dei codici di stato HTTP?",
+            "options": [
+                "1xx: Informational",
+                "2xx: Successful",
+                "3xx: Redirection",
+                "4xx: Client error",
+                "5xx: Server error"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        {
+            "id": 17,
+            "question": "Quale funzione ha il metodo OPTIONS in HTTP?",
+            "options": [
+                "Inviare dati al server",
+                "Richiedere opzioni di comunicazione disponibili",
+                "Eliminare una risorsa",
+                "Invocare il loopback remoto"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 18,
+            "question": "Quali sono vantaggi introdotti dal server push in HTTP/2?",
+            "options": [
+                "Inoltro di risorse al client senza richiesta esplicita",
+                "Riduzione delle richieste client-server",
+                "Compressione automatica degli header",
+                "Gestione di connessioni multiple"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 19,
+            "question": "Cosa significa che HTTP è un protocollo stateless?",
+            "options": [
+                "Non mantiene informazioni tra richieste consecutive",
+                "Salva lo stato del client sul server",
+                "Ogni richiesta è indipendente dalle altre",
+                "Utilizza una cache per memorizzare lo stato"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                2
+            ]
+        },
+        {
+            "id": 20,
+            "question": "Quali header HTTP sono generici per tutte le comunicazioni?",
+            "options": [
+                "Data",
+                "Content-Length",
+                "Accept",
+                "Content-Type"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 21,
+            "question": "Quali caratteristiche distinguono HTTP/1.1 rispetto a HTTP/1.0?",
+            "options": [
+                "Connessioni persistenti",
+                "Uso del pipelining",
+                "Richieste stateless",
+                "Compressione degli header"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 22,
+            "question": "In quale scenario è utilizzato il metodo TRACE in HTTP?",
+            "options": [
+                "Testare la connettività e il loopback remoto",
+                "Inviare dati sensibili al server",
+                "Richiedere risorse al server",
+                "Rimuovere una risorsa dal server"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 23,
+            "question": "Quali metodi HTTP possono modificare o cancellare risorse su un server?",
+            "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                2,
+                3
+            ]
+        },
+        {
+            "id": 24,
+            "question": "Quali problemi possono causare latenza elevata in HTTP?",
+            "options": [
+                "Distanza fisica tra client e server",
+                "Congestione della rete",
+                "Uso di HTTP/3",
+                "Qualità della connessione"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ]
+        },
+        {
+            "id": 25,
+            "question": "Quale ruolo svolge il Message Body in un messaggio HTTP?",
+            "options": [
+                "Contiene i dati trasportati",
+                "Indica il formato dei dati trasportati",
+                "Contiene informazioni di intestazione",
+                "Definisce la connessione TCP"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 26,
+            "question": "Quali metodi HTTP non trasportano dati nel body del messaggio?",
+            "options": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "POST"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ]
+        },
+        {
+            "id": 27,
+            "question": "Quali vantaggi introduce HTTP/3 rispetto alle versioni precedenti?",
+            "options": [
+                "Riduzione della latenza",
+                "Utilizzo del protocollo QUIC",
+                "Compressione degli header",
+                "Multiplexing delle connessioni"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ]
+        },
+        {
+            "id": 28,
+            "question": "Cosa indica il campo 'Content-Type' in un header HTTP?",
+            "options": [
+                "Il tipo di dati trasportati nel body",
+                "La dimensione dei dati trasportati",
+                "La codifica dei dati trasportati",
+                "Il formato dell'header"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 29,
+            "question": "Quali metodi HTTP sono considerati sicuri, poiché non modificano risorse?",
+            "options": [
+                "GET",
+                "HEAD",
+                "POST",
+                "OPTIONS"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ]
+        },
+        {
+            "id": 30,
+            "question": "Quali sono gli obiettivi principali dell'header compression in HTTP/2?",
+            "options": [
+                "Ridurre la dimensione delle richieste e risposte",
+                "Eliminare la necessità di inviare header ripetuti",
+                "Aumentare la velocità di trasmissione",
+                "Implementare la crittografia degli header"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 31,
+            "question": "Quali sono i principi fondamentali di REST?",
+            "options": [
+                "Client-Server",
+                "Stateless",
+                "Cacheable",
+                "Layered System"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "id": 32,
+            "question": "Quale metodo HTTP viene usato per creare una nuova risorsa?",
+            "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 33,
+            "question": "Quale proprietà di un cookie ne specifica la durata in secondi?",
+            "options": [
+                "Path",
+                "Domain",
+                "Max-age",
+                "Secure"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                2
+            ]
+        },
+        {
+            "id": 34,
+            "question": "Quale attributo del cookie garantisce che venga trasmesso solo su connessioni HTTPS?",
+            "options": [
+                "Secure",
+                "Path",
+                "Domain",
+                "Max-age"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 35,
+            "question": "Quale è un vantaggio dell'autenticazione HTTP Digest rispetto a quella Basic?",
+            "options": [
+                "Le credenziali sono criptate",
+                "Non richiede un certificato TLS",
+                "Non utilizza header HTTP",
+                "Supporta solo connessioni stateless"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 36,
+            "question": "Quali sono gli svantaggi dell'autenticazione basata su indirizzo IP?",
+            "options": [
+                "Non funziona con IP assegnati dinamicamente",
+                "Supporta solo indirizzi IPv6",
+                "Facile da aggirare con IP spoofing",
+                "Richiede sempre SSL/TLS"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                2
+            ]
+        },
+        {
+            "id": 37,
+            "question": "Quali proprietà sono garantite da un protocollo sicuro come TLS?",
+            "options": [
+                "Confidenzialità",
+                "Integrità",
+                "Autenticità",
+                "Non ripudio"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "id": 38,
+            "question": "Cosa rappresenta un reverse proxy (o gateway)?",
+            "options": [
+                "Un server che funge da intermediario per altri server",
+                "Un client che si connette direttamente al server",
+                "Un'applicazione che funge da blind relay",
+                "Un'architettura utilizzata solo nei tunnel HTTP"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 39,
+            "question": "Quali sono i due tipi principali di cache web?",
+            "options": [
+                "User Agent Cache",
+                "Proxy Cache",
+                "Server Cache",
+                "Browser Cache"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 40,
+            "question": "Come è definita la freschezza di un documento in cache?",
+            "options": [
+                "Dalla direttiva Cache-Control: max-age",
+                "Dall'attributo Secure",
+                "Dal dominio specificato nel cookie",
+                "Dal campo Authorization"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 41,
+            "question": "Qual è lo scopo dell'header Cache-Control in HTTP?",
+            "options": [
+                "Impostare regole di caching per richieste e risposte",
+                "Definire la validità del certificato TLS",
+                "Assicurare l'integrità dei dati",
+                "Indicare il tipo di risorsa richiesta"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 42,
+            "question": "Quali protocolli sono utilizzati per garantire la sicurezza delle connessioni web?",
+            "options": [
+                "SSL",
+                "TLS",
+                "QUIC",
+                "HTTP Basic"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 43,
+            "question": "Cosa significa che HTTP è stateless?",
+            "options": [
+                "Ogni richiesta è indipendente dalle altre",
+                "Lo stato delle sessioni è mantenuto dai cookie",
+                "Il protocollo non supporta connessioni sicure",
+                "Il server non conserva informazioni tra richieste successive"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0,
+                3
+            ]
+        },
+        {
+            "id": 44,
+            "question": "Qual è il ruolo di un certificato digitale in TLS?",
+            "options": [
+                "Garantire l'autenticità del server",
+                "Fornire una chiave privata al client",
+                "Velocizzare la connessione tra client e server",
+                "Eliminare la necessità di una chiave pubblica"
+            ],
+            "section": "http",
+            "correctAnswers": [
+                0
+            ]
+        }
+    ],
+    "javascript": [
+        {
+            "id": 1,
+            "question": "Qual è il linguaggio di programmazione utilizzato per rendere le pagine web interattive?",
+            "options": [
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "Python"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 2,
+            "question": "Qual è il principale vantaggio di utilizzare JavaScript in una pagina web?",
+            "options": [
+                "Permette di definire il layout delle pagine web",
+                "Consente di rendere le pagine web dinamiche e interattive",
+                "Offre un'alternativa ai linguaggi lato server per la gestione dei database",
+                "Garantisce la compatibilità con tutti i browser"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 3,
+            "question": "Che cosa rappresenta l'Abstract Syntax Tree (AST) nel contesto di JavaScript?",
+            "options": [
+                "Una struttura dati che memorizza i cookie di una pagina",
+                "Una rappresentazione strutturata del codice JavaScript",
+                "Un motore di esecuzione per ottimizzare il codice",
+                "Una libreria esterna per la gestione delle richieste HTTP"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 4,
+            "question": "Qual è la differenza principale tra JavaScript e Java?",
+            "options": [
+                "Java è compilato, mentre JavaScript è interpretato",
+                "Java non supporta la programmazione orientata agli oggetti",
+                "JavaScript richiede sempre un compilatore per funzionare",
+                "Java non può essere utilizzato su browser web"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 5,
+            "question": "Quale tag HTML viene utilizzato per includere uno script JavaScript esterno?",
+            "options": [
+                "<style>",
+                "<script src=''>",
+                "<link>",
+                "<meta>"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 6,
+            "question": "Cosa consente di fare il tag <noscript> in una pagina HTML?",
+            "options": [
+                "Eseguire uno script JavaScript in background",
+                "Fornire contenuti alternativi per gli utenti senza JavaScript",
+                "Abilitare JavaScript nel browser dell'utente",
+                "Aggiungere commenti visibili agli utenti"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 7,
+            "question": "Quale di queste caratteristiche rende JavaScript un linguaggio dinamico?",
+            "options": [
+                "È fortemente tipizzato",
+                "Non richiede la dichiarazione esplicita del tipo di variabili",
+                "Supporta solo la programmazione class-based",
+                "Richiede compilazione per ogni modifica al codice"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 8,
+            "question": "Quale dei seguenti motori JavaScript è stato sviluppato da Google?",
+            "options": [
+                "SpiderMonkey",
+                "V8",
+                "Chakra",
+                "Rhino"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 9,
+            "question": "Qual è il risultato dell'operazione '5' + 3 in JavaScript?",
+            "options": [
+                "8",
+                "53",
+                "5 + 3",
+                "Errore"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 10,
+            "question": "Come si dichiara una variabile in JavaScript?",
+            "options": [
+                "using var",
+                "using let",
+                "using const",
+                "Tutte le precedenti"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 11,
+            "question": "Qual è il valore di una variabile dichiarata ma non inizializzata?",
+            "options": [
+                "null",
+                "undefined",
+                "0",
+                "false"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 12,
+            "question": "Quale valore rappresenta l'assenza di un valore in JavaScript?",
+            "options": [
+                "NaN",
+                "null",
+                "undefined",
+                "infinity"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 13,
+            "question": "Qual è la principale differenza tra NaN e undefined?",
+            "options": [
+                "NaN rappresenta un errore nei calcoli matematici, undefined indica una variabile non inizializzata.",
+                "undefined rappresenta un errore nei calcoli matematici, NaN indica una variabile non inizializzata.",
+                "Entrambi indicano lo stesso valore.",
+                "NaN si usa solo con stringhe, mentre undefined si usa con numeri."
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 14,
+            "question": "Come si può creare un oggetto vuoto in JavaScript?",
+            "options": [
+                "var obj = Object();",
+                "var obj = {};",
+                "var obj = new Object();",
+                "Tutte le precedenti"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 15,
+            "question": "Quale metodo è usato per ottenere la lunghezza di una stringa?",
+            "options": [
+                ".length",
+                ".size",
+                ".count",
+                ".chars"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 16,
+            "question": "Quale delle seguenti sintassi è corretta per creare un array in JavaScript?",
+            "options": [
+                "var arr = Array();",
+                "var arr = [];",
+                "var arr = new Array();",
+                "Tutte le precedenti"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 17,
+            "question": "Qual è la differenza principale tra un array e un oggetto in JavaScript?",
+            "options": [
+                "Gli array utilizzano indici numerici, mentre gli oggetti utilizzano chiavi stringa.",
+                "Gli oggetti sono sempre immutabili, mentre gli array sono modificabili.",
+                "Gli array sono di lunghezza fissa, mentre gli oggetti possono crescere dinamicamente.",
+                "Non c'è differenza tra array e oggetti in JavaScript."
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 18,
+            "question": "Come si accede a una proprietà chiamata 'nome' di un oggetto in JavaScript?",
+            "options": [
+                "oggetto['nome']",
+                "oggetto.nome",
+                "Tutte le precedenti",
+                "Nessuna delle precedenti"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 19,
+            "question": "Quale funzione JavaScript restituisce una stringa rappresentante il tipo del suo operando?",
+            "options": [
+                "typeof",
+                "typeofof",
+                "type",
+                "typeOf"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 20,
+            "question": "Quale oggetto JavaScript fornisce informazioni sul browser in uso?",
+            "options": [
+                "window",
+                "navigator",
+                "document",
+                "screen"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 21,
+            "question": "Quale metodo JavaScript permette di scrivere direttamente all'interno di una pagina HTML durante il caricamento?",
+            "options": [
+                "console.log()",
+                "document.write()",
+                "alert()",
+                "document.querySelector()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 22,
+            "question": "Qual è l'oggetto JavaScript utilizzato per accedere alle informazioni sullo schermo?",
+            "options": [
+                "navigator",
+                "window",
+                "screen",
+                "document"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 23,
+            "question": "Quale evento viene attivato quando un controllo perde il focus?",
+            "options": [
+                "onclick",
+                "onblur",
+                "onfocus",
+                "onchange"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 24,
+            "question": "Quale metodo restituisce un riferimento a un elemento della pagina tramite il suo ID?",
+            "options": [
+                "getElementById(id)",
+                "querySelector(id)",
+                "getElementsByClassName(class)",
+                "getElementByName(name)"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 25,
+            "question": "Quale proprietà dell'oggetto 'form' rappresenta il numero di elementi presenti al suo interno?",
+            "options": [
+                "count",
+                "length",
+                "elements.length",
+                "size"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 26,
+            "question": "Quale tipo di controllo form HTML permette di selezionare solo una delle opzioni disponibili?",
+            "options": [
+                "Checkbox",
+                "Radio",
+                "Textarea",
+                "File"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 27,
+            "question": "Quale evento viene utilizzato per validare i dati di un form prima del suo invio?",
+            "options": [
+                "onsubmit",
+                "onreset",
+                "onblur",
+                "onchange"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 28,
+            "question": "Qual è la funzione principale della libreria jQuery?",
+            "options": [
+                "Rendere il codice JavaScript più leggibile",
+                "Creare applicazioni server-side",
+                "Semplificare l'attraversamento del DOM e la gestione degli eventi",
+                "Scrivere CSS più facilmente"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 29,
+            "question": "Quale proprietà dell'oggetto 'screen' restituisce l'altezza dello schermo in pixel?",
+            "options": [
+                "height",
+                "screenHeight",
+                "resolution",
+                "windowHeight"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        },
+        {
+            "id": 30,
+            "question": "Quale metodo jQuery è utilizzato per selezionare un elemento con uno specifico ID?",
+            "options": [
+                "$('#id')",
+                "document.getElementById(id)",
+                "$.querySelector(id)",
+                "$.select(id)"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "javascript"
+        }
+    ],
+    "json": [
+        {
+            "id": 1,
+            "question": "Quali sono i vantaggi principali del formato JSON rispetto a XML?",
+            "options": [
+                "Leggerezza",
+                "Maggiore sicurezza",
+                "Facilità di lettura",
+                "Migliore modularità"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "json"
+        },
+        {
+            "id": 2,
+            "question": "Quale dei seguenti esempi rappresenta una dichiarazione corretta di un oggetto JSON?",
+            "options": [
+                "{'Nome': 'Paul', 'Età': 30}",
+                "{\"Nome\": \"Paul\", \"Età\": 30}",
+                "var person = {Nome: 'Paul', Età: 30};",
+                "{Nome: 'Paul', Età: 30}"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "json"
+        },
+        {
+            "id": 3,
+            "question": "Quale metodo JavaScript consente di convertire una stringa JSON in un oggetto JavaScript in modo sicuro?",
+            "options": [
+                "eval()",
+                "JSON.parse()",
+                "toJson()",
+                "fromJson()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "json"
+        },
+        {
+            "id": 4,
+            "question": "Quale libreria Java è comunemente utilizzata per il parsing JSON?",
+            "options": [
+                "Jackson",
+                "Jabsorb",
+                "Gson",
+                "JQuery"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "json"
+        },
+        {
+            "id": 5,
+            "question": "Quali delle seguenti istruzioni creano correttamente un array di oggetti JSON?",
+            "options": [
+                "var bands = [{'Nome': 'Queen', 'Anno': 1970}, {'Nome': 'Beatles', 'Anno': 1960}];",
+                "var bands = {['Nome': 'Queen', 'Anno': 1970], ['Nome': 'Beatles', 'Anno': 1960]};",
+                "var bands = [{\"Nome\": \"Queen\", \"Anno\": 1970}, {\"Nome\": \"Beatles\", \"Anno\": 1960}];",
+                "var bands = {Nome: \"Queen\", Anno: 1970, Nome: \"Beatles\", Anno: 1960};"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "json"
+        },
+        {
+            "id": 6,
+            "question": "Quali metodi fornisce la libreria Gson per la gestione di JSON in Java?",
+            "options": [
+                "JSON.parse()",
+                "toJson()",
+                "fromJson()",
+                "JSON.stringify()"
+            ],
+            "correctAnswers": [
+                1,
+                2
+            ],
+            "section": "json"
+        },
+        {
+            "id": 7,
+            "question": "Quale dei seguenti è un formato di dati valido per JSON?",
+            "options": [
+                "Array",
+                "Oggetto",
+                "Funzione",
+                "Stringa"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "json"
+        },
+        {
+            "id": 8,
+            "question": "Quali sono i metodi per convertire un oggetto JavaScript in una stringa JSON?",
+            "options": [
+                "JSON.stringify()",
+                "JSON.parse()",
+                "eval()",
+                "toJson()"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "json"
+        },
+        {
+            "id": 9,
+            "question": "In JavaScript, come si accede alla proprietà 'Paese' di un oggetto JSON?",
+            "options": [
+                "obj.getPaese()",
+                "obj['Paese']",
+                "obj.Paese",
+                "obj->Paese"
+            ],
+            "correctAnswers": [
+                1,
+                2
+            ],
+            "section": "json"
+        },
+        {
+            "id": 10,
+            "question": "Quale vantaggio offre JSON rispetto ad altri formati di scambio dati?",
+            "options": [
+                "Maggiore sicurezza",
+                "Maggiore leggibilità",
+                "Facilità di parsing",
+                "Minor consumo di banda"
+            ],
+            "correctAnswers": [
+                1,
+                2,
+                3
+            ],
+            "section": "json"
+        }
+    ],
+    "react": [
+        {
+            "id": 1,
+            "question": "Qual è il ruolo principale di React nello sviluppo web?",
+            "options": [
+                "Gestione del back-end delle applicazioni",
+                "Rendering delle interfacce utente",
+                "Gestione dei database",
+                "Creazione di API REST"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 2,
+            "question": "In quale anno è stato rilasciato pubblicamente React?",
+            "options": [
+                "2011",
+                "2012",
+                "2013",
+                "2015"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 3,
+            "question": "Quale delle seguenti affermazioni è vera riguardo React?",
+            "options": [
+                "È un framework full-stack",
+                "Si occupa del front-end e back-end",
+                "Si basa su JavaScript ed esegue il codice nel browser",
+                "Richiede un server per funzionare"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 4,
+            "question": "Qual è il principale vantaggio dell'approccio Single Page Application (SPA) utilizzato da React?",
+            "options": [
+                "Riduzione del tempo di caricamento iniziale",
+                "Interfaccia più interattiva senza ricaricare la pagina",
+                "Miglior gestione del database",
+                "Maggiore sicurezza rispetto alle applicazioni tradizionali"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 5,
+            "question": "Quali sono le principali caratteristiche di React?",
+            "options": [
+                "Architettura a componenti",
+                "Virtual DOM",
+                "Multi-threading",
+                "One-Way Data Flow"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "react"
+        },
+        {
+            "id": 6,
+            "question": "Qual è la funzione principale del Virtual DOM in React?",
+            "options": [
+                "Aumentare la sicurezza dell'applicazione",
+                "Ridurre le modifiche al DOM reale per migliorare le prestazioni",
+                "Gestire le chiamate API in modo più efficiente",
+                "Memorizzare i dati lato client"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 7,
+            "question": "Cos'è JSX in React?",
+            "options": [
+                "Un linguaggio di programmazione separato",
+                "Un'estensione di sintassi che permette di scrivere markup HTML dentro JavaScript",
+                "Un database per memorizzare dati dell'interfaccia",
+                "Un framework per la gestione delle API"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 8,
+            "question": "Quali regole bisogna seguire quando si scrive codice JSX?",
+            "options": [
+                "Restituire un singolo elemento radice",
+                "Chiudere tutti i tag",
+                "Usare nomi di attributi in camelCase",
+                "Separare logica e markup in file distinti"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 9,
+            "question": "Quale attributo viene utilizzato in React al posto di 'class' in HTML?",
+            "options": [
+                "cssClass",
+                "className",
+                "classReact",
+                "styleClass"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 10,
+            "question": "Quale funzione ha Babel in un progetto React?",
+            "options": [
+                "Compilare JSX in JavaScript standard",
+                "Gestire le chiamate API",
+                "Eseguire il rendering dell'interfaccia utente",
+                "Fornire un database integrato"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "react"
+        },
+        {
+            "id": 11,
+            "question": "Come si possono inserire espressioni JavaScript all'interno di JSX?",
+            "options": [
+                "Usando le parentesi graffe {}",
+                "Usando le doppie parentesi graffe {{}}",
+                "Scrivendole direttamente senza parentesi",
+                "Includendole tra virgolette"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "react"
+        },
+        {
+            "id": 12,
+            "question": "Quando si usa `{{ }}` in JSX?",
+            "options": [
+                "Per definire oggetti all'interno del markup",
+                "Per scrivere funzioni inline",
+                "Per inserire array nel markup",
+                "Per definire variabili globali"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "react"
+        },
+        {
+            "id": 13,
+            "question": "Quali vantaggi offre React per lo sviluppatore?",
+            "options": [
+                "Riutilizzo del codice",
+                "Separazione della logica e interfaccia",
+                "Costruzione modulare e scalabile",
+                "Gestione avanzata dei database"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 14,
+            "question": "Qual è uno dei principali benefici per l'utente nell'uso di React?",
+            "options": [
+                "Maggiore interattività dell'interfaccia grazie al Virtual DOM",
+                "Migliore gestione del back-end",
+                "Accesso diretto ai dati del server",
+                "Maggiore protezione dei dati personali"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "react"
+        },
+        {
+            "id": 15,
+            "question": "Come si chiama l'algoritmo che React utilizza per confrontare il Virtual DOM con il DOM reale?",
+            "options": [
+                "Rendering",
+                "Reconciliation",
+                "Diffing",
+                "Syncing"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 16,
+            "question": "Quale metodo viene utilizzato per renderizzare un React Element nel DOM?",
+            "options": [
+                "React.render()",
+                "ReactDOM.render()",
+                "document.render()",
+                "React.createElement()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 17,
+            "question": "Quali affermazioni sono vere riguardo ai componenti React?",
+            "options": [
+                "Devono sempre restituire un singolo elemento radice.",
+                "I nomi dei componenti devono iniziare con una lettera maiuscola.",
+                "I componenti possono essere definiti solo come funzioni.",
+                "I componenti non possono accettare props."
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 18,
+            "question": "Come viene definito un componente React basato su classe?",
+            "options": [
+                "function ComponentName() {}",
+                "const ComponentName = () => {}",
+                "class ComponentName extends React.Component {}",
+                "React.createClass(ComponentName)"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 19,
+            "question": "Quale metodo deve essere definito all'interno di un componente di classe React?",
+            "options": [
+                "execute()",
+                "render()",
+                "display()",
+                "init()"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 20,
+            "question": "Cosa sono i 'props' in React?",
+            "options": [
+                "Variabili locali definite all'interno di un componente.",
+                "Valori immutabili passati da un componente padre a un componente figlio.",
+                "Funzioni che restituiscono elementi React.",
+                "Eventi speciali di React."
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "react"
+        },
+        {
+            "id": 21,
+            "question": "Quale hook viene utilizzato per gestire lo stato nei componenti a funzione in React?",
+            "options": [
+                "useEffect",
+                "useContext",
+                "useState",
+                "useReducer"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 22,
+            "question": "Quali delle seguenti è una caratteristica delle Synthetic Events in React?",
+            "options": [
+                "Garantiscono compatibilità cross-browser.",
+                "Sono meno efficienti degli eventi nativi.",
+                "Utilizzano il bubbling e capturing nativo.",
+                "Non supportano `preventDefault()` e `stopPropagation()`."
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 23,
+            "question": "Come si associa un gestore di eventi a un elemento JSX in React?",
+            "options": [
+                "Usando attributi in minuscolo come `onclick`.",
+                "Passando la funzione senza parentesi.",
+                "Utilizzando funzioni anonime direttamente nel JSX.",
+                "Utilizzando la sintassi PascalCase per gli eventi."
+            ],
+            "correctAnswers": [
+                1,
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 24,
+            "question": "Quali metodi vengono utilizzati per ottenere dati da un'API in React?",
+            "options": [
+                "getAPI()",
+                "fetch()",
+                "axios.get()",
+                "ReactHTTP()"
+            ],
+            "correctAnswers": [
+                1,
+                2
+            ],
+            "section": "react"
+        },
+        {
+            "id": 25,
+            "question": "Quali sono i passaggi corretti per definire un componente a funzione in React?",
+            "options": [
+                "Esportare la funzione.",
+                "Dichiarare la funzione con la lettera minuscola.",
+                "Restituire il markup con il return.",
+                "Includere lo stato con `useState`."
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "react"
+        }
+    ],
+    "semantic-web": [
+        {
+            "id": 1,
+            "question": "Che cos'è il Web semantico?",
+            "options": [
+                "Un'estensione del Web in cui i dati sono collegati e comprensibili dalle macchine",
+                "Un sistema che utilizza solo il linguaggio HTML",
+                "Un insieme di tecnologie per visualizzare contenuti su Internet",
+                "Un tipo di software per la gestione dei database"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 2,
+            "question": "Quali sono le principali caratteristiche di un'ontologia nel Semantic Web?",
+            "options": [
+                "Concettualizzazione, esplicito, formale, condiviso",
+                "Definire regole per il linguaggio HTML",
+                "Gestire dati in formato CSV",
+                "Rappresentare concetti e relazioni in un dominio"
+            ],
+            "correctAnswers": [
+                0,
+                3
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 3,
+            "question": "Cosa definisce una tripla RDF nel Semantic Web?",
+            "options": [
+                "Una dichiarazione su una risorsa, composta da soggetto, predicato e oggetto",
+                "Un tipo di metadato in formato HTML",
+                "Una struttura di dati XML per il Web",
+                "Un modello di linguaggio per la semantica"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 4,
+            "question": "Quali sono i principali vantaggi dei Linked Open Data (LOD)?",
+            "options": [
+                "Facilitano la creazione di una rete di conoscenza globale",
+                "Consentono di usare dati in formati proprietari",
+                "Rendono i dati facilmente accessibili e combinabili",
+                "Utilizzano dati RDF pubblici con URI risolvibili"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 5,
+            "question": "Quali tecnologie sono utilizzate nel Web semantico per rappresentare e comprendere i dati?",
+            "options": [
+                "Ontologie come OWL e RDF",
+                "JSON-LD e RDFa",
+                "Linguaggi di markup come HTML e CSS",
+                "Tecniche di inferenza logica e disambiguazione"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 6,
+            "question": "Cos'è un Knowledge Graph nel contesto del Web semantico?",
+            "options": [
+                "Una rappresentazione strutturata di conoscenza in un grafo di entità e relazioni",
+                "Un sistema di gestione dei contenuti web",
+                "Un tipo di database relazionale",
+                "Un insieme di link a pagine web"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 7,
+            "question": "Cosa significa la 'disambiguazione' nel Web semantico?",
+            "options": [
+                "Definire esplicitamente il significato delle entità e classi",
+                "Usare solo linguaggi di programmazione specifici",
+                "Creare un database centralizzato di tutte le informazioni",
+                "Analizzare la sintassi dei dati"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 8,
+            "question": "Qual è la funzione principale di un'ontologia nel Semantic Web?",
+            "options": [
+                "Definire concetti e relazioni in un dominio specifico",
+                "Creare pagine web interattive",
+                "Gestire e archiviare file di grandi dimensioni",
+                "Codificare la semantica di un linguaggio di programmazione"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 9,
+            "question": "In che formato sono tipicamente pubblicati i Linked Open Data?",
+            "options": [
+                "RDF/XML, Turtle, RDFa",
+                "JSON, CSV, XML",
+                "HTML, CSS, JavaScript",
+                "PDF, DOCX, XLSX"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "semantic-web"
+        },
+        {
+            "id": 10,
+            "question": "Quali strumenti Python possono essere utilizzati per lavorare con dati RDF nel Web semantico?",
+            "options": [
+                "RDFlib",
+                "Flask",
+                "Pandas",
+                "PyLD"
+            ],
+            "correctAnswers": [
+                0,
+                3
+            ],
+            "section": "semantic-web"
+        }
+    ],
+    "tcp-ip": [
+        {
+            "id": 1,
+            "question": "Qual è la funzione principale del protocollo IP?",
+            "options": [
+                "Garantire la consegna affidabile dei dati",
+                "Individuare e raggiungere l'indirizzo corretto per i dati",
+                "Suddividere i dati in pacchetti",
+                "Riassemblare i pacchetti di dati"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 2,
+            "question": "Qual è il ruolo principale del protocollo TCP?",
+            "options": [
+                "Gestire l'infrastruttura fisica della rete",
+                "Indirizzare i pacchetti al server corretto",
+                "Garantire una trasmissione affidabile dei dati",
+                "Controllare il flusso di traffico in rete"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 3,
+            "question": "Quali sono i quattro livelli dell'architettura TCP/IP?",
+            "options": [
+                "Accesso alla rete, Trasporto, Internet, Applicazione",
+                "Hardware, Rete, Trasporto, Applicazione",
+                "Fisico, Logico, Rete, Trasporto",
+                "Applicazione, Presentazione, Sessione, Rete"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 4,
+            "question": "Cosa gestisce il livello di accesso alla rete nel modello TCP/IP?",
+            "options": [
+                "Il controllo del flusso dei dati",
+                "L'infrastruttura fisica della comunicazione",
+                "La connessione tra applicazioni",
+                "Il riassemblaggio dei pacchetti"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 5,
+            "question": "Qual è il compito principale del livello Internet nel modello TCP/IP?",
+            "options": [
+                "Gestire l'infrastruttura fisica della rete",
+                "Suddividere i dati in pacchetti",
+                "Controllare il flusso e l'instradamento del traffico",
+                "Fornire l'interfaccia utente finale"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 6,
+            "question": "Quali protocolli sono associati al livello di trasporto nel modello TCP/IP?",
+            "options": [
+                "HTTP e SMTP",
+                "Ethernet e Wi-Fi",
+                "TCP e UDP",
+                "IP e ICMP"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 7,
+            "question": "Qual è il compito principale del livello di applicazione nel modello TCP/IP?",
+            "options": [
+                "Suddividere i dati in pacchetti",
+                "Fornire interfacce utente e servizi di rete",
+                "Instradare i dati verso il server corretto",
+                "Gestire l'infrastruttura fisica della rete"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 8,
+            "question": "Quale di queste è un'applicazione del livello di applicazione del modello TCP/IP?",
+            "options": [
+                "Ethernet",
+                "SMTP",
+                "ICMP",
+                "TCP"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 9,
+            "question": "Cosa garantisce il TCP con il processo di Handshake a 3 vie?",
+            "options": [
+                "La suddivisione dei dati in pacchetti",
+                "L'ordine corretto dei pacchetti",
+                "Una connessione affidabile tra due dispositivi",
+                "Il controllo del flusso di traffico in rete"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "tcp-ip"
+        },
+        {
+            "id": 10,
+            "question": "In che modo HTTP utilizza TCP/IP?",
+            "options": [
+                "Usa il livello Internet per la consegna affidabile dei dati",
+                "Utilizza TCP per garantire la consegna affidabile e IP per instradare i pacchetti",
+                "Usa il livello di accesso alla rete per l'invio dei pacchetti HTTP",
+                "Utilizza UDP per il trasferimento dati e IP per il riassemblaggio"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "tcp-ip"
+        }
+    ],
+    "uri": [
+        {
+            "id": 1,
+            "section": "uri",
+            "question": "Cos'è un URI?",
+            "options": [
+                "Un identificatore univoco per risorse accessibili tramite HTTP",
+                "Un meccanismo per identificare risorse digitali, fisiche o concettuali",
+                "Una stringa che rappresenta esclusivamente URL",
+                "Un insieme di indirizzi IP statici"
+            ],
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 2,
+            "section": "uri",
+            "question": "Qual è la differenza principale tra URL e URN?",
+            "options": [
+                "Un URL specifica dove e come accedere a una risorsa, mentre un URN identifica una risorsa in modo univoco e permanente",
+                "Un URN è sempre più corto di un URL",
+                "Gli URL sono utilizzati solo su Internet, mentre gli URN non lo sono",
+                "Gli URL non supportano query string, mentre gli URN sì"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 3,
+            "section": "uri",
+            "question": "Quale parte della sintassi URI rappresenta il protocollo utilizzato?",
+            "options": [
+                "<scheme>",
+                "<host>",
+                "<path>",
+                "<query>"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 4,
+            "section": "uri",
+            "question": "Qual è la funzione della componente <query> in un URL?",
+            "options": [
+                "Descrivere il protocollo di accesso alla risorsa",
+                "Fornire parametri aggiuntivi al server",
+                "Identificare il server su cui si trova la risorsa",
+                "Specificare le credenziali per l'accesso"
+            ],
+            "correctAnswers": [
+                1
+            ]
+        },
+        {
+            "id": 5,
+            "section": "uri",
+            "question": "Quale tra questi è un esempio di URI opaca?",
+            "options": [
+                "mailto:paolo.rossi@disi.unibo.it",
+                "http://informatica.unibo.it/",
+                "ftp://example.com/resource.txt",
+                "https://www.example.com/home"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 6,
+            "section": "uri",
+            "question": "Quale caratteristica distingue un'URI gerarchica da una opaca?",
+            "options": [
+                "Le URI gerarchiche seguono una struttura organizzata in parti analizzabili, mentre le URI opache no",
+                "Le URI opache possono essere normalizzate, mentre le gerarchiche no",
+                "Le URI opache sono sempre più corte delle gerarchiche",
+                "Le URI gerarchiche non includono componenti <query>"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 7,
+            "section": "uri",
+            "question": "Quale processo permette di ottenere una URI risultante a partire da una URI originaria?",
+            "options": [
+                "Risoluzione",
+                "Normalizzazione",
+                "Relativizzazione",
+                "Decodifica"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 8,
+            "section": "uri",
+            "question": "Cosa avviene durante la normalizzazione di una URI gerarchica?",
+            "options": [
+                "I segmenti '.' e '..' vengono rimossi dal percorso",
+                "La URI viene convertita in una URI opaca",
+                "Si ottiene una URI relativa alla base URI",
+                "Viene cambiato il protocollo della URI"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 9,
+            "section": "uri",
+            "question": "Quale tra questi è un esempio di processo di relativizzazione?",
+            "options": [
+                "Ottenere una URI originaria relativa alla base URI a partire da una URI risultante",
+                "Convertire una URI opaca in una URI gerarchica",
+                "Modificare una URI per renderla più leggibile",
+                "Rimuovere le componenti <query> e <path> da una URI"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 10,
+            "section": "uri",
+            "question": "Qual è la componente della sintassi URI che indica l'indirizzo del server?",
+            "options": [
+                "<host>",
+                "<scheme>",
+                "<path>",
+                "<query>"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 11,
+            "section": "uri",
+            "question": "Che vantaggio offre il concetto di mapping concettuale negli URI?",
+            "options": [
+                "Permette che un URI rimanga valido anche se l'entità cambia nel tempo",
+                "Elimina la necessità di utilizzare schemi di protocollo",
+                "Garantisce sempre la disponibilità della risorsa",
+                "Limita l'accesso alle sole risorse HTTP"
+            ],
+            "correctAnswers": [
+                0
+            ]
+        },
+        {
+            "id": 12,
+            "section": "uri",
+            "question": "Quale tra queste proprietà non appartiene agli URI?",
+            "options": [
+                "Estensibilità",
+                "Convenzioni sintattiche comuni",
+                "Validità temporanea",
+                "Semantica comune per l'interpretazione"
+            ],
+            "correctAnswers": [
+                2
+            ]
+        }
+    ],
+    "web-application": [
+        {
+            "id": 1,
+            "question": "Quali sono i componenti principali di un'applicazione web?",
+            "options": [
+                "Web Server",
+                "Application Server",
+                "Client API",
+                "Database"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 2,
+            "question": "Quali linguaggi vengono comunemente utilizzati per il codice lato client di un'applicazione web?",
+            "options": [
+                "HTML",
+                "CSS",
+                "Python",
+                "JavaScript"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 3,
+            "question": "Quali sono le caratteristiche principali di un sito web tradizionale rispetto a un'applicazione web?",
+            "options": [
+                "Coinvolgimento utente elevato",
+                "Contenuti prevalentemente statici",
+                "Richiede autenticazione",
+                "Facilità di integrazione con altri software"
+            ],
+            "correctAnswers": [
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 4,
+            "question": "Quali vantaggi offre una Single Page Application (SPA)?",
+            "options": [
+                "Alte prestazioni",
+                "Navigazione fluida",
+                "Maggiore compatibilità SEO rispetto alle applicazioni a pagine multiple",
+                "Migliore esperienza utente"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 5,
+            "question": "Quali di questi elementi fanno parte del frontend di un'applicazione web?",
+            "options": [
+                "Interfaccia utente (UI)",
+                "Gestione della logica applicativa",
+                "Elaborazione dei dati lato server",
+                "Componenti interattivi come bottoni e form"
+            ],
+            "correctAnswers": [
+                0,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 6,
+            "question": "Quali sono i principali vantaggi di utilizzare un framework frontend come React o Angular?",
+            "options": [
+                "Componenti riutilizzabili",
+                "Migliore gestione dello stato",
+                "Maggiore sicurezza del database",
+                "Rendering dinamico delle interfacce utente"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 7,
+            "question": "Quale dei seguenti è un ruolo del database in un'applicazione web?",
+            "options": [
+                "Memorizzare informazioni essenziali come i dati degli utenti",
+                "Eseguire la logica applicativa",
+                "Fornire contenuti multimediali direttamente all'utente",
+                "Generare codice HTML dinamicamente"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 8,
+            "question": "Quali sono gli step principali del processo di accesso a una web application?",
+            "options": [
+                "Invio della richiesta (GET o POST)",
+                "Rendering delle immagini sul client",
+                "Elaborazione della richiesta sul server",
+                "Ritorno della risposta al client"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 9,
+            "question": "Quali tecnologie vengono tipicamente utilizzate per il backend di un'applicazione web?",
+            "options": [
+                "Node.js",
+                "Flask",
+                "React",
+                "Django"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 10,
+            "question": "Quali caratteristiche rendono un sito web compatibile con la SEO?",
+            "options": [
+                "Struttura ottimizzata per i motori di ricerca",
+                "Navigazione fluida per gli utenti",
+                "Facilità di indicizzazione da parte dei motori di ricerca",
+                "Presenza di contenuti aggiornabili in tempo reale"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "web-application"
+        },
+        {
+            "id": 11,
+            "question": "Quali sono i principali vantaggi nell'uso di un web framework?",
+            "options": [
+                "Automatizzazione di compiti comuni",
+                "Miglioramento della sicurezza",
+                "Aumento della complessità del codice",
+                "Sviluppo più rapido"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 12,
+            "question": "Quali delle seguenti affermazioni descrivono un microframework?",
+            "options": [
+                "Offre solo funzionalità essenziali come routing e gestione delle sessioni",
+                "Include strumenti integrati per autenticazione e gestione del database",
+                "È più leggero e modulare rispetto a un full-stack framework",
+                "Richiede librerie aggiuntive per funzionalità avanzate"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 13,
+            "question": "Quale delle seguenti affermazioni è vera riguardo all'architettura MVC?",
+            "options": [
+                "Il Model si occupa della logica di business e della gestione dei dati",
+                "La View gestisce l'interazione con l'utente",
+                "Il Controller si occupa della visualizzazione dei dati",
+                "Il Model si occupa esclusivamente dell'interfaccia grafica"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 14,
+            "question": "Quali tra questi linguaggi di programmazione hanno framework per lo sviluppo web?",
+            "options": [
+                "Python",
+                "Java",
+                "C#",
+                "Excel"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                2
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 15,
+            "question": "Quali delle seguenti sono caratteristiche di PHP come linguaggio di programmazione web?",
+            "options": [
+                "È open-source",
+                "Non supporta l'integrazione con database",
+                "Può essere facilmente integrato con HTML",
+                "È utilizzato per applicazioni lato client"
+            ],
+            "correctAnswers": [
+                0,
+                2
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 16,
+            "question": "Quali dei seguenti vantaggi offre il framework .NET?",
+            "options": [
+                "Supporta più linguaggi di programmazione",
+                "Fornisce strumenti per il monitoraggio e il controllo",
+                "È specifico solo per applicazioni mobili",
+                "Offre scalabilità per progetti di varie dimensioni"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 17,
+            "question": "Quale delle seguenti caratteristiche distingue il linguaggio di programmazione Java?",
+            "options": [
+                "Compilazione in bytecode eseguita dalla JVM",
+                "L'approccio 'Write Once, Run Anywhere'",
+                "È utilizzato esclusivamente per sviluppo web",
+                "Necessita di un interprete per l'esecuzione"
+            ],
+            "correctAnswers": [
+                0,
+                1
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 18,
+            "question": "Quali sono alcuni vantaggi dell'uso di Python per lo sviluppo web?",
+            "options": [
+                "Leggibilità del codice",
+                "Supporto per intelligenza artificiale e machine learning",
+                "Difficoltà di integrazione con altri strumenti",
+                "Disponibilità di framework come Django e Flask"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 19,
+            "question": "Quali dei seguenti framework appartengono alla categoria dei Full-Stack Framework?",
+            "options": [
+                "Django",
+                "Flask",
+                "Spring",
+                "Express.js"
+            ],
+            "correctAnswers": [
+                0,
+                2,
+                3
+            ],
+            "section": "web-framework"
+        },
+        {
+            "id": 20,
+            "question": "Quale delle seguenti affermazioni è vera riguardo a un Full-Stack Framework?",
+            "options": [
+                "Fornisce strumenti sia per il frontend che per il backend",
+                "Include funzionalità di autenticazione e gestione del database",
+                "È meno complesso di un microframework",
+                "Offre una struttura completa per lo sviluppo web"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "web-framework"
+        }
+    ],
+    "web-dinamico": [
+        {
+            "id": 1,
+            "question": "Qual è lo scopo principale dei fogli di stile CSS?",
+            "options": [
+                "Definire il contenuto di una pagina web",
+                "Definire come il contenuto deve essere presentato all'utente",
+                "Gestire le connessioni tra server e client",
+                "Archiviare dati su server remoti"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 2,
+            "question": "Quale linguaggio viene comunemente utilizzato per rendere interattive le pagine web?",
+            "options": [
+                "JavaScript",
+                "Python",
+                "PHP",
+                "Ruby"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 3,
+            "question": "Qual è la differenza principale tra il metodo GET e il metodo POST in HTTP?",
+            "options": [
+                "GET permette di inviare dati solo in formato JSON, mentre POST accetta qualsiasi formato",
+                "GET espone i dati nell'URL, mentre POST li invia nel corpo della richiesta",
+                "GET è più sicuro di POST per inviare informazioni sensibili",
+                "POST è limitato a un massimo di 256 caratteri"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 4,
+            "question": "Quale variabile di ambiente viene utilizzata per identificare il metodo HTTP usato nella richiesta?",
+            "options": [
+                "CONTENT_TYPE",
+                "REQUEST_METHOD",
+                "QUERY_STRING",
+                "REMOTE_HOST"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 5,
+            "question": "Qual è una delle principali limitazioni dei programmi CGI tradizionali?",
+            "options": [
+                "Non possono essere eseguiti su sistemi Windows",
+                "Richiedono l'installazione di database proprietari",
+                "Ogni richiesta crea un nuovo processo, causando problemi di performance",
+                "Non supportano linguaggi moderni come Python o Ruby"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 6,
+            "question": "Quale di questi è un vantaggio dell'uso di un database relazionale in un sistema web dinamico?",
+            "options": [
+                "Riduce il tempo di caricamento delle pagine statiche",
+                "Permette di separare i contenuti dalla loro presentazione",
+                "Evita l'uso di programmi CGI",
+                "Elimina la necessità di un server web"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 7,
+            "question": "Quale componente di un server web è responsabile di identificare e gestire i programmi CGI?",
+            "options": [
+                "La directory dedicata (cgi-bin)",
+                "Il browser dell'utente",
+                "Il database relazionale",
+                "Il protocollo HTTP"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 8,
+            "question": "Cosa accade quando si invia una richiesta HTTP con il metodo POST?",
+            "options": [
+                "I dati vengono aggiunti all'URL come stringa di query",
+                "I dati vengono inviati nel corpo della richiesta",
+                "Il server ignora i dati se non specificati nel header HTTP",
+                "Viene creato automaticamente un programma CGI per elaborare i dati"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 9,
+            "question": "Qual è uno svantaggio dell'approccio CGI tradizionale rispetto a tecnologie moderne?",
+            "options": [
+                "Non supporta il metodo POST",
+                "Richiede processi separati per ogni richiesta, rallentando il server",
+                "Non consente di eseguire script scritti in linguaggi diversi da Perl",
+                "Non gestisce dati dinamici provenienti da database"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 10,
+            "question": "Quale è il vantaggio di usare un template HTML in un sistema web dinamico?",
+            "options": [
+                "Riduce la necessità di un server web dedicato",
+                "Facilita la modifica del layout di tutte le pagine",
+                "Aumenta la sicurezza contro attacchi informatici",
+                "Evita la necessità di usare linguaggi di programmazione"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 11,
+            "question": "Qual è la principale funzione di un application server?",
+            "options": [
+                "Gestire la connessione al database",
+                "Eseguire il rendering del contenuto HTML",
+                "Gestire il ciclo di vita delle applicazioni server-side",
+                "Fornire servizi di sicurezza per le applicazioni client"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "server"
+        },
+        {
+            "id": 12,
+            "question": "Quale delle seguenti affermazioni descrive correttamente un sistema stateful?",
+            "options": [
+                "Ogni richiesta è indipendente dalle altre",
+                "Il server non mantiene alcuna traccia dell'interazione",
+                "Lo stato delle richieste è memorizzato e riutilizzato durante l'interazione",
+                "Ogni messaggio ricevuto viene ignorato"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 13,
+            "question": "Qual è la principale differenza tra un'architettura a 3 tier e una a 2 tier?",
+            "options": [
+                "Un'architettura a 3 tier ha meno livelli rispetto a quella a 2 tier",
+                "Un'architettura a 2 tier separa più chiaramente la logica applicativa dal database",
+                "Un'architettura a 3 tier separa la logica di business dal database, mentre in quella a 2 tier questa separazione non esiste",
+                "Un'architettura a 2 tier è più scalabile rispetto a quella a 3 tier"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "architettura"
+        },
+        {
+            "id": 14,
+            "question": "Cosa implica la gestione dello stato di sessione sul server in un'applicazione web?",
+            "options": [
+                "I dati di sessione sono memorizzati solo sul lato client",
+                "Il server mantiene le informazioni relative all'utente durante l'interazione",
+                "Ogni richiesta viene trattata come una nuova sessione",
+                "Lo stato di sessione è gestito solo tramite cookie"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        },
+        {
+            "id": 15,
+            "question": "Cosa significa che un'operazione è idempotente in un sistema web?",
+            "options": [
+                "L'operazione produce un risultato che può variare ogni volta che viene invocata",
+                "L'operazione restituisce sempre lo stesso risultato indipendentemente dal numero di invocazioni",
+                "L'operazione può essere eseguita solo una volta",
+                "L'operazione è efficace solo in contesti stateless"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "web-dinamico"
+        }
+    ],
+    "www": [
+        {
+            "id": 1,
+            "question": "Cosa rappresenta principalmente il World Wide Web (WWW)?",
+            "options": [
+                "Una rete fisica di server interconnessi",
+                "Un mercato elettronico per beni",
+                "Un sistema ipertestuale distribuito su internet",
+                "Un database globale per l'archiviazione in cloud"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "www"
+        },
+        {
+            "id": 2,
+            "question": "Qual è una caratteristica fondamentale del Web?",
+            "options": [
+                "I documenti sono limitati a un unico server",
+                "Le risorse possono essere assemblate da luoghi diversi",
+                "Il Web funziona esclusivamente su reti locali",
+                "Tutte le pagine web sono archiviate in un unico repository"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "www"
+        },
+        {
+            "id": 3,
+            "question": "Quali dei seguenti termini descrivono l'azione di spostarsi tra le pagine web?",
+            "options": [
+                "Navigare",
+                "Esplorare",
+                "Scaricare",
+                "Saltare"
+            ],
+            "correctAnswers": [
+                0,
+                1,
+                3
+            ],
+            "section": "www"
+        },
+        {
+            "id": 4,
+            "question": "Cosa rappresenta la formula WWW = URL + HTTP + HTML?",
+            "options": [
+                "I tre principali componenti del World Wide Web",
+                "L'architettura dei browser web",
+                "La struttura del codice di una pagina web",
+                "Il protocollo di rete per le email"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "www"
+        },
+        {
+            "id": 5,
+            "question": "Quale componente è responsabile della localizzazione delle risorse sul Web?",
+            "options": [
+                "URL (Uniform Resource Locator)",
+                "HTTP (HyperText Transfer Protocol)",
+                "HTML (HyperText Markup Language)",
+                "FTP (File Transfer Protocol)"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "www"
+        },
+        {
+            "id": 6,
+            "question": "Qual è il ruolo di HTTP nel Web?",
+            "options": [
+                "Visualizzare documenti nel browser",
+                "Trasferire risorse tra client e server",
+                "Proteggere la connessione tra client e server",
+                "Localizzare documenti sul server"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "www"
+        },
+        {
+            "id": 7,
+            "question": "Quale descrizione si adatta meglio a HTML?",
+            "options": [
+                "Un linguaggio per descrivere documenti ipertestuali",
+                "Un protocollo per trasferire risorse",
+                "Un sistema per localizzare pagine web",
+                "Un tipo di sistema di gestione dei database"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "www"
+        },
+        {
+            "id": 8,
+            "question": "Nel modello client-server del Web, qual è il ruolo del client?",
+            "options": [
+                "Richiedere e visualizzare attivamente le risorse dal server",
+                "Archiviare passivamente e fornire risorse ad altri client",
+                "Gestire le connessioni di rete tra dispositivi",
+                "Monitorare e proteggere la trasmissione dei dati"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "www"
+        },
+        {
+            "id": 9,
+            "question": "Nel modello client-server, qual è il ruolo del server?",
+            "options": [
+                "Rimanere in ascolto per richieste dai client",
+                "Gestire l'interfaccia utente per i documenti",
+                "Controllare la sicurezza del client",
+                "Visualizzare contenuti multimediali"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "www"
+        }
+    ]
+}

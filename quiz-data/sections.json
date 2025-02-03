@@ -1,0 +1,114 @@
+{
+    "web-tecnologies": [
+        {
+            "id": "www",
+            "name": "WWW",
+            "icon": "TbWorldWww"
+        },
+        {
+            "id": "tcp-ip",
+            "name": "TCP/IP",
+            "icon": "MdWeb"
+        },
+        {
+            "id": "http",
+            "name": "HTTP",
+            "icon": "MdHttps"
+        },
+        {
+            "id": "uri",
+            "name": "URI",
+            "icon": "MdLink"
+        },
+        {
+            "id": "html",
+            "name": "HTML",
+            "icon": "FaHtml5"
+        },
+        {
+            "id": "css",
+            "name": "CSS",
+            "icon": "FaCss3"
+        },
+        {
+            "id": "web-dinamico",
+            "name": "Web Dinamico",
+            "icon": "MdOutlineDynamicForm"
+        },
+        {
+            "id": "javascript",
+            "name": "Javascript",
+            "icon": "FaJsSquare"
+        },
+        {
+            "id": "ajax",
+            "name": "AJAX",
+            "icon": "FaSyncAlt"
+        },
+        {
+            "id": "json",
+            "name": "JSON",
+            "icon": "LuFileJson2"
+        },
+        {
+            "id": "web-application",
+            "name": "Web Application",
+            "icon": "MdOutlineWeb"
+        },
+        {
+            "id": "react",
+            "name": "React",
+            "icon": "FaReact"
+        },
+        {
+            "id": "api",
+            "name": "API",
+            "icon": "TbApiApp"
+        },
+        {
+            "id": "semantic-web",
+            "name": "Semantic Web",
+            "icon": "SiSemanticuireact"
+        }
+    ],
+
+    "software-engineering": [
+        {
+            "id": "software-engineering",
+            "name": "Software Engineering",
+            "icon": "FaGears"
+        },
+        {
+            "id": "requirements",
+            "name": "Requirements",
+            "icon": "GrNotes"
+        },
+        {
+            "id": "design",
+            "name": "Design",
+            "icon": "CgIfDesign"
+        },
+        {
+            "id": "implementation",
+            "name": "Implementation",
+            "icon": "MdEngineering"
+        },
+        {
+            "id": "testing",
+            "name": "Testing",
+            "icon": "GrDocumentTest"
+        },
+        {
+            "id": "maintenance",
+            "name": "Maintenance",
+            "icon": "GrConfigure"
+        }
+    ],
+    "calcolatori": [
+        {
+            "id": "calcolatori",
+            "name": "calcolatori",
+            "icon": "Computer"
+        }
+    ]
+}

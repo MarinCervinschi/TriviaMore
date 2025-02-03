@@ -1,0 +1,19 @@
+{
+    "classes": [
+        {
+            "id": "web-tecnologies",
+            "name": "Tecnologie Web",
+            "icon": "TbWorldCode"
+        },
+        {
+            "id": "software-engineering",
+            "name": "Ingegneria del Software",
+            "icon": "PiTreeStructureBold"
+        },
+        {
+            "id": "calcolatori",
+            "name": "Calcolatori Elettronici",
+            "icon": "Computer"
+        }
+    ]
+}

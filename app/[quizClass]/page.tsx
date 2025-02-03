@@ -7,61 +7,39 @@ import { notFound } from "next/navigation"
 import { useParams } from "next/navigation"
 import { BiLogOut } from "react-icons/bi";
 import Link from 'next/link'
-import QuizSection from '@/types/QuizSection'
 import iconMap from '@/lib/iconMap'
 import QuizClass from '@/types/QuizClass'
 import Loader from '../components/Loader'
 
 export default function QuizClassPage() {
-    const [quizData, setQuizData] = useState([] as QuizClass[]);
-    const [sections, setSections] = useState([] as QuizSection[]);
     const params = useParams();
-
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        setTimeout(() => setLoading(false), 1000);
-    }, []);
-
-    const fetchQuizData = async () => {
-        try {
-            const response = await fetch('/api/classes', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch quiz data');
-            }
-            const data = await response.json();
-            const formattedData = data.map((row: any) => ({
-                ...row,
-                icon: iconMap[row.icon]
-            }));
-            setQuizData(formattedData);
-        } catch (error) {
-            console.error(error);
-        }
+    if (!params?.quizClass) {
+        return notFound();
     }
+    const [quizClass, setQuizClass] = useState<QuizClass>({ id: '', name: '' });
+    const [sections, setSections] = useState([]);
 
     const fetchSections = async (quizClassId: string) => {
         try {
-            const response = await fetch(`/api/sections/${quizClassId}`, {
+            const response = await fetch(`/api/class/${quizClassId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
+
             if (!response.ok) {
-                console.log(response.statusText);
-                throw new Error('Failed to fetch sections');
+                const data = await response.json();
+                throw new Error(data.message || response.statusText);
             }
+
             const data = await response.json();
-            const formattedData = data.map((row: any) => ({
+            const formattedData = data.sections.map((row: any) => ({
                 ...row,
                 icon: iconMap[row.icon]
             }));
+
+            setQuizClass({ id: data.class.id, name: data.class.name });
             setSections(formattedData);
         } catch (error) {
             console.error(error);
@@ -69,44 +47,24 @@ export default function QuizClassPage() {
     }
 
     useEffect(() => {
-        fetchQuizData();
+        fetchSections(params.quizClass as string);
     }, []);
 
-    useEffect(() => {
-        if (quizData.length) {
-            const quizClass = quizData.find((c) => c.id === params?.quizClass);
-            if (quizClass) {
-                fetchSections(quizClass.id);
-            }
-        }
-    }, [quizData, params?.quizClass]);
-
-    if (!quizData.length || !sections.length) {
-        return <Loader  />;
-    } 
-
-    const quizClass = quizData.find((c) => c.id === params?.quizClass);
-    if (!quizClass) {
-        return notFound();
+    if (!sections.length) {
+        return <Loader />;
     }
 
     return (
-        <>
-            {loading ? (
-                <Loader />
-            ) : (
-                <DefaultLayout>
-                    <div className="flex flex-col items-center justify-center p-4 space-y-4">
-                        <div className="flex items-center justify-center space-x-4">
-                            <Link href={`/`} className="text-3xl hover:scale-110 active:text-red-600">
-                                <BiLogOut />
-                            </Link>
-                            <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
-                        </div>
-                        <SectionSelector sections={sections} quizClassId={quizClass.id} />
-                    </div>
-                </DefaultLayout>
-            )}
-        </>
+        <DefaultLayout>
+            <div className="flex flex-col items-center justify-center p-4 space-y-4">
+                <div className="flex items-center justify-center space-x-4">
+                    <Link href={`/`} className="text-3xl hover:scale-110 active:text-red-600">
+                        <BiLogOut />
+                    </Link>
+                    <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
+                </div>
+                <SectionSelector sections={sections} quizClassId={quizClass.id} />
+            </div>
+        </DefaultLayout>
     )
 }

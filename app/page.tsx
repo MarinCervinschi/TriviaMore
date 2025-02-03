@@ -18,7 +18,8 @@ export default function Home() {
         }
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch quiz data');
+        const data = await response.json();
+        throw new Error(data.message || response.statusText);
       }
       const data = await response.json();
       const formattedData = data.map((row: any) => ({
