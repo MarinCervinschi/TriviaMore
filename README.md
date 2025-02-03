@@ -4,10 +4,21 @@
 [![GitHub issues](https://img.shields.io/github/issues/MarinCervinschi/TriviaMore)]()
 [![GitHub visitors](https://visitor-badge.laobi.icu/badge?page_id=MarinCervinschi.TriviaMore&)]()
 
-# Trivia More
-Trivia More is a quiz app that test your knowledge and prepare you for the University exams. The app includes multiple classes that are divided into sections. Each section cover a specific topic of the argouments that are teached in that course. The questions are multiple choice and the user can select one or more answers. The app will show the correct answers and the user score at the end of the quiz as in the real exam. The app show you as well the time that you spent on the quiz, to help you to manage your time better.
+# Trivia More 🎓🧠
 
-## Get Started
+Prepare. Practice. Succeed.
+
+Trivia More is a comprehensive quiz app designed to test and enhance your knowledge while preparing you for university exams. The app offers:
+- 📚 Structured Learning: Multiple classes, divided into sections that cover specific course topics.  
+- ❓ Challenging Questions: Multiple-choice questions with single or multiple answer options.  
+- 📝 Instant Feedback: View correct answers and get detailed scoring at the end of each quiz.  
+- ⏱️ Time Management: Track your quiz duration to improve your speed and efficiency.  
+
+Whether you’re revising for exams or just testing your knowledge, Trivia More is the perfect companion for academic success.
+
+## Visit the app [here](https://trivia-more.vercel.app/) 🌐
+
+### Get Started 🚀
 
 1. Clone the repository
 ```bash
