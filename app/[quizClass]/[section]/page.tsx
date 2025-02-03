@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Quiz } from "@components/quiz/Quiz"
-import { getRandomQuestions } from "@/lib/utils"
 import { useParams } from "next/navigation"
 import { notFound } from "next/navigation"
 import DefaultLayout from "@components/Layouts/DefaultLayout"
@@ -19,31 +18,9 @@ export default function QuizPage() {
     if (!params?.quizClass || !params?.section) {
         return notFound()
     }
-    const [quizClass, setQuizClass] = useState<QuizClass>({ id: '', name: '' });
+    const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [section, setSection] = useState<QuizSection>({} as QuizSection);
     const [questions, setQuestions] = useState([] as QuizQuestion[]);
-
-    const fetchAllQuestions = async (quizClassId: string) => {
-        try {
-            const response = await fetch(`/api/class/${quizClassId}/random`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || response.statusText);
-            }
-
-            const data = await response.json();
-            return data.questions;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
 
     const fetchData = async (quizClassId: string, sectionId: string) => {
         try {
@@ -65,15 +42,12 @@ export default function QuizPage() {
                 ...data.section,
                 icon: iconMap[data.section.icon]
             };
+            console.log(data.section);
+            console.log(iconMap[data.section.icon]);
 
-            setQuizClass({ id: data.quizClass.id, name: data.quizClass.name });
+            setQuizClass(data.quizClass);
             setSection(formattedData);
-            if (params.section === "random") {
-                const all = await fetchAllQuestions(quizClassId);
-                setQuestions(getRandomQuestions(30, all));
-            } else {
-                setQuestions(data.questions);
-            }
+            setQuestions(data.questions);
         } catch (error) {
             console.error(error);
         }
@@ -83,12 +57,8 @@ export default function QuizPage() {
         fetchData(params.quizClass as string, params.section as string);
     }, []);
 
-    if (!section) {
+    if (!section || !questions.length) {
         return <Loader />;
-    }
-
-    if (!questions.length) {
-        return <div>No questions found</div>;
     }
 
     return (
@@ -96,7 +66,7 @@ export default function QuizPage() {
             <div className="flex flex-col items-center justify-center p-4 space-y-4">
                 <div className="flex items-center justify-center space-x-4">
                     <Link href={`/${quizClass.id}`} className="text-3xl hover:scale-110 active:text-red-600">
-                        <BiLogOut/>
+                        <BiLogOut />
                     </Link>
                     <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
                 </div>

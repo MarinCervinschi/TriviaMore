@@ -12,6 +12,7 @@ import { CgIfDesign } from "react-icons/cg";
 import { MdEngineering } from "react-icons/md";
 import { GrDocumentTest } from "react-icons/gr";
 import { GrConfigure } from "react-icons/gr";
+import { FaRandom } from "react-icons/fa";
 
 const iconMap: { [key: string]: JSX.Element } = {
     TbWorldCode: <TbWorldCode />,
@@ -37,6 +38,7 @@ const iconMap: { [key: string]: JSX.Element } = {
     MdEngineering: <MdEngineering />,
     GrDocumentTest: <GrDocumentTest />,
     GrConfigure: <GrConfigure />,
+    FaRandom: <FaRandom />,
 };
 
 export default iconMap

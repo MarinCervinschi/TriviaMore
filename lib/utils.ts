@@ -14,7 +14,7 @@ export function shuffleArray(array: QuizQuestion[]): QuizQuestion[] {
     return array;
 }
 
-export function getRandomQuestions(count: number = 30, allQuestions: QuizQuestion[]): QuizQuestion[] {
+export function getRandomQuestions(allQuestions: QuizQuestion[], count: number = 30): QuizQuestion[] {
   const shuffled = shuffleArray(allQuestions);
   return shuffled.slice(0, count);
 }

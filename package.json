@@ -29,7 +29,6 @@
     "hamburger-react": "^2.5.0",
     "lucide-react": "^0.469.0",
     "next": "^15.1.5",
-    "papaparse": "^5.5.2",
     "postcss": "^8.5.1",
     "radix-ui": "^1.0.1",
     "react": "18.2.0",

@@ -1,7 +1,6 @@
-import QuizQuestion from './QuizQuestion';
 
 export default interface QuizSection {
-    "id": string;
+    id: string;
     name: string;
     icon?: React.ReactNode;
 }

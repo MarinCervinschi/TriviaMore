@@ -1,4 +1,11 @@
 {
+    "random": [
+        {
+            "id": "random",
+            "name": "Random",
+            "icon": "FaRandom"
+        }
+    ],
     "web-tecnologies": [
         {
             "id": "www",
@@ -71,7 +78,6 @@
             "icon": "SiSemanticuireact"
         }
     ],
-
     "software-engineering": [
         {
             "id": "software-engineering",

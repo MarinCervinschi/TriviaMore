@@ -1,7 +1,6 @@
-import QuizSection from './QuizSection'
 
 export default interface QuizClass {
-    "id": string
+    id: string
     name: string
     icon?: JSX.Element
 }

@@ -2,6 +2,7 @@ import { Button } from "@components/ui/button"
 import SectionSelectorProps from "@/types/SectionSelectorProps"
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
 import Link from "next/link"
+import iconMap from "@/lib/iconMap"
 
 export default function SectionSelector({ sections, quizClassId }: SectionSelectorProps) {
 
@@ -18,7 +19,7 @@ export default function SectionSelector({ sections, quizClassId }: SectionSelect
             </Button>
           ))}
           <Button asChild variant="default" className="h-auto py-4 text-lg col-span-full">
-            <Link href={`/${quizClassId}/random`}>Random Mix (30 Questions)</Link>
+            <Link href={`/${quizClassId}/random`}>{iconMap['FaRandom']} &nbsp; Random Mix (30 Questions)</Link>
           </Button>
         </div>
       </CardContent>

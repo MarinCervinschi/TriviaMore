@@ -1,7 +1,7 @@
 export default interface QuizQuestion {
-    "id": number;
-    "question": string;
+    id: number;
+    question: string;
     options: string[];
-    "correctAnswers": number[];
+    correctAnswers: number[];
     section: string;
 }

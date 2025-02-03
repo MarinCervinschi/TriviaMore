@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import DefaultLayout from "./components/Layouts/DefaultLayout"
 import ClassSelector from "@components/ClassSelector"
 import QuizClass from '@/types/QuizClass'
+import Loader from './components/Loader'
 
 export default function Home() {
   const [quizData, setQuizData] = useState([] as QuizClass[]);
@@ -35,6 +36,10 @@ export default function Home() {
   useEffect(() => {
     fetchQuizData();
   }, []);
+
+  if (!quizData.length) {
+    return <Loader />;
+  }
 
   return (
     <DefaultLayout>
