@@ -25,7 +25,7 @@ export function Timer({ isRunning, totalTime }: TimerProps) {
   }
 
   return (
-    <div className="text-lg font-semibold" aria-live="polite">
+    <div className="text-lg font-semibold min-w-[120px]" aria-live="polite">
       Time: {formatTime(totalTime !== undefined ? totalTime : time)}
     </div>
   )
