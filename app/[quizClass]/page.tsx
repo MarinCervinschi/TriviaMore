@@ -12,6 +12,7 @@ import iconMap from '@/lib/iconMap'
 
 import QuizClass from '@/types/QuizClass'
 import QuizSection from '@/types/QuizSection'
+import SplitText from '@components/animation/SplitText';
 
 export default function QuizClassPage() {
     const params = useParams();
@@ -62,7 +63,16 @@ export default function QuizClassPage() {
                     <Link href={`/`} className="text-3xl hover:scale-110 active:text-red-600">
                         <BiLogOut />
                     </Link>
-                    <h1 className="text-3xl font-bold text-center">{quizClass.name}</h1>
+                    <SplitText
+                        text={quizClass.name}
+                        className="text-3xl font-bold text-center"
+                        delay={50}
+                        animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
+                        animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+                        easing={(t: number) => t}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                    />
                 </div>
                 <SectionSelector sections={sections} quizClassId={quizClass.id} />
             </div>

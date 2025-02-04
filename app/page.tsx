@@ -9,6 +9,8 @@ import Loader from '@components/Loader'
 import QuizClass from '@/types/QuizClass'
 import iconMap from '@/lib/iconMap'
 
+import SplitText from "@components/animation/SplitText";
+
 export default function Home() {
   const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);
 
@@ -45,7 +47,16 @@ export default function Home() {
   return (
     <DefaultLayout>
       <div className="flex flex-col items-center justify-center p-4 space-y-4">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-9">Welcome to the Quiz App</h1>
+        <SplitText
+          text="Welcome to the Quiz App"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-9"
+          delay={50}
+          animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
+          animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+          easing={(t: number) => t}
+          threshold={0.2}
+          rootMargin="-50px"
+        />
         <ClassSelector classes={quizData} />
       </div>
     </DefaultLayout>
