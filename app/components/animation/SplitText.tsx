@@ -30,7 +30,6 @@ const SplitText: React.FC<SplitTextProps> = ({
     const letters = words.flat();
     const [inView, setInView] = useState(false);
     const ref = useRef<HTMLParagraphElement>(null);
-    const animatedCount = useRef(0);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -52,23 +51,23 @@ const SplitText: React.FC<SplitTextProps> = ({
         return () => observer.disconnect();
     }, [threshold, rootMargin]);
 
+    // Initialize springs for each letter
     const springs = useSprings(
         letters.length,
         letters.map((_, i) => ({
             from: animationFrom,
-            to: inView
-                ? async (next: (props: any) => Promise<void>) => {
-                    await next(animationTo);
-                    animatedCount.current += 1;
-                    if (animatedCount.current === letters.length && onLetterAnimationComplete) {
-                        onLetterAnimationComplete();
-                    }
-                }
-                : animationFrom,
+            to: inView ? animationTo : animationFrom,
             delay: i * delay,
             config: { easing },
         }))
     );
+
+    useEffect(() => {
+        if (inView && onLetterAnimationComplete) {
+            const timeoutId = setTimeout(() => onLetterAnimationComplete(), letters.length * delay);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [inView, letters.length, delay, onLetterAnimationComplete]);
 
     return (
         <p
