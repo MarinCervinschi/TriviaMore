@@ -48,7 +48,7 @@ export default function Home() {
     <DefaultLayout>
       <div className="flex flex-col items-center justify-center p-4 space-y-4">
         <SplitText
-          text="Welcome to the Quiz App"
+          text="Welcome to the Trivia More!"
           className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-9"
           delay={50}
           animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}

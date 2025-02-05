@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Quiz App</title>
+        <title>Trivia More</title>
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>
