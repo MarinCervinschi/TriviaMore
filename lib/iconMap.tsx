@@ -15,6 +15,7 @@ import { GrConfigure } from "react-icons/gr";
 import { FaRandom } from "react-icons/fa";
 import { TbLogicXor } from "react-icons/tb";
 import { MdSpeed } from "react-icons/md";
+import { FaShapes } from "react-icons/fa";
 
 const iconMap: { [key: string]: JSX.Element } = {
     TbWorldCode: <TbWorldCode />,
@@ -43,6 +44,7 @@ const iconMap: { [key: string]: JSX.Element } = {
     FaRandom: <FaRandom />,
     TbLogicXor: <TbLogicXor />,
     MdSpeed: <MdSpeed />,
+    FaShapes: <FaShapes />,
 };
 
 export default iconMap

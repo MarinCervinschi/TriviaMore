@@ -1409,5 +1409,637 @@
             ],
             "section": "Software Engineering"
         }
+    ],
+    "design-patterns": [
+        {
+            "id": 1,
+            "question": "Un'azienda vuole sviluppare un software per la manutenzione degli elettrodomestici. Per la sostituzione delle componenti degli asciugacapelli (domestici, professionali e professionali avanzati) desidera mantenere flessibile l'implementazione delle modalità di sostituzione, evitando duplicazione di codice. Quale design pattern è il più adatto per questa situazione?",
+            "options": [
+                "Strategy",
+                "Singleton",
+                "Decorator",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 2,
+            "question": "In un sistema di gestione parcheggi, le piazzole possono essere normali o premium, ma devono supportare anche vari accessori opzionali (corrente elettrica, illuminazione, musica). Come struttureresti il software per consentire di aggiungere dinamicamente gli accessori alle piazzole mantenendo flessibilità?",
+            "options": [
+                "Composite",
+                "Decorator",
+                "Observer",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 3,
+            "question": "Un sistema di gestione degli acquisti tramite badge prevede due flussi distinti: uno per l'acquisto di ingressi alla piscina e uno per l'acquisto diretto di servizi con inserimento di importo manuale. Come progetteresti il sistema per riutilizzare parte del flusso comune tra le operazioni?",
+            "options": [
+                "Template Method",
+                "Strategy",
+                "Composite",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 4,
+            "question": "In un'applicazione di e-commerce è necessario notificare automaticamente agli utenti eventuali modifiche allo stato degli ordini (in elaborazione, spedito, consegnato). Quale design pattern adotteresti per garantire la notifica automatica degli aggiornamenti?",
+            "options": [
+                "Observer",
+                "Strategy",
+                "Decorator",
+                "Singleton"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 5,
+            "question": "Un sistema di navigazione che consente di scorrere una collezione di punti di interesse deve fornire un metodo uniforme per iterare su vari tipi di dati (percorsi, monumenti, ristoranti). Quale design pattern rappresenta la scelta più adatta?",
+            "options": [
+                "Iterator",
+                "Composite",
+                "Decorator",
+                "Template Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 6,
+            "question": "Un sistema per la gestione di documenti deve consentire agli utenti di organizzare strutture gerarchiche di elementi come paragrafi, sezioni e documenti completi. Quale design pattern rappresenta una buona soluzione per modellare questa struttura?",
+            "options": [
+                "Composite",
+                "Strategy",
+                "Singleton",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 7,
+            "question": "In un'applicazione che gestisce la configurazione di connessioni al database, è necessario garantire che venga creata una sola istanza dell'oggetto di configurazione. Quale design pattern soddisfa questa esigenza?",
+            "options": [
+                "Singleton",
+                "Factory Method",
+                "Decorator",
+                "Template Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 8,
+            "question": "In un editor grafico è necessario consentire agli utenti di aggiungere funzionalità (come bordi, ombre e trasparenza) agli elementi grafici esistenti senza modificare le loro classi. Quale design pattern adotteresti?",
+            "options": [
+                "Decorator",
+                "Observer",
+                "Singleton",
+                "Strategy"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 9,
+            "question": "Un sistema di prenotazione di viaggi online deve consentire la creazione di diversi tipi di pacchetti turistici (solo volo, volo più hotel, volo più hotel e noleggio auto) senza cambiare il codice esistente ogni volta che si aggiunge un nuovo tipo. Quale design pattern si presta meglio per risolvere questo problema?",
+            "options": [
+                "Factory Method",
+                "Observer",
+                "Strategy",
+                "Composite"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 10,
+            "question": "Un software per la gestione di eventi sportivi deve consentire la creazione di report personalizzati che combinano informazioni su punteggi, giocatori e statistiche. È importante che gli utenti possano costruire il report combinando moduli esistenti. Quale design pattern adotta una soluzione simile?",
+            "options": [
+                "Builder",
+                "Singleton",
+                "Composite",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 11,
+            "question": "Un'applicazione per il controllo di dispositivi smart (termostati, lampadine, serrature) deve inviare comandi in modo uniforme a dispositivi con interfacce diverse. Quale design pattern permette di ottenere questa astrazione?",
+            "options": [
+                "Adapter",
+                "Observer",
+                "Strategy",
+                "Decorator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 12,
+            "question": "Un'applicazione per la gestione di processi produttivi prevede che i componenti di una macchina debbano essere attivati in una sequenza precisa (ad esempio, riscaldamento, avvio nastro trasportatore, e controllo qualità). Quale design pattern permette di rappresentare efficacemente questo flusso?",
+            "options": [
+                "Command",
+                "Template Method",
+                "Observer",
+                "Strategy"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 13,
+            "question": "Un sistema di gestione per una catena di hotel deve permettere di aggiornare dinamicamente le tariffe delle camere in base alla stagione, all'occupazione e ad altre condizioni esterne. Quale design pattern può gestire questo scenario in modo flessibile?",
+            "options": [
+                "Strategy",
+                "Observer",
+                "Singleton",
+                "Composite"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 14,
+            "question": "Un'applicazione per il monitoraggio dei mercati finanziari deve aggiornare automaticamente il portafoglio dell'utente in base a variazioni di prezzo dei titoli. Come rappresenteresti questo sistema per garantire la propagazione automatica degli aggiornamenti?",
+            "options": [
+                "Observer",
+                "Decorator",
+                "Strategy",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 15,
+            "question": "Un'applicazione per la gestione dei contenuti di un sito web deve consentire agli amministratori di pubblicare post in diversi formati (testo semplice, immagini, video) mantenendo una struttura uniforme per il rendering. Quale design pattern risponde meglio a questa esigenza?",
+            "options": [
+                "Template Method",
+                "Decorator",
+                "Adapter",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 16,
+            "question": "Un sistema di controllo degli ordini per una catena di ristoranti deve consentire l'invio di comandi come 'prepara ordine', 'consegna ordine' e 'annulla ordine' in modo uniforme, mantenendo traccia delle operazioni. Quale design pattern può aiutare in questo scenario?",
+            "options": [
+                "Command",
+                "Observer",
+                "Strategy",
+                "Composite"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 17,
+            "question": "Un'applicazione di prenotazione eventi deve permettere agli utenti di navigare tra gli eventi disponibili e visualizzarli in base a categorie o sottocategorie. Quale design pattern si presta meglio per rappresentare questa gerarchia?",
+            "options": [
+                "Composite",
+                "Decorator",
+                "Iterator",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 18,
+            "question": "Un sistema per la gestione delle configurazioni di un'app deve garantire che esista una sola istanza di configurazione condivisa tra tutti i moduli dell'applicazione. Quale design pattern è adatto a questo caso?",
+            "options": [
+                "Singleton",
+                "Decorator",
+                "Observer",
+                "Builder"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 19,
+            "question": "Un'applicazione per la gestione delle ricette di cucina deve consentire di aggiungere vari ingredienti e personalizzare la preparazione senza cambiare il codice di base per ogni variazione. Quale design pattern è più adatto per gestire questa esigenza?",
+            "options": [
+                "Decorator",
+                "Composite",
+                "Adapter",
+                "Strategy"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 20,
+            "question": "Un sistema bancario deve consentire l'esecuzione di una serie di operazioni transazionali, come depositi, prelievi e trasferimenti, mantenendo la possibilità di annullare o ripetere operazioni. Quale design pattern rappresenta una soluzione ottimale?",
+            "options": [
+                "Command",
+                "Observer",
+                "Factory Method",
+                "Template Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 21,
+            "question": "Un'applicazione per la gestione delle notifiche deve supportare diversi tipi di notifica (email, SMS, push) che possono essere attivate in base alle preferenze dell'utente. Quale design pattern è ideale per rappresentare queste varianti?",
+            "options": [
+                "Strategy",
+                "Composite",
+                "Decorator",
+                "Adapter"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 22,
+            "question": "Un sistema di vendita online prevede la possibilità di applicare vari sconti (percentuale, prezzo fisso, promozioni speciali) in modo combinabile senza dover modificare il codice di base della logica di pagamento. Quale design pattern si adatta meglio?",
+            "options": [
+                "Decorator",
+                "Factory Method",
+                "Singleton",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 23,
+            "question": "Un'applicazione per la gestione delle risorse di un progetto deve consentire la creazione di attività composte da sottoattività, mantenendo una gerarchia flessibile. Quale design pattern rappresenta una buona scelta?",
+            "options": [
+                "Composite",
+                "Strategy",
+                "Adapter",
+                "Command"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 24,
+            "question": "Un software di gestione magazzino deve fornire la possibilità di iterare in modo uniforme su diversi tipi di collezioni (articoli disponibili, articoli in ordine, articoli fuori stock). Quale design pattern implementeresti?",
+            "options": [
+                "Iterator",
+                "Composite",
+                "Decorator",
+                "Template Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 25,
+            "question": "Un sistema di gestione dei pagamenti deve supportare più metodi di pagamento (carta di credito, PayPal, bonifico bancario) senza modificare la logica principale del checkout. Quale design pattern è ideale per garantire flessibilità?",
+            "options": [
+                "Strategy",
+                "Factory Method",
+                "Observer",
+                "Command"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 26,
+            "question": "Un'applicazione di messaggistica deve permettere agli utenti di registrarsi per ricevere aggiornamenti sugli stati dei propri contatti (online, offline, non disturbare). Quale design pattern consente di implementare questa funzionalità in modo efficace?",
+            "options": [
+                "Observer",
+                "Command",
+                "Template Method",
+                "Decorator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 27,
+            "question": "In un sistema di gestione dei menu di un ristorante, le voci del menu possono essere semplici piatti o combinazioni di piatti. Quale design pattern consente di rappresentare in modo flessibile questa struttura gerarchica?",
+            "options": [
+                "Composite",
+                "Decorator",
+                "Iterator",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 28,
+            "question": "Un'applicazione di editing video deve consentire l'aggiunta dinamica di effetti (filtri, transizioni, audio) su una clip senza modificare la classe della clip stessa. Quale design pattern risponde a questa esigenza?",
+            "options": [
+                "Decorator",
+                "Observer",
+                "Template Method",
+                "Command"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 29,
+            "question": "Un sistema di autenticazione deve garantire che ci sia un solo oggetto responsabile della gestione delle sessioni degli utenti per evitare conflitti. Quale design pattern è più indicato?",
+            "options": [
+                "Singleton",
+                "Observer",
+                "Adapter",
+                "Strategy"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 30,
+            "question": "Un software per l'automazione industriale deve consentire il salvataggio e il ripristino degli stati delle macchine durante la produzione. Quale design pattern permette di memorizzare lo stato di un oggetto per poi ripristinarlo?",
+            "options": [
+                "Memento",
+                "Composite",
+                "Command",
+                "Iterator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 31,
+            "question": "Un sistema per la gestione di cataloghi di prodotti deve consentire la creazione dinamica di oggetti complessi (come configurazioni di computer) seguendo diverse configurazioni. Quale design pattern è adatto a questo scopo?",
+            "options": [
+                "Builder",
+                "Singleton",
+                "Strategy",
+                "Composite"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 32,
+            "question": "Un'applicazione di e-commerce deve consentire di mostrare prodotti diversi in base alla tipologia di visualizzazione scelta dall'utente (lista, griglia o carosello). Come rappresenteresti le diverse modalità di visualizzazione senza cambiare la logica principale?",
+            "options": [
+                "Strategy",
+                "Factory Method",
+                "Command",
+                "Decorator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 33,
+            "question": "Un software per la gestione delle notifiche aziendali deve consentire di inviare notifiche tramite canali diversi (email, SMS, push) mantenendo flessibilità nell'aggiungere nuovi canali. Quale design pattern risponde a questa esigenza?",
+            "options": [
+                "Strategy",
+                "Observer",
+                "Adapter",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 34,
+            "question": "Un sistema per la gestione di documenti digitali deve permettere di iterare su una collezione di file mantenendo l'ordine di lettura specificato. Quale design pattern consente di implementare questa funzionalità?",
+            "options": [
+                "Iterator",
+                "Composite",
+                "Decorator",
+                "Builder"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 35,
+            "question": "Un'applicazione che gestisce configurazioni software deve consentire agli utenti di passare da una configurazione all'altra senza perdere il contesto corrente. Quale design pattern potrebbe essere utile per gestire gli stati dell'applicazione?",
+            "options": [
+                "State",
+                "Command",
+                "Strategy",
+                "Memento"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 36,
+            "question": "Un sistema per la gestione dei processi aziendali deve consentire l'esecuzione sequenziale di operazioni complesse come approvazione, revisione e archiviazione. Le operazioni devono poter essere modificate o riutilizzate senza cambiare il flusso principale. Quale design pattern è più indicato?",
+            "options": [
+                "Template Method",
+                "Observer",
+                "Strategy",
+                "Decorator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 37,
+            "question": "Un'applicazione di sicurezza deve consentire il salvataggio e il ripristino dello stato di una sessione utente in caso di disconnessione o crash. Quale design pattern si adatta meglio a questo caso?",
+            "options": [
+                "Memento",
+                "Singleton",
+                "Composite",
+                "Command"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 38,
+            "question": "In un'applicazione per la gestione di un negozio di abbigliamento, è necessario creare diverse varianti di capi (come taglia, colore e materiale) combinando le caratteristiche senza moltiplicare le classi. Quale design pattern utilizzeresti?",
+            "options": [
+                "Builder",
+                "Decorator",
+                "Composite",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 39,
+            "question": "Un sistema di gestione dei permessi aziendali deve consentire la composizione di ruoli complessi (ad esempio, Manager con permessi di lettura, scrittura e approvazione) tramite la combinazione di permessi di base. Quale design pattern soddisfa questa esigenza?",
+            "options": [
+                "Composite",
+                "Decorator",
+                "Strategy",
+                "Adapter"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 40,
+            "question": "In un sistema di automazione per smart home, è necessario inviare comandi standardizzati a dispositivi con interfacce diverse come lampadine, serrature e termostati. Quale design pattern ti permette di adattare queste interfacce diverse?",
+            "options": [
+                "Adapter",
+                "Command",
+                "Observer",
+                "Singleton"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 41,
+            "question": "Un sistema di gestione di una rete di sensori deve consentire l'invio di dati in tempo reale a vari dispositivi e applicazioni senza che i dispositivi conoscano direttamente chi riceve i dati. Quale design pattern è adatto per questo scenario?",
+            "options": [
+                "Observer",
+                "Decorator",
+                "Strategy",
+                "Factory Method"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 42,
+            "question": "In un'applicazione di chat, l'utente può applicare diverse configurazioni grafiche (tema scuro, dimensione del carattere, stile delle notifiche) senza cambiare la logica sottostante. Quale design pattern consente questa flessibilità?",
+            "options": [
+                "Decorator",
+                "Template Method",
+                "Strategy",
+                "Command"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 43,
+            "question": "Un'applicazione per la gestione degli ordini in una catena di negozi deve consentire l'aggiunta di nuove modalità di pagamento senza modificare il codice principale. Come implementeresti questa funzionalità?",
+            "options": [
+                "Strategy",
+                "Singleton",
+                "Adapter",
+                "Iterator"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 44,
+            "question": "Un software di navigazione per mappe deve consentire di iterare su punti di interesse (come ristoranti, musei e hotel) mantenendo un ordine specifico. Quale design pattern risponde a questa esigenza?",
+            "options": [
+                "Iterator",
+                "Composite",
+                "Command",
+                "Builder"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        },
+        {
+            "id": 45,
+            "question": "In un sistema di gestione delle prenotazioni di voli, è necessario gestire stati come 'prenotazione in corso', 'prenotazione completata' e 'prenotazione cancellata'. Quale design pattern consente di rappresentare efficacemente questi stati mantenendo la logica separata?",
+            "options": [
+                "State",
+                "Command",
+                "Decorator",
+                "Observer"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "Design Pattern Scenario"
+        }
     ]
 }

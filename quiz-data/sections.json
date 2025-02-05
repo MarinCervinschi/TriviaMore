@@ -108,6 +108,11 @@
             "id": "maintenance",
             "name": "Maintenance",
             "icon": "GrConfigure"
+        },
+        {
+            "id": "design-patterns",
+            "name": "Design Patterns",
+            "icon": "FaShapes"
         }
     ],
     "calcolatori": [
