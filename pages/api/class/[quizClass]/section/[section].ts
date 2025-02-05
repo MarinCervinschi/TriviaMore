@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import QuizQuestion from '@/types/QuizQuestion';
 import { getRandomQuestions } from '@/lib/utils';
+import { shuffleArray } from '@/lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const quizClass = req.query.quizClass as string;
@@ -45,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
             const sectionQuestions = questionsData[section] || [];
 
-            res.status(200).json({ quizClass: classData, section: sectionData, questions: sectionQuestions });
+            res.status(200).json({ quizClass: classData, section: sectionData, questions: shuffleArray(sectionQuestions) });
         }
 
     } catch (error: any) {
