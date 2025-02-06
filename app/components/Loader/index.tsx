@@ -1,7 +1,14 @@
+import { grid } from 'ldrs'
+grid.register()
+
 const Loader = () => {
     return (
         <div className="flex h-screen items-center justify-center bg-white">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-black border-t-transparent"></div>
+            <l-grid
+                size="60"
+                speed="1.5"
+                color="black"
+            ></l-grid>
         </div>
     );
 };

@@ -30,6 +30,7 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "hamburger-react": "^2.5.0",
+    "ldrs": "^1.0.2",
     "lucide-react": "^0.469.0",
     "next": "^15.1.5",
     "postcss": "^8.5.1",
