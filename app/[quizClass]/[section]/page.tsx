@@ -8,7 +8,8 @@ import Link from 'next/link'
 import { Quiz } from "@components/quiz/Quiz"
 import DefaultLayout from "@components/Layouts/DefaultLayout"
 import Loader from '@components/Loader'
-import SplitText from '@components/animation/SplitText';
+import SplitText from '@animations/SplitText';
+import AnimatedContent from '@animations/AnimatedContent';
 
 import iconMap from '@/lib/iconMap'
 import QuizSection from "@/types/QuizSection"
@@ -79,7 +80,18 @@ export default function QuizPage() {
                         rootMargin="-50px"
                     />
                 </div>
-                <Quiz section={section} questions={questions} quizClassId={quizClass.id} />
+                <AnimatedContent
+                    distance={150}
+                    direction="vertical"
+                    reverse={false}
+                    config={{ tension: 80, friction: 20 }}
+                    initialOpacity={0.2}
+                    animateOpacity
+                    scale={1.1}
+                    threshold={0.2}
+                >
+                    <Quiz section={section} questions={questions} quizClassId={quizClass.id} />
+                </AnimatedContent>
             </div>
         </DefaultLayout>
     )

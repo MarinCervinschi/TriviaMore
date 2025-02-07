@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react'
 
 import DefaultLayout from "@components/Layouts/DefaultLayout"
 import ClassSelector from "@components/ClassSelector"
+import SplitText from "@animations/SplitText";
+import AnimatedContent from '@animations/AnimatedContent'
 import Loader from '@components/Loader'
 
 import QuizClass from '@/types/QuizClass'
 import iconMap from '@/lib/iconMap'
 
-import SplitText from "@components/animation/SplitText";
 
 export default function Home() {
   const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);
@@ -57,7 +58,18 @@ export default function Home() {
           threshold={0.2}
           rootMargin="-50px"
         />
-        <ClassSelector classes={quizData} />
+        <AnimatedContent
+          distance={150}
+          direction="vertical"
+          reverse={false}
+          config={{ tension: 80, friction: 20 }}
+          initialOpacity={0.2}
+          animateOpacity
+          scale={1.1}
+          threshold={0.2}
+        >
+          <ClassSelector classes={quizData} />
+        </AnimatedContent>
       </div>
     </DefaultLayout>
   )

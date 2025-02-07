@@ -23,6 +23,7 @@
       "@/*": ["./*"],
       "@types/*": ["./types/*"],
       "@components/*": ["./app/components/*"],
+      "@animations/*": ["./app/components/animations/*"],
       "@atoms/*": ["./app/components/atoms/*"],
       "@molecules/*": ["./app/components/molecules/*"],
       "@organisms/*": ["./app/components/organisms/*"]
