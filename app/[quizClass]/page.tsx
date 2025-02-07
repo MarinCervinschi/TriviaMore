@@ -8,11 +8,12 @@ import Link from 'next/link'
 import SectionSelector from "@components/quiz/SectionSelector"
 import DefaultLayout from "@components/Layouts/DefaultLayout"
 import Loader from '@components/Loader'
+import SplitText from '@animations/SplitText';
+import AnimatedContent from '@animations/AnimatedContent';
 import iconMap from '@/lib/iconMap'
 
 import QuizClass from '@/types/QuizClass'
 import QuizSection from '@/types/QuizSection'
-import SplitText from '@components/animation/SplitText';
 
 export default function QuizClassPage() {
     const params = useParams();
@@ -74,7 +75,18 @@ export default function QuizClassPage() {
                         rootMargin="-50px"
                     />
                 </div>
-                <SectionSelector sections={sections} quizClassId={quizClass.id} />
+                <AnimatedContent
+                    distance={150}
+                    direction="vertical"
+                    reverse={false}
+                    config={{ tension: 80, friction: 20 }}
+                    initialOpacity={0.2}
+                    animateOpacity
+                    scale={1.1}
+                    threshold={0.2}
+                >
+                    <SectionSelector sections={sections} quizClassId={quizClass.id} />
+                </AnimatedContent>
             </div>
         </DefaultLayout>
     )

@@ -3,7 +3,7 @@ import React, { useState, ReactNode, useEffect } from "react";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import { BsArrowUpCircleFill } from "react-icons/bs";
-import Squares from "../animation/Squares/Squares";
+import Squares from "@animations/Squares";
 
 export default function DefaultLayout({
   children,
