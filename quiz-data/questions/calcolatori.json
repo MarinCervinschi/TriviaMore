@@ -5,15 +5,15 @@
             "question": "La modularità nei calcolatori",
             "options": [
                 "È la capacità del sistema di essere progettato per parti anche indipendenti per aumentare o modificare le prestazioni in base alle esigenze",
-                "È la capacità del sistema di eseguire più operazioni contemporaneamente",
-                "Indica l'utilizzo di diversi linguaggi di programmazione in un unico sistema",
-                "Si riferisce alla separazione tra hardware e software"
+                "È la capacità del sistema di eseguire più operazioni in parallelo, suddividendo il carico di lavoro tra diverse unità di elaborazione",
+                "Indica l'impiego combinato di più linguaggi di programmazione all'interno di un unico sistema software per migliorare la flessibilità dello sviluppo",
+                "Si riferisce alla distinzione tra hardware e software in un sistema, permettendo una gestione separata delle componenti fisiche e logiche"
             ],
             "correctAnswers": [
                 0
             ],
             "section": "calcolatore"
-        },
+        },        
         {
             "id": 2,
             "question": "Una memoria è volatile se",
@@ -60,10 +60,10 @@
             "id": 5,
             "question": "Il tempo di accesso per le memorie ad accesso casuale come la memoria centrale",
             "options": [
-                "È il tempo necessario per trasferire i dati al processore",
-                "È il tempo di risposta del processore alla memoria",
-                "È il tempo che intercorre da quando sono forniti gli indirizzi a quando sono pronti i dati",
-                "Dipende esclusivamente dalla capacità della memoria"
+                "È il tempo necessario per trasferire i dati dal sistema di memoria al processore, considerando eventuali ritardi di interconnessione",
+                "È il tempo di risposta complessivo del processore alla richiesta di memoria, includendo eventuali latenze dovute all'architettura interna",
+                "È il tempo che intercorre dal momento in cui vengono forniti gli indirizzi di memoria fino a quando i dati richiesti sono disponibili per l'uso",
+                "Dipende esclusivamente dalla capacità della memoria e da altri fattori come la tecnologia utilizzata e la velocità di accesso ai dati memorizzati"
             ],
             "correctAnswers": [
                 2
@@ -130,30 +130,30 @@
             "id": 10,
             "question": "Cosa è un modello",
             "options": [
-                "Una rappresentazione fisica del calcolatore",
-                "Un'unità logica all'interno della CPU",
-                "Un framework per la gestione dei dati",
+                "Una rappresentazione fisica del calcolatore, che ne descrive in dettaglio la struttura",
+                "Un'unità logica all'interno della CPU, incaricata di eseguire operazioni specifiche",
+                "Un framework software utilizzato per la gestione e l'archiviazione efficiente dei dati",
                 "È una astrazione della realtà che descrive solo i dettagli di interesse"
             ],
             "correctAnswers": [
                 3
             ],
             "section": "calcolatore"
-        },
+        },        
         {
             "id": 11,
             "question": "Nelle macchine RISC il CPI diminuisce rispetto alle CISC",
             "options": [
                 "Perché le istruzioni sono tutte semplici e l'implementazione hardware è più efficiente",
-                "Perché le istruzioni sono più complesse e ottimizzate",
-                "Perché usano una pipeline più lunga",
-                "Perché utilizzano meno registri rispetto alle CISC"
+                "Perché le istruzioni sono più complesse e l'implementazione hardware è più efficiente",
+                "Perché sfruttano una pipeline più lunga, permettendo di suddividere l'esecuzione delle istruzioni in più fasi",
+                "Perché utilizzano meno registri rispetto alle CISC, riducendo la complessità nella gestione delle istruzioni e dei dati"
             ],
             "correctAnswers": [
                 0
             ],
             "section": "calcolatore"
-        },
+        },        
         {
             "id": 12,
             "question": "I sistemi general-purpose",
@@ -271,8 +271,8 @@
             "question": "Il termine architettura di un calcolatore fu definito",
             "options": [
                 "Dalla Intel per il Pentium",
-                "Dall'IBM per la famiglia S/360 negli anni",
-                "Dalla AMD per i processori Ryzen",
+                "Dall'IBM per la famiglia S/360 negli anni 60'",
+                "Dalla AMD per i processori Ryzen negli anni 80'",
                 "Dalla Apple per i primi Macintosh"
             ],
             "correctAnswers": [
@@ -312,9 +312,9 @@
             "id": 23,
             "question": "Il simulatore di CPU",
             "options": [
-                "È un hardware che velocizza l'esecuzione delle istruzioni",
-                "È un algoritmo per ottimizzare le prestazioni della memoria cache",
-                "È un framework per la gestione della pipeline",
+                "È un dispositivo hardware che aiuta a migliorare l'efficienza dell'esecuzione delle istruzioni all'interno del processore",
+                "È un algoritmo per l'ottimizzazione della memoria cache e la gestione dei dati durante l'esecuzione dei programmi",
+                "È un framework progettato per la gestione e l'ottimizzazione del flusso di istruzioni nella pipeline del processore",
                 "È uno strumento software per modellare e simulare il comportamento della CPU e le prestazioni"
             ],
             "correctAnswers": [
@@ -341,15 +341,43 @@
             "question": "Che differenza c’è tra un segnale analogico e uno digitale?",
             "options": [
                 "Il primo può assumere solo due valori distinti, il secondo una serie continua di valori",
-                "Il primo può assumere un numero infinito di valori nell’intervallo di definizione, il secondo un numero finito",
-                "Il primo è utilizzato solo nelle telecomunicazioni, il secondo nei computer",
-                "Non esiste una differenza significativa tra i due"
+                "Il primo può assumere un numero infinito di valori nell’intervallo di definizione, mentre il secondo ha valori discreti e finiti",
+                "Il primo è principalmente utilizzato nelle telecomunicazioni per trasmettere informazioni su lunghe distanze, mentre il secondo è impiegato nei computer per elaborare e rappresentare i dati",
+                "Non esiste una differenza significativa tra i due, poiché entrambi sono utilizzati per rappresentare segnali"
             ],
             "correctAnswers": [
                 1
             ],
             "section": "calcolatore"
-        }
+        },
+        {
+            "id": 26,
+            "question": "Si considerino le seguenti grandezze digitali: 1) La dimensione di una stripe card 2) La capacità di un disco blue-ray 3) La lunghezza di un valore floating point IEEE 754 single-precision 4) Un frame non compresso PAL-DVD. Si ordino per la quantità di bit, dal più piccolo al più grande:",
+            "options": [
+                "1 2 3 4",
+                "3 1 2 4",
+                "3 1 4 2",
+                "4 3 2 1"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "calcolatore"
+        },
+        {
+            "id": 27,
+            "question": "Si considerino le seguenti grandezze digitali: 1) Il tipico spazio di indirizzamento di un pentium 2) La lunghezza standard di un frame audio MPEG 3) La capacità di un blue-ray 4) La lunghezza di un valore floating point double-precision. Si ordinino per la quantità di bit, dal più piccolo al più grande:",
+            "options": [
+                "4 2 1 3",
+                "1 4 3 2",
+                "2 4 3 1",
+                "3 1 2 4"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "calcolatore"
+        }                
     ],
     "prestazioni": [
         {
@@ -584,6 +612,48 @@
                 "Sì, 10,5 s",
                 "Sì, 9,9 s",
                 "No, impiega 16 s"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "prestazioni"
+        },
+        {
+            "id": 18,
+            "question": "L’AutoBench e il ConsumerBench:",
+            "options": [
+                "A. sono benchmark dell’EEMBC",
+                "B. sono benchmark per il test delle performance di sistemi desktop",
+                "C. sono utilizzati per misurare la velocità delle reti di calcolatori",
+                "D. sono benchmark per la valutazione delle performance dei dispositivi mobili"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "prestazioni"
+        },
+        {
+            "id": 19,
+            "question": "Il benchmark drystone di che tipo è?",
+            "options": [
+                "A. benchmark ridotto",
+                "B. benchmark reale",
+                "C. benchmark scientifico",
+                "D. benchmark sintetico"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "prestazioni"
+        },
+        {
+            "id": 20,
+            "question": "L'EEMBC è",
+            "options": [
+                "A. un'associazione che promuove il design dei microprocessori per computer",
+                "B. una piattaforma di sviluppo software per applicazioni embedded",
+                "C. l'Embedded Microprocessor Benchmark Consortium",
+                "D. una tecnologia per migliorare l'efficienza energetica dei dispositivi"
             ],
             "correctAnswers": [
                 2
@@ -1151,6 +1221,231 @@
                 0
             ],
             "section": "reti_logiche"
-        }
+        },
+        {
+            "id": 41,
+            "question": "Cosa significa nella CPU, che la unità di controllo è micro-programmata?",
+            "options": [
+                "A. Che la CPU esegue una serie di micro-operazioni non programmabili, riducendo la flessibilità nell'esecuzione delle istruzioni e limitando le capacità di personalizzazione del sistema",
+                "B. Che la CPU esegue tutte le operazioni in un singolo ciclo di clock, ottimizzando la velocità ma sacrificando la complessità e la capacità di gestione di istruzioni avanzate",
+                "C. Che l'unità di controllo è programmata tramite software, permettendo una gestione dinamica delle operazioni e consentendo modifiche al comportamento della CPU attraverso il caricamento di nuovi programmi",
+                "D. Che è realizzata come un generico micro sequienziatore in cui tramite un micro-program counter e una memoria vengono sequenzializzate tutte le micro-operazioni necessarie per eseguire una singola istruzione"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 42,
+            "question": "Nel modello di Mealy",
+            "options": [
+                "A. la funzione di uscita dipende solo dallo stato presente",
+                "B. la funzione di uscita dipende dallo stato presente e dagli ingressi in quell'istante",
+                "C. la funzione di uscita dipende solo dagli ingressi in quell'istante",
+                "D. la funzione di uscita non dipende nè dallo stato presente nè dagli ingressi in quell'istante"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 43,
+            "question": "La codifica BCD è",
+            "options": [
+                "A. una codifica per cifre decimali che utilizza 4 bit per cifra",
+                "B. una codifica per lettere maiuscole che utilizza 8 bit per carattere",
+                "C. una codifica binaria che rappresenta solo numeri pari",
+                "D. una codifica per numeri binari che utilizza 3 bit per cifra"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 44,
+            "question": "La funzione logica di due variabili EXNOR:",
+            "options": [
+                "A. vale 1 se e solo se gli ingressi sono diversi",
+                "B. vale 1 se e solo se gli ingressi sono uguali",
+                "C. vale 0 se e solo se gli ingressi sono uguali",
+                "D. vale 0 se e solo se gli ingressi sono diversi"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 45,
+            "question": "Nelle reti sequenziali asincrone",
+            "options": [
+                "A. le variazioni delle configurazioni di ingresso modificano lo stato interno e le uscite in qualsiasi momento",
+                "B. le variazioni delle configurazioni di ingresso modificano lo stato interno e le uscite solo in momenti specifici",
+                "C. lo stato interno non cambia mai",
+                "D. le uscite dipendono solo dallo stato interno"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 46,
+            "question": "La funzione logica di due variabili OR:",
+            "options": [
+                "A. vale 1 se e solo se entrambi gli ingressi sono 0",
+                "B. vale 1 se e solo se almeno uno degli ingressi vale 1",
+                "C. vale 0 se e solo se almeno uno degli ingressi è 1",
+                "D. vale 0 se e solo se entrambi gli ingressi sono 1"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 47,
+            "question": "Un half-adder è",
+            "options": [
+                "A. una rete logica combinatoria con un ingresso e due uscite S e R, S è la somma dei due bit di ingresso, mentre R è il riporto",
+                "B. una rete logica combinatoria con tre ingressi e due uscite S e R, S è la somma dei due bit di ingresso, mentre R è il riporto",
+                "C. una rete logica combinatoria con due ingressi e due uscite S e R. S è la somma dei due bit di ingresso, mentre R è il riporto",
+                "D. una rete logica combinatoria con due ingressi e una sola uscita"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 48,
+            "question": "La funzione logica di due variabili AND",
+            "options": [
+                "A. vale 0 se e solo se uno degli ingressi è 1",
+                "B. vale 1 se e solo se almeno uno degli ingressi è 0",
+                "C. vale 1 se e solo se tutti gli ingressi valgono 1",
+                "D. vale 0 se e solo se entrambi gli ingressi sono 1"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 49,
+            "question": "Un full-adder è",
+            "options": [
+                "A. una rete logica combinatoria con due ingressi e una sola uscita",
+                "B. una rete logica combinatoria con due ingressi e due uscite S e R, S è la somma dei tre bit di ingresso, mentre R è il riporto",
+                "C. una rete logica combinatoria con tre ingressi e una sola uscita, S è la somma dei tre bit di ingresso, mentre R è il riporto",
+                "D. una rete logica combinatoria con tre ingressi e due uscite S e R. S è la somma dei tre bit di ingresso, mentre R è il riporto"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 50,
+            "question": "Il bistabile set-reset",
+            "options": [
+                "A. è una rete logica sequenziale sincrona con due ingressi S e R e due uscite Q e Q#",
+                "B. è una rete logica combinatoria con due ingressi S e R e due uscite Q e Q#",
+                "C. è una rete logica sequenziale asincrona con due ingressi S e R e due uscite Q e Q# tale che l'uscita Q assume il valore 1 quando SR=10 e il valore 0 quando SR=01 e non cambia allorché SR=00",
+                "D. è una rete logica sequenziale asincrona con due ingressi S e R e due uscite Q e Q# tale che l'uscita Q assume il valore 0 quando SR=10 e il valore 1 quando SR=01 e cambia allorché SR=00"
+            ],
+            "correctAnswers": [
+                2
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 51,
+            "question": "Un multiplexer è",
+            "options": [
+                "A. è una rete logica con un solo ingresso e due uscite, dove il flusso di dati è limitato a una sola sorgente e una selezione tra due possibili uscite viene effettuata senza un'adeguata gestione complessa dei segnali",
+                "B.. è una rete logica avente 2^n ingressi di tipo dato, n segnali di controllo ed 1 uscita: il dato di ingresso contrassegnato dall'indice pari alla configurazione dei segnali di controllo viene posto in uscita.",
+                "C. è una rete logica con più ingressi e più uscite, utilizzata per moltiplicare i segnali e permettere operazioni parallele su diversi flussi di dati, ma senza una gestione ottimizzata dei singoli segnali in uscita, limitando l'applicazione a semplici operazioni di combinazione",
+                "D. è una rete logica combinatoria che effettua la somma di ingressi, combinando diversi segnali in un'unica uscita, ma non sempre in grado di garantire prestazioni ottimali in scenari complessi dove siano necessari controlli e selezioni avanzate tra più ingressi"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 52,
+            "question": "Partendo dalla seguente tabella di verita’ e usando il metodo di Quine McClusky, eseguire la sintesi della funzione logica rappresentata. a b c d | F 0 0 0 0 | 0 0 0 0 1 | 0 0 0 1 0 | 0 0 0 1 1 | 0 0 1 0 0 | 0 0 1 0 1 | 0 0 1 1 0 | 0 0 1 1 1 | 0 1 0 0 0 | 0 1 0 0 1 | 0 1 0 1 0 | 0 1 0 1 1 | 0 1 1 0 0 | 1 1 1 0 1 | 1 1 1 1 0 | 1 1 1 1 1 | 1",
+            "options": [
+                "A. ab",
+                "B. ac’d’ + bcd",
+                "C. bcd + ac’d’ + ab’d",
+                "D. acd + ab"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 53,
+            "question": "Partendo dalla seguente tabella di verita’ e usando il metodo di Quine McClusky, eseguire la sintesi della funzione logica rappresentata. a b c d | F 0 0 0 0 | 0 0 0 0 1 | 0 0 0 1 0 | 0 0 0 1 1 | 0 0 1 0 0 | 0 0 1 0 1 | 0 0 1 1 0 | 0 0 1 1 1 | 1 1 0 0 0 | 1 1 0 0 1 | 0 1 0 1 0 | 0 1 0 1 1 | 0 1 1 0 0 | 1 1 1 0 1 | 0 1 1 1 0 | 0 1 1 1 1 | 1",
+            "options": [
+                "A. ac’d’ + bcd",
+                "B. acd + ab",
+                "C. bcd + ac’d’ + ab’d",
+                "D. ac’d’ + ab"
+            ],
+            "correctAnswers": [
+                0
+            ],
+            "section": "calcolatore"
+        },
+        {
+            "id": 54,
+            "question": "Partendo dalla seguente tabella di verita’ e usando il metodo di Quine McClusky, eseguire la sintesi della funzione logica rappresentata. a b c d | F 0 0 0 0 | 0 0 0 0 1 | 0 0 0 1 0 | 0 0 0 1 1 | 0 0 1 0 0 | 0 0 1 0 1 | 0 0 1 1 0 | 0 0 1 1 1 | 1 1 0 0 0 | 1 1 0 0 1 | 0 1 0 1 0 | 1 1 0 1 1 | 0 1 1 0 0 | 1 1 1 0 1 | 0 1 1 1 0 | 0 1 1 1 1 | 1",
+            "options": [
+                "A. ac’d’ + bcd",
+                "B. bcd + ac’d’ + ab’d",
+                "C. acd + ab",
+                "D. ab + ac’d’"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 55,
+            "question": "Partendo dalla seguente tabella di verita’ e usando il metodo di Quine McClusky, eseguire la sintesi della funzione logica rappresentata. a b c d | F 0 0 0 0 | 0 0 0 0 1 | 0 0 0 1 0 | 0 0 0 1 1 | 0 0 1 0 0 | 0 0 1 0 1 | 0 0 1 1 0 | 0 0 1 1 1 | 0 1 0 0 0 | 0 1 0 0 1 | 0 1 0 1 0 | 0 1 0 1 1 | 1 1 1 0 0 | 1 1 1 0 1 | 1 1 1 1 0 | 1 1 1 1 1 | 1",
+            "options": [
+                "A. ab",
+                "B. acd + ab",
+                "C. ac’d’ + bcd",
+                "D. ac’d’ + ab"
+            ],
+            "correctAnswers": [
+                1
+            ],
+            "section": "reti_logiche"
+        },
+        {
+            "id": 56,
+            "question": "Finite State Machine è sinonimo di",
+            "options": [
+                "A. Macchina a stati",
+                "B. Sistema a stati",
+                "C. Macchina logica a stati finiti",
+                "D. Automa a stati finiti"
+            ],
+            "correctAnswers": [
+                3
+            ],
+            "section": "reti_logiche"
+        }  
+        
     ]
 }
