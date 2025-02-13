@@ -16,6 +16,8 @@ import { FaRandom } from "react-icons/fa";
 import { TbLogicXor } from "react-icons/tb";
 import { MdSpeed } from "react-icons/md";
 import { FaShapes } from "react-icons/fa";
+import { MdOutlineMemory } from "react-icons/md";
+
 
 const iconMap: { [key: string]: JSX.Element } = {
     TbWorldCode: <TbWorldCode />,
@@ -45,6 +47,7 @@ const iconMap: { [key: string]: JSX.Element } = {
     TbLogicXor: <TbLogicXor />,
     MdSpeed: <MdSpeed />,
     FaShapes: <FaShapes />,
+    MdOutlineMemory: <MdOutlineMemory />
 };
 
 export default iconMap

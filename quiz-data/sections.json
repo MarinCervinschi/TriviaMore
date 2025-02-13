@@ -130,6 +130,11 @@
             "id": "reti-logiche",
             "name": "Reti Logiche",
             "icon": "TbLogicXor"
+        },
+        {
+            "id": "memorie",
+            "name": "Memorie",
+            "icon": "MdOutlineMemory"
         }
     ]
 }

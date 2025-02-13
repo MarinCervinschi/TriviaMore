@@ -1445,7 +1445,452 @@
                 3
             ],
             "section": "reti_logiche"
-        }  
-        
+        } 
+    ],
+    "memorie": [
+        {
+            "id": 1,
+            "question": "Le DDR-SDRAM",
+            "options": [
+                "A. sono RAM statiche con latenza fissa e velocità costante",
+                "B. sono RAM dinamiche Double Data Rate per trasferire a tutti i fronti del clock",
+                "C. sono un tipo di memoria cache di livello 2",
+                "D. non supportano il trasferimento a burst"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 2,
+            "question": "La differenza tra SRAM e DRAM è che",
+            "options": [
+                "A. entrambe utilizzano condensatori per mantenere il dato memorizzato",
+                "B. le prime hanno FF per mantenere il dato memorizzato e le seconde condensatori per avere alta densità",
+                "C. le SRAM sono sempre più veloci delle DRAM",
+                "D. le DRAM consumano più energia delle SRAM"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 3,
+            "question": "Nelle DRAM",
+            "options": [
+                "A. è possibile solo il trasferimento a burst",
+                "B. è possibile sia il trasferimento singolo che a burst a seconda del tipo di memoria",
+                "C. il trasferimento a burst è più lento di quello singolo",
+                "D. il trasferimento singolo è sempre più efficiente del burst"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 4,
+            "question": "Il tempo di accesso per le memorie sequenziali come la memoria di massa",
+            "options": [
+                "A. è indipendente dalla quantità di dati trasferiti",
+                "B. è il tempo per accedere al dato specifico più il tempo per trasferire i dati, proporzionale alla quantità di dati",
+                "C. è costante per qualsiasi operazione di lettura",
+                "D. dipende solo dalla velocità del bus di sistema"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 5,
+            "question": "In un trasferimento a burst",
+            "options": [
+                "A. si trasferisce un numero variabile di parole in lettura e scrittura",
+                "B. si trasferiscono un numero fissato di parole solo in lettura a indirizzi consecutivi",
+                "C. si trasferiscono dati casuali senza ordine specifico",
+                "D. si trasferiscono parole a intervalli regolari ma non consecutivi"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 6,
+            "question": "I seguenti bit sono esempi di flag di stato e di controllo rispettivamente",
+            "options": [
+                "A. CF,DF di stato e PF,IF di controllo",
+                "B. PF,DF di stato e CF,IF di controllo",
+                "C. DF,IF di stato e PF,CF di controllo",
+                "D. PF,CF di stato e DF,IF di controllo"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        },
+        {
+            "id": 7,
+            "question": "Per ridurre le miss compulsory",
+            "options": [
+                "A. Bisognerebbe ridurre la capacità della cache",
+                "B. Bisognerebbe aumentare la dimensione della linea",
+                "C. Bisognerebbe ridurre l’associatività della cache",
+                "D. Bisognerebbe aumentare la latenza della memoria"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 8,
+            "question": "Sia data una cache di capacità di 128Kbyte a 2-way associative con blocchi di 32Byte. Due byte che in memoria si trovano agli indirizzi FAA40055h e FAB40045h",
+            "options": [
+                "A. Si trovano nello stesso set ma in due linee diverse",
+                "B. Si trovano in set differenti",
+                "C. Sono mappati nella stessa linea di cache",
+                "D. Non possono coesistere nella cache"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 9,
+            "question": "Una cache ha Hit Rate del 98%, tempo di accesso di 2 Tck; il tempo di miss per accedere al livello inferiore di gerarchia è 200 Tck. Quanto è il tempo di accesso medio?",
+            "options": [
+                "A. 4 Tck",
+                "B. 5 Tck",
+                "C. 6 Tck",
+                "D. 8 Tck"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 10,
+            "question": "Un processore ha una cache di primo livello on-chip con tempo di accesso di 1Tck e hit rate del 95%; in caso di miss deve andare in memoria centrale dove per caricare una linea di 32 byte sono necessari 10 clock con il clock di sistema a 500Mhz e il clock del processore a 1Ghz. Qual è il tempo di accesso medio?",
+            "options": [
+                "A. 1 ns",
+                "B. 1,5 ns",
+                "C. 2 ns",
+                "D. 2,5 ns"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 11,
+            "question": "Sia data una cache di capacità di 128Kbyte a 4-way associative con blocchi di 32Byte. Due byte che sono in cache contemporaneamente, in memoria si trovano agli indirizzi F0340035h e F1340026h che",
+            "options": [
+                "A. Si trovano in set differenti",
+                "B. Si trovano nello stesso set ma in due linee diverse",
+                "C. Sono mappati nella stessa linea di cache",
+                "D. Non possono coesistere nella cache"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 12,
+            "question": "Si deve eseguire un programma con un ciclo di 10 iterazioni; in ogni ciclo si devono leggere le variabili var1, var2, var3 e var4 che sono allocate in memoria agli indirizzi rispettivamente F000A023, A000A022, F000A021, F000A025. Con uno spazio di indirizzamento a 32 bit ed una cache direct mapped con linee di 32B di dati e di capacità di 1Mbyte, quante miss si verificano?",
+            "options": [
+                "A. Meno di 10 miss",
+                "B. Esattamente 10 miss",
+                "C. Più di 18 miss",
+                "D. Nessuna miss"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 13,
+            "question": "La misura di affidabilità che indica il tempo medio tra due eventi di guasto si dice",
+            "options": [
+                "A. MTTF Mean Time to Failure",
+                "B. MTTR Mean Time to Repair",
+                "C. MTBF Mean Time Between Failures",
+                "D. MDT Mean Down Time"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 14,
+            "question": "Le EEPROM",
+            "options": [
+                "A. possono essere cancellate solo con raggi ultravioletti",
+                "B. sono scrivibili una sola volta",
+                "C. non possono essere riscritte",
+                "D. sono cancellabili elettricamente"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        },
+        {
+            "id": 15,
+            "question": "Una CPU multicore impiega lo snooping e il protocollo MESI per la gestione delle cache. Se sulla cache del CORE A una linea si trova in uno stato EXCLUSIVE significa che",
+            "options": [
+                "A. La linea è stata modificata dal CORE A e non è coerente con la memoria inferiore",
+                "B. La linea è stata modificata da un altro core ed è incoerente con la memoria",
+                "C. La linea non è stata modificata dal CORE A, il CORE A è single owner della linea il cui valore è coerente con la memoria gerarchicamente inferiore",
+                "D. La linea è in stato di condivisione con altri core"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 16,
+            "question": "Una CPU con clock di 2Ghz ha una linea di 64 byte, ha tempo di accesso di 1 Tck e ha il 98% di hit rate per la cache; in caso di miss va in memoria centrale con il clock di sistema a 1Ghz che necessita per il line fill 32 cicli di clock. Qual è il tempo di accesso medio?",
+            "options": [
+                "A. 1,14",
+                "B. 1,5",
+                "C. 2,0",
+                "D. 2,5"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 17,
+            "question": "Una memoria è affidabile se ha un elevato",
+            "options": [
+                "A. un elevato Mean Time To Repair",
+                "B. un elevato Mean Time Between Failure",
+                "C. un elevato Mean Down Time",
+                "D. un basso Mean Time Between Failure"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 18,
+            "question": "Il TLB",
+            "options": [
+                "A. È una memoria principale",
+                "B. Contiene le pagine di memoria virtuale",
+                "C. Serve per la gestione della cache",
+                "D. È una cache che mantiene l’indirizzo fisico associato all’indirizzo virtuale"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        },
+        {
+            "id": 19,
+            "question": "Sia data una cache di capacità di 128Kbyte a 4-way associative con blocchi di 16Byte. Quanti sono i bit di tag, index e offset se lo spazio di indirizzamento è a 4Gbyte?",
+            "options": [
+                "A. 17, 11, 4",
+                "B. 16, 12, 4",
+                "C. 18, 10, 4",
+                "D. 15, 11, 5"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 20,
+            "question": "Sia data una cache di capacità di 128Kbyte a 4-way associative con blocchi di 16Byte. Quanti sono i bit di tag, index e offset se lo spazio di indirizzamento è a 16Gbyte?",
+            "options": [
+                "A. 17, 12, 4",
+                "B. 18, 11, 4",
+                "C. 19, 11, 4",
+                "D. 16, 12, 5"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 21,
+            "question": "Sia data una cache di capacità di 128Kbyte a 4-way associative con blocchi di 16Byte. Quanti sono i bit di tag, index e offset se lo spazio di indirizzamento è a 16Gbyte?",
+            "options": [
+                "A. 18, 10, 4",
+                "B. 19, 10, 4",
+                "C. 18, 12, 4",
+                "D. 17, 12, 5"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 22,
+            "question": "Nella memoria virtuale si usa il TLB",
+            "options": [
+                "A. Per ridurre il tempo di accesso alla RAM",
+                "B. Per gestire le pagine di memoria cache",
+                "C. Per velocizzare l’accesso con traduzione immediata tra indirizzo virtuale e fisico",
+                "D. Per sostituire la memoria principale"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 23,
+            "question": "Una cache ha Hit Rate del 90%, tempo di accesso di 2 Tck; il tempo di miss per accedere al livello inferiore di gerarchia è 20 Tck. Quanto è il tempo di accesso medio?",
+            "options": [
+                "A. 2,5 Tck",
+                "B. 3 Tck",
+                "C. 3,5 Tck",
+                "D. 4 Tck"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        },
+        {
+            "id": 24,
+            "question": "In una memoria non gerarchica",
+            "options": [
+                "A. i dati sono replicati su più livelli di memoria",
+                "B. lo spazio di indirizzamento è gestito con memorie gerarchiche",
+                "C. lo spazio di indirizzamento è gestito solo con memorie ad accesso casuale senza replicazione di dati",
+                "D. si usa solo la cache"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 25,
+            "question": "Un processore a 8 bit di bus di dati e 24 bit di indirizzi con spazio di indirizzamento non allineato ha una memoria RAM di 4Mbyte (a partire dall'indirizzo 0) composta da due memorie M0 e M1 grandi uguali, ognuna a parallelismo di 1 byte, i cui chip select (codifica espandibile) sono dati da",
+            "options": [
+                "A. CSM1#= /(/A23 x /A22 x A21), CSM0# = /(/A23 x /A22 X /A21)",
+                "B. CSM0#= /(A23 x /A22 x /A21), CSM1# = /(A23 x /A22 X A21)",
+                "C. CSM1#= /A23 x /A22 x A21, CSM0# = /A23 x /A22 X /A21",
+                "D. CSM0#= A23 x /A22 x A21, CSM1# = A23 x /A22 X /A21"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 26,
+            "question": "Le FLASH",
+            "options": [
+                "A. sono più lente delle EEPROM",
+                "B. possono essere usate al posto degli Hard Disk, più veloci ma più costose",
+                "C. possono essere scritte una sola volta",
+                "D. non possono essere riscritte"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 27,
+            "question": "Sia data una cache di capacità di 128Kbyte a 2-way associative con blocchi di 32Byte. Due byte che in memoria si trovano agli indirizzi FAA40055h e FAA40045h",
+            "options": [
+                "A. Si trovano nello stesso set e nella stessa linea",
+                "B. Si trovano in set diversi ma nella stessa linea",
+                "C. Si trovano nello stesso set ma in linee diverse",
+                "D. Si trovano in set diversi e in linee diverse"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 28,
+            "question": "Quali aspetti architetturali non sono gestiti a livello di ISA?",
+            "options": [
+                "A. Il numero di registri",
+                "B. Il set di istruzioni",
+                "C. L’organizzazione delle cache",
+                "D. Il formato delle istruzioni"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 29,
+            "question": "Per ridurre le miss di tipo conflict",
+            "options": [
+                "A. converrebbe aumentare la dimensione dei blocchi",
+                "B. converrebbe ridurre la dimensione della cache",
+                "C. converrebbe usare una cache diretta",
+                "D. converrebbe aumentare la associatività"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        },
+        {
+            "id": 30,
+            "question": "Se una memoria ha un tempo di accesso ad un dato di 10ns e necessita di 1ns tra un accesso e il successivo, se gli accessi sono di tipo diverso (cioè una lettura ed una scrittura), il sistema avrà un throughput",
+            "options": [
+                "A. di più di 100M accessi al secondo",
+                "B. di meno di 100M accessi al secondo se gli accessi sono di tipo diverso",
+                "C. di esattamente 100M accessi al secondo",
+                "D. di 50M accessi al secondo"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 31,
+            "question": "Una CPU con 32 bit di indirizzo ha una cache con linee da 64 byte, di capacità di 2 Mbyte, 2-way associative, inizialmente vuota. Deve accedere alla memoria leggendo in un loop un vettore di byte a[i] e poi in un secondo loop un vettore di byte b[i], entrambi di 256 elementi. a si trova all’indirizzo A030F040; b si trova all’indirizzo A0F0F100; al termine la cache avrà",
+            "options": [
+                "A. Solo gli elementi di b saranno in cache",
+                "B. Solo gli elementi di a saranno in cache",
+                "C. Tutti gli elementi saranno in cache, con alcuni valori di a e b nello stesso set ma in linee diverse",
+                "D. Gli elementi di a e b saranno in cache ma in set diversi"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 32,
+            "question": "Una cache ha tempo di accesso di 2 Tck e una Miss Penalty di 100 Tck e una Miss Rate del 2%. Quanto è il tempo di accesso medio?",
+            "options": [
+                "A. 3.96 Tck",
+                "B. 5.0 Tck",
+                "C. 4.5 Tck",
+                "D. 6.0 Tck"
+            ],
+            "correctAnswers": [0],
+            "section": "memorie"
+        },
+        {
+            "id": 33,
+            "question": "La località temporale ci dice che",
+            "options": [
+                "A. È probabile che un dato venga usato una sola volta",
+                "B. È probabile che un dato usato in un istante possa essere riusato in un tempo localmente vicino",
+                "C. Un dato è sempre riutilizzato immediatamente dopo l’uso",
+                "D. La cache non influisce sulla località temporale"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 34,
+            "question": "Una cache ha tempo di accesso di 4 Tck e una Miss Penalty di 200 Tck e una Miss Rate del 8%. Quanto è il tempo di accesso medio?",
+            "options": [
+                "A. 10.5 Tck",
+                "B. 15.0 Tck",
+                "C. 19.68 Tck",
+                "D. 25.0 Tck"
+            ],
+            "correctAnswers": [2],
+            "section": "memorie"
+        },
+        {
+            "id": 35,
+            "question": "Una CPU con 32 bit di indirizzo ha una cache con linee da 64 byte, di capacità di 2 Mbyte, way associative, inizialmente vuota. Deve accedere alla memoria leggendo in un loop un vettore di byte a[i] e poi in un secondo loop un vettore di byte b[i], entrambi di 256 elementi. a si trova all’indirizzo A030F040; b si trova all’indirizzo A0F0F100; al termine la cache avrà",
+            "options": [
+                "A. Solo gli elementi di b saranno in cache",
+                "B. Tutti gli elementi saranno in cache, con i valori di a e b in linee diverse ed in set differenti",
+                "C. Tutti gli elementi saranno in cache ma con conflitti tra a e b",
+                "D. Solo gli elementi di a saranno in cache"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 36,
+            "question": "Sia data una cache di capacità di 128Kbyte a 2-way associative con blocchi di 16Byte. Quanti sono i bit di tag, index e offset se lo spazio di indirizzamento è a 4Gbyte?",
+            "options": [
+                "A. 15, 13, 4",
+                "B. 16, 12, 4",
+                "C. 17, 11, 4",
+                "D. 18, 10, 4"
+            ],
+            "correctAnswers": [1],
+            "section": "memorie"
+        },
+        {
+            "id": 37,
+            "question": "Sia data una cache di capacità di 128Kbyte a 4-way associative con blocchi di 16Byte. Due byte che in memoria si trovano agli indirizzi F0340035h e F1340025h",
+            "options": [
+                "A. Si trovano nello stesso set e nella stessa linea",
+                "B. Si trovano in set diversi ma nella stessa linea",
+                "C. Si trovano nello stesso set ma in linee diverse",
+                "D. Si trovano in due set diversi e in due linee diverse"
+            ],
+            "correctAnswers": [3],
+            "section": "memorie"
+        }
     ]
 }
