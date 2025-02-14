@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
@@ -18,8 +18,6 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
   const [isTimerRunning, setIsTimerRunning] = useState(true)
   const [startTime, setStartTime] = useState<number>(Date.now())
   const [totalTime, setTotalTime] = useState<number | null>(null)
-
-  console.log(section);
 
   const handleAnswerChange = (optionIndex: number) => {
     setUserAnswers((prev) => {
@@ -50,6 +48,21 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
       setCurrentQuestion((prev) => prev - 1)
     }
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (event.key === "ArrowLeft" && currentQuestion > 0) {
+        handlePrevious();
+      } else if (event.key === "ArrowRight" && currentQuestion < questions.length - 1) {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentQuestion, handlePrevious, handleNext, questions.length]);
 
   const calculateScores = () => {
     const newScores = questions.map((question, index) => {
