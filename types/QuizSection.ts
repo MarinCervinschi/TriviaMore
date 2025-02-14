@@ -1,6 +1,9 @@
 
 export default interface QuizSection {
+    _id?: string;
     id: string;
-    name: string;
+    classId: string;
+    sectionName: string;
     icon?: React.ReactNode;
+    __v?: number;
 }

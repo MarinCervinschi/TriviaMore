@@ -1,15 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
-import path from 'path';
+import ClassModel from '@/models/ClassModel';
+import dbConnect from '@/lib/mongodb';
+import QuizClass from '@/types/QuizClass';
 
+// Connect to MongoDB
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const filePath = path.join(process.cwd(), 'quiz-data', 'classes.json');
-  
+  await dbConnect(); // Ensure database connection
+
   try {
-    const fileContent = await fs.promises.readFile(filePath, 'utf8');
-    const jsonData = JSON.parse(fileContent);
-    res.status(200).json(jsonData.classes);
+    const classes = await ClassModel.find({}).lean() as QuizClass[]; // Fetch all class data
+    res.status(200).json(classes);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to read file' });
+    res.status(500).json({ error: 'Failed to fetch data from database' });
   }
 }
