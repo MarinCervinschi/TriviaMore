@@ -1,8 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs/promises';
-import path from 'path';
+import dbConnect from '@/lib/mongodb';
+import ClassModel from '@/models/ClassModel';
+import SectionModel from '@/models/SectionModel';
+import QuizClass from '@/types/QuizClass';
+import QuizSection from '@/types/QuizSection';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await dbConnect(); // Ensure database connection
+
   const quizClass = req.query.quizClass as string;
 
   if (!quizClass) {
@@ -10,29 +15,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const sectionsPath = path.join(process.cwd(), 'quiz-data', 'sections.json');
-    const classesPath = path.join(process.cwd(), 'quiz-data', 'classes.json');
-
-    // Read JSON files asynchronously
-    const [sectionsFileContent, classesFileContent] = await Promise.all([
-      fs.readFile(sectionsPath, 'utf8'),
-      fs.readFile(classesPath, 'utf8'),
-    ]);
-
-    // Parse JSON data
-    const sectionsData = JSON.parse(sectionsFileContent);
-    const classesData = JSON.parse(classesFileContent).classes;
-
-    // Find class data
-    const classData = classesData.find((cls: any) => cls.id === quizClass);
+    // Fetch class data from MongoDB
+    const classData = await ClassModel.findOne({ id: quizClass }).lean() as QuizClass;
 
     if (!classData) {
       return res.status(404).json({ message: 'Class not found' });
     }
 
-    // Check if sections exist for the given class
-    const classSections = sectionsData[quizClass];
-    if (!classSections) {
+    // Fetch sections associated with this class
+    const classSections = await SectionModel.find({ classId: quizClass }) as QuizSection[];
+
+    if (!classSections.length) {
       return res.status(404).json({ message: 'Sections not found for the given class' });
     }
 

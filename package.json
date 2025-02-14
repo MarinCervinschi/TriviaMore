@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "plop": "plop"
+    "plop": "plop",
+    "models": "ts-node ./scripts/createModels.ts"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.4",
@@ -27,11 +28,13 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.3.2",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "hamburger-react": "^2.5.0",
     "ldrs": "^1.0.2",
     "lucide-react": "^0.469.0",
+    "mongoose": "^8.10.0",
     "next": "^15.1.5",
     "postcss": "^8.5.1",
     "radix-ui": "^1.0.1",
@@ -42,6 +45,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.3.2",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "typescript": "5.0.4"
   },
   "devDependencies": {

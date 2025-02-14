@@ -59,7 +59,7 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
   const calculateScores = () => {
     const newScores = questions.map((question, index) => {
       const userAnswer = userAnswers[index]
-      const correctAnswers = question.correctAnswers
+      const correctAnswers = question.answer
 
       const correctGuesses = userAnswer.filter((answer) => correctAnswers.includes(answer)).length
       const incorrectGuesses = userAnswer.filter((answer) => !correctAnswers.includes(answer)).length
@@ -78,7 +78,7 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className='flex text-xl items-center font-bold'>{section.icon}&nbsp;{section.name} Quiz Results</CardTitle>
+          <CardTitle className='flex text-xl items-center font-bold'>{section.icon}&nbsp;{section.sectionName} Quiz Results</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex justify-between items-center mb-4">
@@ -88,12 +88,12 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
             {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
           </div>
           {questions.map((question, index) => (
-            <div key={`${question.section}-${question.id}`} className="mb-6">
+            <div key={`${question._id}`} className="mb-6">
               <p className="font-medium mb-2">{question.question}</p>
-              <p className="text-sm text-gray-600 mb-2">Section: {question.section}</p>
+              <p className="text-sm text-gray-600 mb-2">Section: {question.sectionId}</p>
               <p className="text-sm font-semibold mb-2">Your score: {scores[index].toFixed(2)}</p>
               {question.options.map((option, optionIndex) => {
-                const isCorrect = question.correctAnswers.includes(optionIndex)
+                const isCorrect = question.answer.includes(optionIndex)
                 const isSelected = userAnswers[index].includes(optionIndex)
                 let textColorClass = "";
                 if (isSelected) {
@@ -126,13 +126,13 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
       <CardHeader className="flex flex-col items-center justify-between sm:flex-row space-x-9">
         <CardTitle className='flex text-xl items-center font-bold '>
           {section.icon} &nbsp;
-          {section.name} - Question {currentQuestion + 1} of {questions.length}
+          {section.sectionName} - Question {currentQuestion + 1} of {questions.length}
         </CardTitle>
         <Timer isRunning={isTimerRunning} />
       </CardHeader>
       <CardContent>
         <p className="text-lg font-medium mb-4">{question.question}</p>
-        {section.id === "random" && <p className="text-sm text-gray-600 mb-4">Section: {question.section}</p>}
+        {section.id === "random" && <p className="text-sm text-gray-600 mb-4">Section: {question.sectionId}</p>}
         {question.options.map((option, index) => (
           <div key={index} className="flex items-center space-x-2 mb-2">
             <Checkbox
