@@ -4,9 +4,9 @@ import ClassModel from '@/models/ClassModel';
 import SectionModel from '@/models/SectionModel';
 import QuestionModel from '@/models/QuestionModel';
 
-import QuizQuestion from '@/types/QuizQuestion';
-import QuizSection from '@/types/QuizSection';
-import QuizClass from '@/types/QuizClass';
+import QuizQuestion from "@/types/QuizQuestion";
+import QuizSection from "@/types/QuizSection";
+import QuizClass from "@/types/QuizClass";
 
 import { getRandomQuestions, shuffleArray } from '@/lib/utils';
 

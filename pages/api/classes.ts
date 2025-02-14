@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ClassModel from '@/models/ClassModel';
 import dbConnect from '@/lib/mongodb';
-import QuizClass from '@/types/QuizClass';
+import QuizClass from "@/types/QuizClass";
 
 export default async function hundler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect(); // Ensure database connection

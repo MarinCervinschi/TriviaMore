@@ -3,8 +3,8 @@ import dbConnect from '@/lib/mongodb';
 import ClassModel from '@/models/ClassModel';
 import SectionModel from '@/models/SectionModel';
 
-import QuizClass from '@/types/QuizClass';
-import QuizSection from '@/types/QuizSection';
+import QuizClass from "@/types/QuizClass";
+import QuizSection from "@/types/QuizSection";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect(); // Ensure database connection

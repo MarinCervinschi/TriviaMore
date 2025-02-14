@@ -2,10 +2,10 @@
 
 import './globals.css'
 import { Inter } from 'next/font/google'
-import Loader from './components/Loader'
 import { useEffect, useState } from 'react'
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Loader from "@/components/Loader"
 
 const inter = Inter({ subsets: ['latin'] })
 

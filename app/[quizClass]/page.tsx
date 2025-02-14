@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { notFound, useParams } from "next/navigation"
-import { BiLogOut } from "react-icons/bi";
+import { BiLogOut } from "react-icons/bi"
 import Link from 'next/link'
 
-import SectionSelector from "@components/quiz/SectionSelector"
-import DefaultLayout from "@components/Layouts/DefaultLayout"
-import Loader from '@components/Loader'
-import SplitText from '@animations/SplitText';
-import AnimatedContent from '@animations/AnimatedContent';
-import iconMap from '@/lib/iconMap'
+import SectionSelector from "@/components/SectionSelector"
+import DefaultLayout from "@/components/Layouts/DefaultLayout"
+import Loader from "@/components/Loader"
+import SplitText from "@/animations/SplitText"
+import AnimatedContent from "@/animations/AnimatedContent"
+import iconMap from "@/lib/iconMap"
 
-import QuizClass from '@/types/QuizClass'
-import QuizSection from '@/types/QuizSection'
+import QuizClass from "@/types/QuizClass"
+import QuizSection from "@/types/QuizSection"
 
 export default function QuizClassPage() {
     const params = useParams();
