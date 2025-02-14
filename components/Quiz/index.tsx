@@ -1,19 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import QuizSection from "@/types/QuizSection"
-import QuizQuestion from "@/types/QuizQuestion"
-import { Checkbox } from "@components/ui/checkbox"
-import { Button } from "@components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@components/ui/card"
-import { Timer } from "./Timer"
 import Link from "next/link"
+import { useState } from "react"
 
-interface QuizProps {
-  section: QuizSection
-  questions: QuizQuestion[]
-  quizClassId: string
-}
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { Timer } from "@/components/Timer"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
+import QuizProps from "@/types/QuizProps"
 
 export function Quiz({ section, questions, quizClassId }: QuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)

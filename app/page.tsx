@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react'
 
-import DefaultLayout from "@components/Layouts/DefaultLayout"
-import ClassSelector from "@components/ClassSelector"
-import SplitText from "@animations/SplitText";
-import AnimatedContent from '@animations/AnimatedContent'
-import Loader from '@components/Loader'
+import Loader from "@/components/Loader"
+import ClassSelector from "@/components/ClassSelector"
+import DefaultLayout from "@/components/Layouts/DefaultLayout"
 
-import QuizClass from '@/types/QuizClass'
-import iconMap from '@/lib/iconMap'
+import SplitText from "@/components/animations/SplitText";
+import AnimatedContent from "@/components/animations/AnimatedContent"
 
+import iconMap from "@/lib/iconMap"
+import QuizClass from "@/types/QuizClass"
 
 export default function Home() {
   const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);

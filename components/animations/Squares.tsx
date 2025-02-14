@@ -1,9 +1,3 @@
-/*
-	jsrepo 1.32.1
-	Installed from https://reactbits.dev/ts/tailwind/
-	07-02-2025
-*/
-
 import React, { useRef, useEffect, useState } from 'react';
 
 type CanvasStrokeStyle = string | CanvasGradient | CanvasPattern;

@@ -1,9 +1,3 @@
-/*
-	jsrepo 1.32.1
-	Installed from https://reactbits.dev/ts/tailwind/
-	07-02-2025
-*/
-
 import { useRef, useEffect, useState, ReactNode } from "react";
 import { useSpring, animated, SpringConfig } from "@react-spring/web";
 

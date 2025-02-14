@@ -1,7 +1,8 @@
-import { Button } from "@components/ui/button"
-import SectionSelectorProps from "@/types/SectionSelectorProps"
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+import SectionSelectorProps from "@/types/SectionSelectorProps"
 import iconMap from "@/lib/iconMap"
 
 export default function SectionSelector({ sections, quizClassId }: SectionSelectorProps) {

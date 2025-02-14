@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import QuizSection from '@/types/QuizSection';
+import QuizSection from "@/types/QuizSection";
 
 const SectionSchema = new Schema({
     id: { type: String, required: true, unique: true },

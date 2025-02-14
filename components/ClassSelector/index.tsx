@@ -1,5 +1,5 @@
-import { Button } from "@components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import QuizClass from "@/types/QuizClass"
 import Link from "next/link"
 

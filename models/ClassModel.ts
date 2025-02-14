@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import QuizClass from '@/types/QuizClass';
+import QuizClass from "@/types/QuizClass";
 
 const ClassSchema = new Schema({
     id: { type: String, required: true, unique: true },
