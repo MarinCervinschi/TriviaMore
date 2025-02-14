@@ -3,8 +3,7 @@ import ClassModel from '@/models/ClassModel';
 import dbConnect from '@/lib/mongodb';
 import QuizClass from '@/types/QuizClass';
 
-// Connect to MongoDB
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function hundler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect(); // Ensure database connection
 
   try {

@@ -29,13 +29,7 @@ export default function QuizPage() {
 
         const fetchData = async (quizClassId: string, sectionId: string) => {
             try {
-                const response = await fetch(`/api/class/${quizClassId}/section/${sectionId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
+                const response = await fetch(`/api/questions?quizClass=${quizClassId}&quizSection=${sectionId}`);
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(data.message || response.statusText);
