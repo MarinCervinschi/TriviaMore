@@ -19,7 +19,7 @@ model Section {
   id          String     @id @default(uuid())
   sectionName String
   icon        String?
-  class       Class      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class       Class      @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   classId     String     
   questions   Question[]
 }
@@ -29,8 +29,8 @@ model Question {
   question  String
   options   String[] // Array di opzioni
   answer    Int[] // Array di risposte corrette
-  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sectionId String   
-  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   classId   String   
 }
