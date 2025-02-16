@@ -1,36 +1,74 @@
-import mongoose from 'mongoose';
-import dbConnect from '../lib/mongodb';
-import SectionModel from '../models/SectionModel';
-import QuestionModel from '../models/QuestionModel';
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+import QuizClass from '@/types/QuizClass';
+import sections from './sections';
+import questions from './data';
 
-import QuizQuestion from '../types/QuizQuestion';
-import QuizSection from '../types/QuizSection';
+const prisma = new PrismaClient();
 
-
-const sections: QuizSection[] = [
-  { id: 'dishi', classId: 'calcolatori', sectionName: 'Dischi' },
+const classes: QuizClass[] = [
+    {
+        "name": "Tecnologie Web",
+        "icon": "TbWorldCode"
+    },
 ];
 
-import quizQuestions from './data';
-
-// Function to seed database
-const seedDatabase = async () => {
-  await dbConnect(); // Connect to MongoDB
-
+const seedSections = async () => {
   try {
-    console.log('🌱 Seeding database...');
-
-    // Insert new data
-    await SectionModel.insertMany(sections);
-    await QuestionModel.insertMany(quizQuestions);
-
-    console.log('✅ Database initialized successfully!');
-    mongoose.connection.close();
+    for (const sct of sections) {
+      if (typeof sct.icon !== 'string') {
+        return;
+      }
+      await prisma.section.create({
+        data: { sectionName: sct.sectionName, icon: sct.icon, class: { connect: { id: sct.classId } } }
+      });
+    }
+    console.log('Sections seeded successfully');
   } catch (error) {
-    console.error('❌ Error initializing database:', error);
-    mongoose.connection.close();
+    console.error('Error seeding sections:', error);
   }
 };
 
-// Run the seed function
-seedDatabase();
+const seedClasses = async () => {
+  try {
+    for (const cls of classes) {
+      if (typeof cls.icon !== 'string') {
+        return;
+      }
+      await prisma.class.create({
+        data: { name: cls.name, icon: cls.icon }
+      });
+    }
+    console.log('Classes seeded successfully');
+  } catch (error) {
+    console.error('Error seeding classes:', error);
+  }
+};
+
+const seedQuestions = async () => {
+  try {
+    for (const q of questions) {
+      if (typeof q.question !== 'string' || !Array.isArray(q.options) || !Array.isArray(q.answer)) {
+        return;
+      }
+      console.log(q);
+      await prisma.question.create({
+        data: {
+          question: q.question,
+          options: q.options,
+          answer: q.answer,
+          section: { connect: { id: q.sectionId } },
+          class: { connect: { id: q.classId } },
+        }
+      });
+    }
+    console.log('Questions seeded successfully');
+  } catch (error) {
+    console.error('Error seeding questions:', error);
+  }
+};
+
+
+//seedClasses();
+//seedSections();
+//seedQuestions();

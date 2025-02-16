@@ -19,6 +19,7 @@ export default function QuizClassPage() {
     const params = useParams();
     const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [sections, setSections] = useState<QuizSection[]>([] as QuizSection[]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!params?.quizClass) {
@@ -26,7 +27,7 @@ export default function QuizClassPage() {
         }
         const fetchSections = async (quizClassId: string) => {
             try {
-                const response = await fetch(`/api/section?quizClass=${quizClassId}`);
+                const response = await fetch(`/api/section?classId=${quizClassId}`);
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(data.message || response.statusText);
@@ -40,6 +41,7 @@ export default function QuizClassPage() {
 
                 setQuizClass(data.class);
                 setSections(formattedData);
+                setLoading(false);
             } catch (error) {
                 console.error(error);
             }
@@ -47,9 +49,17 @@ export default function QuizClassPage() {
         fetchSections(params.quizClass as string);
     }, [params]);
 
-    if (!sections.length) {
+    if (loading) {
         return <Loader />;
     }
+
+    const getSectionSelector = () => {
+        if (!sections.length) {
+            return <p className="text-red-500 text-xl">No sections found</p>;
+        }
+        return <SectionSelector sections={sections} quizClassId={quizClass.id || 'id'} />;
+    }
+
 
     return (
         <DefaultLayout>
@@ -79,7 +89,7 @@ export default function QuizClassPage() {
                     scale={1.1}
                     threshold={0.2}
                 >
-                    <SectionSelector sections={sections} quizClassId={quizClass.id} />
+                    {getSectionSelector()}
                 </AnimatedContent>
             </div>
         </DefaultLayout>

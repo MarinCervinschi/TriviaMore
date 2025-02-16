@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
@@ -32,7 +32,24 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
     })
   }
 
-  const handleNext = () => {
+  const calculateScores = useCallback(() => {
+    const newScores = questions.map((question, index) => {
+      const userAnswer = userAnswers[index]
+      const correctAnswers = question.answer
+
+      const correctGuesses = userAnswer.filter((answer) => correctAnswers.includes(answer)).length
+      const incorrectGuesses = userAnswer.filter((answer) => !correctAnswers.includes(answer)).length
+
+      const totalCorrectAnswers = correctAnswers.length
+      const score = Math.max(0, correctGuesses / totalCorrectAnswers - incorrectGuesses / totalCorrectAnswers)
+
+      return Math.round(score * 100) / 100 // Round to 2 decimal places
+    })
+
+    setScores(newScores)
+  }, [questions, userAnswers])
+
+  const handleNext = useCallback(() => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
@@ -41,13 +58,13 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
       setIsTimerRunning(false)
       setTotalTime(Math.floor((Date.now() - startTime) / 1000))
     }
-  }
+  }, [currentQuestion, questions.length, calculateScores, startTime])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentQuestion > 0) {
       setCurrentQuestion((prev) => prev - 1)
     }
-  }
+  }, [currentQuestion])
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
@@ -64,23 +81,6 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
     };
   }, [currentQuestion, handlePrevious, handleNext, questions.length]);
 
-  const calculateScores = () => {
-    const newScores = questions.map((question, index) => {
-      const userAnswer = userAnswers[index]
-      const correctAnswers = question.answer
-
-      const correctGuesses = userAnswer.filter((answer) => correctAnswers.includes(answer)).length
-      const incorrectGuesses = userAnswer.filter((answer) => !correctAnswers.includes(answer)).length
-
-      const totalCorrectAnswers = correctAnswers.length
-      const score = Math.max(0, correctGuesses / totalCorrectAnswers - incorrectGuesses / totalCorrectAnswers)
-
-      return Math.round(score * 100) / 100 // Round to 2 decimal places
-    })
-
-    setScores(newScores)
-  }
-
   if (showResults) {
     const totalScore = scores.reduce((sum, score) => sum + score, 0)
     return (
@@ -96,9 +96,9 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
             {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
           </div>
           {questions.map((question, index) => (
-            <div key={`${question._id}`} className="mb-6">
+            <div key={`${question.id}`} className="mb-6">
               <p className="font-medium mb-2">{question.question}</p>
-              <p className="text-sm text-gray-600 mb-2">Section: {question.sectionId}</p>
+              <p className="text-sm text-gray-600 mb-2">Section: {section.sectionName}</p>
               <p className="text-sm font-semibold mb-2">Your score: {scores[index].toFixed(2)}</p>
               {question.options.map((option, optionIndex) => {
                 const isCorrect = question.answer.includes(optionIndex)
