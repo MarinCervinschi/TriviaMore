@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Class {
+  id        String     @id @default(uuid())
+  name      String
+  icon      String?
+  sections  Section[]
+  questions Question[]
+}
+
+model Section {
+  id          String     @id @default(uuid())
+  sectionName String
+  icon        String?
+  class       Class      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId     String     
+  questions   Question[]
+}
+
+model Question {
+  id        String   @id @default(uuid())
+  question  String
+  options   String[] // Array di opzioni
+  answer    Int[] // Array di risposte corrette
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId String   
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId   String   
+}

@@ -21,6 +21,7 @@ export default function QuizPage() {
     const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [section, setSection] = useState<QuizSection>({} as QuizSection);
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!params?.quizClass || !params?.section) {
@@ -29,7 +30,7 @@ export default function QuizPage() {
 
         const fetchData = async (quizClassId: string, sectionId: string) => {
             try {
-                const response = await fetch(`/api/questions?quizClass=${quizClassId}&quizSection=${sectionId}`);
+                const response = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${sectionId}`);
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(data.message || response.statusText);
@@ -44,6 +45,7 @@ export default function QuizPage() {
                 setQuizClass(data.quizClass);
                 setSection(formattedData);
                 setQuestions(data.questions);
+                setLoading(false);
             } catch (error) {
                 console.error(error);
             }
@@ -52,8 +54,15 @@ export default function QuizPage() {
         fetchData(params.quizClass as string, params.section as string);
     }, [params]);
 
-    if (!section || !questions.length) {
+    if (loading) {
         return <Loader />;
+    }
+
+    const getQuiz = () => {
+        if (!questions.length) {
+            return <p className="text-red-500 text-xl">No questions found</p>;
+        }
+        return <Quiz section={section} questions={questions} quizClassId={quizClass.id || 'id'} />;
     }
 
     return (
@@ -84,7 +93,7 @@ export default function QuizPage() {
                     scale={1.1}
                     threshold={0.2}
                 >
-                    <Quiz section={section} questions={questions} quizClassId={quizClass.id} />
+                    {getQuiz()}
                 </AnimatedContent>
             </div>
         </DefaultLayout>
