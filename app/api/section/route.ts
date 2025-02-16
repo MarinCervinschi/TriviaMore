@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse as res } from 'next/server';
+import { serializeId } from '@/lib/utils';
 
 const prisma = new PrismaClient();
 
@@ -49,8 +50,10 @@ export async function POST(req: Request) {
             return res.json({ message: 'Class not found' }, { status: 404 });
         }
 
+        const id = serializeId(sectionName);
         await prisma.section.create({
             data: {
+                id,
                 sectionName,
                 icon,
                 class: { connect: { id: classId } }
