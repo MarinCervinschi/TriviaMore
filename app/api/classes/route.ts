@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse as res } from 'next/server';
+import { serializeId } from '@/lib/utils';
 
 const prisma = new PrismaClient();
 
@@ -25,8 +26,9 @@ export async function POST(req: Request) {
     }
 
     try {
+        const id = serializeId(name);
         await prisma.class.create({
-            data: { name, icon }
+            data: { id, name, icon }
         });
         return res.json({ message: 'Class created successfully' });
     } catch (error) {

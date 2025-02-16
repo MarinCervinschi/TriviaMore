@@ -6,6 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function serializeId(id: string): string {
+  return id.toLocaleLowerCase().replace(" ", "-");
+}
+
 export function shuffleArray(array: QuizQuestion[]): QuizQuestion[] {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
