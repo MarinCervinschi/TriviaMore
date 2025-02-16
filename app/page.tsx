@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from 'react'
 
-import DefaultLayout from "@components/Layouts/DefaultLayout"
-import ClassSelector from "@components/ClassSelector"
-import SplitText from "@animations/SplitText";
-import AnimatedContent from '@animations/AnimatedContent'
-import Loader from '@components/Loader'
+import Loader from "@/components/Loader"
+import ClassSelector from "@/components/ClassSelector"
+import DefaultLayout from "@/components/Layouts/DefaultLayout"
 
-import QuizClass from '@/types/QuizClass'
-import iconMap from '@/lib/iconMap'
+import SplitText from "@/components/animations/SplitText";
+import AnimatedContent from "@/components/animations/AnimatedContent"
 
+import iconMap from "@/lib/iconMap"
+import QuizClass from "@/types/QuizClass"
 
 export default function Home() {
   const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -34,6 +35,7 @@ export default function Home() {
           icon: iconMap[row.icon]
         }));
         setQuizData(formattedData);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -41,8 +43,15 @@ export default function Home() {
     fetchQuizData();
   }, []);
 
-  if (!quizData.length) {
+  if (loading) {
     return <Loader />;
+  }
+
+  const getClassSelector = () => {
+    if (!quizData.length) {
+      return <p className="text-red-500 text-xl">No classes found</p>;
+    }
+    return <ClassSelector classes={quizData} />;
   }
 
   return (
@@ -68,7 +77,7 @@ export default function Home() {
           scale={1.1}
           threshold={0.2}
         >
-          <ClassSelector classes={quizData} />
+          {getClassSelector()}
         </AnimatedContent>
       </div>
     </DefaultLayout>
