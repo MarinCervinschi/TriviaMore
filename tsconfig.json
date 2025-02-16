@@ -21,12 +21,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@types/*": ["./types/*"],
-      "@components/*": ["./app/components/*"],
-      "@animations/*": ["./app/components/animations/*"],
-      "@atoms/*": ["./app/components/atoms/*"],
-      "@molecules/*": ["./app/components/molecules/*"],
-      "@organisms/*": ["./app/components/organisms/*"]
+      "@/animations/*": ["./components/animations/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "models/**/*.ts", "lib/**/*.ts", ".env.local"],
