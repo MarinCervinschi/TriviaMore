@@ -19,6 +19,13 @@ import { FaShapes } from "react-icons/fa";
 import { MdOutlineMemory } from "react-icons/md";
 import { PiFloppyDiskBold } from "react-icons/pi";
 import { MdOutlineQuiz } from "react-icons/md";
+import { GrSatellite } from "react-icons/gr";
+import { TfiWrite } from "react-icons/tfi";
+import { LuBinary } from "react-icons/lu";
+import { AiOutlineException } from "react-icons/ai";
+
+
+
 
 const iconMap: { [key: string]: JSX.Element } = {
     default: <MdOutlineQuiz />,
@@ -51,6 +58,10 @@ const iconMap: { [key: string]: JSX.Element } = {
     FaShapes: <FaShapes />,
     MdOutlineMemory: <MdOutlineMemory />,
     PiFloppyDiskBold: <PiFloppyDiskBold />,
+    GrSatellite: <GrSatellite />,
+    TfiWrite: <TfiWrite />,
+    LuBinary: <LuBinary />,
+    AiOutlineException: <AiOutlineException />,
 };
 
 export default iconMap
