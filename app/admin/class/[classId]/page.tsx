@@ -12,6 +12,7 @@ import iconMap from "@/lib/iconMap"
 import Loader from "@/components/Loader"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import { useParams } from "next/navigation"
+import AddClassForm from "@/components/admin/AddClassForm"
 
 export default function ManageClass() {
     const params = useParams();
@@ -66,11 +67,10 @@ export default function ManageClass() {
             name: className,
             icon: classIcon,
         }
-        const method = isNewClass ? "POST" : "PUT"
 
         try {
             const response = await fetch("/api/admin/class", {
-                method: method,
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -81,8 +81,8 @@ export default function ManageClass() {
                 if (isNewClass) {
                     router.push("/admin/dashboard")
                 } else {
-                    setEditMode(false)
                 }
+                setEditMode(false)
             } else {
                 throw new Error(`Failed to ${isNewClass ? "create" : "update"} class`)
             }
@@ -149,49 +149,6 @@ export default function ManageClass() {
         }
     }
 
-    const newClass = () => {
-        return <>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="class-id">Class ID</Label>
-                    <Input
-                        id="class-id"
-                        value={classId}
-                        onChange={(e) => setClassId(e.target.value)}
-                        placeholder="Enter class ID (e.g., web-development)"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="class-name">Class Name</Label>
-                    <Input
-                        id="class-name"
-                        value={className}
-                        onChange={(e) => setClassName(e.target.value)}
-                        placeholder="Enter class name"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="class-icon" className="flex gap-1 items-center">Class Icon {iconMap["default"]}</Label>
-                    <Input
-                        id="class-icon"
-                        value={classIcon}
-                        onChange={(e) => setClassIcon(e.target.value)}
-                        placeholder="Enter class icon"
-                        required 
-                    />
-                </div>
-                <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push("/admin/dashboard")}>Cancel</Button>
-                    <Button type="submit">
-                        Create Class
-                    </Button>
-                </div>
-            </form>
-        </>
-    }
-
     return (
         <DefaultLayout>
             <div className="container mx-auto p-4">
@@ -206,7 +163,7 @@ export default function ManageClass() {
                     </CardHeader>
                     <CardContent>
                         {!isNewClass && editClass()}
-                        {isNewClass && newClass()}
+                        {isNewClass && <AddClassForm />}
                     </CardContent>
                 </Card>
 
