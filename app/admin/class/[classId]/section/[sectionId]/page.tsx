@@ -144,6 +144,10 @@ export default function ManageSection() {
             return (
                 <div className="space-y-4">
                     <div className="space-y-2">
+                        <Label htmlFor="class-id">Class ID</Label>
+                        <Input id="class-id" value={params.classId} disabled />
+                    </div>
+                    <div className="space-y-2">
                         <Label htmlFor="section-name">Section Name</Label>
                         <Input id="section-name" value={sectionName} onChange={(e) => setSectionName(e.target.value)} />
                     </div>
@@ -179,6 +183,10 @@ export default function ManageSection() {
     const newSection = () => {
         return (
             <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="class-id">Class ID</Label>
+                    <Input id="class-id" value={params.classId} disabled />
+                </div>
                 <div className="space-y-2">
                     <Label htmlFor="section-id">Section ID</Label>
                     <Input
