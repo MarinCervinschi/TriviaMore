@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import QuizSection from "@/types/QuizSection"
-import QuizClass from "@/types/QuizClass"
 import iconMap from "@/lib/iconMap"
 import Loader from "@/components/Loader"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
@@ -38,7 +37,7 @@ export default function ManageClass() {
 
     const fetchClassData = async () => {
         try {
-            const response = await fetch(`/api/section?classId=${params.classId}`)
+            const response = await fetch(`/api/sections?classId=${params.classId}`)
             if (response.ok) {
                 const data = await response.json()
                 const formattedData = data.sections.map((row: any) => ({

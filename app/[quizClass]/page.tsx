@@ -29,7 +29,7 @@ export default function QuizClassPage() {
         }
         const fetchSections = async (quizClassId: string) => {
             try {
-                const response = await fetch(`/api/section?classId=${quizClassId}`);
+                const response = await fetch(`/api/sections?classId=${quizClassId}`);
                 if (!response.ok) {
                     setNameNotFound(true);
                     return;
