@@ -9,6 +9,7 @@ import QuizClass from "@/types/QuizClass"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import iconMap from "@/lib/iconMap"
 import Loader from "@/components/Loader"
+import Cookies from "js-cookie"
 
 export default function AdminDashboard() {
     const [classes, setClasses] = useState<QuizClass[]>([])
@@ -40,12 +41,9 @@ export default function AdminDashboard() {
     }
 
     const handleLogout = async () => {
-        try {
-            await fetch("/api/admin/logout", { method: "POST" })
-            router.push("/admin/login")
-        } catch (error) {
-            console.error("Logout error:", error)
-        }
+        Cookies.remove("admin_token")
+        Cookies.remove("admin_username")
+        router.push("/admin/login")
     }
 
     if (loading) {
