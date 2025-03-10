@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import QuizClass from "@/types/QuizClass"
 import iconMap from "@/lib/iconMap"
 import { useRouter } from "next/navigation"
+import { MdOutlineCancel } from "react-icons/md"
+import { IoMdCreate } from "react-icons/io"
 
 export default function AddClassForm() {
     const [classId, setClassId] = useState("")
@@ -127,9 +129,9 @@ export default function AddClassForm() {
                     </>
                 )}
                 <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push("/admin/dashboard")}>Cancel</Button>
+                    <Button variant={"outline"} onClick={() => router.push("/admin/dashboard")}>Cancel <MdOutlineCancel /></Button>
                     <Button type="submit">
-                        Create Class
+                        Create Class <IoMdCreate />
                     </Button>
                 </div>
             </div>

@@ -13,6 +13,10 @@ import Loader from "@/components/Loader"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import QuizQuestion from "@/types/QuizQuestion"
 import AddSectionForm from "@/components/admin/AddSectionForm"
+import { MdAddToPhotos, MdOutlineCancel } from "react-icons/md"
+import { LuSave } from "react-icons/lu";
+import { FiEdit3, FiDelete } from "react-icons/fi";
+import { IoMdArrowRoundBack } from "react-icons/io"
 
 export default function ManageSection() {
     const params = useParams();
@@ -153,9 +157,9 @@ export default function ManageSection() {
                         <Input id="section-icon" value={sectionIcon} onChange={(e) => setSectionIcon(e.target.value)} />
                     </div>
                     <div className="space-x-2">
-                        <Button onClick={handleSubmit}>Save</Button>
+                        <Button onClick={handleSubmit}>Save <LuSave/></Button>
                         <Button variant="outline" onClick={() => setEditMode(false)}>
-                            Cancel
+                            Cancel <MdOutlineCancel />
                         </Button>
                     </div>
                 </div>
@@ -167,9 +171,9 @@ export default function ManageSection() {
                         <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode}{sectionName}</span>
                     </p>
                     <div className="space-x-2">
-                        <Button onClick={() => setEditMode(true)}>Edit</Button>
+                        <Button onClick={() => setEditMode(true)}>Edit <FiEdit3/></Button>
                         <Button variant="destructive" onClick={handleDeleteSection}>
-                            Delete Section
+                            Delete <FiDelete/>
                         </Button>
                     </div>
                 </div>
@@ -182,7 +186,7 @@ export default function ManageSection() {
             <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold flex gap-1">{isNewSection ? "Add new Section: ": "Manage Section:"} <span className="flex gap-1 items-center">{iconNode}{sectionName}</span></h1>
-                    <Button onClick={() => router.push(`/admin/class/${params.classId}`)}>Back to Class</Button>
+                    <Button onClick={() => router.push(`/admin/class/${params.classId}`)}><IoMdArrowRoundBack /> Back to Class</Button>
                 </div>
                 <Card className="mb-6">
                     <CardHeader>
@@ -219,11 +223,11 @@ export default function ManageSection() {
                                                     <div className="mt-4 space-x-2">
                                                         <Button asChild>
                                                             <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/${question.id}`}>
-                                                                Edit Question
+                                                                Edit <FiEdit3/>
                                                             </Link>
                                                         </Button>
                                                         <Button variant="destructive" onClick={() => handleDeleteQuestion(question.id as string)}>
-                                                            Delete Question
+                                                            Delete <FiDelete/>
                                                         </Button>
                                                     </div>
                                                 </CardContent>
@@ -236,7 +240,7 @@ export default function ManageSection() {
                             </CardContent>
                         </Card>
                         <Button asChild>
-                            <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/new`}>Add New Question</Link>
+                            <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/new`}>Add New Question <MdAddToPhotos/></Link>
                         </Button>
                     </>
                 }
