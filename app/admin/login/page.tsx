@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
+import Cookies from "js-cookie"
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("")
@@ -27,6 +28,9 @@ export default function AdminLogin() {
       })
 
       if (response.ok) {
+        const { token } = await response.json()
+        Cookies.set("admin_token", token, { expires: 10 }) // expires in 1 day
+        Cookies.set("admin_username", username, { expires: 10 }) // expires in 1 day
         router.push("/admin/dashboard")
       } else {
         alert("Invalid credentials")
