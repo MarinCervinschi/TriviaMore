@@ -1,18 +1,20 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import Loader from "@/components/Loader"
+import AddClassForm from "@/components/admin/AddClassForm"
+import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
+
 import QuizSection from "@/types/QuizSection"
 import iconMap from "@/lib/iconMap"
-import Loader from "@/components/Loader"
-import DefaultLayout from "@/components/Layouts/DefaultLayout"
-import { useParams } from "next/navigation"
-import AddClassForm from "@/components/admin/AddClassForm"
+
 import { MdAddToPhotos, MdManageSearch, MdOutlineCancel } from "react-icons/md";
 import { LuSave } from "react-icons/lu"
 import { FiEdit3, FiDelete } from "react-icons/fi";
@@ -31,6 +33,30 @@ export default function ManageClass() {
     const router = useRouter()
 
     useEffect(() => {
+        const fetchClassData = async () => {
+            try {
+                const response = await fetch(`/api/sections?classId=${params.classId}`)
+                if (response.ok) {
+                    const data = await response.json()
+                    const formattedData = data.sections.map((row: any) => ({
+                        ...row,
+                        icon: iconMap[row.icon]
+                    }));
+                    setSections(formattedData)
+                    setClassId(data.class.id)
+                    setClassName(data.class.name)
+                    setClassIcon(data.class.icon)
+                    setIconNode(iconMap[data.class.icon])
+                    setLoading(false)
+                } else {
+                    throw new Error("Failed to fetch class data")
+                }
+            } catch (error) {
+                console.error("Error fetching class data:", error)
+                alert("Failed to load class data. Please try again.")
+            }
+        }
+
         if (params.classId === "new") {
             setIsNewClass(true)
             setLoading(false)
@@ -39,30 +65,6 @@ export default function ManageClass() {
             fetchClassData()
         }
     }, [params.classId])
-
-    const fetchClassData = async () => {
-        try {
-            const response = await fetch(`/api/sections?classId=${params.classId}`)
-            if (response.ok) {
-                const data = await response.json()
-                const formattedData = data.sections.map((row: any) => ({
-                    ...row,
-                    icon: iconMap[row.icon]
-                }));
-                setSections(formattedData)
-                setClassId(data.class.id)
-                setClassName(data.class.name)
-                setClassIcon(data.class.icon)
-                setIconNode(iconMap[data.class.icon])
-                setLoading(false)
-            } else {
-                throw new Error("Failed to fetch class data")
-            }
-        } catch (error) {
-            console.error("Error fetching class data:", error)
-            alert("Failed to load class data. Please try again.")
-        }
-    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
