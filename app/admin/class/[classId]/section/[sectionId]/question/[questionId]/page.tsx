@@ -77,18 +77,18 @@ export default function ManageQuestion() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        let data = {} as QuizQuestion
+        let data = {} as QuizQuestion[]
 
         if (isJsonMode) {
             try {
-                data = JSON.parse(jsonData)
+                data = JSON.parse(jsonData) as QuizQuestion[]
             } catch (error) {
                 console.error("Invalid JSON:", error)
                 alert("Invalid JSON data: " + error)
                 return
             }
         } else {
-            data = question
+            data = [question]
         }
 
         try {
@@ -103,11 +103,12 @@ export default function ManageQuestion() {
             if (response.ok) {
                 router.push(`/admin/class/${params.classId}/section/${params.sectionId}`)
             } else {
-                throw new Error("Failed to save question")
+                const res = await response.json()
+                throw new Error(res.messagge + res.error)
             }
         } catch (error) {
             console.error("Error saving question:", error)
-            alert("Failed to save question. Please try again.")
+            alert("Failed to save question. Please try again." + error)
         }
     }
 
@@ -139,18 +140,20 @@ export default function ManageQuestion() {
                                         <div className="space-y-2">
                                             <Label>Example:</Label>
                                             <pre className="bg-gray-100 p-2 rounded">
-                                                {`{
-    "classId": "${params.classId}",
-    "sectionId": "${params.sectionId}",
-    "question": "What does the span tag in HTML do?",
-    "options": [
-        "Defines a hyperlink",
-        "Defines a section in a document",
-        "Defines a paragraph",
-        "Defines a division or a section in an HTML document"
-    ],
-    "answer": [3]
-}`}
+                                                {`[
+    {
+        "classId": "${params.classId}",
+        "sectionId": "${params.sectionId}",
+        "question": "What does the span tag in HTML do?",
+        "options": [
+            "Defines a hyperlink",
+            "Defines a section in a document",
+            "Defines a paragraph",
+            "Defines a division or a section in an HTML document"
+        ],
+        "answer": [3]
+    }
+]`}
                                             </pre>
                                         </div>
                                         <div className="space-y-2">
