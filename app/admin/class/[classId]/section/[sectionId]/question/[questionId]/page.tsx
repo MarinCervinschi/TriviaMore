@@ -109,6 +109,25 @@ export default function ManageQuestion() {
                     <CardContent>
                         <form onSubmit={handleSubmit}>
                             <div className="space-y-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 ">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="classId">Class ID</Label>
+                                        <Input
+                                            id="classId"
+                                            value={question.classId}
+                                            disabled
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="sectionId">Section ID</Label>
+                                        <Input
+                                            id="sectionId"
+                                            value={question.sectionId}
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+
                                 <div className="space-y-2">
                                     <Label htmlFor="question">Question</Label>
                                     <Input
