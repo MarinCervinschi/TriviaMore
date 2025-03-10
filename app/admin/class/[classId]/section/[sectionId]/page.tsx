@@ -12,6 +12,7 @@ import iconMap from "@/lib/iconMap"
 import Loader from "@/components/Loader"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import QuizQuestion from "@/types/QuizQuestion"
+import AddSectionForm from "@/components/admin/AddSectionForm"
 
 export default function ManageSection() {
     const params = useParams();
@@ -59,20 +60,16 @@ export default function ManageSection() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        const payload = {
+            id: sectionId,
+            classId: params.classId,
+            sectionName: sectionName,
+            icon: sectionIcon,
+        }
+        
         try {
-
-            const method = isNewSection ? "POST" : "PUT"
-
-            const payload = {
-                id: sectionId,
-                classId: params.classId,
-                sectionName: sectionName,
-                icon: sectionIcon,
-            }
-            console.log(payload);
-
             const response = await fetch("/api/admin/section", {
-                method: method,
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -180,53 +177,6 @@ export default function ManageSection() {
         }
     }
 
-    const newSection = () => {
-        return (
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="class-id">Class ID</Label>
-                    <Input id="class-id" value={params.classId} disabled />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="section-id">Section ID</Label>
-                    <Input
-                        id="section-id"
-                        value={sectionId}
-                        onChange={(e) => setSectionId(e.target.value)}
-                        placeholder="Enter section ID (e.g., html-css)"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="section-name">Section Name</Label>
-                    <Input
-                        id="section-name"
-                        value={sectionName}
-                        onChange={(e) => setSectionName(e.target.value)}
-                        placeholder="Enter section name"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="section-icon">Section Icon</Label>
-                    <Input
-                        id="section-icon"
-                        value={sectionIcon}
-                        onChange={(e) => setSectionIcon(e.target.value)}
-                        placeholder="Enter icon name"
-                        required
-                    />
-                </div>
-                <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push(`/admin/class/${params.classId}`)}>Cancel</Button>
-                    <Button type="submit">
-                        Create Section
-                    </Button>
-                </div>
-            </form>
-        )
-    }
-
     return (
         <DefaultLayout>
             <div className="container mx-auto p-4">
@@ -240,7 +190,7 @@ export default function ManageSection() {
                     </CardHeader>
                     <CardContent>
                         {!isNewSection && editSection()}
-                        {isNewSection && newSection()}
+                        {isNewSection && <AddSectionForm quizClassId={params.classId as string} />}
                     </CardContent>
                 </Card>
 
