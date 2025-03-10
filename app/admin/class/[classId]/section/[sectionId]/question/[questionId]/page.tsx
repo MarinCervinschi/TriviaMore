@@ -14,6 +14,7 @@ import QuizQuestion from "@/types/QuizQuestion"
 import { useParams } from "next/navigation"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Loader from "@/components/Loader"
+import iconMap from "@/lib/iconMap"
 
 export default function ManageQuestion() {
     const params = useParams();
@@ -54,7 +55,7 @@ export default function ManageQuestion() {
         }
     }
 
-    const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setQuestion((prev) => ({ ...prev, question: e.target.value }))
     }
 
@@ -118,10 +119,14 @@ export default function ManageQuestion() {
 
     return (
         <DefaultLayout>
-            <div className="container mx-auto p-4">
+            <div className="w-full max-w-5xl mx-auto p-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold flex gap-1">{params.questionId === "new" ? "Add New Question" : "Edit Question"} {iconMap["default"]}</h1>
+                    <Button onClick={() => router.push(`/admin/class/${params.classId}/section/${params.sectionId}`)}>Back to Sections</Button>
+                </div>
                 <Card>
                     <CardHeader>
-                        <CardTitle>{params.questionId === "new" ? "Add New Question" : "Edit Question"}</CardTitle>
+                        <CardTitle>Question Details</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit}>
@@ -191,7 +196,7 @@ export default function ManageQuestion() {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="question">Question</Label>
-                                            <Input
+                                            <Textarea
                                                 id="question"
                                                 value={question.question}
                                                 onChange={handleQuestionChange}

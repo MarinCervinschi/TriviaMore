@@ -20,7 +20,7 @@ export default function ManageSection() {
     const [sectionId, setSectionId] = useState("")
     const [sectionIcon, setSectionIcon] = useState("default")
     const [isNewSection, setIsNewSection] = useState(false)
-    const [iconNode, setIconNode] = useState<React.ReactNode>()
+    const [iconNode, setIconNode] = useState<React.ReactNode>(iconMap["default"])
     const [questions, setQuestions] = useState<QuizQuestion[]>([])
     const [editMode, setEditMode] = useState(false)
     const [loading, setLoading] = useState(params.sectionId !== "new")
@@ -179,9 +179,9 @@ export default function ManageSection() {
 
     return (
         <DefaultLayout>
-            <div className="container mx-auto p-4">
+            <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold flex gap-1">Manage Section: <span className="flex gap-1 items-center">{iconNode}{sectionName}</span></h1>
+                    <h1 className="text-3xl font-bold flex gap-1">{isNewSection ? "Add new Section: ": "Manage Section:"} <span className="flex gap-1 items-center">{iconNode}{sectionName}</span></h1>
                     <Button onClick={() => router.push(`/admin/class/${params.classId}`)}>Back to Class</Button>
                 </div>
                 <Card className="mb-6">

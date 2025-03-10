@@ -151,7 +151,7 @@ export default function ManageClass() {
 
     return (
         <DefaultLayout>
-            <div className="container mx-auto p-4">
+            <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold flex gap-1">{isNewClass ? "Add New Class" : `Manage Class:`}<span className="flex items-center gap-1">{iconNode}{className}</span></h1>
                     <Button onClick={() => router.push("/admin/dashboard")}>Back to Dashboard</Button>
