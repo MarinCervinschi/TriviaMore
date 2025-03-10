@@ -1,18 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { useParams } from "next/navigation"
-import iconMap from "@/lib/iconMap"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+
 import Loader from "@/components/Loader"
-import DefaultLayout from "@/components/Layouts/DefaultLayout"
-import QuizQuestion from "@/types/QuizQuestion"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import AddSectionForm from "@/components/admin/AddSectionForm"
+import DefaultLayout from "@/components/Layouts/DefaultLayout"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+import iconMap from "@/lib/iconMap"
+import QuizQuestion from "@/types/QuizQuestion"
+
 import { MdAddToPhotos, MdOutlineCancel } from "react-icons/md"
 import { LuSave } from "react-icons/lu";
 import { FiEdit3, FiDelete } from "react-icons/fi";
@@ -31,6 +33,27 @@ export default function ManageSection() {
     const router = useRouter()
 
     useEffect(() => {
+        const fetchSectionData = async () => {
+            try {
+                const response = await fetch(`/api/questions?classId=${params.classId}&sectionId=${params.sectionId}`)
+                if (response.ok) {
+                    const data = await response.json()
+
+                    setSectionId(data.section.id)
+                    setSectionName(data.section.sectionName)
+                    setSectionIcon(data.section.icon)
+                    setIconNode(iconMap[data.section.icon])
+                    setQuestions(data.questions)
+                    setLoading(false)
+                } else {
+                    throw new Error("Failed to fetch section data")
+                }
+            } catch (error) {
+                console.error("Error fetching section data:", error)
+                alert("Failed to load section data. Please try again.")
+            }
+        }
+
         if (params.sectionId !== "new") {
             fetchSectionData()
             setSectionId(params.sectionId as string)
@@ -38,28 +61,8 @@ export default function ManageSection() {
             setLoading(false)
             setIsNewSection(true)
         }
-    }, [params.sectionId])
+    }, [params.classId, params.sectionId])
 
-    const fetchSectionData = async () => {
-        try {
-            const response = await fetch(`/api/questions?classId=${params.classId}&sectionId=${params.sectionId}`)
-            if (response.ok) {
-                const data = await response.json()
-
-                setSectionId(data.section.id)
-                setSectionName(data.section.sectionName)
-                setSectionIcon(data.section.icon)
-                setIconNode(iconMap[data.section.icon])
-                setQuestions(data.questions)
-                setLoading(false)
-            } else {
-                throw new Error("Failed to fetch section data")
-            }
-        } catch (error) {
-            console.error("Error fetching section data:", error)
-            alert("Failed to load section data. Please try again.")
-        }
-    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -70,7 +73,7 @@ export default function ManageSection() {
             sectionName: sectionName,
             icon: sectionIcon,
         }
-        
+
         try {
             const response = await fetch("/api/admin/section", {
                 method: "PUT",
@@ -157,7 +160,7 @@ export default function ManageSection() {
                         <Input id="section-icon" value={sectionIcon} onChange={(e) => setSectionIcon(e.target.value)} />
                     </div>
                     <div className="space-x-2">
-                        <Button onClick={handleSubmit}>Save <LuSave/></Button>
+                        <Button onClick={handleSubmit}>Save <LuSave /></Button>
                         <Button variant="outline" onClick={() => setEditMode(false)}>
                             Cancel <MdOutlineCancel />
                         </Button>
@@ -171,9 +174,9 @@ export default function ManageSection() {
                         <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode}{sectionName}</span>
                     </p>
                     <div className="space-x-2">
-                        <Button onClick={() => setEditMode(true)}>Edit <FiEdit3/></Button>
+                        <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
                         <Button variant="destructive" onClick={handleDeleteSection}>
-                            Delete <FiDelete/>
+                            Delete <FiDelete />
                         </Button>
                     </div>
                 </div>
@@ -185,7 +188,7 @@ export default function ManageSection() {
         <DefaultLayout>
             <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold flex gap-1">{isNewSection ? "Add new Section: ": "Manage Section:"} <span className="flex gap-1 items-center">{iconNode}{sectionName}</span></h1>
+                    <h1 className="text-3xl font-bold flex gap-1">{isNewSection ? "Add new Section: " : "Manage Section:"} <span className="flex gap-1 items-center">{iconNode}{sectionName}</span></h1>
                     <Button onClick={() => router.push(`/admin/class/${params.classId}`)}><IoMdArrowRoundBack /> Back to Class</Button>
                 </div>
                 <Card className="mb-6">
@@ -223,11 +226,11 @@ export default function ManageSection() {
                                                     <div className="mt-4 space-x-2">
                                                         <Button asChild>
                                                             <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/${question.id}`}>
-                                                                Edit <FiEdit3/>
+                                                                Edit <FiEdit3 />
                                                             </Link>
                                                         </Button>
                                                         <Button variant="destructive" onClick={() => handleDeleteQuestion(question.id as string)}>
-                                                            Delete <FiDelete/>
+                                                            Delete <FiDelete />
                                                         </Button>
                                                     </div>
                                                 </CardContent>
@@ -240,7 +243,7 @@ export default function ManageSection() {
                             </CardContent>
                         </Card>
                         <Button asChild>
-                            <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/new`}>Add New Question <MdAddToPhotos/></Link>
+                            <Link href={`/admin/class/${params.classId}/section/${params.sectionId}/question/new`}>Add New Question <MdAddToPhotos /></Link>
                         </Button>
                     </>
                 }

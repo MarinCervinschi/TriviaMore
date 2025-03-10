@@ -1,20 +1,21 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { useParams, useRouter } from "next/navigation"
+
+import Loader from "@/components/Loader"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import QuizQuestion from "@/types/QuizQuestion"
-import { useParams } from "next/navigation"
+import { Textarea } from "@/components/ui/textarea"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
-import Loader from "@/components/Loader"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
+import QuizQuestion from "@/types/QuizQuestion"
 import iconMap from "@/lib/iconMap"
+
 import { LuSave } from "react-icons/lu"
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md"
@@ -35,28 +36,29 @@ export default function ManageQuestion() {
     const router = useRouter()
 
     useEffect(() => {
+        const fetchQuestionData = async () => {
+            try {
+                const response = await fetch(
+                    `/api/admin/question?questionId=${params.questionId}`,
+                )
+                if (response.ok) {
+                    const data = await response.json()
+                    setQuestion(data)
+                    setLoading(false)
+                } else {
+                    throw new Error("Failed to fetch question data")
+                }
+            } catch (error) {
+                console.error("Error fetching question data:", error)
+                alert("Failed to load question data. Please try again.")
+            }
+        }
+
         if (params.questionId !== "new") {
             fetchQuestionData()
         }
     }, [params.questionId]) // Updated dependency array
 
-    const fetchQuestionData = async () => {
-        try {
-            const response = await fetch(
-                `/api/admin/question?questionId=${params.questionId}`,
-            )
-            if (response.ok) {
-                const data = await response.json()
-                setQuestion(data)
-                setLoading(false)
-            } else {
-                throw new Error("Failed to fetch question data")
-            }
-        } catch (error) {
-            console.error("Error fetching question data:", error)
-            alert("Failed to load question data. Please try again.")
-        }
-    }
 
     const handleQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setQuestion((prev) => ({ ...prev, question: e.target.value }))
@@ -236,7 +238,7 @@ export default function ManageQuestion() {
                             Cancel <MdOutlineCancel />
                         </Button>
                         <Button type="submit" onClick={handleSubmit}>
-                            Save Question <LuSave/>
+                            Save Question <LuSave />
                         </Button>
                     </CardFooter>
                 </Card>
