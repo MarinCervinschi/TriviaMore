@@ -27,25 +27,25 @@ export async function GET(req: Request) {
 
 
 export async function POST(req: Request) {
-    const question: QuizQuestion = await req.json();
-    if (!question) {
+    const questions: QuizQuestion[] = await req.json();
+    if (!questions) {
         return res.json({ message: 'question body is required' }, { status: 400 });
     }
 
     try {
-        if (question.id) {
+        if (questions[0].id) {
             // Update question
             const updatedQuestion = await prisma.question.update({
-                where: { id: question.id },
-                data: question,
+                where: { id: questions[0].id },
+                data: questions[0],
             });
             return res.json(updatedQuestion, { status: 200 });
         } else {
             // Create question
-            const newQuestion = await prisma.question.create({
-                data: question,
+            const newQuestions = await prisma.question.createMany({
+                data: questions,
             });
-            return res.json(newQuestion, { status: 201 });
+            return res.json({ message: 'Question created successfully', newQuestions }, { status: 201 });
         }
     } catch (error: any) {
         return res.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
