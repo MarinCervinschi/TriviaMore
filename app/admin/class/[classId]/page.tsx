@@ -13,6 +13,10 @@ import Loader from "@/components/Loader"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import { useParams } from "next/navigation"
 import AddClassForm from "@/components/admin/AddClassForm"
+import { MdAddToPhotos, MdManageSearch, MdOutlineCancel } from "react-icons/md";
+import { LuSave } from "react-icons/lu"
+import { FiEdit3, FiDelete } from "react-icons/fi";
+import { IoMdArrowRoundBack } from "react-icons/io"
 
 export default function ManageClass() {
     const params = useParams();
@@ -125,9 +129,9 @@ export default function ManageClass() {
                     <Input id="class-icon" value={classIcon} onChange={(e) => setClassIcon(e.target.value)} />
                 </div>
                 <div className="space-x-2">
-                    <Button onClick={handleSubmit}>Save</Button>
+                    <Button onClick={handleSubmit}>Save <LuSave /></Button>
                     <Button variant="outline" onClick={() => setEditMode(false)}>
-                        Cancel
+                        Cancel <MdOutlineCancel />
                     </Button>
                 </div>
             </div>
@@ -139,9 +143,9 @@ export default function ManageClass() {
                         <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode} {className}</span>
                     </p>
                     <div className="space-x-2">
-                        <Button onClick={() => setEditMode(true)}>Edit</Button>
+                        <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
                         <Button variant="destructive" onClick={handleDeleteClass}>
-                            Delete Class
+                            Delete <FiDelete />
                         </Button>
                     </div>
                 </div>
@@ -154,7 +158,7 @@ export default function ManageClass() {
             <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold flex gap-1">{isNewClass ? "Add New Class" : `Manage Class:`}<span className="flex items-center gap-1">{iconNode}{className}</span></h1>
-                    <Button onClick={() => router.push("/admin/dashboard")}>Back to Dashboard</Button>
+                    <Button onClick={() => router.push("/admin/dashboard")}><IoMdArrowRoundBack /> Back to Dashboard</Button>
                 </div>
 
                 <Card className="mb-6">
@@ -183,7 +187,7 @@ export default function ManageClass() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <Link href={`/admin/class/${params.classId}/section/${section.id}`}>
-                                                        <Button>Manage Section</Button>
+                                                        <Button>Manage <MdManageSearch /></Button>
                                                     </Link>
                                                 </CardContent>
                                             </Card>
@@ -196,7 +200,7 @@ export default function ManageClass() {
                         </Card>
 
                         <Button asChild>
-                            <Link href={`/admin/class/${params.classId}/section/new`}>Add New Section</Link>
+                            <Link href={`/admin/class/${params.classId}/section/new`}>Add New Section <MdAddToPhotos /></Link>
                         </Button>
                     </>
                 )}

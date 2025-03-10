@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import QuizSection from "@/types/QuizSection"
+import { MdOutlineCancel } from "react-icons/md"
+import { IoMdCreate } from "react-icons/io";
 
 interface AddSectionFormProps {
     quizClassId: string
@@ -138,9 +140,9 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                     </>
                 )}
                 <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push(`/admin/class/${quizClassId}`)}>Cancel</Button>
+                    <Button variant={"outline"} onClick={() => router.push(`/admin/class/${quizClassId}`)}>Cancel <MdOutlineCancel /></Button>
                     <Button type="submit">
-                        Create Section
+                        Create Section <IoMdCreate />
                     </Button>
                 </div>
             </div>

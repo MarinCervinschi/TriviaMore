@@ -2,6 +2,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FaHome } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { RiAdminLine } from "react-icons/ri";
+
+
 import Cookies from "js-cookie"
 
 export default function Header() {
@@ -21,7 +24,7 @@ export default function Header() {
           Trivia More
         </Link>
         <nav className="flex gap-4 items-center">
-          {username && <Link className="underline-offset-4 hover:underline" href={"/admin/dashboard"}>{`< ${username} />`}</Link>}
+          {username && <Link className="underline-offset-4 hover:underline flex items-center gap-1" href={"/admin/dashboard"}><RiAdminLine/>{`< ${username} />`}</Link>}
           <Button asChild variant="ghost">
             <Link href="/">Home <FaHome /></Link>
           </Button>
