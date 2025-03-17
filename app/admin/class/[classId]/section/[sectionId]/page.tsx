@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import Loader from "@/components/Loader"
 import { Label } from "@/components/ui/label"
@@ -19,6 +20,7 @@ import { MdAddToPhotos, MdOutlineCancel } from "react-icons/md"
 import { LuSave } from "react-icons/lu";
 import { FiEdit3, FiDelete } from "react-icons/fi";
 import { IoMdArrowRoundBack } from "react-icons/io"
+import { to } from "@react-spring/web"
 
 export default function ManageSection() {
     const params = useParams();
@@ -50,7 +52,7 @@ export default function ManageSection() {
                 }
             } catch (error) {
                 console.error("Error fetching section data:", error)
-                alert("Failed to load section data. Please try again.")
+                toast.error("Failed to load section data. Please try again.")
             }
         }
 
@@ -84,6 +86,7 @@ export default function ManageSection() {
             })
 
             if (response.ok) {
+                toast.success(`${isNewSection ? "Created" : "Updated"} section successfully 🎉`)
                 if (isNewSection) {
                     router.push(`/admin/class/${params.classId}`)
                 } else {
@@ -94,7 +97,7 @@ export default function ManageSection() {
             }
         } catch (error) {
             console.error(`Error ${isNewSection ? "creating" : "updating"} section:`, error)
-            alert(`Failed to ${isNewSection ? "create" : "update"} section. Please try again.`)
+            toast.error(`Failed to ${isNewSection ? "create" : "update"} section. Please try again.`)
         }
     }
 
@@ -106,13 +109,14 @@ export default function ManageSection() {
                 })
 
                 if (response.ok) {
+                    toast.success("Section deleted successfully 🎉")
                     router.push(`/admin/class/${params.classId}`)
                 } else {
                     throw new Error("Failed to delete section")
                 }
             } catch (error) {
                 console.error("Error deleting section:", error)
-                alert("Failed to delete section. Please try again.")
+                toast.error("Failed to delete section. Please try again.")
             }
         }
     }
@@ -128,13 +132,14 @@ export default function ManageSection() {
                 )
 
                 if (response.ok) {
+                    toast.success("Question deleted successfully 🎉")
                     setQuestions((prev) => prev.filter((q) => q.id !== questionId))
                 } else {
                     throw new Error("Failed to delete question")
                 }
             } catch (error) {
                 console.error("Error deleting question:", error)
-                alert("Failed to delete question. Please try again.")
+                toast.error("Failed to delete question. Please try again.")
             }
         }
     }
