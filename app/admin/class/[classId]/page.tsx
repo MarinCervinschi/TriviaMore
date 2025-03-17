@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -57,7 +58,7 @@ export default function ManageClass() {
                 }
             } catch (error) {
                 console.error("Error fetching class data:", error)
-                alert("Failed to load class data. Please try again.")
+                toast.error("Failed to load class data. Please try again.")
             }
         }
 
@@ -89,17 +90,17 @@ export default function ManageClass() {
             })
 
             if (response.ok) {
+                toast.success(`Class ${isNewClass ? "created" : "updated"} successfully 🎉`)
                 if (isNewClass) {
                     router.push("/admin/dashboard")
-                } else {
-                }
+                } 
                 setEditMode(false)
             } else {
                 throw new Error(`Failed to ${isNewClass ? "create" : "update"} class`)
             }
         } catch (error) {
             console.error(`Error ${isNewClass ? "creating" : "updating"} class:`, error)
-            alert(`Failed to ${isNewClass ? "create" : "update"} class. Please try again.`)
+            toast.error(`Failed to ${isNewClass ? "create" : "update"} class. Please try again.`)
         }
     }
 
@@ -111,13 +112,14 @@ export default function ManageClass() {
                 })
 
                 if (response.ok) {
+                    toast.success("Class deleted successfully 🎉")
                     router.push("/admin/dashboard")
                 } else {
                     throw new Error("Failed to delete class")
                 }
             } catch (error) {
                 console.error("Error deleting class:", error)
-                alert("Failed to delete class. Please try again.")
+                toast.error("Failed to delete class. Please try again.")
             }
         }
     }
