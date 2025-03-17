@@ -11,6 +11,7 @@ import iconMap from "@/lib/iconMap"
 import { useRouter } from "next/navigation"
 import { MdOutlineCancel } from "react-icons/md"
 import { IoMdCreate } from "react-icons/io"
+import { toast } from "sonner"
 
 export default function AddClassForm() {
     const [classId, setClassId] = useState("")
@@ -30,6 +31,7 @@ export default function AddClassForm() {
                 data = JSON.parse(jsonData)
             } catch (error) {
                 console.error("Invalid JSON:", error)
+                toast.error("Invalid JSON data. Please check and try again.")
                 return
             }
         } else {
@@ -51,13 +53,14 @@ export default function AddClassForm() {
             })
 
             if (response.ok) {
+                toast.success("Class created successfully 🎉")
                 router.push("/admin/dashboard")
             } else {
                 throw new Error(`Failed to create class`)
             }
         } catch (error) {
             console.error(`Error creating class:`, error)
-            alert(`Failed to create class. Please try again.`)
+            toast.error(`Failed to create class. Please try again.`)
         }
     }
 

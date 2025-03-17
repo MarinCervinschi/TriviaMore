@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import QuizSection from "@/types/QuizSection"
 import { MdOutlineCancel } from "react-icons/md"
 import { IoMdCreate } from "react-icons/io";
+import { toast } from "sonner"
 
 interface AddSectionFormProps {
     quizClassId: string
@@ -31,6 +32,7 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                 data = JSON.parse(jsonData)
             } catch (error) {
                 console.error("Invalid JSON:", error)
+                toast.error("Invalid JSON data. Please check and try again.")
                 return
             }
         } else {
@@ -52,13 +54,14 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
             })
 
             if (response.ok) {
+                toast.success("Section created successfully 🎉")
                 router.push(`/admin/class/${quizClassId}`)
             } else {
                 throw new Error(`Failed to create section`)
             }
         } catch (error) {
             console.error(`Error creating section:`, error)
-            alert(`Failed to create section. Please try again.`)
+            toast.error(`Failed to create section. Please try again.`)
         }
     }
 

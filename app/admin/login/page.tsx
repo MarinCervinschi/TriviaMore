@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Cookies from "js-cookie"
 
@@ -31,13 +32,14 @@ export default function AdminLogin() {
         const { token } = await response.json()
         Cookies.set("admin_token", token, { expires: 10 }) // expires in 1 day
         Cookies.set("admin_username", username, { expires: 10 }) // expires in 1 day
+        toast.success("Login successful 🎉")
         router.push("/admin/dashboard")
       } else {
-        alert("Invalid credentials")
+        toast.error("Invalid username or password")
       }
     } catch (error) {
       console.error("Login error:", error)
-      alert("An error occurred during login")
+      toast.error("Failed to login. Error: " + error)
     }
   }
 
