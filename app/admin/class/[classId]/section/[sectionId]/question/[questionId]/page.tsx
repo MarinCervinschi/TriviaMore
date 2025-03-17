@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import Loader from "@/components/Loader"
 import { Input } from "@/components/ui/input"
@@ -19,6 +20,7 @@ import iconMap from "@/lib/iconMap"
 import { LuSave } from "react-icons/lu"
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md"
+import { to } from "@react-spring/web"
 
 export default function ManageQuestion() {
     const params = useParams();
@@ -50,7 +52,7 @@ export default function ManageQuestion() {
                 }
             } catch (error) {
                 console.error("Error fetching question data:", error)
-                alert("Failed to load question data. Please try again.")
+                toast.error("Failed to load question data. Please try again.")
             }
         }
 
@@ -90,7 +92,7 @@ export default function ManageQuestion() {
                 data = JSON.parse(jsonData) as QuizQuestion[]
             } catch (error) {
                 console.error("Invalid JSON:", error)
-                alert("Invalid JSON data: " + error)
+                toast.error("Invalid JSON data: " + error)
                 return
             }
         } else {
@@ -107,6 +109,7 @@ export default function ManageQuestion() {
             })
 
             if (response.ok) {
+                toast.success("Question saved successfully 🎉")
                 router.push(`/admin/class/${params.classId}/section/${params.sectionId}`)
             } else {
                 const res = await response.json()
@@ -114,7 +117,7 @@ export default function ManageQuestion() {
             }
         } catch (error) {
             console.error("Error saving question:", error)
-            alert("Failed to save question. Please try again." + error)
+            toast.error("Failed to save question. Please try again.")
         }
     }
 

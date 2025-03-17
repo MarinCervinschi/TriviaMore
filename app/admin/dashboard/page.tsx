@@ -12,6 +12,7 @@ import Loader from "@/components/Loader"
 import Cookies from "js-cookie"
 import { TbLogout2 } from "react-icons/tb";
 import { MdAddToPhotos, MdManageSearch } from "react-icons/md";
+import { toast } from "sonner"
 import { getVisibility } from "../utils"
 
 export default function AdminDashboard() {
@@ -39,13 +40,14 @@ export default function AdminDashboard() {
             }
         } catch (error) {
             console.error("Error fetching classes:", error)
-            alert("Failed to load classes. Please try again.")
+            toast.error("Failed to load classes. Please try again.")
         }
     }
 
     const handleLogout = async () => {
         Cookies.remove("admin_token")
         Cookies.remove("admin_username")
+        toast.success("Logged out successfully")
         router.push("/admin/login")
     }
 
