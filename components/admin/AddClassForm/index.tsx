@@ -81,6 +81,7 @@ export default function AddClassForm() {
                                 {`{
   "id": "web-development",
   "name": "Web Development",
+  "visibility": true,
   "icon": "FaCode"
 }`}
                             </pre>
