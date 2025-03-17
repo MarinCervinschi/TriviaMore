@@ -14,11 +14,12 @@ model AdminUser {
 }
 
 model Class {
-  id        String     @id @default(uuid())
-  name      String
-  icon      String?
-  sections  Section[]
-  questions Question[]
+  id         String     @id @default(uuid())
+  name       String
+  icon       String?
+  visibility Boolean    @default(true)
+  sections   Section[]
+  questions  Question[]
 }
 
 model Section {

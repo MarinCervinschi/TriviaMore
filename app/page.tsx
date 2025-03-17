@@ -12,8 +12,6 @@ import AnimatedContent from "@/components/animations/AnimatedContent"
 import iconMap from "@/lib/iconMap"
 import QuizClass from "@/types/QuizClass"
 
-const excludeClasses = ["computer-architecture", "telecommunications"];
-
 export default function Home() {
   const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +31,6 @@ export default function Home() {
         }
         const data = await response.json();
         const formattedData = data
-          .filter((row: any) => !excludeClasses.includes(row.id))
           .map((row: any) => ({
             ...row,
             icon: iconMap[row.icon]

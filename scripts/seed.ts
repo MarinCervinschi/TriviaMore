@@ -9,6 +9,7 @@ const prisma = new PrismaClient();
 const classes: QuizClass[] = [
     {
         "name": "Tecnologie Web",
+        "visibility": true,
         "icon": "TbWorldCode"
     },
 ];

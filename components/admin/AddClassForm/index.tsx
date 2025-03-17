@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import QuizClass from "@/types/QuizClass"
 import iconMap from "@/lib/iconMap"
 import { useRouter } from "next/navigation"
@@ -14,6 +15,7 @@ import { IoMdCreate } from "react-icons/io"
 export default function AddClassForm() {
     const [classId, setClassId] = useState("")
     const [className, setClassName] = useState("")
+    const [visibility, setVisibility] = useState(false)
     const [classIcon, setClassIcon] = useState("default")
     const [jsonData, setJsonData] = useState("")
     const [isJsonMode, setIsJsonMode] = useState(false)
@@ -34,6 +36,7 @@ export default function AddClassForm() {
             data = {
                 id: classId,
                 name: className,
+                visibility: visibility,
                 icon: classIcon,
             } as QuizClass
         }
@@ -78,6 +81,7 @@ export default function AddClassForm() {
                                 {`{
   "id": "web-development",
   "name": "Web Development",
+  "visibility": true,
   "icon": "FaCode"
 }`}
                             </pre>
@@ -125,6 +129,15 @@ export default function AddClassForm() {
                                 placeholder="Enter class icon"
                                 required
                             />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="class-visibility">Visible to Users</Label>
+                                <Switch id="class-visibility" checked={visibility} onCheckedChange={setVisibility} />
+                            </div>
+                            <p className="text-sm text-gray-500">
+                                {visibility ? "This class will be visible to all users" : "This class will be hidden from users"}
+                            </p>
                         </div>
                     </>
                 )}
