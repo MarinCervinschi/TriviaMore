@@ -20,6 +20,7 @@ import { MdAddToPhotos, MdManageSearch, MdOutlineCancel } from "react-icons/md";
 import { LuSave } from "react-icons/lu"
 import { FiEdit3, FiDelete } from "react-icons/fi";
 import { IoMdArrowRoundBack } from "react-icons/io"
+import { getVisibility } from "../../utils"
 
 export default function ManageClass() {
     const params = useParams();
@@ -157,6 +158,7 @@ export default function ManageClass() {
                     <p className="flex items-center gap-1">
                         <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode} {className}</span>
                     </p>
+                    {getVisibility(visibility)}
                     <div className="space-x-2">
                         <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
                         <Button variant="destructive" onClick={handleDeleteClass}>
