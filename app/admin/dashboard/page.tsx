@@ -58,7 +58,7 @@ export default function AdminDashboard() {
             <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <Button onClick={handleLogout}>Logout<TbLogout2 /></Button>
+                    <Button onClick={handleLogout} variant={"destructive"}>Logout<TbLogout2 /></Button>
                 </div>
                 <Card className="mb-6">
                     <CardHeader>
