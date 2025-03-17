@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 interface PostData {
     id?: string;
     name: string;
+    visibility: boolean;
     icon?: string;
 }
 
