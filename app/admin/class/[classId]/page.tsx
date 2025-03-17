@@ -11,6 +11,7 @@ import Loader from "@/components/Loader"
 import AddClassForm from "@/components/admin/AddClassForm"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
 
 import QuizSection from "@/types/QuizSection"
 import iconMap from "@/lib/iconMap"
@@ -19,11 +20,13 @@ import { MdAddToPhotos, MdManageSearch, MdOutlineCancel } from "react-icons/md";
 import { LuSave } from "react-icons/lu"
 import { FiEdit3, FiDelete } from "react-icons/fi";
 import { IoMdArrowRoundBack } from "react-icons/io"
+import { getVisibility } from "../../utils"
 
 export default function ManageClass() {
     const params = useParams();
     const [classId, setClassId] = useState("")
     const [className, setClassName] = useState("")
+    const [visibility, setVisibility] = useState(false)
     const [classIcon, setClassIcon] = useState("default")
     const [iconNode, setIconNode] = useState<React.ReactNode>()
     const [sections, setSections] = useState<QuizSection[]>([])
@@ -45,6 +48,7 @@ export default function ManageClass() {
                     setSections(formattedData)
                     setClassId(data.class.id)
                     setClassName(data.class.name)
+                    setVisibility(data.class.visibility)
                     setClassIcon(data.class.icon)
                     setIconNode(iconMap[data.class.icon])
                     setLoading(false)
@@ -71,6 +75,7 @@ export default function ManageClass() {
         const quizClass = {
             id: classId,
             name: className,
+            visibility: visibility,
             icon: classIcon,
         }
 
@@ -129,6 +134,15 @@ export default function ManageClass() {
                     <Input id="class-name" value={className} onChange={(e) => setClassName(e.target.value)} />
                     <Label htmlFor="class-icon">Class Icon</Label>
                     <Input id="class-icon" value={classIcon} onChange={(e) => setClassIcon(e.target.value)} />
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="class-visibility">visibility to Users</Label>
+                            <Switch id="class-visibility" checked={visibility} onCheckedChange={setVisibility} />
+                        </div>
+                        <p className="text-sm text-gray-500">
+                            {visibility ? "This class will be visibility to all users" : "This class will be hidden from users"}
+                        </p>
+                    </div>
                 </div>
                 <div className="space-x-2">
                     <Button onClick={handleSubmit}>Save <LuSave /></Button>
@@ -144,6 +158,7 @@ export default function ManageClass() {
                     <p className="flex items-center gap-1">
                         <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode} {className}</span>
                     </p>
+                    {getVisibility(visibility)}
                     <div className="space-x-2">
                         <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
                         <Button variant="destructive" onClick={handleDeleteClass}>

@@ -12,6 +12,7 @@ import Loader from "@/components/Loader"
 import Cookies from "js-cookie"
 import { TbLogout2 } from "react-icons/tb";
 import { MdAddToPhotos, MdManageSearch } from "react-icons/md";
+import { getVisibility } from "../utils"
 
 export default function AdminDashboard() {
     const [classes, setClasses] = useState<QuizClass[]>([])
@@ -57,7 +58,7 @@ export default function AdminDashboard() {
             <div className="w-full max-w-5xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <Button onClick={handleLogout}>Logout<TbLogout2 /></Button>
+                    <Button onClick={handleLogout} variant={"destructive"}>Logout<TbLogout2 /></Button>
                 </div>
                 <Card className="mb-6">
                     <CardHeader>
@@ -72,9 +73,12 @@ export default function AdminDashboard() {
                                             <CardTitle><span className="flex gap-1">{quizClass.icon} {quizClass.name}</span></CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            <Link href={`/admin/class/${quizClass.id}`}>
-                                                <Button>Manage <MdManageSearch /></Button>
-                                            </Link>
+                                            <div className="flex justify-between items-center">
+                                                <Link href={`/admin/class/${quizClass.id}`}>
+                                                    <Button>Manage <MdManageSearch /></Button>
+                                                </Link>
+                                                {getVisibility(quizClass.visibility)}
+                                            </div>
                                         </CardContent>
                                     </Card>
                                 ))}
