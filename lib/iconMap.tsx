@@ -23,9 +23,7 @@ import { GrSatellite } from "react-icons/gr";
 import { TfiWrite } from "react-icons/tfi";
 import { LuBinary } from "react-icons/lu";
 import { AiOutlineException } from "react-icons/ai";
-
-
-
+import { MdOutlineWifiPassword } from "react-icons/md";
 
 const iconMap: { [key: string]: JSX.Element } = {
     default: <MdOutlineQuiz />,
@@ -62,6 +60,7 @@ const iconMap: { [key: string]: JSX.Element } = {
     TfiWrite: <TfiWrite />,
     LuBinary: <LuBinary />,
     AiOutlineException: <AiOutlineException />,
+    MdOutlineWifiPassword: <MdOutlineWifiPassword />
 };
 
 export default iconMap
