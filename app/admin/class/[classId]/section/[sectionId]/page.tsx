@@ -20,7 +20,6 @@ import { MdAddToPhotos, MdOutlineCancel } from "react-icons/md"
 import { LuSave } from "react-icons/lu";
 import { FiEdit3, FiDelete } from "react-icons/fi";
 import { IoMdArrowRoundBack } from "react-icons/io"
-import { to } from "@react-spring/web"
 
 export default function ManageSection() {
     const params = useParams();
@@ -210,7 +209,7 @@ export default function ManageSection() {
                     <>
                         <Card className="mb-6">
                             <CardHeader>
-                                <CardTitle>Questions</CardTitle>
+                                <CardTitle>Questions - {questions.length}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {questions && questions.length > 0 ? (
