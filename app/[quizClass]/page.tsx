@@ -20,17 +20,19 @@ export default function QuizClassPage() {
     const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [sections, setSections] = useState<QuizSection[]>([] as QuizSection[]);
     const [loading, setLoading] = useState(true);
+    const [nameNotFound, setNameNotFound] = useState(false);
 
     useEffect(() => {
         if (!params?.quizClass) {
-            notFound();
+            setNameNotFound(true);
+            return;
         }
         const fetchSections = async (quizClassId: string) => {
             try {
-                const response = await fetch(`/api/section?classId=${quizClassId}`);
+                const response = await fetch(`/api/sections?classId=${quizClassId}`);
                 if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.message || response.statusText);
+                    setNameNotFound(true);
+                    return;
                 }
 
                 const data = await response.json();
@@ -50,6 +52,9 @@ export default function QuizClassPage() {
     }, [params]);
 
     if (loading) {
+        if (nameNotFound) {
+            notFound();
+        }
         return <Loader />;
     }
 
