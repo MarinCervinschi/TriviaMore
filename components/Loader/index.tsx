@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import DefaultLayout from '../Layouts/DefaultLayout';
 
 declare global {
     namespace JSX {
@@ -19,13 +20,13 @@ const Loader = () => {
     }, []);
 
     return (
-        <div className="flex h-screen items-center justify-center bg-white">
+        <DefaultLayout>
             <l-grid
                 size="60"
                 speed="1.5"
                 color="black"
             ></l-grid>
-        </div>
+        </DefaultLayout>
     );
 };
 

@@ -30,10 +30,11 @@ export default function Home() {
           throw new Error(data.message || response.statusText);
         }
         const data = await response.json();
-        const formattedData = data.map((row: any) => ({
-          ...row,
-          icon: iconMap[row.icon]
-        }));
+        const formattedData = data
+          .map((row: any) => ({
+            ...row,
+            icon: iconMap[row.icon]
+          }));
         setQuizData(formattedData);
         setLoading(false);
       } catch (error) {

@@ -22,6 +22,8 @@ package-lock.json
 
 .env
 
+/backups/*
+
 # debug
 npm-debug.log*
 yarn-debug.log*

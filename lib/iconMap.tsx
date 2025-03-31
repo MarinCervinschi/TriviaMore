@@ -1,24 +1,16 @@
-import { TbWorldCode } from "react-icons/tb";
+import { TbWorldCode, TbWorldWww, TbApiApp, TbLogicXor, TbCloudNetwork } from "react-icons/tb";
 import { Computer } from "lucide-react";
-import { PiTreeStructureBold } from "react-icons/pi";
-import { TbWorldWww, TbApiApp } from "react-icons/tb";
-import { MdWeb, MdHttps, MdLink, MdOutlineDynamicForm, MdOutlineWeb } from "react-icons/md";
-import { FaHtml5, FaCss3, FaJsSquare, FaReact, FaSyncAlt } from "react-icons/fa";
-import { LuFileJson2 } from "react-icons/lu";
-import { SiSemanticuireact } from "react-icons/si";
+import { PiTreeStructureBold, PiFloppyDiskBold } from "react-icons/pi";
+import { MdWeb, MdHttps, MdLink, MdOutlineDynamicForm, MdOutlineWeb, MdEngineering, MdSpeed, MdOutlineMemory, MdOutlineQuiz, MdOutlineWifiPassword } from "react-icons/md";
+import { FaHtml5, FaCss3, FaJsSquare, FaReact, FaSyncAlt, FaRandom, FaShapes } from "react-icons/fa";
 import { FaGears } from "react-icons/fa6";
-import { GrNotes } from "react-icons/gr";
+import { LuFileJson2, LuBinary, LuRouter } from "react-icons/lu";
+import { SiSemanticuireact } from "react-icons/si";
+import { GrNotes, GrDocumentTest, GrConfigure, GrSatellite } from "react-icons/gr";
 import { CgIfDesign } from "react-icons/cg";
-import { MdEngineering } from "react-icons/md";
-import { GrDocumentTest } from "react-icons/gr";
-import { GrConfigure } from "react-icons/gr";
-import { FaRandom } from "react-icons/fa";
-import { TbLogicXor } from "react-icons/tb";
-import { MdSpeed } from "react-icons/md";
-import { FaShapes } from "react-icons/fa";
-import { MdOutlineMemory } from "react-icons/md";
-import { PiFloppyDiskBold } from "react-icons/pi";
-import { MdOutlineQuiz } from "react-icons/md";
+import { TfiWrite } from "react-icons/tfi";
+import { AiOutlineException } from "react-icons/ai";
+import { BsHddStack } from "react-icons/bs";
 
 const iconMap: { [key: string]: JSX.Element } = {
     default: <MdOutlineQuiz />,
@@ -51,6 +43,14 @@ const iconMap: { [key: string]: JSX.Element } = {
     FaShapes: <FaShapes />,
     MdOutlineMemory: <MdOutlineMemory />,
     PiFloppyDiskBold: <PiFloppyDiskBold />,
+    GrSatellite: <GrSatellite />,
+    TfiWrite: <TfiWrite />,
+    LuBinary: <LuBinary />,
+    AiOutlineException: <AiOutlineException />,
+    MdOutlineWifiPassword: <MdOutlineWifiPassword />,
+    TbCloudNetwork: <TbCloudNetwork />,
+    BsHddStack: <BsHddStack />,
+    LuRouter: <LuRouter />,
 };
 
 export default iconMap
