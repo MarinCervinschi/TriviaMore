@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import Loader from "@/components/Loader"
@@ -20,10 +20,9 @@ import iconMap from "@/lib/iconMap"
 import { LuSave } from "react-icons/lu"
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md"
-import { to } from "@react-spring/web"
 
 export default function ManageQuestion() {
-    const params = useParams();
+    const params = useParams() || notFound();
     const [question, setQuestion] = useState<QuizQuestion>({
         question: "",
         options: ["", "", "", ""],
