@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ import { IoMdArrowRoundBack } from "react-icons/io"
 import { getVisibility } from "../../utils"
 
 export default function ManageClass() {
-    const params = useParams();
+    const params = useParams() || notFound();
     const [classId, setClassId] = useState("")
     const [className, setClassName] = useState("")
     const [visibility, setVisibility] = useState(false)
