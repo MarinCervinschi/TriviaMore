@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import Loader from "@/components/Loader"
@@ -22,7 +22,7 @@ import { FiEdit3, FiDelete } from "react-icons/fi";
 import { IoMdArrowRoundBack } from "react-icons/io"
 
 export default function ManageSection() {
-    const params = useParams();
+    const params = useParams() || notFound();
     const [sectionName, setSectionName] = useState("")
     const [sectionId, setSectionId] = useState("")
     const [sectionIcon, setSectionIcon] = useState("default")
