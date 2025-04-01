@@ -2,19 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { notFound, useParams } from "next/navigation"
-import { BiLogOut } from "react-icons/bi"
-import Link from 'next/link'
 
 import Quiz from "@/components/Quiz"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Loader from "@/components/Loader"
-import SplitText from "@/animations/SplitText"
 import AnimatedContent from "@/animations/AnimatedContent"
 
 import iconMap from "@/lib/iconMap"
 import QuizSection from "@/types/QuizSection"
 import QuizClass from "@/types/QuizClass"
 import QuizQuestion from "@/types/QuizQuestion"
+import Breadcrumb from '@/components/Breadcrumbs'
 
 export default function QuizPage() {
     const params = useParams()
@@ -67,22 +65,8 @@ export default function QuizPage() {
 
     return (
         <DefaultLayout>
-            <div className="flex flex-col items-center justify-center p-4 space-y-4">
-                <div className="flex items-center justify-center space-x-4">
-                    <Link href={`/${quizClass.id}`} className="text-3xl hover:scale-110">
-                        <BiLogOut />
-                    </Link>
-                    <SplitText
-                        text={quizClass.name}
-                        className="text-3xl font-bold text-center"
-                        delay={50}
-                        animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
-                        animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
-                        easing={(t: number) => t}
-                        threshold={0.2}
-                        rootMargin="-50px"
-                    />
-                </div>
+            <div className="flex flex-col items-center justify-center w-full h-full min-h-[calc(100vh-4rem)] space-y-4">
+                <Breadcrumb pages={[quizClass.name, section.sectionName]} url={`/${quizClass.id}`} />
                 <AnimatedContent
                     distance={150}
                     direction="vertical"

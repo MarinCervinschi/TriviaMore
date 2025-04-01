@@ -101,7 +101,7 @@ export default function Quiz({ questions, section, quizClassId }: QuizProps) {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <main className="w-full md:w-[700px] lg:w-[850px] py-12 mx-auto">
+    <main className="w-full md:w-[700px] lg:w-[850px] mx-auto px-4">
       <h1 className="text-3xl font-bold mb-8 text-foreground flex justify-center items-center">
         <span className="flex items-center gap-2">{section.icon}{section.sectionName}</span>
       </h1>
