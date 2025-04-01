@@ -69,7 +69,7 @@ export default function QuizPage() {
         <DefaultLayout>
             <div className="flex flex-col items-center justify-center p-4 space-y-4">
                 <div className="flex items-center justify-center space-x-4">
-                    <Link href={`/${quizClass.id}`} className="text-3xl hover:scale-110 active:text-red-600">
+                    <Link href={`/${quizClass.id}`} className="text-3xl hover:scale-110">
                         <BiLogOut />
                     </Link>
                     <SplitText
