@@ -5,7 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Toaster } from '@/components/ui/sonner'
 
 export const metadata = {
-  title: 'Trivia More',
+  title: 'Trivia MORE',
   description: 'A quiz app for exam preparation',
   url: 'https://trivia-more.vercel.app',
 }
