@@ -32,7 +32,7 @@ export default function DefaultLayout({
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex flex-col min-h-screen bg-transparent text-gray-900">
+      <div className="flex flex-col min-h-screen bg-transparent">
         {/* <!-- ===== Header Start ===== --> */}
         <Header />
         {/* <!-- ===== Header End ===== --> */}
