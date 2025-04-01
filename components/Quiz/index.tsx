@@ -1,77 +1,94 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import QuestionCard from "./QuestionCard";
+import QuizScore from "./QuizScore";
+import QuizReview from "./QuizReview";
+import QuizQuestion from "@/types/QuizQuestion";
+import QuizSection from "@/types/QuizSection";
+import Link from "next/link";
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Timer } from "@/components/Timer"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+type QuizProps = {
+  questions: QuizQuestion[];
+  section: QuizSection;
+  quizClassId: string;
+};
 
-import QuizProps from "@/types/QuizProps"
+export default function Quiz({ questions, section, quizClassId }: QuizProps) {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<number[][]>(questions.map(() => []));
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
 
-export function Quiz({ section, questions, quizClassId }: QuizProps) {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [userAnswers, setUserAnswers] = useState<number[][]>(questions.map(() => []))
-  const [showResults, setShowResults] = useState(false)
-  const [scores, setScores] = useState<number[]>([])
-  const [isTimerRunning, setIsTimerRunning] = useState(true)
-  const [startTime, setStartTime] = useState<number>(Date.now())
-  const [totalTime, setTotalTime] = useState<number | null>(null)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgress((currentQuestionIndex / questions.length) * 100);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [currentQuestionIndex, questions.length]);
 
-  const handleAnswerChange = (optionIndex: number) => {
-    setUserAnswers((prev) => {
-      const newAnswers = [...prev]
-      const currentAnswers = newAnswers[currentQuestion]
-      if (currentAnswers?.includes(optionIndex)) {
-        newAnswers[currentQuestion] = currentAnswers.filter((i) => i !== optionIndex)
-      } else {
-        newAnswers[currentQuestion] = [...currentAnswers, optionIndex]
-      }
-      return newAnswers
-    })
-  }
+  const handleSelectAnswer = (answerIndex: number) => {
+    if (!isSubmitted) {
+      setAnswers((prevAnswers) => {
+        const newAnswers = [...prevAnswers];
+        const currentAnswers = newAnswers[currentQuestionIndex];
 
-  const calculateScores = useCallback(() => {
-    const newScores = questions.map((question, index) => {
-      const userAnswer = userAnswers[index]
-      const correctAnswers = question.answer
+        // Toggle selection
+        if (currentAnswers.includes(answerIndex)) {
+          newAnswers[currentQuestionIndex] = currentAnswers.filter((a) => a !== answerIndex);
+        } else {
+          newAnswers[currentQuestionIndex] = [...currentAnswers, answerIndex];
+        }
+        return newAnswers;
+      });
+    }
+  };
 
-      const correctGuesses = userAnswer.filter((answer) => correctAnswers.includes(answer)).length
-      const incorrectGuesses = userAnswer.filter((answer) => !correctAnswers.includes(answer)).length
+  const handleSubmit = useCallback(() => {
+    setIsSubmitted(true);
 
-      const totalCorrectAnswers = correctAnswers.length
-      const score = Math.max(0, correctGuesses / totalCorrectAnswers - incorrectGuesses / totalCorrectAnswers)
+    // Calculate score
+    const totalScore = questions.reduce((acc, question, index) => {
+      const userAnswers = answers[index];
+      const correctAnswers = question.answer;
 
-      return Math.round(score * 100) / 100 // Round to 2 decimal places
-    })
+      const correctGuesses = userAnswers.filter((answer) => correctAnswers.includes(answer)).length;
+      const incorrectGuesses = userAnswers.filter((answer) => !correctAnswers.includes(answer)).length;
 
-    setScores(newScores)
-  }, [questions, userAnswers])
+      const totalCorrectAnswers = correctAnswers.length;
+      const score = Math.max(0, correctGuesses / totalCorrectAnswers - incorrectGuesses / totalCorrectAnswers);
 
-  const handleNext = useCallback(() => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion((prev) => prev + 1)
+      return acc + Math.round(score * 100) / 100; // Round to 2 decimal places
+    }, 0);
+
+    setScore(totalScore);
+  }, [questions, answers]);
+
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      calculateScores()
-      setShowResults(true)
-      setIsTimerRunning(false)
-      setTotalTime(Math.floor((Date.now() - startTime) / 1000))
+      handleSubmit();
     }
-  }, [currentQuestion, questions.length, calculateScores, startTime])
+  }, [currentQuestionIndex, questions.length, handleSubmit]);
 
-  const handlePrevious = useCallback(() => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion((prev) => prev - 1)
+  const handlePreviousQuestion = useCallback(() => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prev) => prev - 1);
     }
-  }, [currentQuestion])
+  }, [currentQuestionIndex]);
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
-      if (event.key === "ArrowLeft" && currentQuestion > 0) {
-        handlePrevious();
-      } else if (event.key === "ArrowRight" && currentQuestion < questions.length - 1) {
-        handleNext();
+      if (event.key === "ArrowLeft" && currentQuestionIndex > 0) {
+        handlePreviousQuestion();
+      } else if (event.key === "ArrowRight" && currentQuestionIndex < questions.length - 1) {
+        handleNextQuestion();
       }
     };
 
@@ -79,91 +96,64 @@ export function Quiz({ section, questions, quizClassId }: QuizProps) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentQuestion, handlePrevious, handleNext, questions.length]);
+  }, [currentQuestionIndex, handlePreviousQuestion, handleNextQuestion, questions.length]);
 
-  if (showResults) {
-    const totalScore = scores.reduce((sum, score) => sum + score, 0)
-    return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className='flex text-xl items-center font-bold'>{section.icon}&nbsp;{section.sectionName} Quiz Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-lg font-semibold">
-              Your total score: {totalScore.toFixed(2)} out of {questions.length}
-            </p>
-            {totalTime !== null && <Timer isRunning={false} totalTime={totalTime} />}
-          </div>
-          {questions.map((question, index) => (
-            <div key={`${question.id}`} className="mb-6">
-              <p className="font-medium mb-2">{question.question}</p>
-              <p className="text-sm text-gray-600 mb-2">Section: {section.sectionName}</p>
-              <p className="text-sm font-semibold mb-2">Your score: {scores[index].toFixed(2)}</p>
-              {question.options.map((option, optionIndex) => {
-                const isCorrect = question.answer.includes(optionIndex)
-                const isSelected = userAnswers[index].includes(optionIndex)
-                let textColorClass = "";
-                if (isSelected) {
-                  textColorClass = isCorrect ? "text-green-600" : "text-red-600"
-                }
-                return (
-                  <div key={optionIndex} className={`flex items-center space-x-2 mb-1 ${textColorClass}`}>
-                    <span className="text-sm">{isSelected ? (isCorrect ? "✓" : "✗") : "○"}</span>
-                    <span className="text-sm">{option}</span>
-                    {isCorrect && !isSelected && <span className="text-green-600 font-bold text-sm ml-2">(Correct)</span>}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </CardContent>
-        <CardFooter>
-          <Button asChild>
-            <Link href={`/${quizClassId}`}>Choose Another Section</Link>
-          </Button>
-        </CardFooter>
-      </Card>
-    )
-  }
-
-  const question = questions[currentQuestion]
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="flex flex-col items-center justify-between sm:flex-row space-x-9">
-        <CardTitle className='flex text-xl items-center font-bold '>
-          {section.icon} &nbsp;
-          {section.sectionName} - Question {currentQuestion + 1} of {questions.length}
-        </CardTitle>
-        <Timer isRunning={isTimerRunning} />
-      </CardHeader>
-      <CardContent>
-        <p className="text-lg font-medium mb-4">{question.question}</p>
-        {section.id === "random" && <p className="text-sm text-gray-600 mb-4">Section: {question.sectionId}</p>}
-        {question.options.map((option, index) => (
-          <div key={index} className="flex items-center space-x-2 mb-2">
-            <Checkbox
-              id={`option-${index}`}
-              checked={userAnswers[currentQuestion]?.includes(index)}
-              onCheckedChange={() => handleAnswerChange(index)}
-            />
-            <label
-              htmlFor={`option-${index}`}
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    <main className="w-full md:w-[700px] lg:w-[850px] mx-auto px-4">
+      <h1 className="text-3xl font-bold mb-8 text-foreground flex justify-center items-center">
+        <span className="flex items-center gap-2">{section.icon}{section.sectionName}</span>
+      </h1>
+      <div className="relative">
+        {!isSubmitted && <Progress value={progress} className="h-1 mb-8" />}
+        <div className="min-h-[400px]"> {/* Prevent layout shift */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isSubmitted ? "results" : currentQuestionIndex}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
             >
-              {option}
-            </label>
-          </div>
-        ))}
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button onClick={handlePrevious} disabled={currentQuestion === 0} variant="outline">
-          Previous
-        </Button>
-        <Button onClick={handleNext}>{currentQuestion < questions.length - 1 ? "Next" : "Finish"}</Button>
-      </CardFooter>
-    </Card>
-  )
-}
+              {!isSubmitted ? (
+                <div className="space-y-8">
+                  <QuestionCard
+                    question={currentQuestion}
+                    selectedAnswers={answers[currentQuestionIndex]}
+                    onSelectAnswer={handleSelectAnswer}
+                    isSubmitted={isSubmitted}
+                    random={section.id === "random"}
+                    showCorrectAnswer={false}
+                  />
+                  <div className="flex justify-between items-center pt-4">
+                    <Button onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0} variant="ghost">
+                      <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+                    </Button>
+                    <span className="text-sm font-medium">{currentQuestionIndex + 1} / {questions.length}</span>
+                    <Button
+                      onClick={handleNextQuestion}
+                      variant="ghost"
+                    >
+                      {currentQuestionIndex === questions.length - 1 ? "Submit" : "Next"}
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-8 flex flex-col items-center">
+                  <QuizScore correctAnswers={score ?? 0} totalQuestions={questions.length} />
+                  <QuizReview questions={questions} userAnswers={answers} section={section} />
 
+                  <Button size={'lg'}>
+                    <Link href={`/${quizClassId}`}>Choose Another Section</Link>
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </main>
+  );
+}
