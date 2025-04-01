@@ -43,7 +43,7 @@ export default function DefaultLayout({
             speed={0.2}
             squareSize={40}
             direction='diagonal' // up, down, left, right, diagonal
-            borderColor='#f5f5f5'
+            borderColor='#F5F3F4'
             hoverFillColor='#f5f5f5'
           />
         </div>
