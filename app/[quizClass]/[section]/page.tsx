@@ -5,7 +5,7 @@ import { notFound, useParams } from "next/navigation"
 import { BiLogOut } from "react-icons/bi"
 import Link from 'next/link'
 
-import { Quiz } from "@/components/Quiz"
+import Quiz from "@/components/Quiz"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Loader from "@/components/Loader"
 import SplitText from "@/animations/SplitText"
