@@ -1,6 +1,9 @@
 #!/bin/sh
 #File backup.sh
 
+# Trap SIGINT (Control-C) and ensure postgresql service is stopped
+trap 'echo "Interrupted. Stopping postgresql service"; brew services stop postgresql@15; exit 130' INT
+
 # Load environment variables from .env file
 if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
@@ -15,9 +18,14 @@ fi
 
 DATABASE_URL=$DATABASE_URL
 
-# Start postgresql service
-echo "Starting postgresql service"
-brew services start postgresql@15
+# Check if postgresql service is already running
+if brew services list | grep -q "postgresql@15.*started"; then
+    echo "Postgresql service is already running"
+else
+    # Start postgresql service
+    echo "Starting postgresql service"
+    brew services start postgresql@15
+fi
 
 # Backup the database
 echo "Backing up database"
