@@ -13,12 +13,14 @@ import QuizSection from "@/types/QuizSection"
 import QuizClass from "@/types/QuizClass"
 import QuizQuestion from "@/types/QuizQuestion"
 import Breadcrumb from '@/components/Breadcrumbs'
+import { FlashCard } from '@/components/FlashCard'
 
 export default function QuizPage() {
     const params = useParams()
     const [quizClass, setQuizClass] = useState<QuizClass>({} as QuizClass);
     const [section, setSection] = useState<QuizSection>({} as QuizSection);
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+    const [flashCard, setFlashCard] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -27,8 +29,9 @@ export default function QuizPage() {
         }
 
         const fetchData = async (quizClassId: string, sectionId: string) => {
+            const id = sectionId.split('%26');
             try {
-                const response = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${sectionId}`);
+                const response = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${id[0]}`);
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(data.message || response.statusText);
@@ -43,6 +46,7 @@ export default function QuizPage() {
                 setQuizClass(data.quizClass);
                 setSection(formattedData);
                 setQuestions(data.questions);
+                setFlashCard(!!id[1]);
                 setLoading(false);
             } catch (error) {
                 console.error(error);
@@ -60,7 +64,10 @@ export default function QuizPage() {
         if (!questions.length) {
             return <p className="text-red-500 text-xl">No questions found</p>;
         }
-        return <Quiz section={section} questions={questions} quizClassId={quizClass.id || 'id'} />;
+        return (flashCard ?
+            <FlashCard section={section} questions={questions} quizClassId={quizClass.id || ''} /> :
+            <Quiz section={section} questions={questions} quizClassId={quizClass.id || 'id'} />
+        );
     }
 
     return (

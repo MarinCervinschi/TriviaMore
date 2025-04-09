@@ -7,7 +7,7 @@ interface BreadcrumbProps {
 const Breadcrumb = ({ pages, url }: BreadcrumbProps) => {
   return (
     <nav className="container mx-auto mb-6">
-      <ol className="flex items-center gap-2">
+      <ol className="flex items-center gap-2 flex-wrap">
         <li>
           <Link className="font-medium hover:text-accent hover:underline underline-offset-4 flex items-center gap-2" href="/">
             <FaHome /> {`Home >`}
