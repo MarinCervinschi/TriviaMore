@@ -11,6 +11,7 @@ import { CgIfDesign } from "react-icons/cg";
 import { TfiWrite } from "react-icons/tfi";
 import { AiOutlineException } from "react-icons/ai";
 import { BsHddStack } from "react-icons/bs";
+import { IoMdPaper } from "react-icons/io";
 
 const iconMap: { [key: string]: JSX.Element } = {
     default: <MdOutlineQuiz />,
@@ -51,6 +52,7 @@ const iconMap: { [key: string]: JSX.Element } = {
     TbCloudNetwork: <TbCloudNetwork />,
     BsHddStack: <BsHddStack />,
     LuRouter: <LuRouter />,
+    IoMdPaper: <IoMdPaper />,
 };
 
 export default iconMap
