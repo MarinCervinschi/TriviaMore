@@ -9,6 +9,7 @@ import QuizQuestion from "@/types/QuizQuestion"
 import { toast } from "sonner"
 import { Progress } from "@/components/ui/progress"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface FlashCardProps {
     section: QuizSection
@@ -72,6 +73,11 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
     const question = questions[currentCardIndex]
     const correctAnswers = question.answer.map((index) => question.options[index])
 
+    const getLink = (answer: string) => {
+        const fileId = answer.split('/file/d/')[1].split('/')[0];
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+    };
+
     return (
         <div className="w-[400px] sm:w-[500px] md:w-[700px] lg:w-[850px] mx-auto px-4">
             <Progress value={progress} className="h-1 mb-8" />
@@ -108,14 +114,32 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
                             </CardHeader>
                             <CardContent className="flex flex-col items-center justify-center h-[250px]">
                                 <div className="p-5 text-sm sm:text-md md:text-lg font-medium break-words text-green-600 overflow-auto">
-                                    {correctAnswers.length === 1 ? (
-                                        <p>{correctAnswers[0]}</p>
+                                    {section.id === "theorems" && quizClassId == "telecommunications" ? (
+                                        correctAnswers.length === 1 ? (
+                                            <Link href={getLink(correctAnswers[0])} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                                                View Document
+                                            </Link>
+                                        ) : (
+                                            <ul className="list-disc pl-5">
+                                                {correctAnswers.map((answer, index) => (
+                                                    <li key={index}>
+                                                        <Link href={getLink(answer)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                                                            View Document {index + 1}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )
                                     ) : (
-                                        <ul className="list-disc pl-5">
-                                            {correctAnswers.map((answer, index) => (
-                                                <li key={index}>{answer}</li>
-                                            ))}
-                                        </ul>
+                                        correctAnswers.length === 1 ? (
+                                            <p>{correctAnswers[0]}</p>
+                                        ) : (
+                                            <ul className="list-disc pl-5">
+                                                {correctAnswers.map((answer, index) => (
+                                                    <li key={index}>{answer}</li>
+                                                ))}
+                                            </ul>
+                                        )
                                     )}
                                 </div>
                             </CardContent>
