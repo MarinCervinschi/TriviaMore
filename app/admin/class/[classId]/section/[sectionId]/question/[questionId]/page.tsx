@@ -18,8 +18,8 @@ import QuizQuestion from "@/types/QuizQuestion"
 import iconMap from "@/lib/iconMap"
 
 import { LuSave } from "react-icons/lu"
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { MdOutlineCancel } from "react-icons/md"
+import { IoMdArrowRoundBack, IoIosRemoveCircle } from "react-icons/io";
+import { MdOutlineCancel, MdAddToPhotos } from "react-icons/md"
 
 export default function ManageQuestion() {
     const params = useParams() || notFound();
@@ -97,6 +97,12 @@ export default function ManageQuestion() {
         } else {
             data = [question]
         }
+
+        data = data.map((item) => ({
+            ...item,
+            classId: params.classId as string,
+            sectionId: params.sectionId as string,
+        }))
 
         try {
             const response = await fetch("/api/admin/question", {
@@ -225,8 +231,35 @@ export default function ManageQuestion() {
                                                     onCheckedChange={(checked) => handleCorrectAnswerChange(index, checked as boolean)}
                                                 />
                                                 <Label htmlFor={`correct-${index}`}>Correct</Label>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    disabled={question.options.length <= 1}
+                                                    onClick={() =>
+                                                        setQuestion((prev) => {
+                                                            const newOptions = [...prev.options];
+                                                            newOptions.splice(index, 1);
+                                                            const newAnswers = prev.answer.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i));
+                                                            return { ...prev, options: newOptions, answer: newAnswers };
+                                                        })
+                                                    }
+                                                >
+                                                    <IoIosRemoveCircle />
+                                                </Button>
                                             </div>
                                         ))}
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                setQuestion((prev) => ({
+                                                    ...prev,
+                                                    options: [...prev.options, ""],
+                                                }))
+                                            }
+                                        >
+                                            Add Option <MdAddToPhotos />
+                                        </Button>
                                     </>
                                 )}
                             </div>
