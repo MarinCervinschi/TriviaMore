@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 import Loader from "@/components/Loader"
 import ClassSelector from "@/components/ClassSelector"
@@ -10,50 +10,28 @@ import SplitText from "@/components/animations/SplitText";
 import AnimatedContent from "@/components/animations/AnimatedContent"
 
 import iconMap from "@/lib/iconMap"
-import QuizClass from "@/types/QuizClass"
+
+const fetchClasses = async () => {
+  const res = await fetch('/api/classes');
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.message || res.statusText);
+  }
+  const data = await res.json();
+  return data.map((row: any) => ({
+    ...row,
+    icon: iconMap[row.icon]
+  }));
+};
 
 export default function Home() {
-  const [quizData, setQuizData] = useState<QuizClass[]>([] as QuizClass[]);
-  const [loading, setLoading] = useState(true);
+  const { data: quizData, isLoading, isError, error } = useQuery({
+    queryKey: ['quiz-classes'],
+    queryFn: fetchClasses
+  });
 
-  useEffect(() => {
-    const fetchQuizData = async () => {
-      try {
-        const response = await fetch('/api/classes', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || response.statusText);
-        }
-        const data = await response.json();
-        const formattedData = data
-          .map((row: any) => ({
-            ...row,
-            icon: iconMap[row.icon]
-          }));
-        setQuizData(formattedData);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fetchQuizData();
-  }, []);
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  const getClassSelector = () => {
-    if (!quizData.length) {
-      return <p className="text-red-500 text-xl">No classes found</p>;
-    }
-    return <ClassSelector classes={quizData} />;
-  }
+  if (isLoading) return <Loader />;
+  if (isError) return <p className="text-red-500">Errore: {(error as Error).message}</p>;
 
   return (
     <DefaultLayout>
@@ -78,9 +56,13 @@ export default function Home() {
           scale={1.1}
           threshold={0.2}
         >
-          {getClassSelector()}
+          {quizData.length ? (
+            <ClassSelector classes={quizData} />
+          ) : (
+            <p className="text-red-500 text-xl">No classes found</p>
+          )}
         </AnimatedContent>
       </div>
     </DefaultLayout>
-  )
+  );
 }
