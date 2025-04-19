@@ -15,7 +15,7 @@ import Link from "next/link";
 type QuizProps = {
   questions: QuizQuestion[];
   section: QuizSection;
-  quizClassId: string;
+  quizClassId: string | undefined;
 };
 
 export default function Quiz({ questions, section, quizClassId }: QuizProps) {
