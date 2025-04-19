@@ -14,7 +14,7 @@ import Link from "next/link"
 interface FlashCardProps {
     section: QuizSection
     questions: QuizQuestion[]
-    quizClassId: string
+    quizClassId: string | undefined
 }
 
 export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
