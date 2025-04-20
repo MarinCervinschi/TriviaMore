@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useMutation } from '@tanstack/react-query'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,45 +12,54 @@ import { toast } from "sonner"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Cookies from "js-cookie"
 
+type LoginPayload = { username: string; password: string }
+type LoginResponse = { token: string }
+
 export default function AdminLogin() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const response = await fetch("/api/admin/login", {
+  const loginMutation = useMutation<LoginResponse, Error, LoginPayload>({
+    mutationFn: async ({ username, password }) => {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-      })
+      });
 
-      if (response.ok) {
-        const { token } = await response.json()
-        Cookies.set("admin_token", token, { expires: 10 }) // expires in 1 day
-        Cookies.set("admin_username", username, { expires: 10 }) // expires in 1 day
-        toast.success("Login successful 🎉")
-        router.push("/admin/dashboard")
-      } else {
-        toast.error("Invalid username or password")
+      if (!res.ok) {
+        throw new Error("Invalid username or password");
       }
-    } catch (error) {
-      console.error("Login error:", error)
-      toast.error("Failed to login. Error: " + error)
+
+      return res.json();
+    },
+    onSuccess: (data) => {
+      Cookies.set("admin_token", data.token, { expires: 10 });
+      Cookies.set("admin_username", username, { expires: 10 });
+      toast.success("Login successful 🎉");
+      router.push("/admin/dashboard");
+    },
+    onError: (error) => {
+      toast.error("Failed to login. " + error.message);
     }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginMutation.mutate({ username, password });
   }
 
   return (
-    <DefaultLayout >
+    <DefaultLayout>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
@@ -76,12 +85,11 @@ export default function AdminLogin() {
           </form>
         </CardContent>
         <CardFooter>
-          <Button className="w-full" onClick={handleLogin}>
-            Login
+          <Button className="w-full" onClick={handleSubmit} disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? "Logging in..." : "Login"}
           </Button>
         </CardFooter>
       </Card>
     </DefaultLayout>
-  )
+  );
 }
-
