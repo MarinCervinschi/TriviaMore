@@ -10,7 +10,6 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import Loader from "@/components/Loader"
 import SplitText from "@/animations/SplitText"
 import AnimatedContent from "@/animations/AnimatedContent"
-import iconMap from "@/lib/iconMap"
 
 import QuizClass from "@/types/QuizClass"
 import QuizSection from "@/types/QuizSection"
@@ -23,14 +22,10 @@ const fetchQuizClassAndSections = async (quizClassId: string) => {
     }
 
     const data = await res.json();
-    const formattedSections = data.sections.map((row: any) => ({
-        ...row,
-        icon: iconMap[row.icon]
-    }));
 
     return {
         class: data.class as QuizClass,
-        sections: formattedSections as QuizSection[]
+        sections: data.sections as QuizSection[]
     };
 };
 

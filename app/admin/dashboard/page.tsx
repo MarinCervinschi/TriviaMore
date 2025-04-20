@@ -29,11 +29,7 @@ export default function AdminDashboard() {
             const response = await fetch("/api/classes")
             if (response.ok) {
                 const data = await response.json()
-                const formattedData = data.map((row: any) => ({
-                    ...row,
-                    icon: iconMap[row.icon]
-                }));
-                setClasses(formattedData)
+                setClasses(data)
                 setLoading(false)
             } else {
                 throw new Error("Failed to fetch classes")
@@ -72,7 +68,7 @@ export default function AdminDashboard() {
                                 {classes.map((quizClass) => (
                                     <Card key={quizClass.id}>
                                         <CardHeader>
-                                            <CardTitle><span className="flex gap-1">{quizClass.icon} {quizClass.name}</span></CardTitle>
+                                            <CardTitle><span className="flex gap-1">{iconMap[quizClass.icon || 'default']} {quizClass.name}</span></CardTitle>
                                         </CardHeader>
                                         <CardContent>
                                             <div className="flex justify-between items-center">

@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Progress } from "@/components/ui/progress"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
+import iconMap from "@/lib/iconMap"
 
 interface FlashCardProps {
     section: QuizSection
@@ -92,7 +93,7 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
                         <Card className="relative">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <CardTitle>
-                                    <span className="flex items-center gap-2">{section.icon}{section.sectionName} - Flash Card</span>
+                                    <span className="flex items-center gap-2">{iconMap[section.icon || 'default']}{section.sectionName} - Flash Card</span>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="flex items-center justify-center h-[250px]">
@@ -109,7 +110,7 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
                         <Card className="relative">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <CardTitle>
-                                    <span className="flex items-center gap-2">{section.icon}{section.sectionName} - Answer</span>
+                                    <span className="flex items-center gap-2">{iconMap[section.icon || 'default']}{section.sectionName} - Answer</span>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-col items-center justify-center h-[250px]">

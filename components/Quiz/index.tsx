@@ -11,6 +11,7 @@ import QuizReview from "./QuizReview";
 import QuizQuestion from "@/types/QuizQuestion";
 import QuizSection from "@/types/QuizSection";
 import Link from "next/link";
+import iconMap from "@/lib/iconMap";
 
 type QuizProps = {
   questions: QuizQuestion[];
@@ -103,7 +104,7 @@ export default function Quiz({ questions, section, quizClassId }: QuizProps) {
   return (
     <main className="w-full md:w-[700px] lg:w-[850px] mx-auto px-4">
       <h1 className="text-3xl font-bold mb-8 text-foreground flex justify-center items-center">
-        <span className="flex items-center gap-2">{section.icon}{section.sectionName}</span>
+        <span className="flex items-center gap-2">{iconMap[section.icon || 'default']}{section.sectionName}</span>
       </h1>
       <div className="relative">
         {!isSubmitted && <Progress value={progress} className="h-1 mb-8" />}
