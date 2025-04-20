@@ -9,8 +9,6 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import SplitText from "@/components/animations/SplitText";
 import AnimatedContent from "@/components/animations/AnimatedContent"
 
-import iconMap from "@/lib/iconMap"
-
 const fetchClasses = async () => {
   const res = await fetch('/api/classes');
   if (!res.ok) {
@@ -18,10 +16,7 @@ const fetchClasses = async () => {
     throw new Error(data.message || res.statusText);
   }
   const data = await res.json();
-  return data.map((row: any) => ({
-    ...row,
-    icon: iconMap[row.icon]
-  }));
+  return data;
 };
 
 export default function Home() {

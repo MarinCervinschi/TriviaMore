@@ -42,11 +42,8 @@ export default function ManageClass() {
                 const response = await fetch(`/api/sections?classId=${params.classId}`)
                 if (response.ok) {
                     const data = await response.json()
-                    const formattedData = data.sections.map((row: any) => ({
-                        ...row,
-                        icon: iconMap[row.icon]
-                    }));
-                    setSections(formattedData)
+
+                    setSections(data.sections)
                     setClassId(data.class.id)
                     setClassName(data.class.name)
                     setVisibility(data.class.visibility)
@@ -202,7 +199,7 @@ export default function ManageClass() {
                                         {sections.map((section) => (
                                             <Card key={section.id}>
                                                 <CardHeader>
-                                                    <CardTitle><span className="flex gap-1 items-center">{section.icon} {section.sectionName}</span></CardTitle>
+                                                    <CardTitle><span className="flex gap-1 items-center">{iconMap[section.icon || 'default']} {section.sectionName}</span></CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <Link href={`/admin/class/${params.classId}/section/${section.id}`}>

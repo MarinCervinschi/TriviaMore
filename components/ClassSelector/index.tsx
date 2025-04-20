@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import QuizClass from "@/types/QuizClass"
 import Link from "next/link"
 
+import iconMap from "@/lib/iconMap"
+
 interface ClassSelectorProps {
     classes: QuizClass[]
 }
@@ -17,7 +19,7 @@ export default function ClassSelector({ classes }: ClassSelectorProps) {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 ">
                     {classes.map((quizClass) => (
                         <Button key={quizClass.id} asChild variant="outline" className="h-auto py-4 text-lg">
-                            <Link href={`/${quizClass.id}`}>{quizClass.icon}{quizClass.name}</Link>
+                            <Link href={`/${quizClass.id}`}>{iconMap[quizClass.icon || 'default']}{quizClass.name}</Link>
                         </Button>
                     ))}
                 </div>

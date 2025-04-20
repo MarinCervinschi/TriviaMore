@@ -10,7 +10,6 @@ import AnimatedContent from "@/animations/AnimatedContent"
 import Breadcrumb from '@/components/Breadcrumbs'
 import { FlashCard } from '@/components/FlashCard'
 
-import iconMap from "@/lib/iconMap"
 import QuizSection from "@/types/QuizSection"
 import QuizClass from "@/types/QuizClass"
 import QuizQuestion from "@/types/QuizQuestion"
@@ -28,10 +27,7 @@ const fetchQuizPageData = async (quizClassId: string, sectionParam: string) => {
 
   return {
     quizClass: data.quizClass as QuizClass,
-    section: {
-      ...data.section,
-      icon: iconMap[data.section.icon]
-    } as QuizSection,
+    section: data.section as QuizSection,
     questions: data.questions as QuizQuestion[],
     flashCard: !!flashFlag
   };
