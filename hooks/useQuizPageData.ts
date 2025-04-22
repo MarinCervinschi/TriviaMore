@@ -28,10 +28,10 @@ const fetchQuizPageData = async (quizClassId: string, sectionParam: string): Pro
     };
 };
 
-export const useQuizPageData = (quizClassId: string, sectionParam: string) => {
+export const useQuizPageData = (quizClassId: string, sectionParam: string, idEnabled: boolean) => {
     return useQuery({
         queryKey: ['quiz-page', quizClassId, sectionParam],
-        queryFn: () => fetchQuizPageData(quizClassId!, sectionParam!),
-        enabled: !!quizClassId && !!sectionParam
+        queryFn: () => fetchQuizPageData(quizClassId, sectionParam),
+        enabled: idEnabled
     });
 }

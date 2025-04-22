@@ -20,9 +20,7 @@ export default function ManageSection({ params }: { params: Promise<{ classId: s
     const router = useRouter();
     const isNewSection = sectionId === 'new';
 
-    const { data, isLoading, isError, error } = isNewSection
-        ? { data: null, isLoading: false, isError: false, error: null }
-        : useQuizPageData(classId, sectionId);
+    const { data, isLoading, isError, error } = useQuizPageData(classId, sectionId, !isNewSection);
 
     if (isLoading) return <Loader />;
     if (isError) return <p className="text-red-500">Error: {error?.message}</p>;

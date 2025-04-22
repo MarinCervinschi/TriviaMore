@@ -19,12 +19,10 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
     const router = useRouter()
     const isNewClass = classId === "new"
 
-    const { data, isLoading, isError, error } = isNewClass
-        ? { data: null, isLoading: false, isError: false }
-        : useClassData(classId, !isNewClass)
+    const { data, isLoading, isError, error } = useClassData(classId, !isNewClass)
 
     if (isLoading) return <Loader />
-    if (isError) return <p className="text-red-500">Error: {error?.message}</p>
+    if (isError) return <p className="text-red-500">Error: {error.message}</p>
 
     return (
         <DefaultLayout>

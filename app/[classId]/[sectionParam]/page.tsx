@@ -15,7 +15,7 @@ import { useQuizPageData } from '@/hooks/useQuizPageData'
 export default function QuizPage({params}: { params: Promise<{ classId: string, sectionParam: string }> }) {
     const { classId, sectionParam } = use(params);
     
-    const { data, isLoading, isError, error } = useQuizPageData(classId!, sectionParam!);
+    const { data, isLoading, isError, error } = useQuizPageData(classId, sectionParam, true);
 
     if (!classId || !sectionParam) {
         notFound();
