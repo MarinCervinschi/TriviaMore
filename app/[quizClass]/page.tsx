@@ -1,7 +1,7 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { useParams, notFound } from 'next/navigation'
+import { use } from 'react'
+import { notFound } from 'next/navigation'
 import { BiLogOut } from 'react-icons/bi'
 import Link from 'next/link'
 
@@ -11,40 +11,19 @@ import Loader from "@/components/Loader"
 import SplitText from "@/animations/SplitText"
 import AnimatedContent from "@/animations/AnimatedContent"
 
-import QuizClass from "@/types/QuizClass"
-import QuizSection from "@/types/QuizSection"
+import { useClassData } from '@/hooks/useClassData'
 
-const fetchQuizClassAndSections = async (quizClassId: string) => {
-    const res = await fetch(`/api/sections?classId=${quizClassId}`);
-    if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Errore nel fetch delle sezioni');
-    }
+export default function ManageClass({ params }: { params: Promise<{ classId: string }> }) {
+    const { classId } = use(params);
 
-    const data = await res.json();
+    const { data, isLoading, isError, error } = useClassData(classId, !!classId);
 
-    return {
-        class: data.class as QuizClass,
-        sections: data.sections as QuizSection[]
-    };
-};
-
-export default function QuizClassPage() {
-    const params = useParams();
-    const quizClassId = params?.quizClass as string | undefined;
-
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['quiz-class-sections', quizClassId],
-        queryFn: () => fetchQuizClassAndSections(quizClassId!),
-        enabled: !!quizClassId
-    });
-
-    if (!quizClassId || isError) {
-        console.error('Error fetching quiz class and sections:', error);
+    if (!classId) {
         notFound();
     }
 
     if (isLoading) return <Loader />;
+    if (isError) return <p className="text-red-500">Errore: {error.message}</p>;
 
     const { class: quizClass, sections } = data!;
 
