@@ -1,7 +1,6 @@
 'use client'
 
 import { use } from 'react'
-import { notFound } from 'next/navigation'
 
 import Quiz from "@/components/Quiz"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
@@ -11,18 +10,29 @@ import Breadcrumb from '@/components/Breadcrumbs'
 import { FlashCard } from '@/components/FlashCard'
 
 import { useQuizPageData } from '@/hooks/useQuizPageData'
+import ErrorPage from '@/components/ErrorPage'
 
-export default function QuizPage({params}: { params: Promise<{ classId: string, sectionParam: string }> }) {
+export default function QuizPage({ params }: { params: Promise<{ classId: string, sectionParam: string }> }) {
     const { classId, sectionParam } = use(params);
-    
+
     const { data, isLoading, isError, error } = useQuizPageData(classId, sectionParam, true);
 
     if (!classId || !sectionParam) {
-        notFound();
+        return <ErrorPage status={404} message="Class or section not found" backTo="/" />;
     }
 
     if (isLoading) return <Loader />;
-    if (isError) return <p className="text-red-500 text-xl">Error: {error.message}</p>;
+    if (isError) {
+        const status = (error as any)?.status ?? 500;
+
+        return (
+            <ErrorPage
+                status={status}
+                message={error.message}
+                backTo="/"
+            />
+        );
+    }
 
     const { quizClass, section, questions, flashCard } = data!;
 

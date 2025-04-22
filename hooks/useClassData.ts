@@ -5,8 +5,10 @@ import { useQuery } from "@tanstack/react-query"
 const fetchClassData = async (classId: string): Promise<{ class: QuizClass; sections: QuizSection[] }> => {
     const response = await fetch(`/api/sections?classId=${classId}`)
     if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to fetch class data")
+        const errorBody = await response.json().catch(() => ({}));
+        const error = new Error(errorBody.message || "Failed to fetch class data");
+        (error as any).status = response.status;
+        throw error;
     }
     const data = await response.json()
     return {

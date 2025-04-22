@@ -1,7 +1,6 @@
 'use client'
 
 import { use } from 'react'
-import { notFound } from 'next/navigation'
 import { BiLogOut } from 'react-icons/bi'
 import Link from 'next/link'
 
@@ -12,6 +11,7 @@ import SplitText from "@/animations/SplitText"
 import AnimatedContent from "@/animations/AnimatedContent"
 
 import { useClassData } from '@/hooks/useClassData'
+import ErrorPage from '@/components/ErrorPage'
 
 export default function ManageClass({ params }: { params: Promise<{ classId: string }> }) {
     const { classId } = use(params);
@@ -19,11 +19,21 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
     const { data, isLoading, isError, error } = useClassData(classId, !!classId);
 
     if (!classId) {
-        notFound();
+        return <ErrorPage status={404} message="Class not found" backTo="/" />;
     }
 
     if (isLoading) return <Loader />;
-    if (isError) return <p className="text-red-500">Errore: {error.message}</p>;
+    if (isError) {
+        const status = (error as any)?.status ?? 500;
+      
+        return (
+          <ErrorPage
+            status={status}
+            message={error.message}
+            backTo="/"
+          />
+        );
+      }
 
     const { class: quizClass, sections } = data!;
 
