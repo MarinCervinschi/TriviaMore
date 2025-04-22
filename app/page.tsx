@@ -1,7 +1,5 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-
 import Loader from "@/components/Loader"
 import ClassSelector from "@/components/ClassSelector"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
@@ -9,24 +7,13 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import SplitText from "@/components/animations/SplitText";
 import AnimatedContent from "@/components/animations/AnimatedContent"
 
-const fetchClasses = async () => {
-  const res = await fetch('/api/classes');
-  if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.message || res.statusText);
-  }
-  const data = await res.json();
-  return data;
-};
+import { useClassesData } from '@/hooks/useClassesData'
 
 export default function Home() {
-  const { data: quizData, isLoading, isError, error } = useQuery({
-    queryKey: ['quiz-classes'],
-    queryFn: fetchClasses
-  });
+  const { data: quizData, isLoading, isError, error } = useClassesData();
 
   if (isLoading) return <Loader />;
-  if (isError) return <p className="text-red-500">Errore: {(error as Error).message}</p>;
+  if (isError) return <p className="text-red-500">Errore: {error.message}</p>;
 
   return (
     <DefaultLayout>
@@ -51,7 +38,7 @@ export default function Home() {
           scale={1.1}
           threshold={0.2}
         >
-          {quizData.length ? (
+          {quizData?.length ? (
             <ClassSelector classes={quizData} />
           ) : (
             <p className="text-red-500 text-xl">No classes found</p>
