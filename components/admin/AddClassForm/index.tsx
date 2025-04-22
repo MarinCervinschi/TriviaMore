@@ -1,36 +1,44 @@
-"use client"
+'use client'
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useClassMutations } from "@/hooks/admin/useClassMutations"
+import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import QuizClass from "@/types/QuizClass"
+
 import iconMap from "@/lib/iconMap"
-import { useRouter } from "next/navigation"
 import { MdOutlineCancel } from "react-icons/md"
 import { IoMdCreate } from "react-icons/io"
-import { toast } from "sonner"
+
+import QuizClass from "@/types/QuizClass"
 
 export default function AddClassForm() {
+
     const [classId, setClassId] = useState("")
     const [className, setClassName] = useState("")
     const [visibility, setVisibility] = useState(false)
     const [classIcon, setClassIcon] = useState("default")
+
     const [jsonData, setJsonData] = useState("")
     const [isJsonMode, setIsJsonMode] = useState(false)
-    const router = useRouter()
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const router = useRouter()
+    const { createClassMutation } = useClassMutations(classId)
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        let data
+
+        let data: QuizClass
 
         if (isJsonMode) {
             try {
                 data = JSON.parse(jsonData)
-            } catch (error) {
-                console.error("Invalid JSON:", error)
+            } catch (err) {
                 toast.error("Invalid JSON data. Please check and try again.")
                 return
             }
@@ -38,30 +46,12 @@ export default function AddClassForm() {
             data = {
                 id: classId,
                 name: className,
-                visibility: visibility,
-                icon: classIcon,
-            } as QuizClass
-        }
-
-        try {
-            const response = await fetch("/api/admin/class", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-
-            if (response.ok) {
-                toast.success("Class created successfully 🎉")
-                router.push("/admin/dashboard")
-            } else {
-                throw new Error(`Failed to create class`)
+                visibility,
+                icon: classIcon
             }
-        } catch (error) {
-            console.error(`Error creating class:`, error)
-            toast.error(`Failed to create class. Please try again.`)
         }
+
+        createClassMutation.mutate(data)
     }
 
     return (
@@ -76,19 +66,16 @@ export default function AddClassForm() {
                         JSON
                     </Button>
                 </div>
+
                 {isJsonMode ? (
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Example:</Label>
-                            <pre className="bg-gray-100 p-2 rounded">
-                                {`{
+                    <>
+                        <Label>Example:</Label>
+                        <pre className="bg-gray-100 p-2 rounded">{`{
   "id": "web-development",
   "name": "Web Development",
   "visibility": true,
   "icon": "FaCode"
-}`}
-                            </pre>
-                        </div>
+}`}</pre>
                         <div className="space-y-2">
                             <Label htmlFor="json-data">JSON Data</Label>
                             <Textarea
@@ -100,7 +87,7 @@ export default function AddClassForm() {
                                 required
                             />
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <>
                         <div className="space-y-2">
@@ -109,7 +96,7 @@ export default function AddClassForm() {
                                 id="class-id"
                                 value={classId}
                                 onChange={(e) => setClassId(e.target.value)}
-                                placeholder="Enter class ID (e.g., web-development)"
+                                placeholder="Enter class ID"
                                 required
                             />
                         </div>
@@ -129,7 +116,7 @@ export default function AddClassForm() {
                                 id="class-icon"
                                 value={classIcon}
                                 onChange={(e) => setClassIcon(e.target.value)}
-                                placeholder="Enter class icon"
+                                placeholder="Enter icon key"
                                 required
                             />
                         </div>
@@ -144,14 +131,16 @@ export default function AddClassForm() {
                         </div>
                     </>
                 )}
+
                 <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push("/admin/dashboard")}>Cancel <MdOutlineCancel /></Button>
-                    <Button type="submit">
-                        Create Class <IoMdCreate />
+                    <Button variant="outline" onClick={() => router.push("/admin/dashboard")} type="button">
+                        Cancel <MdOutlineCancel />
+                    </Button>
+                    <Button type="submit" disabled={createClassMutation.isPending}>
+                        {createClassMutation.isPending ? "Creating..." : "Create Class"} <IoMdCreate />
                     </Button>
                 </div>
             </div>
         </form>
     )
 }
-
