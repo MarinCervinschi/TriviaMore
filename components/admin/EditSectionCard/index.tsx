@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useSectionMutations } from "@/hooks/admin/useSectionMutations"
 
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
     const [editMode, setEditMode] = useState(false)
     const [sectionName, setSectionName] = useState('');
     const [sectionIcon, setSectionIcon] = useState('default');
+    const router = useRouter();
 
     const { updateSectionMutation, deleteSectionMutation } = useSectionMutations(classId, sectionId);
 
@@ -82,10 +84,15 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
             <p className="flex gap-1">
                 <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode}{sectionData?.sectionName}</span>
             </p>
-            <div className="space-x-2">
-                <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
-                <Button variant="destructive" onClick={handleDeleteSection}>
-                    Delete <FiDelete />
+            <div className="flex items-center justify-between">
+                <div className="space-x-2">
+                    <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
+                    <Button variant="destructive" onClick={handleDeleteSection}>
+                        Delete <FiDelete />
+                    </Button>
+                </div>
+                <Button variant="outline" onClick={() => router.push(`/${classId}/${sectionId}`)}>
+                    Try it out
                 </Button>
             </div>
         </div>

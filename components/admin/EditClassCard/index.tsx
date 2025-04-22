@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useClassMutations } from "@/hooks/admin/useClassMutations"
 
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
     const [className, setClassName] = useState("")
     const [classIcon, setClassIcon] = useState("default")
     const [visibility, setVisibility] = useState(false)
+    const router = useRouter()
 
     const { updateClassMutation, deleteClassMutation } = useClassMutations(classId);
 
@@ -78,9 +80,12 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
                 <strong>Name:</strong> <span className="flex gap-1 items-center">{iconMap[classIcon]}{className}</span>
             </p>
             {getVisibility(visibility)}
-            <div className="space-x-2">
-                <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
-                <Button variant="destructive" onClick={handleDeleteClass}>Delete <FiDelete /></Button>
+            <div className="flex justify-between items-center">
+                <div className="space-x-2">
+                    <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
+                    <Button variant="destructive" onClick={handleDeleteClass}>Delete <FiDelete /></Button>
+                </div>
+                <Button variant="outline" onClick={() => router.push(`/${classId}`)}> Go to Class</Button>
             </div>
         </div>
     );
