@@ -2,7 +2,7 @@
 
 import { use } from "react"
 import { useClassData } from "@/hooks/useClassData"
-import { useRouter, notFound } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import Loader from "@/components/Loader"
 import EditClassCard from "@/components/admin/EditClassCard"
@@ -18,10 +18,13 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
     const { classId } = use(params)
     const router = useRouter()
     const isNewClass = classId === "new"
-    const { data, isLoading, isError } = useClassData(classId, !isNewClass)
+
+    const { data, isLoading, isError, error } = isNewClass
+        ? { data: null, isLoading: false, isError: false }
+        : useClassData(classId, !isNewClass)
 
     if (isLoading) return <Loader />
-    if (isError && !isNewClass) return notFound()
+    if (isError) return <p className="text-red-500">Error: {error?.message}</p>
 
     return (
         <DefaultLayout>
@@ -36,10 +39,11 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
                 <Card className="mb-6">
                     <CardHeader><CardTitle>{isNewClass ? "Class Details" : "Edit Class"}</CardTitle></CardHeader>
                     <CardContent>
-                        {isNewClass ?
-                            <AddClassForm /> :
+                        {isNewClass ? (
+                            <AddClassForm />
+                        ) : (
                             <EditClassCard classId={classId} quizClass={data?.class} />
-                        }
+                        )}
                     </CardContent>
                 </Card>
                 {!isNewClass && <SectionsCard classId={classId} sections={data?.sections || []} />}
