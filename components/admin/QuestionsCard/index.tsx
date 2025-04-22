@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MdAddToPhotos } from "react-icons/md";
 import QuizQuestion from "@/types/QuizQuestion";
 import { FiDelete, FiEdit3 } from "react-icons/fi";
-import { useSectionMutations } from "@/hooks/admin/useSectionMutations";
+import { useQuestionMutation } from "@/hooks/admin/useQuestionMutation";
 
 interface ClassQuestionsProps {
   classId: string;
@@ -15,7 +15,7 @@ interface ClassQuestionsProps {
 
 export default function QuestionsCard({ classId, sectionId, questions }: ClassQuestionsProps) {
 
-  const { deleteQuestionMutation } = useSectionMutations(classId, sectionId);
+  const { deleteQuestionMutation } = useQuestionMutation(classId, sectionId);
 
   const handleDeleteQuestion = async (questionId: string) => {
     if (!confirm('Are you sure you want to delete this question? This action cannot be undone.')) return;

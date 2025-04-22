@@ -44,16 +44,7 @@ const deleteSection = async (sectionId: string) => {
   return response.json()
 }
 
-const deleteQuestion = async (questionId: string) => {
-  const response = await fetch(`/api/admin/question?questionId=${questionId}`, {
-    method: "DELETE",
-  })
 
-  if (!response.ok) {
-    throw new Error("Failed to delete question")
-  }
-  return response.json()
-}
 
 
 export const useSectionMutations = (classId: string, sectionId: string) => {
@@ -102,22 +93,9 @@ export const useSectionMutations = (classId: string, sectionId: string) => {
     }
   });
 
-  const deleteQuestionMutation = useMutation({
-    mutationFn: deleteQuestion,
-    onSuccess: () => {
-      toast.success("Question deleted successfully 🎉")
-      queryClient.invalidateQueries({ queryKey: ['quiz-page', classId, sectionId] })
-    },
-    onError: (error: Error) => {
-      console.error("Error deleting question:", error)
-      toast.error(`Failed to delete question: ${error.message}`)
-    }
-  });
-
   return {
     createSectionMutation,
     updateSectionMutation,
     deleteSectionMutation,
-    deleteQuestionMutation,
   };
 };
