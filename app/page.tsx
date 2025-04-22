@@ -8,12 +8,23 @@ import SplitText from "@/components/animations/SplitText";
 import AnimatedContent from "@/components/animations/AnimatedContent"
 
 import { useClassesData } from '@/hooks/useClassesData'
+import ErrorPage from "@/components/ErrorPage";
 
 export default function Home() {
   const { data: quizData, isLoading, isError, error } = useClassesData();
 
   if (isLoading) return <Loader />;
-  if (isError) return <p className="text-red-500">Errore: {error.message}</p>;
+  if (isError) {
+    const status = (error as any)?.status ?? 500;
+  
+    return (
+      <ErrorPage
+        status={status}
+        message={error.message}
+        backTo="/"
+      />
+    );
+  }
 
   return (
     <DefaultLayout>

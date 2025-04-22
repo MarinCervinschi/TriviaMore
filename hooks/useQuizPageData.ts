@@ -14,8 +14,10 @@ const fetchQuizPageData = async (quizClassId: string, sectionParam: string): Pro
 
     const res = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${sectionId}`);
     if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || res.statusText);
+        const errorBody = await res.json().catch(() => ({}));
+        const error = new Error(errorBody.message || "Failed to fetch quiz page data");
+        (error as any).status = res.status;
+        throw error;
     }
 
     const data = await res.json();
