@@ -1,15 +1,19 @@
 "use client"
 
+import { toast } from "sonner"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useSectionMutations } from "@/hooks/admin/useSectionMutations"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
-import QuizSection from "@/types/QuizSection"
+
 import { MdOutlineCancel } from "react-icons/md"
-import { IoMdCreate } from "react-icons/io";
-import { toast } from "sonner"
+import { IoMdCreate } from "react-icons/io"
+
+import QuizSection from "@/types/QuizSection"
 
 interface AddSectionFormProps {
     quizClassId: string
@@ -19,9 +23,12 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
     const [sectionId, setSectionId] = useState("")
     const [sectionName, setSectionName] = useState("")
     const [sectionIcon, setSectionIcon] = useState("default")
+    
     const [jsonData, setJsonData] = useState("")
     const [isJsonMode, setIsJsonMode] = useState(false)
     const router = useRouter()
+
+    const { createSectionMutation } = useSectionMutations(quizClassId, sectionId)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -30,6 +37,8 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
         if (isJsonMode) {
             try {
                 data = JSON.parse(jsonData)
+                // Ensure the classId can't be overridden from JSON
+                data.classId = quizClassId
             } catch (error) {
                 console.error("Invalid JSON:", error)
                 toast.error("Invalid JSON data. Please check and try again.")
@@ -44,27 +53,8 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
             }
         }
 
-        try {
-            const response = await fetch("/api/admin/section", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-
-            if (response.ok) {
-                toast.success("Section created successfully 🎉")
-                router.push(`/admin/class/${quizClassId}`)
-            } else {
-                throw new Error(`Failed to create section`)
-            }
-        } catch (error) {
-            console.error(`Error creating section:`, error)
-            toast.error(`Failed to create section. Please try again.`)
-        }
+        createSectionMutation.mutate(data)
     }
-
 
     return (
         <form onSubmit={handleSubmit}>
@@ -83,14 +73,12 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                         <div className="space-y-2">
                             <Label>Example:</Label>
                             <pre className="bg-gray-100 p-2 rounded text-wrap">
-                                {
-                                    `{
+                                {`{
     "classId": "${quizClassId}", # disallow editing                    
     "id": "html-css",
     "sectionName": "HTML/CSS",
     "icon": "FaHtml5"
-}`
-                                }
+}`}
                             </pre>
                         </div>
                         <div className="space-y-2">
@@ -143,9 +131,18 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                     </>
                 )}
                 <div className="flex justify-between">
-                    <Button variant={"outline"} onClick={() => router.push(`/admin/class/${quizClassId}`)}>Cancel <MdOutlineCancel /></Button>
-                    <Button type="submit">
-                        Create Section <IoMdCreate />
+                    <Button
+                        variant="outline"
+                        onClick={() => router.push(`/admin/class/${quizClassId}`)}
+                        disabled={createSectionMutation.isPending}
+                    >
+                        Cancel <MdOutlineCancel />
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={createSectionMutation.isPending}
+                    >
+                        {createSectionMutation.isPending ? "Creating..." : "Create Section"} <IoMdCreate />
                     </Button>
                 </div>
             </div>
