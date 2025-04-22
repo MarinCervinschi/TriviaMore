@@ -1,11 +1,9 @@
 'use client'
 
 import { useRouter } from "next/navigation"
-import { useQuery } from '@tanstack/react-query'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import QuizClass from "@/types/QuizClass"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import iconMap from "@/lib/iconMap"
 import Loader from "@/components/Loader"
@@ -13,24 +11,14 @@ import Cookies from "js-cookie"
 import { TbLogout2 } from "react-icons/tb"
 import { MdAddToPhotos, MdManageSearch } from "react-icons/md"
 import { toast } from "sonner"
-import { getVisibility } from "../utils"
+import { getVisibility } from "../../../components/admin/utils"
 
-const fetchClasses = async (): Promise<QuizClass[]> => {
-  const response = await fetch("/api/classes")
-  if (!response.ok) {
-    throw new Error("Failed to fetch classes")
-  }
-  return response.json()
-}
+import { useClassesData } from "@/hooks/useClassesData"
 
 export default function AdminDashboard() {
   const router = useRouter()
 
-  const { data: classes, isLoading, isError, error } = useQuery({
-    queryKey: ['admin-classes'],
-    queryFn: fetchClasses,
-    staleTime: 1000 * 60 * 5 // 5 mins freshness
-  })
+  const { data: classes, isLoading, isError, error } = useClassesData()
 
   const handleLogout = () => {
     Cookies.remove("admin_token")
@@ -60,9 +48,9 @@ export default function AdminDashboard() {
             <CardTitle>Quiz Classes</CardTitle>
           </CardHeader>
           <CardContent>
-            {(classes ?? []).length > 0 ? (
+            {classes?.length ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(classes ?? []).map((quizClass) => (
+                {classes?.map((quizClass) => (
                   <Card key={quizClass.id}>
                     <CardHeader>
                       <CardTitle>
