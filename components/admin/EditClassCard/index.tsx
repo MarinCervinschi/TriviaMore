@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
+import iconMap from "@/lib/iconMap"
 import { getVisibility } from "@/components/admin/utils"
 import { MdOutlineCancel } from "react-icons/md"
 import { FiEdit3, FiDelete } from "react-icons/fi"
 
 import QuizClass from "@/types/QuizClass"
+import { LuSave } from "react-icons/lu"
 
 interface EditClassCardProps {
     classId: string
@@ -24,7 +26,7 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
     const [className, setClassName] = useState("")
     const [classIcon, setClassIcon] = useState("default")
     const [visibility, setVisibility] = useState(false)
-    
+
     const { updateClassMutation, deleteClassMutation } = useClassMutations(classId);
 
     useEffect(() => {
@@ -43,6 +45,7 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
             icon: classIcon,
             visibility
         });
+        setEditMode(updateClassMutation.isPending);
     };
 
     const handleDeleteClass = () => {
@@ -63,13 +66,17 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
                 </div>
             </div>
             <div className="space-x-2">
-                <Button type="submit" disabled={updateClassMutation.isPending}>Save</Button>
+                <Button type="submit" disabled={updateClassMutation.isPending}>
+                    Save {updateClassMutation.isPending ? "..." : <LuSave />}
+                </Button>
                 <Button variant="outline" onClick={() => setEditMode(false)}>Cancel <MdOutlineCancel /></Button>
             </div>
         </form>
     ) : (
         <div className="space-y-4">
-            <p><strong>Name:</strong> {className}</p>
+            <p className="flex gap-1">
+                <strong>Name:</strong> <span className="flex gap-1 items-center">{iconMap[classIcon]}{className}</span>
+            </p>
             {getVisibility(visibility)}
             <div className="space-x-2">
                 <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
