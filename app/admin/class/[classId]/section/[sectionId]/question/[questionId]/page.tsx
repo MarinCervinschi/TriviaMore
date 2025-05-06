@@ -26,7 +26,6 @@ import { MdOutlineCancel } from "react-icons/md"
 export default function ManageQuestion({ params }: { params: Promise<{ classId: string, sectionId: string, questionId: string }> }) {
     const { classId, sectionId, questionId } = use(params)
     const [question, setQuestion] = useState<QuizQuestion>({
-        id: "",
         question: "",
         options: ["", "", "", ""],
         answer: [],
