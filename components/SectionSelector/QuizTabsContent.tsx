@@ -2,7 +2,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TabsContent } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
 import { useMobile } from "./use-mobile"
 import iconMap from "@/lib/iconMap"
@@ -18,7 +17,7 @@ export default function QuizTabsContent({ sections, quizClassId }: QuizTabsConte
     const router = useRouter()
 
     return (
-        <TabsContent value="quiz" className="space-y-6">
+        <div className="space-y-6">
             <div className="overflow-hidden rounded-lg border border-border">
               <Table>
                 <TableHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20">
@@ -82,7 +81,7 @@ export default function QuizTabsContent({ sections, quizClassId }: QuizTabsConte
                 </TableBody>
               </Table>
             </div>
-          </TabsContent>
+          </div>
     )
 
 }

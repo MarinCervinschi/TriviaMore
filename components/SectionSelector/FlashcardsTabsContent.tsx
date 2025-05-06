@@ -2,7 +2,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TabsContent } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
 import { useMobile } from "./use-mobile"
 import iconMap from "@/lib/iconMap"
@@ -18,7 +17,7 @@ export default function FlashcardsTabsContent({ sections, quizClassId }: Flashca
     const router = useRouter()
 
     return (
-        <TabsContent value="flashcards" className="space-y-6">
+        <div className="space-y-6">
             <div className="overflow-hidden rounded-lg border border-border">
                 <Table>
                     <TableHeader className="bg-gradient-to-r from-muted/10 to-accent/10 dark:from-muted/20 dark:to-accent/20">
@@ -81,6 +80,6 @@ export default function FlashcardsTabsContent({ sections, quizClassId }: Flashca
                     </TableBody>
                 </Table>
             </div>
-        </TabsContent>
+        </div>
     )
 }
