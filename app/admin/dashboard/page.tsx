@@ -14,9 +14,11 @@ import { toast } from "sonner"
 import { getVisibility } from "../../../components/admin/utils"
 
 import { useClassesData } from "@/hooks/useClassesData"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const queryClient = useQueryClient();
 
   const { data: classes, isLoading, isError, error } = useClassesData()
 
@@ -24,6 +26,7 @@ export default function AdminDashboard() {
     Cookies.remove("admin_token")
     Cookies.remove("admin_username")
     toast.success("Logged out successfully")
+    queryClient.invalidateQueries({ queryKey: ['quiz-classes'] });
     router.push("/admin/login")
   }
 
