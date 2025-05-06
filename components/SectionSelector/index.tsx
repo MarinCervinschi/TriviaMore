@@ -1,53 +1,41 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+"use client"
 
-import SectionSelectorProps from "@/types/SectionSelectorProps"
-import iconMap from "@/lib/iconMap"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type SectionSelectorProps from "@/types/SectionSelectorProps"
+
+import QuizTabsContent from "./QuizTabsContent"
+import FlashcardsTabsContent from "./FlashcardsTabsContent"
 
 export default function SectionSelector({ sections, quizClassId }: SectionSelectorProps) {
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-5xl mx-auto ">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Select a Quiz Section</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Tabs defaultValue="quiz" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="quiz">Quiz Mode</TabsTrigger>
-            <TabsTrigger value="flashcards">Flash Cards</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-lg">
+            <TabsTrigger
+              value="quiz"
+              className="text-base font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground"
+            >
+              Quiz Mode
+            </TabsTrigger>
+            <TabsTrigger
+              value="flashcards"
+              className="text-base font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-muted data-[state=active]:to-accent data-[state=active]:text-accent-foreground"
+            >
+              Flash Cards
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="quiz" className="space-y-4">
-            <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${sections.length > 9 ? 'lg:grid-cols-3' : ''}`}>
-              {sections.map((section) => (
-                <Button key={section.id} asChild variant="outline" className="h-auto py-4 text-lg">
-                  <Link href={`/${quizClassId}/${section.id}`}>{iconMap[section.icon || 'default']}{section.sectionName}</Link>
-                </Button>
-              ))}
-              <Button asChild variant="default" className="h-auto py-4 text-lg col-span-full">
-                <Link href={`/${quizClassId}/random`}>{iconMap['FaRandom']} &nbsp; Random Mix (30 Questions)</Link>
-              </Button>
-            </div>
-          </TabsContent>
+          <QuizTabsContent sections={sections} quizClassId={quizClassId} />
+          <FlashcardsTabsContent sections={sections} quizClassId={quizClassId} />
 
-          <TabsContent value="flashcards" className="space-y-4">
-            <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${sections.length > 9 ? 'lg:grid-cols-3' : ''}`}>
-              {sections.map((section) => (
-                <Button key={section.id} asChild variant="outline" className="h-auto py-4 text-lg">
-                  <Link href={`/${quizClassId}/${section.id}&flash`}>{iconMap[section.icon || 'default']}{section.sectionName}</Link>
-                </Button>
-              ))}
-              <Button asChild variant="default" className="h-auto py-4 text-lg col-span-full">
-                <Link href={`/${quizClassId}/random&flash`}>{iconMap['FaRandom']} &nbsp; Random Mix (30 Cards)</Link>
-              </Button>
-            </div>
-          </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
   )
 }
-
