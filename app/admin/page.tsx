@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +19,7 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
+  const queryClient = useQueryClient();
 
   const loginMutation = useMutation<LoginResponse, Error, LoginPayload>({
     mutationFn: async ({ username, password }) => {
@@ -40,6 +41,7 @@ export default function AdminLogin() {
       Cookies.set("admin_token", data.token, { expires: 10 });
       Cookies.set("admin_username", username, { expires: 10 });
       toast.success("Login successful 🎉");
+      queryClient.invalidateQueries({ queryKey: ['quiz-classes'] });
       router.push("/admin/dashboard");
     },
     onError: (error) => {
