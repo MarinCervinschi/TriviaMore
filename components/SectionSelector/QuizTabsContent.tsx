@@ -19,13 +19,13 @@ export default function QuizTabsContent({ sections, quizClassId }: QuizTabsConte
 
     return (
         <TabsContent value="quiz" className="space-y-6">
-            <div className="overflow-hidden rounded-xl border border-border">
+            <div className="overflow-hidden rounded-lg border border-border">
               <Table>
                 <TableHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20">
                   <TableRow>
-                    <TableHead className="px-6 py-3 text-left text-sm font-semibold">Icon</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-sm font-semibold">Section</TableHead>
-                    <TableHead className="px-6 py-3 text-right text-sm font-semibold md:table-cell hidden">
+                    <TableHead className="text-primary px-6 py-3 text-left text-sm font-semibold">Icon</TableHead>
+                    <TableHead className="text-primary px-6 py-3 text-left text-sm font-semibold">Section</TableHead>
+                    <TableHead className="text-primary px-6 py-3 text-right text-sm font-semibold md:table-cell hidden">
                       Action
                     </TableHead>
                   </TableRow>
@@ -51,7 +51,7 @@ export default function QuizTabsContent({ sections, quizClassId }: QuizTabsConte
                           <Button
                             asChild
                             variant="outline"
-                            className="bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-secondary/20 dark:border-secondary/40 hover:text-secondary dark:hover:text-secondary-foreground transition-all"
+                            className="bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border-secondary/20 dark:border-secondary/40 hover:text-white dark:hover:text-secondary-foreground transition-all"
                           >
                             <Link href={href}>Start Quiz</Link>
                           </Button>

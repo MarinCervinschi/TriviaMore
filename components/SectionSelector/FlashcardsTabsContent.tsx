@@ -19,13 +19,13 @@ export default function FlashcardsTabsContent({ sections, quizClassId }: Flashca
 
     return (
         <TabsContent value="flashcards" className="space-y-6">
-            <div className="overflow-hidden rounded-xl border border-border">
+            <div className="overflow-hidden rounded-lg border border-border">
                 <Table>
                     <TableHeader className="bg-gradient-to-r from-muted/10 to-accent/10 dark:from-muted/20 dark:to-accent/20">
                         <TableRow>
-                            <TableHead className="px-6 py-3 text-left text-sm font-semibold">Icon</TableHead>
-                            <TableHead className="px-6 py-3 text-left text-sm font-semibold">Section</TableHead>
-                            <TableHead className="px-6 py-3 text-right text-sm font-semibold md:table-cell hidden">
+                            <TableHead className="text-primary px-6 py-3 text-left text-sm font-semibold">Icon</TableHead>
+                            <TableHead className="text-primary px-6 py-3 text-left text-sm font-semibold">Section</TableHead>
+                            <TableHead className="text-primary px-6 py-3 text-right text-sm font-semibold md:table-cell hidden">
                                 Action
                             </TableHead>
                         </TableRow>
@@ -50,7 +50,7 @@ export default function FlashcardsTabsContent({ sections, quizClassId }: Flashca
                                         <Button
                                             asChild
                                             variant="outline"
-                                            className="bg-gradient-to-r from-muted/10 to-accent/10 hover:from-muted/20 hover:to-accent/20 border-accent/20 dark:border-accent/40 hover:text-accent dark:hover:text-accent-foreground transition-all"
+                                            className="bg-gradient-to-r from-muted/10 to-accent/10 hover:from-muted/20 hover:to-accent/20 border-accent/20 dark:border-accent/40 hover:text-white dark:hover:text-accent-foreground transition-all"
                                         >
                                             <Link href={href}>View Cards</Link>
                                         </Button>
