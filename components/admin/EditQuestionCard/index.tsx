@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MdAddToPhotos } from "react-icons/md";
 import { IoIosRemoveCircle } from "react-icons/io";
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import SafeInlineMath from "@/components/SafeInlineMath";
 import QuizQuestion from "@/types/QuizQuestion";
 
 interface ClassEditQuestionProps {
@@ -111,6 +111,21 @@ export default function EditQuestionCard({ question, setQuestion }: ClassEditQue
             >
                 Add Option <MdAddToPhotos />
             </Button>
+
+            {/* 🔍 Live Preview Section */}
+            <div className="mt-8 p-4 border border-gray-400 rounded-md bg-gray-100">
+                <h3 className="font-semibold text-lg mb-2">Live Preview</h3>
+                <div className="mb-4">
+                    <SafeInlineMath text={question.question} />
+                </div>
+                <ul className="list-disc pl-6 space-y-1">
+                    {question.options.map((option, index) => (
+                        <li key={index} className={question.answer.includes(index) ? "text-green-600 font-medium" : ""}>
+                            <SafeInlineMath text={option} />
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </>
     );
 }

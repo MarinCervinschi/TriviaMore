@@ -1,11 +1,11 @@
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MdAddToPhotos } from "react-icons/md";
-import QuizQuestion from "@/types/QuizQuestion";
 import { FiDelete, FiEdit3 } from "react-icons/fi";
+import QuizQuestion from "@/types/QuizQuestion";
 import { useQuestionMutation } from "@/hooks/admin/useQuestionMutation";
+import SafeInlineMath from "@/components/SafeInlineMath"; // Import your math renderer
 
 interface ClassQuestionsProps {
   classId: string;
@@ -14,7 +14,6 @@ interface ClassQuestionsProps {
 }
 
 export default function QuestionsCard({ classId, sectionId, questions }: ClassQuestionsProps) {
-
   const { deleteQuestionMutation } = useQuestionMutation(classId, sectionId);
 
   const handleDeleteQuestion = async (questionId: string) => {
@@ -34,27 +33,32 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
               {questions.map((question) => (
                 <Card key={question.id}>
                   <CardHeader>
-                    <CardTitle>{question.question}</CardTitle>
+                    <CardTitle>
+                      <SafeInlineMath text={question.question} />
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="list-disc pl-5">
+                    <ul className="list-disc pl-5 space-y-1">
                       {question.options.map((option, index) => (
                         <li
                           key={index}
                           className={question.answer.includes(index) ? "text-green-600" : ""}
                         >
-                          {option}
+                          <SafeInlineMath text={option} />
                         </li>
                       ))}
                     </ul>
-                    <div className="mt-4 space-x-2">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       <Button asChild>
                         <Link href={`/admin/class/${classId}/section/${sectionId}/question/${question.id}`}>
-                          Edit <FiEdit3 />
+                          <FiEdit3 className="mr-2" /> Edit
                         </Link>
                       </Button>
-                      <Button variant="destructive" onClick={() => question.id && handleDeleteQuestion(question.id)}>
-                        Delete <FiDelete />
+                      <Button
+                        variant="destructive"
+                        onClick={() => question.id && handleDeleteQuestion(question.id)}
+                      >
+                        <FiDelete className="mr-2" /> Delete
                       </Button>
                     </div>
                   </CardContent>
@@ -68,7 +72,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
       </Card>
       <Button asChild>
         <Link href={`/admin/class/${classId}/section/${sectionId}/question/new`}>
-          Add New Question <MdAddToPhotos />
+          <MdAddToPhotos className="mr-2" /> Add New Question
         </Link>
       </Button>
     </>

@@ -8,13 +8,13 @@ import { toast } from "sonner"
 import Loader from "@/components/Loader"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import DefaultLayout from "@/components/Layouts/DefaultLayout"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useQuestionData } from "@/hooks/admin/useQuestionData"
 import { useQuestionMutation } from "@/hooks/admin/useQuestionMutation"
 import EditQuestionCard from "@/components/admin/EditQuestionCard"
+import JsonInputMode from "@/components/admin/JsonInputMode"
 
 import QuizQuestion from "@/types/QuizQuestion"
 import iconMap from "@/lib/iconMap"
@@ -26,7 +26,6 @@ import { MdOutlineCancel } from "react-icons/md"
 export default function ManageQuestion({ params }: { params: Promise<{ classId: string, sectionId: string, questionId: string }> }) {
     const { classId, sectionId, questionId } = use(params)
     const [question, setQuestion] = useState<QuizQuestion>({
-        id: "",
         question: "",
         options: ["", "", "", ""],
         answer: [],
@@ -98,38 +97,12 @@ export default function ManageQuestion({ params }: { params: Promise<{ classId: 
                                     </Button>
                                 </div>
                                 {isJsonMode ? (
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label>Example:</Label>
-                                            <pre className="bg-gray-100 p-2 rounded">
-                                                {`[
-    {
-        "classId": "${classId}",
-        "sectionId": "${sectionId}",
-        "question": "What does the span tag in HTML do?",
-        "options": [
-            "Defines a hyperlink",
-            "Defines a section in a document",
-            "Defines a paragraph",
-            "Defines a division or a section in an HTML document"
-        ],
-        "answer": [3]
-    }
-]`}
-                                            </pre>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="json-data">JSON Data</Label>
-                                            <Textarea
-                                                id="json-data"
-                                                value={jsonData}
-                                                onChange={(e) => setJsonData(e.target.value)}
-                                                placeholder="Enter JSON data for the new class"
-                                                rows={10}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                    <JsonInputMode
+                                        classId={classId}
+                                        sectionId={sectionId}
+                                        jsonData={jsonData}
+                                        setJsonData={setJsonData}
+                                    />
                                 ) : (
                                     <EditQuestionCard question={question} setQuestion={setQuestion} />
                                 )}
