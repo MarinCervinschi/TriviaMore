@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node ./scripts/seed.ts",
     "preinstall": "npx prisma generate"
   },
   "dependencies": {

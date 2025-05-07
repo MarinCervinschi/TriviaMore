@@ -8,11 +8,11 @@ import iconMap from "@/lib/iconMap"
 import QuizSection from "@/types/QuizSection"
 
 interface FlashcardsTabsContentProps {
-    sections: QuizSection[];
+    flashCards: QuizSection[] | undefined;
     quizClassId: string | undefined;
 }
 
-export default function FlashcardsTabsContent({ sections, quizClassId }: FlashcardsTabsContentProps) {
+export default function FlashcardsTabsContent({ flashCards, quizClassId }: FlashcardsTabsContentProps) {
     const isMobile = useMobile()
     const router = useRouter()
 
@@ -30,53 +30,63 @@ export default function FlashcardsTabsContent({ sections, quizClassId }: Flashca
                         </TableRow>
                     </TableHeader>
                     <TableBody className="divide-y divide-border">
-                        {sections.map((section, index) => {
-                            const href = `/${quizClassId}/${section.id}&flash`
-                            return (
-                                <TableRow
-                                    key={section.id}
-                                    className={`hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${index % 2 === 0 ? "bg-white dark:bg-slate-900/50" : "bg-slate-50 dark:bg-slate-800/30"
-                                        }`}
-                                    onClick={() => {
-                                        if (isMobile) {
-                                            router.push(href)
-                                        }
-                                    }}
-                                >
-                                    <TableCell className="px-6 py-4 text-xl">{iconMap[section.icon || "default"]}</TableCell>
-                                    <TableCell className="px-6 py-4 font-medium">{section.sectionName}</TableCell>
-                                    <TableCell className="px-6 py-4 text-right md:table-cell hidden">
-                                        <Button
-                                            asChild
-                                            variant="outline"
-                                            className="bg-gradient-to-r from-muted/10 to-accent/10 hover:from-muted/20 hover:to-accent/20 border-accent/20 dark:border-accent/40 hover:text-white dark:hover:text-accent-foreground transition-all"
-                                        >
-                                            <Link href={href}>View Cards</Link>
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            )
-                        })}
-                        <TableRow
-                            className="bg-gradient-to-r from-muted/5 to-accent/20 hover:from-muted/10 hover:to-accent/30 dark:from-muted/20 dark:to-accent/30 dark:hover:from-muted/30 dark:hover:to-accent/40 cursor-pointer"
-                            onClick={() => {
-                                if (isMobile) {
-                                    router.push(`/${quizClassId}/random&flash`)
-                                }
-                            }}
-                        >
-                            <TableCell className="px-6 py-4 text-xl">{iconMap["FaRandom"]}</TableCell>
-                            <TableCell className="px-6 py-4 font-medium">Random Mix</TableCell>
-                            <TableCell className="px-6 py-4 text-right md:table-cell hidden">
-                                <Button
-                                    asChild
-                                    variant="default"
-                                    className="bg-gradient-to-r from-accent to-destructive hover:from-accent/90 hover:to-destructive/90"
-                                >
-                                    <Link href={`/${quizClassId}/random&flash`}>30 Cards</Link>
-                                </Button>
-                            </TableCell>
-                        </TableRow>
+                        {flashCards && flashCards.length > 0 ? (
+                            flashCards.map((section, index) => {
+                                const href = `/${quizClassId}/${section.id}&flash`
+                                return (
+                                    <TableRow
+                                        key={section.id}
+                                        className={`hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${index % 2 === 0 ? "bg-white dark:bg-slate-900/50" : "bg-slate-50 dark:bg-slate-800/30"
+                                            }`}
+                                        onClick={() => {
+                                            if (isMobile) {
+                                                router.push(href)
+                                            }
+                                        }}
+                                    >
+                                        <TableCell className="px-6 py-4 text-xl">{iconMap[section.icon || "default"]}</TableCell>
+                                        <TableCell className="px-6 py-4 font-medium">{section.sectionName}</TableCell>
+                                        <TableCell className="px-6 py-4 text-right md:table-cell hidden">
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                className="bg-gradient-to-r from-muted/10 to-accent/10 hover:from-muted/20 hover:to-accent/20 border-accent/20 dark:border-accent/40 hover:text-white dark:hover:text-accent-foreground transition-all"
+                                            >
+                                                <Link href={href}>View Cards</Link>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={3} className="px-6 py-4 text-center text-primary">
+                                    No flash cards for this section
+                                </TableCell>
+                            </TableRow>
+                        )}
+                        {flashCards && flashCards.length > 0 && (
+                            <TableRow
+                                className="bg-gradient-to-r from-muted/5 to-accent/20 hover:from-muted/10 hover:to-accent/30 dark:from-muted/20 dark:to-accent/30 dark:hover:from-muted/30 dark:hover:to-accent/40 cursor-pointer"
+                                onClick={() => {
+                                    if (isMobile) {
+                                        router.push(`/${quizClassId}/random&flash`)
+                                    }
+                                }}
+                            >
+                                <TableCell className="px-6 py-4 text-xl">{iconMap["FaRandom"]}</TableCell>
+                                <TableCell className="px-6 py-4 font-medium">Random Mix</TableCell>
+                                <TableCell className="px-6 py-4 text-right md:table-cell hidden">
+                                    <Button
+                                        asChild
+                                        variant="default"
+                                        className="bg-gradient-to-r from-accent to-destructive hover:from-accent/90 hover:to-destructive/90"
+                                    >
+                                        <Link href={`/${quizClassId}/random&flash`}>30 Cards</Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </div>
