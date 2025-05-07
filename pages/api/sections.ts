@@ -29,7 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             where: { classId: classId },
         });
 
-        return res.status(200).json({ class: classData, sections: classSections });
+        const filteredSections = classSections.filter(section => section.flashCard === false);
+        const filteredFlashCards = classSections.filter(section => section.flashCard === true);
+
+        return res.status(200).json({ class: classData, sections: filteredSections, flashCards: filteredFlashCards });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });

@@ -35,7 +35,7 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
         );
       }
 
-    const { class: quizClass, sections } = data!;
+    const { class: quizClass, sections, flashCards } = data!;
 
     return (
         <DefaultLayout>
@@ -66,7 +66,7 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
                     threshold={0.2}
                 >
                     {sections.length ? (
-                        <SectionSelector sections={sections} quizClassId={quizClass.id} />
+                        <SectionSelector sections={sections} flashCards={flashCards} quizClassId={quizClass.id} />
                     ) : (
                         <p className="text-red-500 text-xl">No sections found</p>
                     )}
