@@ -12,9 +12,20 @@ import { TfiWrite } from "react-icons/tfi";
 import { AiOutlineException } from "react-icons/ai";
 import { BsHddStack } from "react-icons/bs";
 import { IoMdPaper } from "react-icons/io";
+import { IoLanguage } from "react-icons/io5";
+import { FiFileText } from "react-icons/fi";
+import { BiNetworkChart } from "react-icons/bi";
+import { LiaNetworkWiredSolid } from "react-icons/lia";
+import { IoGitNetwork } from "react-icons/io5";
+
 
 const iconMap: { [key: string]: JSX.Element } = {
     default: <MdOutlineQuiz />,
+    IoLanguage: <IoLanguage />,
+    IoGitNetwork: <IoGitNetwork />,
+    LiaNetworkWiredSolid: <LiaNetworkWiredSolid />,
+    BiNetworkChart: <BiNetworkChart />,
+    FiFileText: <FiFileText />,
     TbWorldCode: <TbWorldCode />,
     PiTreeStructureBold: <PiTreeStructureBold />,
     Computer: <Computer />,

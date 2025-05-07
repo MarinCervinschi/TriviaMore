@@ -14,6 +14,7 @@ import { FiEdit3, FiDelete } from "react-icons/fi"
 import { LuSave } from "react-icons/lu"
 import iconMap from "@/lib/iconMap"
 import QuizSection from "@/types/QuizSection"
+import IconSelector from "@/components/IconSelector"
 
 interface EditSectionCardProps {
     classId: string
@@ -68,7 +69,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
             </div>
             <div className="space-y-2">
                 <Label htmlFor="section-icon">Section Icon</Label>
-                <Input id="section-icon" value={sectionIcon} onChange={(e) => setSectionIcon(e.target.value)} />
+                <IconSelector selectedIcon={sectionIcon} onSelectIcon={setSectionIcon} />
             </div>
             <div className="space-x-2">
                 <Button onClick={handleSubmit}>
