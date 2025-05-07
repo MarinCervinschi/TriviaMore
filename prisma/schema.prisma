@@ -26,6 +26,7 @@ model Section {
   id          String     @id @default(uuid())
   sectionName String
   icon        String?
+  flashCard   Boolean    @default(false)
   class       Class      @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   classId     String     
   questions   Question[]
