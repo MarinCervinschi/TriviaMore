@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MdAddToPhotos, MdManageSearch } from "react-icons/md";
 import QuizSection from "@/types/QuizSection";
 import iconMap from "@/lib/iconMap";
+import { getFlashCardVisibility } from "../utils";
 
 interface ClassSectionsProps {
     classId: string;
@@ -29,11 +30,14 @@ export default function SectionsCard({ classId, sections }: ClassSectionsProps) 
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <Link href={`/admin/class/${classId}/section/${section.id}`}>
-                                            <Button>
-                                                Manage <MdManageSearch />
-                                            </Button>
-                                        </Link>
+                                        <div className="flex justify-between items-center">
+                                            <Link href={`/admin/class/${classId}/section/${section.id}`}>
+                                                <Button>
+                                                    Manage <MdManageSearch />
+                                                </Button>
+                                            </Link>
+                                            {getFlashCardVisibility(section.flashCard)}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             ))}
