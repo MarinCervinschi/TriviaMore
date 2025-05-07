@@ -15,6 +15,7 @@ import { IoMdCreate } from "react-icons/io"
 
 import QuizSection from "@/types/QuizSection"
 import IconSelector from "@/components/IconSelector"
+import { Switch } from "@/components/ui/switch"
 
 interface AddSectionFormProps {
     quizClassId: string
@@ -23,6 +24,7 @@ interface AddSectionFormProps {
 export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
     const [sectionId, setSectionId] = useState("")
     const [sectionName, setSectionName] = useState("")
+    const [isFlahscard, setIsFlashcard] = useState(false)
     const [sectionIcon, setSectionIcon] = useState("default")
     
     const [jsonData, setJsonData] = useState("")
@@ -50,6 +52,7 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                 id: sectionId,
                 classId: quizClassId,
                 sectionName: sectionName,
+                flashCard: isFlahscard,
                 icon: sectionIcon,
             }
         }
@@ -125,6 +128,15 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                                 selectedIcon={sectionIcon}
                                 onSelectIcon={setSectionIcon}
                             />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="is-flashcard">Flashcard Mode</Label>
+                                <Switch id="is-flashcard" checked={isFlahscard} onCheckedChange={setIsFlashcard} />
+                            </div>
+                            <p className="text-sm text-gray-500">
+                                {isFlahscard ? "This section will be in flashcard mode" : "This section will not be in flashcard mode"}
+                            </p>
                         </div>
                     </>
                 )}

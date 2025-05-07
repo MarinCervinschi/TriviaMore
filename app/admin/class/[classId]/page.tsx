@@ -24,6 +24,8 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
     if (isLoading) return <Loader />
     if (isError) return <p className="text-red-500">Error: {error.message}</p>
 
+    const { class: quizClass, sections, flashCards } = data!
+
     return (
         <DefaultLayout>
             <div className="w-full max-w-5xl mx-auto p-4">
@@ -40,11 +42,11 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
                         {isNewClass ? (
                             <AddClassForm />
                         ) : (
-                            <EditClassCard classId={classId} quizClass={data?.class} />
+                            <EditClassCard classId={classId} quizClass={quizClass} />
                         )}
                     </CardContent>
                 </Card>
-                {!isNewClass && <SectionsCard classId={classId} sections={data?.sections || []} />}
+                {!isNewClass && <SectionsCard classId={classId} sections={[...(sections || []), ...(flashCards || [])]} />}
             </div>
         </DefaultLayout>
     )
