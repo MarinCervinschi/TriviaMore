@@ -16,6 +16,7 @@ import { FiEdit3, FiDelete } from "react-icons/fi"
 
 import QuizClass from "@/types/QuizClass"
 import { LuSave } from "react-icons/lu"
+import IconSelector from "@/components/IconSelector"
 
 interface EditClassCardProps {
     classId: string
@@ -61,7 +62,7 @@ export default function EditClassCard({ classId, quizClass }: EditClassCardProps
                 <Label htmlFor="class-name">Class Name</Label>
                 <Input id="class-name" value={className} onChange={(e) => setClassName(e.target.value)} />
                 <Label htmlFor="class-icon">Class Icon</Label>
-                <Input id="class-icon" value={classIcon} onChange={(e) => setClassIcon(e.target.value)} />
+                <IconSelector selectedIcon={classIcon} onSelectIcon={setClassIcon} />
                 <div className="flex justify-between items-center">
                     <Label htmlFor="class-visibility">Visibility</Label>
                     <Switch id="class-visibility" checked={visibility} onCheckedChange={setVisibility} />

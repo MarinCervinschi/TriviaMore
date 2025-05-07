@@ -14,6 +14,7 @@ import { MdOutlineCancel } from "react-icons/md"
 import { IoMdCreate } from "react-icons/io"
 
 import QuizSection from "@/types/QuizSection"
+import IconSelector from "@/components/IconSelector"
 
 interface AddSectionFormProps {
     quizClassId: string
@@ -120,12 +121,9 @@ export default function AddSectionForm({ quizClassId }: AddSectionFormProps) {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="section-icon">Section Icon</Label>
-                            <Input
-                                id="section-icon"
-                                value={sectionIcon}
-                                onChange={(e) => setSectionIcon(e.target.value)}
-                                placeholder="Enter icon name"
-                                required
+                            <IconSelector
+                                selectedIcon={sectionIcon}
+                                onSelectIcon={setSectionIcon}
                             />
                         </div>
                     </>

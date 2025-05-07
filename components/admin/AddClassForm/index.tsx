@@ -11,11 +11,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
-import iconMap from "@/lib/iconMap"
 import { MdOutlineCancel } from "react-icons/md"
 import { IoMdCreate } from "react-icons/io"
 
 import QuizClass from "@/types/QuizClass"
+import IconSelector from "@/components/IconSelector"
 
 export default function AddClassForm() {
 
@@ -111,14 +111,10 @@ export default function AddClassForm() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="class-icon" className="flex gap-1 items-center">Class Icon {iconMap["default"]}</Label>
-                            <Input
-                                id="class-icon"
-                                value={classIcon}
-                                onChange={(e) => setClassIcon(e.target.value)}
-                                placeholder="Enter icon key"
-                                required
-                            />
+                            <Label htmlFor="class-icon" className="block mb-1">
+                                Class Icon
+                            </Label>
+                            <IconSelector selectedIcon={classIcon} onSelectIcon={setClassIcon} />
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
