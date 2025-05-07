@@ -61,7 +61,7 @@ export default function FlashcardsTabsContent({ flashCards, quizClassId }: Flash
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={3} className="px-6 py-4 text-center text-primary">
-                                    No flash cards for this section
+                                    No flash cards for this class
                                 </TableCell>
                             </TableRow>
                         )}
