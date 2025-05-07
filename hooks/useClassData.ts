@@ -2,7 +2,7 @@ import QuizClass from "@/types/QuizClass"
 import QuizSection from "@/types/QuizSection";
 import { useQuery } from "@tanstack/react-query"
 
-const fetchClassData = async (classId: string): Promise<{ class: QuizClass; sections: QuizSection[] }> => {
+const fetchClassData = async (classId: string): Promise<{ class: QuizClass; sections: QuizSection[], flashCards: QuizSection[] }> => {
     const response = await fetch(`/api/sections?classId=${classId}`)
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
@@ -14,6 +14,7 @@ const fetchClassData = async (classId: string): Promise<{ class: QuizClass; sect
     return {
         class: data.class,
         sections: data.sections,
+        flashCards: data.flashCards,
     }
 }
 

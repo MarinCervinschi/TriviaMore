@@ -15,6 +15,8 @@ import { LuSave } from "react-icons/lu"
 import iconMap from "@/lib/iconMap"
 import QuizSection from "@/types/QuizSection"
 import IconSelector from "@/components/IconSelector"
+import { Switch } from "@/components/ui/switch"
+import { getFlashCardVisibility } from "../utils"
 
 interface EditSectionCardProps {
     classId: string
@@ -26,6 +28,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
     const [editMode, setEditMode] = useState(false)
     const [sectionName, setSectionName] = useState('');
     const [sectionIcon, setSectionIcon] = useState('default');
+    const [isFlahscard, setIsFlashcard] = useState(false)
     const router = useRouter();
 
     const { updateSectionMutation, deleteSectionMutation } = useSectionMutations(classId, sectionId);
@@ -33,6 +36,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
     useEffect(() => {
         if (sectionData) {
             setSectionName(sectionData.sectionName);
+            setIsFlashcard(sectionData.flashCard);
             setSectionIcon(sectionData.icon || 'default');
         }
     }, [sectionData]);
@@ -44,6 +48,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
             id: sectionId,
             classId: classId,
             sectionName,
+            flashCard: isFlahscard,
             icon: sectionIcon,
         };
         updateSectionMutation.mutate(payload);
@@ -71,6 +76,10 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
                 <Label htmlFor="section-icon">Section Icon</Label>
                 <IconSelector selectedIcon={sectionIcon} onSelectIcon={setSectionIcon} />
             </div>
+            <div className="flex justify-between items-center">
+                <Label htmlFor="section-flashcard">Flashcard</Label>
+                <Switch id="section-flashcard" checked={isFlahscard} onCheckedChange={setIsFlashcard} />
+            </div>
             <div className="space-x-2">
                 <Button onClick={handleSubmit}>
                     Save {updateSectionMutation.isPending ? "..." : <LuSave />}
@@ -85,6 +94,7 @@ export default function EditSectionCard({ classId, sectionId, sectionData }: Edi
             <p className="flex gap-1">
                 <strong>Name:</strong> <span className="flex gap-1 items-center">{iconNode}{sectionData?.sectionName}</span>
             </p>
+            {getFlashCardVisibility(isFlahscard)}
             <div className="flex items-center justify-between">
                 <div className="space-x-2">
                     <Button onClick={() => setEditMode(true)}>Edit <FiEdit3 /></Button>
