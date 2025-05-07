@@ -6,7 +6,7 @@ import type SectionSelectorProps from "@/types/SectionSelectorProps"
 import QuizTabsContent from "./QuizTabsContent"
 import FlashcardsTabsContent from "./FlashcardsTabsContent"
 
-export default function SectionSelector({ sections, quizClassId }: SectionSelectorProps) {
+export default function SectionSelector({ sections, flashCards, quizClassId }: SectionSelectorProps) {
   return (
     <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="w-full">
@@ -23,7 +23,7 @@ export default function SectionSelector({ sections, quizClassId }: SectionSelect
           <CardTitle className="text-xl font-semibold text-center">Flash Cards</CardTitle>
         </CardHeader>
         <CardContent>
-          <FlashcardsTabsContent sections={sections} quizClassId={quizClassId} />
+          <FlashcardsTabsContent flashCards={flashCards} quizClassId={quizClassId} />
         </CardContent>
       </Card>
     </div>
