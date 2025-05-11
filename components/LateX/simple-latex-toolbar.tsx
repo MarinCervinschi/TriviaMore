@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useEffect, useRef, useState } from "react"
-import { Bold, Italic, Underline } from "lucide-react"
+import { Bold, Italic, Underline, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface SimpleLatexToolbarProps {
@@ -12,7 +12,6 @@ interface SimpleLatexToolbarProps {
 }
 
 export function SimpleLatexToolbar({ targetRef, onFormatText }: SimpleLatexToolbarProps) {
-  const [selection, setSelection] = useState({ text: "", start: 0, end: 0 })
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const [visible, setVisible] = useState(false)
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -28,14 +27,9 @@ export function SimpleLatexToolbar({ targetRef, onFormatText }: SimpleLatexToolb
         // Get position of selection
         const selectionRect = getSelectionCoordinates(target)
 
-        setSelection({
-          text: selectedText,
-          start: target.selectionStart ?? 0,
-          end: target.selectionEnd ?? 0,
-        })
 
         setPosition({
-          top: selectionRect.top - 40, // Position above the selection
+          top: selectionRect.top,
           left: selectionRect.left,
         })
 
@@ -86,14 +80,17 @@ export function SimpleLatexToolbar({ targetRef, onFormatText }: SimpleLatexToolb
         left: `${Math.min(position.left, window.innerWidth - 120)}px`, // Ensure it's not off the right of the screen
       }}
     >
-      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("bold")}>
+      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("bold")}>
         <Bold className="h-4 w-4" />
       </Button>
-      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("italic")}>
+      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("italic")}>
         <Italic className="h-4 w-4" />
       </Button>
-      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("underline")}>
+      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("underline")}>
         <Underline className="h-4 w-4" />
+      </Button>      
+      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onFormatText("arrow")}>
+        <ArrowRight className="h-4 w-4" />
       </Button>
     </div>
   )

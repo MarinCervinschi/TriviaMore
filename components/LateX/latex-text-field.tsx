@@ -25,9 +25,10 @@ export function LatexTextField({
   multiline = false,
   className = "",
   label,
-  preview = true,
+  preview = false,
 }: LatexTextFieldProps) {
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const handleFormatText = (format: string) => {
     if (!inputRef.current) return
@@ -50,6 +51,9 @@ export function LatexTextField({
       case "underline":
         formattedText = `$\\underline{${selectedText}}$`
         break
+      case "arrow":
+        formattedText = `$\\rightarrow{${selectedText}}$`
+        break
       default:
         formattedText = selectedText
     }
@@ -69,7 +73,7 @@ export function LatexTextField({
   }
 
   return (
-    <div className="relative space-y-2">
+    <div className="relative space-y-2 flex-1" ref={containerRef}>
       {multiline ? (
         <>
           <Textarea
@@ -80,7 +84,6 @@ export function LatexTextField({
             className={className}
             rows={4}
           />
-          <SimpleLatexToolbar targetRef={inputRef} onFormatText={handleFormatText} />
         </>
       ) : (
         <>
@@ -92,9 +95,10 @@ export function LatexTextField({
             placeholder={placeholder}
             className={className}
           />
-          <SimpleLatexToolbar targetRef={inputRef} onFormatText={handleFormatText} />
         </>
       )}
+
+      <SimpleLatexToolbar targetRef={inputRef} onFormatText={handleFormatText} />
 
       {preview && (
         <div className="p-2 border rounded-md bg-muted/10 min-h-[24px]">

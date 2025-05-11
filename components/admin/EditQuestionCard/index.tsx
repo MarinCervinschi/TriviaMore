@@ -1,15 +1,14 @@
-import { useState } from "react";
-import { MdAddToPhotos } from "react-icons/md";
-import { IoIosRemoveCircle } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import QuizQuestion from "@/types/QuizQuestion";
-import SmartInlineMath from "@/components/SmartInlineMath";
 
 import { LatexTextField } from "@/components/LateX/latex-text-field";
+import SmartInlineMath from "@/components/SmartInlineMath";
+import QuizQuestion from "@/types/QuizQuestion";
+
+import { IoIosRemoveCircle } from "react-icons/io";
+import { MdAddToPhotos } from "react-icons/md";
 
 interface ClassEditQuestionProps {
     question: QuizQuestion;
@@ -58,21 +57,17 @@ export default function EditQuestionCard({ question, setQuestion }: ClassEditQue
             </div>
 
             {question.options.map((option, index) => (
-                <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor={`option-${index}`}>Option {index + 1}</Label>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id={`correct-${index}`}
-                                checked={question.answer.includes(index)}
-                                onCheckedChange={(checked) => handleCorrectAnswerChange(index, checked as boolean)}
-                            />
-                            <Label htmlFor={`correct-${index}`} className="text-sm">
-                                Correct
-                            </Label>
-                        </div>
-                    </div>
+                <div key={index} className="flex items-center space-x-2">
+
                     <LatexTextField value={option} onChange={(value) => handleOptionChange(index, value)} multiline={false} />
+                    <Checkbox
+                        id={`correct-${index}`}
+                        checked={question.answer.includes(index)}
+                        onCheckedChange={(checked) => handleCorrectAnswerChange(index, checked as boolean)}
+                    />
+                    <Label htmlFor={`correct-${index}`} className="text-sm">
+                        Correct
+                    </Label>
                     <Button
                         type="button"
                         variant="destructive"
@@ -88,7 +83,7 @@ export default function EditQuestionCard({ question, setQuestion }: ClassEditQue
                         }}
                         className="mt-1"
                     >
-                        <IoIosRemoveCircle className="mr-1" /> Remove Option
+                        <IoIosRemoveCircle />
                     </Button>
                 </div>
             ))}
@@ -107,16 +102,16 @@ export default function EditQuestionCard({ question, setQuestion }: ClassEditQue
             </Button>
 
             {/* Live Preview Section */}
-            <div className="mt-8 p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-muted/20">
+            <div className="mt-8 p-4 border border-gray-400 rounded-md bg-gray-100">
                 <h3 className="font-semibold text-lg mb-2">Live Preview</h3>
-                <div className="mb-4 p-3 bg-background rounded-md border">
+                <div className="mb-4 font-semibold">
                     <SmartInlineMath text={question.question} />
                 </div>
                 <ul className="list-disc pl-6 space-y-3">
                     {question.options.map((option, index) => (
                         <li
                             key={index}
-                            className={`p-2 rounded ${question.answer.includes(index) ? "bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-800" : "bg-background border"}`}
+                            className={question.answer.includes(index) ? "text-green-600 font-medium" : ""}
                         >
                             <SmartInlineMath text={option} />
                         </li>
