@@ -5,7 +5,7 @@ import { MdAddToPhotos } from "react-icons/md";
 import { FiDelete, FiEdit3 } from "react-icons/fi";
 import QuizQuestion from "@/types/QuizQuestion";
 import { useQuestionMutation } from "@/hooks/admin/useQuestionMutation";
-import SafeInlineMath from "@/components/SafeInlineMath"; // Import your math renderer
+import SmartInlineMath from "@/components/SmartInlineMath"; // Import your math renderer
 
 interface ClassQuestionsProps {
   classId: string;
@@ -34,7 +34,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
                 <Card key={question.id}>
                   <CardHeader>
                     <CardTitle>
-                      <SafeInlineMath text={question.question} />
+                      <SmartInlineMath text={question.question} />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -44,7 +44,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
                           key={index}
                           className={question.answer.includes(index) ? "text-green-600" : ""}
                         >
-                          <SafeInlineMath text={option} />
+                          <SmartInlineMath text={option} />
                         </li>
                       ))}
                     </ul>

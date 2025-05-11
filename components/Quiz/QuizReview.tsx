@@ -2,7 +2,7 @@ import { Check, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QuizQuestion from "@/types/QuizQuestion";
 import QuizSection from "@/types/QuizSection";
-import SafeInlineMath from "@/components/SafeInlineMath";
+import SmartInlineMath from "@/components/SmartInlineMath";
 
 interface QuizReviewProps {
     questions: QuizQuestion[];
@@ -23,7 +23,7 @@ export default function QuizReview({ questions, userAnswers, section }: QuizRevi
                     return (
                         <div key={questionIndex} className="mb-8 last:mb-0">
                             <h3 className="text-lg font-semibold mb-4">
-                                <SafeInlineMath text={question.question} />
+                                <SmartInlineMath text={question.question} />
                             </h3>
                             {section.id === "random" && (
                                 <p className="text-sm text-gray-600 mb-4">Section: {question.sectionId}</p>
@@ -50,7 +50,7 @@ export default function QuizReview({ questions, userAnswers, section }: QuizRevi
                                         >
                                             <span className="text-lg font-medium mr-4 w-6">{optionIndex + 1}</span>
                                             <span className="flex-grow">
-                                                <SafeInlineMath text={option} />
+                                                <SmartInlineMath text={option} />
                                             </span>
                                             {isCorrect && isSelected && (
                                                 <Check className="ml-2 text-green-600 dark:text-green-400" size={20} />

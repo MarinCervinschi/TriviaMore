@@ -2,7 +2,7 @@ import React from 'react';
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QuizQuestion from "@/types/QuizQuestion";
-import SafeInlineMath from "@/components/SafeInlineMath";
+import SmartInlineMath from "@/components/SmartInlineMath";
 
 interface QuestionCardProps {
     question: QuizQuestion;
@@ -23,7 +23,7 @@ export default function QuestionCard({
     return (
         <div className="space-y-6">
             <h2 className="text-lg font-semibold leading-tight">
-                <SafeInlineMath text={question.question} />
+                <SmartInlineMath text={question.question} />
             </h2>
             {random && (
                 <p className="text-sm text-gray-600 mb-4">
@@ -54,7 +54,7 @@ export default function QuestionCard({
                         >
                             <span className="text-lg font-medium mr-4 shrink-0">{index + 1}</span>
                             <span className="flex-grow">
-                                <SafeInlineMath text={option} />
+                                <SmartInlineMath text={option} />
                             </span>
 
                             {showCorrectAnswer && isCorrect && <Check className="ml-2 shrink-0 text-white" size={20} />}
