@@ -22,7 +22,7 @@ export default function QuestionCard({
 }: QuestionCardProps) {
     return (
         <div className="space-y-6">
-            <h2 className="text-lg font-semibold leading-tight">
+            <h2 className="text-lg font-semibold leading-tight overflow-auto">
                 <SmartInlineMath text={question.question} />
             </h2>
             {random && (
@@ -53,7 +53,7 @@ export default function QuestionCard({
                             onClick={() => onSelectAnswer(index)}
                         >
                             <span className="text-lg font-medium mr-4 shrink-0">{index + 1}</span>
-                            <span className="flex-grow">
+                            <span className="flex-grow overflow-auto">
                                 <SmartInlineMath text={option} />
                             </span>
 
