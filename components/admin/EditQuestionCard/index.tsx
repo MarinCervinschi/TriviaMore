@@ -104,14 +104,14 @@ export default function EditQuestionCard({ question, setQuestion }: ClassEditQue
             {/* Live Preview Section */}
             <div className="mt-8 p-4 border border-gray-400 rounded-md bg-gray-100">
                 <h3 className="font-semibold text-lg mb-2">Live Preview</h3>
-                <div className="mb-4 font-semibold">
+                <div className="mb-4 font-semibold overflow-auto">
                     <SmartInlineMath text={question.question} />
                 </div>
                 <ul className="list-disc pl-6 space-y-3">
                     {question.options.map((option, index) => (
                         <li
                             key={index}
-                            className={question.answer.includes(index) ? "text-green-600 font-medium" : ""}
+                            className={`overflow-auto ${question.answer.includes(index) ? "text-green-600" : ""}`}
                         >
                             <SmartInlineMath text={option} />
                         </li>

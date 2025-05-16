@@ -22,7 +22,7 @@ export default function QuizReview({ questions, userAnswers, section }: QuizRevi
 
                     return (
                         <div key={questionIndex} className="mb-8 last:mb-0">
-                            <h3 className="text-lg font-semibold mb-4">
+                            <h3 className="text-lg font-semibold mb-4 overflow-auto">
                                 <SmartInlineMath text={question.question} />
                             </h3>
                             {section.id === "random" && (
@@ -49,7 +49,7 @@ export default function QuizReview({ questions, userAnswers, section }: QuizRevi
                                             className={`flex items-center p-4 rounded-lg ${className}`}
                                         >
                                             <span className="text-lg font-medium mr-4 w-6">{optionIndex + 1}</span>
-                                            <span className="flex-grow">
+                                            <span className="flex-grow overflow-auto">
                                                 <SmartInlineMath text={option} />
                                             </span>
                                             {isCorrect && isSelected && (

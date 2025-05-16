@@ -33,7 +33,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
               {questions.map((question) => (
                 <Card key={question.id}>
                   <CardHeader>
-                    <CardTitle>
+                    <CardTitle className="overflow-auto">
                       <SmartInlineMath text={question.question} />
                     </CardTitle>
                   </CardHeader>
@@ -42,7 +42,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
                       {question.options.map((option, index) => (
                         <li
                           key={index}
-                          className={question.answer.includes(index) ? "text-green-600" : ""}
+                          className={`overflow-auto ${question.answer.includes(index) ? "text-green-600" : ""}`}
                         >
                           <SmartInlineMath text={option} />
                         </li>
