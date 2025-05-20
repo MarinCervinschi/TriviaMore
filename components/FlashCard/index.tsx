@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import iconMap from "@/lib/iconMap"
+import SmartInlineMath from "@/components/SmartInlineMath";
 
 interface FlashCardProps {
     section: QuizSection
@@ -97,7 +98,9 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="flex items-center justify-center h-[250px]">
-                                <p className="p-5 text-sm sm:text-md md:text-lg font-medium text-center break-words overflow-auto">{question.question}</p>
+                                <p className="p-5 text-sm sm:text-md md:text-lg font-medium text-center break-words overflow-auto">
+                                    <SmartInlineMath text={question.question} />
+                                </p>
                             </CardContent>
                             <CardFooter className="flex justify-center">
                                 <Button onClick={handleFlip}>Show Answer</Button>
