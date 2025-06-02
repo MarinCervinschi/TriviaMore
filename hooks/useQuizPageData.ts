@@ -34,6 +34,7 @@ export const useQuizPageData = (quizClassId: string, sectionParam: string, idEna
     return useQuery({
         queryKey: ['quiz-page', quizClassId, sectionParam],
         queryFn: () => fetchQuizPageData(quizClassId, sectionParam),
-        enabled: idEnabled
+        enabled: idEnabled,
+        staleTime: Infinity
     });
 }
