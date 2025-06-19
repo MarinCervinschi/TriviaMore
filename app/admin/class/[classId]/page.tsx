@@ -24,7 +24,7 @@ export default function ManageClass({ params }: { params: Promise<{ classId: str
     if (isLoading) return <Loader />
     if (isError) return <p className="text-red-500">Error: {error.message}</p>
 
-    const { class: quizClass, sections, flashCards } = data!
+    const { class: quizClass, sections, flashCards } = data! ?? { class: null, sections: [], flashCards: [] }
 
     return (
         <DefaultLayout>
