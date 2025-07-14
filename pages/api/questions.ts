@@ -37,7 +37,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ message: 'Questions not found for the given class' });
             }
 
-            const randomQuestions = getRandomQuestions(allQuestions);
+            const onlyQuestions = allQuestions.filter((q) => !q.sectionId?.includes('-flash'));
+
+            const randomQuestions = getRandomQuestions(onlyQuestions);
             const randomObj = { id: 'random', sectionName: 'Random', icon: 'FaRandom' };
             return res.status(200).json({ quizClass: classData, section: randomObj, questions: randomQuestions });
         } else {
