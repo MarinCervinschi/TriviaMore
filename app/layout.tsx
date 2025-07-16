@@ -26,12 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <ReactQueryProvider>
-          {children}
-        </ReactQueryProvider>
-        <Toaster />
-        <Analytics />
-        <SpeedInsights />
+        {children}
       </body>
     </html>
   )
