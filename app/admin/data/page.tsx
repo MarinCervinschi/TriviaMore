@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AdminDashboardLayout } from "@/components/admin/admin-dashboard-layout"
-import { AdminDashboard } from "@/components/admin/admin-dashboard"
+import { AdminHierarchyManager } from "@/components/admin/admin-hierarchy-manager"
 
-export default function AdminPage() {
+export default function AdminDataPage() {
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
 
@@ -33,7 +33,7 @@ export default function AdminPage() {
 
   return (
     <AdminDashboardLayout user={user}>
-      <AdminDashboard />
+      <AdminHierarchyManager />
     </AdminDashboardLayout>
   )
 }

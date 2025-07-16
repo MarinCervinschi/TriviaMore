@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AdminDashboardLayout } from "@/components/admin/admin-dashboard-layout"
-import { AdminDashboard } from "@/components/admin/admin-dashboard"
+import { SettingsManager } from "@/components/admin/settings-manager"
 
-export default function AdminPage() {
+export default function AdminSettingsPage() {
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token")
     const storedUser = localStorage.getItem("user")
 
-    if (!storedToken || !storedUser) {
+    if (!storedUser) {
       router.push("/auth/login")
       return
     }
@@ -33,7 +32,7 @@ export default function AdminPage() {
 
   return (
     <AdminDashboardLayout user={user}>
-      <AdminDashboard />
+      <SettingsManager />
     </AdminDashboardLayout>
   )
 }
