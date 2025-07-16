@@ -1,8 +1,10 @@
 import React from 'react';
-import { Check, X } from "lucide-react";
+import { Check, X, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QuizQuestion from "@/types/QuizQuestion";
 import SmartInlineMath from "@/components/SmartInlineMath";
+import { toast } from "sonner"
+
 
 interface QuestionCardProps {
     question: QuizQuestion;
@@ -20,11 +22,36 @@ export default function QuestionCard({
     random = false,
     showCorrectAnswer
 }: QuestionCardProps) {
+    const copyQuestionToClipboard = async () => {
+        try {
+            const questionText = question.question;
+            const optionsText = question.options.map((option, index) => `${index + 1}. ${option}`).join('\n');
+
+            const fullText = `Domanda: ${questionText}\n\nOpzioni:\n${optionsText}\n`;
+
+            await navigator.clipboard.writeText(fullText);
+            toast.success("Domanda copiata negli appunti!");
+        } catch (err) {
+            console.error('Errore nel copiare negli appunti:', err);
+        }
+    };
+
     return (
         <div className="space-y-6">
-            <h2 className="text-lg font-semibold leading-tight overflow-auto">
-                <SmartInlineMath text={question.question} />
-            </h2>
+            <div className="flex items-start justify-between gap-4">
+                <h2 className="text-lg font-semibold leading-tight overflow-auto flex-grow">
+                    <SmartInlineMath text={question.question} />
+                </h2>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyQuestionToClipboard}
+                    className="shrink-0"
+                    title="Copia domanda e risposte"
+                >
+                    <Copy size={16} />
+                </Button>
+            </div>
             {random && (
                 <p className="text-sm text-gray-600 mb-4">
                     Section: {question.sectionId}
