@@ -60,11 +60,22 @@ export default function Quiz({ questions, section, quizClassId }: QuizProps) {
 
       const correctGuesses = userAnswers.filter((answer) => correctAnswers.includes(answer)).length;
       const incorrectGuesses = userAnswers.filter((answer) => !correctAnswers.includes(answer)).length;
-
       const totalCorrectAnswers = correctAnswers.length;
-      const score = Math.max(0, correctGuesses / totalCorrectAnswers - incorrectGuesses / totalCorrectAnswers);
 
-      return acc + Math.round(score * 100) / 100; // Round to 2 decimal places
+      if (correctGuesses === totalCorrectAnswers && incorrectGuesses === 0) {
+        // Tutte le risposte corrette: 3 punti
+        return acc + 3;
+      } else if (incorrectGuesses > 0) {
+        // Almeno una risposta sbagliata: 0 punti
+        return acc;
+      } else if (correctGuesses > 0 && incorrectGuesses === 0) {
+        // Solo alcune corrette (nessuna sbagliata): punteggio frazionario
+        const partialScore = (correctGuesses / totalCorrectAnswers) * 3;
+        return acc + Math.round(partialScore * 100) / 100;
+      } else {
+        // Nessuna risposta corretta
+        return acc;
+      }
     }, 0);
 
     setScore(totalScore);
