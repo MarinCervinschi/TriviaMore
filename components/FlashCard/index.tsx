@@ -136,11 +136,13 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
                                         )
                                     ) : (
                                         correctAnswers.length === 1 ? (
-                                            <p>{correctAnswers[0]}</p>
+                                            <SmartInlineMath text={correctAnswers[0]} />
                                         ) : (
                                             <ul className="list-disc pl-5">
                                                 {correctAnswers.map((answer, index) => (
-                                                    <li key={index}>{answer}</li>
+                                                    <li key={index} className="overflow-auto">
+                                                        <SmartInlineMath text={answer} />
+                                                    </li>
                                                 ))}
                                             </ul>
                                         )
