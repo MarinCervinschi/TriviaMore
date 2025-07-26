@@ -23,7 +23,12 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
 
   return (
     <>
-      <Card className="mb-6">
+      <Button asChild>
+        <Link href={`/admin/class/${classId}/section/${sectionId}/question/new`}>
+          <MdAddToPhotos className="mr-2" /> Add New Question
+        </Link>
+      </Button>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle>Questions - {questions.length}</CardTitle>
         </CardHeader>
@@ -70,11 +75,7 @@ export default function QuestionsCard({ classId, sectionId, questions }: ClassQu
           )}
         </CardContent>
       </Card>
-      <Button asChild>
-        <Link href={`/admin/class/${classId}/section/${sectionId}/question/new`}>
-          <MdAddToPhotos className="mr-2" /> Add New Question
-        </Link>
-      </Button>
+
     </>
   );
 }
