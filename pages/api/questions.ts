@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
-    const { classId, sectionId } = req.query;
+    const { classId, sectionId, flash } = req.query;
 
     if (!classId || typeof classId !== 'string' || !sectionId || typeof sectionId !== 'string') {
         return res.status(400).json({ message: 'classId and sectionId query parameters are required' });
@@ -37,9 +37,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ message: 'Questions not found for the given class' });
             }
 
-            const onlyQuestions = allQuestions.filter((q) => !q.sectionId?.includes('-flash'));
+            let filterCondition;
+            if (flash === 'true') {
+                filterCondition = allQuestions.filter((q) => q.sectionId?.includes('-flash'));
+            } else {
+                filterCondition = allQuestions.filter((q) => !q.sectionId?.includes('-flash'));
+            }
 
-            const randomQuestions = getRandomQuestions(onlyQuestions);
+            const randomQuestions = getRandomQuestions(filterCondition);
             const randomObj = { id: 'random', sectionName: 'Random', icon: 'FaRandom' };
             return res.status(200).json({ quizClass: classData, section: randomObj, questions: randomQuestions });
         } else {
