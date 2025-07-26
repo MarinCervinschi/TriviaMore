@@ -12,7 +12,7 @@ const fetchQuizPageData = async (quizClassId: string, sectionParam: string): Pro
 }> => {
     const [sectionId, flashFlag] = sectionParam.split('%26');
 
-    const res = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${sectionId}`);
+    const res = await fetch(`/api/questions?classId=${quizClassId}&sectionId=${sectionId}&flash=${flashFlag ? 'true' : 'false'}`);
     if (!res.ok) {
         const errorBody = await res.json().catch(() => ({}));
         const error = new Error(errorBody.message || "Failed to fetch quiz page data");
