@@ -10,6 +10,15 @@ export function serializeId(id: string): string {
   return id.toLocaleLowerCase().replace(" ", "-");
 }
 
+export function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export function getRandomQuestions(allQuestions: QuizQuestion[], count: number = 11): QuizQuestion[] {
   const questions = [...allQuestions];
   const selected: QuizQuestion[] = [];
