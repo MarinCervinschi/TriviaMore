@@ -82,7 +82,7 @@ export default function FlashcardsTabsContent({ flashCards, quizClassId }: Flash
                                         variant="default"
                                         className="bg-gradient-to-r from-accent to-destructive hover:from-accent/90 hover:to-destructive/90"
                                     >
-                                        <Link href={`/${quizClassId}/random&flash`}>30 Cards</Link>
+                                        <Link href={`/${quizClassId}/random&flash`}>11 Cards</Link>
                                     </Button>
                                 </TableCell>
                             </TableRow>

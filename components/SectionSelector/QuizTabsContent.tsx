@@ -74,7 +74,7 @@ export default function QuizTabsContent({ sections, quizClassId }: QuizTabsConte
                         variant="default"
                         className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90"
                       >
-                        <Link href={`/${quizClassId}/random`}>30 Questions</Link>
+                        <Link href={`/${quizClassId}/random`}>11 Questions</Link>
                       </Button>
                     </TableCell>
                   </TableRow>
