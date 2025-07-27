@@ -1,5 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import QuizClass from '@/types/QuizClass';
 import QuizSection from '@/types/QuizSection';
 import QuizQuestion from '@/types/QuizQuestion';
@@ -31,10 +32,18 @@ const fetchQuizPageData = async (quizClassId: string, sectionParam: string): Pro
 };
 
 export const useQuizPageData = (quizClassId: string, sectionParam: string, idEnabled: boolean) => {
+    const [sectionId] = sectionParam.split('%26');
+    const isRandom = sectionId === 'random';
+
+    const randomKey = useMemo(() => Date.now(), []);
+
     return useQuery({
-        queryKey: ['quiz-page', quizClassId, sectionParam],
+        queryKey: isRandom
+            ? ['quiz-page-random', quizClassId, sectionParam, randomKey]
+            : ['quiz-page', quizClassId, sectionParam],
         queryFn: () => fetchQuizPageData(quizClassId, sectionParam),
         enabled: idEnabled,
-        staleTime: Infinity
+        staleTime: isRandom ? 0 : Infinity,
+        gcTime: isRandom ? 0 : undefined
     });
 }
