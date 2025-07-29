@@ -44,6 +44,9 @@ export const useQuizPageData = (quizClassId: string, sectionParam: string, idEna
         queryFn: () => fetchQuizPageData(quizClassId, sectionParam),
         enabled: idEnabled,
         staleTime: isRandom ? 0 : Infinity,
-        gcTime: isRandom ? 0 : undefined
+        gcTime: isRandom ? 0 : undefined,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false
     });
 }
