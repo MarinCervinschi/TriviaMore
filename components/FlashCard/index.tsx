@@ -73,6 +73,7 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
     }, [currentCardIndex, handlePrevious, handleNext, questions.length, handleFlip]);
 
     const question = questions[currentCardIndex]
+    const random = section.id === 'random'
     const correctAnswers = question.answer.map((index) => question.options[index])
 
     const getLink = (answer: string) => {
@@ -82,6 +83,11 @@ export function FlashCard({ section, questions, quizClassId }: FlashCardProps) {
 
     return (
         <div className="w-[400px] sm:w-[500px] md:w-[700px] lg:w-[850px] mx-auto px-4">
+            {random && (
+                <p className="text-sm text-gray-600 mb-4">
+                    Section: {question.sectionId}
+                </p>
+            )}
             <Progress value={progress} className="h-1 mb-8" />
 
             <div className="w-full min-h-[400px] perspective-1000">
