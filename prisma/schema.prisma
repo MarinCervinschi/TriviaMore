@@ -22,6 +22,10 @@ model User {
   progress           Progress[]
   accessibleSections SectionAccess[]
 
+  // Admin relations
+  managedDepartments DepartmentAdmin[]
+  maintainedCourses  CourseMaintainer[]
+
   @@map("users")
 }
 
@@ -30,12 +34,28 @@ model Department {
   name        String
   code        String   @unique
   description String?
+  position    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  courses Course[]
+  courses     Course[]
+  admins      DepartmentAdmin[]
 
+  @@index([position])
   @@map("departments")
+}
+
+model DepartmentAdmin {
+  id           String     @id @default(cuid())
+  userId       String
+  departmentId String
+  createdAt    DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, departmentId])
+  @@map("department_admins")
 }
 
 model Course {
@@ -44,14 +64,31 @@ model Course {
   code         String
   description  String?
   departmentId String
+  position     Int      @default(0)
+  courseType   CourseType @default(BACHELOR)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  classes    Class[]
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  classes      Class[]
+  maintainers  CourseMaintainer[]
 
+  @@index([position])
   @@unique([code, departmentId])
   @@map("courses")
+}
+
+model CourseMaintainer {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("course_maintainers")
 }
 
 model Class {
@@ -60,12 +97,15 @@ model Class {
   code        String
   description String?
   courseId    String
+  classYear   Int
+  position    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   sections Section[]
 
+  @@index([position])
   @@unique([code, courseId])
   @@map("classes")
 }
@@ -76,6 +116,7 @@ model Section {
   description String?
   isPublic    Boolean  @default(true)
   classId     String
+  position    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -85,6 +126,7 @@ model Section {
   access    SectionAccess[]
   progress  Progress[]
 
+  @@index([position])
   @@map("sections")
 }
 
@@ -105,7 +147,7 @@ model Question {
   content       String
   type          QuestionType
   options       Json? // For multiple choice questions
-  correctAnswer String
+  correctAnswer String[]
   explanation   String?
   difficulty    Difficulty   @default(MEDIUM)
   sectionId     String
@@ -171,7 +213,7 @@ model AnswerAttempt {
   id            String  @id @default(cuid())
   quizAttemptId String
   questionId    String
-  userAnswer    String
+  userAnswer    String[]
   isCorrect     Boolean
   timeSpent     Int? // in seconds
 
@@ -213,7 +255,9 @@ model Progress {
 }
 
 enum Role {
-  ADMIN
+  SUPERADMIN
+  DEPARTMENT_ADMIN
+  COURSE_MAINTAINER
   STUDENT
 }
 
@@ -227,4 +271,9 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+enum CourseType {
+  BACHELOR
+  MASTER
 }
