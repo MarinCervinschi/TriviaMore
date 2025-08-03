@@ -26,6 +26,9 @@ async function main() {
         await prisma.department.deleteMany()
         await prisma.evaluationMode.deleteMany()
         await prisma.user.deleteMany()
+        await prisma.session.deleteMany()
+        await prisma.verificationToken.deleteMany()
+        await prisma.account.deleteMany()
         console.log('✅ Database pulito con successo')
     } catch (error) {
         console.log('⚠️  Database vuoto o tabelle non esistenti, continuando con la creazione...')
@@ -70,6 +73,7 @@ async function main() {
     const superAdmin = await prisma.user.create({
         data: {
             username: 'superadmin',
+
             password: hashedPassword,
             role: Role.SUPERADMIN,
         },
