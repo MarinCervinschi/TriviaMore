@@ -11,13 +11,36 @@ export interface QuizQuestion {
   order: number;
 }
 
+export interface QuizSection {
+  id: string;
+  name: string;
+  class: {
+    name: string;
+    course: {
+      name: string;
+      department: {
+        name: string;
+      };
+    };
+  };
+}
+
 export interface Quiz {
   id: string;
   timeLimit?: number;
-  sectionId: string;
-  evaluationModeId: string;
+  evaluationMode: EvaluationMode;
   quizMode: QuizMode;
+  section: QuizSection;
   questions: QuizQuestion[];
+}
+
+export interface EvaluationMode {
+  name: string;
+  description?: string;
+  correctAnswerPoints: number;
+  incorrectAnswerPoints: number;
+  partialCreditEnabled: boolean;
+  
 }
 
 export interface GuestQuizRequest {
@@ -63,5 +86,4 @@ export interface QuizAttemptResponse {
 
 export interface GuestQuizResponse {
   quiz: Quiz;
-  tempId: string; // Per tracciare i quiz anonimi
 }
