@@ -1,111 +1,75 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BrowseService } from '@/lib/services/browse.service';
-import { mockDepartments } from '@/lib/mock/browse.mock';
 
-// Imposta a true per usare i dati mock durante lo sviluppo
-const USE_MOCK_DATA = process.env.NODE_ENV === 'development';
+// http://localhost:3000/api/browse
+// http://localhost:3000/api/browse?nodeId=course-id&action=expand&nodeType=course
+// http://localhost:3000/api/browse?action=expand&nodeId=class-id&nodeType=class
+// http://localhost:3000/api/browse?q=search-term&limit=20
+
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const action = searchParams.get('action');
-    const nodeId = searchParams.get('nodeId');
-    const query = searchParams.get('q');
-
-    // Usa i dati mock durante lo sviluppo
-    if (USE_MOCK_DATA) {
-      // Gestione dell'espansione dei nodi con mock data
-      if (action === 'expand' && nodeId) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const action = searchParams.get('action');
         const nodeType = searchParams.get('nodeType');
-        
-        if (nodeType === 'course') {
-          // Trova il corso nei mock data e restituisci le sue classi
-          const course = mockDepartments
-            .flatMap(dept => dept.courses || [])
-            .find(course => course.id === nodeId);
-          
-          return NextResponse.json({ 
-            classes: course?.classes || [] 
-          });
+        const nodeId = searchParams.get('nodeId');
+        const query = searchParams.get('q');
+
+        if (query) {
+            const limit = parseInt(searchParams.get('limit') || '50');
+            const results = await BrowseService.searchTree(query, limit);
+            return NextResponse.json(results);
         }
-        
-        if (nodeType === 'class') {
-          // Trova la classe nei mock data e restituisci le sue sezioni
-          const classNode = mockDepartments
-            .flatMap(dept => dept.courses || [])
-            .flatMap(course => course.classes || [])
-            .find(cls => cls.id === nodeId);
-          
-          return NextResponse.json({ 
-            sections: classNode?.sections || [] 
-          });
+
+        if (action && !isValidAction(action)) {
+            return NextResponse.json(
+                { error: 'Invalid action' },
+                { status: 400 }
+            );
         }
-      }
 
-      // Caricamento iniziale con mock data (senza sezioni pre-caricate)
-      const mockTreeWithoutSections = {
-        departments: mockDepartments.map(dept => ({
-          ...dept,
-          courses: dept.courses?.map(course => ({
-            ...course,
-            classes: course.classes?.map(cls => ({
-              id: cls.id,
-              name: cls.name,
-              code: cls.code,
-              description: cls.description,
-              classYear: cls.classYear,
-              position: cls.position,
-              courseId: cls.courseId,
-              _count: cls._count
-              // Rimuoviamo le sections per lazy loading
-            }))
-            // Rimuoviamo le classes complete per lazy loading
-          }))
-        }))
-      };
-      
-      return NextResponse.json(mockTreeWithoutSections);
+        if (action && isValidAction(action) && !isValidNodeType(nodeType)) {
+            return NextResponse.json(
+                { error: 'Invalid node type' },
+                { status: 400 }
+            );
+        }
+
+        if (action && nodeType && !nodeId) {
+            return NextResponse.json(
+                { error: 'nodeId is required for expand action' },
+                { status: 400 }
+            );
+        }
+
+        if (nodeType === 'course' && nodeId) {
+            const result = await BrowseService.expandCourse(nodeId);
+            return NextResponse.json(result);
+        }
+
+        if (nodeType === 'class' && nodeId) {
+            // TODO: Estrarre userId dal token JWT quando implementato l'auth
+            const userId = undefined; // Per ora guest
+            const result = await BrowseService.expandClass(nodeId, userId);
+            return NextResponse.json(result);
+        }
+
+        const tree = await BrowseService.getInitialTree();
+        return NextResponse.json(tree);
+
+    } catch (error) {
+        console.error('Browse API error:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
     }
+}
 
-    // Produzione: usa il database
-    // Gestione della ricerca
-    if (query) {
-      const limit = parseInt(searchParams.get('limit') || '50');
-      const results = await BrowseService.searchTree(query, limit);
-      return NextResponse.json(results);
-    }
+function isValidNodeType(nodeType: string | null): nodeType is 'course' | 'class' {
+    return nodeType === 'course' || nodeType === 'class';
+}
 
-    // Gestione dell'espansione dei nodi
-    if (action === 'expand' && nodeId) {
-      const nodeType = searchParams.get('nodeType');
-      
-      if (nodeType === 'course') {
-        const result = await BrowseService.expandCourse(nodeId);
-        return NextResponse.json(result);
-      }
-      
-      if (nodeType === 'class') {
-        // TODO: Estrarre userId dal token JWT quando implementato l'auth
-        const userId = undefined; // Per ora guest
-        const result = await BrowseService.expandClass(nodeId, userId);
-        return NextResponse.json(result);
-      }
-
-      return NextResponse.json(
-        { error: 'Invalid node type' },
-        { status: 400 }
-      );
-    }
-
-    // Caricamento iniziale della struttura
-    const tree = await BrowseService.getInitialTree();
-    return NextResponse.json(tree);
-
-  } catch (error) {
-    console.error('Browse API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+function isValidAction(action: string | null): action is 'expand' {
+    return action === 'expand';
 }
