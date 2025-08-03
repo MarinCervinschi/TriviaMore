@@ -4,6 +4,8 @@ import {
     StartQuizRequest,
     CompleteQuizRequest,
     Quiz,
+    QuizSection,
+    EvaluationMode,
     QuizResult,
     GuestQuizResponse,
     QuizAttemptResponse
@@ -22,21 +24,30 @@ export class QuizService {
             quizMode = QuizMode.STUDY
         } = params;
 
-        const allQuestions = await prisma.section.findFirst({
+        const sectionData = await prisma.section.findFirst({
             where: {
                 id: sectionId,
                 isPublic: true
             },
             include: {
-                questions: true
+                questions: true,
+                class: {
+                    include: {
+                        course: {
+                            include: {
+                                department: true
+                            }
+                        }
+                    }
+                }
             }
         });
 
-        if (!allQuestions || allQuestions.questions.length === 0) {
+        if (!sectionData || sectionData.questions.length === 0) {
             throw new Error('Sezione non trovata o nessuna domanda disponibile');
         }
 
-        const selectedQuestions = this.selectRandomItems(allQuestions.questions, questionCount);
+        const selectedQuestions = this.selectRandomItems(sectionData.questions, questionCount);
 
         const defaultEvaluationMode = await prisma.evaluationMode.findFirst({
             where: { name: 'Standard' }
@@ -46,27 +57,48 @@ export class QuizService {
             throw new Error('Modalità di valutazione non configurata');
         }
 
-        const quiz: Quiz = {
-            id: `guest-${Date.now()}`,
-            sectionId: allQuestions.id,
-            evaluationModeId: defaultEvaluationMode.id,
-            quizMode,
-            questions: selectedQuestions.map((q: any, index: number) => ({
-                id: q.id,
-                content: q.content,
-                questionType: q.questionType,
-                options: q.options as string[] | undefined,
-                correctAnswer: q.correctAnswer,
-                explanation: q.explanation || undefined,
-                difficulty: q.difficulty,
-                order: index + 1
-            }))
+        const quizSection: QuizSection = {
+            id: sectionData.id,
+            name: sectionData.name,
+            class: {
+                name: sectionData.class.name,
+                course: {
+                    name: sectionData.class.course.name,
+                    department: {
+                        name: sectionData.class.course.department.name
+                    }
+                }
+            }
         };
 
-        return {
-            quiz,
-            tempId: quiz.id
+        const evaluationMode: EvaluationMode = {
+            name: defaultEvaluationMode.name,
+            description: defaultEvaluationMode.description || undefined,
+            correctAnswerPoints: defaultEvaluationMode.correctAnswerPoints,
+            incorrectAnswerPoints: defaultEvaluationMode.incorrectAnswerPoints,
+            partialCreditEnabled: defaultEvaluationMode.partialCreditEnabled
         };
+
+        const questions = selectedQuestions.map((q: any, index: number) => ({
+            id: q.id,
+            content: q.content,
+            questionType: q.questionType,
+            options: q.options as string[] | undefined,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation || undefined,
+            difficulty: q.difficulty,
+            order: index + 1
+        }));
+
+        const quiz: Quiz = {
+            id: `guest-${Date.now()}`,
+            quizMode,
+            section: quizSection,
+            evaluationMode,
+            questions
+        };
+
+        return { quiz };
     }
 
     /**
