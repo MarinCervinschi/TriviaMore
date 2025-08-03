@@ -10,7 +10,6 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
-  email     String   @unique
   password  String
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
@@ -18,6 +17,7 @@ model User {
 
   // Student-specific relations
   quizAttempts       QuizAttempt[]
+  userClasses        UserClass[]
   bookmarks          Bookmark[]
   progress           Progress[]
   accessibleSections SectionAccess[]
@@ -38,48 +38,46 @@ model Department {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  courses     Course[]
-  admins      DepartmentAdmin[]
+  courses Course[]
+  admins  DepartmentAdmin[]
 
   @@index([position])
   @@map("departments")
 }
 
 model DepartmentAdmin {
-  id           String     @id @default(cuid())
   userId       String
   departmentId String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime @default(now())
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, departmentId])
+  @@id([userId, departmentId])
   @@map("department_admins")
 }
 
 model Course {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   name         String
   code         String
   description  String?
   departmentId String
-  position     Int      @default(0)
+  position     Int        @default(0)
   courseType   CourseType @default(BACHELOR)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  classes      Class[]
-  maintainers  CourseMaintainer[]
+  department  Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  classes     Class[]
+  maintainers CourseMaintainer[]
 
-  @@index([position])
   @@unique([code, departmentId])
+  @@index([position])
   @@map("courses")
 }
 
 model CourseMaintainer {
-  id        String   @id @default(cuid())
   userId    String
   courseId  String
   createdAt DateTime @default(now())
@@ -87,7 +85,7 @@ model CourseMaintainer {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, courseId])
+  @@id([userId, courseId])
   @@map("course_maintainers")
 }
 
@@ -102,11 +100,12 @@ model Class {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  sections Section[]
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sections    Section[]
+  userClasses UserClass[]
 
-  @@index([position])
   @@unique([code, courseId])
+  @@index([position])
   @@map("classes")
 }
 
@@ -131,21 +130,21 @@ model Section {
 }
 
 model SectionAccess {
-  id        String @id @default(cuid())
   userId    String
   sectionId String
+  createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, sectionId])
+  @@id([userId, sectionId])
   @@map("section_access")
 }
 
 model Question {
   id            String       @id @default(cuid())
   content       String
-  type          QuestionType
+  questionType  QuestionType
   options       Json? // For multiple choice questions
   correctAnswer String[]
   explanation   String?
@@ -159,31 +158,37 @@ model Question {
   bookmarks      Bookmark[]
   answerAttempts AnswerAttempt[]
 
+  @@index([sectionId])
+  @@index([difficulty])
+  @@index([questionType])
   @@map("questions")
 }
 
 model Quiz {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  timeLimit   Int? // in minutes
-  isActive    Boolean  @default(true)
-  sectionId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  timeLimit        Int? // in minutes
+  sectionId        String
+  evaluationModeId String
+  quizMode         QuizMode @default(STUDY)
+  createdAt        DateTime @default(now())
 
-  section   Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  questions QuizQuestion[]
-  attempts  QuizAttempt[]
+  section        Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  evaluationMode EvaluationMode @relation(fields: [evaluationModeId], references: [id], onDelete: Cascade)
+  questions      QuizQuestion[]
+  attempts       QuizAttempt[]
 
+  @@index([sectionId])
+  @@index([quizMode])
+  @@index([evaluationModeId])
   @@map("quizzes")
 }
 
 model QuizQuestion {
-  id         String @id @default(cuid())
+  id         String   @id @default(cuid())
   quizId     String
   questionId String
   order      Int
+  createdAt  DateTime @default(now())
 
   quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -193,29 +198,29 @@ model QuizQuestion {
 }
 
 model QuizAttempt {
-  id             String   @id @default(cuid())
-  userId         String
-  quizId         String
-  score          Float
-  totalQuestions Int
-  correctAnswers Int
-  timeSpent      Int? // in seconds
-  completedAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  quizId      String
+  score       Float
+  timeSpent   Int? // in seconds
+  completedAt DateTime @default(now())
 
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
   answers AnswerAttempt[]
 
+  @@index([userId])
+  @@index([quizId])
+  @@index([completedAt])
   @@map("quiz_attempts")
 }
 
 model AnswerAttempt {
-  id            String  @id @default(cuid())
+  id            String   @id @default(cuid())
   quizAttemptId String
   questionId    String
   userAnswer    String[]
-  isCorrect     Boolean
-  timeSpent     Int? // in seconds
+  score         Float
 
   quizAttempt QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
   question    Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -225,7 +230,6 @@ model AnswerAttempt {
 }
 
 model Bookmark {
-  id         String   @id @default(cuid())
   userId     String
   questionId String
   createdAt  DateTime @default(now())
@@ -233,19 +237,51 @@ model Bookmark {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, questionId])
+  @@id([userId, questionId])
   @@map("bookmarks")
 }
 
+model UserClass {
+  userId    String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([userId, classId])
+  @@map("user_classes")
+}
+
 model Progress {
-  id               String   @id @default(cuid())
-  userId           String
-  sectionId        String
-  questionsStudied Int      @default(0)
-  quizzesTaken     Int      @default(0)
-  averageScore     Float?
-  lastAccessedAt   DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id        String @id @default(cuid())
+  userId    String
+  sectionId String
+
+  // General metrics
+  totalQuestionsStudied Int @default(0)
+
+  // Study mode metrics
+  studyQuizzesTaken   Int    @default(0)
+  studyAverageScore   Float?
+  studyBestScore      Float?
+  studyTotalTimeSpent Int    @default(0)
+
+  // Exam simulation metrics
+  examQuizzesTaken   Int    @default(0)
+  examAverageScore   Float?
+  examBestScore      Float?
+  examTotalTimeSpent Int    @default(0)
+
+  // Learning patterns
+  improvementRate  Float? // score improvement over time
+  consistencyScore Float? // consistency in performance
+
+  // Timestamps
+  lastAccessedAt  DateTime @default(now())
+  firstAccessedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -254,10 +290,25 @@ model Progress {
   @@map("progress")
 }
 
+model EvaluationMode {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  description           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  correctAnswerPoints   Float    @default(1.0)
+  incorrectAnswerPoints Float    @default(0.0)
+  partialCreditEnabled  Boolean  @default(false)
+
+  quizzes Quiz[]
+
+  @@map("evaluation_modes")
+}
+
 enum Role {
   SUPERADMIN
-  DEPARTMENT_ADMIN
-  COURSE_MAINTAINER
+  ADMIN
+  MAINTAINER
   STUDENT
 }
 
@@ -276,4 +327,9 @@ enum Difficulty {
 enum CourseType {
   BACHELOR
   MASTER
+}
+
+enum QuizMode {
+  STUDY
+  EXAM_SIMULATION
 }
