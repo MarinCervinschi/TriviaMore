@@ -13,7 +13,7 @@ export const registerSchema = userBaseSchema.extend({
 })
 
 export const loginSchema = z.object({
-  username: z.string().optional(),
+  username: z.string().min(1, "Username richiesto"),
   password: z.string().min(1, "Password richiesta"),
 })
 
