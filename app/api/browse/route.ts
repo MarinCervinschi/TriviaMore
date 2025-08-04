@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { BrowseService } from '@/lib/services/browse.service';
+import { NextAuthRequest } from 'next-auth/lib';
+import { auth } from '@/lib/auth';
 
 // http://localhost:3000/api/browse
 // http://localhost:3000/api/browse?nodeId=course-id&action=expand&nodeType=course
@@ -7,17 +9,18 @@ import { BrowseService } from '@/lib/services/browse.service';
 // http://localhost:3000/api/browse?q=search-term&limit=20
 
 
-export async function GET(request: NextRequest) {
+export const GET = auth(async function GET(request: NextAuthRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const action = searchParams.get('action');
         const nodeType = searchParams.get('nodeType');
         const nodeId = searchParams.get('nodeId');
         const query = searchParams.get('q');
+        const userId = request.auth?.user?.id || undefined;
 
         if (query) {
             const limit = parseInt(searchParams.get('limit') || '50');
-            const results = await BrowseService.searchTree(query, limit);
+            const results = await BrowseService.searchTree(query, limit, userId);
             return NextResponse.json(results);
         }
 
@@ -43,13 +46,11 @@ export async function GET(request: NextRequest) {
         }
 
         if (nodeType === 'course' && nodeId) {
-            const result = await BrowseService.expandCourse(nodeId);
+            const result = await BrowseService.expandCourse(nodeId, userId);
             return NextResponse.json(result);
         }
 
         if (nodeType === 'class' && nodeId) {
-            // TODO: Estrarre userId dal token JWT quando implementato l'auth
-            const userId = undefined; // Per ora guest
             const result = await BrowseService.expandClass(nodeId, userId);
             return NextResponse.json(result);
         }
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
             { status: 500 }
         );
     }
-}
+}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
 
 function isValidNodeType(nodeType: string | null): nodeType is 'course' | 'class' {
     return nodeType === 'course' || nodeType === 'class';

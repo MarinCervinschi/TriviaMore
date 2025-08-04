@@ -14,7 +14,7 @@ type UserCardProps = {
 function UserCard({ id, role, name, email, image }: UserCardProps) {
     return (
         <div className="flex items-center p-4 bg-white rounded-lg shadow-md gap-4 max-w-md">
-            <img
+            <Image
                 src={image}
                 alt={name}
                 width={64}
