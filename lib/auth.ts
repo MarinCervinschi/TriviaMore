@@ -1,27 +1,20 @@
+import bcrypt from "bcryptjs"
 import { v4 as uuid } from "uuid"
+import { prisma } from "@/lib/prisma"
 import NextAuth, { User } from "next-auth"
-import { encode as defaultEncode } from "next-auth/jwt"
+import { loginSchema } from "@/lib/validations"
 import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
-import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import bcrypt from "bcryptjs"
-import { prisma } from "@/lib/prisma"
-import { loginSchema } from "@/lib/validations"
+import { encode as defaultEncode } from "next-auth/jwt"
+import CredentialsProvider from "next-auth/providers/credentials"
 
 const adapter = PrismaAdapter(prisma) as any
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter,
     callbacks: {
-        async jwt({ token, account, user }) {
-            if (user) {
-                token.sub = user.id;
-                token.role = user.role;
-                token.username = user.username;
-            }
-            console.log("JWT Callback:", { token, account, user });
-
+        async jwt({ token, account }) {
             if (account?.provider === "credentials") {
                 token.credentials = true
             }
@@ -29,19 +22,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return token
         },
         async session({ session, token }) {
-            if (token) {
-                session.user.id = token.sub!;
-                session.user.role = token.role;
-                session.user.username = token.username;
-            }
-            else if (session.user) {
+            if (session && session.user) {
                 session.user = {
                     id: session.user.id,
-                    name: session.user.name,
-                    email: session.user.email,
-                    username: session.user.username,
                     role: session.user.role,
-                    emailVerified: session.user.emailVerified,
+                    name: session.user.name || undefined,
+                    email: session.user.email || undefined,
+                    image: session.user.image || null,
                 }
             }
 
@@ -50,7 +37,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     jwt: {
         encode: async function (params) {
-            console.log("JWT Encode Callback:", params);
             if (params.token?.credentials) {
                 const sessionToken = uuid()
 
@@ -108,11 +94,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                     const userData: User = {
                         id: user.id,
-                        email: user.email || "",
-                        name: user.name || "",
-                        image: user.image || null,
                         role: user.role,
-                        username: user.username || "",
+                        name: user.name || undefined,
+                        email: user.email || undefined,
+                        image: user.image || null,
                     }
 
                     return userData
