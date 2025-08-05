@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { motion } from "framer-motion"
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -11,13 +12,13 @@ interface ThemeProviderProps {
   disableTransitionOnChange?: boolean
 }
 
-export function ThemeProvider({ 
-  children, 
+export function ThemeProvider({
+  children,
   attribute = "class",
   defaultTheme = "system",
   enableSystem = true,
   disableTransitionOnChange = false,
-  ...props 
+  ...props
 }: ThemeProviderProps) {
   return (
     <NextThemesProvider
@@ -27,7 +28,14 @@ export function ThemeProvider({
       disableTransitionOnChange={disableTransitionOnChange}
       {...props}
     >
-      {children}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 1 }}
+      >
+        {children}
+      </motion.div>
     </NextThemesProvider>
   )
 }
