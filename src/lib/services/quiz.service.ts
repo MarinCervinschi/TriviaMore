@@ -17,7 +17,7 @@ export class QuizService {
     /**
      * Genera un quiz per utenti anonimi basato sulla sezione specificata
      */
-    async generateGuestQuiz(params: GuestQuizRequest): Promise<GuestQuizResponse> {
+    static async generateGuestQuiz(params: GuestQuizRequest): Promise<GuestQuizResponse> {
         const {
             sectionId,
             questionCount = 30,
@@ -47,7 +47,7 @@ export class QuizService {
             throw new Error('Sezione non trovata o nessuna domanda disponibile');
         }
 
-        const selectedQuestions = this.selectRandomItems(sectionData.questions, questionCount);
+        const selectedQuestions = QuizService.selectRandomItems(sectionData.questions, questionCount);
 
         const defaultEvaluationMode = await prisma.evaluationMode.findFirst({
             where: { name: 'Standard' }
@@ -104,14 +104,14 @@ export class QuizService {
     /**
      * Avvia un quiz per un utente registrato
      */
-    async startQuiz({ }): Promise<void> {
+    static async startQuiz({ }): Promise<void> {
         // TODO: Implementare la logica per avviare un quiz
     }
 
     /**
      * Completa un quiz e salva i progressi
      */
-    async completeQuiz({ }): Promise<void> {
+    static async completeQuiz({ }): Promise<void> {
         // TODO: Implementare la logica per completare il quiz
     }
 
@@ -119,7 +119,7 @@ export class QuizService {
     /**
      * Mescola casualmente un array usando l'algoritmo Fisher-Yates
      */
-    private shuffleArray<T>(array: T[]): T[] {
+    private static shuffleArray<T>(array: T[]): T[] {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -132,9 +132,9 @@ export class QuizService {
      * Seleziona casualmente un numero specifico di elementi da un array
      * Più efficiente del shuffle completo quando si vuole solo un subset
      */
-    private selectRandomItems<T>(array: T[], count: number): T[] {
+    private static selectRandomItems<T>(array: T[], count: number): T[] {
         if (count >= array.length) {
-            return this.shuffleArray(array);
+            return QuizService.shuffleArray(array);
         }
 
         const selected: T[] = [];
@@ -154,7 +154,7 @@ export class QuizService {
     /**
      * Aggiorna i progressi dell'utente
      */
-    private async updateUserProgress({ }): Promise<void> {
+    private static async updateUserProgress({ }): Promise<void> {
         // TODO: Implementare la logica per aggiornare i progressi dell'utente
     }
 }

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { QuizService } from '@/lib/services/quiz.service';
 
-const quizService = new QuizService();
-
 // http://localhost:3000/api/quiz/guest?sectionId=section-id
 
 export async function GET(request: NextRequest) {
@@ -19,7 +17,7 @@ export async function GET(request: NextRequest) {
 
         const params = { sectionId, questionCount: 30 };
 
-        const guestQuiz = await quizService.generateGuestQuiz(params);
+        const guestQuiz = await QuizService.generateGuestQuiz(params);
 
         return NextResponse.json(guestQuiz);
     } catch (error) {
