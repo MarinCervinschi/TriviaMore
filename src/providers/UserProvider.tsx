@@ -20,7 +20,7 @@ export function UserProvider({ children }: UserProviderProps) {
                 const response = await fetch('/api/auth/session');
                 if (response.ok) {
                     const session = await response.json();
-                    setUser(session.user);
+                    setUser(session.user || null);
                 } else {
                     setUser(null);
                 }
