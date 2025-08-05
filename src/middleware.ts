@@ -11,7 +11,6 @@ export async function middleware(request: NextRequest) {
   const isDashboard = request.nextUrl.pathname.startsWith("/dashboard")
   const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected")
 
-  console.log(`Middleware: isAuth=${isAuth}, isAuthPage=${isAuthPage}, isDashboard=${isDashboard}, isProtectedApi=${isProtectedApi}`);
   if (isDashboard || isProtectedApi) {
     if (!isAuth) {
       return NextResponse.redirect(new URL("/api/auth/signin", request.url))
