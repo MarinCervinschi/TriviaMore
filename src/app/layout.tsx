@@ -1,6 +1,7 @@
 import './globals.css'
 import { Poppins } from 'next/font/google'
 import { ThemeProvider } from "@/providers/theme-provider"
+import { ReactQueryProviders } from '@/providers/react-query-provider'
 import { Toaster } from '@/components/ui/sonner'
 
 export const metadata = {
@@ -30,9 +31,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <ReactQueryProviders>
+            {children}
+          </ReactQueryProviders>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   )
