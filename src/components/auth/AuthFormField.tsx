@@ -27,7 +27,7 @@ export const AuthFormField: React.FC<AuthFormFieldProps> = ({
 }) => {
     return (
         <div>
-            <Label htmlFor={id}>{label}</Label>
+            <Label htmlFor={id} className="text-gray-700 dark:text-gray-300">{label}</Label>
             <Input
                 {...register(id)}
                 id={id}
@@ -35,10 +35,10 @@ export const AuthFormField: React.FC<AuthFormFieldProps> = ({
                 placeholder={placeholder}
                 autoComplete={autoComplete}
                 disabled={disabled}
-                className={error ? "border-red-500" : ""}
+                className={`dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 ${error ? "border-red-500 dark:border-red-400" : ""}`}
             />
             {error && (
-                <div className="flex items-center gap-1 text-sm text-red-600 mt-1">
+                <div className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400 mt-1">
                     <AlertCircle className="w-4 h-4" />
                     {error.message}
                 </div>
