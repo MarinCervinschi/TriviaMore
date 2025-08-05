@@ -1,0 +1,111 @@
+import bcrypt from "bcryptjs"
+import { v4 as uuid } from "uuid"
+import { prisma } from "@/lib/prisma"
+import NextAuth, { User } from "next-auth"
+import { loginSchema } from "@/lib/validations"
+import GitHub from "next-auth/providers/github"
+import Google from "next-auth/providers/google"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { encode as defaultEncode } from "next-auth/jwt"
+import CredentialsProvider from "next-auth/providers/credentials"
+
+const adapter = PrismaAdapter(prisma) as any
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+    adapter,
+    callbacks: {
+        async jwt({ token, account }) {
+            if (account?.provider === "credentials") {
+                token.credentials = true
+            }
+
+            return token
+        },
+        async session({ session, token }) {
+            if (session && session.user) {
+                session.user = {
+                    id: session.user.id,
+                    role: session.user.role,
+                    name: session.user.name || undefined,
+                    email: session.user.email || undefined,
+                    image: session.user.image || null,
+                }
+            }
+
+            return session;
+        }
+    },
+    jwt: {
+        encode: async function (params) {
+            if (params.token?.credentials) {
+                const sessionToken = uuid()
+
+                if (!params.token.sub) {
+                    throw new Error("No user ID found in token")
+                }
+
+                const createdSession = await adapter?.createSession?.({
+                    sessionToken: sessionToken,
+                    userId: params.token.sub,
+                    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 giorni
+                })
+
+                if (!createdSession) {
+                    throw new Error("Failed to create session")
+                }
+
+                return sessionToken
+            }
+
+            return defaultEncode(params)
+        }
+    },
+    providers: [
+        Google,
+        GitHub,
+        CredentialsProvider({
+            name: "credentials",
+            credentials: {
+                username: { label: "Username", type: "text" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+                try {
+                    const validatedCredentials = loginSchema.parse(credentials)
+
+                    const user = await prisma.user.findFirst({
+                        where: {
+                            username: validatedCredentials.username
+                        }
+                    })
+
+                    if (!user || !user.password) {
+                        throw new Error("User not found")
+                    }
+
+                    const isValid = await bcrypt.compare(
+                        validatedCredentials.password,
+                        user.password
+                    )
+
+                    if (!isValid) {
+                        throw new Error("Invalid credentials")
+                    }
+
+                    const userData: User = {
+                        id: user.id,
+                        role: user.role,
+                        name: user.name || undefined,
+                        email: user.email || undefined,
+                        image: user.image || null,
+                    }
+
+                    return userData
+                } catch (error) {
+                    console.error("Authorization error:", error)
+                    throw new Error("Authorization failed")
+                }
+            },
+        }),
+    ],
+});

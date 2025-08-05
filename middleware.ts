@@ -1,22 +1,34 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export function middleware(request: NextRequest) {
-  const authToken = request.cookies.get("admin_token")?.value
+export async function middleware(request: NextRequest) {
+  const sessionToken = request.cookies.get("authjs.session-token")?.value
 
-  const isAdminDashboard = request.nextUrl.pathname.startsWith("/admin") && request.nextUrl.pathname !== "/admin"
-  const isAdminApi = request.nextUrl.pathname.startsWith("/api/admin") && request.nextUrl.pathname !== "/api/admin/login"
+  const isAuth = !!sessionToken
+  const isAuthPage = request.nextUrl.pathname.startsWith("/auth")
 
-  // Protect /admin and /api/admin routes
-  if (isAdminDashboard || isAdminApi) {
-    if (!authToken) {
-      return NextResponse.redirect(new URL("/admin", request.url))
+  // Protected routes
+  const isDashboard = request.nextUrl.pathname.startsWith("/dashboard")
+  const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected")
+
+  if (isDashboard || isProtectedApi) {
+    if (!isAuth) {
+      return NextResponse.redirect(new URL("/api/auth/signin", request.url))
     }
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (isAuthPage && isAuth) {
+    return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/api/protected/:path*",
+    "/auth/:path*"
+  ],
 }
