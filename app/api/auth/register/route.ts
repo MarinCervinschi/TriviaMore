@@ -6,20 +6,17 @@ import { registerSchema, z } from "@/lib/validations"
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { name, email, username, password } = registerSchema.parse(body)
+        const { name, email, password } = registerSchema.parse(body)
 
         const existingUser = await prisma.user.findFirst({
             where: {
-                OR: [
-                    { email },
-                    { username },
-                ],
+                email,
             },
         })
 
         if (existingUser) {
             return NextResponse.json(
-                { error: "Un utente con questa email o username esiste già" },
+                { error: "Un utente con questa email esiste già" },
                 { status: 400 }
             )
         }
@@ -30,7 +27,6 @@ export async function POST(request: NextRequest) {
             data: {
                 name,
                 email,
-                username,
                 password: hashedPassword,
                 role: "STUDENT",
             },
