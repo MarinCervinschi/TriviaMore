@@ -23,13 +23,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         async session({ session, token }) {
             if (session && session.user) {
-                session.user = {
-                    id: session.user.id,
-                    role: session.user.role,
-                    name: session.user.name || undefined,
-                    email: session.user.email || undefined,
-                    image: session.user.image || null,
-                }
+                const { password, ...userWithoutPassword } = session.user as any;
+                session.user = userWithoutPassword;
             }
 
             return session;
