@@ -84,6 +84,11 @@ export default function DashboardPageComponent() {
                     </div>
                 </div>
             </div>
+            <Button asChild className="w-full max-w-xs">
+                <Link href="/" className="flex items-center justify-center">
+                    Home <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
 
             {/* User Info Card */}
             <Card>
