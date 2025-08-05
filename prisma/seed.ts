@@ -26,6 +26,9 @@ async function main() {
         await prisma.department.deleteMany()
         await prisma.evaluationMode.deleteMany()
         await prisma.user.deleteMany()
+        await prisma.session.deleteMany()
+        await prisma.verificationToken.deleteMany()
+        await prisma.account.deleteMany()
         console.log('✅ Database pulito con successo')
     } catch (error) {
         console.log('⚠️  Database vuoto o tabelle non esistenti, continuando con la creazione...')
@@ -69,7 +72,8 @@ async function main() {
 
     const superAdmin = await prisma.user.create({
         data: {
-            username: 'superadmin',
+            name: 'superadmin',
+            email: 'superadmin@example.com',
             password: hashedPassword,
             role: Role.SUPERADMIN,
         },
@@ -77,7 +81,8 @@ async function main() {
 
     const admin = await prisma.user.create({
         data: {
-            username: 'admin',
+            name: 'admin',
+            email: 'admin@example.com',
             password: hashedPassword,
             role: Role.ADMIN,
         },
@@ -85,7 +90,8 @@ async function main() {
 
     const maintainer = await prisma.user.create({
         data: {
-            username: 'maintainer',
+            name: 'maintainer',
+            email: 'maintainer@example.com',
             password: hashedPassword,
             role: Role.MAINTAINER,
         },
@@ -93,7 +99,8 @@ async function main() {
 
     const student1 = await prisma.user.create({
         data: {
-            username: 'mario.rossi',
+            name: 'Mario Rossi',
+            email: 'mario.rossi@example.com',
             password: hashedPassword,
             role: Role.STUDENT,
         },
@@ -101,7 +108,8 @@ async function main() {
 
     const student2 = await prisma.user.create({
         data: {
-            username: 'giulia.bianchi',
+            name: 'Giulia Bianchi',
+            email: 'giulia.bianchi@example.com',
             password: hashedPassword,
             role: Role.STUDENT,
         },
