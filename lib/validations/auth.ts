@@ -4,7 +4,6 @@ import { z } from "zod"
 export const userBaseSchema = z.object({
   name: z.string().min(2, "Il nome deve essere di almeno 2 caratteri"),
   email: z.email("Email non valida"),
-  username: z.string().min(3, "Lo username deve essere di almeno 3 caratteri"),
 })
 
 // Authentication schemas
@@ -13,7 +12,7 @@ export const registerSchema = userBaseSchema.extend({
 })
 
 export const loginSchema = z.object({
-  username: z.string().min(1, "Username richiesto"),
+  email: z.email("Email non valida"),
   password: z.string().min(1, "Password richiesta"),
 })
 
