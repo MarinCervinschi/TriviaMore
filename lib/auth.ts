@@ -66,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         CredentialsProvider({
             name: "credentials",
             credentials: {
-                username: { label: "Username", type: "text" },
+                email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
@@ -75,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                     const user = await prisma.user.findFirst({
                         where: {
-                            username: validatedCredentials.username
+                            email: validatedCredentials.email
                         }
                     })
 
