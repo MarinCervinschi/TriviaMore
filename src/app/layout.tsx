@@ -1,6 +1,7 @@
 import './globals.css'
 import { Poppins } from 'next/font/google'
 import { ThemeProvider } from "@/providers/theme-provider"
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata = {
   title: 'Trivia MORE',
@@ -30,6 +31,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
