@@ -2,6 +2,7 @@ import React from "react";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 type UserCardProps = {
     id: string;
@@ -34,6 +35,10 @@ function UserCard({ id, role, name, email, image }: UserCardProps) {
 
 export default async function DashboardPage() {
     const session = await auth();
+
+    if(!session) {
+        redirect("/api/auth/signin");
+    }
 
     // Example user data (replace with your actual data source)
     const user = session?.user || {
