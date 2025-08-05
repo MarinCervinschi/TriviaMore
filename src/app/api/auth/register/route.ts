@@ -40,8 +40,18 @@ export async function POST(request: NextRequest) {
         )
     } catch (error) {
         if (error instanceof z.ZodError) {
+            // Mappiamo gli errori di validazione Zod in modo più user-friendly
+            const fieldErrors = error.issues.map(issue => ({
+                field: issue.path.join('.'),
+                message: issue.message
+            }));
+            
             return NextResponse.json(
-                { error: "Dati non validi", details: error.issues },
+                { 
+                    error: "Dati non validi", 
+                    details: fieldErrors,
+                    message: fieldErrors.map(e => e.message).join(', ')
+                },
                 { status: 400 }
             )
         }
