@@ -1,8 +1,9 @@
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { signIn } from "next-auth/react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 interface SocialAuthButtonProps {
     provider: "google" | "github"
@@ -28,16 +29,18 @@ const providerConfig = {
     google: {
         name: "Google",
         icon: GoogleIcon,
-        bgColor: "bg-white hover:bg-gray-50",
-        textColor: "text-gray-900",
-        borderColor: "border-gray-300"
+        bgColor: "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
+        textColor: "text-gray-900 dark:text-gray-100",
+        borderColor: "border-gray-300 dark:border-gray-600",
+        loadingText: "Connettendo con Google..."
     },
     github: {
         name: "GitHub",
         icon: GitHubIcon,
-        bgColor: "bg-gray-900 hover:bg-gray-800",
+        bgColor: "bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600",
         textColor: "text-white",
-        borderColor: "border-gray-900"
+        borderColor: "border-gray-900 dark:border-gray-600",
+        loadingText: "Connettendo con GitHub..."
     }
 }
 
@@ -45,11 +48,18 @@ export const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
     provider,
     disabled = false
 }) => {
+    const [isLoading, setIsLoading] = useState(false)
     const config = providerConfig[provider]
     const IconComponent = config.icon
     const router = useRouter()
 
     const handleSocialSignIn = async () => {
+        // Feedback haptic per dispositivi mobili
+        if (navigator.vibrate) {
+            navigator.vibrate(50)
+        }
+        
+        setIsLoading(true)
         try {
             const result = await signIn(provider, {
                 redirect: false,
@@ -64,19 +74,36 @@ export const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
         } catch (error) {
             console.error(`${config.name} sign in error:`, error)
             toast.error(`Errore durante l'accesso con ${config.name}`)
+        } finally {
+            setIsLoading(false)
         }
     }
+
+    const isButtonDisabled = disabled || isLoading
 
     return (
         <Button
             type="button"
             variant="outline"
             onClick={handleSocialSignIn}
-            disabled={disabled}
-            className={`w-full ${config.bgColor} ${config.textColor} ${config.borderColor}`}
+            disabled={isButtonDisabled}
+            className={`w-full social-auth-btn ${config.bgColor} ${config.textColor} ${config.borderColor} ${
+                isLoading ? 'social-auth-loading' : ''
+            }`}
         >
-            <IconComponent />
-            <span className="ml-2">Continua con {config.name}</span>
+            {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+                <IconComponent />
+            )}
+            <span className="ml-2 font-medium">
+                {isLoading 
+                    ? config.loadingText
+                    : disabled 
+                        ? 'Caricamento...' 
+                        : `Continua con ${config.name}`
+                }
+            </span>
         </Button>
     )
 }
