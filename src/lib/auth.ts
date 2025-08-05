@@ -75,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     })
 
                     if (!user || !user.password) {
-                        throw new Error("User not found")
+                        return null
                     }
 
                     const isValid = await bcrypt.compare(
@@ -84,7 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     )
 
                     if (!isValid) {
-                        throw new Error("Invalid credentials")
+                        return null
                     }
 
                     const userData: User = {
@@ -98,7 +98,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     return userData
                 } catch (error) {
                     console.error("Authorization error:", error)
-                    throw new Error("Authorization failed")
+                    if (error instanceof Error) {
+                        throw error;
+                    }
+                    return null;
                 }
             },
         }),

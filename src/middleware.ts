@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
 
   if (isDashboard || isProtectedApi) {
     if (!isAuth) {
-      return NextResponse.redirect(new URL("/api/auth/signin", request.url))
+      return NextResponse.redirect(new URL("/auth/login", request.url))
     }
   }
 
