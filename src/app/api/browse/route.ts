@@ -22,7 +22,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		if (query) {
 			const limit = parseInt(searchParams.get("limit") || "50");
 			const results = await BrowseService.searchTree(query, limit, userId);
-			return NextResponse.json(results);
+			return NextResponse.json({ data: results, isUser: !!userId }, { status: 200 });
 		}
 
 		if (action && !isValidAction(action)) {
@@ -42,16 +42,16 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 
 		if (nodeType === "course" && nodeId) {
 			const result = await BrowseService.expandCourse(nodeId, userId);
-			return NextResponse.json(result);
+			return NextResponse.json({ data: result, isUser: !!userId }, { status: 200 });
 		}
 
 		if (nodeType === "class" && nodeId) {
 			const result = await BrowseService.expandClass(nodeId, userId);
-			return NextResponse.json(result);
+			return NextResponse.json({ data: result, isUser: !!userId }, { status: 200 });
 		}
 
 		const tree = await BrowseService.getInitialTree();
-		return NextResponse.json(tree);
+		return NextResponse.json({ data: tree, isUser: !!userId }, { status: 200 });
 	} catch (error) {
 		console.error("Browse API error:", error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
