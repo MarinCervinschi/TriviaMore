@@ -1,15 +1,16 @@
-import React from "react"
-import { AlertCircle } from "lucide-react"
+import React from "react";
+
+import { AlertCircle } from "lucide-react";
 
 interface AuthErrorMessageProps {
-    message: string
+	message: string;
 }
 
 export const AuthErrorMessage: React.FC<AuthErrorMessageProps> = ({ message }) => {
-    return (
-        <div className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400 mt-2">
-            <AlertCircle className="w-4 h-4" />
-            {message}
-        </div>
-    )
-}
+	return (
+		<div className="mt-2 flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+			<AlertCircle className="h-4 w-4" />
+			{message}
+		</div>
+	);
+};

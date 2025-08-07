@@ -33,9 +33,9 @@ The system uses a **hybrid approach**:
 
 ```typescript
 providers: [
-  Google,
-  GitHub,
-  // ... other providers
+	Google,
+	GitHub,
+	// ... other providers
 ];
 ```
 
@@ -53,15 +53,15 @@ providers: [
 
 ```typescript
 CredentialsProvider({
-  name: "credentials",
-  credentials: {
-    email: { label: "Email", type: "text" },
-    password: { label: "Password", type: "password" },
-  },
-  async authorize(credentials) {
-    // Validates email/password against database
-    // Returns user object if valid
-  },
+	name: "credentials",
+	credentials: {
+		email: { label: "Email", type: "text" },
+		password: { label: "Password", type: "password" },
+	},
+	async authorize(credentials) {
+		// Validates email/password against database
+		// Returns user object if valid
+	},
 });
 ```
 
@@ -164,30 +164,30 @@ The middleware protects routes and handles authentication checks:
 ```typescript
 // middleware.ts
 export async function middleware(request: NextRequest) {
-  const sessionToken = request.cookies.get("authjs.session-token")?.value;
-  const isAuth = !!sessionToken;
+	const sessionToken = request.cookies.get("authjs.session-token")?.value;
+	const isAuth = !!sessionToken;
 
-  // Protected routes
-  const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
-  const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected");
+	// Protected routes
+	const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+	const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected");
 
-  if (isDashboard || isProtectedApi) {
-    if (!isAuth) {
-      return NextResponse.redirect(new URL("/api/auth/signin", request.url));
-    }
-  }
+	if (isDashboard || isProtectedApi) {
+		if (!isAuth) {
+			return NextResponse.redirect(new URL("/api/auth/signin", request.url));
+		}
+	}
 
-  // Redirect authenticated users away from auth pages
-  const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
-  if (isAuthPage && isAuth) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+	// Redirect authenticated users away from auth pages
+	const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
+	if (isAuthPage && isAuth) {
+		return NextResponse.redirect(new URL("/dashboard", request.url));
+	}
 
-  return NextResponse.next();
+	return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/protected/:path*", "/auth/:path*"],
+	matcher: ["/dashboard/:path*", "/api/protected/:path*", "/auth/:path*"],
 };
 ```
 
@@ -203,28 +203,28 @@ export const config = {
 
 ```typescript
 declare module "next-auth" {
-  interface Session {
-    user: User & DefaultSession["user"];
-  }
+	interface Session {
+		user: User & DefaultSession["user"];
+	}
 
-  interface User {
-    id: string;
-    role: Role; // Custom role from Prisma
-    name?: string;
-    email?: string;
-    image?: string | null;
-  }
+	interface User {
+		id: string;
+		role: Role; // Custom role from Prisma
+		name?: string;
+		email?: string;
+		image?: string | null;
+	}
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
-    sub?: string;
-    role?: Role;
-    name?: string;
-    email?: string;
-    image?: string | null;
-    credentials?: boolean; // Flag for credentials provider
-  }
+	interface JWT {
+		sub?: string;
+		role?: Role;
+		name?: string;
+		email?: string;
+		image?: string | null;
+		credentials?: boolean; // Flag for credentials provider
+	}
 }
 ```
 
@@ -232,14 +232,14 @@ declare module "next-auth/jwt" {
 
 ```typescript
 export const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+	name: z.string().min(2, "Name must be at least 2 characters"),
+	email: z.email("Invalid email"),
+	password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email"),
-  password: z.string().min(1, "Password richiesta"),
+	email: z.email("Invalid email"),
+	password: z.string().min(1, "Password richiesta"),
 });
 ```
 
@@ -273,22 +273,23 @@ export default async function DashboardPage() {
 
 ```typescript
 // app/api/protected/user/route.ts
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+import { auth } from "@/lib/auth";
+
 export async function GET() {
-  const session = await auth();
+	const session = await auth();
 
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+	if (!session?.user) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
 
-  // Check role-based access
-  if (session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+	// Check role-based access
+	if (session.user.role !== "ADMIN") {
+		return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+	}
 
-  return NextResponse.json({ user: session.user });
+	return NextResponse.json({ user: session.user });
 }
 ```
 
@@ -352,33 +353,34 @@ export function SignOutButton() {
 
 ```typescript
 // lib/auth-utils.ts
-import { auth } from "@/lib/auth";
 import { Role } from "@prisma/client";
 
+import { auth } from "@/lib/auth";
+
 export async function requireAuth() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Authentication required");
-  }
-  return session;
+	const session = await auth();
+	if (!session?.user) {
+		throw new Error("Authentication required");
+	}
+	return session;
 }
 
 export async function requireRole(allowedRoles: Role[]) {
-  const session = await requireAuth();
-  if (!allowedRoles.includes(session.user.role)) {
-    throw new Error("Insufficient permissions");
-  }
-  return session;
+	const session = await requireAuth();
+	if (!allowedRoles.includes(session.user.role)) {
+		throw new Error("Insufficient permissions");
+	}
+	return session;
 }
 
 // Usage in API route
 export async function GET() {
-  try {
-    const session = await requireRole(["ADMIN", "MAINTAINER"]);
-    // Admin-only logic here
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 403 });
-  }
+	try {
+		const session = await requireRole(["ADMIN", "MAINTAINER"]);
+		// Admin-only logic here
+	} catch (error) {
+		return NextResponse.json({ error: error.message }, { status: 403 });
+	}
 }
 ```
 
@@ -545,17 +547,14 @@ enum Role {
 ### Common Issues
 
 1. **Session not found after credentials login**
-
    - Check if `encode` function is creating session properly
    - Verify database connection and Session table
 
 2. **OAuth login creates JWT instead of session**
-
    - Remove `session: { strategy: "jwt" }` from configuration
    - Ensure PrismaAdapter is properly configured
 
 3. **Middleware not protecting routes**
-
    - Check if sessionToken cookie exists
    - Verify middleware matcher patterns
    - Check if routes are correctly protected
