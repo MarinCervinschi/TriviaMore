@@ -35,8 +35,9 @@ export function Navigation() {
 
 					{status === "loading" ? (
 						<div className="flex items-center gap-4">
-							<div className="h-9 w-24 animate-pulse rounded bg-muted"></div>
-							<div className="h-9 w-9 animate-pulse rounded bg-muted"></div>
+							<div className="h-9 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+							<div className="h-9 w-9 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+							<div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
 						</div>
 					) : navigationUser ? (
 						<AuthenticatedNavigation
