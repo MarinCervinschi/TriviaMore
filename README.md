@@ -9,10 +9,11 @@
 Prepare. Practice. Succeed.
 
 Trivia MORE is a comprehensive quiz app designed to test and enhance your knowledge while preparing you for university exams. The app offers:
-- 📚 Structured Learning: Multiple classes, divided into sections that cover specific course topics.  
-- ❓ Challenging Questions: Multiple-choice questions with single or multiple answer options.  
-- 📝 Instant Feedback: View correct answers and get detailed scoring at the end of each quiz.  
-- ⏱️ Time Management: Track your quiz duration to improve your speed and efficiency.  
+
+- 📚 Structured Learning: Multiple classes, divided into sections that cover specific course topics.
+- ❓ Challenging Questions: Multiple-choice questions with single or multiple answer options.
+- 📝 Instant Feedback: View correct answers and get detailed scoring at the end of each quiz.
+- ⏱️ Time Management: Track your quiz duration to improve your speed and efficiency.
 
 Whether you’re revising for exams or just testing your knowledge, Trivia MORE is the perfect companion for academic success.
 
@@ -21,14 +22,19 @@ Whether you’re revising for exams or just testing your knowledge, Trivia MORE 
 ### Get Started 🚀
 
 1. Clone the repository
+
 ```bash
 git clone ...
 ```
+
 2. Install dependencies
+
 ```bash
 npm install
 ```
+
 3. Set up the database (copy `.env.example` to `.env` first)
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -39,10 +45,13 @@ npx prisma db push
 # Seed database with sample data
 npm run db:seed
 ```
+
 4. Start the server
+
 ```bash
 npm run dev
 ```
+
 5. Open the browser and go to http://localhost:3000
 
 ### 📋 Available Scripts
@@ -81,6 +90,7 @@ docker-compose exec postgres psql -U postgres -d triviamore
 ```
 
 **Database Connection Details:**
+
 - **Host**: localhost
 - **Port**: 5432
 - **Database**: triviamore
@@ -91,6 +101,7 @@ docker-compose exec postgres psql -U postgres -d triviamore
 > **Note**: Copy `.env.example` to `.env` and update the `DATABASE_URL` before running Prisma commands.
 
 ### Setup & Development
+
 ```bash
 # Install Prisma CLI (if not already installed)
 npm install prisma --save-dev
@@ -109,6 +120,7 @@ npx prisma migrate deploy
 ```
 
 ### Database Inspection
+
 ```bash
 # Open Prisma Studio (visual database browser)
 npx prisma studio
@@ -121,6 +133,7 @@ npx prisma db pull
 ```
 
 ### Database Reset & Seeding
+
 ```bash
 # Reset database and apply all migrations
 npx prisma migrate reset
@@ -137,35 +150,41 @@ npm run db:reset
 Il progetto include un file di seed completo che popola il database con dati di esempio per testare tutte le funzionalità dell'applicazione. Il seed crea:
 
 **👥 Utenti di test:**
+
 - `superadmin` / `password123` (SUPERADMIN)
-- `admin` / `password123` (ADMIN)  
+- `admin` / `password123` (ADMIN)
 - `maintainer` / `password123` (MAINTAINER)
 - `mario.rossi` / `password123` (STUDENT)
 - `giulia.bianchi` / `password123` (STUDENT)
 
 **📚 Struttura accademica:**
+
 - 2 Dipartimenti (Informatica, Matematica)
 - 3 Corsi (Ingegneria del Software, Basi di Dati, Algebra Lineare)
 - 3 Classi per l'anno accademico 2024/25
 - 5 Sezioni con contenuti specifici
 
 **❓ Contenuti didattici:**
+
 - 15+ domande su vari argomenti (UML, Design Patterns, SQL, Normalizzazione, Algebra)
 - Quiz configurati con diverse modalità di valutazione
 - Tentativi di quiz con risposte e punteggi
 - Dati di progresso per gli studenti
 
 **📊 Modalità di valutazione:**
+
 - Standard (1 punto per risposta corretta, 0 per sbagliata)
 - Con Penalità (1 punto per corretta, -0.25 per sbagliata)
 - Credito Parziale (per domande a risposta multipla)
 
 Per popolare il database con questi dati di esempio:
+
 ```bash
 npx prisma db seed
 ```
 
 ### Schema Management
+
 ```bash
 # Format schema file
 npx prisma format
