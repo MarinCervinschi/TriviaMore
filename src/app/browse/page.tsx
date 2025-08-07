@@ -1,22 +1,14 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { getQueryClient } from "@/providers/get-query-client";
 import BrowsePageComponent from "@/components/pages/Browse";
+import { BrowseService } from "@/lib/services/browse.service";
+import { getQueryClient } from "@/providers/get-query-client";
 
 async function fetchDepartments() {
 	try {
-		const baseUrl = process.env.VERCEL_URL 
-			? `https://${process.env.VERCEL_URL}`
-			: 'http://localhost:3000';
-		
-		const response = await fetch(`${baseUrl}/api/browse`);
-		if (!response.ok) {
-			throw new Error("Failed to fetch departments");
-		}
-		return response.json();
+		return await BrowseService.getInitialTree();
 	} catch (error) {
-		console.error("Error fetching departments:", error);
 		throw error;
 	}
 }
@@ -24,10 +16,14 @@ async function fetchDepartments() {
 export default async function BrowsePage() {
 	const queryClient = getQueryClient();
 
-	await queryClient.prefetchQuery({
-		queryKey: ["browse-departments"],
-		queryFn: fetchDepartments,
-	});
+	try {
+		await queryClient.prefetchQuery({
+			queryKey: ["browse-departments"],
+			queryFn: fetchDepartments,
+		});
+	} catch (error) {
+		console.error("Failed to prefetch departments:", error);
+	}
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
