@@ -1,7 +1,8 @@
 import { Poppins } from "next/font/google";
 
+import { SessionProvider } from "next-auth/react";
+
 import { Toaster } from "@/components/ui/sonner";
-import { UserProvider } from "@/providers/UserProvider";
 import { ReactQueryProviders } from "@/providers/react-query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	return (
 		<html lang="it" suppressHydrationWarning>
 			<body className={poppins.className}>
-				<UserProvider>
+				<SessionProvider>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					>
 						<ReactQueryProviders>{children}</ReactQueryProviders>
 					</ThemeProvider>
-				</UserProvider>
+				</SessionProvider>
 				<Toaster />
 			</body>
 		</html>
