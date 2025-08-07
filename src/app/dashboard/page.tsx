@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
+import Loader from "@/components/Common/Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import Loader from "@/components/Common/Loader";
 
 function getRoleLabel(role: string): string {
 	switch (role) {
