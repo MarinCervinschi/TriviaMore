@@ -51,7 +51,8 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		}
 
 		const tree = await BrowseService.getInitialTree();
-		return NextResponse.json({ data: tree, isUser: !!userId }, { status: 200 });
+
+		return NextResponse.json(tree, { status: 200 });
 	} catch (error) {
 		console.error("Browse API error:", error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
