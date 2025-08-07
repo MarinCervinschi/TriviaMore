@@ -1,70 +1,48 @@
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth"
+import { useMutation } from "@tanstack/react-query"
 
 export const useRegisterForm = () => {
-    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    
+
     const {
         register,
         handleSubmit,
         setError,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<RegisterInput>({
         resolver: zodResolver(registerSchema),
     })
 
-    const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
-        setIsLoading(true)
-        
-        try {
-            const response = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-
-            const responseData = await response.json()
-
-            if (response.ok) {
-                toast.success("Account creato con successo! Ora puoi effettuare l'accesso.")
-                router.push("/auth/login")
+    const { mutate: registerUser, isPending } = useMutation({
+        mutationFn: registerUserFetch,
+        onSuccess: () => {
+            toast.success("Account creato con successo! Ora puoi effettuare l'accesso.")
+            router.push("/auth/login")
+        },
+        onError: (error: any) => {
+            if (error.details) {
+                error.details.forEach((err: { field: string; message: string }) => {
+                    if (['email', 'name', 'password'].includes(err.field)) {
+                        setError(err.field as keyof RegisterInput, {
+                            message: err.message
+                        })
+                    }
+                })
             } else {
-                // Gestione errori specifici
-                if (response.status === 400 && responseData.details) {
-                    // Errori di validazione Zod - mostriamo errori per campo
-                    responseData.details.forEach((error: { field: string; message: string }) => {
-                        if (error.field === 'email') {
-                            setError("email", { message: error.message })
-                        } else if (error.field === 'name') {
-                            setError("name", { message: error.message })
-                        } else if (error.field === 'password') {
-                            setError("password", { message: error.message })
-                        }
-                    })
-                } else {
-                    // Altri errori (es. email già esistente)
-                    setError("root", {
-                        message: responseData.error || "Si è verificato un errore durante la registrazione.",
-                    })
-                }
-                toast.error(responseData.error || "Si è verificato un errore durante la registrazione.")
+                setError("root", {
+                    message: error.error || "Si è verificato un errore durante la registrazione.",
+                })
             }
-        } catch (error) {
-            console.error("Registration error:", error)
-            setError("root", {
-                message: "Si è verificato un errore durante la registrazione.",
-            })
-            toast.error("Si è verificato un errore durante la registrazione.")
-        } finally {
-            setIsLoading(false)
+            toast.error(error.error || "Si è verificato un errore durante la registrazione.")
         }
+    })
+
+    const onSubmit: SubmitHandler<RegisterInput> = (data) => {
+        registerUser(data)
     }
 
     return {
@@ -72,6 +50,23 @@ export const useRegisterForm = () => {
         handleSubmit,
         onSubmit,
         errors,
-        isSubmitting: isSubmitting || isLoading,
+        isSubmitting: isPending,
     }
+}
+
+async function registerUserFetch(data: RegisterInput) {
+    const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw errorData;
+    }
+
+    return response.json();
 }
