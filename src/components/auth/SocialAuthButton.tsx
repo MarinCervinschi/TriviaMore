@@ -76,16 +76,7 @@ export const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
 
 		setIsLoading(true);
 		try {
-			const result = await signIn(provider, {
-				redirect: false,
-			});
-
-			if (result?.error) {
-				toast.error(`Errore durante l'accesso con ${config.name}`);
-			} else if (result?.ok) {
-				toast.success(`Accesso con ${config.name} effettuato con successo!`);
-				router.push("/dashboard");
-			}
+			await signIn(provider);
 		} catch (error) {
 			console.error(`${config.name} sign in error:`, error);
 			toast.error(`Errore durante l'accesso con ${config.name}`);
