@@ -12,7 +12,6 @@ import {
 	Menu,
 	Settings,
 	User,
-	X,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -27,14 +26,23 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useUser } from "@/providers/UserProvider";
+import { useSession } from "next-auth/react";
 
 export function Navigation() {
-	const { user, } = useUser();
+	const { data: session } = useSession();
 	const [isOpen, setIsOpen] = useState(false);
+    let user = undefined;
+    if (!session) {
+        user = null;
+    } else {
+        user = session.user;
+    }
 
 	const handleSignOut = async () => {
-		await signOut();
+		await signOut({
+            redirect: true,
+            callbackUrl: "/auth/login",
+        });
 		setIsOpen(false);
 	};
 
