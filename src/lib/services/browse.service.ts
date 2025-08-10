@@ -302,4 +302,152 @@ export class BrowseService extends UserService {
 			})),
 		};
 	}
+
+	/**
+	 * Ottieni tutti i corsi di un dipartimento (per generateStaticParams)
+	 */
+	static async getCoursesByDepartment(departmentCode: string) {
+		const department = await prisma.department.findUnique({
+			where: { code: departmentCode },
+			include: {
+				courses: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+					orderBy: { position: "asc" },
+				},
+			},
+		});
+
+		return department?.courses || [];
+	}
+
+	/**
+	 * Ottieni un corso per codice
+	 */
+	static async getCourseByCode(departmentCode: string, courseCode: string) {
+		return await prisma.course.findFirst({
+			where: {
+				code: courseCode,
+				department: { code: departmentCode },
+			},
+			include: {
+				department: {
+					select: {
+						id: true,
+						name: true,
+						code: true,
+					},
+				},
+			},
+		});
+	}
+
+	/**
+	 * Ottieni corso con le sue classi e filtri
+	 */
+	static async getCourseWithClasses(
+		departmentCode: string,
+		courseCode: string,
+		filters: {
+			classYear?: number;
+			search?: string;
+		} = {},
+		userId?: string
+	) {
+		let permissions: UserPermissions | undefined;
+
+		if (userId) {
+			permissions = await super.getUserPermissions(userId);
+		}
+
+		const course = await prisma.course.findFirst({
+			where: {
+				code: courseCode,
+				department: { code: departmentCode },
+			},
+			include: {
+				department: {
+					select: {
+						id: true,
+						name: true,
+						code: true,
+					},
+				},
+				classes: {
+					where: {
+						...(filters.classYear && { classYear: filters.classYear }),
+						...(filters.search && {
+							OR: [
+								{ name: { contains: filters.search, mode: "insensitive" } },
+								{ code: { contains: filters.search, mode: "insensitive" } },
+								{ description: { contains: filters.search, mode: "insensitive" } },
+							],
+						}),
+					},
+					orderBy: [{ classYear: "asc" }, { position: "asc" }],
+					include: {
+						sections: {
+							select: {
+								id: true,
+							},
+						},
+					},
+				},
+				_count: {
+					select: { classes: true },
+				},
+			},
+		});
+
+		if (!course) {
+			return null;
+		}
+
+		// Per ogni classe, conta solo le sezioni accessibili all'utente
+		const classesWithAccessibleSections = await Promise.all(
+			course.classes.map(async cls => {
+				// Usa getSectionWhereClause per determinare quali sezioni l'utente può vedere
+				const sectionWhereClause = await super.getSectionWhereClause(
+					cls.id,
+					permissions
+				);
+
+				// Conta le sezioni accessibili
+				const accessibleSectionsCount = await prisma.section.count({
+					where: sectionWhereClause,
+				});
+
+				return {
+					id: cls.id,
+					name: cls.name,
+					code: cls.code,
+					description: cls.description,
+					courseId: cls.courseId,
+					classYear: cls.classYear,
+					position: cls.position,
+					_count: {
+						sections: accessibleSectionsCount,
+					},
+				};
+			})
+		);
+
+		return {
+			id: course.id,
+			name: course.name,
+			code: course.code,
+			description: course.description,
+			courseType: course.courseType,
+			position: course.position,
+			departmentId: course.departmentId,
+			department: course.department,
+			_count: {
+				classes: course._count.classes,
+			},
+			classes: classesWithAccessibleSections,
+		};
+	}
 }
