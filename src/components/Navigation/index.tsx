@@ -2,26 +2,15 @@
 
 import { useState } from "react";
 
-import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 
 import { AuthenticatedNavigation } from "./AuthenticatedNavigation";
 import { GuestNavigation } from "./GuestNavigation";
 import { NavLogo } from "./NavLogo";
-import { NavigationUser } from "./types";
 import { handleUserSignOut } from "./utils";
 
-export function Navigation() {
-	const { data: session, status } = useSession();
+export function Navigation({ user }: { user: User | null }) {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-	// Transform session user to navigation user interface
-	const navigationUser: NavigationUser | null = session?.user
-		? {
-				name: session.user.name,
-				email: session.user.email,
-				image: session.user.image,
-			}
-		: null;
 
 	const onSignOut = () => handleUserSignOut();
 
@@ -33,15 +22,9 @@ export function Navigation() {
 				<div className="flex items-center justify-between py-4">
 					<NavLogo />
 
-					{status === "loading" ? (
-						<div className="flex items-center gap-4">
-							<div className="h-9 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-							<div className="h-9 w-9 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-							<div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
-						</div>
-					) : navigationUser ? (
+					{user ? (
 						<AuthenticatedNavigation
-							user={navigationUser}
+							user={user}
 							onSignOut={onSignOut}
 							mobileMenuProps={mobileMenuProps}
 						/>

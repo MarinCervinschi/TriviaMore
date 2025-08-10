@@ -1,17 +1,4 @@
-/**
- * Navigation Type Definitions
- *
- * Following Interface Segregation Principle:
- * - Minimal interfaces focused on specific navigation needs
- * - NavigationUser contains only display-relevant user properties
- * - Props interfaces define only necessary data for each component
- */
-
-export interface NavigationUser {
-	name?: string | null;
-	email?: string | null;
-	image?: string | null;
-}
+import { User } from "next-auth";
 
 export interface MobileMenuProps {
 	mobileMenuOpen: boolean;
@@ -19,12 +6,12 @@ export interface MobileMenuProps {
 }
 
 export interface UserAvatarProps {
-	user: NavigationUser;
+	user: User;
 	size?: "sm" | "md" | "lg";
 }
 
 export interface UserMenuProps {
-	user: NavigationUser;
+	user: User;
 	onSignOut: () => void;
 }
 
@@ -33,7 +20,7 @@ export interface GuestNavigationProps {
 }
 
 export interface AuthenticatedNavigationProps {
-	user: NavigationUser;
+	user: User;
 	onSignOut: () => void;
 	mobileMenuProps: MobileMenuProps;
 }
