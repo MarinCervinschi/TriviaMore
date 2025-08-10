@@ -2,13 +2,15 @@
 
 import { MinimalFooter } from "@/components/MinimalFooter";
 import { Navigation } from "@/components/Navigation";
+import { User } from "next-auth";
 
 interface AppLayoutProps {
 	children: React.ReactNode;
+	user?: User | null;
 	showFooter?: boolean;
 }
 
-export function AppLayout({ children, showFooter = true }: AppLayoutProps) {
+export function AppLayout({ children, user, showFooter = true }: AppLayoutProps) {
 	return (
 		<div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
 			{/* Background decoration - Gradient orbs for modern look */}
@@ -19,7 +21,7 @@ export function AppLayout({ children, showFooter = true }: AppLayoutProps) {
 
 			{/* Content with relative positioning to stay above background */}
 			<div className="relative z-10">
-				<Navigation />
+				<Navigation user={user ?? null} />
 				<main className="flex-1">{children}</main>
 				{showFooter && <MinimalFooter />}
 			</div>

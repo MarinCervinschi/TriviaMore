@@ -1,10 +1,11 @@
+import { User } from "next-auth";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { NavigationUser } from "./types";
 import { getUserInitials } from "./utils";
 
 interface UserAvatarProps {
-	user: NavigationUser;
+	user: User;
 	size?: "sm" | "md" | "lg";
 }
 
