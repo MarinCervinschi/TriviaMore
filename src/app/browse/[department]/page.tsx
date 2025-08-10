@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 
-import { AppLayout } from "@/components/layouts/AppLayout";
 import DepartmentPageComponent from "@/components/pages/Browse/Department/index";
 import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services/browse.service";
@@ -38,15 +37,13 @@ export default async function DepartmentPage({
 	}
 
 	return (
-		<AppLayout user={session?.user}>
-			<DepartmentPageComponent
-				department={departmentData}
-				filters={{
-					type: resolvedSearchParams.type,
-					search: resolvedSearchParams.search,
-				}}
-			/>
-		</AppLayout>
+		<DepartmentPageComponent
+			department={departmentData}
+			filters={{
+				type: resolvedSearchParams.type,
+				search: resolvedSearchParams.search,
+			}}
+		/>
 	);
 }
 
