@@ -1,35 +1,17 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 import { AppLayout } from "@/components/layouts/AppLayout";
 import BrowsePageComponent from "@/components/pages/Browse";
+import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services/browse.service";
-import { getQueryClient } from "@/providers/get-query-client";
-
-async function fetchDepartments() {
-	try {
-		return await BrowseService.getInitialTree();
-	} catch (error) {
-		throw error;
-	}
-}
+import { BrowseTreeResponse } from "@/lib/types/browse.types";
 
 export default async function BrowsePage() {
-	const queryClient = getQueryClient();
-
-	try {
-		await queryClient.prefetchQuery({
-			queryKey: ["browse-departments"],
-			queryFn: fetchDepartments,
-		});
-	} catch (error) {
-		console.error("Failed to prefetch departments:", error);
-	}
+	const session = await auth();
+	const data: BrowseTreeResponse = await BrowseService.getInitialTree();
 
 	return (
-		<HydrationBoundary state={dehydrate(queryClient)}>
-			<AppLayout>
-				<BrowsePageComponent />
-			</AppLayout>
-		</HydrationBoundary>
+		<AppLayout user={session?.user}>
+			<BrowsePageComponent departments={data.departments} />
+		</AppLayout>
 	);
 }

@@ -12,21 +12,13 @@ import { type UserPermissions, UserService } from "./user.service";
 
 export class BrowseService extends UserService {
 	/**
-	 * Ottieni la struttura iniziale: Departments → Courses
-	 * Le classi e sezioni vengono caricate on-demand
+	 * Ottieni la struttura iniziale: solo Departments con count dei corsi
+	 * Ottimizzato per la pagina browse principale
 	 */
 	static async getInitialTree(): Promise<BrowseTreeResponse> {
 		const departments = await prisma.department.findMany({
 			orderBy: { position: "asc" },
 			include: {
-				courses: {
-					orderBy: { position: "asc" },
-					include: {
-						_count: {
-							select: { classes: true },
-						},
-					},
-				},
 				_count: {
 					select: { courses: true },
 				},
@@ -42,120 +34,9 @@ export class BrowseService extends UserService {
 			_count: {
 				courses: dept._count.courses,
 			},
-			courses: dept.courses.map(course => ({
-				id: course.id,
-				name: course.name,
-				code: course.code,
-				description: course.description ?? undefined,
-				courseType: course.courseType,
-				position: course.position,
-				departmentId: course.departmentId,
-				_count: {
-					classes: course._count.classes,
-				},
-			})),
 		}));
 
 		return { departments: departmentNodes };
-	}
-
-	/**
-	 * Espandi un corso per mostrare le sue classi
-	 */
-	static async expandCourse(
-		courseId: string,
-		userId?: string
-	): Promise<ExpandCourseResponse> {
-		let permissions: UserPermissions | undefined;
-
-		if (userId) {
-			permissions = await super.getUserPermissions(userId);
-		}
-
-		const classes = await prisma.class.findMany({
-			where: { courseId },
-			orderBy: { position: "asc" },
-		});
-
-		// Per ogni classe, contiamo le sezioni accessibili
-		const classNodes: ClassNode[] = await Promise.all(
-			classes.map(async cls => {
-				const sectionWhereClause = await super.getSectionWhereClause(
-					cls.id,
-					permissions
-				);
-
-				const sectionCount = await prisma.section.count({
-					where: sectionWhereClause,
-				});
-
-				return {
-					id: cls.id,
-					name: cls.name,
-					code: cls.code,
-					description: cls.description ?? undefined,
-					classYear: cls.classYear,
-					position: cls.position,
-					courseId: cls.courseId,
-					_count: {
-						sections: sectionCount,
-					},
-				};
-			})
-		);
-
-		return { classes: classNodes };
-	}
-
-	/**
-	 * Espandi una classe per mostrare le sue sezioni
-	 */
-	static async expandClass(
-		classId: string,
-		userId?: string
-	): Promise<ExpandClassResponse> {
-		let permissions: UserPermissions | undefined;
-
-		if (userId) {
-			permissions = await super.getUserPermissions(userId);
-		}
-
-		const whereClause = await super.getSectionWhereClause(classId, permissions);
-
-		console.log(
-			"Fetching sections for classId:",
-			classId,
-			"with userId:",
-			userId,
-			"whereClause:",
-			whereClause,
-			"permissions:",
-			permissions
-		);
-
-		const sections = await prisma.section.findMany({
-			where: whereClause,
-			orderBy: { position: "asc" },
-			include: {
-				_count: {
-					select: { questions: true },
-				},
-			},
-		});
-
-		const sectionNodes: SectionNode[] = sections.map(section => ({
-			id: section.id,
-			name: section.name,
-			description: section.description ?? undefined,
-			isPublic: section.isPublic,
-			position: section.position,
-			classId: section.classId,
-			_count: {
-				questions: section._count.questions,
-			},
-		}));
-
-		return { sections: sectionNodes };
 	}
 
 	/**
@@ -318,6 +199,107 @@ export class BrowseService extends UserService {
 			courses: searchResults[1],
 			classes: searchResults[2],
 			sections: searchResults[3],
+		};
+	}
+
+	/**
+	 * Ottieni tutti i dipartimenti (per generateStaticParams)
+	 */
+	static async getAllDepartments() {
+		return await prisma.department.findMany({
+			select: {
+				id: true,
+				code: true,
+				name: true,
+			},
+			orderBy: { position: "asc" },
+		});
+	}
+
+	/**
+	 * Ottieni un dipartimento per codice
+	 */
+	static async getDepartmentByCode(code: string) {
+		return await prisma.department.findUnique({
+			where: { code },
+			select: {
+				id: true,
+				name: true,
+				code: true,
+				description: true,
+			},
+		});
+	}
+
+	/**
+	 * Ottieni dipartimento con i suoi corsi e filtri
+	 */
+	static async getDepartmentWithCourses(
+		departmentCode: string,
+		filters: {
+			courseType?: "BACHELOR" | "MASTER";
+			search?: string;
+		} = {},
+		userId?: string
+	) {
+		let permissions: UserPermissions | undefined;
+
+		if (userId) {
+			permissions = await super.getUserPermissions(userId);
+		}
+
+		const department = await prisma.department.findUnique({
+			where: { code: departmentCode },
+			include: {
+				courses: {
+					where: {
+						...(filters.courseType && { courseType: filters.courseType }),
+						...(filters.search && {
+							OR: [
+								{ name: { contains: filters.search, mode: "insensitive" } },
+								{ code: { contains: filters.search, mode: "insensitive" } },
+								{ description: { contains: filters.search, mode: "insensitive" } },
+							],
+						}),
+					},
+					orderBy: { position: "asc" },
+					include: {
+						_count: {
+							select: { classes: true },
+						},
+					},
+				},
+				_count: {
+					select: { courses: true },
+				},
+			},
+		});
+
+		if (!department) {
+			return null;
+		}
+
+		return {
+			id: department.id,
+			name: department.name,
+			code: department.code,
+			description: department.description,
+			position: department.position,
+			_count: {
+				courses: department._count.courses,
+			},
+			courses: department.courses.map(course => ({
+				id: course.id,
+				name: course.name,
+				code: course.code,
+				description: course.description,
+				courseType: course.courseType,
+				position: course.position,
+				departmentId: course.departmentId,
+				_count: {
+					classes: course._count.classes,
+				},
+			})),
 		};
 	}
 }
