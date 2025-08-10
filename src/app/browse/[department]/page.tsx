@@ -58,18 +58,24 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: DepartmentPageProps) {
 	const resolvedParams = await params;
 	const departmentData = await BrowseService.getDepartmentByCode(
-		resolvedParams.department
+		resolvedParams.department.toUpperCase()
 	);
 
 	if (!departmentData) {
 		return {
-			title: "Department Not Found",
+			title: "Dipartimento Non Trovato - TriviaMore",
+			description: "Il dipartimento richiesto non è stato trovato.",
 		};
 	}
 
 	return {
-		title: `${departmentData.name} - Browse Courses`,
-		description: `Explore courses in ${departmentData.name} department. ${departmentData.description || ""}`,
-		keywords: `${departmentData.name}, ${departmentData.code}, courses, university`,
+		title: `${departmentData.name} - Esplora Corsi | TriviaMore`,
+		description: `Esplora i corsi del dipartimento di ${departmentData.name}. ${departmentData.description ? `${departmentData.description} ` : ""}Trova quiz e materiali di studio per tutti i corsi disponibili.`,
+		keywords: `${departmentData.name}, ${departmentData.code}, corsi universitari, quiz, studio, università, ${departmentData.name.toLowerCase()}`,
+		openGraph: {
+			title: `${departmentData.name} - Esplora Corsi`,
+			description: `Esplora i corsi del dipartimento di ${departmentData.name} su TriviaMore.`,
+			type: "website",
+		},
 	};
 }

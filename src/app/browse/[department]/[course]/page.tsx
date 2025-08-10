@@ -70,19 +70,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: CoursePageProps) {
 	const resolvedParams = await params;
 	const courseData = await BrowseService.getCourseByCode(
-		resolvedParams.department,
+		resolvedParams.department.toUpperCase(),
 		resolvedParams.course
 	);
 
 	if (!courseData) {
 		return {
-			title: "Course Not Found",
+			title: "Corso Non Trovato - TriviaMore",
+			description: "Il corso richiesto non è stato trovato.",
 		};
 	}
 
 	return {
-		title: `${courseData.name} - Browse Classes`,
-		description: `Explore classes in ${courseData.name} course. ${courseData.description || ""}`,
-		keywords: `${courseData.name}, ${courseData.code}, classes, ${courseData.department.name}`,
+		title: `${courseData.name} - Esplora Sezioni | TriviaMore`,
+		description: `Esplora tutte le sezioni del corso ${courseData.name} nel dipartimento di ${courseData.department.name}. ${courseData.description ? `${courseData.description} ` : ""}Trova quiz e materiali di studio per ogni sezione.`,
+		keywords: `${courseData.name}, ${courseData.code}, sezioni, ${courseData.department.name}, quiz, studio, università, ${courseData.name.toLowerCase()}`,
+		openGraph: {
+			title: `${courseData.name} - Esplora Sezioni`,
+			description: `Esplora tutte le sezioni del corso ${courseData.name} su TriviaMore.`,
+			type: "website",
+		},
 	};
 }
