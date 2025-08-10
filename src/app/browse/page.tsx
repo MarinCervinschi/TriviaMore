@@ -7,3 +7,19 @@ export default async function BrowsePage() {
 
 	return <BrowsePageComponent departments={data.departments} />;
 }
+
+export async function generateMetadata() {
+	return {
+		title: "Esplora Corsi - TriviaMore",
+		description:
+			"Sfoglia tutti i corsi universitari disponibili su TriviaMore. Trova quiz e materiali di studio organizzati per dipartimento e corso.",
+		keywords:
+			"corsi universitari, quiz, studio, dipartimenti, università, trivia, apprendimento",
+		openGraph: {
+			title: "Esplora Corsi - TriviaMore",
+			description:
+				"Sfoglia tutti i corsi universitari disponibili su TriviaMore. Trova quiz e materiali di studio organizzati per dipartimento e corso.",
+			type: "website",
+		},
+	};
+}
