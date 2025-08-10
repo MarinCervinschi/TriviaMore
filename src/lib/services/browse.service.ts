@@ -450,4 +450,287 @@ export class BrowseService extends UserService {
 			classes: classesWithAccessibleSections,
 		};
 	}
+
+	/**
+	 * Ottieni tutte le classi di un corso (per generateStaticParams)
+	 */
+	static async getClassesByCourse(departmentCode: string, courseCode: string) {
+		const course = await prisma.course.findFirst({
+			where: {
+				code: courseCode,
+				department: { code: departmentCode },
+			},
+			include: {
+				classes: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+					orderBy: [{ classYear: "asc" }, { position: "asc" }],
+				},
+			},
+		});
+
+		return course?.classes || [];
+	}
+
+	/**
+	 * Ottieni una classe per codice
+	 */
+	static async getClassByCode(
+		departmentCode: string,
+		courseCode: string,
+		classCode: string
+	) {
+		return await prisma.class.findFirst({
+			where: {
+				code: classCode,
+				course: {
+					code: courseCode,
+					department: { code: departmentCode },
+				},
+			},
+			include: {
+				course: {
+					include: {
+						department: {
+							select: {
+								id: true,
+								name: true,
+								code: true,
+							},
+						},
+					},
+				},
+			},
+		});
+	}
+
+	/**
+	 * Ottieni classe con le sue sezioni e filtri
+	 */
+	static async getClassWithSections(
+		departmentCode: string,
+		courseCode: string,
+		classCode: string,
+		filters: {
+			search?: string;
+		} = {},
+		userId?: string
+	) {
+		let permissions: UserPermissions | undefined;
+
+		if (userId) {
+			permissions = await super.getUserPermissions(userId);
+		}
+
+		const classData = await prisma.class.findFirst({
+			where: {
+				code: classCode,
+				course: {
+					code: courseCode,
+					department: { code: departmentCode },
+				},
+			},
+			include: {
+				course: {
+					include: {
+						department: {
+							select: {
+								id: true,
+								name: true,
+								code: true,
+							},
+						},
+					},
+				},
+				_count: {
+					select: { sections: true },
+				},
+			},
+		});
+
+		if (!classData) {
+			return null;
+		}
+
+		// Ottieni le sezioni accessibili
+		const sectionWhereClause = await super.getSectionWhereClause(
+			classData.id,
+			permissions
+		);
+
+		// Costruisci la query finale includendo il filtro di ricerca
+		const whereClause = filters.search
+			? {
+					AND: [
+						sectionWhereClause,
+						{
+							OR: [
+								{ name: { contains: filters.search, mode: "insensitive" as const } },
+								{
+									description: {
+										contains: filters.search,
+										mode: "insensitive" as const,
+									},
+								},
+							],
+						},
+					],
+				}
+			: sectionWhereClause;
+
+		const sections = await prisma.section.findMany({
+			where: whereClause,
+			orderBy: { position: "asc" },
+			include: {
+				_count: {
+					select: { questions: true },
+				},
+			},
+		});
+
+		return {
+			id: classData.id,
+			name: classData.name,
+			code: classData.code,
+			description: classData.description,
+			courseId: classData.courseId,
+			classYear: classData.classYear,
+			position: classData.position,
+			course: classData.course,
+			_count: {
+				sections: classData._count.sections,
+			},
+			sections: sections.map(section => ({
+				id: section.id,
+				name: section.name,
+				description: section.description,
+				isPublic: section.isPublic,
+				position: section.position,
+				classId: section.classId,
+				_count: {
+					questions: section._count.questions,
+				},
+			})),
+		};
+	}
+
+	/**
+	 * Ottieni tutte le sezioni di una classe (per generateStaticParams)
+	 */
+	static async getSectionsByClass(
+		departmentCode: string,
+		courseCode: string,
+		classCode: string
+	) {
+		const classData = await prisma.class.findFirst({
+			where: {
+				code: classCode,
+				course: {
+					code: courseCode,
+					department: { code: departmentCode },
+				},
+			},
+			include: {
+				sections: {
+					select: {
+						id: true,
+						name: true,
+					},
+					orderBy: { position: "asc" },
+				},
+			},
+		});
+
+		return classData?.sections || [];
+	}
+
+	/**
+	 * Ottieni una sezione per nome
+	 */
+	static async getSectionByName(
+		departmentCode: string,
+		courseCode: string,
+		classCode: string,
+		sectionName: string,
+		userId?: string
+	) {
+		let permissions: UserPermissions | undefined;
+
+		if (userId) {
+			permissions = await super.getUserPermissions(userId);
+		}
+
+		// Converti il nome dalla URL (lowercase con trattini) al nome originale
+		const originalSectionName = sectionName.replace(/-/g, " ");
+
+		// Prima trova la classe
+		const classData = await prisma.class.findFirst({
+			where: {
+				code: classCode,
+				course: {
+					code: courseCode,
+					department: { code: departmentCode },
+				},
+			},
+			include: {
+				course: {
+					include: {
+						department: {
+							select: {
+								id: true,
+								name: true,
+								code: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!classData) {
+			return null;
+		}
+
+		// Ottieni il where clause per le sezioni
+		const sectionWhereClause = await super.getSectionWhereClause(
+			classData.id,
+			permissions
+		);
+
+		// Cerca la sezione per nome (case insensitive)
+		const section = await prisma.section.findFirst({
+			where: {
+				...sectionWhereClause,
+				name: {
+					equals: originalSectionName,
+					mode: "insensitive" as const,
+				},
+			},
+			include: {
+				_count: {
+					select: { questions: true },
+				},
+			},
+		});
+
+		if (!section) {
+			return null;
+		}
+
+		return {
+			id: section.id,
+			name: section.name,
+			description: section.description,
+			isPublic: section.isPublic,
+			position: section.position,
+			classId: section.classId,
+			class: classData,
+			_count: {
+				questions: section._count.questions,
+			},
+		};
+	}
 }
