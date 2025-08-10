@@ -25,7 +25,7 @@ export default async function DepartmentPage({
 	const resolvedSearchParams = await searchParams;
 
 	const departmentData = await BrowseService.getDepartmentWithCourses(
-		resolvedParams.department,
+		resolvedParams.department.toUpperCase(),
 		{
 			courseType: resolvedSearchParams.type,
 			search: resolvedSearchParams.search,
@@ -54,7 +54,7 @@ export async function generateStaticParams() {
 	const departments = await BrowseService.getAllDepartments();
 
 	return departments.map(dept => ({
-		department: dept.code,
+		department: dept.code.toLowerCase(),
 	}));
 }
 

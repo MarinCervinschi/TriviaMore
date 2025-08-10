@@ -1,4 +1,3 @@
-
 import { AppLayout } from "@/components/layouts/AppLayout";
 import BrowsePageComponent from "@/components/pages/Browse";
 import { auth } from "@/lib/auth";
