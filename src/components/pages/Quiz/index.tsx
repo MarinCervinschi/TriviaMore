@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Quiz } from "@/lib/types/quiz.types";
+import {
+	clearQuizDataFromSession,
+	getQuizDataFromSession,
+} from "@/lib/utils/authenticated-quiz";
 import { clearQuizSession, getQuizSession } from "@/lib/utils/quiz-session";
 
 import { QuizContainer } from "./QuizContainer";
@@ -26,6 +30,7 @@ export default function QuizPageComponent({
 	user,
 }: QuizPageComponentProps) {
 	const [quiz, setQuiz] = useState<Quiz | null>(null);
+	const [attemptId, setAttemptId] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
@@ -68,8 +73,25 @@ export default function QuizPageComponent({
 					const data = await response.json();
 					setQuiz(data.quiz);
 				} else {
-					// TODO: Implementare caricamento quiz utenti autenticati
-					throw new Error("Quiz utenti non ancora implementato");
+					// Carica quiz per utenti autenticati
+					if (!user?.id) {
+						throw new Error("Utente non autenticato");
+					}
+
+					// Per gli utenti autenticati, i dati vengono caricati tramite API start
+					// e poi salvati in sessionStorage dal client che chiama l'API
+					const quizData = getQuizDataFromSession(quizId);
+
+					if (quizData) {
+						setQuiz(quizData.quiz);
+						setAttemptId(quizData.attemptId);
+					} else {
+						// Se non ci sono dati salvati, significa che l'utente è arrivato direttamente
+						// a questa pagina senza aver avviato un quiz
+						setError(
+							"Quiz non trovato. Avvia un nuovo quiz dalla sezione appropriata."
+						);
+					}
 				}
 			} catch (err) {
 				console.error("Errore caricamento quiz:", err);
@@ -80,7 +102,8 @@ export default function QuizPageComponent({
 		};
 
 		loadQuiz();
-	}, [quizId, isGuest]);
+	}, [quizId, isGuest, user]);
+
 	const handleQuizComplete = async (results: any) => {
 		// Pulisci la sessione per guest
 		if (isGuest) {
@@ -91,34 +114,39 @@ export default function QuizPageComponent({
 
 		// Per utenti autenticati, salviamo nel database e navighiamo ai risultati
 		try {
-			// TODO: Implementare API per salvare risultati utenti autenticati
-			/*
-			const response = await fetch('/api/quiz/complete', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+			if (!attemptId) {
+				throw new Error("ID tentativo quiz non trovato");
+			}
+
+			const response = await fetch("/api/protected/quiz/complete", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					quizId: quiz.id,
-					userId: user?.id,
-					answers: results.answers,
+					quizAttemptId: attemptId,
+					answers: results.answers.map((answer: any) => ({
+						questionId: answer.questionId,
+						userAnswer: answer.answer, // Mappa 'answer' a 'userAnswer'
+						score: answer.score,
+					})),
 					timeSpent: results.timeSpent,
-					totalScore: results.totalScore
-				})
+				}),
 			});
 
 			if (!response.ok) {
-				throw new Error('Errore nel salvataggio risultati');
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Errore nel salvataggio risultati");
 			}
 
-			const { attemptId } = await response.json();
-			router.push(`/quiz/results/${attemptId}`);
-			*/
+			// Pulisci i dati del quiz dalla sessione
+			clearQuizDataFromSession(quizId);
 
-			console.log("Quiz completato (utente):", results);
-			// Per ora, reindirizza alla browse
-			router.push("/browse");
+			// Naviga alla pagina dei risultati
+			router.push(`/quiz/results/${attemptId}`);
 		} catch (error) {
 			console.error("Errore salvataggio risultati:", error);
-			// In caso di errore, mostra comunque i risultati inline
+			setError(
+				"Errore nel salvataggio dei risultati. I dati potrebbero non essere stati salvati."
+			);
 		}
 	};
 
@@ -171,6 +199,7 @@ export default function QuizPageComponent({
 	return (
 		<QuizContainer
 			quiz={quiz}
+			attemptId={attemptId}
 			isGuest={isGuest}
 			user={user}
 			onComplete={handleQuizComplete}

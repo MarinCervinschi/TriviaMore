@@ -20,6 +20,7 @@ interface UserAnswer {
 
 interface QuizContainerProps {
 	quiz: Quiz;
+	attemptId?: string | null;
 	isGuest: boolean;
 	user?: {
 		id: string;
@@ -32,13 +33,20 @@ interface QuizContainerProps {
 
 export function QuizContainer({
 	quiz,
+	attemptId,
 	isGuest,
 	user,
 	onComplete,
 	onExit,
 }: QuizContainerProps) {
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>(() => {
+		// Inizializzazione sincrona per evitare race conditions
+		return quiz.questions.map(q => ({
+			questionId: q.id,
+			answer: [],
+		}));
+	});
 	const [startTime, setStartTime] = useState(Date.now());
 	const [sidebarOpen, setSidebarOpen] = useState(true); // Aperta di default su desktop
 	const [showResults, setShowResults] = useState(false);
@@ -46,15 +54,6 @@ export function QuizContainer({
 	const currentQuestion = quiz.questions[currentQuestionIndex];
 	const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
 	const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
-
-	// Inizializza le risposte utente
-	useEffect(() => {
-		const initialAnswers: UserAnswer[] = quiz.questions.map(q => ({
-			questionId: q.id,
-			answer: [],
-		}));
-		setUserAnswers(initialAnswers);
-	}, [quiz.questions]);
 
 	const handleAnswerChange = (questionId: string, answer: string[]) => {
 		setUserAnswers(prev =>

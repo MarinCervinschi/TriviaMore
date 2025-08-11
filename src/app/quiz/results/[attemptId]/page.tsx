@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 
+import { AppLayout } from "@/components/layouts/AppLayout";
 import QuizResultsPageComponent from "@/components/pages/Quiz/QuizResults";
 import { auth } from "@/lib/auth";
+import { QuizService } from "@/lib/services/quiz.service";
 
 interface QuizResultsPageProps {
 	params: Promise<{
@@ -13,28 +15,39 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 	const session = await auth();
 	const resolvedParams = await params;
 
-	// Solo utenti autenticati possono vedere i risultati
 	if (!session?.user) {
 		notFound();
 	}
 
-	// TODO: Recuperare i risultati dal database usando attemptId
-	// const results = await QuizService.getQuizResults(resolvedParams.attemptId, session.user.id);
+	try {
+		const results = await QuizService.getQuizResults(
+			resolvedParams.attemptId,
+			session.user.id
+		);
 
-	return (
-		<QuizResultsPageComponent
-			attemptId={resolvedParams.attemptId}
-			user={session.user}
-		/>
-	);
+		if (!results) {
+			notFound();
+		}
+
+		return (
+			<AppLayout user={session.user}>
+				<QuizResultsPageComponent
+					attemptId={resolvedParams.attemptId}
+					user={session.user}
+					results={results}
+				/>
+			</AppLayout>
+		);
+	} catch (error) {
+		console.error("Error loading quiz results:", error);
+		notFound();
+	}
 }
 
-export async function generateMetadata({ params }: QuizResultsPageProps) {
-	const resolvedParams = await params;
-
+export function generateMetadata() {
 	return {
 		title: "Risultati Quiz - TriviaMore",
 		description: "Visualizza i risultati del tuo quiz completato.",
-		robots: "noindex, nofollow", // I risultati non dovrebbero essere indicizzati
+		robots: "noindex, nofollow",
 	};
 }
