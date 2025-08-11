@@ -1,6 +1,21 @@
 "use client";
 
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { FlashcardCard } from "./FlashcardCard";
+import { QuizCard } from "./QuizCard";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
+
+interface EvaluationMode {
+	id: string;
+	name: string;
+	description?: string | null;
+	correctAnswerPoints: number;
+	incorrectAnswerPoints: number;
+	partialCreditEnabled: boolean;
+}
 
 interface SectionData {
 	id: string;
@@ -39,6 +54,7 @@ interface SectionPageComponentProps {
 	courseCode: string;
 	classCode: string;
 	isUserLoggedIn: boolean;
+	evaluationModes?: EvaluationMode[];
 }
 
 export default function SectionPageComponent({
@@ -48,7 +64,40 @@ export default function SectionPageComponent({
 	courseCode,
 	classCode,
 	isUserLoggedIn,
+	evaluationModes = [],
 }: SectionPageComponentProps) {
+	const router = useRouter();
+
+	// Stati per le impostazioni del quiz
+	const totalQuestions = sectionData._count.questions;
+	const defaultQuestionCount = Math.min(20, totalQuestions);
+	const [quizQuestionCount, setQuizQuestionCount] = useState([defaultQuestionCount]);
+	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
+		evaluationModes.length > 0 ? evaluationModes[0].id : ""
+	);
+	const [isQuizSettingsOpen, setIsQuizSettingsOpen] = useState(false);
+
+	// Stati per le impostazioni delle flashcard
+	const defaultFlashcardCount = Math.min(10, totalQuestions);
+	const [flashcardCount, setFlashcardCount] = useState([defaultFlashcardCount]);
+	const [isFlashcardSettingsOpen, setIsFlashcardSettingsOpen] = useState(false);
+
+	const handleStartQuiz = () => {
+		// TODO: Implementare logica per avviare il quiz
+		console.log("Avvia quiz con:", {
+			questionCount: quizQuestionCount[0],
+			evaluationModeId: selectedEvaluationMode,
+			sectionId: sectionData.id,
+		});
+	};
+
+	const handleStartFlashcards = () => {
+		// TODO: Implementare logica per avviare le flashcard
+		console.log("Avvia flashcard con:", {
+			cardCount: flashcardCount[0],
+			sectionId: sectionData.id,
+		});
+	};
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -89,26 +138,34 @@ export default function SectionPageComponent({
 					</div>
 				</div>
 
-				{/* Contenuto temporaneo */}
-				<div className="rounded-lg bg-white p-8 shadow-sm dark:bg-gray-800">
-					<h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-						Contenuto della sezione
-					</h2>
-					<p className="text-gray-600 dark:text-gray-300">
-						Questa pagina verrà implementata con quiz, domande e altre funzionalità per
-						la sezione &quot;{sectionData.name}&quot;.
-					</p>
-					<div className="mt-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-						<p className="text-sm text-blue-700 dark:text-blue-300">
-							💡 In futuro qui troverai:
-						</p>
-						<ul className="mt-2 space-y-1 text-sm text-blue-600 dark:text-blue-400">
-							<li>• Quiz interattivi per questa sezione</li>
-							<li>• Domande di studio e ripasso</li>
-							<li>• Statistiche del tuo progresso</li>
-							<li>• Materiali di studio correlati</li>
-						</ul>
-					</div>
+				{/* Contenuto della sezione */}
+				<div className="space-y-6">
+					{/* Tenta Quiz */}
+					<QuizCard
+						sectionName={sectionData.name}
+						totalQuestions={totalQuestions}
+						isUserLoggedIn={isUserLoggedIn}
+						onStartQuiz={handleStartQuiz}
+						questionCount={quizQuestionCount}
+						onQuestionCountChange={setQuizQuestionCount}
+						evaluationModes={evaluationModes}
+						selectedEvaluationMode={selectedEvaluationMode}
+						onEvaluationModeChange={setSelectedEvaluationMode}
+						isSettingsOpen={isQuizSettingsOpen}
+						onSettingsOpenChange={setIsQuizSettingsOpen}
+					/>
+
+					{/* Flashcard */}
+					<FlashcardCard
+						sectionName={sectionData.name}
+						totalQuestions={totalQuestions}
+						isUserLoggedIn={isUserLoggedIn}
+						onStartFlashcards={handleStartFlashcards}
+						cardCount={flashcardCount}
+						onCardCountChange={setFlashcardCount}
+						isSettingsOpen={isFlashcardSettingsOpen}
+						onSettingsOpenChange={setIsFlashcardSettingsOpen}
+					/>
 				</div>
 			</div>
 		</div>
