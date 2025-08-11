@@ -45,6 +45,7 @@ export interface EvaluationMode {
 export interface GuestQuizRequest {
 	sectionId: string;
 	questionCount?: number;
+	timeLimit?: number;
 	quizMode?: QuizMode;
 }
 
