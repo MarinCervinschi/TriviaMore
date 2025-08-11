@@ -8,6 +8,7 @@ export async function middleware(request: NextRequest) {
 	const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
 
 	// Protected routes
+	const isRoot = request.nextUrl.pathname === "/";
 	const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
 	const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected");
 
@@ -17,8 +18,7 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	// Redirect authenticated users away from auth pages
-	if (isAuthPage && isAuth) {
+	if ((isAuthPage || isRoot) && isAuth) {
 		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 
@@ -26,5 +26,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/dashboard/:path*", "/api/protected/:path*", "/auth/:path*"],
+	matcher: ["/", "/dashboard/:path*", "/api/protected/:path*", "/auth/:path*"],
 };
