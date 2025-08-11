@@ -81,23 +81,45 @@ export default function QuizPageComponent({
 
 		loadQuiz();
 	}, [quizId, isGuest]);
-	const handleQuizComplete = (results: any) => {
-		// Pulisci la sessione
+	const handleQuizComplete = async (results: any) => {
+		// Pulisci la sessione per guest
 		if (isGuest) {
 			clearQuizSession(quizId);
-		}
-
-		// Per i guest, mostriamo solo i risultati senza salvare
-		if (isGuest) {
-			console.log("Quiz completato (guest):", results);
-			// TODO: Mostrare risultati inline per guest
+			// Per i guest, i risultati vengono mostrati inline dal QuizContainer
 			return;
 		}
 
 		// Per utenti autenticati, salviamo nel database e navighiamo ai risultati
-		// TODO: Implementare salvataggio risultati e navigazione
-		console.log("Quiz completato (utente):", results);
-		// router.push(`/quiz/results/${attemptId}`);
+		try {
+			// TODO: Implementare API per salvare risultati utenti autenticati
+			/*
+			const response = await fetch('/api/quiz/complete', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					quizId: quiz.id,
+					userId: user?.id,
+					answers: results.answers,
+					timeSpent: results.timeSpent,
+					totalScore: results.totalScore
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error('Errore nel salvataggio risultati');
+			}
+
+			const { attemptId } = await response.json();
+			router.push(`/quiz/results/${attemptId}`);
+			*/
+
+			console.log("Quiz completato (utente):", results);
+			// Per ora, reindirizza alla browse
+			router.push("/browse");
+		} catch (error) {
+			console.error("Errore salvataggio risultati:", error);
+			// In caso di errore, mostra comunque i risultati inline
+		}
 	};
 
 	const handleQuizExit = () => {

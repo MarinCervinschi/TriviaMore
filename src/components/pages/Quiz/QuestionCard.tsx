@@ -60,11 +60,11 @@ export function QuestionCard({
 		}
 	};
 
-	const handleMultipleChoice = (optionIndex: string, checked: boolean) => {
+	const handleMultipleChoice = (optionContent: string, checked: boolean) => {
 		if (checked) {
-			onAnswerChange([...selectedAnswers, optionIndex]);
+			onAnswerChange([...selectedAnswers, optionContent]);
 		} else {
-			onAnswerChange(selectedAnswers.filter(ans => ans !== optionIndex));
+			onAnswerChange(selectedAnswers.filter(ans => ans !== optionContent));
 		}
 	};
 
@@ -99,9 +99,9 @@ export function QuestionCard({
 						<div key={index} className="flex items-center space-x-2">
 							<Checkbox
 								id={`option-${index}`}
-								checked={selectedAnswers.includes(index.toString())}
+								checked={selectedAnswers.includes(option)}
 								onCheckedChange={checked =>
-									handleMultipleChoice(index.toString(), checked as boolean)
+									handleMultipleChoice(option, checked as boolean)
 								}
 							/>
 							<Label
