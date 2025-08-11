@@ -6,6 +6,7 @@ import { Quiz, QuizQuestion } from "@/lib/types/quiz.types";
 
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
+import { QuizInlineResults } from "./QuizInlineResults";
 import { QuizNavigation } from "./QuizNavigation";
 import { QuizProgress } from "./QuizProgress";
 import { QuizSidebar } from "./QuizSidebar";
@@ -38,7 +39,7 @@ export function QuizContainer({
 }: QuizContainerProps) {
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-	const [startTime] = useState(Date.now());
+	const [startTime, setStartTime] = useState(Date.now());
 	const [sidebarOpen, setSidebarOpen] = useState(true); // Aperta di default su desktop
 	const [showResults, setShowResults] = useState(false);
 
@@ -90,25 +91,69 @@ export function QuizContainer({
 			const question = quiz.questions.find(q => q.id === userAnswer.questionId);
 			if (!question) return userAnswer;
 
-			// Confronta le risposte
-			const isCorrect =
-				userAnswer.answer.length === question.correctAnswer.length &&
-				userAnswer.answer.every(ans => question.correctAnswer.includes(ans));
-
+			// Calcolo del punteggio più accurato per risposte multiple
 			let score = 0;
-			if (isCorrect) {
-				score = quiz.evaluationMode.correctAnswerPoints;
-				correctAnswers++;
-			} else if (userAnswer.answer.length > 0) {
-				// Risposta sbagliata
-				score = quiz.evaluationMode.incorrectAnswerPoints;
+			let isFullyCorrect = false;
+
+			if (userAnswer.answer.length === 0) {
+				// Nessuna risposta data - nessun punteggio (né positivo né negativo)
+				score = 0;
+				isFullyCorrect = false;
+			} else {
+				// Ora le risposte dell'utente sono già contenuti, quindi confronto diretto
+				const correctGiven = userAnswer.answer.filter(ans =>
+					question.correctAnswer.includes(ans)
+				).length;
+				const incorrectGiven = userAnswer.answer.filter(
+					ans => !question.correctAnswer.includes(ans)
+				).length;
+				const totalCorrect = question.correctAnswer.length;
+				const totalGiven = userAnswer.answer.length;
+
+				// Se ha dato tutte le risposte corrette e nessuna sbagliata
+				if (
+					correctGiven === totalCorrect &&
+					incorrectGiven === 0 &&
+					totalGiven === totalCorrect
+				) {
+					score = quiz.evaluationMode.correctAnswerPoints;
+					isFullyCorrect = true;
+					correctAnswers++;
+				} else if (correctGiven > 0) {
+					// Punteggio parziale se supportato
+					if (quiz.evaluationMode.partialCreditEnabled) {
+						// Calcola percentuale di correttezza
+						const correctnessRatio = correctGiven / totalCorrect;
+						const penaltyRatio = incorrectGiven / Math.max(totalGiven, 1);
+						const adjustedRatio = Math.max(0, correctnessRatio - penaltyRatio);
+						score = Math.round(quiz.evaluationMode.correctAnswerPoints * adjustedRatio);
+
+						// Se ci sono risposte sbagliate, applica anche la penalità
+						if (incorrectGiven > 0) {
+							const penalty =
+								incorrectGiven * Math.abs(quiz.evaluationMode.incorrectAnswerPoints);
+							score = Math.max(
+								score - penalty,
+								quiz.evaluationMode.incorrectAnswerPoints
+							);
+						}
+					} else {
+						// Senza punteggio parziale, tutto o niente
+						score = 0;
+					}
+					isFullyCorrect = false;
+				} else {
+					// Tutte risposte sbagliate - applica penalità completa
+					score = quiz.evaluationMode.incorrectAnswerPoints;
+					isFullyCorrect = false;
+				}
 			}
 
 			totalScore += score;
 
 			return {
 				...userAnswer,
-				isCorrect,
+				isCorrect: isFullyCorrect,
 				score,
 			};
 		});
@@ -119,6 +164,7 @@ export function QuizContainer({
 			totalQuestions: quiz.questions.length,
 			timeSpent: Date.now() - startTime,
 			answers: answersWithResults,
+			evaluationMode: quiz.evaluationMode, // Aggiungo le informazioni della modalità
 		};
 	};
 
@@ -146,7 +192,32 @@ export function QuizContainer({
 	};
 
 	if (showResults) {
-		// TODO: Creare componente QuizResults
+		// Per guest: mostra risultati inline
+		if (isGuest) {
+			return (
+				<QuizInlineResults
+					results={calculateResults()}
+					questions={quiz.questions}
+					quizTitle={`Quiz: ${quiz.section.name}`}
+					onExit={onExit}
+					onRetry={() => {
+						// Reset completo del quiz per rifare
+						setCurrentQuestionIndex(0);
+						const initialAnswers: UserAnswer[] = quiz.questions.map(q => ({
+							questionId: q.id,
+							answer: [],
+						}));
+						setUserAnswers(initialAnswers);
+						setStartTime(Date.now()); // Reset timer
+						setShowResults(false);
+					}}
+				/>
+			);
+		}
+
+		// Per utenti registrati: reindirizza alla pagina risultati
+		// Questo caso dovrebbe essere gestito dal componente padre
+		// che chiamerà onComplete con i risultati
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 				<div className="text-center">
@@ -154,14 +225,8 @@ export function QuizContainer({
 						Quiz Completato!
 					</h1>
 					<p className="text-gray-700 dark:text-gray-300">
-						Risultati verranno mostrati qui
+						Reindirizzamento ai risultati...
 					</p>
-					<button
-						onClick={onExit}
-						className="mt-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-					>
-						Chiudi
-					</button>
 				</div>
 			</div>
 		);
@@ -190,6 +255,7 @@ export function QuizContainer({
 					onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
 					onTimeUp={handleTimeUp}
 					sidebarOpen={sidebarOpen}
+					key={`quiz-header-${startTime}`}
 				/>
 
 				{/* Progress */}

@@ -94,7 +94,7 @@ export class QuizService {
 			id: q.id,
 			content: q.content,
 			questionType: q.questionType,
-			options: q.options as string[] | undefined,
+			options: q.options ? QuizService.shuffleArray(q.options as string[]) : undefined,
 			correctAnswer: q.correctAnswer,
 			explanation: q.explanation || undefined,
 			difficulty: q.difficulty,
