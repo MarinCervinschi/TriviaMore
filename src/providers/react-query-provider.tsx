@@ -2,23 +2,18 @@
 
 import { ReactNode, useEffect, useMemo } from "react";
 
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
-const persistentClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: Infinity,
-			gcTime: 1000 * 60 * 60 * 24 * 7, // 1 settimana
-		},
-	},
-});
+import { getQueryClient } from "./get-query-client";
 
 export function ReactQueryProviders({ children }: { children: ReactNode }) {
+	const persistentClient = getQueryClient();
+
 	useEffect(() => {
 		if (typeof window !== "undefined") {
-			const persister = createSyncStoragePersister({
+			const persister = createAsyncStoragePersister({
 				storage: window.localStorage,
 				key: "PERSISTENT_QUERY_CACHE",
 				throttleTime: 1000,
@@ -34,7 +29,7 @@ export function ReactQueryProviders({ children }: { children: ReactNode }) {
 				},
 			});
 		}
-	}, []);
+	}, [persistentClient]);
 
 	return (
 		<QueryClientProvider client={persistentClient}>{children}</QueryClientProvider>
