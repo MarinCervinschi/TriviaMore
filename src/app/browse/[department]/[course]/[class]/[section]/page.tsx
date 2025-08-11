@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import SectionPageComponent from "@/components/pages/Browse/Section/index";
 import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services/browse.service";
+import { EvaluationService } from "@/lib/services/evaluation.service";
 
 interface SectionPageProps {
 	params: Promise<{
@@ -22,13 +23,16 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
 	const resolvedParams = await params;
 	const resolvedSearchParams = await searchParams;
 
-	const sectionData = await BrowseService.getSectionByName(
-		resolvedParams.department.toUpperCase(),
-		resolvedParams.course.toUpperCase(),
-		resolvedParams.class.toUpperCase(),
-		resolvedParams.section,
-		session?.user?.id
-	);
+	const [sectionData, evaluationModes] = await Promise.all([
+		BrowseService.getSectionByName(
+			resolvedParams.department.toUpperCase(),
+			resolvedParams.course.toUpperCase(),
+			resolvedParams.class.toUpperCase(),
+			resolvedParams.section,
+			session?.user?.id
+		),
+		EvaluationService.getAllEvaluationModes(),
+	]);
 
 	if (!sectionData) {
 		notFound();
@@ -44,6 +48,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
 			courseCode={resolvedParams.course}
 			classCode={resolvedParams.class}
 			isUserLoggedIn={!!session?.user}
+			evaluationModes={evaluationModes}
 		/>
 	);
 }
