@@ -2,6 +2,7 @@ import { QuizMode } from "@prisma/client";
 
 import { prisma } from "../prisma";
 import {
+	AnswerAttempt,
 	CompleteQuizRequest,
 	EvaluationMode,
 	GuestQuizRequest,
@@ -116,15 +117,285 @@ export class QuizService {
 	/**
 	 * Avvia un quiz per un utente registrato
 	 */
-	static async startQuiz({}): Promise<void> {
-		// TODO: Implementare la logica per avviare un quiz
+	static async startQuiz(params: StartQuizRequest): Promise<QuizAttemptResponse> {
+		const {
+			userId,
+			sectionId,
+			questionCount = 30,
+			timeLimit = 30,
+			quizMode,
+			evaluationModeId,
+		} = params;
+
+		// Verifica che l'utente esista
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+		});
+
+		if (!user) {
+			throw new Error("Utente non trovato");
+		}
+
+		// Verifica che la sezione esista e che l'utente abbia accesso
+		const sectionData = await prisma.section.findFirst({
+			where: {
+				id: sectionId,
+				OR: [
+					{ isPublic: true },
+					{
+						access: {
+							some: {
+								userId: userId,
+							},
+						},
+					},
+				],
+			},
+			include: {
+				questions: {
+					where: {
+						questionType: {
+							in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
+						},
+					},
+				},
+				class: {
+					include: {
+						course: {
+							include: {
+								department: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!sectionData) {
+			throw new Error("Sezione non trovata");
+		}
+
+		if (sectionData.questions.length === 0) {
+			throw new Error("Nessuna domanda disponibile per il quiz");
+		}
+
+		// Verifica che la modalità di valutazione esista
+		const evaluationMode = await prisma.evaluationMode.findUnique({
+			where: { id: evaluationModeId },
+		});
+
+		if (!evaluationMode) {
+			throw new Error("Modalità di valutazione non trovata");
+		}
+
+		// Seleziona le domande random
+		const selectedQuestions = QuizService.selectRandomItems(
+			sectionData.questions,
+			questionCount
+		);
+
+		// Crea il quiz nel database
+		const quiz = await prisma.quiz.create({
+			data: {
+				timeLimit,
+				sectionId,
+				evaluationModeId,
+				quizMode,
+				questions: {
+					create: selectedQuestions.map((question, index) => ({
+						questionId: question.id,
+						order: index + 1,
+					})),
+				},
+			},
+			include: {
+				questions: {
+					include: {
+						question: true,
+					},
+					orderBy: {
+						order: "asc",
+					},
+				},
+				section: {
+					include: {
+						class: {
+							include: {
+								course: {
+									include: {
+										department: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				evaluationMode: true,
+			},
+		});
+
+		// Crea il quiz attempt
+		const quizAttempt = await prisma.quizAttempt.create({
+			data: {
+				userId,
+				quizId: quiz.id,
+				score: 0, // Sarà aggiornato al completamento
+			},
+		});
+
+		// Prepara la risposta
+		const quizSection: QuizSection = {
+			id: quiz.section.id,
+			name: quiz.section.name,
+			class: {
+				name: quiz.section.class.name,
+				course: {
+					name: quiz.section.class.course.name,
+					department: {
+						name: quiz.section.class.course.department.name,
+					},
+				},
+			},
+		};
+
+		const evaluationModeResponse: EvaluationMode = {
+			name: quiz.evaluationMode.name,
+			description: quiz.evaluationMode.description || undefined,
+			correctAnswerPoints: quiz.evaluationMode.correctAnswerPoints,
+			incorrectAnswerPoints: quiz.evaluationMode.incorrectAnswerPoints,
+			partialCreditEnabled: quiz.evaluationMode.partialCreditEnabled,
+		};
+
+		const questions = quiz.questions.map(qq => ({
+			id: qq.question.id,
+			content: qq.question.content,
+			questionType: qq.question.questionType,
+			options: qq.question.options
+				? QuizService.shuffleArray(qq.question.options as string[])
+				: undefined,
+			correctAnswer: qq.question.correctAnswer,
+			explanation: qq.question.explanation || undefined,
+			difficulty: qq.question.difficulty,
+			order: qq.order,
+		}));
+
+		const quizResponse: Quiz = {
+			id: quiz.id,
+			timeLimit: quiz.timeLimit || undefined,
+			quizMode: quiz.quizMode,
+			section: quizSection,
+			evaluationMode: evaluationModeResponse,
+			questions,
+		};
+
+		return {
+			attemptId: quizAttempt.id,
+			quiz: quizResponse,
+		};
 	}
 
 	/**
 	 * Completa un quiz e salva i progressi
 	 */
-	static async completeQuiz({}): Promise<void> {
-		// TODO: Implementare la logica per completare il quiz
+	static async completeQuiz(params: CompleteQuizRequest): Promise<QuizResult> {
+		const { userId, quizAttemptId, answers, timeSpent } = params;
+
+		// Verifica che il quiz attempt esista e appartenga all'utente
+		const quizAttempt = await prisma.quizAttempt.findFirst({
+			where: {
+				id: quizAttemptId,
+				userId,
+			},
+			include: {
+				quiz: {
+					include: {
+						questions: {
+							include: {
+								question: true,
+							},
+						},
+						section: true,
+						evaluationMode: true,
+					},
+				},
+				answers: true,
+			},
+		});
+
+		if (!quizAttempt) {
+			throw new Error("Quiz attempt non trovato");
+		}
+
+		// Verifica che il quiz non sia già stato completato
+		if (quizAttempt.answers.length > 0) {
+			throw new Error("Quiz già completato");
+		}
+
+		// Calcola i punteggi e salva le risposte
+		let totalScore = 0;
+		let correctAnswers = 0;
+		const savedAnswers: AnswerAttempt[] = [];
+
+		for (const answer of answers) {
+			// Trova la domanda corrispondente
+			const quizQuestion = quizAttempt.quiz.questions.find(
+				qq => qq.question.id === answer.questionId
+			);
+
+			if (!quizQuestion) {
+				continue; // Salta risposte per domande non trovate
+			}
+
+			// Salva la risposta nel database
+			const savedAnswer = await prisma.answerAttempt.create({
+				data: {
+					quizAttemptId,
+					questionId: answer.questionId,
+					userAnswer: answer.userAnswer,
+					score: answer.score,
+				},
+			});
+
+			totalScore += answer.score;
+			if (answer.score > 0) {
+				correctAnswers++;
+			}
+
+			savedAnswers.push({
+				questionId: savedAnswer.questionId,
+				userAnswer: savedAnswer.userAnswer,
+				score: savedAnswer.score,
+			});
+		}
+
+		// Aggiorna il quiz attempt con il punteggio finale e il tempo
+		await prisma.quizAttempt.update({
+			where: { id: quizAttemptId },
+			data: {
+				score: totalScore,
+				timeSpent,
+				completedAt: new Date(),
+			},
+		});
+
+		// Aggiorna i progressi dell'utente
+		await QuizService.updateUserProgress({
+			userId,
+			sectionId: quizAttempt.quiz.sectionId,
+			quizMode: quizAttempt.quiz.quizMode,
+			score: totalScore,
+			timeSpent,
+			totalQuestions: quizAttempt.quiz.questions.length,
+		});
+
+		return {
+			id: quizAttemptId,
+			score: totalScore,
+			totalQuestions: quizAttempt.quiz.questions.length,
+			correctAnswers,
+			timeSpent,
+			answers: savedAnswers,
+		};
 	}
 
 	/**
@@ -163,9 +434,203 @@ export class QuizService {
 	}
 
 	/**
+	 * Recupera i risultati di un quiz attempt specifico
+	 */
+	static async getQuizResults(attemptId: string, userId: string): Promise<any | null> {
+		const quizAttempt = await prisma.quizAttempt.findFirst({
+			where: {
+				id: attemptId,
+				userId: userId, // Assicuriamo che l'utente possa vedere solo i suoi risultati
+			},
+			include: {
+				quiz: {
+					include: {
+						questions: {
+							include: {
+								question: true,
+							},
+							orderBy: {
+								order: "asc",
+							},
+						},
+						section: {
+							include: {
+								class: {
+									include: {
+										course: {
+											include: {
+												department: true,
+											},
+										},
+									},
+								},
+							},
+						},
+						evaluationMode: true,
+					},
+				},
+				answers: {
+					include: {
+						question: true,
+					},
+				},
+			},
+		});
+
+		if (!quizAttempt) {
+			return null;
+		}
+
+		// Mappa le risposte nel formato atteso dal componente QuizResults
+		const answers = quizAttempt.answers.map(answer => ({
+			questionId: answer.questionId,
+			userAnswer: answer.userAnswer,
+			isCorrect: answer.score > 0,
+			score: answer.score,
+			question: {
+				content: answer.question.content,
+				correctAnswer: answer.question.correctAnswer,
+			},
+		}));
+
+		// Mappa le domande del quiz con le opzioni complete
+		const questions = quizAttempt.quiz.questions.map(qq => ({
+			id: qq.question.id,
+			content: qq.question.content,
+			options: (qq.question.options as string[]) || [],
+			correctAnswer: qq.question.correctAnswer as string[],
+		}));
+
+		return {
+			id: quizAttempt.id,
+			score: quizAttempt.score,
+			totalQuestions: quizAttempt.quiz.questions.length,
+			correctAnswers: quizAttempt.answers.filter(a => a.score > 0).length,
+			timeSpent: quizAttempt.timeSpent || 0,
+			quiz: {
+				id: quizAttempt.quiz.id,
+				title: quizAttempt.quiz.section.name, // Usa il nome della sezione come titolo
+				description: `Quiz di ${quizAttempt.quiz.section.name}`,
+				section: {
+					name: quizAttempt.quiz.section.name,
+					class: {
+						name: quizAttempt.quiz.section.class.name,
+						course: {
+							name: quizAttempt.quiz.section.class.course.name,
+						},
+					},
+				},
+				questions,
+				evaluationMode: {
+					name: quizAttempt.quiz.evaluationMode.name,
+					description: quizAttempt.quiz.evaluationMode.description || undefined,
+					correctAnswerPoints: quizAttempt.quiz.evaluationMode.correctAnswerPoints,
+					incorrectAnswerPoints: quizAttempt.quiz.evaluationMode.incorrectAnswerPoints,
+					partialCreditEnabled: quizAttempt.quiz.evaluationMode.partialCreditEnabled,
+				},
+			},
+			answers,
+		};
+	}
+
+	/**
 	 * Aggiorna i progressi dell'utente
 	 */
-	private static async updateUserProgress({}): Promise<void> {
-		// TODO: Implementare la logica per aggiornare i progressi dell'utente
+	private static async updateUserProgress(params: {
+		userId: string;
+		sectionId: string;
+		quizMode: QuizMode;
+		score: number;
+		timeSpent: number;
+		totalQuestions: number;
+	}): Promise<void> {
+		const { userId, sectionId, quizMode, score, timeSpent, totalQuestions } = params;
+
+		// Trova o crea il record di progresso
+		const existingProgress = await prisma.progress.findUnique({
+			where: {
+				userId_sectionId: {
+					userId,
+					sectionId,
+				},
+			},
+		});
+
+		const percentage = (score / totalQuestions) * 100;
+
+		if (existingProgress) {
+			// Aggiorna il progresso esistente
+			const updateData: any = {
+				totalQuestionsStudied: existingProgress.totalQuestionsStudied + totalQuestions,
+				lastAccessedAt: new Date(),
+				updatedAt: new Date(),
+			};
+
+			if (quizMode === "STUDY") {
+				const newStudyQuizCount = existingProgress.studyQuizzesTaken + 1;
+				const currentAverage = existingProgress.studyAverageScore || 0;
+				const newAverage =
+					(currentAverage * existingProgress.studyQuizzesTaken + percentage) /
+					newStudyQuizCount;
+
+				updateData.studyQuizzesTaken = newStudyQuizCount;
+				updateData.studyAverageScore = newAverage;
+				updateData.studyBestScore = Math.max(
+					existingProgress.studyBestScore || 0,
+					percentage
+				);
+				updateData.studyTotalTimeSpent =
+					existingProgress.studyTotalTimeSpent + timeSpent;
+			} else if (quizMode === "EXAM_SIMULATION") {
+				const newExamQuizCount = existingProgress.examQuizzesTaken + 1;
+				const currentAverage = existingProgress.examAverageScore || 0;
+				const newAverage =
+					(currentAverage * existingProgress.examQuizzesTaken + percentage) /
+					newExamQuizCount;
+
+				updateData.examQuizzesTaken = newExamQuizCount;
+				updateData.examAverageScore = newAverage;
+				updateData.examBestScore = Math.max(
+					existingProgress.examBestScore || 0,
+					percentage
+				);
+				updateData.examTotalTimeSpent = existingProgress.examTotalTimeSpent + timeSpent;
+			}
+
+			await prisma.progress.update({
+				where: {
+					userId_sectionId: {
+						userId,
+						sectionId,
+					},
+				},
+				data: updateData,
+			});
+		} else {
+			// Crea un nuovo record di progresso
+			const createData: any = {
+				userId,
+				sectionId,
+				totalQuestionsStudied: totalQuestions,
+				lastAccessedAt: new Date(),
+				firstAccessedAt: new Date(),
+			};
+
+			if (quizMode === "STUDY") {
+				createData.studyQuizzesTaken = 1;
+				createData.studyAverageScore = percentage;
+				createData.studyBestScore = percentage;
+				createData.studyTotalTimeSpent = timeSpent;
+			} else if (quizMode === "EXAM_SIMULATION") {
+				createData.examQuizzesTaken = 1;
+				createData.examAverageScore = percentage;
+				createData.examBestScore = percentage;
+				createData.examTotalTimeSpent = timeSpent;
+			}
+
+			await prisma.progress.create({
+				data: createData,
+			});
+		}
 	}
 }
