@@ -1,5 +1,7 @@
 "use client";
 
+import { SectionBreadcrumb } from "./SectionBreadcrumb";
+
 interface SectionData {
 	id: string;
 	name: string;
@@ -51,49 +53,12 @@ export default function SectionPageComponent({
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 				{/* Breadcrumb */}
-				<nav className="mb-8" aria-label="Breadcrumb">
-					<ol className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-						<li>
-							<a
-								href="/browse"
-								className="transition-colors hover:text-green-600 dark:hover:text-green-400"
-							>
-								Esplora
-							</a>
-						</li>
-						<span className="text-gray-400">/</span>
-						<li>
-							<a
-								href={`/browse/${departmentCode}`}
-								className="transition-colors hover:text-green-600 dark:hover:text-green-400"
-							>
-								{sectionData.class.course.department.name}
-							</a>
-						</li>
-						<span className="text-gray-400">/</span>
-						<li>
-							<a
-								href={`/browse/${departmentCode}/${courseCode}`}
-								className="transition-colors hover:text-green-600 dark:hover:text-green-400"
-							>
-								{sectionData.class.course.name}
-							</a>
-						</li>
-						<span className="text-gray-400">/</span>
-						<li>
-							<a
-								href={`/browse/${departmentCode}/${courseCode}/${classCode}`}
-								className="transition-colors hover:text-green-600 dark:hover:text-green-400"
-							>
-								{sectionData.class.name}
-							</a>
-						</li>
-						<span className="text-gray-400">/</span>
-						<li className="font-medium text-gray-900 dark:text-white">
-							{sectionData.name}
-						</li>
-					</ol>
-				</nav>
+				<SectionBreadcrumb
+					sectionData={sectionData}
+					departmentCode={departmentCode}
+					courseCode={courseCode}
+					classCode={classCode}
+				/>
 
 				{/* Header */}
 				<div className="mb-8">
