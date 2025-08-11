@@ -137,7 +137,7 @@ export default function ClassPageComponent({
 					sections={filteredSections}
 					departmentCode={departmentCode}
 					courseCode={courseCode}
-					classCode={classData.code}
+					classCode={classData.code.toLowerCase()}
 					isUserLoggedIn={isUserLoggedIn}
 				/>
 			</div>
