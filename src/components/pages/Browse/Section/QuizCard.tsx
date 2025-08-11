@@ -22,6 +22,8 @@ interface QuizCardProps {
 	// Settings props
 	questionCount: number[];
 	onQuestionCountChange: (value: number[]) => void;
+	timeLimit: number[];
+	onTimeLimitChange: (value: number[]) => void;
 	evaluationModes: EvaluationMode[];
 	selectedEvaluationMode: string;
 	onEvaluationModeChange: (value: string) => void;
@@ -36,6 +38,8 @@ export function QuizCard({
 	onStartQuiz,
 	questionCount,
 	onQuestionCountChange,
+	timeLimit,
+	onTimeLimitChange,
 	evaluationModes,
 	selectedEvaluationMode,
 	onEvaluationModeChange,
@@ -86,6 +90,8 @@ export function QuizCard({
 								totalQuestions={totalQuestions}
 								questionCount={questionCount}
 								onQuestionCountChange={onQuestionCountChange}
+								timeLimit={timeLimit}
+								onTimeLimitChange={onTimeLimitChange}
 								evaluationModes={evaluationModes}
 								selectedEvaluationMode={selectedEvaluationMode}
 								onEvaluationModeChange={onEvaluationModeChange}

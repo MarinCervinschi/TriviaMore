@@ -35,6 +35,8 @@ interface QuizSettingsDialogProps {
 	totalQuestions: number;
 	questionCount: number[];
 	onQuestionCountChange: (value: number[]) => void;
+	timeLimit: number[];
+	onTimeLimitChange: (value: number[]) => void;
 	evaluationModes: EvaluationMode[];
 	selectedEvaluationMode: string;
 	onEvaluationModeChange: (value: string) => void;
@@ -47,6 +49,8 @@ export function QuizSettingsDialog({
 	totalQuestions,
 	questionCount,
 	onQuestionCountChange,
+	timeLimit,
+	onTimeLimitChange,
 	evaluationModes,
 	selectedEvaluationMode,
 	onEvaluationModeChange,
@@ -84,6 +88,26 @@ export function QuizSettingsDialog({
 						</div>
 						<p className="text-xs text-gray-500 dark:text-gray-400">
 							Da {Math.min(5, totalQuestions)} a {Math.min(totalQuestions, 50)} domande
+						</p>
+					</div>
+
+					<div className="space-y-4">
+						<Label htmlFor="quiz-time-limit" className="text-sm font-medium">
+							Tempo limite: {timeLimit[0]} minuti
+						</Label>
+						<div className="px-3">
+							<Slider
+								id="quiz-time-limit"
+								min={10}
+								max={120}
+								step={5}
+								value={timeLimit}
+								onValueChange={onTimeLimitChange}
+								className="w-full"
+							/>
+						</div>
+						<p className="text-xs text-gray-500 dark:text-gray-400">
+							Da 10 a 120 minuti
 						</p>
 					</div>
 

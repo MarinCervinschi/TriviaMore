@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { createQuizSession } from "@/lib/utils/quiz-session";
+
 import { FlashcardCard } from "./FlashcardCard";
 import { QuizCard } from "./QuizCard";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
@@ -72,6 +74,7 @@ export default function SectionPageComponent({
 	const totalQuestions = sectionData._count.questions;
 	const defaultQuestionCount = Math.min(20, totalQuestions);
 	const [quizQuestionCount, setQuizQuestionCount] = useState([defaultQuestionCount]);
+	const [quizTimeLimit, setQuizTimeLimit] = useState([30]); // Default 30 minuti
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
 		evaluationModes.length > 0 ? evaluationModes[0].id : ""
 	);
@@ -83,14 +86,21 @@ export default function SectionPageComponent({
 	const [isFlashcardSettingsOpen, setIsFlashcardSettingsOpen] = useState(false);
 
 	const handleStartQuiz = () => {
-		// TODO: Implementare logica per avviare il quiz
-		console.log("Avvia quiz con:", {
-			questionCount: quizQuestionCount[0],
-			evaluationModeId: selectedEvaluationMode,
+		// Crea una sessione con i parametri del quiz
+		const quizParams = {
 			sectionId: sectionData.id,
-		});
-	};
+			questionCount: quizQuestionCount[0],
+			timeLimit: quizTimeLimit[0],
+			...(isUserLoggedIn &&
+				selectedEvaluationMode && { evaluationModeId: selectedEvaluationMode }),
+		};
 
+		// Genera ID sessione breve
+		const sessionId = createQuizSession(quizParams);
+
+		// Naviga con URL pulito
+		router.push(`/quiz/${sessionId}`);
+	};
 	const handleStartFlashcards = () => {
 		// TODO: Implementare logica per avviare le flashcard
 		console.log("Avvia flashcard con:", {
@@ -148,6 +158,8 @@ export default function SectionPageComponent({
 						onStartQuiz={handleStartQuiz}
 						questionCount={quizQuestionCount}
 						onQuestionCountChange={setQuizQuestionCount}
+						timeLimit={quizTimeLimit}
+						onTimeLimitChange={setQuizTimeLimit}
 						evaluationModes={evaluationModes}
 						selectedEvaluationMode={selectedEvaluationMode}
 						onEvaluationModeChange={setSelectedEvaluationMode}
