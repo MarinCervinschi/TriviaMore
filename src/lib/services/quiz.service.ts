@@ -18,7 +18,12 @@ export class QuizService {
 	 * Genera un quiz per utenti anonimi basato sulla sezione specificata
 	 */
 	static async generateGuestQuiz(params: GuestQuizRequest): Promise<GuestQuizResponse> {
-		const { sectionId, questionCount = 30, quizMode = QuizMode.STUDY } = params;
+		const {
+			sectionId,
+			questionCount = 30,
+			timeLimit = 30,
+			quizMode = QuizMode.STUDY,
+		} = params;
 
 		const sectionData = await prisma.section.findFirst({
 			where: {
@@ -26,7 +31,14 @@ export class QuizService {
 				isPublic: true,
 			},
 			include: {
-				questions: true,
+				questions: {
+					where: {
+						// Filtra solo domande MULTIPLE_CHOICE e TRUE_FALSE per i quiz
+						questionType: {
+							in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
+						},
+					},
+				},
 				class: {
 					include: {
 						course: {
@@ -40,7 +52,7 @@ export class QuizService {
 		});
 
 		if (!sectionData || sectionData.questions.length === 0) {
-			throw new Error("Sezione non trovata o nessuna domanda disponibile");
+			throw new Error("Sezione non trovata o nessuna domanda disponibile per il quiz");
 		}
 
 		const selectedQuestions = QuizService.selectRandomItems(
@@ -91,6 +103,7 @@ export class QuizService {
 
 		const quiz: Quiz = {
 			id: `guest-${Date.now()}`,
+			timeLimit,
 			quizMode,
 			section: quizSection,
 			evaluationMode,

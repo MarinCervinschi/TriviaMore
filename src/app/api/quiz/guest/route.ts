@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const sectionId = searchParams.get("sectionId");
+		const questionCount = searchParams.get("questionCount");
+		const timeLimit = searchParams.get("timeLimit");
 
 		if (!sectionId) {
 			return NextResponse.json(
@@ -16,7 +18,11 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		const params = { sectionId, questionCount: 30 };
+		const params = {
+			sectionId,
+			questionCount: questionCount ? parseInt(questionCount) : 30,
+			timeLimit: timeLimit ? parseInt(timeLimit) : 30,
+		};
 
 		const guestQuiz = await QuizService.generateGuestQuiz(params);
 
