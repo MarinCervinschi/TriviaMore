@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { QuizQuestion } from "@/lib/types/quiz.types";
 
@@ -107,7 +108,10 @@ export function QuestionCard({
 								htmlFor={`option-${index}`}
 								className="flex-1 cursor-pointer rounded p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
 							>
-								{option}
+								<MarkdownRenderer
+									content={option}
+									className="option-markdown [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+								/>
 							</Label>
 						</div>
 					))}
@@ -186,9 +190,12 @@ export function QuestionCard({
 						</div>
 					</div>
 				</div>
-				<h2 className="text-lg font-semibold leading-relaxed text-gray-900 dark:text-white">
-					{question.content}
-				</h2>
+				<div className="text-lg font-semibold leading-relaxed text-gray-900 dark:text-white">
+					<MarkdownRenderer
+						content={question.content}
+						className="question-markdown [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+					/>
+				</div>
 			</CardHeader>
 
 			<CardContent className="space-y-6">
