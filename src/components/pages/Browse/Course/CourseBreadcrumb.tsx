@@ -1,6 +1,15 @@
 import Link from "next/link";
 
-import { ChevronLeft } from "lucide-react";
+import { Home } from "lucide-react";
+
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface CourseBreadcrumbProps {
 	departmentName: string;
@@ -14,24 +23,26 @@ export function CourseBreadcrumb({
 	courseName,
 }: CourseBreadcrumbProps) {
 	return (
-		<nav className="mb-8">
-			<div className="flex items-center space-x-2 text-sm">
-				<Link
-					href="/browse"
-					className="text-gray-500 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-				>
-					Tutti i Dipartimenti
-				</Link>
-				<span className="text-gray-400 dark:text-gray-500">/</span>
-				<Link
-					href={`/browse/${departmentCode}`}
-					className="text-gray-500 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-				>
-					{departmentName}
-				</Link>
-				<span className="text-gray-400 dark:text-gray-500">/</span>
-				<span className="font-medium text-gray-900 dark:text-white">{courseName}</span>
-			</div>
-		</nav>
+		<Breadcrumb className="mb-8">
+			<BreadcrumbList>
+				<BreadcrumbItem>
+					<BreadcrumbLink asChild>
+						<Link href="/browse" className="flex items-center">
+							<Home className="h-4 w-4" />
+						</Link>
+					</BreadcrumbLink>
+				</BreadcrumbItem>
+				<BreadcrumbSeparator />
+				<BreadcrumbItem>
+					<BreadcrumbLink asChild>
+						<Link href={`/browse/${departmentCode}`}>{departmentName}</Link>
+					</BreadcrumbLink>
+				</BreadcrumbItem>
+				<BreadcrumbSeparator />
+				<BreadcrumbItem>
+					<BreadcrumbPage>{courseName}</BreadcrumbPage>
+				</BreadcrumbItem>
+			</BreadcrumbList>
+		</Breadcrumb>
 	);
 }
