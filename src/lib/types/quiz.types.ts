@@ -50,8 +50,8 @@ export interface GuestQuizRequest {
 }
 
 export interface StartQuizRequest {
+	userId: string;
 	sectionId: string;
-	difficulty?: Difficulty;
 	questionCount?: number;
 	timeLimit?: number;
 	quizMode: QuizMode;
@@ -65,6 +65,7 @@ export interface AnswerAttempt {
 }
 
 export interface CompleteQuizRequest {
+	userId: string;
 	quizAttemptId: string;
 	answers: AnswerAttempt[];
 	timeSpent: number;
