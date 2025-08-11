@@ -50,13 +50,15 @@ export function QuizTimer({ timeLimit, onTimeUp }: QuizTimerProps) {
 	};
 
 	return (
-		<div className={`flex items-center space-x-1 ${getTimerColor()}`}>
+		<div className={`flex items-center gap-1 ${getTimerColor()}`}>
 			{isWarning ? (
-				<AlertTriangle className="h-4 w-4" />
+				<AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4" />
 			) : (
-				<Clock className="h-4 w-4" />
+				<Clock className="h-3 w-3 sm:h-4 sm:w-4" />
 			)}
-			<span className="font-mono text-sm font-medium">{formatTime(timeRemaining)}</span>
+			<span className="font-mono text-xs font-medium sm:text-sm">
+				{formatTime(timeRemaining)}
+			</span>
 		</div>
 	);
 }

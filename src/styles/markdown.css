@@ -85,3 +85,24 @@
 .dark .option-markdown th {
 	background-color: rgba(255, 255, 255, 0.05);
 }
+
+/* Quiz Header responsive improvements */
+.quiz-header {
+	min-height: 60px;
+}
+
+@media (max-width: 640px) {
+	.quiz-header {
+		min-height: 56px;
+	}
+
+	.quiz-title {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.quiz-subtitle {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+}
