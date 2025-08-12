@@ -28,7 +28,7 @@ interface CompleteQuizParams {
 
 interface CompleteQuizResponse {
 	success: boolean;
-	data?: any;
+	redirectUrl?: string | null;
 	error?: string;
 }
 
@@ -78,7 +78,7 @@ interface CompleteQuizParams {
 
 interface CompleteQuizResponse {
 	success: boolean;
-	data?: any;
+	redirectUrl?: string | null;
 	error?: string;
 }
 
@@ -116,10 +116,11 @@ export function useCompleteQuizMutation() {
 				throw new Error(errorData.error || "Errore nel salvataggio risultati");
 			}
 
-			const data = await response.json();
+			const location = response.headers.get("Location");
+
 			return {
 				success: true,
-				data,
+				redirectUrl: location,
 			};
 		},
 		onError: error => {
@@ -134,13 +135,13 @@ export function useQuizCompletion() {
 	const completeQuiz = async (
 		params: CompleteQuizParams,
 		options?: {
-			onSuccess?: (data: any) => void;
+			onSuccess?: (redirectUrl?: string | null) => void;
 			onError?: (error: Error) => void;
 		}
 	) => {
 		try {
 			const result = await completeQuizMutation.mutateAsync(params);
-			options?.onSuccess?.(result.data);
+			options?.onSuccess?.(result.redirectUrl);
 			return result;
 		} catch (error) {
 			options?.onError?.(error as Error);
@@ -150,7 +151,6 @@ export function useQuizCompletion() {
 
 	return {
 		completeQuiz,
-		isLoading: completeQuizMutation.isPending,
 		error: completeQuizMutation.error?.message || null,
 		isError: completeQuizMutation.isError,
 		isSuccess: completeQuizMutation.isSuccess,
@@ -163,7 +163,6 @@ export function useQuizExit() {
 
 	const exitQuiz = async (
 		isGuest: boolean,
-		quizId: string,
 		attemptId?: string | null,
 		options?: {
 			onSuccess?: () => void;
@@ -177,7 +176,6 @@ export function useQuizExit() {
 
 			options?.onSuccess?.();
 		} catch (error) {
-			console.error("Errore nell'uscita dal quiz:", error);
 			options?.onError?.(error as Error);
 			throw error;
 		}
@@ -185,7 +183,6 @@ export function useQuizExit() {
 
 	return {
 		exitQuiz,
-		isLoading: cancelQuizMutation.isPending,
 		error: cancelQuizMutation.error?.message || null,
 		isError: cancelQuizMutation.isError,
 	};

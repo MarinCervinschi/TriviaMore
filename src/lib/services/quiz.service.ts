@@ -327,8 +327,8 @@ export class QuizService extends UserService {
 	}
 
 
-	static async completeQuiz(params: CompleteQuizRequest): Promise<QuizResult> {
-		const { userId, quizAttemptId, answers, timeSpent } = params;
+	static async completeQuiz(params: CompleteQuizRequest): Promise<void> {
+		const { userId, quizAttemptId, answers, totalScore, timeSpent } = params;
 
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
@@ -359,12 +359,7 @@ export class QuizService extends UserService {
 			throw new Error("Quiz già completato");
 		}
 
-		let totalScore = 0;
-		let correctAnswers = 0;
-		const savedAnswers: AnswerAttempt[] = [];
-
 		for (const answer of answers) {
-			// Trova la domanda corrispondente
 			const quizQuestion = quizAttempt.quiz.questions.find(
 				qq => qq.question.id === answer.questionId
 			);
@@ -373,8 +368,7 @@ export class QuizService extends UserService {
 				continue; // Salta risposte per domande non trovate
 			}
 
-			// Salva la risposta nel database
-			const savedAnswer = await prisma.answerAttempt.create({
+			await prisma.answerAttempt.create({
 				data: {
 					quizAttemptId,
 					questionId: answer.questionId,
@@ -382,20 +376,8 @@ export class QuizService extends UserService {
 					score: answer.score,
 				},
 			});
-
-			totalScore += answer.score;
-			if (answer.score > 0) {
-				correctAnswers++;
-			}
-
-			savedAnswers.push({
-				questionId: savedAnswer.questionId,
-				userAnswer: savedAnswer.userAnswer,
-				score: savedAnswer.score,
-			});
 		}
 
-		// Aggiorna il quiz attempt con il punteggio finale e il tempo
 		await prisma.quizAttempt.update({
 			where: { id: quizAttemptId },
 			data: {
@@ -405,24 +387,15 @@ export class QuizService extends UserService {
 			},
 		});
 
-		// Aggiorna i progressi dell'utente
 		await QuizService.updateUserProgress({
 			userId,
-			sectionId: quizAttempt.quiz.sectionId, // Usa l'ID della sezione dal quiz salvato
+			sectionId: quizAttempt.quiz.sectionId,
 			quizMode: quizAttempt.quiz.quizMode,
 			score: totalScore,
 			timeSpent,
 			totalQuestions: quizAttempt.quiz.questions.length,
 		});
 
-		return {
-			id: quizAttemptId,
-			score: totalScore,
-			totalQuestions: quizAttempt.quiz.questions.length,
-			correctAnswers,
-			timeSpent,
-			answers: savedAnswers,
-		};
 	}
 
 	/**
@@ -507,7 +480,7 @@ export class QuizService extends UserService {
 	/**
 	 * Recupera i risultati di un quiz attempt specifico
 	 */
-	static async getQuizResults(attemptId: string, userId: string): Promise<any | null> {
+	static async getQuizResults(attemptId: string, userId: string): Promise<QuizResult | null> {
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
 				id: attemptId,
