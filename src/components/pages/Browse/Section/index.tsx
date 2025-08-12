@@ -4,9 +4,10 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
-import { startAuthenticatedQuiz } from "@/lib/utils/authenticated-quiz";
+import { useStartQuizMutation } from "@/hooks";
+import { saveQuizDataToSession } from "@/lib/utils/authenticated-quiz";
 import { createQuizSession } from "@/lib/utils/quiz-session";
 
 import { FlashcardCard } from "./FlashcardCard";
@@ -72,8 +73,8 @@ export default function SectionPageComponent({
 	evaluationModes = [],
 }: SectionPageComponentProps) {
 	const router = useRouter();
+	const startQuizMutation = useStartQuizMutation();
 
-	// Stati per le impostazioni del quiz
 	const totalQuestions = sectionData._count.questions;
 	const defaultQuestionCount = Math.min(20, totalQuestions);
 	const [quizQuestionCount, setQuizQuestionCount] = useState([defaultQuestionCount]);
@@ -83,29 +84,32 @@ export default function SectionPageComponent({
 	);
 	const [isQuizSettingsOpen, setIsQuizSettingsOpen] = useState(false);
 
-	// Stati per le impostazioni delle flashcard
 	const defaultFlashcardCount = Math.min(10, totalQuestions);
 	const [flashcardCount, setFlashcardCount] = useState([defaultFlashcardCount]);
 	const [isFlashcardSettingsOpen, setIsFlashcardSettingsOpen] = useState(false);
 
 	const handleStartQuiz = async () => {
-		try {
-			if (isUserLoggedIn && selectedEvaluationMode) {
-				// Utente autenticato - usa l'API protetta
-				const quizParams = {
-					sectionId: sectionData.id,
-					questionCount: quizQuestionCount[0],
-					timeLimit: quizTimeLimit[0],
-					quizMode: "STUDY" as const, // Per ora default STUDY, poi si può aggiungere selezione
-					evaluationModeId: selectedEvaluationMode,
-				};
+		if (isUserLoggedIn && selectedEvaluationMode) {
+			const quizParams = {
+				sectionId: sectionData.id,
+				questionCount: quizQuestionCount[0],
+				timeLimit: quizTimeLimit[0],
+				quizMode: "STUDY" as const,
+				evaluationModeId: selectedEvaluationMode,
+			};
 
-				const result = await startAuthenticatedQuiz(quizParams);
-
-				// Naviga alla pagina del quiz con l'ID reale
-				router.push(`/quiz/${result.quizId}`);
-			} else {
-				// Guest o utente senza modalità di valutazione - usa la sessione guest
+			startQuizMutation.mutate(quizParams, {
+				onSuccess: result => {
+					saveQuizDataToSession(result.quizId, result.quiz, result.attemptId);
+					router.push(`/quiz/${result.quizId}`);
+				},
+				onError: error => {
+					console.error("Errore nell'avvio del quiz:", error);
+					toast.error(error.message || "Errore nell'avvio del quiz");
+				},
+			});
+		} else {
+			try {
 				const quizParams = {
 					sectionId: sectionData.id,
 					questionCount: quizQuestionCount[0],
@@ -114,17 +118,13 @@ export default function SectionPageComponent({
 						selectedEvaluationMode && { evaluationModeId: selectedEvaluationMode }),
 				};
 
-				// Genera ID sessione breve per guest
 				const sessionId = createQuizSession(quizParams);
 
-				// Naviga con URL pulito
 				router.push(`/quiz/${sessionId}`);
+			} catch (error) {
+				console.error("Errore nell'avvio del quiz guest:", error);
+				toast.error("Errore nell'avvio del quiz");
 			}
-		} catch (error) {
-			console.error("Errore nell'avvio del quiz:", error);
-			toast.error(
-				error instanceof Error ? error.message : "Errore nell'avvio del quiz"
-			);
 		}
 	};
 	const handleStartFlashcards = () => {
@@ -182,6 +182,7 @@ export default function SectionPageComponent({
 						totalQuestions={totalQuestions}
 						isUserLoggedIn={isUserLoggedIn}
 						onStartQuiz={handleStartQuiz}
+						isLoading={startQuizMutation.isPending}
 						questionCount={quizQuestionCount}
 						onQuestionCountChange={setQuizQuestionCount}
 						timeLimit={quizTimeLimit}

@@ -32,10 +32,6 @@ interface CompleteQuizResponse {
 	error?: string;
 }
 
-/**
- * Hook per la mutation di avvio quiz
- * Gestisce l'avvio di un nuovo quiz per utenti autenticati
- */
 export function useStartQuizMutation() {
 	return useMutation<StartQuizResponse, Error, StartQuizParams>({
 		mutationFn: async (params: StartQuizParams): Promise<StartQuizResponse> => {
@@ -86,10 +82,6 @@ interface CompleteQuizResponse {
 	error?: string;
 }
 
-/**
- * Hook per la mutation di cancellazione quiz
- * Gestisce l'eliminazione di un quiz in corso per utenti autenticati
- */
 export function useCancelQuizMutation() {
 	return useMutation<void, Error, CancelQuizParams>({
 		mutationFn: async (params: CancelQuizParams): Promise<void> => {
@@ -110,10 +102,6 @@ export function useCancelQuizMutation() {
 	});
 }
 
-/**
- * Hook per la mutation di completamento quiz
- * Gestisce il salvataggio dei risultati nel database per utenti autenticati
- */
 export function useCompleteQuizMutation() {
 	return useMutation<CompleteQuizResponse, Error, CompleteQuizParams>({
 		mutationFn: async (params: CompleteQuizParams): Promise<CompleteQuizResponse> => {
@@ -170,10 +158,6 @@ export function useQuizCompletion() {
 	};
 }
 
-/**
- * Hook per gestire l'uscita dal quiz
- * Include la cancellazione del quiz se necessario e la pulizia dei dati
- */
 export function useQuizExit() {
 	const cancelQuizMutation = useCancelQuizMutation();
 
@@ -187,7 +171,6 @@ export function useQuizExit() {
 		}
 	) => {
 		try {
-			// Se è un utente autenticato e ha un attemptId, cancella il quiz
 			if (!isGuest && attemptId) {
 				await cancelQuizMutation.mutateAsync({ quizAttemptId: attemptId });
 			}

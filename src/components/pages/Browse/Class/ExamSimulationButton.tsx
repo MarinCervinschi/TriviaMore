@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Info, Lock, Play, Settings } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,7 +26,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { startAuthenticatedQuiz } from "@/lib/utils/authenticated-quiz";
+import { useStartQuizMutation } from "@/hooks";
+import { saveQuizDataToSession } from "@/lib/utils/authenticated-quiz";
 
 interface EvaluationMode {
 	id: string;
@@ -58,6 +60,7 @@ export default function ExamSimulationButton({
 	evaluationModes,
 }: ExamSimulationButtonProps) {
 	const router = useRouter();
+	const startQuizMutation = useStartQuizMutation();
 
 	// Calcola il totale delle domande disponibili
 	const totalQuestions = classData.sections.reduce(
@@ -74,8 +77,6 @@ export default function ExamSimulationButton({
 	const [timerMinutes, setTimerMinutes] = useState([60]); // Default 60 minuti
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-	const [isStarting, setIsStarting] = useState(false);
-
 	const handleStartExam = async () => {
 		if (!isUserLoggedIn) {
 			// Reindirizza al login
@@ -83,26 +84,26 @@ export default function ExamSimulationButton({
 			return;
 		}
 
-		try {
-			setIsStarting(true);
+		const quizParams = {
+			sectionId: classData.id, // Per exam mode, passiamo il classId come sectionId
+			questionCount: questionCount[0],
+			timeLimit: timerMinutes[0] * 60, // Converti in secondi
+			quizMode: "EXAM_SIMULATION" as const,
+			evaluationModeId: selectedEvaluationMode,
+		};
 
-			// Avvia il quiz chiamando l'API
-			const { quizId } = await startAuthenticatedQuiz({
-				sectionId: classData.id, // Per exam mode, passiamo il classId come sectionId
-				questionCount: questionCount[0],
-				timeLimit: timerMinutes[0] * 60, // Converti in secondi
-				quizMode: "EXAM_SIMULATION",
-				evaluationModeId: selectedEvaluationMode,
-			});
-
-			// Naviga alla pagina del quiz
-			router.push(`/quiz/${quizId}`);
-		} catch (error) {
-			console.error("Errore nell'avvio dell'esame:", error);
-			// Potresti aggiungere un toast di errore qui
-		} finally {
-			setIsStarting(false);
-		}
+		startQuizMutation.mutate(quizParams, {
+			onSuccess: result => {
+				// Salva automaticamente i dati nel sessionStorage
+				saveQuizDataToSession(result.quizId, result.quiz, result.attemptId);
+				// Naviga alla pagina del quiz
+				router.push(`/quiz/${result.quizId}`);
+			},
+			onError: error => {
+				console.error("Errore nell'avvio dell'esame:", error);
+				toast.error(error.message || "Errore nell'avvio dell'esame");
+			},
+		});
 	};
 
 	const handleLoginPrompt = () => {
@@ -155,10 +156,10 @@ export default function ExamSimulationButton({
 								<>
 									<Button
 										onClick={handleStartExam}
-										disabled={totalQuestions === 0 || isStarting}
+										disabled={totalQuestions === 0 || startQuizMutation.isPending}
 										className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 sm:w-auto"
 									>
-										{isStarting ? (
+										{startQuizMutation.isPending ? (
 											<>
 												<div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
 												Avvio...
