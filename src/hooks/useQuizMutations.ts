@@ -1,6 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { clearQuizSession } from "@/lib/utils/quiz-session";
 
 interface StartQuizParams {
 	sectionId: string;
@@ -9,14 +14,8 @@ interface StartQuizParams {
 	quizMode: "STUDY" | "EXAM_SIMULATION";
 	evaluationModeId: string;
 }
-
-interface StartQuizResponse {
+interface CompleteQuizParams {
 	quizId: string;
-	attemptId: string;
-	quiz: any;
-}
-
-interface CompleteQuizParams {
 	quizAttemptId: string;
 	answers: Array<{
 		questionId: string;
@@ -26,164 +25,112 @@ interface CompleteQuizParams {
 	timeSpent: number;
 }
 
-interface CompleteQuizResponse {
-	success: boolean;
-	redirectUrl?: string | null;
-	error?: string;
-}
+const completeQuizFetch = async (
+	params: CompleteQuizParams
+): Promise<{ redirectUrl: string }> => {
+	const response = await fetch("/api/protected/quiz/complete", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(params),
+	});
 
-export function useStartQuizMutation() {
-	return useMutation<StartQuizResponse, Error, StartQuizParams>({
-		mutationFn: async (params: StartQuizParams): Promise<StartQuizResponse> => {
-			const response = await fetch("/api/protected/quiz/start", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(params),
-			});
+	if (!response.ok) {
+		const errorData = await response.json();
+		throw new Error(errorData.error || "Errore nel salvataggio risultati");
+	}
 
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || "Errore nell'avvio del quiz");
-			}
+	const location = response.headers.get("Location");
+	if (!location) {
+		throw new Error("Location header mancante nella risposta");
+	}
 
-			const data = await response.json();
+	return {
+		redirectUrl: location,
+	};
+};
 
-			if (!data.quizId || !data.attemptId || !data.quiz) {
-				throw new Error("Dati del quiz incompleti ricevuti dal server");
-			}
-
-			return data;
+const startQuizFetch = async (
+	params: StartQuizParams
+): Promise<{ redirectUrl: string }> => {
+	const response = await fetch("/api/protected/quiz/start", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
 		},
-		onError: error => {
+		body: JSON.stringify(params),
+	});
+
+	if (!response.ok) {
+		const errorData = await response.json();
+		throw new Error(errorData.error || "Errore nell'avvio del quiz");
+	}
+
+	const location = response.headers.get("Location");
+
+	if (!location) {
+		throw new Error("Location header mancante nella risposta");
+	}
+
+	return { redirectUrl: location };
+};
+
+const cancelQuizFetch = async (params: { quizAttemptId: string }): Promise<void> => {
+	const response = await fetch("/api/protected/quiz/cancel", {
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(params),
+	});
+
+	if (!response.ok) {
+		const errorData = await response.json();
+		throw new Error(errorData.error || "Errore nella cancellazione del quiz");
+	}
+};
+
+export function useQuizMutations() {
+	const router = useRouter();
+
+	const startQuiz = useMutation({
+		mutationFn: startQuizFetch,
+		onSuccess: (data: { redirectUrl: string }) => {
+			const { redirectUrl } = data;
+			router.push(redirectUrl);
+		},
+		onError: (error: Error) => {
 			console.error("Errore nell'avvio del quiz:", error);
+			toast.error("Errore nell'avvio del quiz");
 		},
 	});
-}
 
-interface CancelQuizParams {
-	quizAttemptId: string;
-}
+	const completeQuiz = useMutation({
+		mutationFn: completeQuizFetch,
+		onSuccess: (data: { redirectUrl: string }) => {
+			const { redirectUrl } = data;
 
-interface CompleteQuizParams {
-	quizAttemptId: string;
-	answers: Array<{
-		questionId: string;
-		userAnswer: string;
-		score: number;
-	}>;
-	timeSpent: number;
-}
-
-interface CompleteQuizResponse {
-	success: boolean;
-	redirectUrl?: string | null;
-	error?: string;
-}
-
-export function useCancelQuizMutation() {
-	return useMutation<void, Error, CancelQuizParams>({
-		mutationFn: async (params: CancelQuizParams): Promise<void> => {
-			const response = await fetch("/api/protected/quiz/cancel", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || "Errore nella cancellazione del quiz");
-			}
+			router.push(redirectUrl);
 		},
-		onError: error => {
-			console.error("Errore nella cancellazione del quiz:", error);
-		},
-	});
-}
-
-export function useCompleteQuizMutation() {
-	return useMutation<CompleteQuizResponse, Error, CompleteQuizParams>({
-		mutationFn: async (params: CompleteQuizParams): Promise<CompleteQuizResponse> => {
-			const response = await fetch("/api/protected/quiz/complete", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || "Errore nel salvataggio risultati");
-			}
-
-			const location = response.headers.get("Location");
-
-			return {
-				success: true,
-				redirectUrl: location,
-			};
-		},
-		onError: error => {
+		onError: (error: Error) => {
 			console.error("Errore nel completamento del quiz:", error);
+			toast.error("Errore nel completamento del quiz");
 		},
 	});
-}
 
-export function useQuizCompletion() {
-	const completeQuizMutation = useCompleteQuizMutation();
-
-	const completeQuiz = async (
-		params: CompleteQuizParams,
-		options?: {
-			onSuccess?: (redirectUrl?: string | null) => void;
-			onError?: (error: Error) => void;
-		}
-	) => {
-		try {
-			const result = await completeQuizMutation.mutateAsync(params);
-			options?.onSuccess?.(result.redirectUrl);
-			return result;
-		} catch (error) {
-			options?.onError?.(error as Error);
-			throw error;
-		}
-	};
+	const exitQuiz = useMutation({
+		mutationFn: cancelQuizFetch,
+		onSuccess: () => {
+			toast.success("Quiz chiuso con successo");
+			router.back();
+		},
+		onError: (error: Error) => {
+			console.error("Errore nella chiusura del quiz:", error);
+			toast.error("Errore nella chiusura del quiz");
+		},
+	});
 
 	return {
+		startQuiz,
 		completeQuiz,
-		error: completeQuizMutation.error?.message || null,
-		isError: completeQuizMutation.isError,
-		isSuccess: completeQuizMutation.isSuccess,
-		reset: completeQuizMutation.reset,
-	};
-}
-
-export function useQuizExit() {
-	const cancelQuizMutation = useCancelQuizMutation();
-
-	const exitQuiz = async (
-		isGuest: boolean,
-		attemptId?: string | null,
-		options?: {
-			onSuccess?: () => void;
-			onError?: (error: Error) => void;
-		}
-	) => {
-		try {
-			if (!isGuest && attemptId) {
-				await cancelQuizMutation.mutateAsync({ quizAttemptId: attemptId });
-			}
-
-			options?.onSuccess?.();
-		} catch (error) {
-			options?.onError?.(error as Error);
-			throw error;
-		}
-	};
-
-	return {
 		exitQuiz,
-		error: cancelQuizMutation.error?.message || null,
-		isError: cancelQuizMutation.isError,
+		isLoading: startQuiz.isPending || completeQuiz.isPending || exitQuiz.isPending,
 	};
 }
