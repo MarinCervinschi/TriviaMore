@@ -1,16 +1,8 @@
 import Link from "next/link";
 
-
-
 import { BookOpen, GraduationCap, Home, LogOut, Settings, User } from "lucide-react";
 
-
-
 import { Button } from "@/components/ui/button";
-
-
-
-
 
 interface NavLinkItem {
 	href: string;

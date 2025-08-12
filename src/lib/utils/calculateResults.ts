@@ -114,12 +114,10 @@ export function calculateQuizResults(params: CalculateResultsParams): QuizResult
 	};
 }
 
-
 export function calculateSuccessPercentage(results: QuizResults): number {
 	if (results.totalQuestions === 0) return 0;
 	return Math.round((results.correctAnswers / results.totalQuestions) * 100);
 }
-
 
 export function getPerformanceLevel(percentage: number): {
 	level: "excellent" | "good" | "fair" | "poor";
