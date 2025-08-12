@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { NextAuthRequest } from "next-auth/lib";
@@ -27,7 +28,6 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			evaluationModeId,
 		} = body;
 
-		// Validazione dei parametri richiesti
 		if (!sectionId || typeof sectionId !== "string") {
 			return NextResponse.json(
 				{ error: "sectionId is required and must be a string" },
@@ -49,7 +49,6 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			);
 		}
 
-		// Validazione parametri opzionali
 		if (questionCount && (typeof questionCount !== "number" || questionCount <= 0)) {
 			return NextResponse.json(
 				{ error: "questionCount must be a positive number" },
@@ -64,7 +63,7 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			);
 		}
 
-		const quizAttempt = await QuizService.startQuiz({
+		const { quizId } = await QuizService.startQuiz({
 			userId,
 			sectionId,
 			questionCount,
@@ -73,20 +72,16 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			evaluationModeId,
 		});
 
-		// Restituisce i dati completi del quiz
-		return NextResponse.json(
-			{
-				quizId: quizAttempt.quiz.id,
-				attemptId: quizAttempt.attemptId,
-				quiz: quizAttempt.quiz,
+		return NextResponse.json(null, {
+			status: 201,
+			headers: {
+				Location: `/quiz/${quizId}`,
 			},
-			{ status: 201 }
-		);
+		});
 	} catch (error) {
 		console.error("Error starting quiz:", error);
 
 		if (error instanceof Error) {
-			// Errori specifici del business logic
 			if (
 				error.message === "Sezione non trovata" ||
 				error.message === "Modalità di valutazione non trovata" ||

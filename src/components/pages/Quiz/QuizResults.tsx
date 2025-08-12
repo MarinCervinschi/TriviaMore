@@ -4,16 +4,6 @@ import { useRouter } from "next/navigation";
 
 import { QuizResults } from "./SharedQuizResults";
 
-interface QuizResultsPageComponentProps {
-	attemptId: string;
-	user: {
-		id: string;
-		name?: string | null;
-		email?: string | null;
-	};
-	results: QuizAttemptResults; // Risultati passati dal server
-}
-
 interface QuizAttemptResults {
 	id: string;
 	score: number;
@@ -60,21 +50,20 @@ interface QuizAttemptResults {
 }
 
 export default function QuizResultsPageComponent({
-	attemptId,
-	user,
 	results,
-}: QuizResultsPageComponentProps) {
+}: {
+	results: QuizAttemptResults;
+}) {
 	const router = useRouter();
 
 	const handleBackToDashboard = () => {
-		router.push("/dashboard");
+		router.back();
 	};
 
 	const handleRetryQuiz = () => {
 		router.push(`/quiz/${results.quiz.id}`);
 	};
 
-	// Formatta i dati per il componente condiviso
 	const formattedResults = {
 		totalScore: results.score,
 		correctAnswers: results.correctAnswers,
@@ -89,7 +78,6 @@ export default function QuizResultsPageComponent({
 		})),
 	};
 
-	// Usa il titolo dalla sezione se non c'è un titolo diretto del quiz
 	const quizTitle = results.quiz.title || results.quiz.section.name;
 
 	return (
