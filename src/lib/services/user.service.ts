@@ -14,9 +14,6 @@ export interface UserPermissions {
 }
 
 export class UserService {
-	/**
-	 * Ottieni i permessi dell'utente per la navigazione
-	 */
 	protected static async getUserPermissions(userId: string): Promise<UserPermissions> {
 		const user = await prisma.user.findUnique({
 			where: { id: userId },
@@ -48,9 +45,8 @@ export class UserService {
 
 	protected static async getSectionWhereClause(
 		classId: string,
-		permissions?: UserPermissions,
+		permissions?: UserPermissions
 	) {
-
 		if (!permissions) {
 			return {
 				classId,
@@ -107,45 +103,6 @@ export class UserService {
 				},
 			],
 		};
-	}
-
-	/**
-	 * Verifica se l'utente può vedere tutte le sezioni di un dipartimento (per ADMIN)
-	 */
-	protected static async canAccessDepartment(
-		departmentId: string,
-		permissions: UserPermissions
-	): Promise<boolean> {
-		return (
-			permissions.role === "SUPERADMIN" ||
-			(permissions.role === "ADMIN" &&
-				permissions.managedDepartmentIds.includes(departmentId))
-		);
-	}
-
-	/**
-	 * Verifica se l'utente può vedere tutte le sezioni di un corso (per MAINTAINER)
-	 */
-	protected static async canAccessCourse(
-		courseId: string,
-		permissions: UserPermissions
-	): Promise<boolean> {
-		if (permissions.role === "SUPERADMIN") return true;
-
-		if (permissions.role === "ADMIN") {
-			const course = await prisma.course.findUnique({
-				where: { id: courseId },
-				select: { departmentId: true },
-			});
-			return course
-				? permissions.managedDepartmentIds.includes(course.departmentId)
-				: false;
-		}
-
-		return (
-			permissions.role === "MAINTAINER" &&
-			permissions.maintainedCourseIds.includes(courseId)
-		);
 	}
 
 	/**
