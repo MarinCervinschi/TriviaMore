@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -423,6 +423,73 @@ export class UserService {
 	}
 
 	/**
+	 * Get user recent activity (all quiz attempts)
+	 */
+	static async getUserRecentActivity(userId: string) {
+		try {
+			const quizAttempts = await prisma.quizAttempt.findMany({
+				where: { userId },
+				orderBy: { completedAt: "desc" },
+				include: {
+					quiz: {
+						include: {
+							questions: true,
+							evaluationMode: true,
+							section: {
+								include: {
+									class: {
+										include: {
+											course: {
+												include: {
+													department: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					answers: true,
+				},
+			});
+
+			// Map the data to match the expected interface
+			return quizAttempts.map(attempt => ({
+				id: attempt.id,
+				score: attempt.score,
+				totalQuestions: attempt.quiz.questions.length,
+				correctAnswers: attempt.answers.filter(answer => answer.score > 0).length,
+				completedAt: attempt.completedAt,
+				duration: attempt.timeSpent,
+				evaluationMode:
+					attempt.quiz.evaluationMode.name === "Study Mode"
+						? ("STUDY" as const)
+						: ("EXAM" as const),
+				section: {
+					id: attempt.quiz.section.id,
+					name: attempt.quiz.section.name,
+					class: {
+						id: attempt.quiz.section.class.id,
+						name: attempt.quiz.section.class.name,
+						course: {
+							id: attempt.quiz.section.class.course.id,
+							name: attempt.quiz.section.class.course.name,
+							department: {
+								id: attempt.quiz.section.class.course.department.id,
+								name: attempt.quiz.section.class.course.department.name,
+							},
+						},
+					},
+				},
+			}));
+		} catch (error) {
+			console.error("Error fetching user activity:", error);
+			return [];
+		}
+	}
+
+	/**
 	 * Check if a user can view another user's profile
 	 */
 	static async canViewProfile(
@@ -471,7 +538,7 @@ export class UserService {
 			return user.name
 				.trim()
 				.replace(/\s+/g, "-")
-				.replace(/[^a-zA-Z0-9\-]/g, "")
+				.replace(/[^a-zA-Z0-9-]/g, "")
 				.toLowerCase();
 		}
 		return user.id;
