@@ -46,38 +46,12 @@ export class UserService {
 		};
 	}
 
-	/**
-	 * Determina se l'utente può vedere una sezione privata
-	 */
-	protected static canAccessPrivateSection(
-		sectionId: string,
-		classId: string,
-		permissions: UserPermissions
-	): boolean {
-		// SUPERADMIN vede tutto
-		if (permissions.role === "SUPERADMIN") {
-			return true;
-		}
-
-		// Accesso diretto alla sezione
-		if (permissions.accessibleSectionIds.includes(sectionId)) {
-			return true;
-		}
-
-		// TODO: Per ADMIN e MAINTAINER, dobbiamo verificare se hanno accesso al dipartimento/corso
-		// Questo richiede di passare più informazioni o fare query aggiuntive
-		return false;
-	}
-
-	/**
-	 * Genera where clause per le sezioni basata sui permessi dell'utente
-	 */
 	protected static async getSectionWhereClause(
 		classId: string,
-		permissions?: UserPermissions
+		permissions?: UserPermissions,
 	) {
+
 		if (!permissions) {
-			// Utente non autenticato - solo sezioni pubbliche escluse quelle di exam simulation
 			return {
 				classId,
 				isPublic: true,
@@ -88,7 +62,6 @@ export class UserService {
 		}
 
 		if (permissions.role === "SUPERADMIN") {
-			// SUPERADMIN vede tutto ma esclude le sezioni di exam simulation
 			return {
 				classId,
 				name: {
@@ -98,7 +71,6 @@ export class UserService {
 		}
 
 		if (permissions.role === "ADMIN") {
-			// Admin del dipartimento vede tutto del proprio dipartimento escludendo exam simulation
 			const classInfo = await prisma.class.findUnique({
 				where: { id: classId },
 				include: {
@@ -121,7 +93,6 @@ export class UserService {
 			}
 		}
 
-		// Maintainer o Student o utenti con accessi limitati
 		return {
 			classId,
 			name: {
