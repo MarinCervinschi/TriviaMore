@@ -19,9 +19,8 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 		}
 
 		const body = await request.json();
-		const { quizAttemptId, answers, timeSpent } = body;
+		const { quizAttemptId, answers, totalScore, timeSpent } = body;
 
-		// Validazione dei parametri richiesti
 		if (!quizAttemptId || typeof quizAttemptId !== "string") {
 			return NextResponse.json(
 				{ error: "quizAttemptId is required and must be a string" },
@@ -43,7 +42,6 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			);
 		}
 
-		// Validazione della struttura delle risposte
 		for (const answer of answers) {
 			if (!answer.questionId || typeof answer.questionId !== "string") {
 				return NextResponse.json(
@@ -67,14 +65,20 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			}
 		}
 
-		const result = await QuizService.completeQuiz({
+		await QuizService.completeQuiz({
 			userId,
 			quizAttemptId,
 			answers,
+			totalScore,
 			timeSpent,
 		});
 
-		return NextResponse.json(result);
+		return NextResponse.json(null, {
+			status: 200,
+			headers: {
+				Location: `/results/${quizAttemptId}`,
+			},
+		});
 	} catch (error) {
 		console.error("Error completing quiz:", error);
 

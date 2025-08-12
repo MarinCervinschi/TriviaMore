@@ -68,7 +68,43 @@ export interface CompleteQuizRequest {
 	userId: string;
 	quizAttemptId: string;
 	answers: AnswerAttempt[];
+	totalScore: number;
 	timeSpent: number;
+}
+
+export interface QuizResultAnswer {
+	questionId: string;
+	userAnswer: string[];
+	isCorrect: boolean;
+	score: number;
+	question: {
+		content: string;
+		correctAnswer: string[];
+	};
+}
+
+export interface QuizResultQuestion {
+	id: string;
+	content: string;
+	options: string[];
+	correctAnswer: string[];
+}
+
+export interface QuizResultDetails {
+	id: string;
+	title: string;
+	description: string;
+	section: {
+		name: string;
+		class: {
+			name: string;
+			course: {
+				name: string;
+			};
+		};
+	};
+	questions: QuizResultQuestion[];
+	evaluationMode: EvaluationMode;
 }
 
 export interface QuizResult {
@@ -77,7 +113,8 @@ export interface QuizResult {
 	totalQuestions: number;
 	correctAnswers: number;
 	timeSpent: number;
-	answers: AnswerAttempt[];
+	quiz: QuizResultDetails;
+	answers: QuizResultAnswer[];
 }
 
 export interface QuizAttemptResponse {

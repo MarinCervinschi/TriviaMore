@@ -23,12 +23,8 @@ export default function QuizPageComponent({
 }: QuizPageComponentProps) {
 	const router = useRouter();
 	const { clearQuizData } = useQuizCleanup();
-	const {
-		completeQuiz,
-		isLoading: isCompleting,
-		error: completionError,
-	} = useQuizCompletion();
-	const { exitQuiz, isLoading: isExiting } = useQuizExit();
+	const { completeQuiz, error: completionError } = useQuizCompletion();
+	const { exitQuiz } = useQuizExit();
 
 	const { quiz, attemptId, isLoading, error } = useQuiz({
 		quizId,
@@ -59,9 +55,10 @@ export default function QuizPageComponent({
 					timeSpent: results.timeSpent,
 				},
 				{
-					onSuccess: () => {
+					onSuccess: redirectUrl => {
 						clearQuizData(quizId, false);
-						router.push(`/quiz/results/${attemptId}`);
+						const targetUrl = redirectUrl || `/quiz/results/${attemptId}`;
+						router.push(targetUrl);
 					},
 					onError: error => {
 						console.error("Errore nel completamento del quiz:", error);
@@ -77,7 +74,7 @@ export default function QuizPageComponent({
 
 	const handleQuizExit = async () => {
 		try {
-			await exitQuiz(isGuest, quizId, attemptId, {
+			await exitQuiz(isGuest, attemptId, {
 				onSuccess: () => {
 					clearQuizData(quizId, isGuest);
 					router.back();
