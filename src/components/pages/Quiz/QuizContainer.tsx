@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { Quiz, QuizQuestion } from "@/lib/types/quiz.types";
+import { Quiz } from "@/lib/types/quiz.types";
 
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
@@ -20,7 +20,6 @@ interface UserAnswer {
 
 interface QuizContainerProps {
 	quiz: Quiz;
-	attemptId?: string | null;
 	isGuest: boolean;
 	user?: {
 		id: string;
@@ -33,7 +32,6 @@ interface QuizContainerProps {
 
 export function QuizContainer({
 	quiz,
-	attemptId,
 	isGuest,
 	user,
 	onComplete,
@@ -41,14 +39,13 @@ export function QuizContainer({
 }: QuizContainerProps) {
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>(() => {
-		// Inizializzazione sincrona per evitare race conditions
 		return quiz.questions.map(q => ({
 			questionId: q.id,
 			answer: [],
 		}));
 	});
 	const [startTime, setStartTime] = useState(Date.now());
-	const [sidebarOpen, setSidebarOpen] = useState(true); // Aperta di default su desktop
+	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [showResults, setShowResults] = useState(false);
 
 	const currentQuestion = quiz.questions[currentQuestionIndex];
@@ -75,7 +72,6 @@ export function QuizContainer({
 
 	const handleQuestionJump = (index: number) => {
 		setCurrentQuestionIndex(index);
-		// Chiudi la sidebar solo su mobile (controllato dinamicamente)
 		const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 		if (isMobile) {
 			setSidebarOpen(false);
@@ -90,16 +86,13 @@ export function QuizContainer({
 			const question = quiz.questions.find(q => q.id === userAnswer.questionId);
 			if (!question) return userAnswer;
 
-			// Calcolo del punteggio più accurato per risposte multiple
 			let score = 0;
 			let isFullyCorrect = false;
 
 			if (userAnswer.answer.length === 0) {
-				// Nessuna risposta data - nessun punteggio (né positivo né negativo)
 				score = 0;
 				isFullyCorrect = false;
 			} else {
-				// Ora le risposte dell'utente sono già contenuti, quindi confronto diretto
 				const correctGiven = userAnswer.answer.filter(ans =>
 					question.correctAnswer.includes(ans)
 				).length;
@@ -109,7 +102,6 @@ export function QuizContainer({
 				const totalCorrect = question.correctAnswer.length;
 				const totalGiven = userAnswer.answer.length;
 
-				// Se ha dato tutte le risposte corrette e nessuna sbagliata
 				if (
 					correctGiven === totalCorrect &&
 					incorrectGiven === 0 &&
@@ -119,15 +111,12 @@ export function QuizContainer({
 					isFullyCorrect = true;
 					correctAnswers++;
 				} else if (correctGiven > 0) {
-					// Punteggio parziale se supportato
 					if (quiz.evaluationMode.partialCreditEnabled) {
-						// Calcola percentuale di correttezza
 						const correctnessRatio = correctGiven / totalCorrect;
 						const penaltyRatio = incorrectGiven / Math.max(totalGiven, 1);
 						const adjustedRatio = Math.max(0, correctnessRatio - penaltyRatio);
 						score = Math.round(quiz.evaluationMode.correctAnswerPoints * adjustedRatio);
 
-						// Se ci sono risposte sbagliate, applica anche la penalità
 						if (incorrectGiven > 0) {
 							const penalty =
 								incorrectGiven * Math.abs(quiz.evaluationMode.incorrectAnswerPoints);
@@ -137,12 +126,10 @@ export function QuizContainer({
 							);
 						}
 					} else {
-						// Senza punteggio parziale, tutto o niente
 						score = 0;
 					}
 					isFullyCorrect = false;
 				} else {
-					// Tutte risposte sbagliate - applica penalità completa
 					score = quiz.evaluationMode.incorrectAnswerPoints;
 					isFullyCorrect = false;
 				}
@@ -163,7 +150,7 @@ export function QuizContainer({
 			totalQuestions: quiz.questions.length,
 			timeSpent: Date.now() - startTime,
 			answers: answersWithResults,
-			evaluationMode: quiz.evaluationMode, // Aggiungo le informazioni della modalità
+			evaluationMode: quiz.evaluationMode,
 		};
 	};
 
@@ -174,7 +161,6 @@ export function QuizContainer({
 	};
 
 	const handleTimeUp = () => {
-		// Auto-completa il quiz quando il tempo scade
 		handleCompleteQuiz();
 	};
 
@@ -191,7 +177,6 @@ export function QuizContainer({
 	};
 
 	if (showResults) {
-		// Per guest: mostra risultati inline
 		if (isGuest) {
 			return (
 				<QuizInlineResults
@@ -200,23 +185,19 @@ export function QuizContainer({
 					quizTitle={`Quiz: ${quiz.section.name}`}
 					onExit={onExit}
 					onRetry={() => {
-						// Reset completo del quiz per rifare
 						setCurrentQuestionIndex(0);
 						const initialAnswers: UserAnswer[] = quiz.questions.map(q => ({
 							questionId: q.id,
 							answer: [],
 						}));
 						setUserAnswers(initialAnswers);
-						setStartTime(Date.now()); // Reset timer
+						setStartTime(Date.now());
 						setShowResults(false);
 					}}
 				/>
 			);
 		}
 
-		// Per utenti registrati: reindirizza alla pagina risultati
-		// Questo caso dovrebbe essere gestito dal componente padre
-		// che chiamerà onComplete con i risultati
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 				<div className="text-center">
