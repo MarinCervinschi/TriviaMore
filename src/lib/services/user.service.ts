@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
 import type {
@@ -11,6 +13,52 @@ export interface UserPermissions {
 	managedDepartmentIds: string[];
 	maintainedCourseIds: string[];
 	accessibleSectionIds: string[];
+}
+
+export interface UserProfileData {
+	id: string;
+	name: string | null;
+	email: string | null;
+	image: string | null;
+	role: Role;
+	createdAt: Date;
+	updatedAt: Date;
+	_count: {
+		quizAttempts: number;
+		userClasses: number;
+		bookmarks: number;
+	};
+	recentActivity?: {
+		quizAttempts: Array<{
+			id: string;
+			score: number;
+			completedAt: Date;
+			quiz: {
+				section: {
+					name: string;
+					class: {
+						name: string;
+						course: {
+							name: string;
+							department: {
+								name: string;
+							};
+						};
+					};
+				};
+			};
+		}>;
+	};
+	stats?: {
+		totalQuizzes: number;
+		averageScore: number;
+		bestScore: number;
+		totalTimeSpent: number;
+		favoriteSubjects: Array<{
+			name: string;
+			count: number;
+		}>;
+	};
 }
 
 export class UserService {
@@ -290,5 +338,257 @@ export class UserService {
 		});
 
 		return !!userClass;
+	}
+
+	/**
+	 * Get user profile data by ID
+	 */
+	static async getUserProfile(userId: string): Promise<UserProfileData | null> {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { id: userId },
+				include: {
+					_count: {
+						select: {
+							quizAttempts: true,
+							userClasses: true,
+							bookmarks: true,
+						},
+					},
+					quizAttempts: {
+						take: 5,
+						orderBy: { completedAt: "desc" },
+						include: {
+							quiz: {
+								include: {
+									section: {
+										include: {
+											class: {
+												include: {
+													course: {
+														include: {
+															department: true,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!user) return null;
+
+			// Calculate stats
+			const allQuizAttempts = await prisma.quizAttempt.findMany({
+				where: { userId },
+				include: {
+					quiz: {
+						include: {
+							section: {
+								include: {
+									class: {
+										include: {
+											course: {
+												include: {
+													department: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			const stats = this.calculateUserStats(allQuizAttempts);
+
+			return {
+				...user,
+				recentActivity: {
+					quizAttempts: user.quizAttempts,
+				},
+				stats,
+			};
+		} catch (error) {
+			console.error("Error fetching user profile:", error);
+			return null;
+		}
+	}
+
+	/**
+	 * Check if a user can view another user's profile
+	 */
+	static async canViewProfile(
+		viewerUserId: string | undefined,
+		targetUserId: string
+	): Promise<boolean> {
+		// Users can always view their own profile
+		if (viewerUserId === targetUserId) return true;
+
+		// For now, all profiles are public (you can change this logic)
+		// You could add privacy settings to the User model
+		return true;
+	}
+
+	/**
+	 * Get user by ID (minimal data for checking existence)
+	 */
+	static async getUserById(userId: string) {
+		return await prisma.user.findUnique({
+			where: { id: userId },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				role: true,
+			},
+		});
+	}
+
+	/**
+	 * Generate display name for user
+	 */
+	static getDisplayName(user: { name: string | null; email: string | null }): string {
+		if (user.name) return user.name;
+		if (user.email) return user.email.split("@")[0];
+		return "Utente Anonimo";
+	}
+
+	/**
+	 * Generate URL-friendly slug from user data
+	 */
+	static generateUserSlug(user: { id: string; name: string | null }): string {
+		if (user.name) {
+			// Convert "Mario Rossi" to "Mario-Rossi"
+			return user.name
+				.trim()
+				.replace(/\s+/g, "-")
+				.replace(/[^a-zA-Z0-9\-]/g, "")
+				.toLowerCase();
+		}
+		return user.id;
+	}
+
+	/**
+	 * Get user progress data across all sections
+	 */
+	static async getUserProgressData(userId: string) {
+		try {
+			const progressData = await prisma.progress.findMany({
+				where: { userId },
+				include: {
+					section: {
+						include: {
+							class: {
+								include: {
+									course: {
+										include: {
+											department: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				orderBy: [{ lastAccessedAt: "desc" }],
+			});
+
+			return progressData;
+		} catch (error) {
+			console.error("Error fetching user progress:", error);
+			return [];
+		}
+	}
+
+	/**
+	 * Get user bookmarks
+	 */
+	static async getUserBookmarks(userId: string) {
+		try {
+			const bookmarks = await prisma.bookmark.findMany({
+				where: { userId },
+				include: {
+					question: {
+						include: {
+							section: {
+								include: {
+									class: {
+										include: {
+											course: {
+												include: {
+													department: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				orderBy: { createdAt: "desc" },
+			});
+
+			return bookmarks;
+		} catch (error) {
+			console.error("Error fetching user bookmarks:", error);
+			return [];
+		}
+	}
+
+	/**
+	 * Calculate user statistics
+	 */
+	private static calculateUserStats(quizAttempts: any[]) {
+		if (quizAttempts.length === 0) {
+			return {
+				totalQuizzes: 0,
+				averageScore: 0,
+				bestScore: 0,
+				totalTimeSpent: 0,
+				favoriteSubjects: [],
+			};
+		}
+
+		const totalQuizzes = quizAttempts.length;
+		const averageScore =
+			quizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) / totalQuizzes;
+		const bestScore = Math.max(...quizAttempts.map(attempt => attempt.score));
+		const totalTimeSpent = quizAttempts.reduce(
+			(sum, attempt) => sum + (attempt.timeSpent || 0),
+			0
+		);
+
+		// Calculate favorite subjects (departments)
+		const subjectCounts = quizAttempts.reduce(
+			(acc, attempt) => {
+				const deptName = attempt.quiz.section.class.course.department.name;
+				acc[deptName] = (acc[deptName] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>
+		);
+
+		const favoriteSubjects = Object.entries(subjectCounts)
+			.map(([name, count]) => ({ name, count: count as number }))
+			.sort((a, b) => (b.count as number) - (a.count as number))
+			.slice(0, 5);
+
+		return {
+			totalQuizzes,
+			averageScore: Math.round(averageScore * 100) / 100,
+			bestScore: Math.round(bestScore * 100) / 100,
+			totalTimeSpent,
+			favoriteSubjects,
+		};
 	}
 }
