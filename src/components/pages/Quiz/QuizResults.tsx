@@ -57,7 +57,7 @@ export default function QuizResultsPageComponent({
 	const router = useRouter();
 
 	const handleBackToDashboard = () => {
-		router.back();
+		router.push("/dashboard");
 	};
 
 	const handleRetryQuiz = () => {

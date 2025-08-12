@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 
+import { User } from "next-auth";
+
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { Quiz } from "@/lib/types/quiz.types";
+import {
+	QuizResults,
+	UserAnswer,
+	calculateQuizResults,
+} from "@/lib/utils/calculateResults";
 
 import { QuestionCard } from "./QuestionCard";
 import { QuizHeader } from "./QuizHeader";
@@ -11,21 +19,10 @@ import { QuizNavigation } from "./QuizNavigation";
 import { QuizProgress } from "./QuizProgress";
 import { QuizSidebar } from "./QuizSidebar";
 
-interface UserAnswer {
-	questionId: string;
-	answer: string[];
-	isCorrect?: boolean;
-	score?: number;
-}
-
 interface QuizContainerProps {
 	quiz: Quiz;
 	isGuest: boolean;
-	user?: {
-		id: string;
-		name?: string | null;
-		email?: string | null;
-	} | null;
+	user?: User | null;
 	onComplete: (results: any) => void;
 	onExit: () => void;
 }
@@ -78,80 +75,13 @@ export function QuizContainer({
 		}
 	};
 
-	const calculateResults = () => {
-		let totalScore = 0;
-		let correctAnswers = 0;
-
-		const answersWithResults = userAnswers.map(userAnswer => {
-			const question = quiz.questions.find(q => q.id === userAnswer.questionId);
-			if (!question) return userAnswer;
-
-			let score = 0;
-			let isFullyCorrect = false;
-
-			if (userAnswer.answer.length === 0) {
-				score = 0;
-				isFullyCorrect = false;
-			} else {
-				const correctGiven = userAnswer.answer.filter(ans =>
-					question.correctAnswer.includes(ans)
-				).length;
-				const incorrectGiven = userAnswer.answer.filter(
-					ans => !question.correctAnswer.includes(ans)
-				).length;
-				const totalCorrect = question.correctAnswer.length;
-				const totalGiven = userAnswer.answer.length;
-
-				if (
-					correctGiven === totalCorrect &&
-					incorrectGiven === 0 &&
-					totalGiven === totalCorrect
-				) {
-					score = quiz.evaluationMode.correctAnswerPoints;
-					isFullyCorrect = true;
-					correctAnswers++;
-				} else if (correctGiven > 0) {
-					if (quiz.evaluationMode.partialCreditEnabled) {
-						const correctnessRatio = correctGiven / totalCorrect;
-						const penaltyRatio = incorrectGiven / Math.max(totalGiven, 1);
-						const adjustedRatio = Math.max(0, correctnessRatio - penaltyRatio);
-						score = Math.round(quiz.evaluationMode.correctAnswerPoints * adjustedRatio);
-
-						if (incorrectGiven > 0) {
-							const penalty =
-								incorrectGiven * Math.abs(quiz.evaluationMode.incorrectAnswerPoints);
-							score = Math.max(
-								score - penalty,
-								quiz.evaluationMode.incorrectAnswerPoints
-							);
-						}
-					} else {
-						score = 0;
-					}
-					isFullyCorrect = false;
-				} else {
-					score = quiz.evaluationMode.incorrectAnswerPoints;
-					isFullyCorrect = false;
-				}
-			}
-
-			totalScore += score;
-
-			return {
-				...userAnswer,
-				isCorrect: isFullyCorrect,
-				score,
-			};
-		});
-
-		return {
-			totalScore,
-			correctAnswers,
-			totalQuestions: quiz.questions.length,
-			timeSpent: Date.now() - startTime,
-			answers: answersWithResults,
+	const calculateResults = (): QuizResults => {
+		return calculateQuizResults({
+			userAnswers,
+			questions: quiz.questions,
 			evaluationMode: quiz.evaluationMode,
-		};
+			startTime,
+		});
 	};
 
 	const handleCompleteQuiz = () => {
@@ -199,16 +129,18 @@ export function QuizContainer({
 		}
 
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-				<div className="text-center">
-					<h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
-						Quiz Completato!
-					</h1>
-					<p className="text-gray-700 dark:text-gray-300">
-						Reindirizzamento ai risultati...
-					</p>
+			<AppLayout user={user}>
+				<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+					<div className="text-center">
+						<h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
+							Quiz Completato!
+						</h1>
+						<p className="text-gray-700 dark:text-gray-300">
+							Reindirizzamento ai risultati...
+						</p>
+					</div>
 				</div>
-			</div>
+			</AppLayout>
 		);
 	}
 
