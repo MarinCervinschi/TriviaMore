@@ -62,13 +62,11 @@ export default function ExamSimulationButton({
 	const router = useRouter();
 	const startQuizMutation = useStartQuizMutation();
 
-	// Calcola il totale delle domande disponibili
 	const totalQuestions = classData.sections.reduce(
 		(acc, section) => acc + section._count.questions,
 		0
 	);
 
-	// Imposta il numero di domande di default: min tra 30 e quelle disponibili
 	const defaultQuestionCount = Math.min(30, totalQuestions);
 	const [questionCount, setQuestionCount] = useState([defaultQuestionCount]);
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
@@ -79,13 +77,12 @@ export default function ExamSimulationButton({
 
 	const handleStartExam = async () => {
 		if (!isUserLoggedIn) {
-			// Reindirizza al login
 			router.push("/auth/login");
 			return;
 		}
 
 		const quizParams = {
-			sectionId: classData.id, // Per exam mode, passiamo il classId come sectionId
+			sectionId: classData.id,
 			questionCount: questionCount[0],
 			timeLimit: timerMinutes[0] * 60, // Converti in secondi
 			quizMode: "EXAM_SIMULATION" as const,
@@ -94,9 +91,7 @@ export default function ExamSimulationButton({
 
 		startQuizMutation.mutate(quizParams, {
 			onSuccess: result => {
-				// Salva automaticamente i dati nel sessionStorage
 				saveQuizDataToSession(result.quizId, result.quiz, result.attemptId);
-				// Naviga alla pagina del quiz
 				router.push(`/quiz/${result.quizId}`);
 			},
 			onError: error => {
