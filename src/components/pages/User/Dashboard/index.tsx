@@ -3,16 +3,17 @@
 import Link from "next/link";
 
 import {
+	Activity,
 	BookmarkIcon,
 	Calendar,
+	ExternalLink,
 	GraduationCap,
 	Mail,
 	Settings,
 	TrendingUp,
 	Trophy,
-	User as UserIcon,
 } from "lucide-react";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { UserProfileData, UserService } from "@/lib/services/user.service";
+import { type UserProfileData, UserService } from "@/lib/services/user.service";
 
 function getRoleLabel(role: string): string {
 	switch (role) {
@@ -66,6 +67,12 @@ function formatTimeSpent(seconds: number): string {
 	return `${minutes}m`;
 }
 
+function getScoreBadgeVariant(score: number) {
+	if (score >= 80) return "default";
+	if (score >= 60) return "secondary";
+	return "destructive";
+}
+
 interface UserDashboardComponentProps {
 	userProfile: UserProfileData;
 	currentUser: User;
@@ -89,8 +96,8 @@ export default function UserDashboardComponent({
 		<div className="container mx-auto space-y-8 px-4 py-8">
 			{/* Header con info utente */}
 			<div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-4">
+				<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-4">
 						<Avatar className="h-20 w-20 border-4 border-white/20">
 							<AvatarImage src={userProfile.image || undefined} alt={displayName} />
 							<AvatarFallback className="bg-white/20 text-xl font-bold">
@@ -98,7 +105,7 @@ export default function UserDashboardComponent({
 							</AvatarFallback>
 						</Avatar>
 						<div>
-							<h1 className="mb-2 text-3xl font-bold">{displayName}</h1>
+							<h1 className="mb-2 text-2xl font-bold sm:text-3xl">{displayName}</h1>
 							<div className="mb-2 flex items-center gap-2">
 								<Badge
 									variant="secondary"
@@ -107,7 +114,7 @@ export default function UserDashboardComponent({
 									{getRoleLabel(userProfile.role)}
 								</Badge>
 							</div>
-							<div className="flex items-center gap-4 text-blue-100">
+							<div className="flex flex-col gap-2 text-blue-100 sm:flex-row sm:items-center sm:gap-4">
 								<div className="flex items-center gap-1">
 									<Mail className="h-4 w-4" />
 									<span className="text-sm">{userProfile.email}</span>
@@ -126,7 +133,7 @@ export default function UserDashboardComponent({
 			</div>
 
 			{/* Statistiche rapide */}
-			<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 				<Card>
 					<CardContent className="p-6">
 						<div className="flex items-center justify-between">
@@ -187,7 +194,7 @@ export default function UserDashboardComponent({
 			</div>
 
 			{/* Azioni rapide */}
-			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 				<Card className="transition-shadow hover:shadow-lg">
 					<CardHeader className="pb-4">
 						<CardTitle className="flex items-center gap-2 text-lg">
@@ -207,6 +214,23 @@ export default function UserDashboardComponent({
 				<Card className="transition-shadow hover:shadow-lg">
 					<CardHeader className="pb-4">
 						<CardTitle className="flex items-center gap-2 text-lg">
+							<Activity className="h-5 w-5 text-orange-500" />
+							Attività Recenti
+						</CardTitle>
+						<CardDescription>
+							Visualizza la cronologia completa delle tue attività
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<Button asChild variant="outline" className="w-full bg-transparent">
+							<Link href="/user/activity">Vedi Tutte le Attività</Link>
+						</Button>
+					</CardContent>
+				</Card>
+
+				<Card className="transition-shadow hover:shadow-lg">
+					<CardHeader className="pb-4">
+						<CardTitle className="flex items-center gap-2 text-lg">
 							<BookmarkIcon className="h-5 w-5 text-purple-500" />I Miei Segnalibri
 						</CardTitle>
 						<CardDescription>
@@ -214,7 +238,7 @@ export default function UserDashboardComponent({
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Button asChild variant="outline" className="w-full">
+						<Button asChild variant="outline" className="w-full bg-transparent">
 							<Link href="/user/bookmarks">Visualizza Segnalibri</Link>
 						</Button>
 					</CardContent>
@@ -228,74 +252,76 @@ export default function UserDashboardComponent({
 						<CardDescription>Gestisci i corsi che stai seguendo</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Button asChild variant="outline" className="w-full">
+						<Button asChild variant="outline" className="w-full bg-transparent">
 							<Link href="/user/classes">Gestisci Corsi</Link>
-						</Button>
-					</CardContent>
-				</Card>
-
-				<Card className="transition-shadow hover:shadow-lg">
-					<CardHeader className="pb-4">
-						<CardTitle className="flex items-center gap-2 text-lg">
-							<Settings className="h-5 w-5 text-gray-500" />
-							Impostazioni
-						</CardTitle>
-						<CardDescription>
-							Personalizza il tuo profilo e le preferenze
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<Button asChild variant="secondary" className="w-full">
-							<Link href="/user/settings">Modifica Profilo</Link>
 						</Button>
 					</CardContent>
 				</Card>
 			</div>
 
-			{/* Attività recente */}
+			{/* Attività recente - Solo alcune */}
 			{userProfile.recentActivity?.quizAttempts &&
 				userProfile.recentActivity.quizAttempts.length > 0 && (
 					<Card>
 						<CardHeader>
-							<CardTitle>Attività Recente</CardTitle>
-							<CardDescription>I tuoi ultimi quiz completati</CardDescription>
+							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+								<div>
+									<CardTitle>Attività Recente</CardTitle>
+									<CardDescription>I tuoi ultimi quiz completati</CardDescription>
+								</div>
+								<Button asChild variant="outline" size="sm">
+									<Link href="/user/activity" className="flex items-center gap-1">
+										<Activity className="h-4 w-4" />
+										Vedi Tutto
+									</Link>
+								</Button>
+							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
-								{userProfile.recentActivity.quizAttempts.map(attempt => (
+								{userProfile.recentActivity.quizAttempts.slice(0, 3).map(attempt => (
 									<div
 										key={attempt.id}
-										className="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+										className="flex flex-col gap-3 rounded-lg bg-gray-50 p-4 dark:bg-gray-800 sm:flex-row sm:items-center sm:justify-between"
 									>
-										<div className="flex items-center gap-3">
+										<div className="flex items-start gap-3">
 											<div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
 												<Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" />
 											</div>
-											<div>
+											<div className="min-w-0 flex-1">
 												<p className="font-medium">{attempt.quiz.section.name}</p>
-												<p className="text-sm text-muted-foreground">
-													{attempt.quiz.section.class.course.name} •{" "}
-                                                    {attempt.quiz.section.class.name}
-												</p>
+												<div className="mt-1 space-y-1">
+													<p className="text-sm text-muted-foreground">
+														<span className="font-medium">
+															{attempt.quiz.section.class.course.department.name}
+														</span>
+														{" • "}
+														{attempt.quiz.section.class.course.name}
+													</p>
+													<p className="text-sm text-muted-foreground">
+														Classe: {attempt.quiz.section.class.name}
+													</p>
+												</div>
 											</div>
 										</div>
-										<div className="text-right">
-											<div className="flex items-center gap-2">
-												<Badge
-													variant={
-														attempt.score >= 70
-															? "default"
-															: attempt.score >= 50
-																? "secondary"
-																: "destructive"
-													}
-												>
+										<div className="flex items-center gap-3">
+											<div className="text-right">
+												<Badge variant={getScoreBadgeVariant(attempt.score)}>
 													{Math.round(attempt.score)}%
 												</Badge>
+												<p className="mt-1 text-xs text-muted-foreground">
+													{new Date(attempt.completedAt).toLocaleDateString("it-IT")}
+												</p>
 											</div>
-											<p className="text-xs text-muted-foreground">
-												{new Date(attempt.completedAt).toLocaleDateString("it-IT")}
-											</p>
+											<Button asChild size="sm" variant="outline">
+												<Link
+													href={`/quiz/results/${attempt.id}`}
+													className="flex items-center gap-1"
+												>
+													<ExternalLink className="h-3 w-3" />
+													Vedi
+												</Link>
+											</Button>
 										</div>
 									</div>
 								))}
@@ -313,7 +339,7 @@ export default function UserDashboardComponent({
 							<CardDescription>Basato sui quiz che hai completato</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+							<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 								{userProfile.stats.favoriteSubjects.map(subject => (
 									<div
 										key={subject.name}
@@ -327,6 +353,22 @@ export default function UserDashboardComponent({
 						</CardContent>
 					</Card>
 				)}
+
+			{/* Settings Card */}
+			<Card className="transition-shadow hover:shadow-lg">
+				<CardHeader>
+					<CardTitle className="flex items-center gap-2">
+						<Settings className="h-5 w-5 text-gray-500" />
+						Impostazioni Account
+					</CardTitle>
+					<CardDescription>Personalizza il tuo profilo e le preferenze</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<Button asChild variant="secondary" className="w-full sm:w-auto">
+						<Link href="/user/settings">Modifica Profilo</Link>
+					</Button>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
