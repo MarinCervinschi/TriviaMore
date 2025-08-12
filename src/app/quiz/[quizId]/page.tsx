@@ -13,7 +13,6 @@ export default async function QuizPage({ params }: QuizPageProps) {
 	const session = await auth();
 	const resolvedParams = await params;
 
-	// Determina se è guest o utente autenticato
 	const isGuest = resolvedParams.quizId.startsWith("guest-");
 
 	return (
