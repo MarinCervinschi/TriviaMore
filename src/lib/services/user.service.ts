@@ -77,20 +77,28 @@ export class UserService {
 		permissions?: UserPermissions
 	) {
 		if (!permissions) {
-			// Utente non autenticato - solo sezioni pubbliche
+			// Utente non autenticato - solo sezioni pubbliche escluse quelle di exam simulation
 			return {
 				classId,
 				isPublic: true,
+				name: {
+					not: "Exam Simulation",
+				},
 			};
 		}
 
 		if (permissions.role === "SUPERADMIN") {
-			// SUPERADMIN vede tutto
-			return { classId };
+			// SUPERADMIN vede tutto ma esclude le sezioni di exam simulation
+			return {
+				classId,
+				name: {
+					not: "Exam Simulation",
+				},
+			};
 		}
 
 		if (permissions.role === "ADMIN") {
-			// Admin del dipartimento vede tutto del proprio dipartimento
+			// Admin del dipartimento vede tutto del proprio dipartimento escludendo exam simulation
 			const classInfo = await prisma.class.findUnique({
 				where: { id: classId },
 				include: {
@@ -104,13 +112,21 @@ export class UserService {
 				classInfo &&
 				permissions.managedDepartmentIds.includes(classInfo.course.departmentId)
 			) {
-				return { classId };
+				return {
+					classId,
+					name: {
+						not: "Exam Simulation",
+					},
+				};
 			}
 		}
 
 		// Maintainer o Student o utenti con accessi limitati
 		return {
 			classId,
+			name: {
+				not: "Exam Simulation",
+			},
 			OR: [
 				{ isPublic: true },
 				{
