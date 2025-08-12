@@ -503,6 +503,60 @@ export class QuizService {
 	}
 
 	/**
+	 * Cancella un quiz in corso e tutti i record associati
+	 */
+	static async cancelQuiz(quizAttemptId: string, userId: string): Promise<void> {
+		// Verifica che il quiz attempt esista e appartenga all'utente
+		const quizAttempt = await prisma.quizAttempt.findFirst({
+			where: {
+				id: quizAttemptId,
+				userId,
+			},
+			include: {
+				quiz: {
+					include: {
+						questions: true,
+					},
+				},
+				answers: true,
+			},
+		});
+
+		if (!quizAttempt) {
+			throw new Error("Quiz attempt non trovato");
+		}
+
+		// Verifica che il quiz non sia già stato completato
+		if (quizAttempt.completedAt) {
+			throw new Error("Quiz già completato");
+		}
+
+		// Cancella in cascata: prima gli answer attempts, poi il quiz attempt, poi il quiz
+		// Gli answer attempts vengono cancellati automaticamente tramite la foreign key cascade
+		// Le quiz questions vengono cancellate automaticamente tramite la foreign key cascade
+
+		// Elimina il quiz attempt
+		await prisma.quizAttempt.delete({
+			where: { id: quizAttemptId },
+		});
+
+		// Elimina il quiz se non ha altri attempts associati
+		const otherAttempts = await prisma.quizAttempt.findMany({
+			where: {
+				quizId: quizAttempt.quiz.id,
+			},
+		});
+
+		if (otherAttempts.length === 0) {
+			// Nessun altro attempt, possiamo eliminare il quiz
+			// Le quiz questions vengono eliminate automaticamente per la cascata
+			await prisma.quiz.delete({
+				where: { id: quizAttempt.quiz.id },
+			});
+		}
+	}
+
+	/**
 	 * Recupera i risultati di un quiz attempt specifico
 	 */
 	static async getQuizResults(attemptId: string, userId: string): Promise<any | null> {

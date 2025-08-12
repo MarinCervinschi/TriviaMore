@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { User } from "next-auth";
 import { toast } from "sonner";
 
-import { useQuiz, useQuizCleanup, useQuizCompletion } from "@/hooks";
+import { useQuiz, useQuizCleanup, useQuizCompletion, useQuizExit } from "@/hooks";
 
 import { QuizContainer } from "./QuizContainer";
 import { QuizLoader } from "./QuizLoader";
@@ -28,6 +28,7 @@ export default function QuizPageComponent({
 		isLoading: isCompleting,
 		error: completionError,
 	} = useQuizCompletion();
+	const { exitQuiz, isLoading: isExiting } = useQuizExit();
 
 	const { quiz, attemptId, isLoading, error } = useQuiz({
 		quizId,
@@ -74,8 +75,23 @@ export default function QuizPageComponent({
 		}
 	};
 
-	const handleQuizExit = () => {
-		router.back();
+	const handleQuizExit = async () => {
+		try {
+			await exitQuiz(isGuest, quizId, attemptId, {
+				onSuccess: () => {
+					clearQuizData(quizId, isGuest);
+					router.back();
+				},
+				onError: error => {
+					console.error("Errore nell'uscita dal quiz:", error);
+					toast.error("Errore nell'uscita dal quiz");
+					router.back();
+				},
+			});
+		} catch (error) {
+			console.error("Errore nell'uscita dal quiz:", error);
+			router.back();
+		}
 	};
 
 	if (isLoading) {

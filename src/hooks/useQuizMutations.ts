@@ -66,6 +66,10 @@ export function useStartQuizMutation() {
 	});
 }
 
+interface CancelQuizParams {
+	quizAttemptId: string;
+}
+
 interface CompleteQuizParams {
 	quizAttemptId: string;
 	answers: Array<{
@@ -82,6 +86,34 @@ interface CompleteQuizResponse {
 	error?: string;
 }
 
+/**
+ * Hook per la mutation di cancellazione quiz
+ * Gestisce l'eliminazione di un quiz in corso per utenti autenticati
+ */
+export function useCancelQuizMutation() {
+	return useMutation<void, Error, CancelQuizParams>({
+		mutationFn: async (params: CancelQuizParams): Promise<void> => {
+			const response = await fetch("/api/protected/quiz/cancel", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(params),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Errore nella cancellazione del quiz");
+			}
+		},
+		onError: error => {
+			console.error("Errore nella cancellazione del quiz:", error);
+		},
+	});
+}
+
+/**
+ * Hook per la mutation di completamento quiz
+ * Gestisce il salvataggio dei risultati nel database per utenti autenticati
+ */
 export function useCompleteQuizMutation() {
 	return useMutation<CompleteQuizResponse, Error, CompleteQuizParams>({
 		mutationFn: async (params: CompleteQuizParams): Promise<CompleteQuizResponse> => {
@@ -135,5 +167,43 @@ export function useQuizCompletion() {
 		isError: completeQuizMutation.isError,
 		isSuccess: completeQuizMutation.isSuccess,
 		reset: completeQuizMutation.reset,
+	};
+}
+
+/**
+ * Hook per gestire l'uscita dal quiz
+ * Include la cancellazione del quiz se necessario e la pulizia dei dati
+ */
+export function useQuizExit() {
+	const cancelQuizMutation = useCancelQuizMutation();
+
+	const exitQuiz = async (
+		isGuest: boolean,
+		quizId: string,
+		attemptId?: string | null,
+		options?: {
+			onSuccess?: () => void;
+			onError?: (error: Error) => void;
+		}
+	) => {
+		try {
+			// Se è un utente autenticato e ha un attemptId, cancella il quiz
+			if (!isGuest && attemptId) {
+				await cancelQuizMutation.mutateAsync({ quizAttemptId: attemptId });
+			}
+
+			options?.onSuccess?.();
+		} catch (error) {
+			console.error("Errore nell'uscita dal quiz:", error);
+			options?.onError?.(error as Error);
+			throw error;
+		}
+	};
+
+	return {
+		exitQuiz,
+		isLoading: cancelQuizMutation.isPending,
+		error: cancelQuizMutation.error?.message || null,
+		isError: cancelQuizMutation.isError,
 	};
 }
