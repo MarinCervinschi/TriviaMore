@@ -49,9 +49,10 @@ export class BrowseService extends UserService {
 			permissions = await super.getUserPermissions(userId);
 		}
 
-		// Base delle sezioni - solo pubbliche per default
+		// Base delle sezioni - solo pubbliche per default, escludendo Exam Simulation
 		let sectionSearchWhere: any = {
 			isPublic: true,
+			name: { not: "Exam Simulation" },
 			OR: [
 				{ name: { contains: query, mode: "insensitive" } },
 				{ description: { contains: query, mode: "insensitive" } },
@@ -61,16 +62,18 @@ export class BrowseService extends UserService {
 		// Se l'utente è autenticato, espandi i criteri di ricerca per le sezioni
 		if (permissions) {
 			if (permissions.role === "SUPERADMIN") {
-				// SUPERADMIN vede tutto
+				// SUPERADMIN vede tutto ma esclude Exam Simulation
 				sectionSearchWhere = {
+					name: { not: "Exam Simulation" },
 					OR: [
 						{ name: { contains: query, mode: "insensitive" } },
 						{ description: { contains: query, mode: "insensitive" } },
 					],
 				};
 			} else if (permissions.role === "ADMIN") {
-				// ADMIN vede tutto dei propri dipartimenti
+				// ADMIN vede tutto dei propri dipartimenti ma esclude Exam Simulation
 				sectionSearchWhere = {
+					name: { not: "Exam Simulation" },
 					OR: [
 						{ name: { contains: query, mode: "insensitive" } },
 						{ description: { contains: query, mode: "insensitive" } },
@@ -94,8 +97,9 @@ export class BrowseService extends UserService {
 					],
 				};
 			} else if (permissions.role === "MAINTAINER") {
-				// MAINTAINER vede tutto dei propri corsi
+				// MAINTAINER vede tutto dei propri corsi ma esclude Exam Simulation
 				sectionSearchWhere = {
+					name: { not: "Exam Simulation" },
 					OR: [
 						{ name: { contains: query, mode: "insensitive" } },
 						{ description: { contains: query, mode: "insensitive" } },
@@ -117,8 +121,9 @@ export class BrowseService extends UserService {
 					],
 				};
 			} else {
-				// STUDENT: pubbliche + quelle a cui hanno accesso
+				// STUDENT: pubbliche + quelle a cui hanno accesso ma esclude Exam Simulation
 				sectionSearchWhere = {
+					name: { not: "Exam Simulation" },
 					OR: [
 						{ name: { contains: query, mode: "insensitive" } },
 						{ description: { contains: query, mode: "insensitive" } },
