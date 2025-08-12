@@ -136,46 +136,130 @@ export class QuizService {
 			throw new Error("Utente non trovato");
 		}
 
-		// Verifica che la sezione esista e che l'utente abbia accesso
-		const sectionData = await prisma.section.findFirst({
-			where: {
-				id: sectionId,
-				OR: [
-					{ isPublic: true },
-					{
-						access: {
-							some: {
-								userId: userId,
-							},
-						},
-					},
-				],
-			},
-			include: {
-				questions: {
-					where: {
-						questionType: {
-							in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
-						},
-					},
-				},
-				class: {
-					include: {
-						course: {
-							include: {
-								department: true,
-							},
-						},
-					},
-				},
-			},
-		});
+		let questions: any[] = [];
+		let sectionData: any = null;
+		let actualSectionId: string = sectionId; // ID sezione da usare nel database
 
-		if (!sectionData) {
-			throw new Error("Sezione non trovata");
+		if (quizMode === "EXAM_SIMULATION") {
+			// Per l'exam mode, prendiamo domande da tutte le sezioni della classe
+			const classData = await prisma.class.findFirst({
+				where: {
+					id: sectionId, // In exam mode, sectionId è in realtà il classId
+				},
+				include: {
+					sections: {
+						where: {
+							OR: [
+								{ isPublic: true },
+								{
+									access: {
+										some: {
+											userId: userId,
+										},
+									},
+								},
+							],
+						},
+						include: {
+							questions: {
+								where: {
+									questionType: {
+										in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
+									},
+								},
+							},
+						},
+					},
+					course: {
+						include: {
+							department: true,
+						},
+					},
+				},
+			});
+
+			if (!classData) {
+				throw new Error("Classe non trovata o accesso negato");
+			}
+
+			// Trova o crea la sezione "exam" per questa classe
+			let examSection = await prisma.section.findFirst({
+				where: {
+					classId: classData.id,
+					name: "Exam Simulation",
+				},
+			});
+
+			if (!examSection) {
+				// Crea la sezione exam se non esiste
+				examSection = await prisma.section.create({
+					data: {
+						name: "Exam Simulation",
+						description: `Sezione per la simulazione d'esame della classe ${classData.name}`,
+						classId: classData.id,
+						isPublic: true,
+					},
+				});
+			}
+
+			// Usa l'ID della sezione exam per il database
+			actualSectionId = examSection.id;
+
+			// Raccogliamo tutte le domande da tutte le sezioni della classe
+			questions = classData.sections.flatMap(section => section.questions);
+
+			// Creiamo un oggetto sezione per mantenere la compatibilità
+			sectionData = {
+				id: examSection.id,
+				name: `Esame Simulato - ${classData.name}`,
+				description: `Quiz completo per la classe ${classData.name}`,
+				class: classData,
+				questions: questions,
+			};
+		} else {
+			// Per lo study mode, manteniamo la logica esistente
+			sectionData = await prisma.section.findFirst({
+				where: {
+					id: sectionId,
+					OR: [
+						{ isPublic: true },
+						{
+							access: {
+								some: {
+									userId: userId,
+								},
+							},
+						},
+					],
+				},
+				include: {
+					questions: {
+						where: {
+							questionType: {
+								in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
+							},
+						},
+					},
+					class: {
+						include: {
+							course: {
+								include: {
+									department: true,
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!sectionData) {
+				throw new Error("Sezione non trovata o accesso negato");
+			}
+
+			questions = sectionData.questions;
 		}
 
-		if (sectionData.questions.length === 0) {
+		if (questions.length === 0) {
 			throw new Error("Nessuna domanda disponibile per il quiz");
 		}
 
@@ -189,16 +273,13 @@ export class QuizService {
 		}
 
 		// Seleziona le domande random
-		const selectedQuestions = QuizService.selectRandomItems(
-			sectionData.questions,
-			questionCount
-		);
+		const selectedQuestions = QuizService.selectRandomItems(questions, questionCount);
 
 		// Crea il quiz nel database
 		const quiz = await prisma.quiz.create({
 			data: {
 				timeLimit,
-				sectionId,
+				sectionId: actualSectionId, // Usa l'ID della sezione corretta
 				evaluationModeId,
 				quizMode,
 				questions: {
@@ -217,19 +298,7 @@ export class QuizService {
 						order: "asc",
 					},
 				},
-				section: {
-					include: {
-						class: {
-							include: {
-								course: {
-									include: {
-										department: true,
-									},
-								},
-							},
-						},
-					},
-				},
+				section: true,
 				evaluationMode: true,
 			},
 		});
@@ -245,33 +314,33 @@ export class QuizService {
 
 		// Prepara la risposta
 		const quizSection: QuizSection = {
-			id: quiz.section.id,
-			name: quiz.section.name,
+			id: sectionData.id,
+			name: sectionData.name,
 			class: {
-				name: quiz.section.class.name,
+				name: sectionData.class.name,
 				course: {
-					name: quiz.section.class.course.name,
+					name: sectionData.class.course.name,
 					department: {
-						name: quiz.section.class.course.department.name,
+						name: sectionData.class.course.department.name,
 					},
 				},
 			},
 		};
 
 		const evaluationModeResponse: EvaluationMode = {
-			name: quiz.evaluationMode.name,
-			description: quiz.evaluationMode.description || undefined,
-			correctAnswerPoints: quiz.evaluationMode.correctAnswerPoints,
-			incorrectAnswerPoints: quiz.evaluationMode.incorrectAnswerPoints,
-			partialCreditEnabled: quiz.evaluationMode.partialCreditEnabled,
+			name: evaluationMode.name,
+			description: evaluationMode.description || undefined,
+			correctAnswerPoints: evaluationMode.correctAnswerPoints,
+			incorrectAnswerPoints: evaluationMode.incorrectAnswerPoints,
+			partialCreditEnabled: evaluationMode.partialCreditEnabled,
 		};
 
-		const questions = quiz.questions.map(qq => ({
+		const formattedQuestions = quiz.questions.map(qq => ({
 			id: qq.question.id,
 			content: qq.question.content,
 			questionType: qq.question.questionType,
 			options: qq.question.options
-				? QuizService.shuffleArray(qq.question.options as string[])
+				? QuizService.shuffleArray([...(qq.question.options as string[])])
 				: undefined,
 			correctAnswer: qq.question.correctAnswer,
 			explanation: qq.question.explanation || undefined,
@@ -285,7 +354,7 @@ export class QuizService {
 			quizMode: quiz.quizMode,
 			section: quizSection,
 			evaluationMode: evaluationModeResponse,
-			questions,
+			questions: formattedQuestions,
 		};
 
 		return {
@@ -381,7 +450,7 @@ export class QuizService {
 		// Aggiorna i progressi dell'utente
 		await QuizService.updateUserProgress({
 			userId,
-			sectionId: quizAttempt.quiz.sectionId,
+			sectionId: quizAttempt.quiz.sectionId, // Usa l'ID della sezione dal quiz salvato
 			quizMode: quizAttempt.quiz.quizMode,
 			score: totalScore,
 			timeSpent,

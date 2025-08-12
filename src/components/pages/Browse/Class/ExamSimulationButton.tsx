@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { startAuthenticatedQuiz } from "@/lib/utils/authenticated-quiz";
 
 interface EvaluationMode {
 	id: string;
@@ -70,21 +71,38 @@ export default function ExamSimulationButton({
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
 		evaluationModes.length > 0 ? evaluationModes[0].id : ""
 	);
+	const [timerMinutes, setTimerMinutes] = useState([60]); // Default 60 minuti
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-	const handleStartExam = () => {
+	const [isStarting, setIsStarting] = useState(false);
+
+	const handleStartExam = async () => {
 		if (!isUserLoggedIn) {
 			// Reindirizza al login
 			router.push("/auth/login");
 			return;
 		}
 
-		// TODO: Implementare logica per avviare l'esame
-		console.log("Avvia esame con:", {
-			questionCount: questionCount[0],
-			evaluationModeId: selectedEvaluationMode,
-			classId: classData.id,
-		});
+		try {
+			setIsStarting(true);
+
+			// Avvia il quiz chiamando l'API
+			const { quizId } = await startAuthenticatedQuiz({
+				sectionId: classData.id, // Per exam mode, passiamo il classId come sectionId
+				questionCount: questionCount[0],
+				timeLimit: timerMinutes[0] * 60, // Converti in secondi
+				quizMode: "EXAM_SIMULATION",
+				evaluationModeId: selectedEvaluationMode,
+			});
+
+			// Naviga alla pagina del quiz
+			router.push(`/quiz/${quizId}`);
+		} catch (error) {
+			console.error("Errore nell'avvio dell'esame:", error);
+			// Potresti aggiungere un toast di errore qui
+		} finally {
+			setIsStarting(false);
+		}
 	};
 
 	const handleLoginPrompt = () => {
@@ -137,11 +155,20 @@ export default function ExamSimulationButton({
 								<>
 									<Button
 										onClick={handleStartExam}
-										disabled={totalQuestions === 0}
+										disabled={totalQuestions === 0 || isStarting}
 										className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 sm:w-auto"
 									>
-										<Play className="mr-2 h-4 w-4" />
-										Inizia Simulazione
+										{isStarting ? (
+											<>
+												<div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+												Avvio...
+											</>
+										) : (
+											<>
+												<Play className="mr-2 h-4 w-4" />
+												Inizia Simulazione
+											</>
+										)}
 									</Button>
 
 									<Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
@@ -225,6 +252,29 @@ export default function ExamSimulationButton({
 															))}
 														</SelectContent>
 													</Select>
+												</div>
+
+												<div className="space-y-4">
+													<Label
+														htmlFor="timer-minutes"
+														className="text-sm font-medium"
+													>
+														Tempo limite: {timerMinutes[0]} minuti
+													</Label>
+													<div className="px-3">
+														<Slider
+															id="timer-minutes"
+															min={10}
+															max={120}
+															step={5}
+															value={timerMinutes}
+															onValueChange={setTimerMinutes}
+															className="w-full"
+														/>
+													</div>
+													<p className="text-xs text-gray-500 dark:text-gray-400">
+														Da 10 a 120 minuti
+													</p>
 												</div>
 											</div>
 											<div className="flex flex-col space-y-2 border-t pt-4 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">

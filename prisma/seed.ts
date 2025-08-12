@@ -397,6 +397,29 @@ async function main() {
 		],
 	});
 
+	// Creazione sezioni "Exam Simulation" per tutte le classi
+	console.log("🎯 Creando sezioni Exam Simulation...");
+
+	const allClasses = [
+		informaticFoundations,
+		databaseClass,
+		softwareEngClass,
+		algebraClass,
+		businessClass,
+	];
+
+	for (const classData of allClasses) {
+		await prisma.section.create({
+			data: {
+				name: "Exam Simulation",
+				description: `Sezione per la simulazione d'esame della classe ${classData.name}`,
+				classId: classData.id,
+				isPublic: true,
+				position: 999, // Posizione alta per metterla alla fine
+			},
+		});
+	}
+
 	// Creazione domande
 	console.log("❓ Creando domande...");
 
