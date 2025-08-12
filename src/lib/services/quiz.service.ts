@@ -13,11 +13,9 @@ import {
 	QuizSection,
 	StartQuizRequest,
 } from "../types/quiz.types";
+import { UserService } from "./user.service";
 
-export class QuizService {
-	/**
-	 * Genera un quiz per utenti anonimi basato sulla sezione specificata
-	 */
+export class QuizService extends UserService {
 	static async generateGuestQuiz(params: GuestQuizRequest): Promise<GuestQuizResponse> {
 		const {
 			sectionId,
@@ -34,7 +32,6 @@ export class QuizService {
 			include: {
 				questions: {
 					where: {
-						// Filtra solo domande MULTIPLE_CHOICE e TRUE_FALSE per i quiz
 						questionType: {
 							in: ["MULTIPLE_CHOICE", "TRUE_FALSE"],
 						},
@@ -114,9 +111,6 @@ export class QuizService {
 		return { quiz };
 	}
 
-	/**
-	 * Avvia un quiz per un utente registrato
-	 */
 	static async startQuiz(params: StartQuizRequest): Promise<QuizAttemptResponse> {
 		const {
 			userId,
@@ -127,7 +121,6 @@ export class QuizService {
 			evaluationModeId,
 		} = params;
 
-		// Verifica che l'utente esista
 		const user = await prisma.user.findUnique({
 			where: { id: userId },
 		});
@@ -138,28 +131,19 @@ export class QuizService {
 
 		let questions: any[] = [];
 		let sectionData: any = null;
-		let actualSectionId: string = sectionId; // ID sezione da usare nel database
+		let actualSectionId: string = sectionId;
+
+		const permissions = await UserService.getUserPermissions(userId);
+		const whereClause = await super.getSectionWhereClause(actualSectionId, permissions);
 
 		if (quizMode === "EXAM_SIMULATION") {
-			// Per l'exam mode, prendiamo domande da tutte le sezioni della classe
 			const classData = await prisma.class.findFirst({
 				where: {
 					id: sectionId, // In exam mode, sectionId è in realtà il classId
 				},
 				include: {
 					sections: {
-						where: {
-							OR: [
-								{ isPublic: true },
-								{
-									access: {
-										some: {
-											userId: userId,
-										},
-									},
-								},
-							],
-						},
+						where: whereClause,
 						include: {
 							questions: {
 								where: {
@@ -182,7 +166,6 @@ export class QuizService {
 				throw new Error("Classe non trovata o accesso negato");
 			}
 
-			// Trova o crea la sezione "exam" per questa classe
 			let examSection = await prisma.section.findFirst({
 				where: {
 					classId: classData.id,
@@ -191,7 +174,6 @@ export class QuizService {
 			});
 
 			if (!examSection) {
-				// Crea la sezione exam se non esiste
 				examSection = await prisma.section.create({
 					data: {
 						name: "Exam Simulation",
@@ -202,13 +184,10 @@ export class QuizService {
 				});
 			}
 
-			// Usa l'ID della sezione exam per il database
 			actualSectionId = examSection.id;
 
-			// Raccogliamo tutte le domande da tutte le sezioni della classe
 			questions = classData.sections.flatMap(section => section.questions);
 
-			// Creiamo un oggetto sezione per mantenere la compatibilità
 			sectionData = {
 				id: examSection.id,
 				name: `Esame Simulato - ${classData.name}`,
@@ -217,20 +196,9 @@ export class QuizService {
 				questions: questions,
 			};
 		} else {
-			// Per lo study mode, manteniamo la logica esistente
 			sectionData = await prisma.section.findFirst({
 				where: {
 					id: sectionId,
-					OR: [
-						{ isPublic: true },
-						{
-							access: {
-								some: {
-									userId: userId,
-								},
-							},
-						},
-					],
 				},
 				include: {
 					questions: {
@@ -263,7 +231,6 @@ export class QuizService {
 			throw new Error("Nessuna domanda disponibile per il quiz");
 		}
 
-		// Verifica che la modalità di valutazione esista
 		const evaluationMode = await prisma.evaluationMode.findUnique({
 			where: { id: evaluationModeId },
 		});
@@ -272,14 +239,12 @@ export class QuizService {
 			throw new Error("Modalità di valutazione non trovata");
 		}
 
-		// Seleziona le domande random
 		const selectedQuestions = QuizService.selectRandomItems(questions, questionCount);
 
-		// Crea il quiz nel database
 		const quiz = await prisma.quiz.create({
 			data: {
 				timeLimit,
-				sectionId: actualSectionId, // Usa l'ID della sezione corretta
+				sectionId: actualSectionId,
 				evaluationModeId,
 				quizMode,
 				questions: {
@@ -303,16 +268,14 @@ export class QuizService {
 			},
 		});
 
-		// Crea il quiz attempt
 		const quizAttempt = await prisma.quizAttempt.create({
 			data: {
 				userId,
 				quizId: quiz.id,
-				score: 0, // Sarà aggiornato al completamento
+				score: 0,
 			},
 		});
 
-		// Prepara la risposta
 		const quizSection: QuizSection = {
 			id: sectionData.id,
 			name: sectionData.name,
@@ -363,13 +326,10 @@ export class QuizService {
 		};
 	}
 
-	/**
-	 * Completa un quiz e salva i progressi
-	 */
+
 	static async completeQuiz(params: CompleteQuizRequest): Promise<QuizResult> {
 		const { userId, quizAttemptId, answers, timeSpent } = params;
 
-		// Verifica che il quiz attempt esista e appartenga all'utente
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
 				id: quizAttemptId,
@@ -395,12 +355,10 @@ export class QuizService {
 			throw new Error("Quiz attempt non trovato");
 		}
 
-		// Verifica che il quiz non sia già stato completato
 		if (quizAttempt.answers.length > 0) {
 			throw new Error("Quiz già completato");
 		}
 
-		// Calcola i punteggi e salva le risposte
 		let totalScore = 0;
 		let correctAnswers = 0;
 		const savedAnswers: AnswerAttempt[] = [];
@@ -526,16 +484,6 @@ export class QuizService {
 			throw new Error("Quiz attempt non trovato");
 		}
 
-		// Verifica che il quiz non sia già stato completato
-		if (quizAttempt.completedAt) {
-			throw new Error("Quiz già completato");
-		}
-
-		// Cancella in cascata: prima gli answer attempts, poi il quiz attempt, poi il quiz
-		// Gli answer attempts vengono cancellati automaticamente tramite la foreign key cascade
-		// Le quiz questions vengono cancellate automaticamente tramite la foreign key cascade
-
-		// Elimina il quiz attempt
 		await prisma.quizAttempt.delete({
 			where: { id: quizAttemptId },
 		});
