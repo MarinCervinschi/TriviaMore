@@ -3,14 +3,19 @@
 import { ReactNode, useEffect, useMemo } from "react";
 
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
-import { getQueryClient } from "./get-query-client";
+const persistentClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: Infinity,
+			gcTime: 1000 * 60 * 60 * 24 * 7, // 1 settimana
+		},
+	},
+});
 
 export function ReactQueryProviders({ children }: { children: ReactNode }) {
-	const persistentClient = getQueryClient();
-
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			const persister = createAsyncStoragePersister({
@@ -29,14 +34,14 @@ export function ReactQueryProviders({ children }: { children: ReactNode }) {
 				},
 			});
 		}
-	}, [persistentClient]);
+	}, []);
 
 	return (
 		<QueryClientProvider client={persistentClient}>{children}</QueryClientProvider>
 	);
 }
 
-export function useVolatileQuery(options: any) {
+export function useVolatileQuery<TQueryFnData = unknown, TError = Error>(options: any) {
 	const modifiedOptions = useMemo(
 		() => ({
 			...options,
@@ -47,5 +52,5 @@ export function useVolatileQuery(options: any) {
 		[options]
 	);
 
-	return useQuery(modifiedOptions);
+	return useQuery<TQueryFnData, TError>(modifiedOptions);
 }
