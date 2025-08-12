@@ -31,11 +31,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 
 		return (
 			<AppLayout user={session.user}>
-				<QuizResultsPageComponent
-					attemptId={resolvedParams.attemptId}
-					user={session.user}
-					results={results}
-				/>
+				<QuizResultsPageComponent results={results} />
 			</AppLayout>
 		);
 	} catch (error) {

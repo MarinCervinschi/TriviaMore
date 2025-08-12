@@ -76,14 +76,13 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 		return NextResponse.json(null, {
 			status: 200,
 			headers: {
-				Location: `/results/${quizAttemptId}`,
+				Location: `/quiz/results/${quizAttemptId}`,
 			},
 		});
 	} catch (error) {
 		console.error("Error completing quiz:", error);
 
 		if (error instanceof Error) {
-			// Errori specifici del business logic
 			if (
 				error.message === "Quiz attempt non trovato" ||
 				error.message === "Quiz attempt non appartiene all'utente"

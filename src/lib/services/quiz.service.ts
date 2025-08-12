@@ -2,13 +2,10 @@ import { QuizMode } from "@prisma/client";
 
 import { prisma } from "../prisma";
 import {
-	AnswerAttempt,
 	CompleteQuizRequest,
 	EvaluationMode,
 	GuestQuizRequest,
-	GuestQuizResponse,
 	Quiz,
-	QuizAttemptResponse,
 	QuizResult,
 	QuizSection,
 	StartQuizRequest,
@@ -16,7 +13,7 @@ import {
 import { UserService } from "./user.service";
 
 export class QuizService extends UserService {
-	static async generateGuestQuiz(params: GuestQuizRequest): Promise<GuestQuizResponse> {
+	static async generateGuestQuiz(params: GuestQuizRequest): Promise<{ quiz: Quiz }> {
 		const {
 			sectionId,
 			questionCount = 30,
@@ -111,7 +108,7 @@ export class QuizService extends UserService {
 		return { quiz };
 	}
 
-	static async startQuiz(params: StartQuizRequest): Promise<QuizAttemptResponse> {
+	static async startQuiz(params: StartQuizRequest): Promise<{ quizId: string }> {
 		const {
 			userId,
 			sectionId,
@@ -268,7 +265,7 @@ export class QuizService extends UserService {
 			},
 		});
 
-		const quizAttempt = await prisma.quizAttempt.create({
+		await prisma.quizAttempt.create({
 			data: {
 				userId,
 				quizId: quiz.id,
@@ -276,29 +273,56 @@ export class QuizService extends UserService {
 			},
 		});
 
-		const quizSection: QuizSection = {
-			id: sectionData.id,
-			name: sectionData.name,
-			class: {
-				name: sectionData.class.name,
-				course: {
-					name: sectionData.class.course.name,
-					department: {
-						name: sectionData.class.course.department.name,
+		return {
+			quizId: quiz.id,
+		};
+	}
+
+	static async getUserQuiz(
+		userId: string,
+		quizId: string
+	): Promise<{ quiz: Quiz; attemptId: string }> {
+		const quizAttempt = await prisma.quizAttempt.findFirst({
+			where: {
+				userId,
+				quizId,
+			},
+			include: {
+				quiz: {
+					include: {
+						questions: {
+							include: {
+								question: true,
+							},
+							orderBy: {
+								order: "asc",
+							},
+						},
+						section: {
+							include: {
+								class: {
+									include: {
+										course: {
+											include: {
+												department: true,
+											},
+										},
+									},
+								},
+							},
+						},
+						evaluationMode: true,
 					},
 				},
 			},
-		};
+		});
 
-		const evaluationModeResponse: EvaluationMode = {
-			name: evaluationMode.name,
-			description: evaluationMode.description || undefined,
-			correctAnswerPoints: evaluationMode.correctAnswerPoints,
-			incorrectAnswerPoints: evaluationMode.incorrectAnswerPoints,
-			partialCreditEnabled: evaluationMode.partialCreditEnabled,
-		};
+		if (!quizAttempt) {
+			throw new Error("Quiz attempt non trovato");
+		}
 
-		const formattedQuestions = quiz.questions.map(qq => ({
+		const quiz = quizAttempt.quiz;
+		const formattedQuestions = quiz.questions.map((qq: any) => ({
 			id: qq.question.id,
 			content: qq.question.content,
 			questionType: qq.question.questionType,
@@ -311,21 +335,42 @@ export class QuizService extends UserService {
 			order: qq.order,
 		}));
 
-		const quizResponse: Quiz = {
+		const quizSection: QuizSection = {
+			id: quiz.section.id,
+			name: quiz.section.name,
+			class: {
+				name: quiz.section.class.name,
+				course: {
+					name: quiz.section.class.course.name,
+					department: {
+						name: quiz.section.class.course.department.name,
+					},
+				},
+			},
+		};
+
+		const evaluationMode: EvaluationMode = {
+			name: quiz.evaluationMode.name,
+			description: quiz.evaluationMode.description || undefined,
+			correctAnswerPoints: quiz.evaluationMode.correctAnswerPoints,
+			incorrectAnswerPoints: quiz.evaluationMode.incorrectAnswerPoints,
+			partialCreditEnabled: quiz.evaluationMode.partialCreditEnabled,
+		};
+
+		const formattedQuiz: Quiz = {
 			id: quiz.id,
 			timeLimit: quiz.timeLimit || undefined,
 			quizMode: quiz.quizMode,
 			section: quizSection,
-			evaluationMode: evaluationModeResponse,
+			evaluationMode,
 			questions: formattedQuestions,
 		};
 
 		return {
+			quiz: formattedQuiz,
 			attemptId: quizAttempt.id,
-			quiz: quizResponse,
 		};
 	}
-
 
 	static async completeQuiz(params: CompleteQuizRequest): Promise<void> {
 		const { userId, quizAttemptId, answers, totalScore, timeSpent } = params;
@@ -395,7 +440,6 @@ export class QuizService extends UserService {
 			timeSpent,
 			totalQuestions: quizAttempt.quiz.questions.length,
 		});
-
 	}
 
 	/**
@@ -480,7 +524,10 @@ export class QuizService extends UserService {
 	/**
 	 * Recupera i risultati di un quiz attempt specifico
 	 */
-	static async getQuizResults(attemptId: string, userId: string): Promise<QuizResult | null> {
+	static async getQuizResults(
+		attemptId: string,
+		userId: string
+	): Promise<QuizResult | null> {
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
 				id: attemptId,

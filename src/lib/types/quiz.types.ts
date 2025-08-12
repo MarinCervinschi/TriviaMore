@@ -116,12 +116,3 @@ export interface QuizResult {
 	quiz: QuizResultDetails;
 	answers: QuizResultAnswer[];
 }
-
-export interface QuizAttemptResponse {
-	attemptId: string;
-	quiz: Quiz;
-}
-
-export interface GuestQuizResponse {
-	quiz: Quiz;
-}
