@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 
 import { User } from "next-auth";
-import { toast } from "sonner";
 
-import { useQuiz, useQuizCleanup, useQuizCompletion, useQuizExit } from "@/hooks";
+import { useQuizData, useQuizMutations } from "@/hooks";
+import { clearQuizSession } from "@/lib/utils/quiz-session";
 
 import { QuizContainer } from "./QuizContainer";
 import { QuizLoader } from "./QuizLoader";
@@ -22,19 +22,13 @@ export default function QuizPageComponent({
 	user,
 }: QuizPageComponentProps) {
 	const router = useRouter();
-	const { clearQuizData } = useQuizCleanup();
-	const { completeQuiz, error: completionError } = useQuizCompletion();
-	const { exitQuiz } = useQuizExit();
-
-	const { quiz, attemptId, isLoading, error } = useQuiz({
-		quizId,
-		isGuest,
-		user,
-	});
+	const { completeQuiz, exitQuiz } = useQuizMutations();
+	const { data, isLoading, error } = useQuizData(quizId, isGuest);
+	const { quiz, attemptId } = data || {};
 
 	const handleQuizComplete = async (results: any) => {
 		if (isGuest) {
-			clearQuizData(quizId, true);
+			clearQuizSession(quizId);
 			return;
 		}
 
@@ -43,67 +37,40 @@ export default function QuizPageComponent({
 			return;
 		}
 
-		try {
-			await completeQuiz(
-				{
-					quizAttemptId: attemptId,
-					answers: results.answers.map((answer: any) => ({
-						questionId: answer.questionId,
-						userAnswer: answer.answer,
-						score: answer.score,
-					})),
-					timeSpent: results.timeSpent,
-				},
-				{
-					onSuccess: redirectUrl => {
-						clearQuizData(quizId, false);
-						const targetUrl = redirectUrl || `/quiz/results/${attemptId}`;
-						router.push(targetUrl);
-					},
-					onError: error => {
-						console.error("Errore nel completamento del quiz:", error);
-						toast.error("Errore nel completamento del quiz");
-					},
-				}
-			);
-		} catch (error) {
-			console.error("Errore nel completamento del quiz:", error);
-			toast.error("Errore nel completamento del quiz");
-		}
+		await completeQuiz.mutateAsync({
+			quizId,
+			quizAttemptId: attemptId,
+			answers: results.answers.map((answer: any) => ({
+				questionId: answer.questionId,
+				userAnswer: answer.answer,
+				score: answer.score,
+			})),
+			timeSpent: results.timeSpent,
+		});
 	};
 
 	const handleQuizExit = async () => {
-		try {
-			await exitQuiz(isGuest, attemptId, {
-				onSuccess: () => {
-					clearQuizData(quizId, isGuest);
-					router.back();
-				},
-				onError: error => {
-					console.error("Errore nell'uscita dal quiz:", error);
-					toast.error("Errore nell'uscita dal quiz");
-					router.back();
-				},
-			});
-		} catch (error) {
-			console.error("Errore nell'uscita dal quiz:", error);
+		if (isGuest) {
+			clearQuizSession(quizId);
 			router.back();
 		}
-	};
 
+		if (!attemptId) return;
+
+		exitQuiz.mutateAsync({ quizAttemptId: attemptId });
+	};
 	if (isLoading) {
 		return <QuizLoader />;
 	}
 
-	if (error || completionError) {
-		const displayError = error || completionError;
+	if (error) {
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 				<div className="text-center">
 					<h1 className="mb-4 text-2xl font-bold text-red-600 dark:text-red-400">
 						Errore
 					</h1>
-					<p className="mb-4 text-gray-700 dark:text-gray-300">{displayError}</p>
+					<p className="mb-4 text-gray-700 dark:text-gray-300">{error.message}</p>
 					<button
 						onClick={() => router.back()}
 						className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"

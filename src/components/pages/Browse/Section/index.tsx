@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
-import { useStartQuizMutation } from "@/hooks";
-import { saveQuizDataToSession } from "@/lib/utils/authenticated-quiz";
+import { useQuizMutations } from "@/hooks";
 import { createQuizSession } from "@/lib/utils/quiz-session";
 
 import { FlashcardCard } from "./FlashcardCard";
@@ -73,7 +72,7 @@ export default function SectionPageComponent({
 	evaluationModes = [],
 }: SectionPageComponentProps) {
 	const router = useRouter();
-	const startQuizMutation = useStartQuizMutation();
+	const { startQuiz, isLoading } = useQuizMutations();
 
 	const totalQuestions = sectionData._count.questions;
 	const defaultQuestionCount = Math.min(20, totalQuestions);
@@ -98,16 +97,7 @@ export default function SectionPageComponent({
 				evaluationModeId: selectedEvaluationMode,
 			};
 
-			startQuizMutation.mutate(quizParams, {
-				onSuccess: result => {
-					saveQuizDataToSession(result.quizId, result.quiz, result.attemptId);
-					router.push(`/quiz/${result.quizId}`);
-				},
-				onError: error => {
-					console.error("Errore nell'avvio del quiz:", error);
-					toast.error(error.message || "Errore nell'avvio del quiz");
-				},
-			});
+			await startQuiz.mutateAsync(quizParams);
 		} else {
 			try {
 				const quizParams = {
@@ -182,7 +172,7 @@ export default function SectionPageComponent({
 						totalQuestions={totalQuestions}
 						isUserLoggedIn={isUserLoggedIn}
 						onStartQuiz={handleStartQuiz}
-						isLoading={startQuizMutation.isPending}
+						isLoading={isLoading}
 						questionCount={quizQuestionCount}
 						onQuestionCountChange={setQuizQuestionCount}
 						timeLimit={quizTimeLimit}

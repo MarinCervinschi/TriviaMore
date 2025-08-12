@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Info, Lock, Play, Settings } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,8 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useStartQuizMutation } from "@/hooks";
-import { saveQuizDataToSession } from "@/lib/utils/authenticated-quiz";
+import { useQuizMutations } from "@/hooks";
 
 interface EvaluationMode {
 	id: string;
@@ -60,7 +58,7 @@ export default function ExamSimulationButton({
 	evaluationModes,
 }: ExamSimulationButtonProps) {
 	const router = useRouter();
-	const startQuizMutation = useStartQuizMutation();
+	const { startQuiz, isLoading } = useQuizMutations();
 
 	const totalQuestions = classData.sections.reduce(
 		(acc, section) => acc + section._count.questions,
@@ -84,21 +82,12 @@ export default function ExamSimulationButton({
 		const quizParams = {
 			sectionId: classData.id,
 			questionCount: questionCount[0],
-			timeLimit: timerMinutes[0] * 60, // Converti in secondi
+			timeLimit: timerMinutes[0],
 			quizMode: "EXAM_SIMULATION" as const,
 			evaluationModeId: selectedEvaluationMode,
 		};
 
-		startQuizMutation.mutate(quizParams, {
-			onSuccess: result => {
-				saveQuizDataToSession(result.quizId, result.quiz, result.attemptId);
-				router.push(`/quiz/${result.quizId}`);
-			},
-			onError: error => {
-				console.error("Errore nell'avvio dell'esame:", error);
-				toast.error(error.message || "Errore nell'avvio dell'esame");
-			},
-		});
+		await startQuiz.mutateAsync(quizParams);
 	};
 
 	const handleLoginPrompt = () => {
@@ -151,10 +140,10 @@ export default function ExamSimulationButton({
 								<>
 									<Button
 										onClick={handleStartExam}
-										disabled={totalQuestions === 0 || startQuizMutation.isPending}
+										disabled={totalQuestions === 0 || isLoading}
 										className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 sm:w-auto"
 									>
-										{startQuizMutation.isPending ? (
+										{isLoading ? (
 											<>
 												<div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
 												Avvio...

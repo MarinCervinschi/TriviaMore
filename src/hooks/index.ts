@@ -1,9 +1,3 @@
 export { useTheme } from "./useTheme";
-export { useQuiz, useQuizCleanup } from "./useQuiz";
-export {
-	useStartQuizMutation,
-	useCancelQuizMutation,
-	useCompleteQuizMutation,
-	useQuizCompletion,
-	useQuizExit,
-} from "./useQuizMutations";
+export { useQuizData } from "./useQuizData";
+export { useQuizMutations } from "./useQuizMutations";
