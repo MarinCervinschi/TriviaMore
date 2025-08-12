@@ -10,19 +10,15 @@ export function SimpleThemeToggle() {
 
 	if (!mounted) {
 		return (
-			<Button variant="outline" size="icon" disabled>
-				<Sun className="h-[1.2rem] w-[1.2rem]" />
+			<Button variant="ghost" size="sm" disabled>
+				<Sun className="h-4 w-4" />
 			</Button>
 		);
 	}
 
 	return (
-		<Button variant="outline" size="icon" onClick={toggleTheme}>
-			{isDark ? (
-				<Sun className="h-[1.2rem] w-[1.2rem]" />
-			) : (
-				<Moon className="h-[1.2rem] w-[1.2rem]" />
-			)}
+		<Button variant="ghost" size="sm" onClick={toggleTheme}>
+			{isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
 			<span className="sr-only">Cambia tema</span>
 		</Button>
 	);

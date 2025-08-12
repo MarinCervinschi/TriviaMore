@@ -45,12 +45,13 @@ export interface EvaluationMode {
 export interface GuestQuizRequest {
 	sectionId: string;
 	questionCount?: number;
+	timeLimit?: number;
 	quizMode?: QuizMode;
 }
 
 export interface StartQuizRequest {
+	userId: string;
 	sectionId: string;
-	difficulty?: Difficulty;
 	questionCount?: number;
 	timeLimit?: number;
 	quizMode: QuizMode;
@@ -64,9 +65,46 @@ export interface AnswerAttempt {
 }
 
 export interface CompleteQuizRequest {
+	userId: string;
 	quizAttemptId: string;
 	answers: AnswerAttempt[];
+	totalScore: number;
 	timeSpent: number;
+}
+
+export interface QuizResultAnswer {
+	questionId: string;
+	userAnswer: string[];
+	isCorrect: boolean;
+	score: number;
+	question: {
+		content: string;
+		correctAnswer: string[];
+	};
+}
+
+export interface QuizResultQuestion {
+	id: string;
+	content: string;
+	options: string[];
+	correctAnswer: string[];
+}
+
+export interface QuizResultDetails {
+	id: string;
+	title: string;
+	description: string;
+	section: {
+		name: string;
+		class: {
+			name: string;
+			course: {
+				name: string;
+			};
+		};
+	};
+	questions: QuizResultQuestion[];
+	evaluationMode: EvaluationMode;
 }
 
 export interface QuizResult {
@@ -75,14 +113,6 @@ export interface QuizResult {
 	totalQuestions: number;
 	correctAnswers: number;
 	timeSpent: number;
-	answers: AnswerAttempt[];
-}
-
-export interface QuizAttemptResponse {
-	attemptId: string;
-	quiz: Quiz;
-}
-
-export interface GuestQuizResponse {
-	quiz: Quiz;
+	quiz: QuizResultDetails;
+	answers: QuizResultAnswer[];
 }

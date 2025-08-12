@@ -4,6 +4,11 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { toast } from "sonner";
+
+import { useQuizMutations } from "@/hooks";
+import { createQuizSession } from "@/lib/utils/quiz-session";
+
 import { FlashcardCard } from "./FlashcardCard";
 import { QuizCard } from "./QuizCard";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
@@ -67,30 +72,51 @@ export default function SectionPageComponent({
 	evaluationModes = [],
 }: SectionPageComponentProps) {
 	const router = useRouter();
+	const { startQuiz, isLoading } = useQuizMutations();
 
-	// Stati per le impostazioni del quiz
 	const totalQuestions = sectionData._count.questions;
 	const defaultQuestionCount = Math.min(20, totalQuestions);
 	const [quizQuestionCount, setQuizQuestionCount] = useState([defaultQuestionCount]);
+	const [quizTimeLimit, setQuizTimeLimit] = useState([30]); // Default 30 minuti
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
 		evaluationModes.length > 0 ? evaluationModes[0].id : ""
 	);
 	const [isQuizSettingsOpen, setIsQuizSettingsOpen] = useState(false);
 
-	// Stati per le impostazioni delle flashcard
 	const defaultFlashcardCount = Math.min(10, totalQuestions);
 	const [flashcardCount, setFlashcardCount] = useState([defaultFlashcardCount]);
 	const [isFlashcardSettingsOpen, setIsFlashcardSettingsOpen] = useState(false);
 
-	const handleStartQuiz = () => {
-		// TODO: Implementare logica per avviare il quiz
-		console.log("Avvia quiz con:", {
-			questionCount: quizQuestionCount[0],
-			evaluationModeId: selectedEvaluationMode,
-			sectionId: sectionData.id,
-		});
-	};
+	const handleStartQuiz = async () => {
+		if (isUserLoggedIn && selectedEvaluationMode) {
+			const quizParams = {
+				sectionId: sectionData.id,
+				questionCount: quizQuestionCount[0],
+				timeLimit: quizTimeLimit[0],
+				quizMode: "STUDY" as const,
+				evaluationModeId: selectedEvaluationMode,
+			};
 
+			await startQuiz.mutateAsync(quizParams);
+		} else {
+			try {
+				const quizParams = {
+					sectionId: sectionData.id,
+					questionCount: quizQuestionCount[0],
+					timeLimit: quizTimeLimit[0],
+					...(isUserLoggedIn &&
+						selectedEvaluationMode && { evaluationModeId: selectedEvaluationMode }),
+				};
+
+				const sessionId = createQuizSession(quizParams);
+
+				router.push(`/quiz/${sessionId}`);
+			} catch (error) {
+				console.error("Errore nell'avvio del quiz guest:", error);
+				toast.error("Errore nell'avvio del quiz");
+			}
+		}
+	};
 	const handleStartFlashcards = () => {
 		// TODO: Implementare logica per avviare le flashcard
 		console.log("Avvia flashcard con:", {
@@ -146,8 +172,11 @@ export default function SectionPageComponent({
 						totalQuestions={totalQuestions}
 						isUserLoggedIn={isUserLoggedIn}
 						onStartQuiz={handleStartQuiz}
+						isLoading={isLoading}
 						questionCount={quizQuestionCount}
 						onQuestionCountChange={setQuizQuestionCount}
+						timeLimit={quizTimeLimit}
+						onTimeLimitChange={setQuizTimeLimit}
 						evaluationModes={evaluationModes}
 						selectedEvaluationMode={selectedEvaluationMode}
 						onEvaluationModeChange={setSelectedEvaluationMode}

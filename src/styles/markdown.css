@@ -1,0 +1,108 @@
+/* Stili personalizzati per il Markdown nelle domande e risposte */
+
+/* Formule matematiche */
+.katex {
+	font-size: 1.1em;
+}
+
+.katex-display {
+	margin: 1em 0;
+}
+
+/* Markdown nelle domande */
+.question-markdown {
+	line-height: 1.6;
+}
+
+.question-markdown p {
+	margin-bottom: 0.5em;
+}
+
+.question-markdown p:last-child {
+	margin-bottom: 0;
+}
+
+.question-markdown strong {
+	font-weight: 600;
+}
+
+.question-markdown em {
+	font-style: italic;
+}
+
+.question-markdown code {
+	background-color: rgba(0, 0, 0, 0.05);
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 0.9em;
+}
+
+.dark .question-markdown code {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Markdown nelle opzioni */
+.option-markdown {
+	line-height: 1.5;
+}
+
+.option-markdown p {
+	margin: 0;
+}
+
+.option-markdown strong {
+	font-weight: 600;
+}
+
+.option-markdown em {
+	font-style: italic;
+}
+
+.option-markdown code {
+	background-color: rgba(0, 0, 0, 0.05);
+	padding: 0.1em 0.3em;
+	border-radius: 2px;
+	font-size: 0.85em;
+}
+
+.dark .option-markdown code {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tabelle nel markdown */
+.question-markdown table,
+.option-markdown table {
+	font-size: 0.9em;
+	margin: 0.5em 0;
+}
+
+.question-markdown th,
+.option-markdown th {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .question-markdown th,
+.dark .option-markdown th {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Quiz Header responsive improvements */
+.quiz-header {
+	min-height: 60px;
+}
+
+@media (max-width: 640px) {
+	.quiz-header {
+		min-height: 56px;
+	}
+
+	.quiz-title {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.quiz-subtitle {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+}
