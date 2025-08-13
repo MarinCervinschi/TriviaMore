@@ -49,6 +49,23 @@ export interface UserProfileData {
 			};
 		}>;
 	};
+	recentClasses?: Array<{
+		id: string;
+		name: string;
+		code: string;
+		classYear: number;
+		course: {
+			id: string;
+			name: string;
+			code: string;
+			courseType: string;
+			department: {
+				id: string;
+				name: string;
+				code: string;
+			};
+		};
+	}>;
 	stats?: {
 		totalQuizzes: number;
 		averageScore: number;
@@ -409,83 +426,102 @@ export class UserService {
 
 			const stats = this.calculateUserStats(allQuizAttempts);
 
-			return {
-				...user,
-				recentActivity: {
-					quizAttempts: user.quizAttempts,
-				},
-				stats,
-			};
-		} catch (error) {
-			console.error("Error fetching user profile:", error);
-			return null;
-		}
-	}
-
-	/**
-	 * Get user recent activity (all quiz attempts)
-	 */
-	static async getUserRecentActivity(userId: string) {
-		try {
-			const quizAttempts = await prisma.quizAttempt.findMany({
-				where: { userId },
-				orderBy: { completedAt: "desc" },
-				include: {
-					quiz: {
-						include: {
-							questions: true,
-							evaluationMode: true,
-							section: {
-								include: {
-									class: {
-										include: {
-											course: {
-												include: {
-													department: true,
-												},
-											},
+			// Get recent classes based on quiz attempts
+			const recentClassesFromQuizzes = await prisma.class.findMany({
+				where: {
+					sections: {
+						some: {
+							quizzes: {
+								some: {
+									attempts: {
+										some: {
+											userId: userId,
 										},
 									},
 								},
 							},
 						},
 					},
-					answers: true,
 				},
-			});
-
-			// Map the data to match the expected interface
-			return quizAttempts.map(attempt => ({
-				id: attempt.id,
-				score: attempt.score,
-				totalQuestions: attempt.quiz.questions.length,
-				correctAnswers: attempt.answers.filter(answer => answer.score > 0).length,
-				completedAt: attempt.completedAt,
-				duration: attempt.timeSpent,
-				evaluationMode:
-					attempt.quiz.evaluationMode.name === "Study Mode"
-						? ("STUDY" as const)
-						: ("EXAM" as const),
-				section: {
-					id: attempt.quiz.section.id,
-					name: attempt.quiz.section.name,
-					class: {
-						id: attempt.quiz.section.class.id,
-						name: attempt.quiz.section.class.name,
-						course: {
-							id: attempt.quiz.section.class.course.id,
-							name: attempt.quiz.section.class.course.name,
-							department: {
-								id: attempt.quiz.section.class.course.department.id,
-								name: attempt.quiz.section.class.course.department.name,
+				include: {
+					course: {
+						include: {
+							department: true,
+						},
+					},
+					sections: {
+						include: {
+							quizzes: {
+								include: {
+									attempts: {
+										where: { userId },
+										orderBy: { completedAt: "desc" },
+										take: 1,
+									},
+								},
 							},
 						},
 					},
 				},
-			}));
+				orderBy: {
+					sections: {
+						_count: "desc",
+					},
+				},
+				take: 10,
+			});
+
+			// Sort by most recent quiz attempt and limit to 5
+			const recentClasses = recentClassesFromQuizzes
+				.map(classItem => {
+					const mostRecentAttempt = classItem.sections
+						.flatMap(section => section.quizzes)
+						.flatMap(quiz => quiz.attempts)
+						.sort(
+							(a, b) =>
+								new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+						)[0];
+
+					return {
+						...classItem,
+						mostRecentAttemptDate: mostRecentAttempt?.completedAt || new Date(0),
+					};
+				})
+				.sort(
+					(a, b) =>
+						new Date(b.mostRecentAttemptDate).getTime() -
+						new Date(a.mostRecentAttemptDate).getTime()
+				)
+				.slice(0, 5)
+				.map(classItem => ({
+					id: classItem.id,
+					name: classItem.name,
+					code: classItem.code,
+					classYear: classItem.classYear,
+					course: {
+						id: classItem.course.id,
+						name: classItem.course.name,
+						code: classItem.course.code,
+						courseType: classItem.course.courseType,
+						department: {
+							id: classItem.course.department.id,
+							name: classItem.course.department.name,
+							code: classItem.course.department.code,
+						},
+					},
+				}));
+
+			return {
+				...user,
+				recentActivity: {
+					quizAttempts: user.quizAttempts,
+				},
+				recentClasses,
+				stats,
+			};
 		} catch (error) {
-			console.error("Error fetching user activity:", error);
-			return [];
+			console.error("Error fetching user profile:", error);
+			return null;
 		}
 	}
 
