@@ -52,14 +52,12 @@ interface CoursePageComponentProps {
 	course: Course;
 	filters: CourseFilters;
 	departmentCode: string;
-	isUserLoggedIn?: boolean;
 }
 
 export default function CoursePageComponent({
 	course,
 	filters: initialFilters,
 	departmentCode,
-	isUserLoggedIn = false,
 }: CoursePageComponentProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -126,7 +124,7 @@ export default function CoursePageComponent({
 					courseName={course.name}
 				/>
 
-				<CourseHeader course={course} showAddButton={isUserLoggedIn} />
+				<CourseHeader course={course} />
 
 				<CourseFilters
 					filters={filters}
