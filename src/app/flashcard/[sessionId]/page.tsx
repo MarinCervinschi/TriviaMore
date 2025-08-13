@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import FlashcardPageComponent from "@/components/pages/Flashcard";
 import { auth } from "@/lib/auth";
 
 interface FlashcardPageProps {
@@ -14,24 +15,12 @@ export default async function FlashcardPage({ params }: FlashcardPageProps) {
 
 	const isGuest = resolvedParams.sessionId.startsWith("guest-");
 
-	// TODO: Implementare il componente Flashcard
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-			<div className="text-center">
-				<h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-					Flashcard Page
-				</h1>
-				<p className="mb-4 text-gray-700 dark:text-gray-300">
-					Session ID: {resolvedParams.sessionId}
-				</p>
-				<p className="mb-4 text-gray-700 dark:text-gray-300">
-					Is Guest: {isGuest ? "Yes" : "No"}
-				</p>
-				<p className="text-gray-700 dark:text-gray-300">
-					User: {session?.user?.name || "Not logged in"}
-				</p>
-			</div>
-		</div>
+		<FlashcardPageComponent
+			sessionId={resolvedParams.sessionId}
+			isGuest={isGuest}
+			user={session?.user}
+		/>
 	);
 }
 
