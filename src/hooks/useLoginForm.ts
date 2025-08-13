@@ -60,7 +60,7 @@ export const useLoginForm = () => {
 				handleAuthError(result.error);
 			} else if (result?.ok) {
 				toast.success("Accesso effettuato con successo!");
-				router.push("/dashboard");
+				router.push("/user");
 			} else {
 				setError("root", {
 					message: "Si è verificato un errore imprevisto durante l'accesso.",
