@@ -603,42 +603,6 @@ export class UserService {
 	}
 
 	/**
-	 * Get user bookmarks
-	 */
-	static async getUserBookmarks(userId: string) {
-		try {
-			const bookmarks = await prisma.bookmark.findMany({
-				where: { userId },
-				include: {
-					question: {
-						include: {
-							section: {
-								include: {
-									class: {
-										include: {
-											course: {
-												include: {
-													department: true,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				orderBy: { createdAt: "desc" },
-			});
-
-			return bookmarks;
-		} catch (error) {
-			console.error("Error fetching user bookmarks:", error);
-			return [];
-		}
-	}
-
-	/**
 	 * Calculate user statistics from Progress data
 	 */
 	private static calculateUserStatsFromProgress(progressData: any[]): UserProfileStats {
