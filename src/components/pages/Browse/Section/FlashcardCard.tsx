@@ -10,6 +10,7 @@ interface FlashcardCardProps {
 	totalQuestions: number;
 	isUserLoggedIn: boolean;
 	onStartFlashcards: () => void;
+	isLoading?: boolean;
 	// Settings props
 	cardCount: number[];
 	onCardCountChange: (value: number[]) => void;
@@ -22,6 +23,7 @@ export function FlashcardCard({
 	totalQuestions,
 	isUserLoggedIn,
 	onStartFlashcards,
+	isLoading = false,
 	cardCount,
 	onCardCountChange,
 	isSettingsOpen,
@@ -55,11 +57,11 @@ export function FlashcardCard({
 					<div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-3 sm:space-y-0">
 						<Button
 							onClick={onStartFlashcards}
-							disabled={totalQuestions === 0}
+							disabled={totalQuestions === 0 || isLoading}
 							className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 sm:w-auto"
 						>
 							<BookOpen className="mr-2 h-4 w-4" />
-							Inizia Flashcard
+							{isLoading ? "Avvio..." : "Inizia Flashcard"}
 						</Button>
 
 						{isUserLoggedIn && (
