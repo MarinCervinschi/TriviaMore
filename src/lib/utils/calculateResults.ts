@@ -1,4 +1,4 @@
-import { EvaluationMode, QuizQuestion } from "@/lib/types/quiz.types";
+import { EvaluationMode, QuizQuestion, QuizResult } from "@/lib/types/quiz.types";
 
 export interface UserAnswer {
 	questionId: string;
@@ -7,20 +7,16 @@ export interface UserAnswer {
 	score?: number;
 }
 
-export interface QuizResults {
-	totalScore: number;
-	correctAnswers: number;
-	totalQuestions: number;
-	timeSpent: number;
-	answers: UserAnswer[];
-	evaluationMode: EvaluationMode;
-}
+// Usa l'interfaccia unificata da quiz.types.ts
+export type QuizResults = QuizResult;
 
 export interface CalculateResultsParams {
 	userAnswers: UserAnswer[];
 	questions: QuizQuestion[];
 	evaluationMode: EvaluationMode;
 	startTime: number;
+	quizId: string;
+	quizTitle: string;
 }
 
 export function calculateAnswerScore(
@@ -73,7 +69,8 @@ export function calculateAnswerScore(
 }
 
 export function calculateQuizResults(params: CalculateResultsParams): QuizResults {
-	const { userAnswers, questions, evaluationMode, startTime } = params;
+	const { userAnswers, questions, evaluationMode, startTime, quizId, quizTitle } =
+		params;
 
 	let totalScore = 0;
 	let correctAnswers = 0;
@@ -103,48 +100,29 @@ export function calculateQuizResults(params: CalculateResultsParams): QuizResult
 			score,
 		};
 	});
+	const maxScore = questions.length * evaluationMode.correctAnswerPoints;
+	totalScore = maxScore > 0 ? Math.round((totalScore / maxScore) * 33) : 0;
 
 	return {
+		id: "",
 		totalScore,
 		correctAnswers,
 		totalQuestions: questions.length,
 		timeSpent: Date.now() - startTime,
-		answers: answersWithResults,
+		quizId,
+		quizTitle,
+		questions: questions.map(q => ({
+			id: q.id,
+			content: q.content,
+			options: q.options,
+			correctAnswer: q.correctAnswer,
+		})),
 		evaluationMode,
+		answers: answersWithResults.map(answer => ({
+			questionId: answer.questionId,
+			answer: answer.answer,
+			isCorrect: answer.isCorrect || false,
+			score: answer.score || 0,
+		})),
 	};
-}
-
-export function calculateSuccessPercentage(results: QuizResults): number {
-	if (results.totalQuestions === 0) return 0;
-	return Math.round((results.correctAnswers / results.totalQuestions) * 100);
-}
-
-export function getPerformanceLevel(percentage: number): {
-	level: "excellent" | "good" | "fair" | "poor";
-	label: string;
-	color: string;
-} {
-	if (percentage >= 90) {
-		return { level: "excellent", label: "Eccellente", color: "green" };
-	} else if (percentage >= 75) {
-		return { level: "good", label: "Buono", color: "blue" };
-	} else if (percentage >= 60) {
-		return { level: "fair", label: "Sufficiente", color: "yellow" };
-	} else {
-		return { level: "poor", label: "Insufficiente", color: "red" };
-	}
-}
-
-export function formatTimeSpent(milliseconds: number): string {
-	const seconds = Math.floor(milliseconds / 1000);
-	const minutes = Math.floor(seconds / 60);
-	const hours = Math.floor(minutes / 60);
-
-	if (hours > 0) {
-		return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
-	} else if (minutes > 0) {
-		return `${minutes}m ${seconds % 60}s`;
-	} else {
-		return `${seconds}s`;
-	}
 }
