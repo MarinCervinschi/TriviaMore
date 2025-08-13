@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
@@ -13,17 +14,31 @@ interface FlashcardCardProps {
 	question: FlashcardQuestion;
 	cardNumber: number;
 	totalCards: number;
+	isGuest?: boolean;
+	onFlip?: () => void; // Callback quando viene girata
 }
 
 export function FlashcardCard({
 	question,
 	cardNumber,
 	totalCards,
+	isGuest = false,
+	onFlip,
 }: FlashcardCardProps) {
 	const [isFlipped, setIsFlipped] = useState(false);
 	const [showExplanation, setShowExplanation] = useState(false);
 
+	// Reset dello stato quando cambia la domanda
+	useEffect(() => {
+		setIsFlipped(false);
+		setShowExplanation(false);
+	}, [question.id]);
+
 	const handleFlip = () => {
+		if (!isFlipped) {
+			// Se è la prima volta che viene girata, notifica il container
+			onFlip?.();
+		}
 		setIsFlipped(!isFlipped);
 		if (isFlipped) {
 			setShowExplanation(false);
@@ -40,7 +55,7 @@ export function FlashcardCard({
 				{/* Card principale con effetto flip */}
 				<div className="perspective-1000 relative">
 					<div
-						className={`transform-style-preserve-3d relative h-[32rem] w-full cursor-pointer transition-transform duration-700 ${
+						className={`transform-style-preserve-3d relative h-[28rem] w-full cursor-pointer transition-transform duration-700 ${
 							isFlipped ? "rotate-y-180" : ""
 						}`}
 						onClick={handleFlip}
@@ -52,9 +67,17 @@ export function FlashcardCard({
 									<div className="rounded-full bg-purple-600 px-3 py-1 text-sm font-medium text-white">
 										Domanda {cardNumber}/{totalCards}
 									</div>
-									<div className="flex items-center text-sm text-purple-600 dark:text-purple-400">
-										<RotateCcw className="mr-1 h-4 w-4" />
-										Clicca per girare
+									<div className="flex items-center space-x-2">
+										<BookmarkButton
+											questionId={question.id}
+											isGuest={isGuest}
+											size="sm"
+											variant="ghost"
+										/>
+										<div className="flex items-center text-sm text-purple-600 dark:text-purple-400">
+											<RotateCcw className="mr-1 h-4 w-4" />
+											Clicca per girare
+										</div>
 									</div>
 								</div>
 

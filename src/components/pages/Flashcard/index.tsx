@@ -10,6 +10,16 @@ import { clearFlashcardSession } from "@/lib/utils/flashcard-session";
 import { FlashcardContainer } from "./FlashcardContainer";
 import { FlashcardLoader } from "./FlashcardLoader";
 
+// Export dei componenti
+export { FlashcardCard } from "./FlashcardCard";
+export { FlashcardContainer } from "./FlashcardContainer";
+export { FlashcardHeader } from "./FlashcardHeader";
+export { FlashcardLoader } from "./FlashcardLoader";
+export { FlashcardNavigation } from "./FlashcardNavigation";
+export { FlashcardProgress } from "./FlashcardProgress";
+export { FlashcardResults } from "./FlashcardResults";
+export { FlashcardSidebar } from "./FlashcardSidebar";
+
 interface FlashcardPageComponentProps {
 	sessionId: string;
 	isGuest: boolean;

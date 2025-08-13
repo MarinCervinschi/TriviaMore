@@ -1,14 +1,20 @@
-import { ArrowLeft, Zap } from "lucide-react";
-import { User } from "next-auth";
+import { Globe, Menu, User, X } from "lucide-react";
 
+import { SimpleThemeToggle } from "@/components/Theme/simple-theme-toggle";
 import { Button } from "@/components/ui/button";
 import { FlashcardSession } from "@/lib/types/flashcard.types";
 
 interface FlashcardHeaderProps {
 	session: FlashcardSession;
 	isGuest: boolean;
-	user?: User | null;
+	user?: {
+		id: string;
+		name?: string | null;
+		email?: string | null;
+	} | null;
 	onExit: () => void;
+	onToggleSidebar: () => void;
+	sidebarOpen: boolean;
 }
 
 export function FlashcardHeader({
@@ -16,62 +22,86 @@ export function FlashcardHeader({
 	isGuest,
 	user,
 	onExit,
+	onToggleSidebar,
+	sidebarOpen,
 }: FlashcardHeaderProps) {
 	return (
-		<header className="sticky top-0 z-10 border-b border-purple-100 bg-white/80 backdrop-blur-sm dark:border-purple-800 dark:bg-gray-900/80">
-			<div className="container mx-auto px-4 py-4">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-4">
+		<div className="flashcard-header border-b bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+			<div className="flex items-center justify-between gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-3">
+				{/* Left side */}
+				<div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
+					{/* Sidebar toggles */}
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={onToggleSidebar}
+						className="flex-shrink-0 lg:hidden"
+						title="Toggle sidebar"
+					>
+						<Menu className="h-5 w-5" />
+					</Button>
+
+					{!sidebarOpen && (
 						<Button
 							variant="ghost"
 							size="sm"
-							onClick={onExit}
-							className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+							onClick={onToggleSidebar}
+							className="hidden flex-shrink-0 lg:flex"
+							title="Mostra sidebar"
 						>
-							<ArrowLeft className="mr-2 h-4 w-4" />
-							Esci
+							<Menu className="h-5 w-5" />
 						</Button>
+					)}
 
-						<div className="flex items-center space-x-3">
-							<div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/50">
-								<Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-							</div>
-							<div>
-								<h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-									{session.section.name}
-								</h1>
-								<p className="text-sm text-gray-600 dark:text-gray-300">
-									{session.section.class.course.name} - {session.section.class.name}
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<div className="flex items-center space-x-3">
-						{!isGuest && user && (
-							<div className="text-right">
-								<p className="text-sm font-medium text-gray-900 dark:text-white">
-									{user.name}
-								</p>
-								<p className="text-xs text-gray-600 dark:text-gray-300">
-									Modalità Studio
-								</p>
-							</div>
-						)}
-
-						{isGuest && (
-							<div className="text-right">
-								<p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-									Modalità Guest
-								</p>
-								<p className="text-xs text-gray-500 dark:text-gray-400">
-									Accedi per salvare i progressi
-								</p>
-							</div>
-						)}
+					{/* Title section - responsive */}
+					<div className="min-w-0 flex-1">
+						<h1 className="flashcard-title truncate text-sm font-semibold text-gray-900 dark:text-white sm:text-lg">
+							<span className="hidden sm:inline">Flashcards: </span>
+							{session.section.name}
+						</h1>
+						<p className="flashcard-subtitle truncate text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
+							<span className="hidden lg:inline">
+								{session.section.class.course.name} -{" "}
+							</span>
+							{session.section.class.name}
+						</p>
 					</div>
 				</div>
+
+				{/* Right side */}
+				<div className="flex flex-shrink-0 items-center gap-1 sm:gap-3">
+					{/* User info - hidden on small screens */}
+					<div className="hidden items-center gap-2 lg:flex">
+						{isGuest ? (
+							<>
+								<Globe className="h-4 w-4 text-gray-500" />
+								<span className="text-sm text-gray-600 dark:text-gray-400">Guest</span>
+							</>
+						) : (
+							<>
+								<User className="h-4 w-4 text-blue-500" />
+								<span className="max-w-20 truncate text-sm text-gray-700 dark:text-gray-300">
+									{user?.name || user?.email}
+								</span>
+							</>
+						)}
+					</div>
+
+					{/* Theme toggle */}
+					<SimpleThemeToggle />
+
+					{/* Exit button */}
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={onExit}
+						className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+					>
+						<X className="h-4 w-4 sm:mr-2" />
+						<span className="hidden sm:inline">Esci</span>
+					</Button>
+				</div>
 			</div>
-		</header>
+		</div>
 	);
 }
