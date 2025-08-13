@@ -810,7 +810,7 @@ async function main() {
 		data: {
 			userId: student1.id,
 			quizId: programmingQuiz.id,
-			score: 85.5,
+			score: 28.22, // ~85.5% su scala 33
 			timeSpent: 1200, // 20 minuti
 		},
 	});
@@ -819,7 +819,7 @@ async function main() {
 		data: {
 			userId: student1.id,
 			quizId: umlQuiz.id,
-			score: 78.0,
+			score: 25.74, // ~78% su scala 33
 			timeSpent: 1500, // 25 minuti
 		},
 	});
@@ -828,7 +828,7 @@ async function main() {
 		data: {
 			userId: student2.id,
 			quizId: businessQuiz.id,
-			score: 92.0,
+			score: 30.36, // ~92% su scala 33
 			timeSpent: 1800, // 30 minuti
 		},
 	});
@@ -837,7 +837,7 @@ async function main() {
 		data: {
 			userId: student2.id,
 			quizId: algebraQuiz.id,
-			score: 88.5,
+			score: 29.21, // ~88.5% su scala 33
 			timeSpent: 2100, // 35 minuti
 		},
 	});
@@ -911,74 +911,85 @@ async function main() {
 
 	await prisma.progress.createMany({
 		data: [
+			// Student 1 - Programming Basics - Study
 			{
 				userId: student1.id,
 				sectionId: programmingBasicsSection.id,
-				totalQuestionsStudied: 8,
-				studyQuizzesTaken: 3,
-				studyAverageScore: 85.5,
-				studyBestScore: 92.0,
-				studyTotalTimeSpent: 3600,
-				examQuizzesTaken: 0,
-				improvementRate: 18.5,
-				consistencyScore: 82.3,
+				quizMode: QuizMode.STUDY,
+				quizzesTaken: 3,
+				averageScore: 28.22, // ~85.5% su scala 33
+				bestScore: 30.36, // ~92% su scala 33
+				totalTimeSpent: 3600,
 			},
+			// Student 1 - UML - Study
 			{
 				userId: student1.id,
 				sectionId: umlSection.id,
-				totalQuestionsStudied: 5,
-				studyQuizzesTaken: 2,
-				studyAverageScore: 78.0,
-				studyBestScore: 85.0,
-				studyTotalTimeSpent: 2400,
-				examQuizzesTaken: 1,
-				examAverageScore: 75.0,
-				examBestScore: 75.0,
-				examTotalTimeSpent: 1500,
-				improvementRate: 12.1,
-				consistencyScore: 76.8,
+				quizMode: QuizMode.STUDY,
+				quizzesTaken: 2,
+				averageScore: 25.74, // ~78% su scala 33
+				bestScore: 28.05, // ~85% su scala 33
+				totalTimeSpent: 2400,
 			},
+			// Student 1 - UML - Exam
+			{
+				userId: student1.id,
+				sectionId: umlSection.id,
+				quizMode: QuizMode.EXAM_SIMULATION,
+				quizzesTaken: 1,
+				averageScore: 24.75, // ~75% su scala 33
+				bestScore: 24.75, // ~75% su scala 33
+				totalTimeSpent: 1500,
+			},
+			// Student 1 - SQL - Study
 			{
 				userId: student1.id,
 				sectionId: sqlSection.id,
-				totalQuestionsStudied: 6,
-				studyQuizzesTaken: 1,
-				studyAverageScore: 80.0,
-				studyBestScore: 80.0,
-				studyTotalTimeSpent: 1800,
-				examQuizzesTaken: 2,
-				examAverageScore: 82.5,
-				examBestScore: 88.0,
-				examTotalTimeSpent: 2700,
-				improvementRate: 15.3,
-				consistencyScore: 79.4,
+				quizMode: QuizMode.STUDY,
+				quizzesTaken: 1,
+				averageScore: 26.4, // ~80% su scala 33
+				bestScore: 26.4, // ~80% su scala 33
+				totalTimeSpent: 1800,
 			},
+			// Student 1 - SQL - Exam
+			{
+				userId: student1.id,
+				sectionId: sqlSection.id,
+				quizMode: QuizMode.EXAM_SIMULATION,
+				quizzesTaken: 2,
+				averageScore: 27.23, // ~82.5% su scala 33
+				bestScore: 29.04, // ~88% su scala 33
+				totalTimeSpent: 2700,
+			},
+			// Student 2 - Business Fundamentals - Study
 			{
 				userId: student2.id,
 				sectionId: businessFundamentalsSection.id,
-				totalQuestionsStudied: 7,
-				studyQuizzesTaken: 2,
-				studyAverageScore: 90.0,
-				studyBestScore: 95.0,
-				studyTotalTimeSpent: 2100,
-				examQuizzesTaken: 1,
-				examAverageScore: 92.0,
-				examBestScore: 92.0,
-				examTotalTimeSpent: 1800,
-				improvementRate: 22.8,
-				consistencyScore: 91.2,
+				quizMode: QuizMode.STUDY,
+				quizzesTaken: 2,
+				averageScore: 29.7, // ~90% su scala 33
+				bestScore: 31.35, // ~95% su scala 33
+				totalTimeSpent: 2100,
 			},
+			// Student 2 - Business Fundamentals - Exam
+			{
+				userId: student2.id,
+				sectionId: businessFundamentalsSection.id,
+				quizMode: QuizMode.EXAM_SIMULATION,
+				quizzesTaken: 1,
+				averageScore: 30.36, // ~92% su scala 33
+				bestScore: 30.36, // ~92% su scala 33
+				totalTimeSpent: 1800,
+			},
+			// Student 2 - Vectors - Study
 			{
 				userId: student2.id,
 				sectionId: vectorsSection.id,
-				totalQuestionsStudied: 4,
-				studyQuizzesTaken: 1,
-				studyAverageScore: 88.5,
-				studyBestScore: 88.5,
-				studyTotalTimeSpent: 2100,
-				examQuizzesTaken: 0,
-				improvementRate: 16.7,
-				consistencyScore: 87.1,
+				quizMode: QuizMode.STUDY,
+				quizzesTaken: 1,
+				averageScore: 29.21, // ~88.5% su scala 33
+				bestScore: 29.21, // ~88.5% su scala 33
+				totalTimeSpent: 2100,
 			},
 		],
 	});

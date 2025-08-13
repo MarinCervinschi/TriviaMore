@@ -37,6 +37,7 @@ interface ClassData {
 	courseId: string;
 	classYear: number;
 	position: number;
+	isEnrolled?: boolean;
 	course: {
 		id: string;
 		name: string;
@@ -119,6 +120,7 @@ export default function ClassPageComponent({
 						(acc, section) => acc + section._count.questions,
 						0
 					)}
+					isEnrolled={classData.isEnrolled}
 				/>
 
 				<ExamSimulationButton

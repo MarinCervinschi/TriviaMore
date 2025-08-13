@@ -9,22 +9,27 @@ export async function middleware(request: NextRequest) {
 
 	// Protected routes
 	const isRoot = request.nextUrl.pathname === "/";
-	const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+	const isUserProfile = request.nextUrl.pathname.startsWith("/user");
 	const isProtectedApi = request.nextUrl.pathname.startsWith("/api/protected");
 
-	if (isDashboard || isProtectedApi) {
+	if (isUserProfile || isProtectedApi) {
 		if (!isAuth) {
 			return NextResponse.redirect(new URL("/auth/login", request.url));
 		}
 	}
 
 	if ((isAuthPage || isRoot) && isAuth) {
-		return NextResponse.redirect(new URL("/dashboard", request.url));
+		return NextResponse.redirect(new URL("/user", request.url));
 	}
 
 	return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/", "/dashboard/:path*", "/api/protected/:path*", "/auth/:path*"],
+	matcher: [
+		"/",
+		"/user/:path*",
+		"/api/protected/:path*",
+		"/auth/:path*",
+	],
 };

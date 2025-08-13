@@ -22,8 +22,8 @@ export const guestNavLinks: NavLinkItem[] = [
 
 export const authenticatedNavLinks: NavLinkItem[] = [
 	{
-		href: "/dashboard",
-		label: "Dashboard",
+		href: "/user",
+		label: "Il Mio Profilo",
 		icon: Home,
 	},
 	{
@@ -32,21 +32,21 @@ export const authenticatedNavLinks: NavLinkItem[] = [
 		icon: BookOpen,
 	},
 	{
-		href: "/my-courses",
+		href: "/user/classes",
 		label: "I miei Corsi",
-		shortLabel: "Corsi",
+		shortLabel: "I miei Corsi",
 		icon: GraduationCap,
 	},
 ];
 
 export const userMenuLinks: NavLinkItem[] = [
 	{
-		href: "/profile",
-		label: "Profilo",
+		href: "/user",
+		label: "Il Mio Profilo",
 		icon: User,
 	},
 	{
-		href: "/settings",
+		href: "/user/settings",
 		label: "Impostazioni",
 		icon: Settings,
 	},

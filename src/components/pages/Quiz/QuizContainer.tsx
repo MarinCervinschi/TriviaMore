@@ -81,6 +81,8 @@ export function QuizContainer({
 			questions: quiz.questions,
 			evaluationMode: quiz.evaluationMode,
 			startTime,
+			quizId: quiz.id,
+			quizTitle: `Quiz: ${quiz.section.name}`,
 		});
 	};
 
@@ -111,8 +113,6 @@ export function QuizContainer({
 			return (
 				<QuizInlineResults
 					results={calculateResults()}
-					questions={quiz.questions}
-					quizTitle={`Quiz: ${quiz.section.name}`}
 					onExit={onExit}
 					onRetry={() => {
 						setCurrentQuestionIndex(0);
@@ -188,6 +188,7 @@ export function QuizContainer({
 							onAnswerChange={(answer: string[]) =>
 								handleAnswerChange(currentQuestion.id, answer)
 							}
+							isGuest={isGuest}
 						/>
 					</div>
 				</div>

@@ -2,6 +2,8 @@ import { BookOpen, FileText, GraduationCap } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 
+import { AddClassButton } from "./AddClassButton";
+
 interface ClassData {
 	id: string;
 	name: string;
@@ -21,17 +23,19 @@ interface ClassHeaderProps {
 	classData: ClassData;
 	totalSections: number;
 	totalQuestions: number;
+	isEnrolled?: boolean;
 }
 
 export default function ClassHeader({
 	classData,
 	totalSections,
 	totalQuestions,
+	isEnrolled = false,
 }: ClassHeaderProps) {
 	return (
 		<div className="mb-8">
-			<div className="flex items-start justify-between">
-				<div className="flex-1">
+			<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+				<div className="min-w-0 flex-1">
 					<div className="mb-4 flex flex-wrap items-center gap-3">
 						<Badge
 							variant="secondary"
@@ -52,21 +56,21 @@ export default function ClassHeader({
 						</Badge>
 					</div>
 
-					<h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
+					<h1 className="mb-2 break-words text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">
 						{classData.name}
 					</h1>
 
-					<p className="mb-4 text-lg text-gray-600 dark:text-gray-300">
+					<p className="mb-4 break-words text-base text-gray-600 dark:text-gray-300 md:text-lg">
 						{classData.course.name} - {classData.course.department.name}
 					</p>
 
 					{classData.description && (
-						<p className="mb-6 max-w-3xl text-gray-700 dark:text-gray-300">
+						<p className="mb-6 max-w-full break-words text-gray-700 dark:text-gray-300 md:max-w-3xl">
 							{classData.description}
 						</p>
 					)}
 
-					<div className="flex flex-wrap gap-6">
+					<div className="flex flex-wrap gap-4 md:gap-6">
 						<div className="flex items-center space-x-2">
 							<BookOpen className="h-5 w-5 text-green-500 dark:text-green-400" />
 							<span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -86,6 +90,15 @@ export default function ClassHeader({
 							</span>
 						</div>
 					</div>
+				</div>
+
+				{/* Pulsante di aggiunta/rimozione classe */}
+				<div className="flex justify-end md:ml-6 md:flex-shrink-0">
+					<AddClassButton
+						classId={classData.id}
+						className={classData.name}
+						isEnrolled={isEnrolled}
+					/>
 				</div>
 			</div>
 		</div>

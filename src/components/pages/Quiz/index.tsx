@@ -39,6 +39,7 @@ export default function QuizPageComponent({
 
 		await completeQuiz.mutateAsync({
 			quizId,
+			totalScore: results.totalScore,
 			quizAttemptId: attemptId,
 			answers: results.answers.map((answer: any) => ({
 				questionId: answer.questionId,
