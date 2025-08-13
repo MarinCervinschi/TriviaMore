@@ -596,6 +596,19 @@ export class BrowseService extends UserService {
 			},
 		});
 
+		let isEnrolled = false;
+		if (userId) {
+			const userClass = await prisma.userClass.findUnique({
+				where: {
+					userId_classId: {
+						userId,
+						classId: classData.id,
+					},
+				},
+			});
+			isEnrolled = !!userClass;
+		}
+
 		return {
 			id: classData.id,
 			name: classData.name,
@@ -608,6 +621,7 @@ export class BrowseService extends UserService {
 			_count: {
 				sections: classData._count.sections,
 			},
+			isEnrolled,
 			sections: sections.map(section => ({
 				id: section.id,
 				name: section.name,

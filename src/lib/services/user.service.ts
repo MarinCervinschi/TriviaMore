@@ -1,3 +1,5 @@
+import type { Role } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
 import type {
@@ -11,6 +13,63 @@ export interface UserPermissions {
 	managedDepartmentIds: string[];
 	maintainedCourseIds: string[];
 	accessibleSectionIds: string[];
+}
+interface UserProfileStats {
+	totalQuizzes: number;
+	averageScore: number;
+}
+export interface UserProfileData {
+	id: string;
+	name: string | null;
+	email: string | null;
+	image: string | null;
+	role: Role;
+	createdAt: Date;
+	updatedAt: Date;
+	_count: {
+		quizAttempts: number;
+		userClasses: number;
+		bookmarks: number;
+	};
+	recentActivity?: {
+		quizAttempts: Array<{
+			id: string;
+			score: number;
+			completedAt: Date;
+			quiz: {
+				section: {
+					name: string;
+					class: {
+						name: string;
+						course: {
+							name: string;
+							department: {
+								name: string;
+							};
+						};
+					};
+				};
+			};
+		}>;
+	};
+	recentClasses?: Array<{
+		id: string;
+		name: string;
+		code: string;
+		classYear: number;
+		course: {
+			id: string;
+			name: string;
+			code: string;
+			courseType: string;
+			department: {
+				id: string;
+				name: string;
+				code: string;
+			};
+		};
+	}>;
+	stats?: UserProfileStats;
 }
 
 export class UserService {
@@ -290,5 +349,291 @@ export class UserService {
 		});
 
 		return !!userClass;
+	}
+
+	/**
+	 * Get user profile data by ID
+	 */
+	static async getUserProfile(userId: string): Promise<UserProfileData | null> {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { id: userId },
+				include: {
+					_count: {
+						select: {
+							quizAttempts: true,
+							userClasses: true,
+							bookmarks: true,
+						},
+					},
+					quizAttempts: {
+						take: 5,
+						orderBy: { completedAt: "desc" },
+						include: {
+							quiz: {
+								include: {
+									section: {
+										include: {
+											class: {
+												include: {
+													course: {
+														include: {
+															department: true,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!user) return null;
+
+			// Calculate stats from Progress data instead of individual quiz attempts
+			const progressData = await prisma.progress.findMany({
+				where: { userId },
+				include: {
+					section: {
+						include: {
+							class: {
+								include: {
+									course: {
+										include: {
+											department: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			const stats = this.calculateUserStatsFromProgress(progressData);
+
+			// Get recent classes based on quiz attempts
+			const recentClassesFromQuizzes = await prisma.class.findMany({
+				where: {
+					sections: {
+						some: {
+							quizzes: {
+								some: {
+									attempts: {
+										some: {
+											userId: userId,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				include: {
+					course: {
+						include: {
+							department: true,
+						},
+					},
+					sections: {
+						include: {
+							quizzes: {
+								include: {
+									attempts: {
+										where: { userId },
+										orderBy: { completedAt: "desc" },
+										take: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+				orderBy: {
+					sections: {
+						_count: "desc",
+					},
+				},
+				take: 10,
+			});
+
+			// Sort by most recent quiz attempt and limit to 5
+			const recentClasses = recentClassesFromQuizzes
+				.map(classItem => {
+					const mostRecentAttempt = classItem.sections
+						.flatMap(section => section.quizzes)
+						.flatMap(quiz => quiz.attempts)
+						.sort(
+							(a, b) =>
+								new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+						)[0];
+
+					return {
+						...classItem,
+						mostRecentAttemptDate: mostRecentAttempt?.completedAt || new Date(0),
+					};
+				})
+				.sort(
+					(a, b) =>
+						new Date(b.mostRecentAttemptDate).getTime() -
+						new Date(a.mostRecentAttemptDate).getTime()
+				)
+				.slice(0, 5)
+				.map(classItem => ({
+					id: classItem.id,
+					name: classItem.name,
+					code: classItem.code,
+					classYear: classItem.classYear,
+					course: {
+						id: classItem.course.id,
+						name: classItem.course.name,
+						code: classItem.course.code,
+						courseType: classItem.course.courseType,
+						department: {
+							id: classItem.course.department.id,
+							name: classItem.course.department.name,
+							code: classItem.course.department.code,
+						},
+					},
+				}));
+
+			return {
+				...user,
+				recentActivity: {
+					quizAttempts: user.quizAttempts,
+				},
+				recentClasses,
+				stats,
+			};
+		} catch (error) {
+			console.error("Error fetching user profile:", error);
+			return null;
+		}
+	}
+
+	/**
+	 * Check if a user can view another user's profile
+	 */
+	static async canViewProfile(
+		viewerUserId: string | undefined,
+		targetUserId: string
+	): Promise<boolean> {
+		// Users can always view their own profile
+		if (viewerUserId === targetUserId) return true;
+
+		// For now, all profiles are public (you can change this logic)
+		// You could add privacy settings to the User model
+		return true;
+	}
+
+	/**
+	 * Get user by ID (minimal data for checking existence)
+	 */
+	static async getUserById(userId: string) {
+		return await prisma.user.findUnique({
+			where: { id: userId },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				role: true,
+			},
+		});
+	}
+
+	/**
+	 * Generate display name for user
+	 */
+	static getDisplayName(user: { name: string | null; email: string | null }): string {
+		if (user.name) return user.name;
+		if (user.email) return user.email.split("@")[0];
+		return "Utente Anonimo";
+	}
+
+	/**
+	 * Generate URL-friendly slug from user data
+	 */
+	static generateUserSlug(user: { id: string; name: string | null }): string {
+		if (user.name) {
+			// Convert "Mario Rossi" to "Mario-Rossi"
+			return user.name
+				.trim()
+				.replace(/\s+/g, "-")
+				.replace(/[^a-zA-Z0-9-]/g, "")
+				.toLowerCase();
+		}
+		return user.id;
+	}
+
+	/**
+	 * Get user progress data across all sections
+	 */
+	static async getUserProgressData(userId: string) {
+		try {
+			const progressData = await prisma.progress.findMany({
+				where: { userId },
+				include: {
+					section: {
+						include: {
+							class: {
+								include: {
+									course: {
+										include: {
+											department: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				orderBy: [{ lastAccessedAt: "desc" }],
+			});
+
+			return progressData;
+		} catch (error) {
+			console.error("Error fetching user progress:", error);
+			return [];
+		}
+	}
+
+	/**
+	 * Calculate user statistics from Progress data
+	 */
+	private static calculateUserStatsFromProgress(progressData: any[]): UserProfileStats {
+		if (progressData.length === 0) {
+			return {
+				totalQuizzes: 0,
+				averageScore: 0,
+			};
+		}
+
+		const studyProgress = progressData.filter(p => p.quizMode === "STUDY");
+		const examProgress = progressData.filter(p => p.quizMode === "EXAM_SIMULATION");
+
+		const totalQuizzes = progressData.reduce((sum, p) => sum + p.quizzesTaken, 0);
+
+		const studyScores = studyProgress
+			.map(p => p.averageScore)
+			.filter(score => score !== null && score !== undefined);
+		const examScores = examProgress
+			.map(p => p.averageScore)
+			.filter(score => score !== null && score !== undefined);
+
+		const allScores = [...studyScores, ...examScores];
+		const averageScore =
+			allScores.length > 0
+				? allScores.reduce((sum, score) => sum + score, 0) / allScores.length
+				: 0;
+
+		return {
+			totalQuizzes,
+			averageScore: Math.round(averageScore * 100) / 100,
+		};
 	}
 }

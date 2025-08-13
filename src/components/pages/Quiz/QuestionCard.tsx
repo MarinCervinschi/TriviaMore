@@ -2,12 +2,12 @@
 
 import { Difficulty, QuestionType } from "@prisma/client";
 
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { QuizQuestion } from "@/lib/types/quiz.types";
 
 interface QuestionCardProps {
@@ -16,6 +16,7 @@ interface QuestionCardProps {
 	totalQuestions: number;
 	selectedAnswers: string[];
 	onAnswerChange: (answers: string[]) => void;
+	isGuest?: boolean;
 }
 
 export function QuestionCard({
@@ -24,6 +25,7 @@ export function QuestionCard({
 	totalQuestions,
 	selectedAnswers,
 	onAnswerChange,
+	isGuest = false,
 }: QuestionCardProps) {
 	const getDifficultyColor = (difficulty: Difficulty) => {
 		switch (difficulty) {
@@ -189,6 +191,12 @@ export function QuestionCard({
 							</Badge>
 						</div>
 					</div>
+					<BookmarkButton
+						questionId={question.id}
+						isGuest={isGuest}
+						size="sm"
+						variant="ghost"
+					/>
 				</div>
 				<div className="text-lg font-semibold leading-relaxed text-gray-900 dark:text-white">
 					<MarkdownRenderer

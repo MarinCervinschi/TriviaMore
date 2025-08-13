@@ -263,30 +263,20 @@ model UserClass {
 }
 
 model Progress {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   sectionId String
+  quizMode  QuizMode
 
-  // General metrics
-  totalQuestionsStudied Int @default(0)
+  // Quiz metrics
+  quizzesTaken   Int    @default(0)
+  averageScore   Float?
+  bestScore      Float?
+  totalTimeSpent Int    @default(0)
 
-  // Study mode metrics
-  studyQuizzesTaken   Int    @default(0)
-  studyAverageScore   Float?
-  studyBestScore      Float?
-  studyTotalTimeSpent Int    @default(0)
-
-  // Exam simulation metrics
-  examQuizzesTaken   Int    @default(0)
-  examAverageScore   Float?
-  examBestScore      Float?
-  examTotalTimeSpent Int    @default(0)
-
-  // Learning patterns
   improvementRate  Float? // score improvement over time
   consistencyScore Float? // consistency in performance
 
-  // Timestamps
   lastAccessedAt  DateTime @default(now())
   firstAccessedAt DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -294,7 +284,7 @@ model Progress {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, sectionId])
+  @@unique([userId, sectionId, quizMode])
   @@map("progress")
 }
 

@@ -6,117 +6,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
-
-interface QuizResultsProps {
-	results: {
-		totalScore: number;
-		correctAnswers: number;
-		totalQuestions: number;
-		timeSpent: number;
-		answers: Array<{
-			questionId: string;
-			userAnswer: string[];
-			isCorrect?: boolean;
-			score?: number;
-		}>;
-		evaluationMode?: {
-			name: string;
-			description?: string;
-			correctAnswerPoints: number;
-			incorrectAnswerPoints: number;
-			partialCreditEnabled: boolean;
-		};
-	};
-	questions: Array<{
-		id: string;
-		content: string;
-		correctAnswer: string[];
-		options?: string[];
-	}>;
-	quizTitle: string;
-	onExit: () => void;
-	onRetry?: () => void;
-	showRetry?: boolean;
-}
+import { QuizResultsComponentProps } from "@/lib/types/quiz.types";
+import {
+	formatTime,
+	getOptionStyle,
+	getScoreBadge,
+	getScoreColor,
+} from "@/lib/utils/quiz-results";
 
 export function QuizResults({
 	results,
-	questions,
-	quizTitle,
 	onExit,
 	onRetry,
 	showRetry = false,
-}: QuizResultsProps) {
-	const percentage = Math.round(
-		(results.correctAnswers / results.totalQuestions) * 100
-	);
-
-	const formatTime = (milliseconds: number) => {
-		const seconds = Math.floor(milliseconds / 1000);
-		const mins = Math.floor(seconds / 60);
-		const secs = seconds % 60;
-		return `${mins}:${secs.toString().padStart(2, "0")}`;
-	};
-
-	const getScoreColor = (percentage: number) => {
-		if (percentage >= 90) return "text-green-600 dark:text-green-400";
-		if (percentage >= 70) return "text-blue-600 dark:text-blue-400";
-		if (percentage >= 60) return "text-yellow-600 dark:text-yellow-400";
-		return "text-red-600 dark:text-red-400";
-	};
-
-	const getScoreBadge = (percentage: number) => {
-		if (percentage >= 90)
-			return {
-				label: "Eccellente",
-				color: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-			};
-		if (percentage >= 70)
-			return {
-				label: "Buono",
-				color: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-			};
-		if (percentage >= 60)
-			return {
-				label: "Sufficiente",
-				color:
-					"bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-			};
-		return {
-			label: "Insufficiente",
-			color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-		};
-	};
-
-	const getPointsColor = (points: number) => {
-		if (points > 0) return "text-green-600 dark:text-green-400";
-		if (points < 0) return "text-red-600 dark:text-red-400";
-		return "text-gray-600 dark:text-gray-400";
-	};
-
-	// Funzione per determinare il colore di un'opzione
-	const getOptionStyle = (
-		option: string,
-		userAnswers: string[],
-		correctAnswers: string[]
-	) => {
-		const isUserAnswer = userAnswers.includes(option);
-		const isCorrect = correctAnswers.includes(option);
-
-		if (isCorrect && isUserAnswer) {
-			// Risposta corretta data dall'utente
-			return "bg-green-100 border-green-500 text-green-800 dark:bg-green-900/20 dark:border-green-400 dark:text-green-300";
-		} else if (isCorrect && !isUserAnswer) {
-			// Risposta corretta non data dall'utente
-			return "bg-blue-100 border-blue-500 text-blue-800 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-300";
-		} else if (!isCorrect && isUserAnswer) {
-			// Risposta sbagliata data dall'utente
-			return "bg-red-100 border-red-500 text-red-800 dark:bg-red-900/20 dark:border-red-400 dark:text-red-300";
-		} else {
-			// Risposta non data e non corretta
-			return "bg-gray-100 border-gray-300 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300";
-		}
-	};
+}: QuizResultsComponentProps) {
+	const scoreIn33 = results.totalScore;
+	const scoreBadge = getScoreBadge(scoreIn33);
 
 	const getOptionIcon = (
 		option: string,
@@ -136,8 +41,6 @@ export function QuizResults({
 		return null;
 	};
 
-	const scoreBadge = getScoreBadge(percentage);
-
 	return (
 		<div className="space-y-6">
 			{/* Header con titolo */}
@@ -148,7 +51,7 @@ export function QuizResults({
 						Quiz Completato!
 					</h1>
 				</div>
-				<p className="text-lg text-gray-600 dark:text-gray-400">{quizTitle}</p>
+				<p className="text-lg text-gray-600 dark:text-gray-400">{results.quizTitle}</p>
 			</div>
 
 			{/* Risultati Principali */}
@@ -160,12 +63,12 @@ export function QuizResults({
 					</div>
 				</CardHeader>
 				<CardContent>
-					<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+					<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
 						<div className="text-center">
-							<div className={`text-3xl font-bold ${getScoreColor(percentage)}`}>
-								{percentage}%
+							<div className={`text-3xl font-bold ${getScoreColor(scoreIn33)}`}>
+								{scoreIn33}/33
 							</div>
-							<p className="text-sm text-gray-600 dark:text-gray-400">Percentuale</p>
+							<p className="text-sm text-gray-600 dark:text-gray-400">Punteggio</p>
 						</div>
 						<div className="text-center">
 							<div className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -174,15 +77,6 @@ export function QuizResults({
 							<p className="text-sm text-gray-600 dark:text-gray-400">
 								Risposte Corrette
 							</p>
-						</div>
-						<div className="text-center">
-							<div
-								className={`text-3xl font-bold ${getPointsColor(results.totalScore)}`}
-							>
-								{results.totalScore > 0 ? "+" : ""}
-								{results.totalScore}
-							</div>
-							<p className="text-sm text-gray-600 dark:text-gray-400">Punti Totali</p>
 						</div>
 						<div className="text-center">
 							<div className="flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white">
@@ -265,7 +159,7 @@ export function QuizResults({
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-6">
-						{questions.map((question, index) => {
+						{results.questions.map((question, index) => {
 							const userAnswer = results.answers.find(
 								a => a.questionId === question.id
 							);
@@ -325,7 +219,7 @@ export function QuizResults({
 															key={optionIndex}
 															className={`flex items-center justify-between rounded-lg border-2 p-3 ${getOptionStyle(
 																option,
-																userAnswer?.userAnswer || [],
+																userAnswer?.answer || [],
 																question.correctAnswer
 															)}`}
 														>
@@ -337,7 +231,7 @@ export function QuizResults({
 															</div>
 															{getOptionIcon(
 																option,
-																userAnswer?.userAnswer || [],
+																userAnswer?.answer || [],
 																question.correctAnswer
 															)}
 														</div>
@@ -355,8 +249,8 @@ export function QuizResults({
 													Tua risposta:
 												</p>
 												<p className="text-gray-900 dark:text-white">
-													{userAnswer?.userAnswer.length
-														? userAnswer.userAnswer.join(", ")
+													{userAnswer?.answer.length
+														? userAnswer.answer.join(", ")
 														: "Nessuna risposta"}
 												</p>
 											</div>

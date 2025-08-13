@@ -35,13 +35,13 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
 				</div>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild>
-					<Link href="/profile" className="flex items-center gap-2">
+					<Link href="/user" className="flex items-center gap-2">
 						<User className="h-4 w-4" />
-						<span>Profilo</span>
+						<span>Il Mio Profilo</span>
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<Link href="/settings" className="flex items-center gap-2">
+					<Link href="/user/settings" className="flex items-center gap-2">
 						<Settings className="h-4 w-4" />
 						<span>Impostazioni</span>
 					</Link>

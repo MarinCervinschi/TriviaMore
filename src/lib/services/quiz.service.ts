@@ -531,7 +531,7 @@ export class QuizService extends UserService {
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
 				id: attemptId,
-				userId: userId, // Assicuriamo che l'utente possa vedere solo i suoi risultati
+				userId: userId,
 			},
 			include: {
 				quiz: {
@@ -572,19 +572,13 @@ export class QuizService extends UserService {
 			return null;
 		}
 
-		// Mappa le risposte nel formato atteso dal componente QuizResults
 		const answers = quizAttempt.answers.map(answer => ({
 			questionId: answer.questionId,
-			userAnswer: answer.userAnswer,
+			answer: answer.userAnswer,
 			isCorrect: answer.score > 0,
 			score: answer.score,
-			question: {
-				content: answer.question.content,
-				correctAnswer: answer.question.correctAnswer,
-			},
 		}));
 
-		// Mappa le domande del quiz con le opzioni complete
 		const questions = quizAttempt.quiz.questions.map(qq => ({
 			id: qq.question.id,
 			content: qq.question.content,
@@ -594,31 +588,19 @@ export class QuizService extends UserService {
 
 		return {
 			id: quizAttempt.id,
-			score: quizAttempt.score,
-			totalQuestions: quizAttempt.quiz.questions.length,
+			totalScore: quizAttempt.score,
 			correctAnswers: quizAttempt.answers.filter(a => a.score > 0).length,
+			totalQuestions: quizAttempt.quiz.questions.length,
 			timeSpent: quizAttempt.timeSpent || 0,
-			quiz: {
-				id: quizAttempt.quiz.id,
-				title: quizAttempt.quiz.section.name, // Usa il nome della sezione come titolo
-				description: `Quiz di ${quizAttempt.quiz.section.name}`,
-				section: {
-					name: quizAttempt.quiz.section.name,
-					class: {
-						name: quizAttempt.quiz.section.class.name,
-						course: {
-							name: quizAttempt.quiz.section.class.course.name,
-						},
-					},
-				},
-				questions,
-				evaluationMode: {
-					name: quizAttempt.quiz.evaluationMode.name,
-					description: quizAttempt.quiz.evaluationMode.description || undefined,
-					correctAnswerPoints: quizAttempt.quiz.evaluationMode.correctAnswerPoints,
-					incorrectAnswerPoints: quizAttempt.quiz.evaluationMode.incorrectAnswerPoints,
-					partialCreditEnabled: quizAttempt.quiz.evaluationMode.partialCreditEnabled,
-				},
+			quizId: quizAttempt.quiz.id,
+			quizTitle: quizAttempt.quiz.section.name,
+			questions,
+			evaluationMode: {
+				name: quizAttempt.quiz.evaluationMode.name,
+				description: quizAttempt.quiz.evaluationMode.description || undefined,
+				correctAnswerPoints: quizAttempt.quiz.evaluationMode.correctAnswerPoints,
+				incorrectAnswerPoints: quizAttempt.quiz.evaluationMode.incorrectAnswerPoints,
+				partialCreditEnabled: quizAttempt.quiz.evaluationMode.partialCreditEnabled,
 			},
 			answers,
 		};
@@ -637,90 +619,52 @@ export class QuizService extends UserService {
 	}): Promise<void> {
 		const { userId, sectionId, quizMode, score, timeSpent, totalQuestions } = params;
 
-		// Trova o crea il record di progresso
 		const existingProgress = await prisma.progress.findUnique({
 			where: {
-				userId_sectionId: {
+				userId_sectionId_quizMode: {
 					userId,
 					sectionId,
+					quizMode,
 				},
 			},
 		});
 
-		const percentage = (score / totalQuestions) * 100;
-
 		if (existingProgress) {
-			// Aggiorna il progresso esistente
-			const updateData: any = {
-				totalQuestionsStudied: existingProgress.totalQuestionsStudied + totalQuestions,
-				lastAccessedAt: new Date(),
-				updatedAt: new Date(),
-			};
-
-			if (quizMode === "STUDY") {
-				const newStudyQuizCount = existingProgress.studyQuizzesTaken + 1;
-				const currentAverage = existingProgress.studyAverageScore || 0;
-				const newAverage =
-					(currentAverage * existingProgress.studyQuizzesTaken + percentage) /
-					newStudyQuizCount;
-
-				updateData.studyQuizzesTaken = newStudyQuizCount;
-				updateData.studyAverageScore = newAverage;
-				updateData.studyBestScore = Math.max(
-					existingProgress.studyBestScore || 0,
-					percentage
-				);
-				updateData.studyTotalTimeSpent =
-					existingProgress.studyTotalTimeSpent + timeSpent;
-			} else if (quizMode === "EXAM_SIMULATION") {
-				const newExamQuizCount = existingProgress.examQuizzesTaken + 1;
-				const currentAverage = existingProgress.examAverageScore || 0;
-				const newAverage =
-					(currentAverage * existingProgress.examQuizzesTaken + percentage) /
-					newExamQuizCount;
-
-				updateData.examQuizzesTaken = newExamQuizCount;
-				updateData.examAverageScore = newAverage;
-				updateData.examBestScore = Math.max(
-					existingProgress.examBestScore || 0,
-					percentage
-				);
-				updateData.examTotalTimeSpent = existingProgress.examTotalTimeSpent + timeSpent;
-			}
+			const newQuizCount = existingProgress.quizzesTaken + 1;
+			const currentAverage = existingProgress.averageScore || 0;
+			const newAverage =
+				(currentAverage * existingProgress.quizzesTaken + score) / newQuizCount;
 
 			await prisma.progress.update({
 				where: {
-					userId_sectionId: {
+					userId_sectionId_quizMode: {
 						userId,
 						sectionId,
+						quizMode,
 					},
 				},
-				data: updateData,
+				data: {
+					quizzesTaken: newQuizCount,
+					averageScore: newAverage,
+					bestScore: Math.max(existingProgress.bestScore || 0, score),
+					totalTimeSpent: existingProgress.totalTimeSpent + timeSpent,
+					lastAccessedAt: new Date(),
+					updatedAt: new Date(),
+				},
 			});
 		} else {
-			// Crea un nuovo record di progresso
-			const createData: any = {
-				userId,
-				sectionId,
-				totalQuestionsStudied: totalQuestions,
-				lastAccessedAt: new Date(),
-				firstAccessedAt: new Date(),
-			};
-
-			if (quizMode === "STUDY") {
-				createData.studyQuizzesTaken = 1;
-				createData.studyAverageScore = percentage;
-				createData.studyBestScore = percentage;
-				createData.studyTotalTimeSpent = timeSpent;
-			} else if (quizMode === "EXAM_SIMULATION") {
-				createData.examQuizzesTaken = 1;
-				createData.examAverageScore = percentage;
-				createData.examBestScore = percentage;
-				createData.examTotalTimeSpent = timeSpent;
-			}
-
 			await prisma.progress.create({
-				data: createData,
+				data: {
+					userId,
+					sectionId,
+					quizMode,
+					quizzesTaken: 1,
+					averageScore: score,
+					bestScore: score,
+					totalTimeSpent: timeSpent,
+					lastAccessedAt: new Date(),
+					firstAccessedAt: new Date(),
+				},
 			});
 		}
 	}
