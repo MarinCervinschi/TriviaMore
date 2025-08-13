@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-
 import { Heart, Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
+import { useClassMutations } from "@/hooks/useClassMutations";
 
 interface AddClassButtonProps {
 	classId: string;
@@ -19,30 +18,26 @@ export function AddClassButton({
 	isEnrolled = false,
 }: AddClassButtonProps) {
 	const { data: session } = useSession();
-	const [isLoading, setIsLoading] = useState(false);
-	const [enrolled, setEnrolled] = useState(isEnrolled);
+	const { addClass, removeClass, isLoading } = useClassMutations();
 
-    console.log("User ID:", session?.user?.id);
 	if (!session?.user?.id) {
-		return null; // Non mostrare il pulsante se l'utente non è loggato
+		return null;
 	}
 
 	const handleToggleClass = async () => {
-		setIsLoading(true);
 		try {
-			// Per ora simuliamo l'aggiunta/rimozione
-			// TODO: Implementare la chiamata API per aggiungere/rimuovere la classe
-			await new Promise(resolve => setTimeout(resolve, 1000)); // Simula API call
-
-			setEnrolled(!enrolled);
+			if (isEnrolled) {
+				await removeClass.mutateAsync({ classId, className });
+			} else {
+				await addClass.mutateAsync({ classId, className });
+			}
 		} catch (error) {
+			// L'errore è già gestito nel hook con toast.error
 			console.error("Errore nella gestione della classe:", error);
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
-	if (enrolled) {
+	if (isEnrolled) {
 		return (
 			<Button
 				onClick={handleToggleClass}
