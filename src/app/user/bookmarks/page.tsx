@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import UserBookmarksComponent from "@/components/pages/User/Bookmarks";
 import { auth } from "@/lib/auth";
+import { BookmarkService } from "@/lib/services/bookmark.service";
 import { UserService } from "@/lib/services/user.service";
 
 export default async function UserBookmarksPage() {
@@ -12,7 +13,7 @@ export default async function UserBookmarksPage() {
 		redirect("/auth/login");
 	}
 
-	const userBookmarks = await UserService.getUserBookmarks(session.user.id);
+	const userBookmarks = await BookmarkService.getUserBookmarks(session.user.id);
 
 	return (
 		<AppLayout user={session.user}>

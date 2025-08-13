@@ -188,6 +188,7 @@ export function QuizContainer({
 							onAnswerChange={(answer: string[]) =>
 								handleAnswerChange(currentQuestion.id, answer)
 							}
+							isGuest={isGuest}
 						/>
 					</div>
 				</div>
