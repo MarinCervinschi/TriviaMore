@@ -14,7 +14,10 @@ export interface UserPermissions {
 	maintainedCourseIds: string[];
 	accessibleSectionIds: string[];
 }
-
+interface UserProfileStats {
+	totalQuizzes: number;
+	averageScore: number;
+}
 export interface UserProfileData {
 	id: string;
 	name: string | null;
@@ -66,16 +69,7 @@ export interface UserProfileData {
 			};
 		};
 	}>;
-	stats?: {
-		totalQuizzes: number;
-		averageScore: number;
-		bestScore: number;
-		totalTimeSpent: number;
-		favoriteSubjects: Array<{
-			name: string;
-			count: number;
-		}>;
-	};
+	stats?: UserProfileStats;
 }
 
 export class UserService {
@@ -400,21 +394,17 @@ export class UserService {
 
 			if (!user) return null;
 
-			// Calculate stats
-			const allQuizAttempts = await prisma.quizAttempt.findMany({
+			// Calculate stats from Progress data instead of individual quiz attempts
+			const progressData = await prisma.progress.findMany({
 				where: { userId },
 				include: {
-					quiz: {
+					section: {
 						include: {
-							section: {
+							class: {
 								include: {
-									class: {
+									course: {
 										include: {
-											course: {
-												include: {
-													department: true,
-												},
-											},
+											department: true,
 										},
 									},
 								},
@@ -424,7 +414,7 @@ export class UserService {
 				},
 			});
 
-			const stats = this.calculateUserStats(allQuizAttempts);
+			const stats = this.calculateUserStatsFromProgress(progressData);
 
 			// Get recent classes based on quiz attempts
 			const recentClassesFromQuizzes = await prisma.class.findMany({
@@ -649,49 +639,37 @@ export class UserService {
 	}
 
 	/**
-	 * Calculate user statistics
+	 * Calculate user statistics from Progress data
 	 */
-	private static calculateUserStats(quizAttempts: any[]) {
-		if (quizAttempts.length === 0) {
+	private static calculateUserStatsFromProgress(progressData: any[]): UserProfileStats {
+		if (progressData.length === 0) {
 			return {
 				totalQuizzes: 0,
 				averageScore: 0,
-				bestScore: 0,
-				totalTimeSpent: 0,
-				favoriteSubjects: [],
 			};
 		}
 
-		const totalQuizzes = quizAttempts.length;
+		const studyProgress = progressData.filter(p => p.quizMode === "STUDY");
+		const examProgress = progressData.filter(p => p.quizMode === "EXAM_SIMULATION");
+
+		const totalQuizzes = progressData.reduce((sum, p) => sum + p.quizzesTaken, 0);
+
+		const studyScores = studyProgress
+			.map(p => p.averageScore)
+			.filter(score => score !== null && score !== undefined);
+		const examScores = examProgress
+			.map(p => p.averageScore)
+			.filter(score => score !== null && score !== undefined);
+
+		const allScores = [...studyScores, ...examScores];
 		const averageScore =
-			quizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) / totalQuizzes;
-		const bestScore = Math.max(...quizAttempts.map(attempt => attempt.score));
-		const totalTimeSpent = quizAttempts.reduce(
-			(sum, attempt) => sum + (attempt.timeSpent || 0),
-			0
-		);
-
-		// Calculate favorite subjects (departments)
-		const subjectCounts = quizAttempts.reduce(
-			(acc, attempt) => {
-				const deptName = attempt.quiz.section.class.course.department.name;
-				acc[deptName] = (acc[deptName] || 0) + 1;
-				return acc;
-			},
-			{} as Record<string, number>
-		);
-
-		const favoriteSubjects = Object.entries(subjectCounts)
-			.map(([name, count]) => ({ name, count: count as number }))
-			.sort((a, b) => (b.count as number) - (a.count as number))
-			.slice(0, 5);
+			allScores.length > 0
+				? allScores.reduce((sum, score) => sum + score, 0) / allScores.length
+				: 0;
 
 		return {
 			totalQuizzes,
 			averageScore: Math.round(averageScore * 100) / 100,
-			bestScore: Math.round(bestScore * 100) / 100,
-			totalTimeSpent,
-			favoriteSubjects,
 		};
 	}
 }

@@ -152,9 +152,7 @@ export default function UserDashboardComponent({
 									Punteggio Medio
 								</p>
 								<p className="text-2xl font-bold">
-									{userProfile.stats?.averageScore
-										? Math.round((userProfile.stats.averageScore / 100) * 33)
-										: 0}
+									{userProfile.stats?.averageScore}
 									/33
 								</p>
 							</div>
