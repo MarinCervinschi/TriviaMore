@@ -810,7 +810,7 @@ async function main() {
 		data: {
 			userId: student1.id,
 			quizId: programmingQuiz.id,
-			score: 85.5,
+			score: 28.22, // ~85.5% su scala 33
 			timeSpent: 1200, // 20 minuti
 		},
 	});
@@ -819,7 +819,7 @@ async function main() {
 		data: {
 			userId: student1.id,
 			quizId: umlQuiz.id,
-			score: 78.0,
+			score: 25.74, // ~78% su scala 33
 			timeSpent: 1500, // 25 minuti
 		},
 	});
@@ -828,7 +828,7 @@ async function main() {
 		data: {
 			userId: student2.id,
 			quizId: businessQuiz.id,
-			score: 92.0,
+			score: 30.36, // ~92% su scala 33
 			timeSpent: 1800, // 30 minuti
 		},
 	});
@@ -837,7 +837,7 @@ async function main() {
 		data: {
 			userId: student2.id,
 			quizId: algebraQuiz.id,
-			score: 88.5,
+			score: 29.21, // ~88.5% su scala 33
 			timeSpent: 2100, // 35 minuti
 		},
 	});
@@ -917,8 +917,8 @@ async function main() {
 				sectionId: programmingBasicsSection.id,
 				quizMode: QuizMode.STUDY,
 				quizzesTaken: 3,
-				averageScore: 85.5,
-				bestScore: 92.0,
+				averageScore: 28.22, // ~85.5% su scala 33
+				bestScore: 30.36, // ~92% su scala 33
 				totalTimeSpent: 3600,
 			},
 			// Student 1 - UML - Study
@@ -927,8 +927,8 @@ async function main() {
 				sectionId: umlSection.id,
 				quizMode: QuizMode.STUDY,
 				quizzesTaken: 2,
-				averageScore: 78.0,
-				bestScore: 85.0,
+				averageScore: 25.74, // ~78% su scala 33
+				bestScore: 28.05, // ~85% su scala 33
 				totalTimeSpent: 2400,
 			},
 			// Student 1 - UML - Exam
@@ -937,8 +937,8 @@ async function main() {
 				sectionId: umlSection.id,
 				quizMode: QuizMode.EXAM_SIMULATION,
 				quizzesTaken: 1,
-				averageScore: 75.0,
-				bestScore: 75.0,
+				averageScore: 24.75, // ~75% su scala 33
+				bestScore: 24.75, // ~75% su scala 33
 				totalTimeSpent: 1500,
 			},
 			// Student 1 - SQL - Study
@@ -947,8 +947,8 @@ async function main() {
 				sectionId: sqlSection.id,
 				quizMode: QuizMode.STUDY,
 				quizzesTaken: 1,
-				averageScore: 80.0,
-				bestScore: 80.0,
+				averageScore: 26.4, // ~80% su scala 33
+				bestScore: 26.4, // ~80% su scala 33
 				totalTimeSpent: 1800,
 			},
 			// Student 1 - SQL - Exam
@@ -957,8 +957,8 @@ async function main() {
 				sectionId: sqlSection.id,
 				quizMode: QuizMode.EXAM_SIMULATION,
 				quizzesTaken: 2,
-				averageScore: 82.5,
-				bestScore: 88.0,
+				averageScore: 27.23, // ~82.5% su scala 33
+				bestScore: 29.04, // ~88% su scala 33
 				totalTimeSpent: 2700,
 			},
 			// Student 2 - Business Fundamentals - Study
@@ -967,8 +967,8 @@ async function main() {
 				sectionId: businessFundamentalsSection.id,
 				quizMode: QuizMode.STUDY,
 				quizzesTaken: 2,
-				averageScore: 90.0,
-				bestScore: 95.0,
+				averageScore: 29.7, // ~90% su scala 33
+				bestScore: 31.35, // ~95% su scala 33
 				totalTimeSpent: 2100,
 			},
 			// Student 2 - Business Fundamentals - Exam
@@ -977,8 +977,8 @@ async function main() {
 				sectionId: businessFundamentalsSection.id,
 				quizMode: QuizMode.EXAM_SIMULATION,
 				quizzesTaken: 1,
-				averageScore: 92.0,
-				bestScore: 92.0,
+				averageScore: 30.36, // ~92% su scala 33
+				bestScore: 30.36, // ~92% su scala 33
 				totalTimeSpent: 1800,
 			},
 			// Student 2 - Vectors - Study
@@ -987,8 +987,8 @@ async function main() {
 				sectionId: vectorsSection.id,
 				quizMode: QuizMode.STUDY,
 				quizzesTaken: 1,
-				averageScore: 88.5,
-				bestScore: 88.5,
+				averageScore: 29.21, // ~88.5% su scala 33
+				bestScore: 29.21, // ~88.5% su scala 33
 				totalTimeSpent: 2100,
 			},
 		],
