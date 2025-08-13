@@ -45,7 +45,6 @@ export default async function CoursePage({ params, searchParams }: CoursePagePro
 				search: resolvedSearchParams.search,
 			}}
 			departmentCode={resolvedParams.department}
-			isUserLoggedIn={!!session?.user}
 		/>
 	);
 }

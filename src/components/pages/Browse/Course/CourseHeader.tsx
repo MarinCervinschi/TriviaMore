@@ -2,8 +2,6 @@ import { BookOpen, GraduationCap } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 
-import { AddCourseButton } from "./AddCourseButton";
-
 interface Department {
 	id: string;
 	name: string;
@@ -26,10 +24,9 @@ interface Course {
 
 interface CourseHeaderProps {
 	course: Course;
-	showAddButton?: boolean;
 }
 
-export function CourseHeader({ course, showAddButton = false }: CourseHeaderProps) {
+export function CourseHeader({ course }: CourseHeaderProps) {
 	const courseTypeLabel =
 		course.courseType === "BACHELOR" ? "Laurea Triennale" : "Laurea Magistrale";
 	const courseTypeColor = course.courseType === "BACHELOR" ? "blue" : "purple";
@@ -85,13 +82,6 @@ export function CourseHeader({ course, showAddButton = false }: CourseHeaderProp
 						<p className="max-w-3xl leading-relaxed text-gray-600 dark:text-gray-300">
 							{course.description}
 						</p>
-					)}
-
-					{/* Pulsante di aggiunta corso per utenti loggati */}
-					{showAddButton && (
-						<div className="mt-4">
-							<AddCourseButton courseId={course.id} courseName={course.name} />
-						</div>
 					)}
 				</div>
 
