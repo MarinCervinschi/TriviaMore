@@ -2,3 +2,4 @@ export { useTheme } from "./useTheme";
 export { useQuizData } from "./useQuizData";
 export { useQuizMutations } from "./useQuizMutations";
 export { useClassMutations } from "./useClassMutations";
+export { useBookmarkCheck, useBookmarkToggle } from "./useBookmarks";
