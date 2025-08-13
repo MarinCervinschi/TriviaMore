@@ -149,7 +149,7 @@ export default function UserSettingsComponent({
 							</div>
 							<div className="rounded-lg border p-4 text-center">
 								<p className="text-2xl font-bold">
-									{userProfile.stats?.averageScore || 0}%
+									{userProfile.stats?.averageScore || 0}
 								</p>
 								<p className="text-sm text-muted-foreground">Punteggio Medio</p>
 							</div>
