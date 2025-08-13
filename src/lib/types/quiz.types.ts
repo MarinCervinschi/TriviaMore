@@ -72,47 +72,35 @@ export interface CompleteQuizRequest {
 	timeSpent: number;
 }
 
-export interface QuizResultAnswer {
-	questionId: string;
-	userAnswer: string[];
-	isCorrect: boolean;
-	score: number;
-	question: {
-		content: string;
-		correctAnswer: string[];
-	};
-}
-
 export interface QuizResultQuestion {
 	id: string;
 	content: string;
-	options: string[];
+	options?: string[];
 	correctAnswer: string[];
-}
-
-export interface QuizResultDetails {
-	id: string;
-	title: string;
-	description: string;
-	section: {
-		name: string;
-		class: {
-			name: string;
-			course: {
-				name: string;
-			};
-		};
-	};
-	questions: QuizResultQuestion[];
-	evaluationMode: EvaluationMode;
 }
 
 export interface QuizResult {
 	id: string;
-	score: number;
-	totalQuestions: number;
+	totalScore: number;
 	correctAnswers: number;
+	totalQuestions: number;
 	timeSpent: number;
-	quiz: QuizResultDetails;
-	answers: QuizResultAnswer[];
+	quizId: string;
+	quizTitle: string;
+	questions: QuizResultQuestion[];
+	evaluationMode: EvaluationMode;
+	answers: Array<{
+		questionId: string;
+		answer: string[];
+		isCorrect: boolean;
+		score: number;
+	}>;
+}
+
+// Interfaccia per le props del componente QuizResults
+export interface QuizResultsComponentProps {
+	results: QuizResult;
+	onExit: () => void;
+	onRetry?: () => void;
+	showRetry?: boolean;
 }

@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { clearQuizSession } from "@/lib/utils/quiz-session";
-
 interface StartQuizParams {
 	sectionId: string;
 	questionCount?: number;
@@ -17,9 +15,10 @@ interface StartQuizParams {
 interface CompleteQuizParams {
 	quizId: string;
 	quizAttemptId: string;
+	totalScore: number;
 	answers: Array<{
 		questionId: string;
-		userAnswer: string;
+		userAnswer: string[];
 		score: number;
 	}>;
 	timeSpent: number;
