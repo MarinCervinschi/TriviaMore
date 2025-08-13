@@ -11,6 +11,7 @@ import { FlashcardHeader } from "./FlashcardHeader";
 import { FlashcardNavigation } from "./FlashcardNavigation";
 import { FlashcardProgress } from "./FlashcardProgress";
 import { FlashcardResults } from "./FlashcardResults";
+import { FlashcardSidebar } from "./FlashcardSidebar";
 
 interface FlashcardContainerProps {
 	session: FlashcardSession;
@@ -28,10 +29,12 @@ export function FlashcardContainer({
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [isComplete, setIsComplete] = useState(false);
 	const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
+	const [sidebarOpen, setSidebarOpen] = useState(true);
 
 	const currentCard = session.questions[currentIndex];
 	const totalCards = session.questions.length;
 	const isLastCard = currentIndex === totalCards - 1;
+	const progress = ((currentIndex + 1) / totalCards) * 100;
 
 	const handleNext = () => {
 		setStudiedCards(prev => new Set(prev).add(currentIndex));
@@ -49,8 +52,17 @@ export function FlashcardContainer({
 		}
 	};
 
+	const handleCardFlipped = () => {
+		// Segna la carta come studiata quando viene girata
+		setStudiedCards(prev => new Set(prev).add(currentIndex));
+	};
+
 	const handleJumpToCard = (index: number) => {
 		setCurrentIndex(index);
+		const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+		if (isMobile) {
+			setSidebarOpen(false);
+		}
 	};
 
 	const handleRestart = () => {
@@ -71,36 +83,57 @@ export function FlashcardContainer({
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-violet-50 dark:from-purple-900/10 dark:via-gray-900 dark:to-violet-900/10">
-			<FlashcardHeader
-				session={session}
-				isGuest={isGuest}
-				user={user}
-				onExit={onExit}
+		<div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+			{/* Sidebar per desktop */}
+			<FlashcardSidebar
+				questions={session.questions}
+				studiedCards={studiedCards}
+				currentCardIndex={currentIndex}
+				onCardSelect={handleJumpToCard}
+				isOpen={sidebarOpen}
+				onToggle={() => setSidebarOpen(!sidebarOpen)}
 			/>
 
-			<div className="container mx-auto px-4 py-6">
-				<FlashcardProgress
-					currentIndex={currentIndex}
-					totalCards={totalCards}
-					studiedCards={studiedCards}
+			{/* Contenuto principale */}
+			<div className="flex flex-1 flex-col">
+				{/* Header */}
+				<FlashcardHeader
+					session={session}
+					isGuest={isGuest}
+					user={user}
+					onExit={onExit}
+					onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+					sidebarOpen={sidebarOpen}
 				/>
 
-				<div className="mt-8">
-					<FlashcardCard
-						question={currentCard}
-						cardNumber={currentIndex + 1}
-						totalCards={totalCards}
-					/>
+				{/* Progress */}
+				<FlashcardProgress
+					current={currentIndex + 1}
+					total={totalCards}
+					progress={progress}
+				/>
+
+				{/* Flashcard */}
+				<div className="flex-1 p-4 sm:p-6">
+					<div className="mx-auto max-w-4xl">
+						<FlashcardCard
+							question={currentCard}
+							cardNumber={currentIndex + 1}
+							totalCards={totalCards}
+							isGuest={isGuest}
+							onFlip={handleCardFlipped}
+						/>
+					</div>
 				</div>
 
+				{/* Navigation */}
 				<FlashcardNavigation
 					currentIndex={currentIndex}
 					totalCards={totalCards}
+					isLastCard={isLastCard}
 					onPrevious={handlePrevious}
 					onNext={handleNext}
-					onJumpToCard={handleJumpToCard}
-					studiedCards={studiedCards}
+					onComplete={() => setIsComplete(true)}
 				/>
 			</div>
 		</div>
