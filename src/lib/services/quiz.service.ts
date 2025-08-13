@@ -531,7 +531,7 @@ export class QuizService extends UserService {
 		const quizAttempt = await prisma.quizAttempt.findFirst({
 			where: {
 				id: attemptId,
-				userId: userId, // Assicuriamo che l'utente possa vedere solo i suoi risultati
+				userId: userId,
 			},
 			include: {
 				quiz: {
@@ -572,19 +572,13 @@ export class QuizService extends UserService {
 			return null;
 		}
 
-		// Mappa le risposte nel formato atteso dal componente QuizResults
 		const answers = quizAttempt.answers.map(answer => ({
 			questionId: answer.questionId,
-			userAnswer: answer.userAnswer,
+			answer: answer.userAnswer,
 			isCorrect: answer.score > 0,
 			score: answer.score,
-			question: {
-				content: answer.question.content,
-				correctAnswer: answer.question.correctAnswer,
-			},
 		}));
 
-		// Mappa le domande del quiz con le opzioni complete
 		const questions = quizAttempt.quiz.questions.map(qq => ({
 			id: qq.question.id,
 			content: qq.question.content,
@@ -594,31 +588,19 @@ export class QuizService extends UserService {
 
 		return {
 			id: quizAttempt.id,
-			score: quizAttempt.score,
-			totalQuestions: quizAttempt.quiz.questions.length,
+			totalScore: quizAttempt.score,
 			correctAnswers: quizAttempt.answers.filter(a => a.score > 0).length,
+			totalQuestions: quizAttempt.quiz.questions.length,
 			timeSpent: quizAttempt.timeSpent || 0,
-			quiz: {
-				id: quizAttempt.quiz.id,
-				title: quizAttempt.quiz.section.name, // Usa il nome della sezione come titolo
-				description: `Quiz di ${quizAttempt.quiz.section.name}`,
-				section: {
-					name: quizAttempt.quiz.section.name,
-					class: {
-						name: quizAttempt.quiz.section.class.name,
-						course: {
-							name: quizAttempt.quiz.section.class.course.name,
-						},
-					},
-				},
-				questions,
-				evaluationMode: {
-					name: quizAttempt.quiz.evaluationMode.name,
-					description: quizAttempt.quiz.evaluationMode.description || undefined,
-					correctAnswerPoints: quizAttempt.quiz.evaluationMode.correctAnswerPoints,
-					incorrectAnswerPoints: quizAttempt.quiz.evaluationMode.incorrectAnswerPoints,
-					partialCreditEnabled: quizAttempt.quiz.evaluationMode.partialCreditEnabled,
-				},
+			quizId: quizAttempt.quiz.id,
+			quizTitle: quizAttempt.quiz.section.name,
+			questions,
+			evaluationMode: {
+				name: quizAttempt.quiz.evaluationMode.name,
+				description: quizAttempt.quiz.evaluationMode.description || undefined,
+				correctAnswerPoints: quizAttempt.quiz.evaluationMode.correctAnswerPoints,
+				incorrectAnswerPoints: quizAttempt.quiz.evaluationMode.incorrectAnswerPoints,
+				partialCreditEnabled: quizAttempt.quiz.evaluationMode.partialCreditEnabled,
 			},
 			answers,
 		};
