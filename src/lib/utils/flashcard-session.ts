@@ -44,30 +44,3 @@ export function clearFlashcardSession(sessionId: string): void {
 		localStorage.removeItem(sessionId);
 	}
 }
-
-/**
- * Salva il progresso corrente della sessione
- */
-export function saveFlashcardProgress(sessionId: string, currentIndex: number): void {
-	if (typeof window === "undefined") return;
-
-	const sessionData = getFlashcardSession(sessionId);
-	if (sessionData) {
-		const updatedData = {
-			...sessionData,
-			currentIndex,
-			lastAccessed: Date.now(),
-		};
-		localStorage.setItem(sessionId, JSON.stringify(updatedData));
-	}
-}
-
-/**
- * Recupera il progresso salvato della sessione
- */
-export function getFlashcardProgress(sessionId: string): number {
-	if (typeof window === "undefined") return 0;
-
-	const sessionData = getFlashcardSession(sessionId);
-	return (sessionData as any)?.currentIndex || 0;
-}
