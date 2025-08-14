@@ -53,7 +53,6 @@ export function FlashcardContainer({
 	};
 
 	const handleCardFlipped = () => {
-		// Segna la carta come studiata quando viene girata
 		setStudiedCards(prev => new Set(prev).add(currentIndex));
 	};
 
@@ -122,6 +121,10 @@ export function FlashcardContainer({
 							totalCards={totalCards}
 							isGuest={isGuest}
 							onFlip={handleCardFlipped}
+                            onNext={handleNext}
+                            onPrevious={handlePrevious}
+                            canGoNext={currentIndex < totalCards - 1}
+                            canGoPrevious={currentIndex > 0}
 						/>
 					</div>
 				</div>

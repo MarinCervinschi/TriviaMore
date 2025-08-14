@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 
@@ -15,7 +15,11 @@ interface FlashcardCardProps {
 	cardNumber: number;
 	totalCards: number;
 	isGuest?: boolean;
-	onFlip?: () => void; // Callback quando viene girata
+	onFlip?: () => void;
+	onNext?: () => void;
+	onPrevious?: () => void;
+	canGoNext?: boolean;
+	canGoPrevious?: boolean;
 }
 
 export function FlashcardCard({
@@ -24,30 +28,68 @@ export function FlashcardCard({
 	totalCards,
 	isGuest = false,
 	onFlip,
+	onNext,
+	onPrevious,
+	canGoNext = false,
+	canGoPrevious = false,
 }: FlashcardCardProps) {
 	const [isFlipped, setIsFlipped] = useState(false);
 	const [showExplanation, setShowExplanation] = useState(false);
 
-	// Reset dello stato quando cambia la domanda
-	useEffect(() => {
-		setIsFlipped(false);
-		setShowExplanation(false);
-	}, [question.id]);
-
-	const handleFlip = () => {
+	const handleFlip = useCallback(() => {
 		if (!isFlipped) {
-			// Se è la prima volta che viene girata, notifica il container
 			onFlip?.();
 		}
 		setIsFlipped(!isFlipped);
 		if (isFlipped) {
 			setShowExplanation(false);
 		}
-	};
+	}, [isFlipped, onFlip]);
 
-	const toggleExplanation = () => {
+	const toggleExplanation = useCallback(() => {
 		setShowExplanation(!showExplanation);
-	};
+	}, [showExplanation]);
+
+	useEffect(() => {
+		setIsFlipped(false);
+		setShowExplanation(false);
+	}, [question.id]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (
+				event.target instanceof HTMLInputElement ||
+				event.target instanceof HTMLTextAreaElement
+			) {
+				return;
+			}
+
+			switch (event.key) {
+				case "ArrowLeft":
+					event.preventDefault();
+					if (canGoPrevious && onPrevious) {
+						onPrevious();
+					}
+					break;
+				case "ArrowRight":
+					event.preventDefault();
+					if (canGoNext && onNext) {
+						onNext();
+					}
+					break;
+				case " ": // Spacebar
+				case "Enter":
+					event.preventDefault();
+					handleFlip();
+					break;
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [canGoNext, canGoPrevious, onNext, onPrevious, handleFlip]);
 
 	return (
 		<div className="flex justify-center">
