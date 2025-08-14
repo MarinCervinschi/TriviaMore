@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import UserProgressComponent from "@/components/pages/User/Progress";
 import { auth } from "@/lib/auth";
-import { UserService } from "@/lib/services/user.service";
+import { UserService } from "@/lib/services";
 
 export default async function UserProgressPage() {
 	const session = await auth();

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import DepartmentPageComponent from "@/components/pages/Browse/Department/index";
 import { auth } from "@/lib/auth";
-import { BrowseService } from "@/lib/services/browse.service";
+import { BrowseService } from "@/lib/services";
 
 interface DepartmentPageProps {
 	params: Promise<{

@@ -5,6 +5,7 @@ import {
 	FlashcardSessionRequest,
 	StartFlashcardRequest,
 } from "../types/flashcard.types";
+import { RandomizationService } from "./randomization.service";
 import { UserService } from "./user.service";
 
 export class FlashcardService extends UserService {
@@ -42,7 +43,7 @@ export class FlashcardService extends UserService {
 			);
 		}
 
-		const selectedQuestions = FlashcardService.selectRandomItems(
+		const selectedQuestions = RandomizationService.selectRandomItems(
 			sectionData.questions,
 			cardCount
 		);
@@ -230,7 +231,7 @@ export class FlashcardService extends UserService {
 			throw new Error("Sezione non trovata o accesso negato");
 		}
 
-		const selectedQuestions = FlashcardService.selectRandomItemsWithSeed(
+		const selectedQuestions = RandomizationService.selectRandomItemsWithSeed(
 			sectionData.questions,
 			cardCount,
 			timestamp
@@ -324,7 +325,7 @@ export class FlashcardService extends UserService {
 			throw new Error("Nessuna domanda disponibile per la simulazione");
 		}
 
-		const selectedQuestions = FlashcardService.selectRandomItemsWithSeed(
+		const selectedQuestions = RandomizationService.selectRandomItemsWithSeed(
 			allQuestions,
 			cardCount,
 			timestamp
@@ -363,76 +364,6 @@ export class FlashcardService extends UserService {
 		};
 
 		return { session };
-	}
-
-	private static selectRandomItems<T>(array: T[], count: number): T[] {
-		if (count >= array.length) {
-			return FlashcardService.shuffleArray(array);
-		}
-
-		const selected: T[] = [];
-		const indices = new Set<number>();
-
-		while (selected.length < count) {
-			const randomIndex = Math.floor(Math.random() * array.length);
-			if (!indices.has(randomIndex)) {
-				indices.add(randomIndex);
-				selected.push(array[randomIndex]);
-			}
-		}
-
-		return selected;
-	}
-
-	private static selectRandomItemsWithSeed<T>(
-		array: T[],
-		count: number,
-		seed: number
-	): T[] {
-		const rng = FlashcardService.seededRandom(seed);
-
-		if (count >= array.length) {
-			return FlashcardService.shuffleArrayWithRng(array, rng);
-		}
-
-		const selected: T[] = [];
-		const indices = new Set<number>();
-
-		while (selected.length < count) {
-			const randomIndex = Math.floor(rng() * array.length);
-			if (!indices.has(randomIndex)) {
-				indices.add(randomIndex);
-				selected.push(array[randomIndex]);
-			}
-		}
-
-		return selected;
-	}
-
-	private static shuffleArray<T>(array: T[]): T[] {
-		const shuffled = [...array];
-		for (let i = shuffled.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-		}
-		return shuffled;
-	}
-
-	private static shuffleArrayWithRng<T>(array: T[], rng: () => number): T[] {
-		const shuffled = [...array];
-		for (let i = shuffled.length - 1; i > 0; i--) {
-			const j = Math.floor(rng() * (i + 1));
-			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-		}
-		return shuffled;
-	}
-
-	private static seededRandom(seed: number): () => number {
-		let x = Math.sin(seed) * 10000;
-		return () => {
-			x = Math.sin(x) * 10000;
-			return x - Math.floor(x);
-		};
 	}
 
 	private static parseSessionId(

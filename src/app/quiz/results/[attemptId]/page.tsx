@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import QuizResultsPageComponent from "@/components/pages/Quiz/QuizResults";
 import { auth } from "@/lib/auth";
-import { QuizService } from "@/lib/services/quiz.service";
+import { QuizService } from "@/lib/services";
 
 interface QuizResultsPageProps {
 	params: Promise<{

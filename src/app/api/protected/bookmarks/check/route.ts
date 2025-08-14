@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { BookmarkService } from "@/lib/services/bookmark.service";
+import { BookmarkService } from "@/lib/services";
 
 export async function GET(request: NextRequest) {
 	try {
