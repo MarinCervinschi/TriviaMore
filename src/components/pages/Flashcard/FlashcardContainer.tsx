@@ -121,10 +121,10 @@ export function FlashcardContainer({
 							totalCards={totalCards}
 							isGuest={isGuest}
 							onFlip={handleCardFlipped}
-                            onNext={handleNext}
-                            onPrevious={handlePrevious}
-                            canGoNext={currentIndex < totalCards - 1}
-                            canGoPrevious={currentIndex > 0}
+							onNext={handleNext}
+							onPrevious={handlePrevious}
+							canGoNext={currentIndex < totalCards - 1}
+							canGoPrevious={currentIndex > 0}
 						/>
 					</div>
 				</div>
