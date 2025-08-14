@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
 import Link from "next/link";
 
 import { JsonValue } from "@prisma/client/runtime/library";
-import { Bookmark, ChevronRight, Home } from "lucide-react";
+import { Bookmark, ChevronRight, Eye, EyeOff, Home } from "lucide-react";
 import { User } from "next-auth";
 
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -59,6 +62,20 @@ export default function UserBookmarksComponent({
 	bookmarks,
 	currentUser,
 }: UserBookmarksComponentProps) {
+	// Stato per tenere traccia di quali risposte SHORT_ANSWER sono visibili
+	const [visibleAnswers, setVisibleAnswers] = useState<Set<string>>(new Set());
+
+	const toggleAnswerVisibility = (questionId: string) => {
+		setVisibleAnswers(prev => {
+			const newSet = new Set(prev);
+			if (newSet.has(questionId)) {
+				newSet.delete(questionId);
+			} else {
+				newSet.add(questionId);
+			}
+			return newSet;
+		});
+	};
 	const getDifficultyColor = (difficulty: string) => {
 		switch (difficulty) {
 			case "EASY":
@@ -228,6 +245,51 @@ export default function UserBookmarksComponent({
 													)
 												)}
 											</ul>
+										</div>
+									)}
+
+									{/* Pulsante per mostrare risposta nelle domande SHORT_ANSWER */}
+									{bookmark.question.questionType === "SHORT_ANSWER" && (
+										<div className="space-y-3">
+											<Button
+												onClick={() => toggleAnswerVisibility(bookmark.questionId)}
+												variant={
+													visibleAnswers.has(bookmark.questionId)
+														? "secondary"
+														: "default"
+												}
+												size="sm"
+												className="w-full sm:w-auto"
+											>
+												{visibleAnswers.has(bookmark.questionId) ? (
+													<>
+														<EyeOff className="mr-2 h-4 w-4" />
+														Nascondi risposta
+													</>
+												) : (
+													<>
+														<Eye className="mr-2 h-4 w-4" />
+														Mostra risposta
+													</>
+												)}
+											</Button>
+
+											{visibleAnswers.has(bookmark.questionId) && (
+												<div className="rounded-lg border-l-4 border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+													<p className="text-sm font-medium text-green-800 dark:text-green-200">
+														Risposta corretta:
+													</p>
+													<div className="mt-1 text-sm text-green-700 dark:text-green-300">
+														<MarkdownRenderer
+															content={
+																bookmark.question.correctAnswer[0] ||
+																"Nessuna risposta disponibile"
+															}
+															className="flashcard-markdown [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+														/>
+													</div>
+												</div>
+											)}
 										</div>
 									)}
 
