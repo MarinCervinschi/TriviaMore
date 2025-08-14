@@ -85,7 +85,9 @@ export function FlashcardCard({
 								<div className="flashcard-content flex-1 overflow-y-auto p-2">
 									<div className="flex min-h-full items-center justify-center">
 										<div className="w-full space-y-4 text-center">
-											<div className="flashcard-emoji text-4xl md:text-6xl">❓</div>
+											<div className="flashcard-emoji text-center text-4xl md:text-6xl">
+												❓
+											</div>
 											<div>
 												<MarkdownRenderer
 													content={question.content}
@@ -155,8 +157,10 @@ export function FlashcardCard({
 								{/* Contenuto scrollabile per risposte lunghe */}
 								<div className="flashcard-content flex-1 overflow-y-auto p-2">
 									<div className="flex min-h-full items-center justify-center">
-										<div className="w-full space-y-4 text-center">
-											<div className="flashcard-emoji text-4xl md:text-6xl">✅</div>
+										<div className="w-full space-y-4">
+											<div className="flashcard-emoji text-center text-4xl md:text-6xl">
+												✅
+											</div>
 											<div>
 												<MarkdownRenderer
 													content={

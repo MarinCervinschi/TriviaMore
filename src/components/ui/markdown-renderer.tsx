@@ -12,9 +12,7 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
 	return (
-		<div
-			className={`prose prose-sm dark:prose-invert question-markdown max-w-none ${className}`}
-		>
+		<div className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm, remarkMath]}
 				rehypePlugins={[rehypeKatex]}
