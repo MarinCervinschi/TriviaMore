@@ -10,6 +10,7 @@ import {
 	QuizSection,
 	StartQuizRequest,
 } from "../types/quiz.types";
+import { RandomizationService } from "./randomization.service";
 import { UserService } from "./user.service";
 
 export class QuizService extends UserService {
@@ -50,7 +51,7 @@ export class QuizService extends UserService {
 			throw new Error("Sezione non trovata o nessuna domanda disponibile per il quiz");
 		}
 
-		const selectedQuestions = QuizService.selectRandomItems(
+		const selectedQuestions = RandomizationService.selectRandomItems(
 			sectionData.questions,
 			questionCount
 		);
@@ -89,7 +90,9 @@ export class QuizService extends UserService {
 			id: q.id,
 			content: q.content,
 			questionType: q.questionType,
-			options: q.options ? QuizService.shuffleArray(q.options as string[]) : undefined,
+			options: q.options
+				? RandomizationService.shuffleArray(q.options as string[])
+				: undefined,
 			correctAnswer: q.correctAnswer,
 			explanation: q.explanation || undefined,
 			difficulty: q.difficulty,
@@ -236,7 +239,10 @@ export class QuizService extends UserService {
 			throw new Error("Modalità di valutazione non trovata");
 		}
 
-		const selectedQuestions = QuizService.selectRandomItems(questions, questionCount);
+		const selectedQuestions = RandomizationService.selectRandomItems(
+			questions,
+			questionCount
+		);
 
 		const quiz = await prisma.quiz.create({
 			data: {
@@ -327,7 +333,7 @@ export class QuizService extends UserService {
 			content: qq.question.content,
 			questionType: qq.question.questionType,
 			options: qq.question.options
-				? QuizService.shuffleArray([...(qq.question.options as string[])])
+				? RandomizationService.shuffleArray([...(qq.question.options as string[])])
 				: undefined,
 			correctAnswer: qq.question.correctAnswer,
 			explanation: qq.question.explanation || undefined,
@@ -440,41 +446,6 @@ export class QuizService extends UserService {
 			timeSpent,
 			totalQuestions: quizAttempt.quiz.questions.length,
 		});
-	}
-
-	/**
-	 * Mescola casualmente un array usando l'algoritmo Fisher-Yates
-	 */
-	private static shuffleArray<T>(array: T[]): T[] {
-		const shuffled = [...array];
-		for (let i = shuffled.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-		}
-		return shuffled;
-	}
-
-	/**
-	 * Seleziona casualmente un numero specifico di elementi da un array
-	 * Più efficiente del shuffle completo quando si vuole solo un subset
-	 */
-	private static selectRandomItems<T>(array: T[], count: number): T[] {
-		if (count >= array.length) {
-			return QuizService.shuffleArray(array);
-		}
-
-		const selected: T[] = [];
-		const indices = new Set<number>();
-
-		while (selected.length < count) {
-			const randomIndex = Math.floor(Math.random() * array.length);
-			if (!indices.has(randomIndex)) {
-				indices.add(randomIndex);
-				selected.push(array[randomIndex]);
-			}
-		}
-
-		return selected;
 	}
 
 	/**

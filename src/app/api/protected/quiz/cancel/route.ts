@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { QuizService } from "@/lib/services/quiz.service";
+import { QuizService } from "@/lib/services";
 
 // DELETE /api/protected/quiz/cancel - Cancella un quiz in corso per un utente autenticato
 export const DELETE = auth(async function DELETE(request: NextAuthRequest) {

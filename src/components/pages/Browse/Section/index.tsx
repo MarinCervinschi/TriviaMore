@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
-import { useQuizMutations } from "@/hooks";
+import { useFlashcardMutations, useQuizMutations } from "@/hooks";
+import { createFlashcardSession } from "@/lib/utils/flashcard-session";
 import { createQuizSession } from "@/lib/utils/quiz-session";
 
 import { FlashcardCard } from "./FlashcardCard";
@@ -47,6 +48,8 @@ interface SectionData {
 	};
 	_count: {
 		questions: number;
+		quizQuestions?: number;
+		flashcardQuestions?: number;
 	};
 }
 
@@ -73,9 +76,11 @@ export default function SectionPageComponent({
 }: SectionPageComponentProps) {
 	const router = useRouter();
 	const { startQuiz, isLoading } = useQuizMutations();
+	const { startFlashcard, isLoading: isFlashcardLoading } = useFlashcardMutations();
 
-	const totalQuestions = sectionData._count.questions;
-	const defaultQuestionCount = Math.min(20, totalQuestions);
+	const quizQuestions = sectionData._count.quizQuestions || 0;
+	const flashcardQuestions = sectionData._count.flashcardQuestions || 0;
+	const defaultQuestionCount = Math.min(20, quizQuestions);
 	const [quizQuestionCount, setQuizQuestionCount] = useState([defaultQuestionCount]);
 	const [quizTimeLimit, setQuizTimeLimit] = useState([30]); // Default 30 minuti
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
@@ -83,7 +88,7 @@ export default function SectionPageComponent({
 	);
 	const [isQuizSettingsOpen, setIsQuizSettingsOpen] = useState(false);
 
-	const defaultFlashcardCount = Math.min(10, totalQuestions);
+	const defaultFlashcardCount = Math.min(10, flashcardQuestions);
 	const [flashcardCount, setFlashcardCount] = useState([defaultFlashcardCount]);
 	const [isFlashcardSettingsOpen, setIsFlashcardSettingsOpen] = useState(false);
 
@@ -117,12 +122,29 @@ export default function SectionPageComponent({
 			}
 		}
 	};
-	const handleStartFlashcards = () => {
-		// TODO: Implementare logica per avviare le flashcard
-		console.log("Avvia flashcard con:", {
-			cardCount: flashcardCount[0],
-			sectionId: sectionData.id,
-		});
+	const handleStartFlashcards = async () => {
+		if (isUserLoggedIn) {
+			const flashcardParams = {
+				sectionId: sectionData.id,
+				cardCount: flashcardCount[0],
+			};
+
+			await startFlashcard.mutateAsync(flashcardParams);
+		} else {
+			try {
+				const flashcardParams = {
+					sectionId: sectionData.id,
+					cardCount: flashcardCount[0],
+				};
+
+				const sessionId = createFlashcardSession(flashcardParams);
+
+				router.push(`/flashcard/${sessionId}`);
+			} catch (error) {
+				console.error("Errore nell'avvio delle flashcard guest:", error);
+				toast.error("Errore nell'avvio delle flashcard");
+			}
+		}
 	};
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -169,7 +191,7 @@ export default function SectionPageComponent({
 					{/* Tenta Quiz */}
 					<QuizCard
 						sectionName={sectionData.name}
-						totalQuestions={totalQuestions}
+						totalQuestions={quizQuestions}
 						isUserLoggedIn={isUserLoggedIn}
 						onStartQuiz={handleStartQuiz}
 						isLoading={isLoading}
@@ -187,13 +209,14 @@ export default function SectionPageComponent({
 					{/* Flashcard */}
 					<FlashcardCard
 						sectionName={sectionData.name}
-						totalQuestions={totalQuestions}
+						totalQuestions={flashcardQuestions}
 						isUserLoggedIn={isUserLoggedIn}
 						onStartFlashcards={handleStartFlashcards}
 						cardCount={flashcardCount}
 						onCardCountChange={setFlashcardCount}
 						isSettingsOpen={isFlashcardSettingsOpen}
 						onSettingsOpenChange={setIsFlashcardSettingsOpen}
+						isLoading={isFlashcardLoading}
 					/>
 				</div>
 			</div>

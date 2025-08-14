@@ -25,7 +25,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { type UserProfileData, UserService } from "@/lib/services/user.service";
-import { QuizResultsComponentProps } from "@/lib/types/quiz.types";
 
 function getRoleLabel(role: string): string {
 	switch (role) {
