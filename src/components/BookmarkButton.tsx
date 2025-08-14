@@ -37,7 +37,8 @@ export function BookmarkButton({
 	);
 	const toggleBookmark = useBookmarkToggle(userId, questionId);
 
-	const handleToggle = () => {
+	const handleToggle = (e: React.MouseEvent) => {
+		e.stopPropagation();
 		if (isGuest) return;
 		toggleBookmark.mutate();
 	};
@@ -76,6 +77,7 @@ export function BookmarkButton({
 							variant={variant}
 							size="icon"
 							disabled
+							onClick={e => e.stopPropagation()}
 							className={cn(getSizeClasses(), "opacity-50", className)}
 						>
 							<Bookmark className={getIconSize()} />
