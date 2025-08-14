@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { UserService } from "@/lib/services/user.service";
+import { UserService } from "@/lib/services";
 
 // GET /api/protected/userClass - Ottieni tutte le classi salvate/preferite dell'utente autenticato
 export const GET = auth(async function GET(request: NextAuthRequest) {

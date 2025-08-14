@@ -47,6 +47,8 @@ export interface SectionNode {
 	classId: string;
 	_count?: {
 		questions: number;
+		quizQuestions?: number;
+		flashcardQuestions?: number;
 	};
 }
 

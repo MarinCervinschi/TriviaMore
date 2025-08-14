@@ -1,12 +1,11 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { QuizService } from "@/lib/services";
+import { FlashcardService } from "@/lib/services";
 
-// POST /api/protected/quiz/start - Avvia un quiz per un utente autenticato
+// POST /api/protected/flashcard/start - Avvia una sessione di flashcard per un utente autenticato
 export const POST = auth(async function POST(request: NextAuthRequest) {
 	if (!request.auth) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,13 +19,7 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 		}
 
 		const body = await request.json();
-		const {
-			sectionId,
-			questionCount = 30,
-			timeLimit = 30,
-			quizMode,
-			evaluationModeId,
-		} = body;
+		const { sectionId, cardCount = 10 } = body;
 
 		if (!sectionId || typeof sectionId !== "string") {
 			return NextResponse.json(
@@ -35,62 +28,37 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			);
 		}
 
-		if (!quizMode || !["STUDY", "EXAM_SIMULATION"].includes(quizMode)) {
+		if (cardCount && (typeof cardCount !== "number" || cardCount <= 0)) {
 			return NextResponse.json(
-				{ error: "quizMode is required and must be STUDY or EXAM_SIMULATION" },
+				{ error: "cardCount must be a positive number" },
 				{ status: 400 }
 			);
 		}
 
-		if (!evaluationModeId || typeof evaluationModeId !== "string") {
-			return NextResponse.json(
-				{ error: "evaluationModeId is required and must be a string" },
-				{ status: 400 }
-			);
-		}
-
-		if (questionCount && (typeof questionCount !== "number" || questionCount <= 0)) {
-			return NextResponse.json(
-				{ error: "questionCount must be a positive number" },
-				{ status: 400 }
-			);
-		}
-
-		if (timeLimit && (typeof timeLimit !== "number" || timeLimit <= 0)) {
-			return NextResponse.json(
-				{ error: "timeLimit must be a positive number" },
-				{ status: 400 }
-			);
-		}
-
-		const { quizId } = await QuizService.startQuiz({
+		const { sessionId } = await FlashcardService.startFlashcardSession({
 			userId,
 			sectionId,
-			questionCount,
-			timeLimit,
-			quizMode,
-			evaluationModeId,
+			cardCount,
 		});
 
 		return NextResponse.json(null, {
 			status: 201,
 			headers: {
-				Location: `/quiz/${quizId}`,
+				Location: `/flashcard/${sessionId}`,
 			},
 		});
 	} catch (error) {
-		console.error("Error starting quiz:", error);
+		console.error("Error starting flashcard session:", error);
 
 		if (error instanceof Error) {
 			if (
 				error.message === "Sezione non trovata" ||
-				error.message === "Modalità di valutazione non trovata" ||
 				error.message === "Utente non ha accesso alla sezione"
 			) {
 				return NextResponse.json({ error: error.message }, { status: 404 });
 			}
 
-			if (error.message === "Nessuna domanda disponibile per il quiz") {
+			if (error.message === "Nessuna domanda disponibile per le flashcard") {
 				return NextResponse.json({ error: error.message }, { status: 400 });
 			}
 		}

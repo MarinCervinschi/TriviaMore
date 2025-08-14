@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { QuizService } from "@/lib/services/quiz.service";
+import { QuizService } from "@/lib/services";
 
 // http://localhost:3000/api/quiz/guest?sectionId=section-id
 

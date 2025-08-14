@@ -591,7 +591,12 @@ export class BrowseService extends UserService {
 			orderBy: { position: "asc" },
 			include: {
 				_count: {
-					select: { questions: true },
+					select: {
+						questions: true,
+					},
+				},
+				questions: {
+					select: { questionType: true },
 				},
 			},
 		});
@@ -622,17 +627,28 @@ export class BrowseService extends UserService {
 				sections: classData._count.sections,
 			},
 			isEnrolled,
-			sections: sections.map(section => ({
-				id: section.id,
-				name: section.name,
-				description: section.description,
-				isPublic: section.isPublic,
-				position: section.position,
-				classId: section.classId,
-				_count: {
-					questions: section._count.questions,
-				},
-			})),
+			sections: sections.map(section => {
+				const quizQuestions = section.questions.filter(
+					q => q.questionType === "TRUE_FALSE" || q.questionType === "MULTIPLE_CHOICE"
+				).length;
+				const flashcardQuestions = section.questions.filter(
+					q => q.questionType === "SHORT_ANSWER"
+				).length;
+
+				return {
+					id: section.id,
+					name: section.name,
+					description: section.description,
+					isPublic: section.isPublic,
+					position: section.position,
+					classId: section.classId,
+					_count: {
+						questions: section._count.questions,
+						quizQuestions,
+						flashcardQuestions,
+					},
+				};
+			}),
 		};
 	}
 
@@ -732,12 +748,22 @@ export class BrowseService extends UserService {
 				_count: {
 					select: { questions: true },
 				},
+				questions: {
+					select: { questionType: true },
+				},
 			},
 		});
 
 		if (!section) {
 			return null;
 		}
+
+		const quizQuestions = section.questions.filter(
+			q => q.questionType === "TRUE_FALSE" || q.questionType === "MULTIPLE_CHOICE"
+		).length;
+		const flashcardQuestions = section.questions.filter(
+			q => q.questionType === "SHORT_ANSWER"
+		).length;
 
 		return {
 			id: section.id,
@@ -749,6 +775,8 @@ export class BrowseService extends UserService {
 			class: classData,
 			_count: {
 				questions: section._count.questions,
+				quizQuestions,
+				flashcardQuestions,
 			},
 		};
 	}

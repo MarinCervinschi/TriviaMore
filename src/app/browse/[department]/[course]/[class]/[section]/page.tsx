@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 
 import SectionPageComponent from "@/components/pages/Browse/Section/index";
 import { auth } from "@/lib/auth";
-import { BrowseService } from "@/lib/services/browse.service";
-import { EvaluationService } from "@/lib/services/evaluation.service";
+import { BrowseService } from "@/lib/services";
+import { EvaluationService } from "@/lib/services";
 
 interface SectionPageProps {
 	params: Promise<{

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import UserClassesComponent from "@/components/pages/User/Classes";
 import { auth } from "@/lib/auth";
-import { UserService } from "@/lib/services/user.service";
+import { UserService } from "@/lib/services";
 
 export default async function UserClassesPage() {
 	const session = await auth();

@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import UserBookmarksComponent from "@/components/pages/User/Bookmarks";
 import { auth } from "@/lib/auth";
-import { BookmarkService } from "@/lib/services/bookmark.service";
-import { UserService } from "@/lib/services/user.service";
+import { BookmarkService } from "@/lib/services";
+import { UserService } from "@/lib/services";
 
 export default async function UserBookmarksPage() {
 	const session = await auth();
