@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth";
 
 import { auth } from "@/lib/auth";
-import { QuizService } from "@/lib/services/quiz.service";
+import { QuizService } from "@/lib/services";
 
 export const GET = auth(async function GET(request: NextAuthRequest) {
 	if (!request.auth) {

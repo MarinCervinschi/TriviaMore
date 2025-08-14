@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { FlashcardService } from "@/lib/services/flashcard.service";
+import { FlashcardService } from "@/lib/services";
 
 // POST /api/protected/flashcard/start - Avvia una sessione di flashcard per un utente autenticato
 export const POST = auth(async function POST(request: NextAuthRequest) {

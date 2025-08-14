@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { QuizService } from "@/lib/services/quiz.service";
+import { QuizService } from "@/lib/services";
 
 // POST /api/protected/quiz/start - Avvia un quiz per un utente autenticato
 export const POST = auth(async function POST(request: NextAuthRequest) {

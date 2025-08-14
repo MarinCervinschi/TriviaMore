@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextAuthRequest } from "next-auth/lib";
 
 import { auth } from "@/lib/auth";
-import { FlashcardService } from "@/lib/services/flashcard.service";
+import { FlashcardService } from "@/lib/services";
 
 // GET /api/protected/flashcard - Recupera una sessione di flashcard per un utente autenticato
 export const GET = auth(async function GET(request: NextAuthRequest) {

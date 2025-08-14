@@ -1,5 +1,5 @@
 import BrowsePageComponent from "@/components/pages/Browse";
-import { BrowseService } from "@/lib/services/browse.service";
+import { BrowseService } from "@/lib/services";
 import { BrowseTreeResponse } from "@/lib/types/browse.types";
 
 export default async function BrowsePage() {

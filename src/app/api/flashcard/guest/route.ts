@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { FlashcardService } from "@/lib/services/flashcard.service";
+import { FlashcardService } from "@/lib/services";
 
 export async function POST(request: Request) {
 	try {
