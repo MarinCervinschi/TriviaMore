@@ -8,9 +8,6 @@ import {
 import { UserService } from "./user.service";
 
 export class FlashcardService extends UserService {
-	/**
-	 * Genera una sessione di flashcard per utenti guest
-	 */
 	static async generateGuestFlashcardSession(
 		params: FlashcardSessionRequest
 	): Promise<{ session: FlashcardSession }> {
@@ -67,6 +64,7 @@ export class FlashcardService extends UserService {
 		const questions = selectedQuestions.map((q: any, index: number) => ({
 			id: q.id,
 			content: q.content,
+			questionType: q.questionType,
 			correctAnswer: q.correctAnswer,
 			explanation: q.explanation || undefined,
 			difficulty: q.difficulty,
@@ -84,9 +82,6 @@ export class FlashcardService extends UserService {
 		return { session };
 	}
 
-	/**
-	 * Avvia una sessione di flashcard per utenti autenticati
-	 */
 	static async startFlashcardSession(
 		params: StartFlashcardRequest
 	): Promise<{ sessionId: string }> {
@@ -131,15 +126,71 @@ export class FlashcardService extends UserService {
 		}
 
 		const timestamp = Date.now();
-		// Crea un ID sessione che include i parametri codificati
 		const sessionId = `user-flashcard-${userId}-${timestamp}-${Buffer.from(`${sectionId}:${cardCount}`).toString("base64")}`;
 
 		return { sessionId };
 	}
 
-	/**
-	 * Recupera una sessione di flashcard per utenti autenticati
-	 */
+	static async startExamSimulationSession(params: {
+		userId: string;
+		classId: string;
+		cardCount?: number;
+	}): Promise<{ sessionId: string }> {
+		const { userId, classId, cardCount = 20 } = params;
+
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+		});
+
+		if (!user) {
+			throw new Error("Utente non trovato");
+		}
+
+		const permissions = await super.getUserPermissions(userId);
+		const whereClause = await super.getSectionWhereClause(classId, permissions);
+
+		const classData = await prisma.class.findFirst({
+			where: {
+				id: classId,
+			},
+			include: {
+				sections: {
+					where: whereClause,
+					include: {
+						questions: {
+							where: {
+								questionType: "SHORT_ANSWER",
+							},
+						},
+					},
+				},
+				course: {
+					include: {
+						department: true,
+					},
+				},
+			},
+		});
+
+		if (!classData) {
+			throw new Error("Classe non trovata");
+		}
+
+		const totalQuestions = classData.sections.reduce(
+			(acc, section) => acc + section.questions.length,
+			0
+		);
+
+		if (totalQuestions === 0) {
+			throw new Error("Nessuna domanda disponibile per la simulazione");
+		}
+
+		const timestamp = Date.now();
+		const sessionId = `exam-flashcard-${userId}-${timestamp}-${Buffer.from(`${classId}:${cardCount}`).toString("base64")}`;
+
+		return { sessionId };
+	}
+
 	static async getUserFlashcardSession(
 		userId: string,
 		sessionId: string
@@ -179,7 +230,6 @@ export class FlashcardService extends UserService {
 			throw new Error("Sezione non trovata o accesso negato");
 		}
 
-		// Usa lo stesso timestamp per garantire lo stesso ordine random
 		const selectedQuestions = FlashcardService.selectRandomItemsWithSeed(
 			sectionData.questions,
 			cardCount,
@@ -203,6 +253,7 @@ export class FlashcardService extends UserService {
 		const questions = selectedQuestions.map((q: any, index: number) => ({
 			id: q.id,
 			content: q.content,
+			questionType: q.questionType,
 			correctAnswer: q.correctAnswer,
 			explanation: q.explanation || undefined,
 			difficulty: q.difficulty,
@@ -220,9 +271,100 @@ export class FlashcardService extends UserService {
 		return { session };
 	}
 
-	/**
-	 * Seleziona casualmente un numero specifico di elementi da un array
-	 */
+	static async getExamSimulationSession(
+		userId: string,
+		sessionId: string
+	): Promise<{ session: FlashcardSession }> {
+		const sessionData = FlashcardService.parseExamSessionId(sessionId);
+
+		if (!sessionData) {
+			throw new Error("Sessione non valida");
+		}
+
+		const { classId, cardCount, timestamp } = sessionData;
+
+		const permissions = await super.getUserPermissions(userId);
+		const whereClause = await super.getSectionWhereClause(classId, permissions);
+
+		const classData = await prisma.class.findFirst({
+			where: {
+				id: classId,
+			},
+			include: {
+				sections: {
+					where: whereClause,
+					include: {
+						questions: {
+							where: {
+								questionType: "SHORT_ANSWER",
+							},
+						},
+					},
+				},
+				course: {
+					include: {
+						department: true,
+					},
+				},
+			},
+		});
+
+		if (!classData) {
+			throw new Error("Classe non trovata");
+		}
+
+		const allQuestions = classData.sections.flatMap(section =>
+			section.questions.map(question => ({
+				...question,
+				sectionName: section.name,
+			}))
+		);
+
+		if (allQuestions.length === 0) {
+			throw new Error("Nessuna domanda disponibile per la simulazione");
+		}
+
+		const selectedQuestions = FlashcardService.selectRandomItemsWithSeed(
+			allQuestions,
+			cardCount,
+			timestamp
+		);
+
+		const flashcardSection: FlashcardSection = {
+			id: classData.id,
+			name: `Simulazione d'esame - ${classData.name}`,
+			class: {
+				name: classData.name,
+				course: {
+					name: classData.course.name,
+					department: {
+						name: classData.course.department.name,
+					},
+				},
+			},
+		};
+
+		const questions = selectedQuestions.map((q: any, index: number) => ({
+			id: q.id,
+			content: q.content,
+			questionType: q.questionType,
+			correctAnswer: q.correctAnswer,
+			explanation: q.explanation || undefined,
+			difficulty: q.difficulty,
+			order: index + 1,
+		}));
+
+		const session: FlashcardSession = {
+			id: sessionId,
+			section: flashcardSection,
+			questions,
+			currentQuestionIndex: 0,
+			isComplete: false,
+		};
+
+		return { session };
+	}
+
 	private static selectRandomItems<T>(array: T[], count: number): T[] {
 		if (count >= array.length) {
 			return FlashcardService.shuffleArray(array);
@@ -242,15 +384,11 @@ export class FlashcardService extends UserService {
 		return selected;
 	}
 
-	/**
-	 * Seleziona casualmente elementi usando un seed per garantire consistenza
-	 */
 	private static selectRandomItemsWithSeed<T>(
 		array: T[],
 		count: number,
 		seed: number
 	): T[] {
-		// Implementazione semplificata usando il seed come base per Math.random
 		const rng = FlashcardService.seededRandom(seed);
 
 		if (count >= array.length) {
@@ -271,9 +409,6 @@ export class FlashcardService extends UserService {
 		return selected;
 	}
 
-	/**
-	 * Mescola casualmente un array usando l'algoritmo Fisher-Yates
-	 */
 	private static shuffleArray<T>(array: T[]): T[] {
 		const shuffled = [...array];
 		for (let i = shuffled.length - 1; i > 0; i--) {
@@ -283,9 +418,6 @@ export class FlashcardService extends UserService {
 		return shuffled;
 	}
 
-	/**
-	 * Mescola array con un generatore di numeri casuali custom
-	 */
 	private static shuffleArrayWithRng<T>(array: T[], rng: () => number): T[] {
 		const shuffled = [...array];
 		for (let i = shuffled.length - 1; i > 0; i--) {
@@ -295,9 +427,6 @@ export class FlashcardService extends UserService {
 		return shuffled;
 	}
 
-	/**
-	 * Generatore di numeri casuali con seed
-	 */
 	private static seededRandom(seed: number): () => number {
 		let x = Math.sin(seed) * 10000;
 		return () => {
@@ -306,9 +435,6 @@ export class FlashcardService extends UserService {
 		};
 	}
 
-	/**
-	 * Parsa l'ID sessione per estrarre i parametri
-	 */
 	private static parseSessionId(
 		sessionId: string
 	): { sectionId: string; cardCount: number; timestamp: number } | null {
@@ -338,6 +464,39 @@ export class FlashcardService extends UserService {
 			};
 		} catch (error) {
 			console.error("Errore nel parsing dell'ID sessione:", error);
+			return null;
+		}
+	}
+
+	private static parseExamSessionId(
+		sessionId: string
+	): { classId: string; cardCount: number; timestamp: number } | null {
+		try {
+			// Formato: exam-flashcard-{userId}-{timestamp}-{base64EncodedParams}
+			const parts = sessionId.split("-");
+			if (parts.length < 5 || parts[0] !== "exam" || parts[1] !== "flashcard") {
+				return null;
+			}
+
+			const timestamp = parseInt(parts[3]);
+			if (isNaN(timestamp)) {
+				return null;
+			}
+
+			// Decodifica i parametri dalla parte base64
+			const encodedParams = parts[4];
+			const decodedParams = Buffer.from(encodedParams, "base64").toString("utf-8");
+			const [classId, cardCountStr] = decodedParams.split(":");
+
+			const cardCount = parseInt(cardCountStr) || 20;
+
+			return {
+				classId,
+				cardCount,
+				timestamp,
+			};
+		} catch (error) {
+			console.error("Errore nel parsing dell'ID sessione esame:", error);
 			return null;
 		}
 	}
