@@ -25,7 +25,12 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 			return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
 		}
 
-		const result = await FlashcardService.getUserFlashcardSession(userId, sessionId);
+		// Determina se è una sessione di simulazione d'esame o normale
+		const isExamSimulation = sessionId.startsWith("exam-flashcard-");
+
+		const result = isExamSimulation
+			? await FlashcardService.getExamSimulationSession(userId, sessionId)
+			: await FlashcardService.getUserFlashcardSession(userId, sessionId);
 
 		return NextResponse.json(result);
 	} catch (error) {
@@ -34,6 +39,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		if (error instanceof Error) {
 			if (
 				error.message === "Sezione non trovata o accesso negato" ||
+				error.message === "Classe non trovata" ||
 				error.message === "Sessione non valida"
 			) {
 				return NextResponse.json({ error: error.message }, { status: 404 });
