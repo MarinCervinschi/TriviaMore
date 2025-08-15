@@ -31,6 +31,14 @@ import type {
 type CrudModalType = "department" | "course" | "class" | "section" | "question";
 type CrudModalMode = "create" | "edit" | "delete";
 
+
+export interface Modal {
+	isOpen: boolean;
+	type: CrudModalType;
+	mode: CrudModalMode;
+	data?: any;
+}
+
 interface CrudModalProps {
 	type: CrudModalType;
 	mode: CrudModalMode;
