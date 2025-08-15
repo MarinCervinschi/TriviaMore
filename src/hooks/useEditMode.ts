@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 
-import type { Role } from "@prisma/client";
+import type { Role, User } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 
 interface EditModePermissions {
@@ -15,103 +16,56 @@ interface EditModePermissions {
 	role: Role | null;
 }
 
+interface UserPermissions {
+	managedDepartmentIds: string[];
+	maintainedCourseIds: string[];
+}
+
 interface UseEditModeProps {
-	// Context information to determine permissions
 	departmentId?: string;
 	courseId?: string;
 	classId?: string;
-	sectionId?: string;
-	// User's managed/maintained resources (from UserPermissions)
-	managedDepartmentIds?: string[];
-	maintainedCourseIds?: string[];
 }
 
-export function useEditMode({
+async function fetchUserPermissions(): Promise<UserPermissions> {
+	const response = await fetch("/api/user/permissions");
+	if (!response.ok) {
+		throw new Error("Failed to fetch user permissions");
+	}
+	return response.json();
+}
+
+function calculateEditPermissions({
+	user,
 	departmentId,
 	courseId,
 	classId,
-	sectionId,
 	managedDepartmentIds = [],
 	maintainedCourseIds = [],
-}: UseEditModeProps = {}): EditModePermissions {
-	const { data: session } = useSession();
-	const user = session?.user;
+}: {
+	user?: User | null;
+	departmentId?: string;
+	courseId?: string;
+	classId?: string;
+	managedDepartmentIds?: string[];
+	maintainedCourseIds?: string[];
+}): EditModePermissions {
+	if (!user || !user.role) {
+		return {
+			canEdit: false,
+			canEditDepartments: false,
+			canEditCourses: false,
+			canEditClasses: false,
+			canEditSections: false,
+			canEditQuestions: false,
+			role: null,
+		};
+	}
 
-	const permissions = useMemo(() => {
-		if (!user || !user.role) {
-			return {
-				canEdit: false,
-				canEditDepartments: false,
-				canEditCourses: false,
-				canEditClasses: false,
-				canEditSections: false,
-				canEditQuestions: false,
-				role: null,
-			};
-		}
+	const role = user.role as Role;
 
-		const role = user.role as Role;
-
-		// STUDENT: no edit permissions
-		if (role === "STUDENT") {
-			return {
-				canEdit: false,
-				canEditDepartments: false,
-				canEditCourses: false,
-				canEditClasses: false,
-				canEditSections: false,
-				canEditQuestions: false,
-				role,
-			};
-		}
-
-		// SUPERADMIN: full permissions everywhere
-		if (role === "SUPERADMIN") {
-			return {
-				canEdit: true,
-				canEditDepartments: true,
-				canEditCourses: true,
-				canEditClasses: true,
-				canEditSections: true,
-				canEditQuestions: true,
-				role,
-			};
-		}
-
-		// ADMIN: can edit within their managed departments
-		if (role === "ADMIN") {
-			const canEditInDepartment = departmentId
-				? managedDepartmentIds.includes(departmentId)
-				: managedDepartmentIds.length > 0;
-
-			return {
-				canEdit: canEditInDepartment,
-				canEditDepartments: canEditInDepartment,
-				canEditCourses: canEditInDepartment,
-				canEditClasses: canEditInDepartment,
-				canEditSections: canEditInDepartment,
-				canEditQuestions: canEditInDepartment,
-				role,
-			};
-		}
-
-		// MAINTAINER: can edit within their maintained courses (only at class level)
-		if (role === "MAINTAINER") {
-			const canEditInCourse = courseId
-				? maintainedCourseIds.includes(courseId)
-				: maintainedCourseIds.length > 0;
-
-			return {
-				canEdit: canEditInCourse && !!classId, // Only show edit mode in class pages
-				canEditDepartments: false,
-				canEditCourses: false,
-				canEditClasses: canEditInCourse,
-				canEditSections: canEditInCourse,
-				canEditQuestions: canEditInCourse,
-				role,
-			};
-		}
-
+	// STUDENT: no edit permissions
+	if (role === "STUDENT") {
 		return {
 			canEdit: false,
 			canEditDepartments: false,
@@ -121,28 +75,115 @@ export function useEditMode({
 			canEditQuestions: false,
 			role,
 		};
+	}
+
+	// SUPERADMIN: full permissions everywhere
+	if (role === "SUPERADMIN") {
+		return {
+			canEdit: true,
+			canEditDepartments: true,
+			canEditCourses: true,
+			canEditClasses: true,
+			canEditSections: true,
+			canEditQuestions: true,
+			role,
+		};
+	}
+
+	// ADMIN: can edit within their managed departments
+	if (role === "ADMIN") {
+		const canEditInDepartment = departmentId
+			? managedDepartmentIds.includes(departmentId)
+			: managedDepartmentIds.length > 0;
+
+		return {
+			canEdit: canEditInDepartment,
+			canEditDepartments: canEditInDepartment,
+			canEditCourses: canEditInDepartment,
+			canEditClasses: canEditInDepartment,
+			canEditSections: canEditInDepartment,
+			canEditQuestions: canEditInDepartment,
+			role,
+		};
+	}
+
+	// MAINTAINER: can edit within their maintained courses (only at class level and below)
+	if (role === "MAINTAINER") {
+		const canEditInCourse = courseId
+			? maintainedCourseIds.includes(courseId)
+			: maintainedCourseIds.length > 0;
+
+		return {
+			canEdit: canEditInCourse && !!classId, // Only show edit mode in class pages and below
+			canEditDepartments: false,
+			canEditCourses: false,
+			canEditClasses: canEditInCourse,
+			canEditSections: canEditInCourse,
+			canEditQuestions: canEditInCourse,
+			role,
+		};
+	}
+
+	return {
+		canEdit: false,
+		canEditDepartments: false,
+		canEditCourses: false,
+		canEditClasses: false,
+		canEditSections: false,
+		canEditQuestions: false,
+		role,
+	};
+}
+
+export function useEditMode({
+	departmentId,
+	courseId,
+	classId,
+}: UseEditModeProps = {}): EditModePermissions {
+	const { data: session } = useSession();
+
+	const shouldFetchPermissions =
+		session?.user?.role && ["ADMIN", "MAINTAINER"].includes(session.user.role);
+
+	const { data: userPermissions, isLoading } = useQuery({
+		queryKey: ["userPermissions", session?.user?.id],
+		queryFn: fetchUserPermissions,
+		enabled: shouldFetchPermissions,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
+
+	const permissions = useMemo(() => {
+		if (shouldFetchPermissions && isLoading) {
+			return {
+				canEdit: false,
+				canEditDepartments: false,
+				canEditCourses: false,
+				canEditClasses: false,
+				canEditSections: false,
+				canEditQuestions: false,
+				role: (session?.user?.role as Role) || null,
+			};
+		}
+
+		return calculateEditPermissions({
+			user: session?.user,
+			departmentId,
+			courseId,
+			classId,
+			managedDepartmentIds: userPermissions?.managedDepartmentIds || [],
+			maintainedCourseIds: userPermissions?.maintainedCourseIds || [],
+		});
 	}, [
-		user,
+		session?.user,
 		departmentId,
 		courseId,
 		classId,
-		managedDepartmentIds,
-		maintainedCourseIds,
+		userPermissions?.managedDepartmentIds,
+		userPermissions?.maintainedCourseIds,
+		isLoading,
+		shouldFetchPermissions,
 	]);
 
 	return permissions;
-}
-
-// Helper hook to get user permissions data
-export function useUserPermissions() {
-	const { data: session } = useSession();
-
-	// This would typically fetch the user's permissions from an API
-	// For now, we'll return empty arrays - this should be implemented
-	// to fetch the actual managedDepartmentIds and maintainedCourseIds
-	return {
-		managedDepartmentIds: [],
-		maintainedCourseIds: [],
-		isLoading: false,
-	};
 }
