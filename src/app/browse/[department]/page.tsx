@@ -38,6 +38,7 @@ export default async function DepartmentPage({
 
 	return (
 		<DepartmentPageComponent
+			user={session?.user || null}
 			department={departmentData}
 			filters={{
 				type: resolvedSearchParams.type,
