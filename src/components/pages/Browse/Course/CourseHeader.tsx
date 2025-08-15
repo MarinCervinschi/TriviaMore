@@ -1,5 +1,6 @@
-import { BookOpen, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
+import { EditModeCard } from "@/components/EditMode/edit-mode-card";
 import { Badge } from "@/components/ui/badge";
 
 interface Department {
@@ -24,14 +25,22 @@ interface Course {
 
 interface CourseHeaderProps {
 	course: Course;
+	isEditMode?: boolean;
+	canEdit?: boolean;
+	onEditAction?: (action: "edit" | "delete", data: Course) => void;
 }
 
-export function CourseHeader({ course }: CourseHeaderProps) {
+export function CourseHeader({
+	course,
+	isEditMode,
+	canEdit,
+	onEditAction,
+}: CourseHeaderProps) {
 	const courseTypeLabel =
 		course.courseType === "BACHELOR" ? "Laurea Triennale" : "Laurea Magistrale";
 	const courseTypeColor = course.courseType === "BACHELOR" ? "blue" : "purple";
 
-	return (
+	const content = (
 		<div className="mb-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 			<div className="flex flex-col md:flex-row md:items-start md:justify-between">
 				<div className="mb-6 flex-1 md:mb-0">
@@ -114,4 +123,20 @@ export function CourseHeader({ course }: CourseHeaderProps) {
 			</div>
 		</div>
 	);
+
+	if (isEditMode && canEdit) {
+		return (
+			<EditModeCard
+				isEditMode={isEditMode}
+				onEdit={() => onEditAction?.("edit", course)}
+				onDelete={() => onEditAction?.("delete", course)}
+				canEdit={canEdit}
+				canDelete={canEdit}
+			>
+				{content}
+			</EditModeCard>
+		);
+	}
+
+	return content;
 }

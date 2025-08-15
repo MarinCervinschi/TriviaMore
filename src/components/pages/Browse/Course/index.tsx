@@ -4,6 +4,14 @@ import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { User } from "next-auth";
+
+import { EditModeButton } from "@/components/EditMode/edit-mode-button";
+import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
+import { CrudModal, Modal } from "@/components/modals/CrudModal";
+import { useEditMode } from "@/hooks/useEditMode";
+import { useEditModeContext } from "@/providers/edit-mode-provider";
+
 import { CourseBreadcrumb } from "./CourseBreadcrumb";
 import { CourseClasses } from "./CourseClasses";
 import { CourseFilters } from "./CourseFilters";
@@ -49,12 +57,14 @@ interface CourseFilters {
 }
 
 interface CoursePageComponentProps {
+	user: User | null;
 	course: Course;
 	filters: CourseFilters;
 	departmentCode: string;
 }
 
 export default function CoursePageComponent({
+	user,
 	course,
 	filters: initialFilters,
 	departmentCode,
@@ -63,6 +73,17 @@ export default function CoursePageComponent({
 	const searchParams = useSearchParams();
 	const [filters, setFilters] = useState<CourseFilters>(initialFilters);
 	const [searchValue, setSearchValue] = useState(initialFilters.search || "");
+
+	const { isEditMode, toggleEditMode } = useEditModeContext();
+	const editPermissions = useEditMode({
+		departmentId: course.departmentId,
+		courseId: course.id,
+	});
+	const [modalState, setModalState] = useState<Modal>({
+		isOpen: false,
+		mode: "create",
+		type: "class",
+	});
 
 	const updateFilters = (newFilters: Partial<CourseFilters>) => {
 		const params = new URLSearchParams(searchParams);
@@ -94,6 +115,14 @@ export default function CoursePageComponent({
 		router.push(`/browse/${departmentCode}/${course.code.toLowerCase()}`);
 	};
 
+	const handleEditAction = (
+		action: "create" | "edit" | "delete",
+		type: "course" | "class",
+		data?: any
+	) => {
+		setModalState({ isOpen: true, mode: action, type, data });
+	};
+
 	const handleFilterChange = (newFilters: Partial<CourseFilters>) => {
 		const updatedFilters = { ...filters, ...newFilters };
 		setFilters(updatedFilters);
@@ -116,35 +145,68 @@ export default function CoursePageComponent({
 	).sort((a, b) => a - b);
 
 	return (
-		<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-			<div className="container mx-auto px-4 py-8">
-				<CourseBreadcrumb
-					departmentName={course.department.name}
-					departmentCode={departmentCode}
-					courseName={course.name}
-				/>
+		<EditModeOverlay isActive={isEditMode} userRole={user?.role || null}>
+			<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+				<div className="container mx-auto px-4 py-8">
+					{editPermissions.canEdit && (
+						<div className="mb-4 flex justify-end">
+							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+						</div>
+					)}
 
-				<CourseHeader course={course} />
+					<CourseBreadcrumb
+						departmentName={course.department.name}
+						departmentCode={departmentCode}
+						courseName={course.name}
+					/>
 
-				<CourseFilters
-					filters={filters}
-					searchValue={searchValue}
-					availableYears={availableYears}
-					onSearchValueChange={setSearchValue}
-					onSearch={handleSearch}
-					onFilterChange={handleFilterChange}
-					onClearFilters={clearFilters}
-				/>
+					<CourseHeader
+						course={course}
+						isEditMode={isEditMode}
+						canEdit={editPermissions.canEditCourses}
+						onEditAction={(action, data) => handleEditAction(action, "course", data)}
+					/>
 
-				<CourseClasses
-					classes={filteredClasses}
-					departmentCode={departmentCode}
-					courseCode={course.code.toLowerCase()}
-					filters={filters}
-					hasActiveFilters={hasActiveFilters}
-					onClearFilters={clearFilters}
-				/>
+					<CourseFilters
+						filters={filters}
+						searchValue={searchValue}
+						availableYears={availableYears}
+						onSearchValueChange={setSearchValue}
+						onSearch={handleSearch}
+						onFilterChange={handleFilterChange}
+						onClearFilters={clearFilters}
+					/>
+
+					{isEditMode && editPermissions.canEditClasses && (
+						<div className="mb-6">
+							<button
+								onClick={() => handleEditAction("create", "class")}
+								className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+							>
+								<span>+</span>
+								Crea Nuova Classe
+							</button>
+						</div>
+					)}
+
+					<CourseClasses
+						classes={filteredClasses}
+						departmentCode={departmentCode}
+						courseCode={course.code.toLowerCase()}
+						filters={filters}
+						hasActiveFilters={hasActiveFilters}
+						onClearFilters={clearFilters}
+					/>
+				</div>
 			</div>
-		</div>
+
+			<CrudModal
+				isOpen={modalState.isOpen}
+				onClose={() => setModalState({ ...modalState, isOpen: false })}
+				mode={modalState.mode}
+				type={modalState.type}
+				initialData={modalState.data}
+			/>
+		</EditModeOverlay>
 	);
 }
