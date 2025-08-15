@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -66,16 +66,14 @@ export function EditModeOverlay({
 			</div>
 
 			{/* Warning alert */}
-			<div className="mb-6">
-				<Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
-					<AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-					<AlertDescription className="text-amber-800 dark:text-amber-200">
-						<strong>Modalità Modifica Attiva:</strong> Puoi ora modificare, aggiungere
-						ed eliminare contenuti. Le modifiche saranno immediatamente visibili a tutti
-						gli utenti.
-					</AlertDescription>
-				</Alert>
-			</div>
+			<Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
+				<AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+				<AlertDescription className="text-amber-800 dark:text-amber-200">
+					<strong>Modalità Modifica Attiva:</strong> Puoi ora modificare, aggiungere ed
+					eliminare contenuti. Le modifiche saranno immediatamente visibili a tutti gli
+					utenti.
+				</AlertDescription>
+			</Alert>
 
 			{/* Content with edit mode styling */}
 			<div className="relative">
@@ -83,17 +81,6 @@ export function EditModeOverlay({
 
 				{/* Edit mode overlay effect */}
 				<div className="pointer-events-none absolute inset-0 rounded-lg bg-primary/5" />
-			</div>
-
-			{/* Help text */}
-			<div className="mt-6">
-				<Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50">
-					<Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-					<AlertDescription className="text-blue-800 dark:text-blue-200">
-						<strong>Suggerimento:</strong> Passa il mouse sopra gli elementi per vedere
-						le opzioni di modifica disponibili.
-					</AlertDescription>
-				</Alert>
 			</div>
 		</div>
 	);
