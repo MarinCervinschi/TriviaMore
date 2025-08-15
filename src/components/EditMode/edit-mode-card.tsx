@@ -1,9 +1,9 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { EditModeToolbar } from "@/components/EditMode/edit-mode-toolbar";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface EditModeCardProps {
@@ -18,8 +18,6 @@ interface EditModeCardProps {
 	canDelete?: boolean;
 	canMove?: boolean;
 	className?: string;
-	title?: string;
-	description?: string;
 }
 
 export function EditModeCard({
@@ -34,33 +32,18 @@ export function EditModeCard({
 	canDelete = true,
 	canMove = false,
 	className,
-	title,
-	description,
 }: EditModeCardProps) {
-	const [isHovered, setIsHovered] = useState(false);
-
 	return (
 		<Card
 			className={cn(
-				"relative transition-all duration-200",
-				isEditMode && "ring-2 ring-primary/20 hover:ring-primary/40",
-				isEditMode && isHovered && "shadow-lg",
+				"relative mb-8 transition-all duration-200",
+				isEditMode && "ring-2 ring-primary/20 hover:shadow-lg hover:ring-primary/40",
 				className
 			)}
-			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}
 		>
-			{isEditMode && (isHovered || title) && (
+			{isEditMode && (
 				<CardHeader className="pb-2">
-					<div className="flex items-center justify-between">
-						<div>
-							{title && (
-								<h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-							)}
-							{description && (
-								<p className="text-xs text-muted-foreground/70">{description}</p>
-							)}
-						</div>
+					<div className="flex items-center justify-end">
 						<EditModeToolbar
 							onAdd={onAdd}
 							onEdit={onEdit}
@@ -75,33 +58,7 @@ export function EditModeCard({
 				</CardHeader>
 			)}
 
-			<CardContent className={cn(isEditMode && (isHovered || title) ? "pt-0" : "pt-6")}>
-				{children}
-			</CardContent>
-
-			{/* Floating toolbar for mobile/touch devices */}
-			{isEditMode && !title && (
-				<div
-					className={cn(
-						"absolute right-2 top-2 opacity-0 transition-opacity duration-200",
-						isHovered && "opacity-100"
-					)}
-				>
-					<EditModeToolbar
-						onAdd={onAdd}
-						onEdit={onEdit}
-						onDelete={onDelete}
-						onMove={onMove}
-						canAdd={canAdd}
-						canEdit={canEdit}
-						canDelete={canDelete}
-						canMove={canMove}
-						size="sm"
-						variant="ghost"
-						className="rounded-md bg-background/80 p-1 shadow-md backdrop-blur-sm"
-					/>
-				</div>
-			)}
+			<CardContent>{children}</CardContent>
 		</Card>
 	);
 }
