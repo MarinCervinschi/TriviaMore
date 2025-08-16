@@ -110,11 +110,11 @@ export function QuestionCard({ question, onEditAction }: QuestionCardProps) {
 
 		if (question.questionType === "TRUE_FALSE") {
 			return (
-				<div className="mt-3">
+				<div className="mt-3 flex gap-1">
 					<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
 						Risposta corretta:{" "}
-						<Badge variant="secondary">{question.correctAnswer[0]}</Badge>
 					</p>
+                    <Badge variant="secondary">{question.correctAnswer[0]}</Badge>
 				</div>
 			);
 		}
