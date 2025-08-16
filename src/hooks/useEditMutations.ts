@@ -7,12 +7,28 @@ import {
 	ClassBody,
 	CourseBody,
 	DepartmentBody,
+	NodeType,
 	QuestionBody,
 	SectionBody,
-	nodeType,
+	UpdateClassBody,
+	UpdateCourseBody,
+	UpdateDepartmentBody,
+	UpdateQuestionBody,
+	UpdateSectionBody,
 } from "@/lib/types/crud.types";
 
 type Body = ClassBody | CourseBody | DepartmentBody | QuestionBody | SectionBody;
+type UpdateBody =
+	| UpdateClassBody
+	| UpdateCourseBody
+	| UpdateDepartmentBody
+	| UpdateQuestionBody
+	| UpdateSectionBody;
+
+interface CreateNodeParams {
+	nodeType: NodeType;
+	body: Body;
+}
 
 interface CreateQuestionParams {
 	sectionId?: string;
@@ -21,19 +37,19 @@ interface CreateQuestionParams {
 }
 
 interface UpdateNodeParams {
-	nodeType: nodeType;
+	nodeType: NodeType;
 	id: string;
 	sectionId?: string;
-	body: QuestionBody | QuestionBody[];
+	body: UpdateBody;
 }
 
 interface DeleteNodeParams {
-	nodeType: nodeType;
+	nodeType: NodeType;
 	id: string;
 	sectionId?: string;
 }
 
-const fetchCreateNodeType = async (nodeType: string, body: Body) => {
+const fetchCreateNodeType = async ({ nodeType, body }: CreateNodeParams) => {
 	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -96,7 +112,8 @@ export function useEditMutations() {
 
 	// Department mutations
 	const createDepartment = useMutation({
-		mutationFn: (body: DepartmentBody) => fetchCreateNodeType("departments", body),
+		mutationFn: ({ body }: CreateNodeParams) =>
+			fetchCreateNodeType({ nodeType: "department", body: body as DepartmentBody }),
 		onSuccess: () => {
 			toast.success("Dipartimento creato con successo");
 		},
@@ -107,7 +124,11 @@ export function useEditMutations() {
 
 	const updateDepartment = useMutation({
 		mutationFn: ({ id, body }: UpdateNodeParams) =>
-			fetchUpdateNodeType({ nodeType: "department", id, body }),
+			fetchUpdateNodeType({
+				nodeType: "department",
+				id,
+				body: body as UpdateDepartmentBody,
+			}),
 		onSuccess: () => {
 			toast.success("Dipartimento aggiornato con successo");
 		},
@@ -129,7 +150,8 @@ export function useEditMutations() {
 
 	// Course mutations
 	const createCourse = useMutation({
-		mutationFn: (body: CourseBody) => fetchCreateNodeType("courses", body),
+		mutationFn: ({ body }: CreateNodeParams) =>
+			fetchCreateNodeType({ nodeType: "course", body: body as CourseBody }),
 		onSuccess: () => {
 			toast.success("Corso creato con successo");
 		},
@@ -140,7 +162,7 @@ export function useEditMutations() {
 
 	const updateCourse = useMutation({
 		mutationFn: ({ id, body }: UpdateNodeParams) =>
-			fetchUpdateNodeType({ nodeType: "course", id, body }),
+			fetchUpdateNodeType({ nodeType: "course", id, body: body as UpdateCourseBody }),
 		onSuccess: () => {
 			toast.success("Corso aggiornato con successo");
 		},
@@ -162,7 +184,8 @@ export function useEditMutations() {
 
 	// Class mutations
 	const createClass = useMutation({
-		mutationFn: (body: ClassBody) => fetchCreateNodeType("classes", body),
+		mutationFn: ({ body }: CreateNodeParams) =>
+			fetchCreateNodeType({ nodeType: "class", body: body as ClassBody }),
 		onSuccess: () => {
 			toast.success("Classe creata con successo");
 		},
@@ -173,7 +196,7 @@ export function useEditMutations() {
 
 	const updateClass = useMutation({
 		mutationFn: ({ id, body }: UpdateNodeParams) =>
-			fetchUpdateNodeType({ nodeType: "class", id, body }),
+			fetchUpdateNodeType({ nodeType: "class", id, body: body as UpdateClassBody }),
 		onSuccess: () => {
 			toast.success("Classe aggiornata con successo");
 		},
@@ -195,7 +218,8 @@ export function useEditMutations() {
 
 	// Section mutations
 	const createSection = useMutation({
-		mutationFn: (body: SectionBody) => fetchCreateNodeType("sections", body),
+		mutationFn: ({ body }: CreateNodeParams) =>
+			fetchCreateNodeType({ nodeType: "section", body: body as SectionBody }),
 		onSuccess: () => {
 			toast.success("Sezione creata con successo");
 		},
@@ -206,7 +230,7 @@ export function useEditMutations() {
 
 	const updateSection = useMutation({
 		mutationFn: ({ id, body }: UpdateNodeParams) =>
-			fetchUpdateNodeType({ nodeType: "section", id, body }),
+			fetchUpdateNodeType({ nodeType: "section", id, body: body as UpdateSectionBody }),
 		onSuccess: () => {
 			toast.success("Sezione aggiornata con successo");
 		},
@@ -243,7 +267,11 @@ export function useEditMutations() {
 
 	const updateQuestion = useMutation({
 		mutationFn: ({ id, body }: UpdateNodeParams) =>
-			fetchUpdateNodeType({ nodeType: "question", id, body }),
+			fetchUpdateNodeType({
+				nodeType: "question",
+				id,
+				body: body as UpdateQuestionBody,
+			}),
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
 				queryKey: ["section-questions", variables.sectionId],
