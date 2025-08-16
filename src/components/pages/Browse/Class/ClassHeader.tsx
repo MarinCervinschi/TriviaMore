@@ -100,13 +100,15 @@ export default function ClassHeader({
 				</div>
 
 				{/* Pulsante di aggiunta/rimozione classe */}
-				<div className="flex justify-end md:ml-6 md:flex-shrink-0">
-					<AddClassButton
-						classId={classData.id}
-						className={classData.name}
-						isEnrolled={isEnrolled}
-					/>
-				</div>
+				{!isEditMode && (
+					<div className="flex justify-end md:ml-6 md:flex-shrink-0">
+						<AddClassButton
+							classId={classData.id}
+							className={classData.name}
+							isEnrolled={isEnrolled}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);

@@ -162,11 +162,13 @@ export default function ClassPageComponent({
 						onEditAction={(action, data) => handleEditAction(action, "class", data)}
 					/>
 
-					<ExamSimulationButton
-						classData={classData}
-						isUserLoggedIn={isUserLoggedIn}
-						evaluationModes={evaluationModes}
-					/>
+					{!isEditMode && (
+						<ExamSimulationButton
+							classData={classData}
+							isUserLoggedIn={isUserLoggedIn}
+							evaluationModes={evaluationModes}
+						/>
+					)}
 
 					<ClassFilters
 						searchQuery={searchQuery}
@@ -201,6 +203,11 @@ export default function ClassPageComponent({
 				mode={modalState.mode}
 				type={modalState.type}
 				initialData={modalState.data}
+				contextData={{
+					departments: [classData.course.department],
+					courses: [classData.course],
+					classes: [classData],
+				}}
 			/>
 		</EditModeOverlay>
 	);

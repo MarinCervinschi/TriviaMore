@@ -37,7 +37,7 @@ export function QuestionManagement({
 		queryKey: ["section-questions", sectionId],
 		queryFn: async () => {
 			const response = await fetch(
-				`/api/protected/admin/sections/${sectionId}/questions`
+				`/api/protected/admin/crud/questions?sectionId=${sectionId}`
 			);
 			if (!response.ok) {
 				throw new Error("Errore nel caricamento delle domande");

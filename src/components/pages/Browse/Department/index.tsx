@@ -181,6 +181,9 @@ export default function DepartmentPageComponent(props: DepartmentPageComponentPr
 				mode={modalState.mode}
 				type={modalState.type}
 				initialData={modalState.data}
+				contextData={{
+					departments: [props.department],
+				}}
 			/>
 		</EditModeOverlay>
 	);
