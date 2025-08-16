@@ -89,7 +89,7 @@ export function ClassForm({
 							<FormLabel>Nome Classe *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. Programmazione Web - Anno 2024"
+									placeholder="es. Analisi I"
 									{...field}
 									disabled={isLoading}
 								/>
@@ -107,7 +107,7 @@ export function ClassForm({
 							<FormLabel>Codice Classe *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. PROG-WEB-2024"
+									placeholder="es. MAT-001R"
 									{...field}
 									onChange={e => field.onChange(e.target.value.toUpperCase())}
 									disabled={isLoading}

@@ -85,7 +85,7 @@ export function CourseForm({
 							<FormLabel>Nome Corso *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. Programmazione Web"
+									placeholder="es. Ingegneria Informatica"
 									{...field}
 									disabled={isLoading}
 								/>
@@ -103,7 +103,7 @@ export function CourseForm({
 							<FormLabel>Codice Corso *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. PROG-WEB"
+									placeholder="es. 20-312"
 									{...field}
 									onChange={e => field.onChange(e.target.value.toUpperCase())}
 									disabled={isLoading}

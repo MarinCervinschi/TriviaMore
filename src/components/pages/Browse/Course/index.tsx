@@ -206,6 +206,10 @@ export default function CoursePageComponent({
 				mode={modalState.mode}
 				type={modalState.type}
 				initialData={modalState.data}
+				contextData={{
+					departments: [course.department],
+					courses: [course],
+				}}
 			/>
 		</EditModeOverlay>
 	);

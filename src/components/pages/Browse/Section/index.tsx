@@ -244,6 +244,11 @@ export default function SectionPageComponent({
 				mode={modalState.mode}
 				type={modalState.type}
 				initialData={modalState.data}
+				contextData={{
+					courses: [sectionData.course],
+					classes: [sectionData.class],
+					sections: [sectionData],
+				}}
 			/>
 		</EditModeOverlay>
 	);
