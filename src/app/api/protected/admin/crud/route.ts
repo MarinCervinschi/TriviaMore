@@ -9,7 +9,7 @@ import {
 	CourseBody,
 	DepartmentBody,
 	SectionBody,
-	nodeType,
+	NodeType,
 } from "@/lib/types/crud.types";
 
 // /api/protected/admin/crud?nodeType=kind
@@ -26,7 +26,7 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 		}
 
 		const { searchParams } = new URL(request.url);
-		const nodeType = searchParams.get("nodeType") as nodeType | null;
+		const nodeType = searchParams.get("nodeType") as NodeType | null;
 
 		if (nodeType === null) {
 			return NextResponse.json({ error: "Node type not found" }, { status: 400 });
