@@ -8,8 +8,8 @@ import {
 	ClassBody,
 	CourseBody,
 	DepartmentBody,
-	SectionBody,
 	NodeType,
+	SectionBody,
 } from "@/lib/types/crud.types";
 
 // /api/protected/admin/crud?nodeType=kind

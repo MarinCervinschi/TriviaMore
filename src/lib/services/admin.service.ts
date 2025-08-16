@@ -531,7 +531,7 @@ export class AdminService extends UserService {
 			where: { sectionId },
 		});
 	}
-    
+
 	static async createQuestion(userId: string, data: QuestionBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "question");
 		if (!hasPermission) {
