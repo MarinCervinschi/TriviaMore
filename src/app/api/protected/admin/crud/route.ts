@@ -4,6 +4,15 @@ import type { NextAuthRequest } from "next-auth";
 
 import { auth } from "@/lib/auth";
 import { AdminService } from "@/lib/services/admin.service";
+import {
+	ClassBody,
+	CourseBody,
+	DepartmentBody,
+	SectionBody,
+	nodeType,
+} from "@/lib/types/crud.types";
+
+// /api/protected/admin/crud?nodeType=kind
 
 export const POST = auth(async function POST(request: NextAuthRequest) {
 	if (!request.auth) {
@@ -16,28 +25,35 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			return NextResponse.json({ error: "User ID not found" }, { status: 400 });
 		}
 
-		const body = await request.json();
-		const { name, code, description, departmentId, courseType, position } = body;
+		const { searchParams } = new URL(request.url);
+		const nodeType = searchParams.get("nodeType") as nodeType | null;
 
-		if (!name || !code || !departmentId || !courseType) {
-			return NextResponse.json(
-				{ error: "Nome, codice, dipartimento e tipo corso sono obbligatori" },
-				{ status: 400 }
-			);
+		if (nodeType === null) {
+			return NextResponse.json({ error: "Node type not found" }, { status: 400 });
 		}
 
-		const course = await AdminService.createCourse(userId, {
-			name,
-			code,
-			description,
-			departmentId,
-			courseType,
-			position,
-		});
+		const body = await request.json();
 
-		return NextResponse.json(course, { status: 201 });
+		switch (nodeType) {
+			case "department":
+				await AdminService.createDepartment(userId, body as DepartmentBody);
+				break;
+			case "course":
+				await AdminService.createCourse(userId, body as CourseBody);
+				break;
+			case "class":
+				await AdminService.createClass(userId, body as ClassBody);
+				break;
+			case "section":
+				await AdminService.createSection(userId, body as SectionBody);
+				break;
+			default:
+				return NextResponse.json({ error: "Invalid node type" }, { status: 400 });
+		}
+
+		return NextResponse.json(null, { status: 201 });
 	} catch (error) {
-		console.error("Error creating course:", error);
+		console.error("Error creating class:", error);
 
 		if (error instanceof Error) {
 			if (error.message.includes("permessi") || error.message.includes("permission")) {

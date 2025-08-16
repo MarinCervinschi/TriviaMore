@@ -1,5 +1,12 @@
 import { prisma } from "@/lib/prisma";
 
+import {
+	ClassBody,
+	CourseBody,
+	DepartmentBody,
+	QuestionBody,
+	SectionBody,
+} from "../types/crud.types";
 import { type UserPermissions, UserService } from "./user.service";
 
 export class AdminService extends UserService {
@@ -163,15 +170,7 @@ export class AdminService extends UserService {
 	}
 
 	// Department CRUD operations
-	static async createDepartment(
-		userId: string,
-		data: {
-			name: string;
-			code: string;
-			description?: string;
-			position?: number;
-		}
-	) {
+	static async createDepartment(userId: string, data: DepartmentBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "department");
 		if (!hasPermission) {
 			throw new Error("Non hai i permessi per creare dipartimenti");
@@ -199,12 +198,7 @@ export class AdminService extends UserService {
 	static async updateDepartment(
 		userId: string,
 		departmentId: string,
-		data: {
-			name?: string;
-			code?: string;
-			description?: string;
-			position?: number;
-		}
+		data: DepartmentBody
 	) {
 		const { hasPermission } = await this.checkAdminPermissions(
 			userId,
@@ -265,17 +259,7 @@ export class AdminService extends UserService {
 	}
 
 	// Course CRUD operations
-	static async createCourse(
-		userId: string,
-		data: {
-			name: string;
-			code: string;
-			description?: string;
-			departmentId: string;
-			courseType: "BACHELOR" | "MASTER";
-			position?: number;
-		}
-	) {
+	static async createCourse(userId: string, data: CourseBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "course");
 		if (!hasPermission) {
 			throw new Error("Non hai i permessi per creare corsi");
@@ -305,17 +289,7 @@ export class AdminService extends UserService {
 		});
 	}
 
-	static async updateCourse(
-		userId: string,
-		courseId: string,
-		data: {
-			name?: string;
-			code?: string;
-			description?: string;
-			courseType?: "BACHELOR" | "MASTER";
-			position?: number;
-		}
-	) {
+	static async updateCourse(userId: string, courseId: string, data: CourseBody) {
 		const { hasPermission } = await this.checkAdminPermissions(
 			userId,
 			"course",
@@ -386,17 +360,7 @@ export class AdminService extends UserService {
 	}
 
 	// Class CRUD operations
-	static async createClass(
-		userId: string,
-		data: {
-			name: string;
-			code: string;
-			description?: string;
-			courseId: string;
-			classYear: number;
-			position?: number;
-		}
-	) {
+	static async createClass(userId: string, data: ClassBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "class");
 		if (!hasPermission) {
 			throw new Error("Non hai i permessi per creare classi");
@@ -426,17 +390,7 @@ export class AdminService extends UserService {
 		});
 	}
 
-	static async updateClass(
-		userId: string,
-		classId: string,
-		data: {
-			name?: string;
-			code?: string;
-			description?: string;
-			classYear?: number;
-			position?: number;
-		}
-	) {
+	static async updateClass(userId: string, classId: string, data: ClassBody) {
 		const { hasPermission } = await this.checkAdminPermissions(
 			userId,
 			"class",
@@ -505,16 +459,7 @@ export class AdminService extends UserService {
 	}
 
 	// Section CRUD operations
-	static async createSection(
-		userId: string,
-		data: {
-			name: string;
-			description?: string;
-			classId: string;
-			isPublic?: boolean;
-			position?: number;
-		}
-	) {
+	static async createSection(userId: string, data: SectionBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "section");
 		if (!hasPermission) {
 			throw new Error("Non hai i permessi per creare sezioni");
@@ -531,16 +476,7 @@ export class AdminService extends UserService {
 		});
 	}
 
-	static async updateSection(
-		userId: string,
-		sectionId: string,
-		data: {
-			name?: string;
-			description?: string;
-			isPublic?: boolean;
-			position?: number;
-		}
-	) {
+	static async updateSection(userId: string, sectionId: string, data: SectionBody) {
 		const { hasPermission } = await this.checkAdminPermissions(
 			userId,
 			"section",
@@ -586,18 +522,17 @@ export class AdminService extends UserService {
 	}
 
 	// Question CRUD operations
-	static async createQuestion(
-		userId: string,
-		data: {
-			content: string;
-			questionType: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
-			options?: any;
-			correctAnswer: string[];
-			explanation?: string;
-			difficulty: "EASY" | "MEDIUM" | "HARD";
-			sectionId: string;
+	static async getQuestionsBySectionId(sectionId: string) {
+		if (!sectionId) {
+			throw new Error("Section ID not provided");
 		}
-	) {
+
+		return await prisma.question.findMany({
+			where: { sectionId },
+		});
+	}
+    
+	static async createQuestion(userId: string, data: QuestionBody) {
 		const { hasPermission } = await this.checkAdminPermissions(userId, "question");
 		if (!hasPermission) {
 			throw new Error("Non hai i permessi per creare domande");
@@ -616,18 +551,26 @@ export class AdminService extends UserService {
 		});
 	}
 
-	static async updateQuestion(
-		userId: string,
-		questionId: string,
-		data: {
-			content?: string;
-			questionType?: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
-			options?: any;
-			correctAnswer?: string[];
-			explanation?: string;
-			difficulty?: "EASY" | "MEDIUM" | "HARD";
+	static async createQuestions(userId: string, questions: QuestionBody[]) {
+		const { hasPermission } = await this.checkAdminPermissions(userId, "question");
+		if (!hasPermission) {
+			throw new Error("Non hai i permessi per creare domande");
 		}
-	) {
+
+		return await prisma.question.createMany({
+			data: questions.map(data => ({
+				content: data.content,
+				questionType: data.questionType,
+				options: data.options,
+				correctAnswer: data.correctAnswer,
+				explanation: data.explanation,
+				difficulty: data.difficulty,
+				sectionId: data.sectionId,
+			})),
+		});
+	}
+
+	static async updateQuestion(userId: string, questionId: string, data: QuestionBody) {
 		const { hasPermission } = await this.checkAdminPermissions(
 			userId,
 			"question",

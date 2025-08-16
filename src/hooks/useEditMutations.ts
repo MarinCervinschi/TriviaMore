@@ -3,139 +3,101 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-// Department mutations
-interface CreateDepartmentParams {
-	name: string;
-	code: string;
-	description?: string;
-	position?: number;
-}
+import {
+	ClassBody,
+	CourseBody,
+	DepartmentBody,
+	QuestionBody,
+	SectionBody,
+	nodeType,
+} from "@/lib/types/crud.types";
 
-interface UpdateDepartmentParams {
-	id: string;
-	name?: string;
-	code?: string;
-	description?: string;
-	position?: number;
-}
+type Body = ClassBody | CourseBody | DepartmentBody | QuestionBody | SectionBody;
 
-interface DeleteDepartmentParams {
-	id: string;
-}
-
-// Course mutations
-interface CreateCourseParams {
-	name: string;
-	code: string;
-	description?: string;
-	departmentId: string;
-	courseType: "BACHELOR" | "MASTER";
-	position?: number;
-}
-
-interface UpdateCourseParams {
-	id: string;
-	name?: string;
-	code?: string;
-	description?: string;
-	courseType?: "BACHELOR" | "MASTER";
-	position?: number;
-}
-
-interface DeleteCourseParams {
-	id: string;
-}
-
-// Class mutations
-interface CreateClassParams {
-	name: string;
-	code: string;
-	description?: string;
-	courseId: string;
-	classYear: number;
-	position?: number;
-}
-
-interface UpdateClassParams {
-	id: string;
-	name?: string;
-	code?: string;
-	description?: string;
-	classYear?: number;
-	position?: number;
-}
-
-interface DeleteClassParams {
-	id: string;
-}
-
-// Section mutations
-interface CreateSectionParams {
-	name: string;
-	description?: string;
-	classId: string;
-	isPublic?: boolean;
-	position?: number;
-}
-
-interface UpdateSectionParams {
-	id: string;
-	name?: string;
-	description?: string;
-	isPublic?: boolean;
-	position?: number;
-}
-
-interface DeleteSectionParams {
-	id: string;
-}
-
-// Question mutations
 interface CreateQuestionParams {
-	content: string;
-	questionType: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
-	options?: any;
-	correctAnswer: string[];
-	explanation?: string;
-	difficulty: "EASY" | "MEDIUM" | "HARD";
-	sectionId: string;
+	sectionId?: string;
+	body: QuestionBody | QuestionBody[];
+	many: boolean;
 }
 
-interface UpdateQuestionParams {
+interface UpdateNodeParams {
+	nodeType: nodeType;
 	id: string;
-	content?: string;
-	questionType?: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
-	options?: any;
-	correctAnswer?: string[];
-	explanation?: string;
-	difficulty?: "EASY" | "MEDIUM" | "HARD";
+	sectionId?: string;
+	body: QuestionBody | QuestionBody[];
 }
 
-interface DeleteQuestionParams {
+interface DeleteNodeParams {
+	nodeType: nodeType;
 	id: string;
+	sectionId?: string;
 }
+
+const fetchCreateNodeType = async (nodeType: string, body: Body) => {
+	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(
+			error.error || "Errore nella creazione dell'operazione CRUD per " + nodeType
+		);
+	}
+};
+
+const fetchUpdateNodeType = async ({ nodeType, id, body }: UpdateNodeParams) => {
+	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}/${id}`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(
+			error.error || "Errore nell'aggiornamento dell'operazione CRUD per " + nodeType
+		);
+	}
+};
+
+const fetchDeleteNodeType = async ({ nodeType, id }: DeleteNodeParams) => {
+	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}/${id}`, {
+		method: "DELETE",
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(
+			error.error || "Errore nell'eliminazione dell'operazione CRUD per " + nodeType
+		);
+	}
+};
+
+const fetchCreateQuestion = async ({ body, many }: CreateQuestionParams) => {
+	const response = await fetch(`/api/protected/admin/crud/questions?JSON=${many}`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(
+			error.error || "Errore nella creazione dell'operazione CRUD per questions"
+		);
+	}
+};
 
 export function useEditMutations() {
 	const queryClient = useQueryClient();
 
 	// Department mutations
 	const createDepartment = useMutation({
-		mutationFn: async (params: CreateDepartmentParams) => {
-			const response = await fetch("/api/protected/admin/departments", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nella creazione del dipartimento");
-			}
-
-			return response.json();
-		},
+		mutationFn: (body: DepartmentBody) => fetchCreateNodeType("departments", body),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["departments"] });
 			toast.success("Dipartimento creato con successo");
 		},
 		onError: (error: Error) => {
@@ -144,22 +106,9 @@ export function useEditMutations() {
 	});
 
 	const updateDepartment = useMutation({
-		mutationFn: async (params: UpdateDepartmentParams) => {
-			const response = await fetch(`/api/protected/admin/departments/${params.id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'aggiornamento del dipartimento");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id, body }: UpdateNodeParams) =>
+			fetchUpdateNodeType({ nodeType: "department", id, body }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["departments"] });
 			toast.success("Dipartimento aggiornato con successo");
 		},
 		onError: (error: Error) => {
@@ -168,20 +117,9 @@ export function useEditMutations() {
 	});
 
 	const deleteDepartment = useMutation({
-		mutationFn: async (params: DeleteDepartmentParams) => {
-			const response = await fetch(`/api/protected/admin/departments/${params.id}`, {
-				method: "DELETE",
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'eliminazione del dipartimento");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id }: DeleteNodeParams) =>
+			fetchDeleteNodeType({ nodeType: "department", id }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["departments"] });
 			toast.success("Dipartimento eliminato con successo");
 		},
 		onError: (error: Error) => {
@@ -191,22 +129,8 @@ export function useEditMutations() {
 
 	// Course mutations
 	const createCourse = useMutation({
-		mutationFn: async (params: CreateCourseParams) => {
-			const response = await fetch("/api/protected/admin/courses", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nella creazione del corso");
-			}
-
-			return response.json();
-		},
+		mutationFn: (body: CourseBody) => fetchCreateNodeType("courses", body),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["courses"] });
 			toast.success("Corso creato con successo");
 		},
 		onError: (error: Error) => {
@@ -215,22 +139,9 @@ export function useEditMutations() {
 	});
 
 	const updateCourse = useMutation({
-		mutationFn: async (params: UpdateCourseParams) => {
-			const response = await fetch(`/api/protected/admin/courses/${params.id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'aggiornamento del corso");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id, body }: UpdateNodeParams) =>
+			fetchUpdateNodeType({ nodeType: "course", id, body }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["courses"] });
 			toast.success("Corso aggiornato con successo");
 		},
 		onError: (error: Error) => {
@@ -239,20 +150,9 @@ export function useEditMutations() {
 	});
 
 	const deleteCourse = useMutation({
-		mutationFn: async (params: DeleteCourseParams) => {
-			const response = await fetch(`/api/protected/admin/courses/${params.id}`, {
-				method: "DELETE",
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'eliminazione del corso");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id }: DeleteNodeParams) =>
+			fetchDeleteNodeType({ nodeType: "course", id }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["courses"] });
 			toast.success("Corso eliminato con successo");
 		},
 		onError: (error: Error) => {
@@ -262,22 +162,8 @@ export function useEditMutations() {
 
 	// Class mutations
 	const createClass = useMutation({
-		mutationFn: async (params: CreateClassParams) => {
-			const response = await fetch("/api/protected/admin/classes", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nella creazione della classe");
-			}
-
-			return response.json();
-		},
+		mutationFn: (body: ClassBody) => fetchCreateNodeType("classes", body),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["classes"] });
 			toast.success("Classe creata con successo");
 		},
 		onError: (error: Error) => {
@@ -286,22 +172,9 @@ export function useEditMutations() {
 	});
 
 	const updateClass = useMutation({
-		mutationFn: async (params: UpdateClassParams) => {
-			const response = await fetch(`/api/protected/admin/classes/${params.id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'aggiornamento della classe");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id, body }: UpdateNodeParams) =>
+			fetchUpdateNodeType({ nodeType: "class", id, body }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["classes"] });
 			toast.success("Classe aggiornata con successo");
 		},
 		onError: (error: Error) => {
@@ -310,20 +183,9 @@ export function useEditMutations() {
 	});
 
 	const deleteClass = useMutation({
-		mutationFn: async (params: DeleteClassParams) => {
-			const response = await fetch(`/api/protected/admin/classes/${params.id}`, {
-				method: "DELETE",
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'eliminazione della classe");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id }: DeleteNodeParams) =>
+			fetchDeleteNodeType({ nodeType: "class", id }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["classes"] });
 			toast.success("Classe eliminata con successo");
 		},
 		onError: (error: Error) => {
@@ -333,22 +195,8 @@ export function useEditMutations() {
 
 	// Section mutations
 	const createSection = useMutation({
-		mutationFn: async (params: CreateSectionParams) => {
-			const response = await fetch("/api/protected/admin/sections", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nella creazione della sezione");
-			}
-
-			return response.json();
-		},
+		mutationFn: (body: SectionBody) => fetchCreateNodeType("sections", body),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["sections"] });
 			toast.success("Sezione creata con successo");
 		},
 		onError: (error: Error) => {
@@ -357,22 +205,9 @@ export function useEditMutations() {
 	});
 
 	const updateSection = useMutation({
-		mutationFn: async (params: UpdateSectionParams) => {
-			const response = await fetch(`/api/protected/admin/sections/${params.id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'aggiornamento della sezione");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id, body }: UpdateNodeParams) =>
+			fetchUpdateNodeType({ nodeType: "section", id, body }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["sections"] });
 			toast.success("Sezione aggiornata con successo");
 		},
 		onError: (error: Error) => {
@@ -381,20 +216,9 @@ export function useEditMutations() {
 	});
 
 	const deleteSection = useMutation({
-		mutationFn: async (params: DeleteSectionParams) => {
-			const response = await fetch(`/api/protected/admin/sections/${params.id}`, {
-				method: "DELETE",
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'eliminazione della sezione");
-			}
-
-			return response.json();
-		},
+		mutationFn: ({ id }: DeleteNodeParams) =>
+			fetchDeleteNodeType({ nodeType: "section", id }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["sections"] });
 			toast.success("Sezione eliminata con successo");
 		},
 		onError: (error: Error) => {
@@ -404,22 +228,12 @@ export function useEditMutations() {
 
 	// Question mutations
 	const createQuestion = useMutation({
-		mutationFn: async (params: CreateQuestionParams) => {
-			const response = await fetch("/api/protected/admin/questions", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
+		mutationFn: ({ body, many }: CreateQuestionParams) =>
+			fetchCreateQuestion({ body, many }),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({
+				queryKey: ["section-questions", variables.sectionId],
 			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nella creazione della domanda");
-			}
-
-			return response.json();
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["questions"] });
 			toast.success("Domanda creata con successo");
 		},
 		onError: (error: Error) => {
@@ -428,22 +242,12 @@ export function useEditMutations() {
 	});
 
 	const updateQuestion = useMutation({
-		mutationFn: async (params: UpdateQuestionParams) => {
-			const response = await fetch(`/api/protected/admin/questions/${params.id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(params),
+		mutationFn: ({ id, body }: UpdateNodeParams) =>
+			fetchUpdateNodeType({ nodeType: "question", id, body }),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({
+				queryKey: ["section-questions", variables.sectionId],
 			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'aggiornamento della domanda");
-			}
-
-			return response.json();
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["questions"] });
 			toast.success("Domanda aggiornata con successo");
 		},
 		onError: (error: Error) => {
@@ -452,20 +256,12 @@ export function useEditMutations() {
 	});
 
 	const deleteQuestion = useMutation({
-		mutationFn: async (params: DeleteQuestionParams) => {
-			const response = await fetch(`/api/protected/admin/questions/${params.id}`, {
-				method: "DELETE",
+		mutationFn: ({ id }: DeleteNodeParams) =>
+			fetchDeleteNodeType({ nodeType: "question", id }),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({
+				queryKey: ["section-questions", variables.sectionId],
 			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Errore nell'eliminazione della domanda");
-			}
-
-			return response.json();
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["questions"] });
 			toast.success("Domanda eliminata con successo");
 		},
 		onError: (error: Error) => {
