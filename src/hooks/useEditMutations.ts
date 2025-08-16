@@ -65,7 +65,7 @@ const fetchCreateNodeType = async ({ nodeType, body }: CreateNodeParams) => {
 };
 
 const fetchUpdateNodeType = async ({ nodeType, id, body }: UpdateNodeParams) => {
-	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}/${id}`, {
+	const response = await fetch(`/api/protected/admin/crud/${id}?nodeType=${nodeType}`, {
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(body),
@@ -80,11 +80,13 @@ const fetchUpdateNodeType = async ({ nodeType, id, body }: UpdateNodeParams) => 
 };
 
 const fetchDeleteNodeType = async ({ nodeType, id }: DeleteNodeParams) => {
-	const response = await fetch(`/api/protected/admin/crud?nodeType=${nodeType}/${id}`, {
+	const response = await fetch(`/api/protected/admin/crud/${id}?nodeType=${nodeType}`, {
 		method: "DELETE",
 	});
 
 	if (!response.ok) {
+		console.log("Error deleting node:", { nodeType, id });
+		console.log("Response status:", response.status);
 		const error = await response.json();
 		throw new Error(
 			error.error || "Errore nell'eliminazione dell'operazione CRUD per " + nodeType
