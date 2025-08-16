@@ -1,21 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
+
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import {
-	ClassBody,
-	CourseBody,
-	DepartmentBody,
-	NodeType,
-	QuestionBody,
-	SectionBody,
-	UpdateClassBody,
-	UpdateCourseBody,
-	UpdateDepartmentBody,
-	UpdateQuestionBody,
-	UpdateSectionBody,
-} from "@/lib/types/crud.types";
+
+
+import { ClassBody, CourseBody, DepartmentBody, NodeType, QuestionBody, SectionBody, UpdateClassBody, UpdateCourseBody, UpdateDepartmentBody, UpdateQuestionBody, UpdateSectionBody } from "@/lib/types/crud.types";
+
+
+
+
 
 type Body = ClassBody | CourseBody | DepartmentBody | QuestionBody | SectionBody;
 type UpdateBody =
@@ -111,6 +109,7 @@ const fetchCreateQuestion = async ({ body, many }: CreateQuestionParams) => {
 
 export function useEditMutations() {
 	const queryClient = useQueryClient();
+	const router = useRouter();
 
 	// Department mutations
 	const createDepartment = useMutation({
@@ -118,6 +117,7 @@ export function useEditMutations() {
 			fetchCreateNodeType({ nodeType: "department", body: body as DepartmentBody }),
 		onSuccess: () => {
 			toast.success("Dipartimento creato con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -133,6 +133,7 @@ export function useEditMutations() {
 			}),
 		onSuccess: () => {
 			toast.success("Dipartimento aggiornato con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -144,6 +145,8 @@ export function useEditMutations() {
 			fetchDeleteNodeType({ nodeType: "department", id }),
 		onSuccess: () => {
 			toast.success("Dipartimento eliminato con successo");
+			router.back();
+			setTimeout(() => window.location.reload(), 100);
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -156,6 +159,7 @@ export function useEditMutations() {
 			fetchCreateNodeType({ nodeType: "course", body: body as CourseBody }),
 		onSuccess: () => {
 			toast.success("Corso creato con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -167,6 +171,7 @@ export function useEditMutations() {
 			fetchUpdateNodeType({ nodeType: "course", id, body: body as UpdateCourseBody }),
 		onSuccess: () => {
 			toast.success("Corso aggiornato con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -178,6 +183,8 @@ export function useEditMutations() {
 			fetchDeleteNodeType({ nodeType: "course", id }),
 		onSuccess: () => {
 			toast.success("Corso eliminato con successo");
+			router.back();
+			setTimeout(() => window.location.reload(), 100);
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -190,6 +197,7 @@ export function useEditMutations() {
 			fetchCreateNodeType({ nodeType: "class", body: body as ClassBody }),
 		onSuccess: () => {
 			toast.success("Classe creata con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -201,6 +209,7 @@ export function useEditMutations() {
 			fetchUpdateNodeType({ nodeType: "class", id, body: body as UpdateClassBody }),
 		onSuccess: () => {
 			toast.success("Classe aggiornata con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -212,6 +221,8 @@ export function useEditMutations() {
 			fetchDeleteNodeType({ nodeType: "class", id }),
 		onSuccess: () => {
 			toast.success("Classe eliminata con successo");
+			router.back();
+			setTimeout(() => window.location.reload(), 100);
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -224,6 +235,7 @@ export function useEditMutations() {
 			fetchCreateNodeType({ nodeType: "section", body: body as SectionBody }),
 		onSuccess: () => {
 			toast.success("Sezione creata con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -235,6 +247,7 @@ export function useEditMutations() {
 			fetchUpdateNodeType({ nodeType: "section", id, body: body as UpdateSectionBody }),
 		onSuccess: () => {
 			toast.success("Sezione aggiornata con successo");
+			window.location.reload();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -246,6 +259,8 @@ export function useEditMutations() {
 			fetchDeleteNodeType({ nodeType: "section", id }),
 		onSuccess: () => {
 			toast.success("Sezione eliminata con successo");
+			router.back();
+			setTimeout(() => window.location.reload(), 100);
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);

@@ -8,9 +8,9 @@ import {
 	ClassBody,
 	CourseBody,
 	DepartmentBody,
+	NodeType,
 	QuestionBody,
 	SectionBody,
-	NodeType,
 } from "@/lib/types/crud.types";
 
 // api/protected/admin/crud/[id]?nodeType
@@ -59,7 +59,7 @@ export const PUT = auth(async function PUT(
 				return NextResponse.json({ error: "Invalid node type" }, { status: 400 });
 		}
 
-		return NextResponse.json(undefined, { status: 204 });
+		return new NextResponse(undefined, { status: 204 });
 	} catch (error) {
 		console.error("Error updating course:", error);
 
@@ -123,7 +123,7 @@ export const DELETE = auth(async function DELETE(
 				return NextResponse.json({ error: "Invalid node type" }, { status: 400 });
 		}
 
-		return NextResponse.json(undefined, { status: 204 });
+		return new NextResponse(undefined, { status: 204 });
 	} catch (error) {
 		console.error("Error deleting course:", error);
 
