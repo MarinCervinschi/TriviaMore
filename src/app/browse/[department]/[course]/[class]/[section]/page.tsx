@@ -12,16 +12,12 @@ interface SectionPageProps {
 		class: string;
 		section: string;
 	}>;
-	searchParams: Promise<{
-		search?: string;
-	}>;
 }
 
-export default async function SectionPage({ params, searchParams }: SectionPageProps) {
+export default async function SectionPage({ params }: SectionPageProps) {
 	const session = await auth();
 
 	const resolvedParams = await params;
-	const resolvedSearchParams = await searchParams;
 
 	const [sectionData, evaluationModes] = await Promise.all([
 		BrowseService.getSectionByName(
@@ -40,10 +36,8 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
 
 	return (
 		<SectionPageComponent
+			user={session?.user || null}
 			sectionData={sectionData}
-			filters={{
-				search: resolvedSearchParams.search,
-			}}
 			departmentCode={resolvedParams.department}
 			courseCode={resolvedParams.course}
 			classCode={resolvedParams.class}
