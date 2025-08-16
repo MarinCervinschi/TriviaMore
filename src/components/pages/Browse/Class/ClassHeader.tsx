@@ -1,5 +1,6 @@
 import { BookOpen, FileText, GraduationCap } from "lucide-react";
 
+import { EditModeCard } from "@/components/EditMode/edit-mode-card";
 import { Badge } from "@/components/ui/badge";
 
 import { AddClassButton } from "./AddClassButton";
@@ -24,6 +25,9 @@ interface ClassHeaderProps {
 	totalSections: number;
 	totalQuestions: number;
 	isEnrolled?: boolean;
+	isEditMode?: boolean;
+	canEdit?: boolean;
+	onEditAction?: (action: "edit" | "delete", data: ClassData) => void;
 }
 
 export default function ClassHeader({
@@ -31,8 +35,11 @@ export default function ClassHeader({
 	totalSections,
 	totalQuestions,
 	isEnrolled = false,
+	isEditMode = false,
+	canEdit = false,
+	onEditAction,
 }: ClassHeaderProps) {
-	return (
+	const content = (
 		<div className="mb-8">
 			<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
 				<div className="min-w-0 flex-1">
@@ -103,4 +110,20 @@ export default function ClassHeader({
 			</div>
 		</div>
 	);
+
+	if (isEditMode && canEdit) {
+		return (
+			<EditModeCard
+				isEditMode={isEditMode}
+				onEdit={() => onEditAction?.("edit", classData)}
+				onDelete={() => onEditAction?.("delete", classData)}
+				canEdit={canEdit}
+				canDelete={canEdit}
+			>
+				{content}
+			</EditModeCard>
+		);
+	}
+
+	return content;
 }

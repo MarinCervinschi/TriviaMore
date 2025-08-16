@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 
+import { useSession } from "next-auth/react";
+
+import { EditModeButton } from "@/components/EditMode/edit-mode-button";
+import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
+import { CrudModal, Modal } from "@/components/modals/CrudModal";
+import { useEditMode } from "@/hooks/useEditMode";
+import { useEditModeContext } from "@/providers/edit-mode-provider";
+
 import ClassBreadcrumb from "./ClassBreadcrumb";
 import ClassFilters from "./ClassFilters";
 import ClassHeader from "./ClassHeader";
@@ -79,11 +87,23 @@ export default function ClassPageComponent({
 	isUserLoggedIn,
 	evaluationModes,
 }: ClassPageComponentProps) {
+	const { data: session } = useSession();
+	const { isEditMode, toggleEditMode } = useEditModeContext();
+	const editPermissions = useEditMode({
+		departmentId: classData.course.departmentId,
+		courseId: classData.courseId,
+		classId: classData.id,
+	});
+
 	const [searchQuery, setSearchQuery] = useState(filters.search || "");
+	const [modalState, setModalState] = useState<Modal>({
+		isOpen: false,
+		mode: "create",
+		type: "section",
+	});
 
 	const handleSearch = (query: string) => {
 		setSearchQuery(query);
-		// Aggiorna URL con il nuovo filtro di ricerca
 		const params = new URLSearchParams();
 		if (query) {
 			params.set("search", query);
@@ -95,7 +115,6 @@ export default function ClassPageComponent({
 		);
 	};
 
-	// Filtra le sezioni localmente se c'è una query di ricerca
 	const filteredSections = searchQuery
 		? classData.sections.filter(
 				section =>
@@ -104,47 +123,85 @@ export default function ClassPageComponent({
 			)
 		: classData.sections;
 
+	const handleEditAction = (
+		action: "create" | "edit" | "delete",
+		type: "section" | "class",
+		data?: any
+	) => {
+		setModalState({ isOpen: true, mode: action, type, data });
+	};
+
 	return (
-		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				<ClassBreadcrumb
-					department={classData.course.department}
-					course={classData.course}
-					classData={classData}
-					departmentCode={departmentCode}
-					courseCode={courseCode}
-				/>
-
-				<ClassHeader
-					classData={classData}
-					totalSections={filteredSections.length}
-					totalQuestions={filteredSections.reduce(
-						(acc, section) => acc + section._count.questions,
-						0
+		<EditModeOverlay isActive={isEditMode} userRole={session?.user?.role || null}>
+			<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+					{editPermissions.canEdit && (
+						<div className="mb-6 flex justify-end">
+							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+						</div>
 					)}
-					isEnrolled={classData.isEnrolled}
-				/>
 
-				<ExamSimulationButton
-					classData={classData}
-					isUserLoggedIn={isUserLoggedIn}
-					evaluationModes={evaluationModes}
-				/>
+					<ClassBreadcrumb
+						department={classData.course.department}
+						course={classData.course}
+						classData={classData}
+						departmentCode={departmentCode}
+						courseCode={courseCode}
+					/>
 
-				<ClassFilters
-					searchQuery={searchQuery}
-					onSearchChange={handleSearch}
-					totalResults={filteredSections.length}
-				/>
+					<ClassHeader
+						classData={classData}
+						totalSections={filteredSections.length}
+						totalQuestions={filteredSections.reduce(
+							(acc, section) => acc + section._count.questions,
+							0
+						)}
+						isEnrolled={classData.isEnrolled}
+						isEditMode={isEditMode}
+						canEdit={editPermissions.canEditClasses}
+						onEditAction={(action, data) => handleEditAction(action, "class", data)}
+					/>
 
-				<ClassSections
-					sections={filteredSections}
-					departmentCode={departmentCode}
-					courseCode={courseCode}
-					classCode={classData.code.toLowerCase()}
-					isUserLoggedIn={isUserLoggedIn}
-				/>
+					<ExamSimulationButton
+						classData={classData}
+						isUserLoggedIn={isUserLoggedIn}
+						evaluationModes={evaluationModes}
+					/>
+
+					<ClassFilters
+						searchQuery={searchQuery}
+						onSearchChange={handleSearch}
+						totalResults={filteredSections.length}
+					/>
+
+					{isEditMode && editPermissions.canEditSections && (
+						<div className="mb-6">
+							<button
+								onClick={() => handleEditAction("create", "section")}
+								className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+							>
+								<span>+</span>
+								Crea Nuova Sezione
+							</button>
+						</div>
+					)}
+
+					<ClassSections
+						sections={filteredSections}
+						departmentCode={departmentCode}
+						courseCode={courseCode}
+						classCode={classData.code.toLowerCase()}
+						isUserLoggedIn={isUserLoggedIn}
+					/>
+				</div>
 			</div>
-		</div>
+			<CrudModal
+				isOpen={modalState.isOpen}
+				onClose={() => setModalState({ ...modalState, isOpen: false })}
+				mode={modalState.mode}
+				type={modalState.type}
+				initialData={modalState.data}
+			/>
+		</EditModeOverlay>
 	);
 }
