@@ -4,6 +4,16 @@ import type { NextAuthRequest } from "next-auth";
 
 import { auth } from "@/lib/auth";
 import { AdminService } from "@/lib/services/admin.service";
+import {
+	ClassBody,
+	CourseBody,
+	DepartmentBody,
+	QuestionBody,
+	SectionBody,
+	nodeType,
+} from "@/lib/types/crud.types";
+
+// api/protected/admin/crud?nodeType/[id]
 
 export const PUT = auth(async function PUT(
 	request: NextAuthRequest,
@@ -19,19 +29,37 @@ export const PUT = auth(async function PUT(
 			return NextResponse.json({ error: "User ID not found" }, { status: 400 });
 		}
 
+		const { searchParams } = new URL(request.url);
+		const nodeType = searchParams.get("nodeType") as nodeType | null;
+
+		if (nodeType === null) {
+			return NextResponse.json({ error: "Node type not found" }, { status: 400 });
+		}
+
 		const { id } = await params;
 		const body = await request.json();
-		const { name, code, description, courseType, position } = body;
 
-		const course = await AdminService.updateCourse(userId, id, {
-			name,
-			code,
-			description,
-			courseType,
-			position,
-		});
+		switch (nodeType) {
+			case "department":
+				await AdminService.updateDepartment(userId, id, body as DepartmentBody);
+				break;
+			case "course":
+				await AdminService.updateCourse(userId, id, body as CourseBody);
+				break;
+			case "class":
+				await AdminService.updateClass(userId, id, body as ClassBody);
+				break;
+			case "section":
+				await AdminService.updateSection(userId, id, body as SectionBody);
+				break;
+			case "question":
+				await AdminService.updateQuestion(userId, id, body as QuestionBody);
+				break;
+			default:
+				return NextResponse.json({ error: "Invalid node type" }, { status: 400 });
+		}
 
-		return NextResponse.json(course);
+		return NextResponse.json(null, { status: 204 });
 	} catch (error) {
 		console.error("Error updating course:", error);
 
@@ -66,11 +94,36 @@ export const DELETE = auth(async function DELETE(
 			return NextResponse.json({ error: "User ID not found" }, { status: 400 });
 		}
 
+		const { searchParams } = new URL(request.url);
+		const nodeType = searchParams.get("nodeType") as nodeType | null;
+
+		if (nodeType === null) {
+			return NextResponse.json({ error: "Node type not found" }, { status: 400 });
+		}
+
 		const { id } = await params;
 
-		await AdminService.deleteCourse(userId, id);
+		switch (nodeType) {
+			case "department":
+				await AdminService.deleteDepartment(userId, id);
+				break;
+			case "course":
+				await AdminService.deleteCourse(userId, id);
+				break;
+			case "class":
+				await AdminService.deleteClass(userId, id);
+				break;
+			case "section":
+				await AdminService.deleteSection(userId, id);
+				break;
+			case "question":
+				await AdminService.deleteQuestion(userId, id);
+				break;
+			default:
+				return NextResponse.json({ error: "Invalid node type" }, { status: 400 });
+		}
 
-		return NextResponse.json({ success: true });
+		return NextResponse.json(null, { status: 204 });
 	} catch (error) {
 		console.error("Error deleting course:", error);
 
