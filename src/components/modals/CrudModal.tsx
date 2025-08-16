@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { toast } from "sonner";
+
 import { ClassForm } from "@/components/forms/ClassForm";
 import { CourseForm } from "@/components/forms/CourseForm";
 import { DepartmentForm } from "@/components/forms/DepartmentForm";
@@ -30,7 +32,6 @@ import type {
 
 type CrudModalType = "department" | "course" | "class" | "section" | "question";
 type CrudModalMode = "create" | "edit" | "delete";
-
 
 export interface Modal {
 	isOpen: boolean;
@@ -88,58 +89,83 @@ export function CrudModal({
 			switch (type) {
 				case "department":
 					if (mode === "create") {
-						await mutations.createDepartment.mutateAsync(data as DepartmentInput);
+						await mutations.createDepartment.mutateAsync({
+							nodeType: "department",
+							body: data as DepartmentInput,
+						});
 					} else {
 						await mutations.updateDepartment.mutateAsync({
+							nodeType: "department",
 							id: initialData.id,
-							...data,
-						} as UpdateDepartmentInput & { id: string });
+							body: data as UpdateDepartmentInput,
+						});
 					}
 					break;
 				case "course":
 					if (mode === "create") {
-						await mutations.createCourse.mutateAsync(data as CourseInput);
+						await mutations.createCourse.mutateAsync({
+							nodeType: "course",
+							body: data as CourseInput,
+						});
 					} else {
 						await mutations.updateCourse.mutateAsync({
+							nodeType: "course",
 							id: initialData.id,
-							...data,
-						} as UpdateCourseInput & { id: string });
+							body: data as UpdateCourseInput,
+						});
 					}
 					break;
 				case "class":
 					if (mode === "create") {
-						await mutations.createClass.mutateAsync(data as ClassInput);
+						await mutations.createClass.mutateAsync({
+							nodeType: "class",
+							body: data as ClassInput,
+						});
 					} else {
 						await mutations.updateClass.mutateAsync({
+							nodeType: "class",
 							id: initialData.id,
-							...data,
-						} as UpdateClassInput & { id: string });
+							body: data as UpdateClassInput,
+						});
 					}
 					break;
 				case "section":
 					if (mode === "create") {
-						await mutations.createSection.mutateAsync(data as SectionInput);
+						await mutations.createSection.mutateAsync({
+							nodeType: "section",
+							body: data as SectionInput,
+						});
 					} else {
 						await mutations.updateSection.mutateAsync({
+							nodeType: "section",
 							id: initialData.id,
-							...data,
-						} as UpdateSectionInput & { id: string });
+							body: data as UpdateSectionInput,
+						});
 					}
 					break;
 				case "question":
 					if (mode === "create") {
-						await mutations.createQuestion.mutateAsync(data as QuestionInput);
+						await mutations.createQuestion.mutateAsync({
+							sectionId: initialData.sectionId,
+							body: data as QuestionInput,
+							many: false,
+						});
 					} else {
 						await mutations.updateQuestion.mutateAsync({
+							nodeType: "question",
 							id: initialData.id,
-							...data,
-						} as UpdateQuestionInput & { id: string });
+							sectionId: initialData.sectionId,
+							body: data as UpdateQuestionInput,
+						});
 					}
 					break;
 			}
 			onClose();
 		} catch (error) {
 			console.error("Error in CRUD operation:", error);
+			toast.error(
+				error instanceof Error ? error.message : "Errore durante l'operazione"
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -150,19 +176,35 @@ export function CrudModal({
 		try {
 			switch (type) {
 				case "department":
-					await mutations.deleteDepartment.mutateAsync({ id: initialData.id });
+					await mutations.deleteDepartment.mutateAsync({
+						nodeType: "department",
+						id: initialData.id,
+					});
 					break;
 				case "course":
-					await mutations.deleteCourse.mutateAsync({ id: initialData.id });
+					await mutations.deleteCourse.mutateAsync({
+						nodeType: "course",
+						id: initialData.id,
+					});
 					break;
 				case "class":
-					await mutations.deleteClass.mutateAsync({ id: initialData.id });
+					await mutations.deleteClass.mutateAsync({
+						nodeType: "class",
+						id: initialData.id,
+					});
 					break;
 				case "section":
-					await mutations.deleteSection.mutateAsync({ id: initialData.id });
+					await mutations.deleteSection.mutateAsync({
+						nodeType: "section",
+						id: initialData.id,
+					});
 					break;
 				case "question":
-					await mutations.deleteQuestion.mutateAsync({ id: initialData.id });
+					await mutations.deleteQuestion.mutateAsync({
+						nodeType: "question",
+						id: initialData.id,
+						sectionId: initialData.sectionId,
+					});
 					break;
 			}
 			onClose();
