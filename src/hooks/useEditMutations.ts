@@ -2,18 +2,22 @@
 
 import { useRouter } from "next/navigation";
 
-
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-
-
-import { ClassBody, CourseBody, DepartmentBody, NodeType, QuestionBody, SectionBody, UpdateClassBody, UpdateCourseBody, UpdateDepartmentBody, UpdateQuestionBody, UpdateSectionBody } from "@/lib/types/crud.types";
-
-
-
-
+import {
+	ClassBody,
+	CourseBody,
+	DepartmentBody,
+	NodeType,
+	QuestionBody,
+	SectionBody,
+	UpdateClassBody,
+	UpdateCourseBody,
+	UpdateDepartmentBody,
+	UpdateQuestionBody,
+	UpdateSectionBody,
+} from "@/lib/types/crud.types";
 
 type Body = ClassBody | CourseBody | DepartmentBody | QuestionBody | SectionBody;
 type UpdateBody =

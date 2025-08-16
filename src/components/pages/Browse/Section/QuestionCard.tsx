@@ -12,7 +12,7 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 interface QuestionCard {
 	id: string;
 	content: string;
-    sectionId: string;
+	sectionId: string;
 	questionType: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER";
 	difficulty: "EASY" | "MEDIUM" | "HARD";
 	options?: any;

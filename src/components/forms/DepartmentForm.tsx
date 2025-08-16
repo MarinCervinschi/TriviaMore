@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -54,6 +55,7 @@ export function DepartmentForm({
 			await onSubmit(data);
 		} catch (error) {
 			console.error("Error submitting department form:", error);
+			toast.error(error instanceof Error ? error.message : "Errore sconosciuto");
 		}
 	};
 
@@ -68,7 +70,7 @@ export function DepartmentForm({
 							<FormLabel>Nome Dipartimento *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. Ingegneria Informatica"
+									placeholder="es. Dipartimento di Ingegneria"
 									{...field}
 									disabled={isLoading}
 								/>
@@ -86,7 +88,7 @@ export function DepartmentForm({
 							<FormLabel>Codice Dipartimento *</FormLabel>
 							<FormControl>
 								<Input
-									placeholder="es. ING-INF"
+									placeholder="es. DIEF"
 									{...field}
 									onChange={e => field.onChange(e.target.value.toUpperCase())}
 									disabled={isLoading}
