@@ -114,7 +114,7 @@ export function QuestionCard({ question, onEditAction }: QuestionCardProps) {
 					<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
 						Risposta corretta:{" "}
 					</p>
-                    <Badge variant="secondary">{question.correctAnswer[0]}</Badge>
+					<Badge variant="secondary">{question.correctAnswer[0]}</Badge>
 				</div>
 			);
 		}
