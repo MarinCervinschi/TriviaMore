@@ -17,20 +17,20 @@ export function MinimalFooter() {
 
 					{/* Links */}
 					<div className="flex items-center gap-6 text-sm text-muted-foreground">
-						<Link href="/privacy" className="transition-colors hover:text-foreground">
-							Privacy Policy
+						<Link href="/browse" className="transition-colors hover:text-foreground">
+							Esplora i contenuti
 						</Link>
-						<Link href="/terms" className="transition-colors hover:text-foreground">
-							Terms of Service
+						<Link href="/about" className="transition-colors hover:text-foreground">
+							Chi siamo
 						</Link>
 						<Link href="/contact" className="transition-colors hover:text-foreground">
-							Contact
+							Contattaci
 						</Link>
 					</div>
 
 					{/* Copyright */}
 					<div className="text-sm text-muted-foreground">
-						&copy; {new Date().getFullYear()} TriviaMore. All rights reserved.
+						&copy; {new Date().getFullYear()} TriviaMore.
 					</div>
 				</div>
 			</div>

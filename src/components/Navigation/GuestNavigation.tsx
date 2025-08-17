@@ -21,10 +21,10 @@ export function GuestNavigation({ mobileMenuProps }: GuestNavigationProps) {
 				))}
 				<ThemeToggle />
 				<Link href="/auth/login">
-					<Button variant="outline">Login</Button>
+					<Button variant="outline">Accedi</Button>
 				</Link>
 				<Link href="/auth/register">
-					<Button>Get Started</Button>
+					<Button>Registrati</Button>
 				</Link>
 			</div>
 
@@ -53,14 +53,14 @@ export function GuestNavigation({ mobileMenuProps }: GuestNavigationProps) {
 								onClick={() => setMobileMenuOpen(false)}
 								className="flex items-center gap-2 rounded-md px-2 py-3 text-lg font-medium hover:bg-accent"
 							>
-								Login
+								Accedi
 							</Link>
 							<Link
 								href="/auth/register"
 								onClick={() => setMobileMenuOpen(false)}
 								className="flex items-center gap-2 rounded-md px-2 py-3 text-lg font-medium text-blue-600 hover:bg-accent"
 							>
-								Get Started
+								Registrati
 							</Link>
 						</div>
 					</SheetContent>
