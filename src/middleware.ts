@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const NODE_ENV = process.env.NODE_ENV === "production";
+
 export async function middleware(request: NextRequest) {
-	const sessionToken = request.cookies.get("authjs.session-token")?.value;
+	const sessionTokenName = NODE_ENV
+		? "__Secure-authjs.session-token"
+		: "authjs.session-token.dev";
+	const sessionToken = request.cookies.get(sessionTokenName)?.value;
 
 	const isAuth = !!sessionToken;
 	const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
