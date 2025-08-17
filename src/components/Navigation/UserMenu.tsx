@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, Mail, Settings, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +44,12 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
 					<Link href="/user/settings" className="flex items-center gap-2">
 						<Settings className="h-4 w-4" />
 						<span>Impostazioni</span>
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link href="/contact" className="flex items-center gap-2">
+						<Mail className="h-4 w-4" />
+						<span>Contatti</span>
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />

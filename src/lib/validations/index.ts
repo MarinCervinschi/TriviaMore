@@ -3,6 +3,7 @@ import { z } from "zod";
 
 // Re-export all validation schemas from a central location
 export * from "./auth";
+export * from "./contact";
 
 export { z };
 
