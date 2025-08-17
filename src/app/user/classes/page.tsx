@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { AppLayout } from "@/components/layouts/AppLayout";
 import UserClassesComponent from "@/components/pages/User/Classes";
 import { auth } from "@/lib/auth";
 import { UserService } from "@/lib/services";
@@ -8,17 +7,12 @@ import { UserService } from "@/lib/services";
 export default async function UserClassesPage() {
 	const session = await auth();
 
-	if (!session?.user?.id) {
+	const userClasses = await UserService.getUserSavedClasses(session?.user.id);
+	if (!userClasses) {
 		redirect("/auth/login");
 	}
 
-	const userClasses = await UserService.getUserSavedClasses(session.user.id);
-
-	return (
-		<AppLayout user={session.user}>
-			<UserClassesComponent userClasses={userClasses} currentUser={session.user} />
-		</AppLayout>
-	);
+	return <UserClassesComponent userClasses={userClasses} currentUser={session?.user} />;
 }
 
 export async function generateMetadata() {

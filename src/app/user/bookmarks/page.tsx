@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { AppLayout } from "@/components/layouts/AppLayout";
 import UserBookmarksComponent from "@/components/pages/User/Bookmarks";
 import { auth } from "@/lib/auth";
 import { BookmarkService } from "@/lib/services";
@@ -9,16 +8,14 @@ import { UserService } from "@/lib/services";
 export default async function UserBookmarksPage() {
 	const session = await auth();
 
-	if (!session?.user?.id) {
+	const userBookmarks = await BookmarkService.getUserBookmarks(session?.user.id);
+
+	if (!userBookmarks) {
 		redirect("/auth/login");
 	}
 
-	const userBookmarks = await BookmarkService.getUserBookmarks(session.user.id);
-
 	return (
-		<AppLayout user={session.user}>
-			<UserBookmarksComponent bookmarks={userBookmarks} currentUser={session.user} />
-		</AppLayout>
+		<UserBookmarksComponent bookmarks={userBookmarks} currentUser={session?.user} />
 	);
 }
 
