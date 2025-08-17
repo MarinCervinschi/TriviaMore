@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ClassForm } from "@/components/forms/ClassForm";
 import { CourseForm } from "@/components/forms/CourseForm";
 import { DepartmentForm } from "@/components/forms/DepartmentForm";
-import { QuestionForm } from "@/components/forms/QuestionForm";
+import { QuestionForm } from "@/components/forms/QuestionForm/intex";
 import { SectionForm } from "@/components/forms/SectionForm";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
@@ -293,7 +293,7 @@ export function CrudModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+			<DialogContent aria-describedby={undefined} className="max-h-[90vh] max-w-2xl overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>{getModalTitle()}</DialogTitle>
 				</DialogHeader>
