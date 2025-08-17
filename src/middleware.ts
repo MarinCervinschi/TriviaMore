@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV === "production";
 export async function middleware(request: NextRequest) {
 	const sessionTokenName = NODE_ENV
 		? "__Secure-authjs.session-token"
-		: "authjs.session-token.dev";
+		: "authjs.session-token";
 	const sessionToken = request.cookies.get(sessionTokenName)?.value;
 
 	const isAuth = !!sessionToken;
