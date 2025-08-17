@@ -1,6 +1,6 @@
 import { BenefitItemComponent } from "./BenefitItem";
 import { CTACard } from "./CTACard";
-import { BenefitItem, CTACardProps } from "./types";
+import type { BenefitItem, CTACardProps } from "./types";
 
 interface BenefitsSectionProps {
 	benefits: BenefitItem[];
@@ -14,7 +14,7 @@ export function BenefitsSection({ benefits, ctaCard }: BenefitsSectionProps) {
 				<div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
 					<div>
 						<h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
-							Why Students Choose TriviaMore
+							Perché gli studenti scelgono Trivia More
 						</h2>
 						<div className="space-y-4">
 							{benefits.map((benefit, index) => (

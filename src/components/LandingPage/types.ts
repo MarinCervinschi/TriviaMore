@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export interface FeatureCard {
 	icon: LucideIcon;
@@ -27,6 +27,8 @@ export interface CTACardProps {
 	description: string;
 	buttonText: string;
 	buttonHref: string;
+	secondaryButtonText?: string;
+	secondaryButtonHref?: string;
 	disclaimer?: string;
 }
 
