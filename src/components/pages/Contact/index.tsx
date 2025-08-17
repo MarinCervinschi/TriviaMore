@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 
-import { Bug, Github, Heart, Lightbulb, Mail, MessageSquare } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { Bug, Github, Heart, Lightbulb, MessageSquare } from "lucide-react";
 
 import { LandingFooter, footerSections } from "@/components/LandingPage";
 import { ContactForm } from "@/components/forms/ContactForm";
@@ -10,16 +11,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ContactPageContent() {
-	async function handleContactSubmit(data: any) {
-		const res = await fetch("/api/contact", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data),
-		});
+	const send = useMutation({
+		mutationFn: async (data: any) => {
+			const res = await fetch("/api/contact", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			});
 
-		if (!res.ok) {
-			throw new Error("Errore durante l'invio del messaggio");
-		}
+			if (!res.ok) {
+				throw new Error("Errore durante l'invio del messaggio");
+			}
+
+			return res.json();
+		},
+	});
+	async function handleContactSubmit(data: any) {
+		send.mutate(data);
 	}
 	return (
 		<>
@@ -43,7 +51,7 @@ export default function ContactPageContent() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<ContactForm onSubmit={handleContactSubmit} />
+							<ContactForm onSubmit={handleContactSubmit} isLoading={send.isPending} />
 						</CardContent>
 					</Card>
 
