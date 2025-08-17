@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "katex/dist/katex.min.css";
 import { SessionProvider } from "next-auth/react";
 
@@ -99,6 +101,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					</ThemeProvider>
 				</SessionProvider>
 				<Toaster />
+				<Analytics />
+				<SpeedInsights />
 			</body>
 		</html>
 	);
