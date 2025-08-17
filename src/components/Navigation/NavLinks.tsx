@@ -1,6 +1,18 @@
+"use client";
+
+import type React from "react";
+
 import Link from "next/link";
 
-import { BookOpen, GraduationCap, Home, LogOut, Settings, User } from "lucide-react";
+import {
+	BookOpen,
+	GraduationCap,
+	Home,
+	Info,
+	Mail,
+	Settings,
+	User,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -15,8 +27,18 @@ interface NavLinkItem {
 export const guestNavLinks: NavLinkItem[] = [
 	{
 		href: "/browse",
-		label: "Browse Content",
+		label: "Contenuti",
 		icon: BookOpen,
+	},
+	{
+		href: "/about",
+		label: "Chi Siamo",
+		icon: Info,
+	},
+	{
+		href: "/contact",
+		label: "Contatti",
+		icon: Mail,
 	},
 ];
 
@@ -28,7 +50,7 @@ export const authenticatedNavLinks: NavLinkItem[] = [
 	},
 	{
 		href: "/browse",
-		label: "Browse",
+		label: "Contenuti",
 		icon: BookOpen,
 	},
 	{
@@ -44,6 +66,11 @@ export const userMenuLinks: NavLinkItem[] = [
 		href: "/user",
 		label: "Il Mio Profilo",
 		icon: User,
+	},
+	{
+		href: "/contact",
+		label: "Contatti",
+		icon: Mail,
 	},
 	{
 		href: "/user/settings",
