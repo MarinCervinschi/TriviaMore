@@ -7,7 +7,6 @@ import { User } from "next-auth";
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
-import { useEditMode } from "@/hooks/useEditMode";
 import type { DepartmentNode } from "@/lib/types/browse.types";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
 
@@ -25,12 +24,12 @@ export default function BrowsePageComponent({
 	departments,
 }: BrowsePageComponentProps) {
 	const { isEditMode, toggleEditMode } = useEditModeContext();
-	const editPermissions = useEditMode();
 	const [modalState, setModalState] = useState<Modal>({
 		isOpen: false,
 		mode: "create",
 		type: "department",
 	});
+	const canEdit = user?.role === "SUPERADMIN";
 
 	const totalCourses =
 		departments?.reduce((total, dept) => total + (dept._count?.courses || 0), 0) || 0;
@@ -43,7 +42,7 @@ export default function BrowsePageComponent({
 		<EditModeOverlay isActive={isEditMode} userRole={user?.role || null}>
 			<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="container mx-auto px-4 py-8">
-					{editPermissions.canEdit && (
+					{canEdit && (
 						<div className="mb-6 flex justify-end">
 							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
 						</div>
@@ -59,7 +58,7 @@ export default function BrowsePageComponent({
 						totalCourses={totalCourses}
 					/>
 
-					{isEditMode && editPermissions.canEditDepartments && (
+					{isEditMode && canEdit && (
 						<div className="mb-6">
 							<button
 								onClick={() => handleEditAction("create", "department")}
