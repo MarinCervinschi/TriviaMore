@@ -1,5 +1,5 @@
 import { FeatureCardComponent } from "./FeatureCard";
-import { FeatureCard } from "./types";
+import type { FeatureCard } from "./types";
 
 interface FeaturesSectionProps {
 	features: FeatureCard[];
@@ -11,11 +11,11 @@ export function FeaturesSection({ features }: FeaturesSectionProps) {
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="mb-12 text-center">
 					<h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-						Everything You Need to Succeed
+						Tutto quello che ti serve per avere successo
 					</h2>
 					<p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-300">
-						Our comprehensive platform provides all the tools you need for effective
-						studying and exam preparation.
+						La nostra piattaforma collaborativa fornisce tutti gli strumenti necessari
+						per uno studio efficace e una preparazione ottimale agli esami.
 					</p>
 				</div>
 

@@ -34,11 +34,11 @@ export default function LoginPage() {
 
 	return (
 		<AuthLayout>
-			<AuthHeader title="Login" subtitle="Sign in to your account" />
+			<AuthHeader title="Accedi" subtitle="Accedi al tuo account" />
 
 			<Card className="border-0 shadow-xl backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/50">
 				<CardHeader>
-					<CardTitle className="text-gray-900 dark:text-gray-100">Login</CardTitle>
+					<CardTitle className="text-gray-900 dark:text-gray-100">Accedi</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{/* Social Auth Buttons */}
@@ -54,7 +54,7 @@ export default function LoginPage() {
 						</div>
 						<div className="relative flex justify-center text-xs uppercase">
 							<span className="bg-white px-2 text-muted-foreground dark:bg-gray-800">
-								Or continue with
+								O continua con
 							</span>
 						</div>
 					</div>
@@ -95,12 +95,12 @@ export default function LoginPage() {
 					{/* Sign up link */}
 					<div className="mt-6 text-center">
 						<p className="text-sm text-gray-600 dark:text-gray-400">
-							Don&#39;t have an account?{" "}
+							Non hai un account?{" "}
 							<Link
 								href="/auth/register"
 								className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 							>
-								Sign up
+								Registrati
 							</Link>
 						</p>
 					</div>

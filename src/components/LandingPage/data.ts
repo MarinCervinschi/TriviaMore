@@ -1,6 +1,6 @@
-import { BookOpen, CheckCircle, Target, Trophy, Users } from "lucide-react";
+import { BookOpen, Github, Target, Users } from "lucide-react";
 
-import {
+import type {
 	BenefitItem,
 	CTACardProps,
 	FeatureCard,
@@ -9,103 +9,108 @@ import {
 } from "./types";
 
 export const heroContent: HeroSectionProps = {
-	title: "Master Your Studies with",
+	title:
+		"Il successo agli esami UNIMORE è una questione di pratica. Inizia con Trivia More.",
 	subtitle:
-		"TriviaMore helps university students excel in their exams through engaging quizzes, flashcards, and comprehensive study materials organized by department, course, and class.",
+		"Creata da studenti, per studenti. Un unico spazio collaborativo per mettere alla prova le tue conoscenze e migliorare la tua preparazione agli esami universitari.",
 	primaryCTA: {
-		text: "Start Learning Free",
+		text: "Inizia subito a studiare",
 		href: "/auth/register",
 	},
 	secondaryCTA: {
-		text: "Explore Content",
+		text: "Esplora i contenuti",
 		href: "/browse",
 	},
 };
 
 export const features: FeatureCard[] = [
 	{
-		icon: Target,
-		title: "Interactive Quizzes",
+		icon: BookOpen,
+		title: "Materiale collaborativo",
 		description:
-			"Test your knowledge with timed quizzes, instant feedback, and detailed explanations.",
+			"Quiz, domande e contenuti basati su appunti di studenti reali. Creato dalla community per la community.",
 		iconColor: "text-blue-600",
 	},
 	{
-		icon: BookOpen,
-		title: "Smart Flashcards",
+		icon: Target,
+		title: "Focus UNIMORE",
 		description:
-			"Memorize key concepts with our interactive flashcard system and bookmark difficult questions.",
+			"Nata per supportare la preparazione degli esami all'Università di Modena e Reggio Emilia, ma pensata per tutti gli studenti.",
 		iconColor: "text-green-600",
 	},
 	{
-		icon: Trophy,
-		title: "Progress Tracking",
+		icon: Github,
+		title: "Open Source",
 		description:
-			"Monitor your learning progress with detailed analytics and performance insights.",
-		iconColor: "text-yellow-600",
+			"Codice e contenuti aperti, ospitati su GitHub. Chiunque può contribuire e migliorare la piattaforma.",
+		iconColor: "text-purple-600",
 	},
 	{
 		icon: Users,
-		title: "Organized Content",
+		title: "Per la community",
 		description:
-			"Content organized by department, course, and class for easy navigation and focused study.",
-		iconColor: "text-purple-600",
+			"Un progetto creato per necessità reali, con l'obiettivo di aiutare altri studenti ad affrontare esami universitari con più sicurezza.",
+		iconColor: "text-orange-600",
 	},
 ];
 
 export const benefits: BenefitItem[] = [
 	{
-		title: "Comprehensive Coverage",
+		title: "Quiz interattivi con timer",
 		description:
-			"Study materials for multiple departments including Engineering, Sciences, and more.",
+			"Metti alla prova le tue conoscenze con quiz cronometrati, feedback istantaneo e spiegazioni dettagliate.",
 	},
 	{
-		title: "Adaptive Learning",
+		title: "Flashcard intelligenti",
 		description:
-			"Our system adapts to your learning pace and highlights areas that need more attention.",
+			"Memorizza i concetti chiave con il nostro sistema di flashcard e salva le domande più difficili nei preferiti.",
 	},
 	{
-		title: "Exam Simulation",
+		title: "Tracciamento progressi",
 		description:
-			"Practice with timed tests that simulate real exam conditions for better preparation.",
+			"Monitora i tuoi miglioramenti con analisi dettagliate e statistiche personalizzate sui tuoi risultati.",
 	},
 	{
-		title: "Mobile Friendly",
-		description: "Study anywhere, anytime with our responsive design and mobile app.",
+		title: "Non a scopo di lucro",
+		description:
+			"Sviluppata solo per supporto reciproco e come palestra per mettere in pratica competenze tecniche. Completamente gratuita.",
 	},
 ];
 
 export const ctaCardContent: CTACardProps = {
-	title: "Ready to Get Started?",
+	title: "Pronto per iniziare?",
 	description:
-		"Join thousands of students who are already improving their grades with TriviaMore.",
-	buttonText: "Create Free Account",
+		"Unisciti agli studenti che stanno già migliorando la loro preparazione con Trivia More. Contribuisci anche tu alla crescita della piattaforma!",
+	buttonText: "Registrati gratuitamente",
 	buttonHref: "/auth/register",
-	disclaimer: "No credit card required • Free forever",
+	secondaryButtonText: "Contribuisci su GitHub",
+	secondaryButtonHref: "https://github.com/MarinCervinschi/TriviaMore",
+	disclaimer: "Nessuna carta di credito richiesta • Sempre gratuito • Open Source",
 };
 
 export const footerSections: FooterSection[] = [
 	{
-		title: "Product",
+		title: "Piattaforma",
 		links: [
-			{ href: "/browse", label: "Browse Content" },
-			{ href: "/features", label: "Features" },
-			{ href: "/pricing", label: "Pricing" },
+			{ href: "/browse", label: "Esplora contenuti" },
+			{ href: "/about", label: "Che cosa è Trivia More" },
+			{ href: "/contact", label: "Contattaci" },
 		],
 	},
 	{
-		title: "Support",
+		title: "Community",
 		links: [
-			{ href: "/help", label: "Help Center" },
-			{ href: "/contact", label: "Contact Us" },
-			{ href: "/about", label: "About" },
+			{ href: "https://github.com/MarinCervinschi/TriviaMore", label: "GitHub" },
+			{ href: "/contact", label: "Come contribuire" },
+			{ href: "/contact", label: "Centro assistenza" },
 		],
 	},
 	{
-		title: "Legal",
+		title: "UNIMORE",
 		links: [
-			{ href: "/privacy", label: "Privacy Policy" },
-			{ href: "/terms", label: "Terms of Service" },
+			{ href: "/browse/dief", label: "Ingegneria" },
+			{ href: "/browse/", label: "Scienze" },
+			{ href: "/browse/", label: "Economia" },
 		],
 	},
 ];
