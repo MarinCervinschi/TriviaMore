@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { AppLayout } from "@/components/layouts/AppLayout";
 import UserDashboardComponent from "@/components/pages/User/Dashboard";
 import { auth } from "@/lib/auth";
 import { UserService } from "@/lib/services";
@@ -8,21 +7,14 @@ import { UserService } from "@/lib/services";
 export default async function UserPage() {
 	const session = await auth();
 
-	if (!session?.user?.id) {
-		redirect("/auth/login");
-	}
-
-	// Get user profile data
-	const userProfile = await UserService.getUserProfile(session.user.id);
+	const userProfile = await UserService.getUserProfile(session?.user.id);
 
 	if (!userProfile) {
 		redirect("/auth/login");
 	}
 
 	return (
-		<AppLayout user={session.user}>
-			<UserDashboardComponent userProfile={userProfile} currentUser={session.user} />
-		</AppLayout>
+		<UserDashboardComponent userProfile={userProfile} currentUser={session?.user} />
 	);
 }
 
