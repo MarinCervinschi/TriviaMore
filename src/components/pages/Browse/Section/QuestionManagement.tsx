@@ -162,7 +162,10 @@ export function QuestionManagement({
 							: "Prova a modificare i filtri per trovare le domande che stai cercando."}
 					</p>
 					{questions.length === 0 && (
-						<Button onClick={() => onEditAction?.("create", { sectionId })} className="mt-4">
+						<Button
+							onClick={() => onEditAction?.("create", { sectionId })}
+							className="mt-4"
+						>
 							<Plus className="mr-2 h-4 w-4" />
 							Crea Prima Domanda
 						</Button>

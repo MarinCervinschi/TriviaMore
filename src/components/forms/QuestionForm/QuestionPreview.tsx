@@ -125,7 +125,10 @@ export function QuestionPreview({ control }: QuestionPreviewProps) {
 						<div>
 							<h4 className="mb-2 font-medium">Risposta Corretta:</h4>
 							<div className="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
-								<MarkdownRenderer content={correctAnswer[0]} className="flashcard-markdown" />
+								<MarkdownRenderer
+									content={correctAnswer[0]}
+									className="flashcard-markdown"
+								/>
 							</div>
 						</div>
 					)}

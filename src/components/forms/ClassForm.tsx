@@ -88,11 +88,7 @@ export function ClassForm({
 						<FormItem>
 							<FormLabel>Nome Classe *</FormLabel>
 							<FormControl>
-								<Input
-									placeholder="es. Analisi I"
-									{...field}
-									disabled={isLoading}
-								/>
+								<Input placeholder="es. Analisi I" {...field} disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

@@ -293,7 +293,10 @@ export function CrudModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent aria-describedby={undefined} className="max-h-[90vh] max-w-2xl overflow-y-auto">
+			<DialogContent
+				aria-describedby={undefined}
+				className="max-h-[90vh] max-w-2xl overflow-y-auto"
+			>
 				<DialogHeader>
 					<DialogTitle>{getModalTitle()}</DialogTitle>
 				</DialogHeader>
