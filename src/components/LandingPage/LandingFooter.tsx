@@ -51,7 +51,8 @@ export function LandingFooter({ sections }: LandingFooterProps) {
 
 				<div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
 					<p>
-						&copy; {new Date().getFullYear()} Trivia More. Progetto open source per la community studentesca.
+						&copy; {new Date().getFullYear()} Trivia More. Progetto open source per la
+						community studentesca.
 					</p>
 				</div>
 			</div>
