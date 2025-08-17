@@ -5,3 +5,4 @@ export { FlashcardService } from "./flashcard.service";
 export { QuizService } from "./quiz.service";
 export { RandomizationService } from "./randomization.service";
 export { UserService } from "./user.service";
+export { AdminService } from "./admin.service";

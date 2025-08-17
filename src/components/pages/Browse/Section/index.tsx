@@ -4,15 +4,23 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { User } from "next-auth";
 import { toast } from "sonner";
 
+import { EditModeButton } from "@/components/EditMode/edit-mode-button";
+import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
+import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import { useFlashcardMutations, useQuizMutations } from "@/hooks";
+import { useEditMode } from "@/hooks/useEditMode";
 import { createFlashcardSession } from "@/lib/utils/flashcard-session";
 import { createQuizSession } from "@/lib/utils/quiz-session";
+import { useEditModeContext } from "@/providers/edit-mode-provider";
 
 import { FlashcardCard } from "./FlashcardCard";
+import { QuestionManagement } from "./QuestionManagement";
 import { QuizCard } from "./QuizCard";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
+import SectionHeader from "./SectionHeader";
 
 interface EvaluationMode {
 	id: string;
@@ -54,10 +62,8 @@ interface SectionData {
 }
 
 interface SectionPageComponentProps {
-	sectionData: SectionData;
-	filters: {
-		search?: string;
-	};
+	user: User | null;
+	sectionData: any;
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
@@ -66,8 +72,8 @@ interface SectionPageComponentProps {
 }
 
 export default function SectionPageComponent({
+	user,
 	sectionData,
-	filters,
 	departmentCode,
 	courseCode,
 	classCode,
@@ -77,6 +83,18 @@ export default function SectionPageComponent({
 	const router = useRouter();
 	const { startQuiz, isLoading } = useQuizMutations();
 	const { startFlashcard, isLoading: isFlashcardLoading } = useFlashcardMutations();
+	const { isEditMode, toggleEditMode } = useEditModeContext();
+
+	const editPermissions = useEditMode({
+		departmentId: sectionData.class.course.department.id,
+		courseId: sectionData.class.course.id,
+		classId: sectionData.class.id,
+	});
+	const [modalState, setModalState] = useState<Modal>({
+		isOpen: false,
+		mode: "create",
+		type: "question",
+	});
 
 	const quizQuestions = sectionData._count.quizQuestions || 0;
 	const flashcardQuestions = sectionData._count.flashcardQuestions || 0;
@@ -146,80 +164,92 @@ export default function SectionPageComponent({
 			}
 		}
 	};
+
+	const handleEditAction = (
+		action: "create" | "edit" | "delete",
+		type: "section" | "question",
+		data?: any
+	) => {
+		setModalState({ isOpen: true, mode: action, type, data });
+	};
+
 	return (
-		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				{/* Breadcrumb */}
-				<SectionBreadcrumb
-					sectionData={sectionData}
-					departmentCode={departmentCode}
-					courseCode={courseCode}
-					classCode={classCode}
-				/>
-
-				{/* Header */}
-				<div className="mb-8">
-					<h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-						{sectionData.name}
-					</h1>
-					<p className="mb-4 text-lg text-gray-600 dark:text-gray-300">
-						{sectionData.class.name} - {sectionData.class.course.name}
-					</p>
-					{sectionData.description && (
-						<p className="mb-6 max-w-3xl text-gray-700 dark:text-gray-300">
-							{sectionData.description}
-						</p>
+		<EditModeOverlay isActive={isEditMode} userRole={user?.role || null}>
+			<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+					{editPermissions.canEdit && (
+						<div className="mb-4 flex justify-end">
+							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+						</div>
 					)}
-					<div className="flex items-center space-x-4">
-						<span className="text-sm text-gray-600 dark:text-gray-300">
-							{sectionData._count.questions} domande disponibili
-						</span>
-						<span
-							className={`rounded-full px-3 py-1 text-sm ${
-								sectionData.isPublic
-									? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200"
-									: "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200"
-							}`}
-						>
-							{sectionData.isPublic ? "Sezione pubblica" : "Sezione privata"}
-						</span>
-					</div>
-				</div>
 
-				{/* Contenuto della sezione */}
-				<div className="space-y-6">
-					{/* Tenta Quiz */}
-					<QuizCard
-						sectionName={sectionData.name}
-						totalQuestions={quizQuestions}
-						isUserLoggedIn={isUserLoggedIn}
-						onStartQuiz={handleStartQuiz}
-						isLoading={isLoading}
-						questionCount={quizQuestionCount}
-						onQuestionCountChange={setQuizQuestionCount}
-						timeLimit={quizTimeLimit}
-						onTimeLimitChange={setQuizTimeLimit}
-						evaluationModes={evaluationModes}
-						selectedEvaluationMode={selectedEvaluationMode}
-						onEvaluationModeChange={setSelectedEvaluationMode}
-						isSettingsOpen={isQuizSettingsOpen}
-						onSettingsOpenChange={setIsQuizSettingsOpen}
+					<SectionBreadcrumb
+						sectionData={sectionData}
+						departmentCode={departmentCode}
+						courseCode={courseCode}
+						classCode={classCode}
 					/>
 
-					{/* Flashcard */}
-					<FlashcardCard
-						sectionName={sectionData.name}
-						totalQuestions={flashcardQuestions}
-						isUserLoggedIn={isUserLoggedIn}
-						onStartFlashcards={handleStartFlashcards}
-						cardCount={flashcardCount}
-						onCardCountChange={setFlashcardCount}
-						isSettingsOpen={isFlashcardSettingsOpen}
-						onSettingsOpenChange={setIsFlashcardSettingsOpen}
-						isLoading={isFlashcardLoading}
+					<SectionHeader
+						sectionData={sectionData}
+						isEditMode={isEditMode}
+						canEdit={editPermissions.canEdit}
+						onEditAction={(action, data) => handleEditAction(action, "section", data)}
 					/>
+
+					{isEditMode && editPermissions.canEditQuestions ? (
+						<QuestionManagement
+							sectionId={sectionData.id}
+							onEditAction={(action, data) =>
+								handleEditAction(action, "question", data)
+							}
+						/>
+					) : (
+						<div className="space-y-6">
+							<QuizCard
+								sectionName={sectionData.name}
+								totalQuestions={quizQuestions}
+								isUserLoggedIn={isUserLoggedIn}
+								onStartQuiz={handleStartQuiz}
+								isLoading={isLoading}
+								questionCount={quizQuestionCount}
+								onQuestionCountChange={setQuizQuestionCount}
+								timeLimit={quizTimeLimit}
+								onTimeLimitChange={setQuizTimeLimit}
+								evaluationModes={evaluationModes}
+								selectedEvaluationMode={selectedEvaluationMode}
+								onEvaluationModeChange={setSelectedEvaluationMode}
+								isSettingsOpen={isQuizSettingsOpen}
+								onSettingsOpenChange={setIsQuizSettingsOpen}
+							/>
+
+							<FlashcardCard
+								sectionName={sectionData.name}
+								totalQuestions={flashcardQuestions}
+								isUserLoggedIn={isUserLoggedIn}
+								onStartFlashcards={handleStartFlashcards}
+								cardCount={flashcardCount}
+								onCardCountChange={setFlashcardCount}
+								isSettingsOpen={isFlashcardSettingsOpen}
+								onSettingsOpenChange={setIsFlashcardSettingsOpen}
+								isLoading={isFlashcardLoading}
+							/>
+						</div>
+					)}
 				</div>
 			</div>
-		</div>
+			<CrudModal
+				isOpen={modalState.isOpen}
+				onClose={() => setModalState({ ...modalState, isOpen: false })}
+				mode={modalState.mode}
+				type={modalState.type}
+				initialData={modalState.data}
+				contextData={{
+					courses: [sectionData.course],
+					classes: [sectionData.class],
+					sections: [sectionData],
+				}}
+			/>
+		</EditModeOverlay>
 	);
 }
