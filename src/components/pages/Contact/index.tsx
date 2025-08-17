@@ -11,9 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ContactPageContent() {
 	async function handleContactSubmit(data: any) {
-		// Simulazione invio - sostituire con chiamata API reale
-		console.log("Contact form submitted:", data);
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		const res = await fetch("/api/contact", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(data),
+		});
+
+		if (!res.ok) {
+			throw new Error("Errore durante l'invio del messaggio");
+		}
 	}
 	return (
 		<>
