@@ -1,8 +1,17 @@
 "use client";
 
+import type React from "react";
 import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
+
+import { User } from "next-auth";
+
+import { EditModeButton } from "@/components/EditMode/edit-mode-button";
+import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
+import { CrudModal, Modal } from "@/components/modals/CrudModal";
+import { useEditMode } from "@/hooks/useEditMode";
+import { useEditModeContext } from "@/providers/edit-mode-provider";
 
 import { DepartmentBreadcrumb } from "./DepartmentBreadcrumb";
 import { DepartmentCourses } from "./DepartmentCourses";
@@ -40,18 +49,26 @@ interface DepartmentFilters {
 }
 
 interface DepartmentPageComponentProps {
+	user: User | null;
 	department: Department;
 	filters: DepartmentFilters;
 }
 
-export default function DepartmentPageComponent({
-	department,
-	filters: initialFilters,
-}: DepartmentPageComponentProps) {
+export default function DepartmentPageComponent(props: DepartmentPageComponentProps) {
+	const { isEditMode, toggleEditMode } = useEditModeContext();
+
+	const editPermissions = useEditMode({
+		departmentId: props.department.id,
+	});
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [filters, setFilters] = useState<DepartmentFilters>(initialFilters);
-	const [searchValue, setSearchValue] = useState(initialFilters.search || "");
+	const [filters, setFilters] = useState(props.filters);
+	const [searchValue, setSearchValue] = useState(props.filters.search || "");
+	const [modalState, setModalState] = useState<Modal>({
+		isOpen: false,
+		mode: "create",
+		type: "course",
+	});
 
 	const updateFilters = (newFilters: Partial<DepartmentFilters>) => {
 		const params = new URLSearchParams(searchParams);
@@ -64,7 +81,7 @@ export default function DepartmentPageComponent({
 			}
 		});
 
-		router.push(`/browse/${department.code.toLowerCase()}?${params.toString()}`);
+		router.push(`/browse/${props.department.code.toLowerCase()}?${params.toString()}`);
 	};
 
 	const handleSearch = (e: React.FormEvent) => {
@@ -78,7 +95,7 @@ export default function DepartmentPageComponent({
 		const newFilters = {};
 		setFilters(newFilters);
 		setSearchValue("");
-		router.push(`/browse/${department.code.toLowerCase()}`);
+		router.push(`/browse/${props.department.code.toLowerCase()}`);
 	};
 
 	const handleFilterChange = (newFilters: Partial<DepartmentFilters>) => {
@@ -87,7 +104,7 @@ export default function DepartmentPageComponent({
 		updateFilters(updatedFilters);
 	};
 
-	const filteredCourses = department.courses.filter(course => {
+	const filteredCourses = props.department.courses.filter(course => {
 		const matchesType = !filters.type || course.courseType === filters.type;
 		const matchesSearch =
 			!filters.search ||
@@ -98,30 +115,76 @@ export default function DepartmentPageComponent({
 
 	const hasActiveFilters = Boolean(filters.type || filters.search);
 
+	const handleEditAction = (
+		action: "create" | "edit" | "delete",
+		type: "department" | "course",
+		data?: any
+	) => {
+		setModalState({ isOpen: true, mode: action, type, data });
+	};
+
 	return (
-		<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-			<div className="container mx-auto px-4 py-8">
-				<DepartmentBreadcrumb departmentName={department.name} />
+		<EditModeOverlay isActive={isEditMode} userRole={props.user?.role || null}>
+			<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+				<div className="container mx-auto px-4 py-8">
+					{editPermissions.canEdit && (
+						<div className="mb-6 flex justify-end">
+							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+						</div>
+					)}
 
-				<DepartmentHeader department={department} />
+					<DepartmentBreadcrumb departmentName={props.department.name} />
 
-				<DepartmentFilters
-					filters={filters}
-					searchValue={searchValue}
-					onSearchValueChange={setSearchValue}
-					onSearch={handleSearch}
-					onFilterChange={handleFilterChange}
-					onClearFilters={clearFilters}
-				/>
+					<DepartmentHeader
+						department={props.department}
+						isEditMode={isEditMode}
+						canEdit={editPermissions.canEditDepartments}
+						onEditAction={(action, data) =>
+							handleEditAction(action, "department", data)
+						}
+					/>
 
-				<DepartmentCourses
-					courses={filteredCourses}
-					departmentCode={department.code.toLowerCase()}
-					filters={filters}
-					hasActiveFilters={hasActiveFilters}
-					onClearFilters={clearFilters}
-				/>
+					<DepartmentFilters
+						filters={filters}
+						searchValue={searchValue}
+						onSearchValueChange={setSearchValue}
+						onSearch={handleSearch}
+						onFilterChange={handleFilterChange}
+						onClearFilters={clearFilters}
+					/>
+
+					{isEditMode && editPermissions.canEditCourses && (
+						<div className="mb-6">
+							<button
+								onClick={() => handleEditAction("create", "course")}
+								className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+							>
+								<span>+</span>
+								Crea Nuovo Corso
+							</button>
+						</div>
+					)}
+
+					<DepartmentCourses
+						courses={filteredCourses}
+						departmentCode={props.department.code.toLowerCase()}
+						filters={filters}
+						hasActiveFilters={hasActiveFilters}
+						onClearFilters={clearFilters}
+					/>
+				</div>
 			</div>
-		</div>
+
+			<CrudModal
+				isOpen={modalState.isOpen}
+				onClose={() => setModalState({ ...modalState, isOpen: false })}
+				mode={modalState.mode}
+				type={modalState.type}
+				initialData={modalState.data}
+				contextData={{
+					departments: [props.department],
+				}}
+			/>
+		</EditModeOverlay>
 	);
 }

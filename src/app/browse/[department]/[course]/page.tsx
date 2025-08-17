@@ -39,6 +39,7 @@ export default async function CoursePage({ params, searchParams }: CoursePagePro
 
 	return (
 		<CoursePageComponent
+			user={session?.user || null}
 			course={courseData}
 			filters={{
 				year: resolvedSearchParams.year,

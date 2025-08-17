@@ -1,5 +1,7 @@
 import { BookOpen } from "lucide-react";
 
+import { EditModeCard } from "@/components/EditMode/edit-mode-card";
+
 interface Department {
 	id: string;
 	name: string;
@@ -12,10 +14,18 @@ interface Department {
 
 interface DepartmentHeaderProps {
 	department: Department;
+	isEditMode?: boolean;
+	canEdit?: boolean;
+	onEditAction?: (action: "edit" | "delete", data: Department) => void;
 }
 
-export function DepartmentHeader({ department }: DepartmentHeaderProps) {
-	return (
+export function DepartmentHeader({
+	department,
+	isEditMode = false,
+	canEdit = false,
+	onEditAction,
+}: DepartmentHeaderProps) {
+	const content = (
 		<div className="mb-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 			<div className="flex flex-col md:flex-row md:items-start md:justify-between">
 				<div className="mb-6 flex-1 md:mb-0">
@@ -50,4 +60,20 @@ export function DepartmentHeader({ department }: DepartmentHeaderProps) {
 			</div>
 		</div>
 	);
+
+	if (isEditMode && canEdit) {
+		return (
+			<EditModeCard
+				isEditMode={isEditMode}
+				onEdit={() => onEditAction?.("edit", department)}
+				onDelete={() => onEditAction?.("delete", department)}
+				canEdit={canEdit}
+				canDelete={canEdit}
+			>
+				{content}
+			</EditModeCard>
+		);
+	}
+
+	return content;
 }
