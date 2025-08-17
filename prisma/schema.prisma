@@ -7,38 +7,367 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model AdminUser {
-  id       String  @id @default(uuid())
-  username String  @unique
-  password String
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // NextAuth.js relations
+  accounts Account[]
+  sessions Session[]
+
+  // Student-specific relations
+  quizAttempts       QuizAttempt[]
+  userClasses        UserClass[]
+  bookmarks          Bookmark[]
+  progress           Progress[]
+  accessibleSections SectionAccess[]
+
+  // Admin relations
+  managedDepartments DepartmentAdmin[]
+  maintainedCourses  CourseMaintainer[]
+
+  @@map("users")
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String?
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[]
+  admins  DepartmentAdmin[]
+
+  @@index([position])
+  @@map("departments")
+}
+
+model DepartmentAdmin {
+  userId       String
+  departmentId String
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, departmentId])
+  @@map("department_admins")
+}
+
+model Course {
+  id           String     @id @default(cuid())
+  name         String
+  code         String
+  description  String?
+  departmentId String
+  position     Int        @default(0)
+  courseType   CourseType @default(BACHELOR)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  department  Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  classes     Class[]
+  maintainers CourseMaintainer[]
+
+  @@unique([code, departmentId])
+  @@index([position])
+  @@map("courses")
+}
+
+model CourseMaintainer {
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@map("course_maintainers")
 }
 
 model Class {
-  id         String     @id @default(uuid())
-  name       String
-  icon       String?
-  visibility Boolean    @default(true)
-  sections   Section[]
-  questions  Question[]
+  id          String   @id @default(cuid())
+  name        String
+  code        String
+  description String?
+  courseId    String
+  classYear   Int
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sections    Section[]
+  userClasses UserClass[]
+
+  @@unique([code, courseId])
+  @@index([position])
+  @@index([classYear])
+  @@map("classes")
 }
 
 model Section {
-  id          String     @id @default(uuid())
-  sectionName String
-  icon        String?
-  flashCard   Boolean    @default(false)
-  class       Class      @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  classId     String     
-  questions   Question[]
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isPublic    Boolean  @default(true)
+  classId     String
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  class     Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+  questions Question[]
+  quizzes   Quiz[]
+  access    SectionAccess[]
+  progress  Progress[]
+
+  @@index([position])
+  @@map("sections")
+}
+
+model SectionAccess {
+  userId    String
+  sectionId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sectionId])
+  @@map("section_access")
 }
 
 model Question {
-  id        String   @id @default(uuid())
-  question  String
-  options   String[] // Array di opzioni
-  answer    Int[] // Array di risposte corrette
-  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  sectionId String   
-  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  classId   String   
+  id            String       @id @default(cuid())
+  content       String
+  questionType  QuestionType
+  options       Json? // For multiple choice questions
+  correctAnswer String[]
+  explanation   String?
+  difficulty    Difficulty   @default(MEDIUM)
+  sectionId     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  section        Section         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  quizQuestions  QuizQuestion[]
+  bookmarks      Bookmark[]
+  answerAttempts AnswerAttempt[]
+
+  @@index([sectionId])
+  @@index([difficulty])
+  @@index([questionType])
+  @@map("questions")
+}
+
+model Quiz {
+  id               String   @id @default(cuid())
+  timeLimit        Int? // in minutes
+  sectionId        String
+  evaluationModeId String
+  quizMode         QuizMode @default(STUDY)
+  createdAt        DateTime @default(now())
+
+  section        Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  evaluationMode EvaluationMode @relation(fields: [evaluationModeId], references: [id], onDelete: Cascade)
+  questions      QuizQuestion[]
+  attempts       QuizAttempt[]
+
+  @@index([sectionId])
+  @@index([quizMode])
+  @@index([evaluationModeId])
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id         String   @id @default(cuid())
+  quizId     String
+  questionId String
+  order      Int
+  createdAt  DateTime @default(now())
+
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, questionId])
+  @@map("quiz_questions")
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  quizId      String
+  score       Float
+  timeSpent   Int? // in seconds
+  completedAt DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers AnswerAttempt[]
+
+  @@index([userId])
+  @@index([quizId])
+  @@index([completedAt])
+  @@map("quiz_attempts")
+}
+
+model AnswerAttempt {
+  id            String   @id @default(cuid())
+  quizAttemptId String
+  questionId    String
+  userAnswer    String[]
+  score         Float
+
+  quizAttempt QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  question    Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([quizAttemptId, questionId])
+  @@map("answer_attempts")
+}
+
+model Bookmark {
+  userId     String
+  questionId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, questionId])
+  @@map("bookmarks")
+}
+
+model UserClass {
+  userId    String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([userId, classId])
+  @@map("user_classes")
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  sectionId String
+  quizMode  QuizMode
+
+  // Quiz metrics
+  quizzesTaken   Int    @default(0)
+  averageScore   Float?
+  bestScore      Float?
+  totalTimeSpent Int    @default(0)
+
+  improvementRate  Float? // score improvement over time
+  consistencyScore Float? // consistency in performance
+
+  lastAccessedAt  DateTime @default(now())
+  firstAccessedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sectionId, quizMode])
+  @@map("progress")
+}
+
+model EvaluationMode {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  description           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  correctAnswerPoints   Float    @default(1.0)
+  incorrectAnswerPoints Float    @default(0.0)
+  partialCreditEnabled  Boolean  @default(false)
+
+  quizzes Quiz[]
+
+  @@map("evaluation_modes")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  MAINTAINER
+  STUDENT
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum CourseType {
+  BACHELOR
+  MASTER
+}
+
+enum QuizMode {
+  STUDY
+  EXAM_SIMULATION
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
