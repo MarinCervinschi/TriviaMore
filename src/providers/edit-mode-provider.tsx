@@ -2,10 +2,15 @@
 
 import { type ReactNode, createContext, useContext, useState } from "react";
 
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 interface EditModeContextType {
 	isEditMode: boolean;
 	toggleEditMode: () => void;
 	setEditMode: (active: boolean) => void;
+	buildApp: () => Promise<void>;
+	isLoading: boolean;
 }
 
 const EditModeContext = createContext<EditModeContextType | undefined>(undefined);
@@ -21,6 +26,29 @@ export function EditModeProvider({
 }: EditModeProviderProps) {
 	const [isEditMode, setIsEditMode] = useState(defaultEditMode);
 
+	const buildMutation = useMutation({
+		mutationFn: async () => {
+			const response = await fetch("/api/protected/admin/rebuild", {
+				method: "POST",
+			});
+
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+		},
+		onSuccess: () => {
+			toast.success("Build succeeded");
+		},
+		onError: error => {
+			console.error("Build failed:", error);
+			toast.error("Build failed");
+		},
+	});
+
+	const buildApp = async () => {
+		buildMutation.mutateAsync();
+	};
+
 	const toggleEditMode = () => {
 		setIsEditMode(prev => !prev);
 	};
@@ -30,7 +58,15 @@ export function EditModeProvider({
 	};
 
 	return (
-		<EditModeContext.Provider value={{ isEditMode, toggleEditMode, setEditMode }}>
+		<EditModeContext.Provider
+			value={{
+				isEditMode,
+				toggleEditMode,
+				setEditMode,
+				buildApp,
+				isLoading: buildMutation.isPending,
+			}}
+		>
 			{children}
 		</EditModeContext.Provider>
 	);

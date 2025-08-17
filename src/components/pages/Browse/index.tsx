@@ -6,6 +6,7 @@ import { User } from "next-auth";
 
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
+import { RebuildButton } from "@/components/EditMode/rebuild-button";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import type { DepartmentNode } from "@/lib/types/browse.types";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
@@ -23,7 +24,7 @@ export default function BrowsePageComponent({
 	user,
 	departments,
 }: BrowsePageComponentProps) {
-	const { isEditMode, toggleEditMode } = useEditModeContext();
+	const { isEditMode, toggleEditMode, buildApp, isLoading } = useEditModeContext();
 	const [modalState, setModalState] = useState<Modal>({
 		isOpen: false,
 		mode: "create",
@@ -44,7 +45,10 @@ export default function BrowsePageComponent({
 				<div className="container mx-auto px-4 py-8">
 					{canEdit && (
 						<div className="mb-6 flex justify-end">
-							<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+							<div className="flex items-center gap-2">
+								<EditModeButton isActive={isEditMode} onToggle={toggleEditMode} />
+								<RebuildButton isLoading={isLoading} onClick={buildApp} />
+							</div>
 						</div>
 					)}
 
