@@ -24,6 +24,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useEditMode } from "@/hooks/useEditMode";
 import {
 	type SectionInput,
 	type UpdateSectionInput,
@@ -63,6 +64,7 @@ export function SectionForm({
 	isLoading = false,
 }: SectionFormProps) {
 	const schema = mode === "create" ? sectionSchema : updateSectionSchema;
+	const editPermissions = useEditMode({ classId: classes[0]?.id });
 
 	const form = useForm<SectionInput | UpdateSectionInput>({
 		resolver: zodResolver(schema),
@@ -154,29 +156,31 @@ export function SectionForm({
 					)}
 				/>
 
-				<FormField
-					control={form.control}
-					name="isPublic"
-					render={({ field }) => (
-						<FormItem className="flex flex-row items-start space-x-3 space-y-0">
-							<FormControl>
-								<Checkbox
-									checked={field.value}
-									onCheckedChange={field.onChange}
-									disabled={isLoading}
-								/>
-							</FormControl>
-							<div className="space-y-1 leading-none">
-								<FormLabel>Sezione Pubblica</FormLabel>
-								<FormDescription>
-									Se abilitata, la sezione sarà visibile a tutti gli utenti. Altrimenti
-									sarà visibile solo agli utenti autorizzati.
-								</FormDescription>
-							</div>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				{editPermissions.canEditDepartments && (
+					<FormField
+						control={form.control}
+						name="isPublic"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+								<FormControl>
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+										disabled={isLoading}
+									/>
+								</FormControl>
+								<div className="space-y-1 leading-none">
+									<FormLabel>Sezione Pubblica</FormLabel>
+									<FormDescription>
+										Se abilitata, la sezione sarà visibile a tutti gli utenti.
+										Altrimenti sarà visibile solo agli utenti autorizzati.
+									</FormDescription>
+								</div>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				)}
 
 				<FormField
 					control={form.control}
