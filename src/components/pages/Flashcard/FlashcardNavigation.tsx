@@ -39,17 +39,19 @@ export function FlashcardNavigation({
 					className="flex items-center space-x-2"
 				>
 					<ChevronLeft className="h-4 w-4" />
-					<span>Precedente</span>
+					<span className="hidden sm:inline">Precedente</span>
 				</Button>
 
 				<div className="text-center">
 					<div className="text-sm text-gray-600 dark:text-gray-300">
-						Flashcard {currentIndex + 1} di {totalCards}
+						{currentIndex + 1} di {totalCards}
 					</div>
 				</div>
 
 				<Button onClick={handleNextClick} className="flex items-center space-x-2">
-					<span>{isLastCard ? "Completa Studio" : "Successiva"}</span>
+					<span className="hidden sm:inline">
+						{isLastCard ? "Completa Studio" : "Successiva"}
+					</span>
 					<ChevronRight className="h-4 w-4" />
 				</Button>
 			</div>
