@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 
 import SectionPageComponent from "@/components/pages/Browse/Section/index";
 import { auth } from "@/lib/auth";
-import { BrowseService } from "@/lib/services";
-import { EvaluationService } from "@/lib/services";
+import { BrowseService, EvaluationService } from "@/lib/services";
 
 interface SectionPageProps {
 	params: Promise<{
@@ -14,9 +13,11 @@ interface SectionPageProps {
 	}>;
 }
 
+export const dynamicParams = true;
+export const revalidate = 3600;
+
 export default async function SectionPage({ params }: SectionPageProps) {
 	const session = await auth();
-
 	const resolvedParams = await params;
 
 	const [sectionData, evaluationModes] = await Promise.all([
