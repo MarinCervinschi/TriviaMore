@@ -78,7 +78,7 @@ export function QuizSidebar({
 					<div className="px-4 py-2">
 						<div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
 							<div
-								className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+								className="h-2 rounded-full bg-green-600 transition-all duration-300"
 								style={{
 									width: `${(answeredCount / questions.length) * 100}%`,
 								}}
@@ -99,7 +99,7 @@ export function QuizSidebar({
 										onClick={() => onQuestionSelect(index)}
 										className={`relative h-10 w-10 rounded-lg border-2 text-sm font-medium transition-all ${
 											isCurrent
-												? "border-blue-500 bg-blue-500 text-white"
+												? "border-green-500 bg-green-500 text-white"
 												: isAnswered
 													? "border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
 													: "border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
@@ -119,7 +119,7 @@ export function QuizSidebar({
 					<div className="border-t p-4 dark:border-gray-700">
 						<div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
 							<div className="flex items-center space-x-2">
-								<div className="h-3 w-3 rounded border-2 border-blue-500 bg-blue-500"></div>
+								<div className="h-3 w-3 rounded border-2 border-green-500 bg-green-500"></div>
 								<span>Domanda attuale</span>
 							</div>
 							<div className="flex items-center space-x-2">
