@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserDashboardLoadingPage() {
 	return (
-		<div className="container mx-auto space-y-8 px-4 py-8">
+		<div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
 			{/* Header Skeleton */}
 			<div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 p-6">
 				<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
