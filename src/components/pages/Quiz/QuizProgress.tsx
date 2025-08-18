@@ -1,3 +1,5 @@
+import { Progress } from "@/components/ui/progress";
+
 interface QuizProgressProps {
 	current: number;
 	total: number;
@@ -15,11 +17,8 @@ export function QuizProgress({ current, total, progress }: QuizProgressProps) {
 					{Math.round(progress)}% completato
 				</span>
 			</div>
-			<div className="mt-2 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-				<div
-					className="h-2 rounded-full bg-blue-600 transition-all duration-300 ease-out"
-					style={{ width: `${progress}%` }}
-				/>
+			<div className="mt-2">
+				<Progress value={progress} className="h-2" />
 			</div>
 		</div>
 	);
