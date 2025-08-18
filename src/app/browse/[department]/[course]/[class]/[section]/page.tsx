@@ -48,37 +48,6 @@ export default async function SectionPage({ params }: SectionPageProps) {
 	);
 }
 
-export async function generateStaticParams() {
-	const departments = await BrowseService.getAllDepartments();
-	const params = [];
-
-	for (const dept of departments) {
-		const courses = await BrowseService.getCoursesByDepartment(dept.code);
-		for (const course of courses) {
-			const classes = await BrowseService.getClassesByCourse(dept.code, course.code);
-			for (const cls of classes) {
-				const sections = await BrowseService.getSectionsByClass(
-					dept.code,
-					course.code,
-					cls.code
-				);
-				for (const section of sections) {
-					// Converti il nome della sezione per l'URL
-					const sectionUrlName = section.name.toLowerCase().replace(/\s+/g, "-");
-					params.push({
-						department: dept.code.toLowerCase(),
-						course: course.code.toLowerCase(),
-						class: cls.code.toLowerCase(),
-						section: sectionUrlName,
-					});
-				}
-			}
-		}
-	}
-
-	return params;
-}
-
 export async function generateMetadata({ params }: SectionPageProps) {
 	const resolvedParams = await params;
 	const sectionData = await BrowseService.getSectionByName(
