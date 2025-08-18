@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function BrowseLoadingPage() {
 	return (
 		<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-			<div className="container mx-auto px-4 py-8">
+			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 				{/* Hero Section Skeleton */}
 				<div className="mb-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 					<div className="text-center">
