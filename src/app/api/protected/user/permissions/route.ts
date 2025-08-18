@@ -1,26 +1,29 @@
 import { NextResponse } from "next/server";
 
+import { NextAuthRequest } from "next-auth";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-	try {
-		const session = await auth();
+// api/protected/user/permissions
 
-		if (!session?.user?.id) {
-			return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+export const GET = auth(async function GET(request: NextAuthRequest) {
+	if (!request.auth) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
+	try {
+		const userId = request.auth.user?.id;
+
+		if (!userId) {
+			return NextResponse.json({ error: "User ID not found" }, { status: 400 });
 		}
 
-		const userId = session.user.id;
-
-		// Fetch user permissions from database
 		const [managedDepartments, maintainedCourses] = await Promise.all([
-			// Get departments managed by this user (ADMIN role)
 			prisma.departmentAdmin.findMany({
 				where: { userId },
 				select: { departmentId: true },
 			}),
-			// Get courses maintained by this user (MAINTAINER role)
 			prisma.courseMaintainer.findMany({
 				where: { userId },
 				select: { courseId: true },
@@ -40,4 +43,4 @@ export async function GET() {
 			{ status: 500 }
 		);
 	}
-}
+}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;

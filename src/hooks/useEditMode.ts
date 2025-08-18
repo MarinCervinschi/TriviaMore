@@ -28,7 +28,7 @@ interface UseEditModeProps {
 }
 
 async function fetchUserPermissions(): Promise<UserPermissions> {
-	const response = await fetch("/api/user/permissions");
+	const response = await fetch("/api/protected/user/permissions");
 	if (!response.ok) {
 		throw new Error("Failed to fetch user permissions");
 	}
@@ -148,7 +148,7 @@ export function useEditMode({
 	const { data: userPermissions, isLoading } = useQuery({
 		queryKey: ["userPermissions", session?.user?.id],
 		queryFn: fetchUserPermissions,
-		enabled: shouldFetchPermissions,
+		enabled: !shouldFetchPermissions,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
 	});
