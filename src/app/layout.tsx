@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 		address: false,
 		telephone: false,
 	},
-	metadataBase: new URL("https://trivia-more.vercel.app"),
+	metadataBase: new URL("https://www.trivia-more.it"),
 	alternates: {
 		canonical: "/",
 	},
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 		title: "Trivia More - Quiz per Studenti UNIMORE",
 		description:
 			"Piattaforma open source per quiz e flashcard dedicata agli studenti dell'Università di Modena e Reggio Emilia.",
-		url: "https://trivia-more.vercel.app",
+		url: "https://www.trivia-more.it",
 		siteName: "Trivia More",
 		locale: "it_IT",
 		type: "website",

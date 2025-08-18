@@ -17,7 +17,7 @@ Trivia MORE is a comprehensive quiz app designed to test and enhance your knowle
 
 Whether you’re revising for exams or just testing your knowledge, Trivia MORE is the perfect companion for academic success.
 
-## Visit the app [here](https://trivia-more.vercel.app/) 🌐
+## Visit the app [here](https://www.trivia-more.it/) 🌐
 
 ### Get Started 🚀
 
