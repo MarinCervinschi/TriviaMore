@@ -63,7 +63,7 @@ interface SectionData {
 
 interface SectionPageComponentProps {
 	user: User | null;
-	sectionData: any;
+	sectionData: SectionData;
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
@@ -245,7 +245,7 @@ export default function SectionPageComponent({
 				type={modalState.type}
 				initialData={modalState.data}
 				contextData={{
-					courses: [sectionData.course],
+					courses: [sectionData.class.course],
 					classes: [sectionData.class],
 					sections: [sectionData],
 				}}
