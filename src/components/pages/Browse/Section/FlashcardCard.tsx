@@ -38,19 +38,15 @@ export function FlashcardCard({
 							<Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
 							<h3 className="text-lg font-semibold text-gray-900 dark:text-white">
 								Flashcard
+								<span className="ml-2 text-base font-normal text-purple-700 dark:text-purple-300">
+									({totalQuestions} carte)
+								</span>
 							</h3>
 						</div>
 						<p className="text-sm text-gray-700 dark:text-gray-300">
 							Studia velocemente con le flashcard interattive. Perfetto per il ripasso e
-							la memorizzazione dei concetti chiave.{" "}
-							{totalQuestions > 0 ? (
-								<>
-									Sono disponibili <span className="font-medium">{totalQuestions}</span>{" "}
-									carte per <span className="font-medium">{sectionName}</span>.
-								</>
-							) : (
-								"Non ci sono ancora domande disponibili per questa sezione."
-							)}
+							la memorizzazione dei concetti chiave. Per il numero di carte consulta le
+							impostazioni.
 						</p>
 					</div>
 

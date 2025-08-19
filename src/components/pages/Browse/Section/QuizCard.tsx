@@ -57,20 +57,15 @@ export function QuizCard({
 							<Brain className="h-5 w-5 text-green-600 dark:text-green-400" />
 							<h3 className="text-lg font-semibold text-gray-900 dark:text-white">
 								Tenta Quiz
+								<span className="ml-2 text-base font-normal text-green-700 dark:text-green-300">
+									({totalQuestions} domande)
+								</span>
 							</h3>
 						</div>
 						<p className="text-sm text-gray-700 dark:text-gray-300">
 							Mettiti alla prova su questa sezione e rispondi alle domande. Non c&apos;è
-							solo una risposta corretta! Per modalità di valutazione consulta le
-							impostazioni. Di default ogni domanda vale 1 punto e non ci sono penalità.{" "}
-							{totalQuestions > 0 ? (
-								<>
-									Sono disponibili <span className="font-medium">{totalQuestions}</span>{" "}
-									domande per <span className="font-medium">{sectionName}</span>.
-								</>
-							) : (
-								"Non ci sono ancora domande disponibili per questa sezione."
-							)}
+							solo una risposta corretta! Per modalità di valutazione, durata del quiz e numero di domande consulta le
+							impostazioni.
 						</p>
 					</div>
 
