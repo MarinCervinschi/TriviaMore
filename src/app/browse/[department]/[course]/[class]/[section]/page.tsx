@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import SectionPageComponent from "@/components/pages/Browse/Section/index";
-import { auth } from "@/lib/auth";
 import { BrowseService, EvaluationService } from "@/lib/services";
 
 interface SectionPageProps {
@@ -17,7 +16,6 @@ export const dynamicParams = true;
 export const revalidate = 3600;
 
 export default async function SectionPage({ params }: SectionPageProps) {
-	const session = await auth();
 	const resolvedParams = await params;
 
 	const [sectionData, evaluationModes] = await Promise.all([
@@ -25,8 +23,7 @@ export default async function SectionPage({ params }: SectionPageProps) {
 			resolvedParams.department.toUpperCase(),
 			resolvedParams.course.toUpperCase(),
 			resolvedParams.class.toUpperCase(),
-			resolvedParams.section,
-			session?.user?.id
+			resolvedParams.section
 		),
 		EvaluationService.getAllEvaluationModes(),
 	]);
@@ -37,12 +34,10 @@ export default async function SectionPage({ params }: SectionPageProps) {
 
 	return (
 		<SectionPageComponent
-			user={session?.user || null}
 			sectionData={sectionData}
 			departmentCode={resolvedParams.department}
 			courseCode={resolvedParams.course}
 			classCode={resolvedParams.class}
-			isUserLoggedIn={!!session?.user}
 			evaluationModes={evaluationModes}
 		/>
 	);
