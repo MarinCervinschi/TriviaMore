@@ -22,7 +22,6 @@ interface SectionCardProps {
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
-	isUserLoggedIn: boolean;
 }
 
 export default function SectionCard({
@@ -30,7 +29,6 @@ export default function SectionCard({
 	departmentCode,
 	courseCode,
 	classCode,
-	isUserLoggedIn,
 }: SectionCardProps) {
 	// Converti il nome della sezione in lowercase per l'URL
 	const sectionUrlName = section.name.toLowerCase().replace(/\s+/g, "-");

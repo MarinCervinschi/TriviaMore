@@ -17,7 +17,6 @@ interface ClassSectionsProps {
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
-	isUserLoggedIn: boolean;
 }
 
 export default function ClassSections({
@@ -25,7 +24,6 @@ export default function ClassSections({
 	departmentCode,
 	courseCode,
 	classCode,
-	isUserLoggedIn,
 }: ClassSectionsProps) {
 	if (sections.length === 0) {
 		return (
@@ -52,7 +50,6 @@ export default function ClassSections({
 					departmentCode={departmentCode}
 					courseCode={courseCode}
 					classCode={classCode}
-					isUserLoggedIn={isUserLoggedIn}
 				/>
 			))}
 		</div>

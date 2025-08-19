@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { useSession } from "next-auth/react";
-
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
@@ -75,7 +73,6 @@ interface ClassPageComponentProps {
 	};
 	departmentCode: string;
 	courseCode: string;
-	isUserLoggedIn: boolean;
 	evaluationModes: EvaluationMode[];
 }
 
@@ -84,10 +81,8 @@ export default function ClassPageComponent({
 	filters,
 	departmentCode,
 	courseCode,
-	isUserLoggedIn,
 	evaluationModes,
 }: ClassPageComponentProps) {
-	const { data: session } = useSession();
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 	const editPermissions = useEditMode({
 		departmentId: classData.course.departmentId,
@@ -132,7 +127,7 @@ export default function ClassPageComponent({
 	};
 
 	return (
-		<EditModeOverlay isActive={isEditMode} userRole={session?.user?.role || null}>
+		<EditModeOverlay isActive={isEditMode}>
 			<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 					{editPermissions.canEdit && (
@@ -165,7 +160,6 @@ export default function ClassPageComponent({
 					{!isEditMode && (
 						<ExamSimulationButton
 							classData={classData}
-							isUserLoggedIn={isUserLoggedIn}
 							evaluationModes={evaluationModes}
 						/>
 					)}
@@ -193,7 +187,6 @@ export default function ClassPageComponent({
 						departmentCode={departmentCode}
 						courseCode={courseCode}
 						classCode={classData.code.toLowerCase()}
-						isUserLoggedIn={isUserLoggedIn}
 					/>
 				</div>
 			</div>
