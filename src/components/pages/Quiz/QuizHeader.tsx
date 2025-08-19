@@ -1,4 +1,5 @@
 import { Globe, Menu, User, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { SimpleThemeToggle } from "@/components/Theme/simple-theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -9,11 +10,6 @@ import { QuizTimer } from "./QuizTimer";
 interface QuizHeaderProps {
 	quiz: Quiz;
 	isGuest: boolean;
-	user?: {
-		id: string;
-		name?: string | null;
-		email?: string | null;
-	} | null;
 	onExit: () => void;
 	onToggleSidebar: () => void;
 	onTimeUp: () => void;
@@ -23,12 +19,13 @@ interface QuizHeaderProps {
 export function QuizHeader({
 	quiz,
 	isGuest,
-	user,
 	onExit,
 	onToggleSidebar,
 	onTimeUp,
 	sidebarOpen,
 }: QuizHeaderProps) {
+	const { data: session } = useSession();
+
 	return (
 		<div className="quiz-header border-b bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
 			<div className="flex items-center justify-between gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-3">
@@ -90,7 +87,7 @@ export function QuizHeader({
 							<>
 								<User className="h-4 w-4 text-blue-500" />
 								<span className="max-w-20 truncate text-sm text-gray-700 dark:text-gray-300">
-									{user?.name || user?.email}
+									{session?.user?.name || session?.user?.email}
 								</span>
 							</>
 						)}

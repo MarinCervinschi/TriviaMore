@@ -16,14 +16,12 @@ import { FlashcardSidebar } from "./FlashcardSidebar";
 interface FlashcardContainerProps {
 	session: FlashcardSession;
 	isGuest: boolean;
-	user?: User | null;
 	onExit: () => void;
 }
 
 export function FlashcardContainer({
 	session,
 	isGuest,
-	user,
 	onExit,
 }: FlashcardContainerProps) {
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -97,9 +95,8 @@ export function FlashcardContainer({
 			<div className="flex flex-1 flex-col">
 				{/* Header */}
 				<FlashcardHeader
-					session={session}
+					sessionFlash={session}
 					isGuest={isGuest}
-					user={user}
 					onExit={onExit}
 					onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
 					sidebarOpen={sidebarOpen}

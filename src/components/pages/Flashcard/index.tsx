@@ -23,13 +23,11 @@ export { FlashcardSidebar } from "./FlashcardSidebar";
 interface FlashcardPageComponentProps {
 	sessionId: string;
 	isGuest: boolean;
-	user?: User | null;
 }
 
 export default function FlashcardPageComponent({
 	sessionId,
 	isGuest,
-	user,
 }: FlashcardPageComponentProps) {
 	const router = useRouter();
 	const { data, isLoading, error } = useFlashcardData(sessionId, isGuest);
@@ -87,7 +85,6 @@ export default function FlashcardPageComponent({
 		<FlashcardContainer
 			session={session}
 			isGuest={isGuest}
-			user={user}
 			onExit={handleFlashcardExit}
 		/>
 	);

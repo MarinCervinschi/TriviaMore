@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { User } from "next-auth";
 
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Quiz } from "@/lib/types/quiz.types";
@@ -22,7 +21,6 @@ import { QuizSidebar } from "./QuizSidebar";
 interface QuizContainerProps {
 	quiz: Quiz;
 	isGuest: boolean;
-	user?: User | null;
 	onComplete: (results: any) => void;
 	onExit: () => void;
 }
@@ -30,7 +28,6 @@ interface QuizContainerProps {
 export function QuizContainer({
 	quiz,
 	isGuest,
-	user,
 	onComplete,
 	onExit,
 }: QuizContainerProps) {
@@ -129,7 +126,7 @@ export function QuizContainer({
 		}
 
 		return (
-			<AppLayout user={user}>
+			<AppLayout>
 				<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 					<div className="text-center">
 						<h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
@@ -162,7 +159,6 @@ export function QuizContainer({
 				<QuizHeader
 					quiz={quiz}
 					isGuest={isGuest}
-					user={user}
 					onExit={onExit}
 					onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
 					onTimeUp={handleTimeUp}
