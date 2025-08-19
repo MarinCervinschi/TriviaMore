@@ -308,12 +308,6 @@ export default function UserClassesComponent({
 										</p>
 									</div>
 
-									{userClass.class.description && (
-										<p className="text-sm text-muted-foreground">
-											{userClass.class.description}
-										</p>
-									)}
-
 									<div className="flex gap-2">
 										<Button asChild size="sm" className="flex-1">
 											<Link
