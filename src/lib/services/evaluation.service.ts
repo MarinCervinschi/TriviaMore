@@ -6,7 +6,7 @@ export class EvaluationService {
 	 */
 	static async getAllEvaluationModes() {
 		return await prisma.evaluationMode.findMany({
-			orderBy: { name: "asc" },
+			orderBy: { createdAt: "asc" },
 		});
 	}
 
