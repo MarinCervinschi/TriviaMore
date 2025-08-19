@@ -43,7 +43,6 @@ export function useClassMutations() {
 		mutationFn: addClassFetch,
 		onSuccess: (_, variables) => {
 			toast.success(`Classe "${variables.className}" aggiunta ai tuoi corsi!`);
-			window.location.reload();
 		},
 		onError: (error: Error, variables) => {
 			console.error("Errore nell'aggiunta della classe:", error);
@@ -55,7 +54,6 @@ export function useClassMutations() {
 		mutationFn: removeClassFetch,
 		onSuccess: (_, variables) => {
 			toast.success(`Classe "${variables.className}" rimossa dai tuoi corsi!`);
-			window.location.reload();
 		},
 		onError: (error: Error, variables) => {
 			console.error("Errore nella rimozione della classe:", error);
