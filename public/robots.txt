@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://trivia-more.it
+Host: https://www.trivia-more.it
 
 # Sitemaps
-Sitemap: https://trivia-more.it/sitemap.xml
+Sitemap: https://www.trivia-more.it/sitemap.xml
