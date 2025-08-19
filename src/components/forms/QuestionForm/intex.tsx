@@ -198,7 +198,7 @@ export function QuestionForm({
 
 							{questionType === "MULTIPLE_CHOICE" && (
 								<>
-									<MultipleChoiceOptions form={form} isLoading={isLoading} />
+									<MultipleChoiceOptions form={form} initialData={initialData} isLoading={isLoading} />
 									<MultipleChoiceAnswers control={form.control} isLoading={isLoading} />
 								</>
 							)}

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Plus } from "lucide-react";
+import { AlertCircle, Plus, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -33,6 +33,7 @@ export function QuestionManagement({
 		data: questions = [],
 		isLoading,
 		error,
+		refetch,
 	} = useQuery({
 		queryKey: ["section-questions", sectionId],
 		queryFn: async () => {
@@ -124,7 +125,7 @@ export function QuestionManagement({
 	return (
 		<div className="space-y-6">
 			{/* Header with create button */}
-			<div className="flex items-center justify-between">
+			<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
 				<div>
 					<h2 className="text-2xl font-bold text-gray-900 dark:text-white">
 						Gestione Domande
@@ -133,13 +134,22 @@ export function QuestionManagement({
 						Modifica, elimina o crea nuove domande per questa sezione
 					</p>
 				</div>
-				<Button
-					onClick={() => onEditAction?.("create", { sectionId })}
-					className="flex items-center gap-2"
-				>
-					<Plus className="h-4 w-4" />
-					Nuova Domanda
-				</Button>
+				<div className="flex items-center gap-2">
+					<Button
+						onClick={() => onEditAction?.("create", { sectionId })}
+						className="flex items-center gap-2"
+					>
+						<Plus className="h-4 w-4" />
+						Nuova Domanda
+					</Button>
+					<Button
+						onClick={() => refetch()}
+						variant={"secondary"}
+						className="flex items-center gap-2"
+					>
+						<RefreshCcw className="h-4 w-4" />
+					</Button>
+				</div>
 			</div>
 
 			{/* Filters */}
