@@ -28,7 +28,6 @@ export default function QuizPageComponent({
 
 	const handleQuizComplete = async (results: any) => {
 		if (isGuest) {
-			clearQuizSession(quizId);
 			return;
 		}
 
