@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Heart, Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 
@@ -19,25 +21,23 @@ export function AddClassButton({
 }: AddClassButtonProps) {
 	const { data: session } = useSession();
 	const { addClass, removeClass, isLoading } = useClassMutations();
+	const [hasClass, setHasClass] = useState(isEnrolled);
 
 	if (!session?.user?.id) {
 		return null;
 	}
 
 	const handleToggleClass = async () => {
-		try {
-			if (isEnrolled) {
-				await removeClass.mutateAsync({ classId, className });
-			} else {
-				await addClass.mutateAsync({ classId, className });
-			}
-		} catch (error) {
-			// L'errore è già gestito nel hook con toast.error
-			console.error("Errore nella gestione della classe:", error);
+		if (hasClass) {
+			await removeClass.mutateAsync({ classId, className });
+			setHasClass(false);
+		} else {
+			await addClass.mutateAsync({ classId, className });
+			setHasClass(true);
 		}
 	};
 
-	if (isEnrolled) {
+	if (hasClass) {
 		return (
 			<Button
 				onClick={handleToggleClass}
