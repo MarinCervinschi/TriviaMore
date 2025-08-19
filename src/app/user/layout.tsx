@@ -10,5 +10,5 @@ export default async function UserLayout({ children }: { children: React.ReactNo
 		redirect("/auth/login");
 	}
 
-	return <AppLayout user={session.user}>{children}</AppLayout>;
+	return <AppLayout>{children}</AppLayout>;
 }

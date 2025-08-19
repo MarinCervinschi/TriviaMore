@@ -30,7 +30,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 		}
 
 		return (
-			<AppLayout user={session.user}>
+			<AppLayout>
 				<QuizResultsPageComponent results={results} />
 			</AppLayout>
 		);
