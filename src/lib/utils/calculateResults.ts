@@ -7,7 +7,6 @@ export interface UserAnswer {
 	score?: number;
 }
 
-// Usa l'interfaccia unificata da quiz.types.ts
 export type QuizResults = QuizResult;
 
 export interface CalculateResultsParams {
@@ -46,15 +45,19 @@ export function calculateAnswerScore(
 
 	if (correctGiven > 0) {
 		if (evaluationMode.partialCreditEnabled) {
-			const correctnessRatio = correctGiven / totalCorrect;
-			const penaltyRatio = incorrectGiven / Math.max(totalGiven, 1);
-			const adjustedRatio = Math.max(0, correctnessRatio - penaltyRatio);
-			let score = Math.round(evaluationMode.correctAnswerPoints * adjustedRatio);
+			if (incorrectGiven > 0 && evaluationMode.incorrectAnswerPoints == 0) {
+				return { score: 0, isCorrect: false };
+			}
 
-			if (incorrectGiven > 0) {
+			const correctnessRatio = correctGiven / totalCorrect;
+			let score = evaluationMode.correctAnswerPoints * correctnessRatio;
+
+			if (incorrectGiven > 0 && evaluationMode.incorrectAnswerPoints < 0) {
 				const penalty = incorrectGiven * Math.abs(evaluationMode.incorrectAnswerPoints);
 				score = Math.max(score - penalty, evaluationMode.incorrectAnswerPoints);
 			}
+
+			score = Number(score.toFixed(2));
 
 			return { score, isCorrect: false };
 		} else {
@@ -100,6 +103,7 @@ export function calculateQuizResults(params: CalculateResultsParams): QuizResult
 			score,
 		};
 	});
+
 	const maxScore = questions.length * evaluationMode.correctAnswerPoints;
 	totalScore = maxScore > 0 ? Math.round((totalScore / maxScore) * 33) : 0;
 
