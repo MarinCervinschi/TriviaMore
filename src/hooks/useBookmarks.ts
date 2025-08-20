@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { BookmarkData } from "@/components/pages/User/Bookmarks";
+
 interface BookmarkToggleResponse {
 	bookmarked: boolean;
 	message: string;
@@ -15,7 +17,7 @@ export function useBookmarkToggle(userId: string | undefined, questionId: string
 
 	return useMutation({
 		mutationFn: async (): Promise<BookmarkToggleResponse> => {
-			const response = await fetch("/api/protected/bookmarks/toggle", {
+			const response = await fetch("/api/protected/user/bookmarks/toggle", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -32,6 +34,7 @@ export function useBookmarkToggle(userId: string | undefined, questionId: string
 		},
 		onSuccess: data => {
 			queryClient.invalidateQueries({ queryKey: ["bookmark", userId, questionId] });
+			queryClient.invalidateQueries({ queryKey: ["userBookmarks", userId] });
 
 			toast.success(data.message);
 		},
@@ -50,7 +53,7 @@ export function useBookmarkCheck(
 		queryKey: ["bookmark", userId, questionId],
 		queryFn: async (): Promise<BookmarkCheckResponse> => {
 			const response = await fetch(
-				`/api/protected/bookmarks/check?questionId=${questionId}`
+				`/api/protected/user/bookmarks/check?questionId=${questionId}`
 			);
 
 			if (!response.ok) {
@@ -61,5 +64,24 @@ export function useBookmarkCheck(
 			return response.json();
 		},
 		enabled,
+	});
+}
+
+const fetchBookmarks = async () => {
+	const response = await fetch(`/api/protected/user/bookmarks`);
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.error || "Errore durante il recupero dei segnalibri");
+	}
+
+	return response.json();
+};
+
+export function useUserBookmarks(userId: string) {
+	return useQuery<BookmarkData[]>({
+		queryKey: ["userBookmarks", userId],
+		queryFn: fetchBookmarks,
+		enabled: !!userId,
 	});
 }

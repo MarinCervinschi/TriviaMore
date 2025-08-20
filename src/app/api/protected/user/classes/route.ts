@@ -5,7 +5,7 @@ import { NextAuthRequest } from "next-auth/lib";
 import { auth } from "@/lib/auth";
 import { UserService } from "@/lib/services";
 
-// GET /api/protected/userClass - Ottieni tutte le classi salvate/preferite dell'utente autenticato
+// GET /api/protected/user/classes
 export const GET = auth(async function GET(request: NextAuthRequest) {
 	if (!request.auth) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +20,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 
 		const savedClasses = await UserService.getUserSavedClasses(userId);
 
-		return NextResponse.json({ savedClasses });
+		return NextResponse.json(savedClasses);
 	} catch (error) {
 		console.error("Error fetching saved classes:", error);
 

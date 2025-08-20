@@ -61,7 +61,7 @@ export default function ExamSimulationButton({
 }: ExamSimulationButtonProps) {
 	const router = useRouter();
 	const { data: session } = useSession();
-	const { startQuiz, isLoading: isQuizLoading } = useQuizMutations();
+	const { startQuiz, isLoading: isQuizLoading } = useQuizMutations(session?.user.id);
 	const { startExamSimulation, isLoading: isFlashcardLoading } =
 		useFlashcardMutations();
 
