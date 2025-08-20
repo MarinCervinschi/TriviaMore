@@ -1,7 +1,6 @@
 "use client";
 
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useBookmarkCheck, useBookmarkToggle } from "@/hooks/useBookmarks";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/providers/user-provider";
 
 interface BookmarkButtonProps {
 	questionId: string;
@@ -28,14 +28,13 @@ export function BookmarkButton({
 	variant = "ghost",
 	className,
 }: BookmarkButtonProps) {
-	const session = useSession();
-	const userId: string | undefined = session?.data?.user?.id;
+	const user = useUser();
 	const { data: bookmarkData, isLoading } = useBookmarkCheck(
-		userId,
+		user.id,
 		questionId,
 		!isGuest
 	);
-	const toggleBookmark = useBookmarkToggle(userId, questionId);
+	const toggleBookmark = useBookmarkToggle(user.id, questionId);
 
 	const handleToggle = (e: React.MouseEvent) => {
 		e.stopPropagation();

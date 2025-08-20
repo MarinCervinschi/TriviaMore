@@ -3,20 +3,27 @@
 import Head from "next/head";
 import { notFound } from "next/navigation";
 
-import { useSession } from "next-auth/react";
-
 import UserDashboardComponent from "@/components/pages/User/Dashboard";
 import { useUserData } from "@/hooks/useUserData";
 import { UserService } from "@/lib/services";
+import { useUser } from "@/providers/user-provider";
+
+import UserDashboardLoadingPage from "./loading";
 
 export default function UserPage() {
-	const { data: session } = useSession();
-	const { data: userProfile, isError } = useUserData(session?.user.id);
-	const displayName = UserService.getDisplayName(userProfile);
+	const user = useUser();
+	const { data: userProfile, isLoading, isError } = useUserData(user.id);
+
+	if (!user.id || isLoading) {
+		return <UserDashboardLoadingPage />;
+	}
 
 	if (!userProfile || isError) {
 		notFound();
 	}
+
+	const displayName = UserService.getDisplayName(userProfile);
+
 	return (
 		<>
 			<Head>
