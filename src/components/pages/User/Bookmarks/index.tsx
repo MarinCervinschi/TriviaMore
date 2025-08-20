@@ -6,18 +6,11 @@ import Link from "next/link";
 
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Bookmark, ChevronRight, Eye, EyeOff, Home } from "lucide-react";
-import { User } from "next-auth";
 
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 interface QuestionData {
@@ -46,7 +39,7 @@ interface QuestionData {
 	};
 }
 
-interface BookmarkData {
+export interface BookmarkData {
 	userId: string;
 	questionId: string;
 	createdAt: string | Date;
@@ -55,12 +48,10 @@ interface BookmarkData {
 
 interface UserBookmarksComponentProps {
 	bookmarks: BookmarkData[];
-	currentUser: User;
 }
 
 export default function UserBookmarksComponent({
 	bookmarks,
-	currentUser,
 }: UserBookmarksComponentProps) {
 	// Stato per tenere traccia di quali risposte SHORT_ANSWER sono visibili
 	const [visibleAnswers, setVisibleAnswers] = useState<Set<string>>(new Set());

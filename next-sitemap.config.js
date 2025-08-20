@@ -5,9 +5,7 @@ const prisma = new PrismaClient();
 async function getAllDepartments() {
 	return await prisma.department.findMany({
 		select: {
-			id: true,
 			code: true,
-			name: true,
 			updatedAt: true,
 		},
 		orderBy: { position: "asc" },
@@ -15,53 +13,43 @@ async function getAllDepartments() {
 }
 
 async function getAllCourses() {
-		return await prisma.course.findMany({
-			select: {
-				id: true,
-				code: true,
-				name: true,
-				updatedAt: true,
-				department: {
-					select: {
-						id: true,
-						code: true,
-						name: true,
-					},
+	return await prisma.course.findMany({
+		select: {
+			code: true,
+			updatedAt: true,
+			department: {
+				select: {
+					code: true,
 				},
 			},
-			orderBy: { position: "asc" },
-		});
-	}
+		},
+		orderBy: { position: "asc" },
+	});
+}
 
 async function getAllClasses() {
-		return await prisma.class.findMany({
-			select: {
-				id: true,
-				code: true,
-				name: true,
-				updatedAt: true,
-				course: {
-					select: {
-						id: true,
-						code: true,
-						name: true,
-						department: {
-							select: {
-								id: true,
-								code: true,
-								name: true,
-							},
+	return await prisma.class.findMany({
+		select: {
+			code: true,
+			updatedAt: true,
+			course: {
+				select: {
+					code: true,
+					department: {
+						select: {
+							code: true,
 						},
 					},
 				},
 			},
-			orderBy: { position: "asc" },
-		});
-	}
+		},
+		orderBy: { position: "asc" },
+	});
+}
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-	siteUrl: "https://trivia-more.it",
+	siteUrl: "https://www.trivia-more.it",
 	generateRobotsTxt: true,
 	sitemapSize: 7000,
 	exclude: ["/user/*", "/api/*", "/quiz/*", "/flashcard/*"],
@@ -89,10 +77,6 @@ module.exports = {
 		});
 
 		const paths = [
-			{ loc: "/", priority: 0.7 },
-			{ loc: "/about", priority: 0.7 },
-			{ loc: "/contact", priority: 0.7 },
-
 			...depts.map(d => ({
 				loc: `/browse/${d.code}`,
 				lastmod: d.updatedAt.toISOString(),

@@ -1,39 +1,38 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import Head from "next/head";
+import { notFound } from "next/navigation";
 
 import UserSettingsComponent from "@/components/pages/User/Settings";
-import { auth } from "@/lib/auth";
+import { useUserData } from "@/hooks/useUserData";
 import { UserService } from "@/lib/services";
+import { useUser } from "@/providers/user-provider";
 
-export default async function UserSettingsPage() {
-	const session = await auth();
+import UserSettingsLoadingPage from "./loading";
 
-	const userProfile = await UserService.getUserProfile(session?.user.id);
+export default function UserSettingsPage() {
+	const user = useUser();
+	const { data: userProfile, isLoading, isError } = useUserData(user.id);
 
-	if (!userProfile) {
-		redirect("/auth/login");
+	if (!user.id || isLoading) {
+		return <UserSettingsLoadingPage />;
 	}
+	if (!userProfile || isError) {
+		notFound();
+	}
+	const displayName = UserService.getDisplayName(userProfile);
 
 	return (
-		<UserSettingsComponent userProfile={userProfile} currentUser={session?.user} />
+		<>
+			<Head>
+				<title>{`Impostazioni di ${displayName} | TriviaMore`}</title>
+				<meta
+					name="description"
+					content={`Modifica le impostazioni e le preferenze del profilo di ${displayName} su TriviaMore.`}
+				/>
+				<meta name="robots" content="noindex, nofollow" />
+			</Head>
+			<UserSettingsComponent userProfile={userProfile} />
+		</>
 	);
-}
-
-export async function generateMetadata() {
-	const session = await auth();
-
-	if (!session?.user) {
-		return {
-			title: "Accesso Richiesto - TriviaMore",
-			description: "Effettua l'accesso per modificare le tue impostazioni.",
-			robots: "noindex, nofollow",
-		};
-	}
-
-	const displayName = UserService.getDisplayName(session.user);
-
-	return {
-		title: `Impostazioni di ${displayName} | TriviaMore`,
-		description: `Modifica le impostazioni e le preferenze del profilo di ${displayName} su TriviaMore.`,
-		keywords: `impostazioni, profilo, ${displayName}, TriviaMore, preferenze`,
-	};
 }

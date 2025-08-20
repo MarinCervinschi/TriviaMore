@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { User } from "next-auth";
+import { useSession } from "next-auth/react";
 
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
@@ -16,21 +16,18 @@ import { BrowseStats } from "./BrowseStats";
 import { DepartmentGrid } from "./DepartmentGrid";
 
 interface BrowsePageComponentProps {
-	user: User | null;
 	departments?: DepartmentNode[];
 }
 
-export default function BrowsePageComponent({
-	user,
-	departments,
-}: BrowsePageComponentProps) {
+export default function BrowsePageComponent({ departments }: BrowsePageComponentProps) {
+	const { data: session } = useSession();
 	const { isEditMode, toggleEditMode, buildApp, isLoading } = useEditModeContext();
 	const [modalState, setModalState] = useState<Modal>({
 		isOpen: false,
 		mode: "create",
 		type: "department",
 	});
-	const canEdit = user?.role === "SUPERADMIN";
+	const canEdit = session?.user?.role === "SUPERADMIN";
 
 	const totalCourses =
 		departments?.reduce((total, dept) => total + (dept._count?.courses || 0), 0) || 0;
@@ -40,7 +37,7 @@ export default function BrowsePageComponent({
 	};
 
 	return (
-		<EditModeOverlay isActive={isEditMode} userRole={user?.role || null}>
+		<EditModeOverlay isActive={isEditMode}>
 			<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 					{canEdit && (

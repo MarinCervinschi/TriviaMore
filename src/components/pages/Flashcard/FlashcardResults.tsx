@@ -1,5 +1,4 @@
 import { ArrowLeft, Award, CheckCircle, RotateCcw, Zap } from "lucide-react";
-import { useSession } from "next-auth/react";
 
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,6 @@ export function FlashcardResults({
 	onRestart,
 	onExit,
 }: FlashcardResultsProps) {
-	const sessionUser = useSession();
 	const totalCards = session.questions.length;
 	const completionPercentage = Math.round((studiedCardsCount / totalCards) * 100);
 
@@ -43,7 +41,7 @@ export function FlashcardResults({
 	};
 
 	return (
-		<AppLayout user={sessionUser.data?.user}>
+		<AppLayout>
 			<div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-white to-violet-50 p-4 dark:from-purple-900/10 dark:via-gray-900 dark:to-violet-900/10">
 				<Card className="w-full max-w-2xl border-purple-200 bg-white/80 shadow-2xl backdrop-blur-sm dark:border-purple-700 dark:bg-gray-900/80">
 					<CardContent className="p-8">

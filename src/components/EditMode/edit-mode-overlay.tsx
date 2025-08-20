@@ -2,7 +2,9 @@
 
 import type { ReactNode } from "react";
 
+import { Role } from "@prisma/client";
 import { AlertTriangle } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -10,17 +12,18 @@ import { cn } from "@/lib/utils";
 
 interface EditModeOverlayProps {
 	isActive: boolean;
-	userRole: "SUPERADMIN" | "ADMIN" | "MAINTAINER" | "STUDENT" | null;
 	children: ReactNode;
 	className?: string;
 }
 
 export function EditModeOverlay({
 	isActive,
-	userRole,
 	children,
 	className,
 }: EditModeOverlayProps) {
+	const { data: session } = useSession();
+	const userRole: Role = session?.user?.role || null;
+
 	if (!isActive) {
 		return <>{children}</>;
 	}

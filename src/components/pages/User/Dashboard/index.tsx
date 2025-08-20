@@ -12,7 +12,6 @@ import {
 	TrendingUp,
 	Trophy,
 } from "lucide-react";
-import type { User } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -41,21 +40,6 @@ function getRoleLabel(role: string): string {
 	}
 }
 
-function getRoleBadgeVariant(role: string) {
-	switch (role) {
-		case "SUPERADMIN":
-			return "destructive";
-		case "ADMIN":
-			return "default";
-		case "MAINTAINER":
-			return "secondary";
-		case "STUDENT":
-			return "outline";
-		default:
-			return "outline";
-	}
-}
-
 // Converte il punteggio in variant per Badge component
 function getScoreBadgeVariant(
 	score: number
@@ -68,12 +52,10 @@ function getScoreBadgeVariant(
 
 interface UserDashboardComponentProps {
 	userProfile: UserProfileData;
-	currentUser: User;
 }
 
 export default function UserDashboardComponent({
 	userProfile,
-	currentUser,
 }: UserDashboardComponentProps) {
 	const displayName = UserService.getDisplayName(userProfile);
 

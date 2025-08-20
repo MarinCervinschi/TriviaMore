@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { User } from "next-auth";
+import { useSession } from "next-auth/react";
 
 import { useQuizData, useQuizMutations } from "@/hooks";
 import { clearQuizSession } from "@/lib/utils/quiz-session";
@@ -13,16 +13,12 @@ import { QuizLoader } from "./QuizLoader";
 interface QuizPageComponentProps {
 	quizId: string;
 	isGuest: boolean;
-	user?: User | null;
 }
 
-export default function QuizPageComponent({
-	quizId,
-	isGuest,
-	user,
-}: QuizPageComponentProps) {
+export default function QuizPageComponent({ quizId, isGuest }: QuizPageComponentProps) {
 	const router = useRouter();
-	const { completeQuiz, exitQuiz } = useQuizMutations();
+	const { data: session } = useSession();
+	const { completeQuiz, exitQuiz } = useQuizMutations(session?.user.id);
 	const { data, isLoading, error } = useQuizData(quizId, isGuest);
 	const { quiz, attemptId } = data || {};
 
@@ -104,7 +100,6 @@ export default function QuizPageComponent({
 		<QuizContainer
 			quiz={quiz}
 			isGuest={isGuest}
-			user={user}
 			onComplete={handleQuizComplete}
 			onExit={handleQuizExit}
 		/>

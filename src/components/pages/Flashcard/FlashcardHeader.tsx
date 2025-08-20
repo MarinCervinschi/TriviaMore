@@ -1,30 +1,27 @@
 import { Globe, Menu, User, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { SimpleThemeToggle } from "@/components/Theme/simple-theme-toggle";
 import { Button } from "@/components/ui/button";
 import { FlashcardSession } from "@/lib/types/flashcard.types";
 
 interface FlashcardHeaderProps {
-	session: FlashcardSession;
+	sessionFlash: FlashcardSession;
 	isGuest: boolean;
-	user?: {
-		id: string;
-		name?: string | null;
-		email?: string | null;
-	} | null;
 	onExit: () => void;
 	onToggleSidebar: () => void;
 	sidebarOpen: boolean;
 }
 
 export function FlashcardHeader({
-	session,
+	sessionFlash,
 	isGuest,
-	user,
 	onExit,
 	onToggleSidebar,
 	sidebarOpen,
 }: FlashcardHeaderProps) {
+	const { data: session } = useSession();
+
 	return (
 		<div className="flashcard-header border-b bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
 			<div className="flex items-center justify-between gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-3">
@@ -57,13 +54,13 @@ export function FlashcardHeader({
 					<div className="min-w-0 flex-1">
 						<h1 className="flashcard-title truncate text-sm font-semibold text-gray-900 dark:text-white sm:text-lg">
 							<span className="hidden sm:inline">Flashcards: </span>
-							{session.section.name}
+							{sessionFlash.section.name}
 						</h1>
 						<p className="flashcard-subtitle truncate text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
 							<span className="hidden lg:inline">
-								{session.section.class.course.name} -{" "}
+								{sessionFlash.section.class.course.name} -{" "}
 							</span>
-							{session.section.class.name}
+							{sessionFlash.section.class.name}
 						</p>
 					</div>
 				</div>
@@ -81,7 +78,7 @@ export function FlashcardHeader({
 							<>
 								<User className="h-4 w-4 text-blue-500" />
 								<span className="max-w-20 truncate text-sm text-gray-700 dark:text-gray-300">
-									{user?.name || user?.email}
+									{session?.user?.name || session?.user?.email}
 								</span>
 							</>
 						)}

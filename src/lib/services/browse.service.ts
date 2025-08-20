@@ -244,15 +244,8 @@ export class BrowseService extends UserService {
 		filters: {
 			courseType?: "BACHELOR" | "MASTER";
 			search?: string;
-		} = {},
-		userId?: string
+		} = {}
 	) {
-		let permissions: UserPermissions | undefined;
-
-		if (userId) {
-			permissions = await super.getUserPermissions(userId);
-		}
-
 		const department = await prisma.department.findUnique({
 			where: { code: departmentCode },
 			include: {

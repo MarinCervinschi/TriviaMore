@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 
 import QuizPageComponent from "@/components/pages/Quiz";
 import { auth } from "@/lib/auth";
@@ -10,7 +9,6 @@ interface QuizPageProps {
 }
 
 export default async function QuizPage({ params }: QuizPageProps) {
-	const session = await auth();
 	const resolvedParams = await params;
 
 	const isGuest = resolvedParams.quizId.startsWith("guest-");
@@ -19,7 +17,6 @@ export default async function QuizPage({ params }: QuizPageProps) {
 		<QuizPageComponent
 			quizId={resolvedParams.quizId}
 			isGuest={isGuest}
-			user={session?.user}
 		/>
 	);
 }

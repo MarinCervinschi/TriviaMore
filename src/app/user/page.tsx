@@ -1,39 +1,40 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import Head from "next/head";
+import { notFound } from "next/navigation";
 
 import UserDashboardComponent from "@/components/pages/User/Dashboard";
-import { auth } from "@/lib/auth";
+import { useUserData } from "@/hooks/useUserData";
 import { UserService } from "@/lib/services";
+import { useUser } from "@/providers/user-provider";
 
-export default async function UserPage() {
-	const session = await auth();
+import UserDashboardLoadingPage from "./loading";
 
-	const userProfile = await UserService.getUserProfile(session?.user.id);
+export default function UserPage() {
+	const user = useUser();
+	const { data: userProfile, isLoading, isError } = useUserData(user.id);
 
-	if (!userProfile) {
-		redirect("/auth/login");
+	if (!user.id || isLoading) {
+		return <UserDashboardLoadingPage />;
 	}
+
+	if (!userProfile || isError) {
+		notFound();
+	}
+
+	const displayName = UserService.getDisplayName(userProfile);
 
 	return (
-		<UserDashboardComponent userProfile={userProfile} currentUser={session?.user} />
+		<>
+			<Head>
+				<title>{`Il Mio Profilo - ${displayName} | TriviaMore`}</title>
+				<meta
+					name="description"
+					content={`Dashboard personale di ${displayName} su TriviaMore`}
+				/>
+				<meta name="robots" content="noindex, nofollow" />
+			</Head>
+			<UserDashboardComponent userProfile={userProfile} />;
+		</>
 	);
-}
-
-export async function generateMetadata() {
-	const session = await auth();
-
-	if (!session?.user) {
-		return {
-			title: "Accesso Richiesto - TriviaMore",
-			description: "Effettua l'accesso per visualizzare il tuo profilo.",
-			robots: "noindex, nofollow",
-		};
-	}
-
-	const displayName = UserService.getDisplayName(session.user);
-
-	return {
-		title: `Il Mio Profilo - ${displayName} | TriviaMore`,
-		description: `Dashboard personale di ${displayName} su TriviaMore. Visualizza le tue statistiche, progressi e attività recenti.`,
-		keywords: `profilo utente, dashboard, ${displayName}, TriviaMore, quiz, progressi, statistiche`,
-	};
 }

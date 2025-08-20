@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import ClassPageComponent from "@/components/pages/Browse/Class/index";
-import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services";
 import { EvaluationService } from "@/lib/services";
 
@@ -17,8 +16,6 @@ interface ClassPageProps {
 }
 
 export default async function ClassPage({ params, searchParams }: ClassPageProps) {
-	const session = await auth();
-
 	const resolvedParams = await params;
 	const resolvedSearchParams = await searchParams;
 
@@ -29,8 +26,7 @@ export default async function ClassPage({ params, searchParams }: ClassPageProps
 			resolvedParams.class.toUpperCase(),
 			{
 				search: resolvedSearchParams.search,
-			},
-			session?.user?.id
+			}
 		),
 		EvaluationService.getAllEvaluationModes(),
 	]);
@@ -47,7 +43,6 @@ export default async function ClassPage({ params, searchParams }: ClassPageProps
 			}}
 			departmentCode={resolvedParams.department}
 			courseCode={resolvedParams.course}
-			isUserLoggedIn={!!session?.user}
 			evaluationModes={evaluationModes}
 		/>
 	);
