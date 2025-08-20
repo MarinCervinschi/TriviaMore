@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 		type: "website",
 		images: [
 			{
-				url: "./favicon.ico",
+				url: "/icon/og-image.png",
 				width: 1200,
 				height: 630,
 				alt: "Trivia More - Quiz per Studenti UNIMORE",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
 		title: "Trivia More - Quiz per Studenti UNIMORE",
 		description:
 			"Piattaforma open source per quiz e flashcard dedicata agli studenti UNIMORE.",
-		images: ["./favicon.ico"],
+		images: ["/icon/og-image.png"],
 	},
 	robots: {
 		index: true,
@@ -89,6 +89,12 @@ const poppins = Poppins({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="it" suppressHydrationWarning>
+			<head>
+				<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+				<link rel="icon" type="image/png" sizes="16x16" href="/icon/icon-16" />
+				<link rel="icon" type="image/png" sizes="32x32" href="/icon/icon-32" />
+				<link rel="apple-touch-icon" sizes="76x76" href="/icon/ios-icon-76.png" />
+			</head>
 			<body className={poppins.className}>
 				<SessionProvider>
 					<ThemeProvider
