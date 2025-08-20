@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Book, Info, Lock, Play, Settings } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -51,24 +52,20 @@ interface ClassData {
 
 interface ExamSimulationButtonProps {
 	classData: ClassData;
-	isUserLoggedIn: boolean;
 	evaluationModes: EvaluationMode[];
 }
 
 export default function ExamSimulationButton({
 	classData,
-	isUserLoggedIn,
 	evaluationModes,
 }: ExamSimulationButtonProps) {
 	const router = useRouter();
-	const { startQuiz, isLoading: isQuizLoading } = useQuizMutations();
+	const { data: session } = useSession();
+	const { startQuiz, isLoading: isQuizLoading } = useQuizMutations(session?.user.id);
 	const { startExamSimulation, isLoading: isFlashcardLoading } =
 		useFlashcardMutations();
 
-	const totalQuestions = classData.sections.reduce(
-		(acc, section) => acc + section._count.questions,
-		0
-	);
+	const isUserLoggedIn = !!session;
 
 	const totalQuizQuestions = classData.sections.reduce(
 		(acc, section) => acc + section._count.quizQuestions,

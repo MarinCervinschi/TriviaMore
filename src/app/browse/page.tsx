@@ -1,14 +1,12 @@
 import BrowsePageComponent from "@/components/pages/Browse";
-import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services";
 import { BrowseTreeResponse } from "@/lib/types/browse.types";
 
 export default async function BrowsePage() {
-	const session = await auth();
 	const data: BrowseTreeResponse = await BrowseService.getInitialTree();
 
 	return (
-		<BrowsePageComponent user={session?.user || null} departments={data.departments} />
+		<BrowsePageComponent departments={data.departments} />
 	);
 }
 

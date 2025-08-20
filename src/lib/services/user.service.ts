@@ -549,7 +549,7 @@ export class UserService {
 	/**
 	 * Generate display name for user
 	 */
-	static getDisplayName(user: { name: string | null; email: string | null }): string {
+	static getDisplayName(user: { name?: string | null; email?: string | null }): string {
 		if (user.name) return user.name;
 		if (user.email) return user.email.split("@")[0];
 		return "Utente Anonimo";

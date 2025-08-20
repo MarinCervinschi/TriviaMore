@@ -1,11 +1,9 @@
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { auth } from "@/lib/auth";
 
-export default async function QuizResultsLoadingPage() {
-	const session = await auth();
+export default function QuizResultsLoadingPage() {
 	return (
-		<AppLayout user={session?.user}>
+		<AppLayout>
 			<div className="container mx-auto max-w-4xl px-4 py-8">
 				<div className="space-y-6">
 					{/* Header Skeleton */}

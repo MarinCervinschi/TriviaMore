@@ -1,36 +1,40 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import Head from "next/head";
+import { notFound } from "next/navigation";
 
 import UserClassesComponent from "@/components/pages/User/Classes";
-import { auth } from "@/lib/auth";
+import { useUserClasses } from "@/hooks/useUserData";
 import { UserService } from "@/lib/services";
+import { useUser } from "@/providers/user-provider";
 
-export default async function UserClassesPage() {
-	const session = await auth();
+import UserClassesLoadingPage from "./loading";
 
-	const userClasses = await UserService.getUserSavedClasses(session?.user.id);
-	if (!userClasses) {
-		redirect("/auth/login");
+export default function UserClassesPage() {
+	const user = useUser();
+	const { data: userClasses, isLoading, isError } = useUserClasses(user.id);
+
+	if (!user.id || isLoading) {
+		return <UserClassesLoadingPage />;
+	}
+	
+	if (!userClasses || isError) {
+		notFound();
 	}
 
-	return <UserClassesComponent userClasses={userClasses} currentUser={session?.user} />;
-}
+	const displayName = UserService.getDisplayName(user);
 
-export async function generateMetadata() {
-	const session = await auth();
-
-	if (!session?.user) {
-		return {
-			title: "Accesso Richiesto - TriviaMore",
-			description: "Effettua l'accesso per visualizzare i tuoi corsi.",
-			robots: "noindex, nofollow",
-		};
-	}
-
-	const displayName = UserService.getDisplayName(session.user);
-
-	return {
-		title: `Corsi di ${displayName} | TriviaMore`,
-		description: `Visualizza e gestisci i corsi seguiti da ${displayName} su TriviaMore.`,
-		keywords: `corsi, classi, ${displayName}, TriviaMore, università, studio`,
-	};
+	return (
+		<>
+			<Head>
+				<title>{`Corsi di ${displayName} | TriviaMore`}</title>
+				<meta
+					name="description"
+					content={`Visualizza e gestisci i corsi seguiti da ${displayName} su TriviaMore.`}
+				/>
+				<meta name="robots" content="noindex, nofollow" />
+			</Head>
+			<UserClassesComponent userClasses={userClasses} />
+		</>
+	);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface AddClassParams {
@@ -14,7 +14,7 @@ interface RemoveClassParams {
 }
 
 const addClassFetch = async (params: AddClassParams): Promise<void> => {
-	const response = await fetch("/api/protected/userClass", {
+	const response = await fetch("/api/protected/user/classes", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ classId: params.classId }),
@@ -27,10 +27,13 @@ const addClassFetch = async (params: AddClassParams): Promise<void> => {
 };
 
 const removeClassFetch = async (params: RemoveClassParams): Promise<void> => {
-	const response = await fetch(`/api/protected/userClass?classId=${params.classId}`, {
-		method: "DELETE",
-		headers: { "Content-Type": "application/json" },
-	});
+	const response = await fetch(
+		`/api/protected/user/classes?classId=${params.classId}`,
+		{
+			method: "DELETE",
+			headers: { "Content-Type": "application/json" },
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -38,10 +41,13 @@ const removeClassFetch = async (params: RemoveClassParams): Promise<void> => {
 	}
 };
 
-export function useClassMutations() {
+export function useClassMutations(userId: string) {
+	const queryClient = useQueryClient();
+
 	const addClass = useMutation({
 		mutationFn: addClassFetch,
 		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({ queryKey: ["userClasses", userId] });
 			toast.success(`Classe "${variables.className}" aggiunta ai tuoi corsi!`);
 		},
 		onError: (error: Error, variables) => {
@@ -53,6 +59,7 @@ export function useClassMutations() {
 	const removeClass = useMutation({
 		mutationFn: removeClassFetch,
 		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({ queryKey: ["userClasses", userId] });
 			toast.success(`Classe "${variables.className}" rimossa dai tuoi corsi!`);
 		},
 		onError: (error: Error, variables) => {

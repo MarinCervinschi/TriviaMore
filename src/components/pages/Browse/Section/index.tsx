@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { User } from "next-auth";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
@@ -62,26 +62,25 @@ interface SectionData {
 }
 
 interface SectionPageComponentProps {
-	user: User | null;
 	sectionData: SectionData;
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
-	isUserLoggedIn: boolean;
 	evaluationModes?: EvaluationMode[];
 }
 
 export default function SectionPageComponent({
-	user,
 	sectionData,
 	departmentCode,
 	courseCode,
 	classCode,
-	isUserLoggedIn,
 	evaluationModes = [],
 }: SectionPageComponentProps) {
 	const router = useRouter();
-	const { startQuiz, isLoading } = useQuizMutations();
+	const { data: session } = useSession();
+	const isUserLoggedIn = !!session?.user;
+
+	const { startQuiz, isLoading } = useQuizMutations(session?.user.id);
 	const { startFlashcard, isLoading: isFlashcardLoading } = useFlashcardMutations();
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 
@@ -174,7 +173,7 @@ export default function SectionPageComponent({
 	};
 
 	return (
-		<EditModeOverlay isActive={isEditMode} userRole={user?.role || null}>
+		<EditModeOverlay isActive={isEditMode}>
 			<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 					{editPermissions.canEdit && (

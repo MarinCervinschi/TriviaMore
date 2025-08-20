@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Heart, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export function AddClassButton({
 	isEnrolled = false,
 }: AddClassButtonProps) {
 	const { data: session } = useSession();
-	const { addClass, removeClass, isLoading } = useClassMutations();
+	const { addClass, removeClass, isLoading } = useClassMutations(session?.user.id);
 	const [hasClass, setHasClass] = useState(isEnrolled);
 
 	if (!session?.user?.id) {

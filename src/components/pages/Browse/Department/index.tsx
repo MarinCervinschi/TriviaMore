@@ -5,8 +5,6 @@ import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { User } from "next-auth";
-
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
@@ -49,7 +47,6 @@ interface DepartmentFilters {
 }
 
 interface DepartmentPageComponentProps {
-	user: User | null;
 	department: Department;
 	filters: DepartmentFilters;
 }
@@ -124,7 +121,7 @@ export default function DepartmentPageComponent(props: DepartmentPageComponentPr
 	};
 
 	return (
-		<EditModeOverlay isActive={isEditMode} userRole={props.user?.role || null}>
+		<EditModeOverlay isActive={isEditMode}>
 			<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 					{editPermissions.canEdit && (

@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import CoursePageComponent from "@/components/pages/Browse/Course/index";
-import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services";
 
 interface CoursePageProps {
@@ -16,8 +15,6 @@ interface CoursePageProps {
 }
 
 export default async function CoursePage({ params, searchParams }: CoursePageProps) {
-	const session = await auth();
-
 	const resolvedParams = await params;
 	const resolvedSearchParams = await searchParams;
 
@@ -29,8 +26,7 @@ export default async function CoursePage({ params, searchParams }: CoursePagePro
 				? parseInt(resolvedSearchParams.year)
 				: undefined,
 			search: resolvedSearchParams.search,
-		},
-		session?.user?.id
+		}
 	);
 
 	if (!courseData) {
@@ -39,7 +35,6 @@ export default async function CoursePage({ params, searchParams }: CoursePagePro
 
 	return (
 		<CoursePageComponent
-			user={session?.user || null}
 			course={courseData}
 			filters={{
 				year: resolvedSearchParams.year,

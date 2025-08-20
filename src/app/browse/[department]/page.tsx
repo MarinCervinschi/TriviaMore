@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import DepartmentPageComponent from "@/components/pages/Browse/Department/index";
-import { auth } from "@/lib/auth";
 import { BrowseService } from "@/lib/services";
 
 interface DepartmentPageProps {
@@ -18,8 +17,6 @@ export default async function DepartmentPage({
 	params,
 	searchParams,
 }: DepartmentPageProps) {
-	const session = await auth();
-
 	const resolvedParams = await params;
 	const resolvedSearchParams = await searchParams;
 
@@ -28,8 +25,7 @@ export default async function DepartmentPage({
 		{
 			courseType: resolvedSearchParams.type,
 			search: resolvedSearchParams.search,
-		},
-		session?.user?.id
+		}
 	);
 
 	if (!departmentData) {
@@ -38,7 +34,6 @@ export default async function DepartmentPage({
 
 	return (
 		<DepartmentPageComponent
-			user={session?.user || null}
 			department={departmentData}
 			filters={{
 				type: resolvedSearchParams.type,

@@ -7,11 +7,10 @@ import { Navigation } from "@/components/Navigation";
 
 interface AppLayoutProps {
 	children: React.ReactNode;
-	user?: User | null;
 	showFooter?: boolean;
 }
 
-export function AppLayout({ children, user, showFooter = true }: AppLayoutProps) {
+export function AppLayout({ children, showFooter = true }: AppLayoutProps) {
 	return (
 		<div className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
 			{/* Background decoration - Gradient orbs for modern look */}
@@ -22,7 +21,7 @@ export function AppLayout({ children, user, showFooter = true }: AppLayoutProps)
 
 			{/* Content with relative positioning to stay above background */}
 			<div className="relative z-10 flex min-h-screen flex-col">
-				<Navigation user={user ?? null} />
+				<Navigation />
 				<main className="flex-1">{children}</main>
 				{showFooter && (
 					<div className="mt-auto">

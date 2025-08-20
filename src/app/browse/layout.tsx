@@ -1,5 +1,4 @@
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { auth } from "@/lib/auth";
 import { EditModeProvider } from "@/providers/edit-mode-provider";
 
 export default async function BrowseLayout({
@@ -7,10 +6,8 @@ export default async function BrowseLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const session = await auth();
-
 	return (
-		<AppLayout user={session?.user}>
+		<AppLayout>
 			<EditModeProvider>{children}</EditModeProvider>
 		</AppLayout>
 	);

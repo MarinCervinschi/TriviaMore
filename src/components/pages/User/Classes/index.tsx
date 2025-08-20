@@ -28,12 +28,10 @@ import { UserClassResponse } from "@/lib/types/user.types";
 
 interface UserClassesComponentProps {
 	userClasses: UserClassResponse[];
-	currentUser: User;
 }
 
 export default function UserClassesComponent({
 	userClasses,
-	currentUser,
 }: UserClassesComponentProps) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
