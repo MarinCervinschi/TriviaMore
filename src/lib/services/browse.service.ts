@@ -691,7 +691,6 @@ export class BrowseService extends UserService {
 			permissions = await super.getUserPermissions(userId);
 		}
 
-		// Converti il nome dalla URL (lowercase con trattini) al nome originale
 		const originalSectionName = sectionName.replace(/-/g, " ");
 
 		// Prima trova la classe
@@ -732,10 +731,20 @@ export class BrowseService extends UserService {
 		const section = await prisma.section.findFirst({
 			where: {
 				...sectionWhereClause,
-				name: {
-					equals: originalSectionName,
-					mode: "insensitive" as const,
-				},
+				OR: [
+					{
+						name: {
+							equals: originalSectionName,
+							mode: "insensitive" as const,
+						},
+					},
+					{
+						name: {
+							equals: sectionName,
+							mode: "insensitive" as const,
+						},
+					},
+				],
 			},
 			include: {
 				_count: {
