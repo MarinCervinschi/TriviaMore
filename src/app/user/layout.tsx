@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { auth } from "@/lib/auth";
+import { UserProvider } from "@/providers/user-provider";
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
 	const session = await auth();
@@ -10,5 +11,9 @@ export default async function UserLayout({ children }: { children: React.ReactNo
 		redirect("/auth/login");
 	}
 
-	return <AppLayout>{children}</AppLayout>;
+	return (
+		<UserProvider user={session?.user}>
+			<AppLayout>{children}</AppLayout>
+		</UserProvider>
+	);
 }
