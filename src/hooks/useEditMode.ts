@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 
 import type { Role, User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+
+import { useVolatileQuery } from "@/providers/react-query-provider";
 
 interface EditModePermissions {
 	canEdit: boolean;
@@ -145,12 +146,10 @@ export function useEditMode({
 	const shouldFetchPermissions =
 		session?.user?.role && ["ADMIN", "MAINTAINER"].includes(session.user.role);
 
-	const { data: userPermissions, isLoading } = useQuery({
+	const { data: userPermissions, isLoading } = useVolatileQuery<UserPermissions>({
 		queryKey: ["userPermissions", session?.user?.id],
 		queryFn: fetchUserPermissions,
 		enabled: !shouldFetchPermissions,
-		staleTime: 5 * 60 * 1000, // 5 minutes
-		gcTime: 10 * 60 * 1000, // 10 minutes
 	});
 
 	const permissions = useMemo(() => {

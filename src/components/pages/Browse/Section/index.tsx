@@ -80,7 +80,7 @@ export default function SectionPageComponent({
 	const { data: session } = useSession();
 	const isUserLoggedIn = !!session?.user;
 
-	const { startQuiz, isLoading } = useQuizMutations();
+	const { startQuiz, isLoading } = useQuizMutations(session?.user.id);
 	const { startFlashcard, isLoading: isFlashcardLoading } = useFlashcardMutations();
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 

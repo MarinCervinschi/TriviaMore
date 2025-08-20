@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface StartQuizParams {
@@ -86,8 +86,9 @@ const cancelQuizFetch = async (params: { quizAttemptId: string }): Promise<void>
 	}
 };
 
-export function useQuizMutations() {
+export function useQuizMutations(userId: string) {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const startQuiz = useMutation({
 		mutationFn: startQuizFetch,
@@ -105,6 +106,7 @@ export function useQuizMutations() {
 		mutationFn: completeQuizFetch,
 		onSuccess: (data: { redirectUrl: string }) => {
 			const { redirectUrl } = data;
+			queryClient.invalidateQueries({ queryKey: ["userProgress", userId] });
 
 			router.push(redirectUrl);
 		},

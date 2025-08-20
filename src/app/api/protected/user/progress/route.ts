@@ -5,7 +5,8 @@ import { NextAuthRequest } from "next-auth/lib";
 import { auth } from "@/lib/auth";
 import { UserService } from "@/lib/services";
 
-// GET /api/protected/user/profile
+// api/protected/user/progress
+
 export const GET = auth(async function GET(request: NextAuthRequest) {
 	if (!request.auth) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,11 +18,12 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		if (!userId) {
 			return NextResponse.json({ error: "User ID not found" }, { status: 400 });
 		}
-		const userProfile = await UserService.getUserProfile(userId);
 
-		return NextResponse.json(userProfile);
+		const userProgress = await UserService.getUserProgressData(userId);
+
+		return NextResponse.json(userProgress);
 	} catch (error) {
-		console.error("Error fetching user profile:", error);
+		console.error("Error fetching user progress]:", error);
 
 		return NextResponse.json(
 			{ error: error instanceof Error ? error.message : "Internal server error" },
