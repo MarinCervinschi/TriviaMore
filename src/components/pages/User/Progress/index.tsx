@@ -46,7 +46,7 @@ import {
 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
-interface ProgressData {
+export interface ProgressData {
 	id: string;
 	quizMode: "STUDY" | "EXAM_SIMULATION";
 	quizzesTaken: number;
@@ -74,14 +74,12 @@ interface ProgressData {
 
 interface UserProgressComponentProps {
 	progressData: ProgressData[];
-	currentUser: User;
 }
 
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#06b6d4"];
 
 export default function UserProgressComponent({
 	progressData,
-	currentUser,
 }: UserProgressComponentProps) {
 	const studyProgress = progressData.filter(p => p.quizMode === "STUDY");
 	const examProgress = progressData.filter(p => p.quizMode === "EXAM_SIMULATION");

@@ -34,12 +34,10 @@ function getRoleLabel(role: string): string {
 
 interface UserSettingsComponentProps {
 	userProfile: UserProfileData;
-	currentUser: User;
 }
 
 export default function UserSettingsComponent({
 	userProfile,
-	currentUser,
 }: UserSettingsComponentProps) {
 	const displayName = UserService.getDisplayName(userProfile);
 

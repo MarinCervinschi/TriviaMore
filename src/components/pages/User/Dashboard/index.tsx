@@ -12,7 +12,6 @@ import {
 	TrendingUp,
 	Trophy,
 } from "lucide-react";
-import type { User } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

@@ -1,40 +1,42 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import Head from "next/head";
+import { notFound } from "next/navigation";
 
 import UserBookmarksComponent from "@/components/pages/User/Bookmarks";
-import { auth } from "@/lib/auth";
-import { BookmarkService } from "@/lib/services";
+import { useUserBookmarks } from "@/hooks/useBookmarks";
 import { UserService } from "@/lib/services";
+import { useUser } from "@/providers/user-provider";
 
-export default async function UserBookmarksPage() {
-	const session = await auth();
+import UserBookmarksLoadingPage from "./loading";
 
-	const userBookmarks = await BookmarkService.getUserBookmarks(session?.user.id);
+export default function UserBookmarksPage() {
+	const user = useUser();
+	const { data: userBookmarks, isLoading, isError } = useUserBookmarks(user.id);
 
-	if (!userBookmarks) {
-		redirect("/auth/login");
+	if (!user.id || isLoading) {
+		return <UserBookmarksLoadingPage />;
 	}
+
+	if (!userBookmarks || isError) {
+		notFound();
+	}
+	const displayName = UserService.getDisplayName(user);
 
 	return (
-		<UserBookmarksComponent bookmarks={userBookmarks} currentUser={session?.user} />
+		<>
+			<Head>
+				<title>Segnalibri di {displayName} | TriviaMore</title>
+				<meta
+					name="description"
+					content={`Visualizza e gestisci i segnalibri salvati da ${displayName} su TriviaMore.`}
+				/>
+				<meta
+					name="keywords"
+					content={`segnalibri, domande salvate, ${displayName}, TriviaMore, quiz, studio`}
+				/>
+			</Head>
+			<UserBookmarksComponent bookmarks={userBookmarks} />
+		</>
 	);
-}
-
-export async function generateMetadata() {
-	const session = await auth();
-
-	if (!session?.user) {
-		return {
-			title: "Accesso Richiesto - TriviaMore",
-			description: "Effettua l'accesso per visualizzare i tuoi segnalibri.",
-			robots: "noindex, nofollow",
-		};
-	}
-
-	const displayName = UserService.getDisplayName(session.user);
-
-	return {
-		title: `Segnalibri di ${displayName} | TriviaMore`,
-		description: `Visualizza e gestisci i segnalibri salvati da ${displayName} su TriviaMore.`,
-		keywords: `segnalibri, domande salvate, ${displayName}, TriviaMore, quiz, studio`,
-	};
 }
