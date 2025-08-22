@@ -68,9 +68,6 @@ interface ClassData {
 
 interface ClassPageComponentProps {
 	classData: ClassData;
-	filters: {
-		search?: string;
-	};
 	departmentCode: string;
 	courseCode: string;
 	evaluationModes: EvaluationMode[];
@@ -78,37 +75,23 @@ interface ClassPageComponentProps {
 
 export default function ClassPageComponent({
 	classData,
-	filters,
 	departmentCode,
 	courseCode,
 	evaluationModes,
 }: ClassPageComponentProps) {
 	const { isEditMode, toggleEditMode } = useEditModeContext();
+	const [searchQuery, setSearchQuery] = useState<string>("");
 	const editPermissions = useEditMode({
 		departmentId: classData.course.departmentId,
 		courseId: classData.courseId,
 		classId: classData.id,
 	});
 
-	const [searchQuery, setSearchQuery] = useState(filters.search || "");
 	const [modalState, setModalState] = useState<Modal>({
 		isOpen: false,
 		mode: "create",
 		type: "section",
 	});
-
-	const handleSearch = (query: string) => {
-		setSearchQuery(query);
-		const params = new URLSearchParams();
-		if (query) {
-			params.set("search", query);
-		}
-		window.history.pushState(
-			{},
-			"",
-			`${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`
-		);
-	};
 
 	const filteredSections = searchQuery
 		? classData.sections.filter(
@@ -165,8 +148,7 @@ export default function ClassPageComponent({
 					)}
 
 					<ClassFilters
-						searchQuery={searchQuery}
-						onSearchChange={handleSearch}
+						onSearchChange={setSearchQuery}
 						totalResults={filteredSections.length}
 					/>
 

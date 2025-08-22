@@ -1,7 +1,5 @@
 import { BookOpen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
 import { CourseCard } from "./CourseCard";
 
 interface Course {
@@ -16,7 +14,7 @@ interface Course {
 }
 
 interface DepartmentFilters {
-	type?: "BACHELOR" | "MASTER";
+	type?: "all" | "BACHELOR" | "MASTER";
 	search?: string;
 }
 
@@ -24,16 +22,12 @@ interface DepartmentCoursesProps {
 	courses: Course[];
 	departmentCode: string;
 	filters: DepartmentFilters;
-	hasActiveFilters: boolean;
-	onClearFilters: () => void;
 }
 
 export function DepartmentCourses({
 	courses,
 	departmentCode,
 	filters,
-	hasActiveFilters,
-	onClearFilters,
 }: DepartmentCoursesProps) {
 	if (courses.length === 0) {
 		return (
@@ -47,11 +41,6 @@ export function DepartmentCourses({
 				<p className="mb-6 text-gray-600 dark:text-gray-300">
 					Non ci sono corsi che corrispondono ai filtri selezionati.
 				</p>
-				{hasActiveFilters && (
-					<Button variant="outline" onClick={onClearFilters}>
-						Rimuovi Filtri
-					</Button>
-				)}
 			</div>
 		);
 	}
@@ -62,57 +51,59 @@ export function DepartmentCourses({
 	return (
 		<div className="space-y-12">
 			{/* Bachelor Courses */}
-			{(!filters.type || filters.type === "BACHELOR") && bachelorCourses.length > 0 && (
-				<div>
-					<div className="mb-6 flex items-center">
-						<div className="rounded-lg bg-blue-100 px-4 py-2 dark:bg-blue-900/50">
-							<h2 className="text-xl font-bold text-blue-800 dark:text-blue-200">
-								Lauree Triennali
-							</h2>
+			{(filters.type === "all" || filters.type === "BACHELOR") &&
+				bachelorCourses.length > 0 && (
+					<div>
+						<div className="mb-6 flex items-center">
+							<div className="rounded-lg bg-blue-100 px-4 py-2 dark:bg-blue-900/50">
+								<h2 className="text-xl font-bold text-blue-800 dark:text-blue-200">
+									Lauree Triennali
+								</h2>
+							</div>
+							<div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
+								{bachelorCourses.length}{" "}
+								{bachelorCourses.length === 1 ? "corso" : "corsi"}
+							</div>
 						</div>
-						<div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
-							{bachelorCourses.length}{" "}
-							{bachelorCourses.length === 1 ? "corso" : "corsi"}
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{bachelorCourses.map(course => (
+								<CourseCard
+									key={course.id}
+									course={course}
+									departmentCode={departmentCode}
+									variant="bachelor"
+								/>
+							))}
 						</div>
 					</div>
-					<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{bachelorCourses.map(course => (
-							<CourseCard
-								key={course.id}
-								course={course}
-								departmentCode={departmentCode}
-								variant="bachelor"
-							/>
-						))}
-					</div>
-				</div>
-			)}
+				)}
 
 			{/* Master Courses */}
-			{(!filters.type || filters.type === "MASTER") && masterCourses.length > 0 && (
-				<div>
-					<div className="mb-6 flex items-center">
-						<div className="rounded-lg bg-purple-100 px-4 py-2 dark:bg-purple-900/50">
-							<h2 className="text-xl font-bold text-purple-800 dark:text-purple-200">
-								Lauree Magistrali
-							</h2>
+			{(filters.type === "all" || filters.type === "MASTER") &&
+				masterCourses.length > 0 && (
+					<div>
+						<div className="mb-6 flex items-center">
+							<div className="rounded-lg bg-purple-100 px-4 py-2 dark:bg-purple-900/50">
+								<h2 className="text-xl font-bold text-purple-800 dark:text-purple-200">
+									Lauree Magistrali
+								</h2>
+							</div>
+							<div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
+								{masterCourses.length} {masterCourses.length === 1 ? "corso" : "corsi"}
+							</div>
 						</div>
-						<div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
-							{masterCourses.length} {masterCourses.length === 1 ? "corso" : "corsi"}
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{masterCourses.map(course => (
+								<CourseCard
+									key={course.id}
+									course={course}
+									departmentCode={departmentCode}
+									variant="master"
+								/>
+							))}
 						</div>
 					</div>
-					<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{masterCourses.map(course => (
-							<CourseCard
-								key={course.id}
-								course={course}
-								departmentCode={departmentCode}
-								variant="master"
-							/>
-						))}
-					</div>
-				</div>
-			)}
+				)}
 		</div>
 	);
 }

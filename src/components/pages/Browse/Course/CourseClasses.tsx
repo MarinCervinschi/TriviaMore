@@ -1,7 +1,5 @@
 import { BookOpen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
 import { ClassCard } from "./ClassCard";
 
 interface Class {
@@ -17,27 +15,16 @@ interface Class {
 	};
 }
 
-interface CourseFilters {
-	year?: string;
-	search?: string;
-}
-
 interface CourseClassesProps {
 	classes: Class[];
 	departmentCode: string;
 	courseCode: string;
-	filters: CourseFilters;
-	hasActiveFilters: boolean;
-	onClearFilters: () => void;
 }
 
 export function CourseClasses({
 	classes,
 	departmentCode,
 	courseCode,
-	filters,
-	hasActiveFilters,
-	onClearFilters,
 }: CourseClassesProps) {
 	if (classes.length === 0) {
 		return (
@@ -51,11 +38,6 @@ export function CourseClasses({
 				<p className="mb-6 text-gray-600 dark:text-gray-300">
 					Non ci sono classi che corrispondono ai filtri selezionati.
 				</p>
-				{hasActiveFilters && (
-					<Button variant="outline" onClick={onClearFilters}>
-						Rimuovi Filtri
-					</Button>
-				)}
 			</div>
 		);
 	}
