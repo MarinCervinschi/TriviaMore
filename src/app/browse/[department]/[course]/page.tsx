@@ -8,25 +8,14 @@ interface CoursePageProps {
 		department: string;
 		course: string;
 	}>;
-	searchParams: Promise<{
-		year?: string;
-		search?: string;
-	}>;
 }
 
-export default async function CoursePage({ params, searchParams }: CoursePageProps) {
+export default async function CoursePage({ params }: CoursePageProps) {
 	const resolvedParams = await params;
-	const resolvedSearchParams = await searchParams;
 
 	const courseData = await BrowseService.getCourseWithClasses(
 		resolvedParams.department.toUpperCase(),
-		resolvedParams.course.toUpperCase(),
-		{
-			classYear: resolvedSearchParams.year
-				? parseInt(resolvedSearchParams.year)
-				: undefined,
-			search: resolvedSearchParams.search,
-		}
+		resolvedParams.course.toUpperCase()
 	);
 
 	if (!courseData) {
@@ -36,10 +25,6 @@ export default async function CoursePage({ params, searchParams }: CoursePagePro
 	return (
 		<CoursePageComponent
 			course={courseData}
-			filters={{
-				year: resolvedSearchParams.year,
-				search: resolvedSearchParams.search,
-			}}
 			departmentCode={resolvedParams.department}
 		/>
 	);

@@ -1,6 +1,8 @@
 "use client";
 
-import { Filter, Search, X } from "lucide-react";
+import { useState } from "react";
+
+import { Search, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,25 +20,35 @@ interface CourseFilters {
 }
 
 interface CourseFiltersProps {
-	filters: CourseFilters;
-	searchValue: string;
 	availableYears: number[];
-	onSearchValueChange: (value: string) => void;
-	onSearch: (e: React.FormEvent) => void;
 	onFilterChange: (filters: Partial<CourseFilters>) => void;
-	onClearFilters: () => void;
 }
 
-export function CourseFilters({
-	filters,
-	searchValue,
-	availableYears,
-	onSearchValueChange,
-	onSearch,
-	onFilterChange,
-	onClearFilters,
-}: CourseFiltersProps) {
-	const hasActiveFilters = Boolean(filters.year || filters.search);
+export function CourseFilters({ availableYears, onFilterChange }: CourseFiltersProps) {
+	const [filters, setFilters] = useState<CourseFilters>({
+		year: "all",
+		search: "",
+	});
+
+	const updateFilters = (newFilters: Partial<CourseFilters>) => {
+		const updated = {
+			...filters,
+			...newFilters,
+		};
+		setFilters(updated);
+		onFilterChange(updated);
+	};
+
+	const clearFilters = () => {
+		const clearedFilters = {
+			year: "all",
+			search: "",
+		};
+		setFilters(clearedFilters);
+		onFilterChange(clearedFilters);
+	};
+
+	const hasActiveFilters = filters.search || filters.year !== "all";
 
 	return (
 		<div className="mb-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -50,32 +62,27 @@ export function CourseFilters({
 				<div className="flex flex-col gap-4 md:flex-row">
 					{/* Search */}
 					<div className="flex-1">
-						<form onSubmit={onSearch} className="flex gap-2">
-							<div className="relative flex-1">
-								<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
-								<Input
-									type="text"
-									placeholder="Cerca per nome, codice o descrizione..."
-									value={searchValue}
-									onChange={e => onSearchValueChange(e.target.value)}
-									className="pl-10"
-								/>
-							</div>
-							<Button type="submit" className="shrink-0">
-								Cerca
-							</Button>
-						</form>
+						<div className="relative flex-1">
+							<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
+							<Input
+								type="text"
+								placeholder="Cerca per nome, codice o descrizione..."
+								value={filters.search}
+								onChange={e => updateFilters({ search: e.target.value })}
+								className="pl-10"
+							/>
+						</div>
 					</div>
 
 					{/* Year Filter */}
 					<div className="md:w-48">
 						<Select
-							value={filters.year || "all"}
-							onValueChange={value =>
-								onFilterChange({
-									year: value === "all" ? undefined : value,
-								})
-							}
+							value={filters.year}
+							onValueChange={value => {
+								updateFilters({
+									year: value,
+								});
+							}}
 						>
 							<SelectTrigger>
 								<SelectValue placeholder="Anno" />
@@ -93,7 +100,7 @@ export function CourseFilters({
 
 					{/* Clear Filters */}
 					{hasActiveFilters && (
-						<Button variant="outline" onClick={onClearFilters} className="shrink-0">
+						<Button variant="outline" onClick={clearFilters} className="shrink-0">
 							<X className="mr-2 h-4 w-4" />
 							Rimuovi Filtri
 						</Button>
