@@ -10,23 +10,16 @@ interface ClassPageProps {
 		course: string;
 		class: string;
 	}>;
-	searchParams: Promise<{
-		search?: string;
-	}>;
 }
 
-export default async function ClassPage({ params, searchParams }: ClassPageProps) {
+export default async function ClassPage({ params }: ClassPageProps) {
 	const resolvedParams = await params;
-	const resolvedSearchParams = await searchParams;
 
 	const [classData, evaluationModes] = await Promise.all([
 		BrowseService.getClassWithSections(
 			resolvedParams.department.toUpperCase(),
 			resolvedParams.course.toUpperCase(),
-			resolvedParams.class.toUpperCase(),
-			{
-				search: resolvedSearchParams.search,
-			}
+			resolvedParams.class.toUpperCase()
 		),
 		EvaluationService.getAllEvaluationModes(),
 	]);
@@ -38,9 +31,6 @@ export default async function ClassPage({ params, searchParams }: ClassPageProps
 	return (
 		<ClassPageComponent
 			classData={classData}
-			filters={{
-				search: resolvedSearchParams.search,
-			}}
 			departmentCode={resolvedParams.department}
 			courseCode={resolvedParams.course}
 			evaluationModes={evaluationModes}
