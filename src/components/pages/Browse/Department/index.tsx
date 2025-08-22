@@ -1,9 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
@@ -41,14 +39,13 @@ interface Department {
 	courses: Course[];
 }
 
-interface DepartmentFilters {
-	type?: "BACHELOR" | "MASTER";
+interface DepartmentFiltersProps {
+	type?: "all" | "BACHELOR" | "MASTER";
 	search?: string;
 }
 
 interface DepartmentPageComponentProps {
 	department: Department;
-	filters: DepartmentFilters;
 }
 
 export default function DepartmentPageComponent(props: DepartmentPageComponentProps) {
@@ -57,60 +54,34 @@ export default function DepartmentPageComponent(props: DepartmentPageComponentPr
 	const editPermissions = useEditMode({
 		departmentId: props.department.id,
 	});
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const [filters, setFilters] = useState(props.filters);
-	const [searchValue, setSearchValue] = useState(props.filters.search || "");
+	const [filters, setFilters] = useState<DepartmentFiltersProps>({
+		search: "",
+		type: "all",
+	});
 	const [modalState, setModalState] = useState<Modal>({
 		isOpen: false,
 		mode: "create",
 		type: "course",
 	});
 
-	const updateFilters = (newFilters: Partial<DepartmentFilters>) => {
-		const params = new URLSearchParams(searchParams);
+	const filteredCourses = useMemo(() => {
+		let filtered = [...props.department.courses];
 
-		Object.entries(newFilters).forEach(([key, value]) => {
-			if (value) {
-				params.set(key, value);
-			} else {
-				params.delete(key);
-			}
-		});
+		if (filters.search && filters.search.length > 0) {
+			const searchLower = filters.search.toLowerCase();
+			filtered = filtered.filter(
+				course =>
+					course.name.toLowerCase().includes(searchLower) ||
+					course.code.toLowerCase().includes(searchLower)
+			);
+		}
 
-		router.push(`/browse/${props.department.code.toLowerCase()}?${params.toString()}`);
-	};
+		if (filters.type && filters.type !== "all") {
+			filtered = filtered.filter(course => course.courseType === filters.type);
+		}
 
-	const handleSearch = (e: React.FormEvent) => {
-		e.preventDefault();
-		const newFilters = { ...filters, search: searchValue || undefined };
-		setFilters(newFilters);
-		updateFilters(newFilters);
-	};
-
-	const clearFilters = () => {
-		const newFilters = {};
-		setFilters(newFilters);
-		setSearchValue("");
-		router.push(`/browse/${props.department.code.toLowerCase()}`);
-	};
-
-	const handleFilterChange = (newFilters: Partial<DepartmentFilters>) => {
-		const updatedFilters = { ...filters, ...newFilters };
-		setFilters(updatedFilters);
-		updateFilters(updatedFilters);
-	};
-
-	const filteredCourses = props.department.courses.filter(course => {
-		const matchesType = !filters.type || course.courseType === filters.type;
-		const matchesSearch =
-			!filters.search ||
-			course.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-			course.code.toLowerCase().includes(filters.search.toLowerCase());
-		return matchesType && matchesSearch;
-	});
-
-	const hasActiveFilters = Boolean(filters.type || filters.search);
+		return filtered;
+	}, [props.department.courses, filters]);
 
 	const handleEditAction = (
 		action: "create" | "edit" | "delete",
@@ -141,14 +112,7 @@ export default function DepartmentPageComponent(props: DepartmentPageComponentPr
 						}
 					/>
 
-					<DepartmentFilters
-						filters={filters}
-						searchValue={searchValue}
-						onSearchValueChange={setSearchValue}
-						onSearch={handleSearch}
-						onFilterChange={handleFilterChange}
-						onClearFilters={clearFilters}
-					/>
+					<DepartmentFilters onFilterChange={setFilters} />
 
 					{isEditMode && editPermissions.canEditCourses && (
 						<div className="mb-6">
@@ -166,8 +130,6 @@ export default function DepartmentPageComponent(props: DepartmentPageComponentPr
 						courses={filteredCourses}
 						departmentCode={props.department.code.toLowerCase()}
 						filters={filters}
-						hasActiveFilters={hasActiveFilters}
-						onClearFilters={clearFilters}
 					/>
 				</div>
 			</div>

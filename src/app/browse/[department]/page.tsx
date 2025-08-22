@@ -7,40 +7,20 @@ interface DepartmentPageProps {
 	params: Promise<{
 		department: string;
 	}>;
-	searchParams: Promise<{
-		type?: "BACHELOR" | "MASTER";
-		search?: string;
-	}>;
 }
 
-export default async function DepartmentPage({
-	params,
-	searchParams,
-}: DepartmentPageProps) {
+export default async function DepartmentPage({ params }: DepartmentPageProps) {
 	const resolvedParams = await params;
-	const resolvedSearchParams = await searchParams;
 
 	const departmentData = await BrowseService.getDepartmentWithCourses(
-		resolvedParams.department.toUpperCase(),
-		{
-			courseType: resolvedSearchParams.type,
-			search: resolvedSearchParams.search,
-		}
+		resolvedParams.department.toUpperCase()
 	);
 
 	if (!departmentData) {
 		notFound();
 	}
 
-	return (
-		<DepartmentPageComponent
-			department={departmentData}
-			filters={{
-				type: resolvedSearchParams.type,
-				search: resolvedSearchParams.search,
-			}}
-		/>
-	);
+	return <DepartmentPageComponent department={departmentData} />;
 }
 
 export async function generateStaticParams() {
