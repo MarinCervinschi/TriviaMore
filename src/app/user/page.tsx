@@ -34,7 +34,7 @@ export default function UserPage() {
 				/>
 				<meta name="robots" content="noindex, nofollow" />
 			</Head>
-			<UserDashboardComponent userProfile={userProfile} />;
+			<UserDashboardComponent userProfile={userProfile} />
 		</>
 	);
 }

@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
@@ -49,26 +47,24 @@ interface Course {
 	classes: Class[];
 }
 
-interface CourseFilters {
+interface CourseFiltersProps {
 	year?: string;
 	search?: string;
 }
 
 interface CoursePageComponentProps {
 	course: Course;
-	filters: CourseFilters;
 	departmentCode: string;
 }
 
 export default function CoursePageComponent({
 	course,
-	filters: initialFilters,
 	departmentCode,
 }: CoursePageComponentProps) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const [filters, setFilters] = useState<CourseFilters>(initialFilters);
-	const [searchValue, setSearchValue] = useState(initialFilters.search || "");
+	const [filters, setFilters] = useState<CourseFiltersProps>({
+		year: "all",
+		search: "",
+	});
 
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 	const editPermissions = useEditMode({
@@ -81,36 +77,6 @@ export default function CoursePageComponent({
 		type: "class",
 	});
 
-	const updateFilters = (newFilters: Partial<CourseFilters>) => {
-		const params = new URLSearchParams(searchParams);
-
-		Object.entries(newFilters).forEach(([key, value]) => {
-			if (value) {
-				params.set(key, value);
-			} else {
-				params.delete(key);
-			}
-		});
-
-		router.push(
-			`/browse/${departmentCode}/${course.code.toLowerCase()}?${params.toString()}`
-		);
-	};
-
-	const handleSearch = (e: React.FormEvent) => {
-		e.preventDefault();
-		const newFilters = { ...filters, search: searchValue || undefined };
-		setFilters(newFilters);
-		updateFilters(newFilters);
-	};
-
-	const clearFilters = () => {
-		const newFilters = {};
-		setFilters(newFilters);
-		setSearchValue("");
-		router.push(`/browse/${departmentCode}/${course.code.toLowerCase()}`);
-	};
-
 	const handleEditAction = (
 		action: "create" | "edit" | "delete",
 		type: "course" | "class",
@@ -119,26 +85,32 @@ export default function CoursePageComponent({
 		setModalState({ isOpen: true, mode: action, type, data });
 	};
 
-	const handleFilterChange = (newFilters: Partial<CourseFilters>) => {
-		const updatedFilters = { ...filters, ...newFilters };
-		setFilters(updatedFilters);
-		updateFilters(updatedFilters);
-	};
+	const filteredClasses = useMemo(() => {
+		let filtered = [...course.classes];
 
-	const filteredClasses = course.classes.filter(cls => {
-		const matchesYear = !filters.year || cls.classYear.toString() === filters.year;
-		const matchesSearch =
-			!filters.search ||
-			cls.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-			cls.code.toLowerCase().includes(filters.search.toLowerCase());
-		return matchesYear && matchesSearch;
-	});
+		if (filters.search && filters.search.length > 0) {
+			const searchLower = filters.search.toLowerCase();
+			filtered = filtered.filter(
+				cls =>
+					cls.name.toLowerCase().includes(searchLower) ||
+					cls.code.toLowerCase().includes(searchLower)
+			);
+		}
 
-	const hasActiveFilters = Boolean(filters.year || filters.search);
+		if (filters.year && filters.year !== "all") {
+			filtered = filtered.filter(cls => cls.classYear.toString() === filters.year);
+		}
 
-	const availableYears = Array.from(
-		new Set(course.classes.map(cls => cls.classYear))
-	).sort((a, b) => a - b);
+		return filtered;
+	}, [course.classes, filters]);
+
+	const availableYears = useMemo(
+		() =>
+			Array.from(new Set(course.classes.map(cls => cls.classYear))).sort(
+				(a, b) => a - b
+			),
+		[course.classes]
+	);
 
 	return (
 		<EditModeOverlay isActive={isEditMode}>
@@ -163,15 +135,7 @@ export default function CoursePageComponent({
 						onEditAction={(action, data) => handleEditAction(action, "course", data)}
 					/>
 
-					<CourseFilters
-						filters={filters}
-						searchValue={searchValue}
-						availableYears={availableYears}
-						onSearchValueChange={setSearchValue}
-						onSearch={handleSearch}
-						onFilterChange={handleFilterChange}
-						onClearFilters={clearFilters}
-					/>
+					<CourseFilters availableYears={availableYears} onFilterChange={setFilters} />
 
 					{isEditMode && editPermissions.canEditClasses && (
 						<div className="mb-6">
@@ -189,9 +153,6 @@ export default function CoursePageComponent({
 						classes={filteredClasses}
 						departmentCode={departmentCode}
 						courseCode={course.code.toLowerCase()}
-						filters={filters}
-						hasActiveFilters={hasActiveFilters}
-						onClearFilters={clearFilters}
 					/>
 				</div>
 			</div>

@@ -239,27 +239,11 @@ export class BrowseService extends UserService {
 	/**
 	 * Ottieni dipartimento con i suoi corsi e filtri
 	 */
-	static async getDepartmentWithCourses(
-		departmentCode: string,
-		filters: {
-			courseType?: "BACHELOR" | "MASTER";
-			search?: string;
-		} = {}
-	) {
+	static async getDepartmentWithCourses(departmentCode: string) {
 		const department = await prisma.department.findUnique({
 			where: { code: departmentCode },
 			include: {
 				courses: {
-					where: {
-						...(filters.courseType && { courseType: filters.courseType }),
-						...(filters.search && {
-							OR: [
-								{ name: { contains: filters.search, mode: "insensitive" } },
-								{ code: { contains: filters.search, mode: "insensitive" } },
-								{ description: { contains: filters.search, mode: "insensitive" } },
-							],
-						}),
-					},
 					orderBy: { position: "asc" },
 					include: {
 						_count: {
@@ -349,10 +333,6 @@ export class BrowseService extends UserService {
 	static async getCourseWithClasses(
 		departmentCode: string,
 		courseCode: string,
-		filters: {
-			classYear?: number;
-			search?: string;
-		} = {},
 		userId?: string
 	) {
 		let permissions: UserPermissions | undefined;
@@ -375,16 +355,6 @@ export class BrowseService extends UserService {
 					},
 				},
 				classes: {
-					where: {
-						...(filters.classYear && { classYear: filters.classYear }),
-						...(filters.search && {
-							OR: [
-								{ name: { contains: filters.search, mode: "insensitive" } },
-								{ code: { contains: filters.search, mode: "insensitive" } },
-								{ description: { contains: filters.search, mode: "insensitive" } },
-							],
-						}),
-					},
 					orderBy: [{ classYear: "asc" }, { position: "asc" }],
 					include: {
 						sections: {
@@ -512,9 +482,6 @@ export class BrowseService extends UserService {
 		departmentCode: string,
 		courseCode: string,
 		classCode: string,
-		filters: {
-			search?: string;
-		} = {},
 		userId?: string
 	) {
 		let permissions: UserPermissions | undefined;
@@ -553,31 +520,7 @@ export class BrowseService extends UserService {
 			return null;
 		}
 
-		// Ottieni le sezioni accessibili
-		const sectionWhereClause = await super.getSectionWhereClause(
-			classData.id,
-			permissions
-		);
-
-		// Costruisci la query finale includendo il filtro di ricerca
-		const whereClause = filters.search
-			? {
-					AND: [
-						sectionWhereClause,
-						{
-							OR: [
-								{ name: { contains: filters.search, mode: "insensitive" as const } },
-								{
-									description: {
-										contains: filters.search,
-										mode: "insensitive" as const,
-									},
-								},
-							],
-						},
-					],
-				}
-			: sectionWhereClause;
+		const whereClause = await super.getSectionWhereClause(classData.id, permissions);
 
 		const sections = await prisma.section.findMany({
 			where: whereClause,
