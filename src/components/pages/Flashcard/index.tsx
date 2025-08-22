@@ -46,7 +46,7 @@ export default function FlashcardPageComponent({
 
 	if (error) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+			<div className="flex min-h-screen items-center justify-center bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="text-center">
 					<h1 className="mb-4 text-2xl font-bold text-red-600 dark:text-red-400">
 						Errore
@@ -65,7 +65,7 @@ export default function FlashcardPageComponent({
 
 	if (!session) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+			<div className="flex min-h-screen items-center justify-center bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="text-center">
 					<h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
 						Sessione non trovata

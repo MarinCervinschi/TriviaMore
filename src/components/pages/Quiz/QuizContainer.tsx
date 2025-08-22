@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Quiz } from "@/lib/types/quiz.types";
 import {
@@ -127,7 +126,7 @@ export function QuizContainer({
 
 		return (
 			<AppLayout>
-				<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+				<div className="flex min-h-screen items-center justify-center bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 					<div className="text-center">
 						<h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
 							Quiz Completato!
@@ -142,7 +141,7 @@ export function QuizContainer({
 	}
 
 	return (
-		<div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+		<div className="flex min-h-screen bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 			{/* Sidebar per desktop */}
 			<QuizSidebar
 				questions={quiz.questions}
