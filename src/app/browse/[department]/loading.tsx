@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DepartmentLoadingPage() {
 	return (
-		<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+		<div className="min-h-[calc(100vh-200px)] bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 				{/* Breadcrumb Skeleton */}
 				<div className="mb-8">

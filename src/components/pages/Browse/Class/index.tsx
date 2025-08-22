@@ -111,7 +111,7 @@ export default function ClassPageComponent({
 
 	return (
 		<EditModeOverlay isActive={isEditMode}>
-			<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+			<div className="min-h-screen bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 				<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 					{editPermissions.canEdit && (
 						<div className="mb-6 flex justify-end">

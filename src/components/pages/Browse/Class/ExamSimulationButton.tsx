@@ -132,7 +132,7 @@ export default function ExamSimulationButton({
 
 	return (
 		<div className="mb-8">
-			<Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-900/20 dark:to-indigo-900/20">
+			<Card className="border-blue-200 bg-gradient-to-r from-blue-50 via-white to-purple-50 dark:border-blue-800 dark:from-blue-900/20 dark:to-indigo-900/20">
 				<CardContent className="p-4 sm:p-6">
 					<div className="space-y-4">
 						<div>

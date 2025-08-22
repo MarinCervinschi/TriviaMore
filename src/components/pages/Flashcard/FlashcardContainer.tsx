@@ -80,7 +80,7 @@ export function FlashcardContainer({
 	}
 
 	return (
-		<div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+		<div className="flex min-h-screen bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 			{/* Sidebar per desktop */}
 			<FlashcardSidebar
 				questions={session.questions}
