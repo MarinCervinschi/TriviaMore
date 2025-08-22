@@ -1,20 +1,28 @@
+import { useState } from "react";
+
 import { Search, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface ClassFiltersProps {
-	searchQuery: string;
 	onSearchChange: (query: string) => void;
 	totalResults: number;
 }
 
 export default function ClassFilters({
-	searchQuery,
 	onSearchChange,
 	totalResults,
 }: ClassFiltersProps) {
-	const handleClearSearch = () => {
+	const [searchQuery, setSearchQuery] = useState<string>("");
+
+	const updateSearch = (query: string) => {
+		setSearchQuery(query);
+		onSearchChange(query);
+	};
+
+	const clearFilters = () => {
+		setSearchQuery("");
 		onSearchChange("");
 	};
 
@@ -28,14 +36,14 @@ export default function ClassFilters({
 							type="text"
 							placeholder="Cerca sezioni..."
 							value={searchQuery}
-							onChange={e => onSearchChange(e.target.value)}
+							onChange={e => updateSearch(e.target.value)}
 							className="pl-10 pr-10"
 						/>
 						{searchQuery && (
 							<Button
 								variant="ghost"
 								size="sm"
-								onClick={handleClearSearch}
+								onClick={clearFilters}
 								className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
 							>
 								<X className="h-4 w-4" />
