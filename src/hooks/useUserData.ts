@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { Section } from "@/components/pages/Browse/Class";
 import { ProgressData } from "@/components/pages/User/Progress";
 import { UserProfileData } from "@/lib/services/user.service";
 import { UserClassResponse } from "@/lib/types/user.types";
@@ -67,7 +68,7 @@ export const useUserSectionsAccessCountByCourse = (
 	userId: string,
 	courseId: string
 ) => {
-	return useVolatileQuery({
+	return useVolatileQuery<Record<string, number>>({
 		queryKey: ["userSectionsAccess", userId, courseId],
 		queryFn: () => fetchUserSectionsAccessCountByCourse(courseId),
 		enabled: !!userId && !!courseId,
@@ -85,7 +86,7 @@ const fetchUserSectionsAccessByClass = async (classId: string) => {
 };
 
 export const useUserSectionsAccessByClass = (userId: string, classId: string) => {
-	return useVolatileQuery({
+	return useVolatileQuery<Section[]>({
 		queryKey: ["userSectionsAccess", userId, classId],
 		queryFn: () => fetchUserSectionsAccessByClass(classId),
 		enabled: !!userId && !!classId,
