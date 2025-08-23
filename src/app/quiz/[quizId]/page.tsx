@@ -1,4 +1,3 @@
-
 import QuizPageComponent from "@/components/pages/Quiz";
 import { auth } from "@/lib/auth";
 
@@ -13,12 +12,7 @@ export default async function QuizPage({ params }: QuizPageProps) {
 
 	const isGuest = resolvedParams.quizId.startsWith("guest-");
 
-	return (
-		<QuizPageComponent
-			quizId={resolvedParams.quizId}
-			isGuest={isGuest}
-		/>
-	);
+	return <QuizPageComponent quizId={resolvedParams.quizId} isGuest={isGuest} />;
 }
 
 export async function generateMetadata({ params }: QuizPageProps) {

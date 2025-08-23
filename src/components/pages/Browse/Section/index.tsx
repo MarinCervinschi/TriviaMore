@@ -22,7 +22,7 @@ import { QuizCard } from "./QuizCard";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
 import SectionHeader from "./SectionHeader";
 
-interface EvaluationMode {
+export interface EvaluationMode {
 	id: string;
 	name: string;
 	description?: string | null;
@@ -31,7 +31,7 @@ interface EvaluationMode {
 	partialCreditEnabled: boolean;
 }
 
-interface SectionData {
+export interface SectionData {
 	id: string;
 	name: string;
 	description?: string | null;

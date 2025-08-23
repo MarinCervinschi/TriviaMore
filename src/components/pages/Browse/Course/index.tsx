@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from "react";
 
+import { useSession } from "next-auth/react";
+
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import { useEditMode } from "@/hooks/useEditMode";
+import { useUserSectionsAccessCountByCourse } from "@/hooks/useUserData";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
 
 import { CourseBreadcrumb } from "./CourseBreadcrumb";
@@ -61,6 +64,22 @@ export default function CoursePageComponent({
 	course,
 	departmentCode,
 }: CoursePageComponentProps) {
+	const { data: session } = useSession();
+	const userId = session?.user.id;
+	const { data: countUserSectionsAccess } = useUserSectionsAccessCountByCourse(
+		userId,
+		course.id
+	);
+
+	if (countUserSectionsAccess) {
+		course.classes = course.classes.map(cls => ({
+			...cls,
+			_count: {
+				sections: countUserSectionsAccess[cls.id] ?? 0,
+			},
+		}));
+	}
+
 	const [filters, setFilters] = useState<CourseFiltersProps>({
 		year: "all",
 		search: "",

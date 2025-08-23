@@ -2,6 +2,7 @@ import type { Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
+import { SectionNode } from "../types/browse.types";
 import type {
 	RemoveClassFromUserListResponse,
 	UserClassResponse,
@@ -162,6 +163,96 @@ export class UserService {
 				},
 			],
 		};
+	}
+
+	static async getUserSectionsAccess(
+		userId: string,
+		classId: string
+	): Promise<SectionNode[]> {
+		const permissions = await this.getUserPermissions(userId);
+		const whereClause = await this.getSectionWhereClause(classId, permissions);
+		const sections = await prisma.section.findMany({
+			where: whereClause,
+			orderBy: { position: "asc" },
+			include: {
+				_count: {
+					select: {
+						questions: true,
+					},
+				},
+				questions: {
+					select: { questionType: true },
+				},
+			},
+		});
+
+		return sections.map(section => {
+			const quizQuestions = section.questions.filter(
+				q => q.questionType === "TRUE_FALSE" || q.questionType === "MULTIPLE_CHOICE"
+			).length;
+			const flashcardQuestions = section.questions.filter(
+				q => q.questionType === "SHORT_ANSWER"
+			).length;
+
+			return {
+				id: section.id,
+				name: section.name,
+				description: section.description ?? undefined,
+				isPublic: section.isPublic,
+				position: section.position,
+				classId: section.classId,
+				_count: {
+					questions: section._count.questions,
+					quizQuestions,
+					flashcardQuestions,
+				},
+			};
+		});
+	}
+
+	static async countUserSectionsAccessByCourse(
+		userId: string,
+		courseId: string
+	): Promise<Record<string, number>> {
+		const course = await prisma.course.findUnique({
+			where: { id: courseId },
+			include: {
+				classes: {
+					include: {
+						sections: {
+							select: {
+								id: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!course) {
+			throw new Error("Course not found");
+		}
+
+		const permissions: UserPermissions = await this.getUserPermissions(userId);
+
+		const result: Record<string, number> = {};
+
+		await Promise.all(
+			course.classes.map(async cls => {
+				const sectionWhereClause = await this.getSectionWhereClause(
+					cls.id,
+					permissions
+				);
+
+				const accessibleSectionsCount = await prisma.section.count({
+					where: sectionWhereClause,
+				});
+
+				result[cls.id] = accessibleSectionsCount;
+			})
+		);
+
+		return result;
 	}
 
 	/**
