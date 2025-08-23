@@ -67,12 +67,10 @@ export const useUserSectionsAccessCountByCourse = (
 	userId: string,
 	courseId: string
 ) => {
-	return useQuery({
+	return useVolatileQuery({
 		queryKey: ["userSectionsAccess", userId, courseId],
 		queryFn: () => fetchUserSectionsAccessCountByCourse(courseId),
 		enabled: !!userId && !!courseId,
-		retry: 1,
-		refetchOnWindowFocus: false,
 	});
 };
 
@@ -87,11 +85,9 @@ const fetchUserSectionsAccessByClass = async (classId: string) => {
 };
 
 export const useUserSectionsAccessByClass = (userId: string, classId: string) => {
-	return useQuery({
+	return useVolatileQuery({
 		queryKey: ["userSectionsAccess", userId, classId],
 		queryFn: () => fetchUserSectionsAccessByClass(classId),
 		enabled: !!userId && !!classId,
-		retry: 1,
-		refetchOnWindowFocus: false,
 	});
 };
