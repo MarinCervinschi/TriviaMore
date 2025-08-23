@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 
+import { useSession } from "next-auth/react";
+
 import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import { useEditMode } from "@/hooks/useEditMode";
+import { useUserSectionsAccessByClass } from "@/hooks/useUserData";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
 
 import ClassBreadcrumb from "./ClassBreadcrumb";
@@ -79,6 +82,22 @@ export default function ClassPageComponent({
 	courseCode,
 	evaluationModes,
 }: ClassPageComponentProps) {
+	const { data: session } = useSession();
+	const userId = session?.user.id;
+	const { data: userSectionAccess } = useUserSectionsAccessByClass(
+		userId,
+		classData.id
+	);
+
+	if (userSectionAccess) {
+		userSectionAccess.forEach((section: Section) => {
+			const alreadyExists = classData.sections.some(s => s.id === section.id);
+			if (!alreadyExists) {
+				classData.sections.push(section);
+			}
+		});
+	}
+
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const editPermissions = useEditMode({
