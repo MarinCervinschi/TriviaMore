@@ -5,9 +5,7 @@ import { BrowseTreeResponse } from "@/lib/types/browse.types";
 export default async function BrowsePage() {
 	const data: BrowseTreeResponse = await BrowseService.getInitialTree();
 
-	return (
-		<BrowsePageComponent departments={data.departments} />
-	);
+	return <BrowsePageComponent departments={data.departments} />;
 }
 
 export async function generateMetadata() {
