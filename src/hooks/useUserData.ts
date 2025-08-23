@@ -52,3 +52,46 @@ export const useUserClasses = (userId: string) => {
 		enabled: !!userId,
 	});
 };
+
+const fetchUserSectionsAccessCountByCourse = async (courseId: string) => {
+	const response = await fetch(
+		`/api/protected/user/sections-access?courseId=${courseId}`
+	);
+	if (!response.ok) {
+		throw new Error("Failed to fetch user sections access");
+	}
+	return response.json();
+};
+
+export const useUserSectionsAccessCountByCourse = (
+	userId: string,
+	courseId: string
+) => {
+	return useQuery({
+		queryKey: ["userSectionsAccess", userId, courseId],
+		queryFn: () => fetchUserSectionsAccessCountByCourse(courseId),
+		enabled: !!userId && !!courseId,
+		retry: 1,
+		refetchOnWindowFocus: false,
+	});
+};
+
+const fetchUserSectionsAccessByClass = async (classId: string) => {
+	const response = await fetch(
+		`/api/protected/user/sections-access?classId=${classId}`
+	);
+	if (!response.ok) {
+		throw new Error("Failed to fetch user sections access");
+	}
+	return response.json();
+};
+
+export const useUserSectionsAccessByClass = (userId: string, classId: string) => {
+	return useQuery({
+		queryKey: ["userSectionsAccess", userId, classId],
+		queryFn: () => fetchUserSectionsAccessByClass(classId),
+		enabled: !!userId && !!classId,
+		retry: 1,
+		refetchOnWindowFocus: false,
+	});
+};
