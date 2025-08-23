@@ -88,7 +88,7 @@ export default function ClassPageComponent({
 		classData.id
 	);
 
-	if (userSectionAccess) {
+	if (Array.isArray(userSectionAccess)) {
 		userSectionAccess.forEach((section: Section) => {
 			const alreadyExists = classData.sections.some(s => s.id === section.id);
 			if (!alreadyExists) {

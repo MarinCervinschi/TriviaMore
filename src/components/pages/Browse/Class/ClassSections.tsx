@@ -1,5 +1,4 @@
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-
+import SectionCardSkeleton from "../Section/SectionCardSkeleton";
 import SectionCard from "./SectionCard";
 
 interface Section {
@@ -22,6 +21,14 @@ interface ClassSectionsProps {
 	isLoading?: boolean;
 }
 
+const Loader = () => (
+	<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		{Array.from({ length: 6 }).map((_, index) => (
+			<SectionCardSkeleton key={index} />
+		))}
+	</div>
+);
+
 export default function ClassSections({
 	sections,
 	departmentCode,
@@ -30,8 +37,9 @@ export default function ClassSections({
 	isLoading,
 }: ClassSectionsProps) {
 	if (isLoading) {
-		return <LoadingSpinner />;
+		return <Loader />;
 	}
+
 	if (sections.length === 0) {
 		return (
 			<div className="rounded-lg bg-white p-12 text-center shadow-sm dark:bg-gray-800">
