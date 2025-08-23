@@ -31,7 +31,6 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		}
 
 		let result;
-		console.log("Fetching user sections access:", { userId, courseId, classId });
 
 		if (classId) {
 			result = await UserService.getUserSectionsAccess(userId, classId);
