@@ -485,7 +485,9 @@ export class BrowseService extends UserService {
 					},
 				},
 				_count: {
-					select: { sections: { where: { isPublic: true } } },
+					select: {
+						sections: { where: { isPublic: true, name: { not: "Exam Simulation" } } },
+					},
 				},
 			},
 		});
@@ -495,7 +497,11 @@ export class BrowseService extends UserService {
 		}
 
 		const sections = await prisma.section.findMany({
-			where: { classId: classData.id, isPublic: true },
+			where: {
+				classId: classData.id,
+				isPublic: true,
+				name: { not: "Exam Simulation" },
+			},
 			orderBy: { position: "asc" },
 			include: {
 				_count: {
@@ -544,36 +550,6 @@ export class BrowseService extends UserService {
 				};
 			}),
 		};
-	}
-
-	/**
-	 * Ottieni tutte le sezioni di una classe (per generateStaticParams)
-	 */
-	static async getSectionsByClass(
-		departmentCode: string,
-		courseCode: string,
-		classCode: string
-	) {
-		const classData = await prisma.class.findFirst({
-			where: {
-				code: classCode,
-				course: {
-					code: courseCode,
-					department: { code: departmentCode },
-				},
-			},
-			include: {
-				sections: {
-					select: {
-						id: true,
-						name: true,
-					},
-					orderBy: { position: "asc" },
-				},
-			},
-		});
-
-		return classData?.sections || [];
 	}
 
 	/**
