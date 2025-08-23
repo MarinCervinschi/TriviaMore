@@ -9,7 +9,7 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client";
 const persistentClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: Infinity,
+			staleTime: 1000 * 60 * 60, // 1 ora
 			gcTime: 1000 * 60 * 60 * 24 * 7, // 1 settimana
 		},
 	},
