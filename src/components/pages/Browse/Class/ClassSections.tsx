@@ -1,3 +1,5 @@
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
 import SectionCard from "./SectionCard";
 
 interface Section {
@@ -17,6 +19,7 @@ interface ClassSectionsProps {
 	departmentCode: string;
 	courseCode: string;
 	classCode: string;
+	isLoading?: boolean;
 }
 
 export default function ClassSections({
@@ -24,7 +27,11 @@ export default function ClassSections({
 	departmentCode,
 	courseCode,
 	classCode,
+	isLoading,
 }: ClassSectionsProps) {
+	if (isLoading) {
+		return <LoadingSpinner />;
+	}
 	if (sections.length === 0) {
 		return (
 			<div className="rounded-lg bg-white p-12 text-center shadow-sm dark:bg-gray-800">

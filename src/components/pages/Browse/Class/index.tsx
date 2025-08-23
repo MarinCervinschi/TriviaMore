@@ -83,7 +83,7 @@ export default function ClassPageComponent({
 }: ClassPageComponentProps) {
 	const { data: session } = useSession();
 	const userId = session?.user.id;
-	const { data: userSectionAccess } = useUserSectionsAccessByClass(
+	const { data: userSectionAccess, isLoading } = useUserSectionsAccessByClass(
 		userId,
 		classData.id
 	);
@@ -186,6 +186,7 @@ export default function ClassPageComponent({
 						departmentCode={departmentCode}
 						courseCode={courseCode}
 						classCode={classData.code.toLowerCase()}
+						isLoading={isLoading}
 					/>
 				</div>
 			</div>
