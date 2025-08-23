@@ -1,29 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { useClassMutations } from "@/hooks/useClassMutations";
+import { useUserClasses } from "@/hooks/useUserData";
 
 interface AddClassButtonProps {
 	classId: string;
 	className: string;
-	isEnrolled?: boolean;
 }
 
-export function AddClassButton({
-	classId,
-	className,
-	isEnrolled = false,
-}: AddClassButtonProps) {
+export function AddClassButton({ classId, className }: AddClassButtonProps) {
 	const { data: session } = useSession();
-	const { addClass, removeClass, isLoading } = useClassMutations(session?.user.id);
-	const [hasClass, setHasClass] = useState(isEnrolled);
+	const userId = session?.user.id;
+	const { addClass, removeClass, isLoading } = useClassMutations(userId);
+	const [hasClass, setHasClass] = useState<Boolean | undefined>(undefined);
 
-	if (!session?.user?.id) {
+	const { data: userClasses, isLoading: isLoadingUserClasses } = useUserClasses(userId);
+
+	useEffect(() => {
+		if (userClasses) {
+			const isEnrolled = userClasses.some(
+				(userClass: any) => userClass.classId === classId
+			);
+			setHasClass(isEnrolled);
+		}
+	}, [userClasses, classId]);
+
+	if (!userId || hasClass === undefined || isLoadingUserClasses) {
 		return null;
 	}
 

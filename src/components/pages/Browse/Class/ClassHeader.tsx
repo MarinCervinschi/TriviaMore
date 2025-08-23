@@ -24,7 +24,6 @@ interface ClassHeaderProps {
 	classData: ClassData;
 	totalSections: number;
 	totalQuestions: number;
-	isEnrolled?: boolean;
 	isEditMode?: boolean;
 	canEdit?: boolean;
 	onEditAction?: (action: "edit" | "delete", data: ClassData) => void;
@@ -34,7 +33,6 @@ export default function ClassHeader({
 	classData,
 	totalSections,
 	totalQuestions,
-	isEnrolled = false,
 	isEditMode = false,
 	canEdit = false,
 	onEditAction,
@@ -105,7 +103,6 @@ export default function ClassHeader({
 						<AddClassButton
 							classId={classData.id}
 							className={classData.name}
-							isEnrolled={isEnrolled}
 						/>
 					</div>
 				)}
