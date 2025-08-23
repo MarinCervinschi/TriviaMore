@@ -1,13 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-import type {
-	BrowseTreeResponse,
-	ClassNode,
-	DepartmentNode,
-	ExpandClassResponse,
-	ExpandCourseResponse,
-	SectionNode,
-} from "../types/browse.types";
+import type { BrowseTreeResponse, DepartmentNode } from "../types/browse.types";
 import { type UserPermissions, UserService } from "./user.service";
 
 export class BrowseService extends UserService {
@@ -330,17 +323,7 @@ export class BrowseService extends UserService {
 	/**
 	 * Ottieni corso con le sue classi e filtri
 	 */
-	static async getCourseWithClasses(
-		departmentCode: string,
-		courseCode: string,
-		userId?: string
-	) {
-		let permissions: UserPermissions | undefined;
-
-		if (userId) {
-			permissions = await super.getUserPermissions(userId);
-		}
-
+	static async getCourseWithClasses(departmentCode: string, courseCode: string) {
 		const course = await prisma.course.findFirst({
 			where: {
 				code: courseCode,
@@ -374,18 +357,16 @@ export class BrowseService extends UserService {
 			return null;
 		}
 
-		// Per ogni classe, conta solo le sezioni accessibili all'utente
-		const classesWithAccessibleSections = await Promise.all(
+		const classes = await Promise.all(
 			course.classes.map(async cls => {
-				// Usa getSectionWhereClause per determinare quali sezioni l'utente può vedere
-				const sectionWhereClause = await super.getSectionWhereClause(
-					cls.id,
-					permissions
-				);
-
-				// Conta le sezioni accessibili
-				const accessibleSectionsCount = await prisma.section.count({
-					where: sectionWhereClause,
+				const sectionsCount = await prisma.section.count({
+					where: {
+						classId: cls.id,
+						isPublic: true,
+						name: {
+							not: "Exam Simulation",
+						},
+					},
 				});
 
 				return {
@@ -397,7 +378,7 @@ export class BrowseService extends UserService {
 					classYear: cls.classYear,
 					position: cls.position,
 					_count: {
-						sections: accessibleSectionsCount,
+						sections: sectionsCount,
 					},
 				};
 			})
@@ -415,7 +396,7 @@ export class BrowseService extends UserService {
 			_count: {
 				classes: course._count.classes,
 			},
-			classes: classesWithAccessibleSections,
+			classes: classes,
 		};
 	}
 
@@ -481,15 +462,8 @@ export class BrowseService extends UserService {
 	static async getClassWithSections(
 		departmentCode: string,
 		courseCode: string,
-		classCode: string,
-		userId?: string
+		classCode: string
 	) {
-		let permissions: UserPermissions | undefined;
-
-		if (userId) {
-			permissions = await super.getUserPermissions(userId);
-		}
-
 		const classData = await prisma.class.findFirst({
 			where: {
 				code: classCode,
@@ -511,7 +485,7 @@ export class BrowseService extends UserService {
 					},
 				},
 				_count: {
-					select: { sections: true },
+					select: { sections: { where: { isPublic: true } } },
 				},
 			},
 		});
@@ -520,10 +494,8 @@ export class BrowseService extends UserService {
 			return null;
 		}
 
-		const whereClause = await super.getSectionWhereClause(classData.id, permissions);
-
 		const sections = await prisma.section.findMany({
-			where: whereClause,
+			where: { classId: classData.id, isPublic: true },
 			orderBy: { position: "asc" },
 			include: {
 				_count: {
@@ -537,19 +509,6 @@ export class BrowseService extends UserService {
 			},
 		});
 
-		let isEnrolled = false;
-		if (userId) {
-			const userClass = await prisma.userClass.findUnique({
-				where: {
-					userId_classId: {
-						userId,
-						classId: classData.id,
-					},
-				},
-			});
-			isEnrolled = !!userClass;
-		}
-
 		return {
 			id: classData.id,
 			name: classData.name,
@@ -562,7 +521,6 @@ export class BrowseService extends UserService {
 			_count: {
 				sections: classData._count.sections,
 			},
-			isEnrolled,
 			sections: sections.map(section => {
 				const quizQuestions = section.questions.filter(
 					q => q.questionType === "TRUE_FALSE" || q.questionType === "MULTIPLE_CHOICE"

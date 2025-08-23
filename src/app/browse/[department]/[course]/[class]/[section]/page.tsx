@@ -1,72 +1,67 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import Head from "next/head";
+import { notFound, useParams } from "next/navigation";
 
 import SectionPageComponent from "@/components/pages/Browse/Section/index";
-import { BrowseService, EvaluationService } from "@/lib/services";
+import { useSectionData } from "@/hooks/useSectionData";
 
-interface SectionPageProps {
-	params: Promise<{
+import SectionLoadingPage from "./loading";
+
+export default function SectionPage() {
+	const {
+		department: departmentCode,
+		course: courseCode,
+		class: classCode,
+		section: sectionName,
+	} = useParams<{
 		department: string;
 		course: string;
 		class: string;
 		section: string;
-	}>;
-}
+	}>();
+	const { data, isLoading, isError } = useSectionData({
+		departmentCode: departmentCode.toUpperCase(),
+		courseCode: courseCode.toUpperCase(),
+		classCode: classCode.toUpperCase(),
+		sectionName,
+	});
 
-export const dynamicParams = true;
-export const revalidate = 3600;
+	if (isLoading) {
+		return <SectionLoadingPage />;
+	}
+	const { sectionData, evaluationModes } = data;
 
-export default async function SectionPage({ params }: SectionPageProps) {
-	const resolvedParams = await params;
-
-	const [sectionData, evaluationModes] = await Promise.all([
-		BrowseService.getSectionByName(
-			resolvedParams.department.toUpperCase(),
-			resolvedParams.course.toUpperCase(),
-			resolvedParams.class.toUpperCase(),
-			resolvedParams.section
-		),
-		EvaluationService.getAllEvaluationModes(),
-	]);
-
-	if (!sectionData) {
+	if (!sectionData || !evaluationModes || isError) {
 		notFound();
 	}
 
 	return (
-		<SectionPageComponent
-			sectionData={sectionData}
-			departmentCode={resolvedParams.department}
-			courseCode={resolvedParams.course}
-			classCode={resolvedParams.class}
-			evaluationModes={evaluationModes}
-		/>
+		<>
+			<Head>
+				<title>{sectionData.name} - Quiz e Domande | TriviaMore</title>
+				<meta
+					name="description"
+					content={`Esplora quiz e domande della sezione ${sectionData.name} della classe ${sectionData.class.name}. ${sectionData.description ? `${sectionData.description} ` : ""}Studia e mettiti alla prova con quiz interattivi.`}
+				/>
+				<meta
+					name="keywords"
+					content={`${sectionData.name}, quiz, domande, ${sectionData.class.name}, ${sectionData.class.course.name}, ${sectionData.class.course.department.name}, studio, università, ${sectionData.name.toLowerCase()}`}
+				/>
+				<meta property="og:title" content={`${sectionData.name} - Quiz e Domande`} />
+				<meta
+					property="og:description"
+					content={`Esplora quiz e domande della sezione ${sectionData.name} su TriviaMore.`}
+				/>
+				<meta property="og:type" content="website" />
+			</Head>
+			<SectionPageComponent
+				sectionData={sectionData}
+				departmentCode={departmentCode}
+				courseCode={courseCode}
+				classCode={classCode}
+				evaluationModes={evaluationModes}
+			/>
+		</>
 	);
-}
-
-export async function generateMetadata({ params }: SectionPageProps) {
-	const resolvedParams = await params;
-	const sectionData = await BrowseService.getSectionByName(
-		resolvedParams.department.toUpperCase(),
-		resolvedParams.course.toUpperCase(),
-		resolvedParams.class.toUpperCase(),
-		resolvedParams.section
-	);
-
-	if (!sectionData) {
-		return {
-			title: "Sezione Non Trovata - TriviaMore",
-			description: "La sezione richiesta non è stata trovata.",
-		};
-	}
-
-	return {
-		title: `${sectionData.name} - Quiz e Domande | TriviaMore`,
-		description: `Esplora quiz e domande della sezione ${sectionData.name} della classe ${sectionData.class.name}. ${sectionData.description ? `${sectionData.description} ` : ""}Studia e mettiti alla prova con quiz interattivi.`,
-		keywords: `${sectionData.name}, quiz, domande, ${sectionData.class.name}, ${sectionData.class.course.name}, ${sectionData.class.course.department.name}, studio, università, ${sectionData.name.toLowerCase()}`,
-		openGraph: {
-			title: `${sectionData.name} - Quiz e Domande`,
-			description: `Esplora quiz e domande della sezione ${sectionData.name} su TriviaMore.`,
-			type: "website",
-		},
-	};
 }

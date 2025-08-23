@@ -17,7 +17,7 @@ export default function UserClassesPage() {
 	if (!user.id || isLoading) {
 		return <UserClassesLoadingPage />;
 	}
-	
+
 	if (!userClasses || isError) {
 		notFound();
 	}

@@ -15,11 +15,7 @@ export default function QuizResultsPageComponent({ results }: { results: QuizRes
 
 	return (
 		<div className="container mx-auto max-w-4xl px-4 py-8">
-			<QuizResults
-				results={results}
-				onExit={handleBackToUser}
-				showRetry={false}
-			/>
+			<QuizResults results={results} onExit={handleBackToUser} showRetry={false} />
 		</div>
 	);
 }

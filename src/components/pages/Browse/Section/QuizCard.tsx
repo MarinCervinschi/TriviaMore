@@ -64,8 +64,8 @@ export function QuizCard({
 						</div>
 						<p className="text-sm text-gray-700 dark:text-gray-300">
 							Mettiti alla prova su questa sezione e rispondi alle domande. Non c&apos;è
-							solo una risposta corretta! Per modalità di valutazione, durata del quiz e numero di domande consulta le
-							impostazioni.
+							solo una risposta corretta! Per modalità di valutazione, durata del quiz e
+							numero di domande consulta le impostazioni.
 						</p>
 					</div>
 
