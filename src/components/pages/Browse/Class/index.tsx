@@ -17,7 +17,7 @@ import ClassHeader from "./ClassHeader";
 import ClassSections from "./ClassSections";
 import ExamSimulationButton from "./ExamSimulationButton";
 
-interface Section {
+export interface Section {
 	id: string;
 	name: string;
 	description?: string | null;
