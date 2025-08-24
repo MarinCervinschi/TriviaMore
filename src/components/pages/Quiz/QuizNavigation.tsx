@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +22,40 @@ export function QuizNavigation({
 	onComplete,
 }: QuizNavigationProps) {
 	const isFirstQuestion = currentIndex === 0;
+	const isLastQuestionIndex = currentIndex === totalQuestions - 1;
+	const canGoNext = !isLastQuestionIndex;
+	const canGoPrevious = !isFirstQuestion;
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (
+				event.target instanceof HTMLInputElement ||
+				event.target instanceof HTMLTextAreaElement
+			) {
+				return;
+			}
+
+			switch (event.key) {
+				case "ArrowLeft":
+					event.preventDefault();
+					if (canGoPrevious && onPrevious) {
+						onPrevious();
+					}
+					break;
+				case "ArrowRight":
+					event.preventDefault();
+					if (canGoNext && onNext) {
+						onNext();
+					}
+					break;
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [canGoNext, canGoPrevious, onNext, onPrevious]);
 
 	return (
 		<div className="border-t bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6">
