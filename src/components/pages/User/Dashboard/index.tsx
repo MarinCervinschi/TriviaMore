@@ -256,7 +256,7 @@ export default function UserDashboardComponent({
 					</CardHeader>
 					<CardContent>
 						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-							{userProfile.recentClasses.slice(0, 3).map(classItem => (
+							{userProfile.recentClasses.map(classItem => (
 								<Card key={classItem.id} className="transition-shadow hover:shadow-md">
 									<CardHeader className="pb-3">
 										<div className="flex items-start justify-between">
@@ -295,7 +295,7 @@ export default function UserDashboardComponent({
 				</Card>
 			)}
 
-			{/* Attività recente - Solo le ultime 3 */}
+			{/* Attività recente */}
 			{userProfile.recentActivity?.quizAttempts &&
 				userProfile.recentActivity.quizAttempts.length > 0 && (
 					<Card>
@@ -303,13 +303,13 @@ export default function UserDashboardComponent({
 							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 								<div>
 									<CardTitle>Attività Recenti</CardTitle>
-									<CardDescription>I tuoi ultimi 3 quiz completati</CardDescription>
+									<CardDescription>I tuoi ultimi 5 quiz completati</CardDescription>
 								</div>
 							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
-								{userProfile.recentActivity.quizAttempts.slice(0, 3).map(attempt => (
+								{userProfile.recentActivity.quizAttempts.map(attempt => (
 									<div
 										key={attempt.id}
 										className="flex flex-col gap-3 rounded-lg bg-gray-50 p-4 dark:bg-gray-800 sm:flex-row sm:items-center sm:justify-between"

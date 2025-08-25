@@ -10,7 +10,28 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+async function checkDbName() {
+	try {
+		const result = await prisma.$queryRawUnsafe<any>(
+			"SELECT current_database() AS dbname"
+		);
+		const dbName = result[0]?.dbname || "";
+		console.log(`🔍 Nome del database attuale: ${dbName}`, result);
+		if (dbName.toLowerCase().includes("neondb")) {
+			console.error("❌ Seeding bloccato: database NEONDB rilevato.");
+			await prisma.$disconnect();
+			process.exit(1);
+		}
+	} catch (err) {
+		console.error("❌ Errore nel controllo del nome database:", err);
+		await prisma.$disconnect();
+		process.exit(1);
+	}
+}
+
+
 async function main() {
+	await checkDbName();
 	console.log("🌱 Iniziando il seeding del database...");
 
 	// Pulizia del database (solo se le tabelle esistono)

@@ -142,14 +142,15 @@ export function useEditMode({
 	classId,
 }: UseEditModeProps = {}): EditModePermissions {
 	const { data: session } = useSession();
+	const user = session?.user;
 
 	const shouldFetchPermissions =
-		session?.user?.role && ["ADMIN", "MAINTAINER"].includes(session.user.role);
+		user?.role && ["ADMIN", "MAINTAINER"].includes(user.role);
 
 	const { data: userPermissions, isLoading } = useVolatileQuery<UserPermissions>({
-		queryKey: ["userPermissions", session?.user?.id],
+		queryKey: ["userPermissions", user?.id],
 		queryFn: fetchUserPermissions,
-		enabled: !shouldFetchPermissions,
+		enabled: shouldFetchPermissions,
 	});
 
 	const permissions = useMemo(() => {
