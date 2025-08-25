@@ -474,29 +474,102 @@ export class UserService {
 	 */
 	static async getUserProfile(userId: string): Promise<UserProfileData | null> {
 		try {
-			const user = await prisma.user.findUnique({
-				where: { id: userId },
-				include: {
-					_count: {
-						select: {
-							quizAttempts: true,
-							userClasses: true,
-							bookmarks: true,
+			const [user, progressData, recentClassesData, quizAttempts] = await Promise.all([
+				prisma.user.findUnique({
+					where: { id: userId },
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+						role: true,
+						createdAt: true,
+						updatedAt: true,
+						_count: {
+							select: {
+								quizAttempts: true,
+								userClasses: true,
+								bookmarks: true,
+							},
 						},
 					},
-					quizAttempts: {
-						take: 5,
-						orderBy: { completedAt: "desc" },
-						include: {
-							quiz: {
-								include: {
-									section: {
-										include: {
-											class: {
-												include: {
-													course: {
-														include: {
-															department: true,
+				}),
+
+				prisma.progress.findMany({
+					where: { userId },
+					select: {
+						quizMode: true,
+						averageScore: true,
+						bestScore: true,
+						quizzesTaken: true,
+						totalTimeSpent: true,
+						section: {
+							select: {
+								class: {
+									select: {
+										courseId: true,
+									},
+								},
+							},
+						},
+					},
+				}),
+
+				prisma.userRecentClasses.findMany({
+					where: { userId },
+					orderBy: { lastVisited: "desc" },
+					take: 6,
+					select: {
+						lastVisited: true,
+						class: {
+							select: {
+								id: true,
+								name: true,
+								code: true,
+								classYear: true,
+								course: {
+									select: {
+										id: true,
+										name: true,
+										code: true,
+										courseType: true,
+										department: {
+											select: {
+												id: true,
+												name: true,
+												code: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				}),
+
+				prisma.quizAttempt.findMany({
+					where: { userId },
+					orderBy: { completedAt: "desc" },
+					take: 3,
+					select: {
+						id: true,
+						score: true,
+						completedAt: true,
+						quiz: {
+							select: {
+								section: {
+									select: {
+										name: true,
+										class: {
+											select: {
+												name: true,
+												course: {
+													select: {
+														name: true,
+														department: {
+															select: {
+																name: true,
+															},
 														},
 													},
 												},
@@ -507,122 +580,32 @@ export class UserService {
 							},
 						},
 					},
-				},
-			});
+				}),
+			]);
 
 			if (!user) return null;
 
-			// Calculate stats from Progress data instead of individual quiz attempts
-			const progressData = await prisma.progress.findMany({
-				where: { userId },
-				include: {
-					section: {
-						include: {
-							class: {
-								include: {
-									course: {
-										include: {
-											department: true,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			});
-
 			const stats = this.calculateUserStatsFromProgress(progressData);
 
-			// Get recent classes based on quiz attempts
-			const recentClassesFromQuizzes = await prisma.class.findMany({
-				where: {
-					sections: {
-						some: {
-							quizzes: {
-								some: {
-									attempts: {
-										some: {
-											userId: userId,
-										},
-									},
-								},
-							},
-						},
-					},
+			const recentClasses = recentClassesData.map(urc => ({
+				id: urc.class.id,
+				name: urc.class.name,
+				code: urc.class.code,
+				classYear: urc.class.classYear,
+				course: {
+					id: urc.class.course.id,
+					name: urc.class.course.name,
+					code: urc.class.course.code,
+					courseType: urc.class.course.courseType,
+					department: urc.class.course.department,
 				},
-				include: {
-					course: {
-						include: {
-							department: true,
-						},
-					},
-					sections: {
-						include: {
-							quizzes: {
-								include: {
-									attempts: {
-										where: { userId },
-										orderBy: { completedAt: "desc" },
-										take: 1,
-									},
-								},
-							},
-						},
-					},
-				},
-				orderBy: {
-					sections: {
-						_count: "desc",
-					},
-				},
-				take: 10,
-			});
-
-			// Sort by most recent quiz attempt and limit to 5
-			const recentClasses = recentClassesFromQuizzes
-				.map(classItem => {
-					const mostRecentAttempt = classItem.sections
-						.flatMap(section => section.quizzes)
-						.flatMap(quiz => quiz.attempts)
-						.sort(
-							(a, b) =>
-								new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
-						)[0];
-
-					return {
-						...classItem,
-						mostRecentAttemptDate: mostRecentAttempt?.completedAt || new Date(0),
-					};
-				})
-				.sort(
-					(a, b) =>
-						new Date(b.mostRecentAttemptDate).getTime() -
-						new Date(a.mostRecentAttemptDate).getTime()
-				)
-				.slice(0, 5)
-				.map(classItem => ({
-					id: classItem.id,
-					name: classItem.name,
-					code: classItem.code,
-					classYear: classItem.classYear,
-					course: {
-						id: classItem.course.id,
-						name: classItem.course.name,
-						code: classItem.course.code,
-						courseType: classItem.course.courseType,
-						department: {
-							id: classItem.course.department.id,
-							name: classItem.course.department.name,
-							code: classItem.course.department.code,
-						},
-					},
-				}));
+				mostRecentAttemptDate: urc.lastVisited,
+			}));
 
 			return {
 				...user,
 				recentActivity: {
-					quizAttempts: user.quizAttempts,
+					quizAttempts,
 				},
 				recentClasses,
 				stats,
