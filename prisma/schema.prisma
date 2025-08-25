@@ -28,6 +28,7 @@ model User {
   bookmarks          Bookmark[]
   progress           Progress[]
   accessibleSections SectionAccess[]
+  recentClasses      UserRecentClasses[]
 
   // Admin relations
   managedDepartments DepartmentAdmin[]
@@ -107,14 +108,28 @@ model Class {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  sections    Section[]
-  userClasses UserClass[]
+  course        Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sections      Section[]
+  userClasses   UserClass[]
+  recentClasses UserRecentClasses[]
 
   @@unique([code, courseId])
   @@index([position])
   @@index([classYear])
   @@map("classes")
+}
+
+model UserRecentClasses {
+  userId      String
+  classId     String
+  lastVisited DateTime @default(now())
+  visitCount  Int      @default(1)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([userId, classId])
+  @@map("user_recent_classes")
 }
 
 model Section {

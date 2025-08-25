@@ -39,5 +39,8 @@
   "prettier.requireConfig": true,
   "prettier.useEditorConfig": false,
   "typescript.preferences.includePackageJsonAutoImports": "off",
-  "javascript.preferences.includePackageJsonAutoImports": "off"
+  "javascript.preferences.includePackageJsonAutoImports": "off",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
