@@ -29,7 +29,6 @@ async function checkDbName() {
 	}
 }
 
-
 async function main() {
 	await checkDbName();
 	console.log("🌱 Iniziando il seeding del database...");

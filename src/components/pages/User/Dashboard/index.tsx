@@ -303,7 +303,10 @@ export default function UserDashboardComponent({
 							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 								<div>
 									<CardTitle>Attività Recenti</CardTitle>
-									<CardDescription>I tuoi ultimi 5 quiz completati</CardDescription>
+									<CardDescription>
+										I tuoi ultimi {userProfile.recentActivity.quizAttempts.length} quiz
+										completati
+									</CardDescription>
 								</div>
 							</div>
 						</CardHeader>
