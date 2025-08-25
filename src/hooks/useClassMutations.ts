@@ -48,6 +48,7 @@ export function useClassMutations(userId: string) {
 		mutationFn: addClassFetch,
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({ queryKey: ["userClasses", userId] });
+			queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
 			toast.success(`Classe "${variables.className}" aggiunta ai tuoi corsi!`);
 		},
 		onError: (error: Error, variables) => {
@@ -60,6 +61,7 @@ export function useClassMutations(userId: string) {
 		mutationFn: removeClassFetch,
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({ queryKey: ["userClasses", userId] });
+			queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
 			toast.success(`Classe "${variables.className}" rimossa dai tuoi corsi!`);
 		},
 		onError: (error: Error, variables) => {

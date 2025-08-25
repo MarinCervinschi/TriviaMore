@@ -35,6 +35,7 @@ export function useBookmarkToggle(userId: string | undefined, questionId: string
 		onSuccess: data => {
 			queryClient.invalidateQueries({ queryKey: ["bookmark", userId, questionId] });
 			queryClient.invalidateQueries({ queryKey: ["userBookmarks", userId] });
+			queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
 
 			toast.success(data.message);
 		},
