@@ -15,7 +15,7 @@ const fetchUserProfile = async () => {
 };
 
 export const useUserData = (userId: string) => {
-	return useVolatileQuery<UserProfileData>({
+	return useQuery<UserProfileData>({
 		queryKey: ["userProfile", userId],
 		queryFn: () => fetchUserProfile(),
 		enabled: !!userId,
