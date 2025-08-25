@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
 
@@ -8,6 +8,7 @@ import { EditModeButton } from "@/components/EditMode/edit-mode-button";
 import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import { useEditMode } from "@/hooks/useEditMode";
+import { useUpdateRecentClass } from "@/hooks/useUpdateRecentClass";
 import { useUserSectionsAccessByClass } from "@/hooks/useUserData";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
 
@@ -87,6 +88,14 @@ export default function ClassPageComponent({
 		userId,
 		classData.id
 	);
+	const { updateRecentClass } = useUpdateRecentClass(userId);
+
+	useEffect(() => {
+		if (classData.id) {
+			updateRecentClass.mutate(classData.id);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [classData.id]);
 
 	if (Array.isArray(userSectionAccess)) {
 		userSectionAccess.forEach((section: Section) => {

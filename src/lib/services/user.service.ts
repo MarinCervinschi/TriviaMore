@@ -209,6 +209,33 @@ export class UserService {
 			};
 		});
 	}
+	static async updateUserRecentClass(userId: string, classId: string): Promise<void> {
+		try {
+			await prisma.userRecentClasses.upsert({
+				where: {
+					userId_classId: {
+						userId,
+						classId,
+					},
+				},
+				update: {
+					lastVisited: new Date(),
+					visitCount: {
+						increment: 1,
+					},
+				},
+				create: {
+					userId,
+					classId,
+					lastVisited: new Date(),
+					visitCount: 1,
+				},
+			});
+		} catch (error) {
+			console.log("Error updating user recent class:", error);
+			throw error;
+		}
+	}
 
 	static async countUserSectionsAccessByCourse(
 		userId: string,
