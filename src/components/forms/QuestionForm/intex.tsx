@@ -98,8 +98,10 @@ export function QuestionForm({
 	const questionType = form.watch("questionType");
 
 	const handleSubmit = async (data: QuestionInput | UpdateQuestionInput) => {
-		console.log("Form submit event with", data);
 		try {
+			data.correctAnswer = data.correctAnswer?.filter(ans =>
+				data.options?.includes(ans)
+			);
 			await onSubmit(data);
 		} catch (error) {
 			console.error("Error submitting question form:", error);
