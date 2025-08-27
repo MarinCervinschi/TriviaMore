@@ -55,6 +55,7 @@ export default function ClassSections({
 			</div>
 		);
 	}
+	sections.sort((a, b) => a.position - b.position);
 
 	return (
 		<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
