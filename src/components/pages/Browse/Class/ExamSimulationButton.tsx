@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -66,37 +66,46 @@ export default function ExamSimulationButton({
 		useFlashcardMutations();
 
 	const isUserLoggedIn = !!session;
-
-	const totalQuizQuestions = classData.sections.reduce(
-		(acc, section) => acc + section._count.quizQuestions,
-		0
-	);
-
-	const totalFlashcardQuestions = classData.sections.reduce(
-		(acc, section) => acc + section._count.flashcardQuestions,
-		0
-	);
+	const [hasEnoughQuestions, setHasEnoughQuestions] = useState(false);
 
 	// Stati per quiz
-	const defaultQuestionCount = Math.min(30, totalQuizQuestions);
-	const [questionCount, setQuestionCount] = useState([defaultQuestionCount]);
+	const [questionCount, setQuestionCount] = useState([30]);
 	const [selectedEvaluationMode, setSelectedEvaluationMode] = useState(
 		evaluationModes.length > 0 ? evaluationModes[0].id : ""
 	);
 	const [timerMinutes, setTimerMinutes] = useState([60]); // Default 60 minuti
 
 	// Stati per flashcard
-	const defaultFlashcardCount = Math.min(20, totalFlashcardQuestions);
-	const [flashcardCount, setFlashcardCount] = useState([defaultFlashcardCount]);
+	const [flashcardCount, setFlashcardCount] = useState([20]);
 
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 	const [currentTab, setCurrentTab] = useState("quiz");
+	const [totalQuizQuestions, setTotalQuizQuestions] = useState(0);
+	const [totalFlashcardQuestions, setTotalFlashcardQuestions] = useState(0);
+
+	useEffect(() => {
+		const totalQuizQuestions = classData.sections.reduce(
+			(acc, section) => acc + section._count.quizQuestions,
+			0
+		);
+		const totalFlashcardQuestions = classData.sections.reduce(
+			(acc, section) => acc + section._count.flashcardQuestions,
+			0
+		);
+
+		setTotalQuizQuestions(totalQuizQuestions);
+		setTotalFlashcardQuestions(totalFlashcardQuestions);
+		setQuestionCount([Math.min(30, totalQuizQuestions)]);
+		setFlashcardCount([Math.min(20, totalFlashcardQuestions)]);
+	}, [classData, classData.sections.length]);
+
+	useEffect(() => {
+		setHasEnoughQuestions(
+			currentTab === "quiz" ? totalQuizQuestions > 0 : totalFlashcardQuestions > 0
+		);
+	}, [currentTab, totalQuizQuestions, totalFlashcardQuestions]);
 
 	const isLoading = isQuizLoading || isFlashcardLoading;
-
-	// Verifica se ci sono abbastanza domande per la modalità selezionata
-	const hasEnoughQuestions =
-		currentTab === "quiz" ? totalQuizQuestions > 0 : totalFlashcardQuestions > 0;
 
 	const isButtonDisabled = !hasEnoughQuestions || isLoading;
 
