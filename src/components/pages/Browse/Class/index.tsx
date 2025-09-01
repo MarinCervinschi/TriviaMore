@@ -133,7 +133,15 @@ export default function ClassPageComponent({
 		type: "section" | "class",
 		data?: any
 	) => {
-		setModalState({ isOpen: true, mode: action, type, data });
+		if (type === "section" && action === "create") {
+			data = { ...data, position: classData.sections.length + 1 };
+		}
+		setModalState({
+			isOpen: true,
+			mode: action,
+			type,
+			data,
+		});
 	};
 
 	return (
