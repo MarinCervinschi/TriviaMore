@@ -1,12 +1,5 @@
 # Trivia MORE 🎓🧠
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.3-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-
 [![GitHub license](https://img.shields.io/github/license/MarinCervinschi/TriviaMore?style=for-the-badge)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/MarinCervinschi/TriviaMore?style=for-the-badge)]()
 [![GitHub forks](https://img.shields.io/github/forks/MarinCervinschi/TriviaMore?style=for-the-badge)]()
