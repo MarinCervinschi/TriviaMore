@@ -1,198 +1,240 @@
-[![GitHub license](https://img.shields.io/github/license/MarinCervinschi/TriviaMore)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/MarinCervinschi/TriviaMore)]()
-[![GitHub forks](https://img.shields.io/github/forks/MarinCervinschi/TriviaMore)]()
-[![GitHub issues](https://img.shields.io/github/issues/MarinCervinschi/TriviaMore)]()
-[![GitHub visitors](https://visitor-badge.laobi.icu/badge?page_id=MarinCervinschi.TriviaMore&)]()
-
 # Trivia MORE 🎓🧠
 
-Prepare. Practice. Succeed.
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.3-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-Trivia MORE is a comprehensive quiz app designed to test and enhance your knowledge while preparing you for university exams. The app offers:
+[![GitHub license](https://img.shields.io/github/license/MarinCervinschi/TriviaMore?style=for-the-badge)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/MarinCervinschi/TriviaMore?style=for-the-badge)]()
+[![GitHub forks](https://img.shields.io/github/forks/MarinCervinschi/TriviaMore?style=for-the-badge)]()
+[![GitHub issues](https://img.shields.io/github/issues/MarinCervinschi/TriviaMore?style=for-the-badge)]()
 
-- 📚 Structured Learning: Multiple classes, divided into sections that cover specific course topics.
-- ❓ Challenging Questions: Multiple-choice questions with single or multiple answer options.
-- 📝 Instant Feedback: View correct answers and get detailed scoring at the end of each quiz.
-- ⏱️ Time Management: Track your quiz duration to improve your speed and efficiency.
+**Prepare. Practice. Succeed.**
 
-Whether you’re revising for exams or just testing your knowledge, Trivia MORE is the perfect companion for academic success.
+Trivia MORE is a comprehensive quiz application designed to enhance learning and prepare students for university exams through structured practice and assessment.
 
-## Visit the app [here](https://www.trivia-more.it/) 🌐
+## 🌐 Live Demo
 
-### Get Started 🚀
+Visit the application at [trivia-more.it](https://www.trivia-more.it/)
 
-1. Clone the repository
+## 📖 About
+
+Trivia MORE transforms the way students prepare for university exams by providing an interactive, structured learning environment. Built with modern web technologies, it offers a comprehensive quiz platform that adapts to different learning styles and academic needs.
+
+The application serves as a bridge between traditional study methods and digital learning, offering features like real-time progress tracking, adaptive questioning, and collaborative learning tools. Whether you're a student looking to test your knowledge, an educator wanting to create engaging content, or an administrator managing academic programs, Trivia MORE provides the tools you need to succeed.
+
+## 📋 Table of Contents
+
+- [✨ Overview](#-overview)
+- [🚀 Getting Started](#-getting-started)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🐳 Docker Commands](#-docker-commands)
+- [🗄️ Database Management](#️-database-management)
+- [📚 Documentation](#-documentation)
+- [🤝 Contributing](#-contributing)
+- [🐛 Issue Reporting](#-issue-reporting)
+- [📄 License](#-license)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Docker** and **Docker Compose** (recommended for local development)
+- **Node.js** (18+ recommended)
+
+### Environment Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/MarinCervinschi/TriviaMore.git
+   cd TriviaMore
+   ```
+
+2. **Configure environment variables**
+
+   Copy the example environment file and configure it:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit the `.env` file with your specific configuration. The default database URL for local Docker development is already set up.
+
+3. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+### Local Development with Docker
+
+The easiest way to run the application locally is using Docker for the database:
+
+1. **Start the PostgreSQL database**
+
+   ```bash
+   docker-compose up -d postgres
+   ```
+
+2. **Set up the database**
+
+   ```bash
+   # Generate Prisma client and push schema to database
+   npm run db:push
+
+   # Seed the database with sample data
+   npm run db:seed
+   ```
+
+3. **Start the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Open the application**
+
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Radix UI](https://img.shields.io/badge/Radix_UI-Latest-1C1C1C?style=for-the-badge&logo=radix-ui)](https://www.radix-ui.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-0055FF?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-5-FF4154?style=for-the-badge&logo=react-query)](https://tanstack.com/query)
+
+### Backend
+
+[![Next.js API](https://img.shields.io/badge/Next.js_API-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/docs/api-routes/introduction)
+[![Prisma](https://img.shields.io/badge/Prisma-6.3-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+[![NextAuth.js](https://img.shields.io/badge/NextAuth.js-5-7C3AED?style=for-the-badge&logo=nextauth)](https://next-auth.js.org/)
+[![Zod](https://img.shields.io/badge/Zod-4-3E67B1?style=for-the-badge&logo=zod)](https://zod.dev/)
+
+### Development & DevOps
+
+[![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![ESLint](https://img.shields.io/badge/ESLint-8-4B32C3?style=for-the-badge&logo=eslint)](https://eslint.org/)
+[![Prettier](https://img.shields.io/badge/Prettier-3-F7B93E?style=for-the-badge&logo=prettier)](https://prettier.io/)
+[![Vercel](https://img.shields.io/badge/Vercel-Latest-000000?style=for-the-badge&logo=vercel)](https://vercel.com/)
+
+## 🐳 Docker Commands
 
 ```bash
-git clone ...
-```
-
-2. Install dependencies
-
-```bash
-npm install
-```
-
-3. Set up the database (copy `.env.example` to `.env` first)
-
-```bash
-# Generate Prisma client
-npx prisma generate
-
-# Push schema to database
-npx prisma db push
-
-# Seed database with sample data
-npm run db:seed
-```
-
-4. Start the server
-
-```bash
-npm run dev
-```
-
-5. Open the browser and go to http://localhost:3000
-
-### 📋 Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run db:seed      # Seed database with sample data
-npm run db:reset     # Reset database and apply migrations
-npm run db:push      # Push schema changes to database
-npm run db:studio    # Open Prisma Studio (visual database browser)
-```
-
-## Prisma Database Management 🗄️
-
-This project uses Prisma as the ORM for database management. Here are the most commonly used commands:
-
-### Local Database Setup with Docker 🐳
-
-For local development, you can use Docker to run a PostgreSQL database:
-
-```bash
-# Start PostgreSQL database
+# Start the database
 docker-compose up -d postgres
 
 # Stop the database
 docker-compose down
 
-# View logs
+# View database logs
 docker-compose logs postgres
 
 # Access PostgreSQL shell
 docker-compose exec postgres psql -U postgres -d triviamore
+
+# Restart the database
+docker-compose restart postgres
 ```
 
-**Database Connection Details:**
+## 🗄️ Database Management
 
-- **Host**: localhost
-- **Port**: 5432
-- **Database**: triviamore
-- **Username**: postgres
-- **Password**: password123
-- **Connection String**: `postgresql://postgres:password123@localhost:5432/triviamore?schema=public`
-
-> **Note**: Copy `.env.example` to `.env` and update the `DATABASE_URL` before running Prisma commands.
-
-### Setup & Development
+### Prisma Commands
 
 ```bash
-# Install Prisma CLI (if not already installed)
-npm install prisma --save-dev
-
-# Generate Prisma Client (after schema changes)
+# Generate Prisma client
 npx prisma generate
 
-# Push schema changes to database (for development)
+# Push schema changes to database (development)
 npx prisma db push
 
-# Create and apply migrations (for production)
-npx prisma migrate dev --name "your_migration_name"
+# Create and apply migrations (production)
+npx prisma migrate dev --name "migration_name"
 
 # Apply pending migrations
 npx prisma migrate deploy
-```
 
-### Database Inspection
+# Reset database and apply all migrations
+npx prisma migrate reset
 
-```bash
-# Open Prisma Studio (visual database browser)
+# Open Prisma Studio
 npx prisma studio
 
 # Check migration status
 npx prisma migrate status
-
-# View database schema
-npx prisma db pull
 ```
 
-### Database Reset & Seeding
+## 📚 Documentation
 
-```bash
-# Reset database and apply all migrations
-npx prisma migrate reset
+For detailed information about specific aspects of the application:
 
-# Seed the database with sample data
-npx prisma db seed
+- **[API Documentation](./docs/API_DOCUMENTATION.md)** - Complete API reference
+- **[Authentication](./docs/AUTH.md)** - Authentication system overview
 
-# Alternative: Reset database and seed in one command
-npm run db:reset
-```
+## 🤝 Contributing
 
-### 🌱 Database Seeding
+We welcome contributions! Here's how you can help:
 
-Il progetto include un file di seed completo che popola il database con dati di esempio per testare tutte le funzionalità dell'applicazione. Il seed crea:
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Make your changes**
+4. **Run tests and linting**
+   ```bash
+   npm run lint
+   npm run format:check
+   ```
+5. **Commit your changes**
+   ```bash
+   git commit -m 'Add some amazing feature'
+   ```
+6. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+7. **Open a Pull Request**
 
-**👥 Utenti di test:**
+### Development Guidelines
 
-- `superadmin` / `password123` (SUPERADMIN)
-- `admin` / `password123` (ADMIN)
-- `maintainer` / `password123` (MAINTAINER)
-- `mario.rossi` / `password123` (STUDENT)
-- `giulia.bianchi` / `password123` (STUDENT)
+- Follow the existing code style and patterns
+- Write meaningful commit messages
+- Test your changes thoroughly
+- Update documentation when necessary
+- Ensure all linting and formatting checks pass
 
-**📚 Struttura accademica:**
+## 🐛 Issue Reporting
 
-- 2 Dipartimenti (Informatica, Matematica)
-- 3 Corsi (Ingegneria del Software, Basi di Dati, Algebra Lineare)
-- 3 Classi per l'anno accademico 2024/25
-- 5 Sezioni con contenuti specifici
+Found a bug or have a feature request? Please use our issue templates:
 
-**❓ Contenuti didattici:**
+- **[Bug Report](https://github.com/MarinCervinschi/TriviaMore/issues/new?template=bug_report.md)** - Report bugs or unexpected behavior
+- **[Feature Request](https://github.com/MarinCervinschi/TriviaMore/issues/new?template=feature_request.md)** - Suggest new features or improvements
 
-- 15+ domande su vari argomenti (UML, Design Patterns, SQL, Normalizzazione, Algebra)
-- Quiz configurati con diverse modalità di valutazione
-- Tentativi di quiz con risposte e punteggi
-- Dati di progresso per gli studenti
+When reporting issues, please include:
 
-**📊 Modalità di valutazione:**
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- Screenshots (if applicable)
+- Environment details (browser, OS, etc.)
 
-- Standard (1 punto per risposta corretta, 0 per sbagliata)
-- Con Penalità (1 punto per corretta, -0.25 per sbagliata)
-- Credito Parziale (per domande a risposta multipla)
+## 📄 License
 
-Per popolare il database con questi dati di esempio:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```bash
-npx prisma db seed
-```
+## 👨‍💻 Author
 
-### Schema Management
-
-```bash
-# Format schema file
-npx prisma format
-
-# Validate schema
-npx prisma validate
-```
-
-> **Note**: Make sure to set up your `DATABASE_URL` environment variable in `.env` file before running any Prisma commands.
+**Marin Cervinschi** - [@MarinCervinschi](https://github.com/MarinCervinschi)
 
 ---
+
+⭐ If you find this project helpful, please consider giving it a star!
