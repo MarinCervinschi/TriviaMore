@@ -1,5 +1,7 @@
 # API Documentation - TriviaMore
 
+[← Back to README](../README.md) | [📚 All Documentation](./README.md)
+
 ## Introduction
 
 TriviaMore's API is built on **Next.js App Router**, leveraging the file-based routing system for clean, predictable API endpoints. The API follows RESTful principles and provides structured access to the application's core functionality through organized route handlers.
