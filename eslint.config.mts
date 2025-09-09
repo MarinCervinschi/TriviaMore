@@ -65,13 +65,14 @@ export default tseslint.config(
 					varsIgnorePattern: "^_",
 				},
 			],
-			"@typescript-eslint/no-explicit-any": "warn",
+			"@typescript-eslint/no-explicit-any": "off",
 
 			// General code quality rules
 			"prefer-const": "error",
 			"no-var": "error",
-			"no-console": "warn",
+			"no-console": ["warn", { allow: ["warn", "error"] }],
 			eqeqeq: ["error", "always"],
+			"curly": ["error", "all"],
 		},
 	}
 );
