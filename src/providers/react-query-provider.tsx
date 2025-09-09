@@ -6,6 +6,8 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
+import Loader from "@/components/Common/Loader";
+
 export function ReactQueryProviders({ children }: { children: ReactNode }) {
 	const [queryClient] = useState(
 		() =>
@@ -48,7 +50,7 @@ export function ReactQueryProviders({ children }: { children: ReactNode }) {
 	}, [queryClient]);
 
 	if (!isHydrated) {
-		return null;
+		return <Loader />;
 	}
 
 	return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
