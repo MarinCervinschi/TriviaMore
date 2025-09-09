@@ -5,7 +5,6 @@ import { NextAuthRequest } from "next-auth/lib";
 import { auth } from "@/lib/auth";
 import { UserService } from "@/lib/services";
 
-// GET /api/protected/user/sections-access?courseId=<courseId>
 // GET /api/protected/user/sections-access?classId=<classId>
 export const GET = auth(async function GET(request: NextAuthRequest) {
 	if (!request.auth) {
@@ -20,23 +19,13 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 		}
 
 		const { searchParams } = new URL(request.url);
-		const courseId = searchParams.get("courseId");
 		const classId = searchParams.get("classId");
 
-		if (!courseId && !classId) {
-			return NextResponse.json(
-				{ error: "Course ID or Class ID not found" },
-				{ status: 400 }
-			);
+		if (!classId) {
+			return NextResponse.json({ error: "Class ID required" }, { status: 400 });
 		}
 
-		let result;
-
-		if (classId) {
-			result = await UserService.getUserSectionsAccess(userId, classId);
-		} else if (courseId) {
-			result = await UserService.countUserSectionsAccessByCourse(userId, courseId);
-		}
+		const result = await UserService.getUserSectionsAccess(userId, classId);
 
 		return NextResponse.json(result);
 	} catch (error) {
@@ -47,4 +36,4 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});

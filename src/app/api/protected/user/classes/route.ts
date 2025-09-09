@@ -29,7 +29,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
 
 // POST /api/protected/userClass - Aggiungi una classe alla lista preferiti
 export const POST = auth(async function POST(request: NextAuthRequest) {
@@ -85,7 +85,7 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
 
 // DELETE /api/protected/userClass?classId=123 - Rimuovi una classe dalla lista preferiti
 export const DELETE = auth(async function DELETE(request: NextAuthRequest) {
@@ -125,4 +125,4 @@ export const DELETE = auth(async function DELETE(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import type { NextAuthRequest } from "next-auth";
+import { NextAuthRequest } from "next-auth";
 
 import { auth } from "@/lib/auth";
 import { AdminService } from "@/lib/services/admin.service";
@@ -16,7 +16,7 @@ import {
 // api/protected/admin/crud/[id]?nodeType
 
 export const PUT = auth(async function PUT(
-	request: NextRequest & { auth?: any },
+	request: NextAuthRequest,
 	{ params }: { params: Promise<{ id: string }> }
 ) {
 	if (!request.auth) {
@@ -78,7 +78,7 @@ export const PUT = auth(async function PUT(
 
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
-}) as unknown as (request: NextRequest, context: any) => Promise<NextResponse>;
+});
 
 export const DELETE = auth(async function DELETE(
 	request: NextAuthRequest,
@@ -139,4 +139,4 @@ export const DELETE = auth(async function DELETE(
 
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
-}) as unknown as (request: NextAuthRequest, context: any) => Promise<NextResponse>;
+});
