@@ -56,8 +56,6 @@
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"date-fns": "^4.1.0",
-		"eslint": "8.41.0",
-		"eslint-config-next": "13.4.4",
 		"framer-motion": "^12.6.2",
 		"jsonwebtoken": "^9.0.0",
 		"katex": "^0.16.22",
@@ -87,16 +85,22 @@
 		"zod": "^4.0.14"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.35.0",
+		"@next/eslint-plugin-next": "^15.5.2",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
 		"@types/bcrypt": "^5.0.0",
 		"@types/jsonwebtoken": "^9.0.9",
 		"@types/node": "20.2.5",
 		"@types/react": "18.2.7",
 		"@types/react-dom": "18.2.4",
-		"eslint": "8.41.0",
-		"eslint-config-next": "13.4.4",
+		"eslint": "^9.35.0",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^5.2.0",
+		"globals": "^15.15.0",
+		"jiti": "^2.5.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-tailwindcss": "^0.6.14",
-		"typescript": "^5.7.3"
+		"typescript": "^5.7.3",
+		"typescript-eslint": "^8.43.0"
 	}
 }
