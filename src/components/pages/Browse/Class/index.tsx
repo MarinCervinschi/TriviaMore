@@ -9,8 +9,8 @@ import { EditModeOverlay } from "@/components/EditMode/edit-mode-overlay";
 import { CrudModal, Modal } from "@/components/modals/CrudModal";
 import { useEditMode } from "@/hooks/useEditMode";
 import { useUpdateRecentClass } from "@/hooks/useUpdateRecentClass";
-import { useUserSectionsAccessByClass } from "@/hooks/useUserData";
 import { useEditModeContext } from "@/providers/edit-mode-provider";
+import { SectionAccessProvider } from "@/providers/section-access-provider";
 
 import ClassBreadcrumb from "./ClassBreadcrumb";
 import ClassFilters from "./ClassFilters";
@@ -84,10 +84,6 @@ export default function ClassPageComponent({
 }: ClassPageComponentProps) {
 	const { data: session } = useSession();
 	const userId = session?.user.id;
-	const { data: userSectionAccess, isLoading } = useUserSectionsAccessByClass(
-		userId,
-		classData.id
-	);
 	const { updateRecentClass } = useUpdateRecentClass(userId);
 
 	useEffect(() => {
@@ -96,15 +92,6 @@ export default function ClassPageComponent({
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [classData.id]);
-
-	if (Array.isArray(userSectionAccess)) {
-		userSectionAccess.forEach((section: Section) => {
-			const alreadyExists = classData.sections.some(s => s.id === section.id);
-			if (!alreadyExists) {
-				classData.sections.push(section);
-			}
-		});
-	}
 
 	const { isEditMode, toggleEditMode } = useEditModeContext();
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -198,13 +185,14 @@ export default function ClassPageComponent({
 						</div>
 					)}
 
-					<ClassSections
-						sections={filteredSections}
-						departmentCode={departmentCode}
-						courseCode={courseCode}
-						classCode={classData.code.toLowerCase()}
-						isLoading={isLoading}
-					/>
+					<SectionAccessProvider classId={classData.id}>
+						<ClassSections
+							sections={filteredSections}
+							departmentCode={departmentCode}
+							courseCode={courseCode}
+							classCode={classData.code.toLowerCase()}
+						/>
+					</SectionAccessProvider>
 				</div>
 			</div>
 			<CrudModal

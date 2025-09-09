@@ -100,4 +100,4 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
