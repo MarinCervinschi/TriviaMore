@@ -62,4 +62,4 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});

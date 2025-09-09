@@ -94,7 +94,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 	const data = await fetchUserData(userId);
 
 	return NextResponse.json({ data });
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
 ```
 
 ### Authentication Strategy
@@ -173,7 +173,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 	const userProfile = await UserService.getUserProfile(userId);
 
 	return NextResponse.json(userProfile);
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
 ```
 
 **Benefits:**

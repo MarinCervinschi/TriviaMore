@@ -55,4 +55,4 @@ export const DELETE = auth(async function DELETE(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});

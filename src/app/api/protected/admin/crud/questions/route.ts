@@ -30,7 +30,7 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 	} catch (error) {
 		return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+})
 
 // api/protected/admin/crud/questions?JSON=boolean
 
@@ -70,4 +70,4 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
