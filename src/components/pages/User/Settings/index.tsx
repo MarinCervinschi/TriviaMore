@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { ChevronRight, Home } from "lucide-react";
-import { User } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

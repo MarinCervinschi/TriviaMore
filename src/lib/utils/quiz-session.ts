@@ -22,7 +22,9 @@ export function createQuizSession(params: QuizSession): string {
 }
 
 export function getQuizSession(sessionId: string): QuizSession | null {
-	if (typeof window === "undefined") return null;
+	if (typeof window === "undefined") {
+		return null;
+	}
 
 	const data = sessionStorage.getItem(`quiz-session-${sessionId}`);
 	return data ? JSON.parse(data) : null;

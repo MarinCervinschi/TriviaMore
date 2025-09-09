@@ -36,9 +36,13 @@ export function SectionAccessProvider({
 	const userAccessibleSections = accessibleSections?.map(section => section.id) || [];
 
 	const canAccessSection = (sectionId: string, isPublic: boolean): boolean => {
-		if (isPublic) return true;
+		if (isPublic) {
+			return true;
+		}
 
-		if (!userId) return false;
+		if (!userId) {
+			return false;
+		}
 
 		return userAccessibleSections.includes(sectionId);
 	};

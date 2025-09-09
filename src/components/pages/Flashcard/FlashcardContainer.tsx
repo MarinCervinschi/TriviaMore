@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { User } from "next-auth";
-
 import { FlashcardSession } from "@/lib/types/flashcard.types";
 
 import { FlashcardCard } from "./FlashcardCard";

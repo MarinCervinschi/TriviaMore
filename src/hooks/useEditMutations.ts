@@ -87,8 +87,6 @@ const fetchDeleteNodeType = async ({ nodeType, id }: DeleteNodeParams) => {
 	});
 
 	if (!response.ok) {
-		console.log("Error deleting node:", { nodeType, id });
-		console.log("Response status:", response.status);
 		const error = await response.json();
 		throw new Error(
 			error.error || "Errore nell'eliminazione dell'operazione CRUD per " + nodeType
