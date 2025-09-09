@@ -85,14 +85,15 @@ export class AdminService extends UserService {
 		managedDepartmentIds: string[]
 	): Promise<boolean> {
 		switch (operation) {
-			case "course":
+			case "course": {
 				const course = await prisma.course.findUnique({
 					where: { id: resourceId },
 					select: { departmentId: true },
 				});
 				return course ? managedDepartmentIds.includes(course.departmentId) : false;
+			}
 
-			case "class":
+			case "class": {
 				const classData = await prisma.class.findUnique({
 					where: { id: resourceId },
 					include: { course: { select: { departmentId: true } } },
@@ -100,8 +101,9 @@ export class AdminService extends UserService {
 				return classData
 					? managedDepartmentIds.includes(classData.course.departmentId)
 					: false;
+			}
 
-			case "section":
+			case "section": {
 				const section = await prisma.section.findUnique({
 					where: { id: resourceId },
 					include: {
@@ -111,8 +113,9 @@ export class AdminService extends UserService {
 				return section
 					? managedDepartmentIds.includes(section.class.course.departmentId)
 					: false;
+			}
 
-			case "question":
+			case "question": {
 				const question = await prisma.question.findUnique({
 					where: { id: resourceId },
 					include: {
@@ -126,6 +129,7 @@ export class AdminService extends UserService {
 				return question
 					? managedDepartmentIds.includes(question.section.class.course.departmentId)
 					: false;
+			}
 
 			default:
 				return false;
@@ -141,21 +145,23 @@ export class AdminService extends UserService {
 		maintainedCourseIds: string[]
 	): Promise<boolean> {
 		switch (operation) {
-			case "class":
+			case "class": {
 				const classData = await prisma.class.findUnique({
 					where: { id: resourceId },
 					select: { courseId: true },
 				});
 				return classData ? maintainedCourseIds.includes(classData.courseId) : false;
+			}
 
-			case "section":
+			case "section": {
 				const section = await prisma.section.findUnique({
 					where: { id: resourceId },
 					include: { class: { select: { courseId: true } } },
 				});
 				return section ? maintainedCourseIds.includes(section.class.courseId) : false;
+			}
 
-			case "question":
+			case "question": {
 				const question = await prisma.question.findUnique({
 					where: { id: resourceId },
 					include: { section: { include: { class: { select: { courseId: true } } } } },
@@ -163,6 +169,7 @@ export class AdminService extends UserService {
 				return question
 					? maintainedCourseIds.includes(question.section.class.courseId)
 					: false;
+			}
 
 			default:
 				return false;

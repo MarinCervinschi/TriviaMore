@@ -1,5 +1,4 @@
 import QuizPageComponent from "@/components/pages/Quiz";
-import { auth } from "@/lib/auth";
 
 interface QuizPageProps {
 	params: Promise<{

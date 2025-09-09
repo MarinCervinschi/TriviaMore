@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { NextAuthRequest } from "next-auth/lib";

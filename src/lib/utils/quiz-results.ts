@@ -18,9 +18,15 @@ export function getPerformanceLevel(score: number): {
 }
 
 export function getScoreColor(score: number): string {
-	if (score >= 30) return "text-green-600 dark:text-green-400";
-	if (score >= 25) return "text-blue-600 dark:text-blue-400";
-	if (score >= 20) return "text-yellow-600 dark:text-yellow-400";
+	if (score >= 30) {
+		return "text-green-600 dark:text-green-400";
+	}
+	if (score >= 25) {
+		return "text-blue-600 dark:text-blue-400";
+	}
+	if (score >= 20) {
+		return "text-yellow-600 dark:text-yellow-400";
+	}
 	return "text-red-600 dark:text-red-400";
 }
 
@@ -28,21 +34,24 @@ export function getScoreBadge(score: number): {
 	label: string;
 	color: string;
 } {
-	if (score >= 30)
+	if (score >= 30) {
 		return {
 			label: "Eccellente",
 			color: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
 		};
-	if (score >= 25)
+	}
+	if (score >= 25) {
 		return {
 			label: "Buono",
 			color: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
 		};
-	if (score >= 20)
+	}
+	if (score >= 20) {
 		return {
 			label: "Sufficiente",
 			color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
 		};
+	}
 	return {
 		label: "Insufficiente",
 		color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",

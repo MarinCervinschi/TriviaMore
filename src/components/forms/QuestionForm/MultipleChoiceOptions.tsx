@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Plus, Trash2 } from "lucide-react";
-import { type Control, UseFormReturn, useFieldArray } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {

@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 
-import { User } from "next-auth";
-
 import { useFlashcardData } from "@/hooks";
 import { clearFlashcardSession } from "@/lib/utils/flashcard-session";
 

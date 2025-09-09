@@ -25,7 +25,9 @@ export function createFlashcardSession(params: FlashcardSessionRequest): string 
  * Recupera i dati della sessione dal localStorage
  */
 export function getFlashcardSession(sessionId: string): FlashcardSessionData | null {
-	if (typeof window === "undefined") return null;
+	if (typeof window === "undefined") {
+		return null;
+	}
 
 	try {
 		const data = localStorage.getItem(sessionId);

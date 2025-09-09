@@ -11,7 +11,6 @@ interface AuthHeaderProps {
 }
 
 export const AuthHeader: React.FC<AuthHeaderProps> = ({
-	title,
 	subtitle,
 	showBackButton = true,
 }) => {

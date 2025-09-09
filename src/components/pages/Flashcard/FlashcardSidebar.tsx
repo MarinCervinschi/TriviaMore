@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, Eye, X } from "lucide-react";
+import { ChevronLeft, Eye, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { FlashcardQuestion } from "@/lib/types/flashcard.types";

@@ -105,7 +105,7 @@ export default function DepartmentLoadingPage() {
 	);
 }
 
-function CourseCardSkeleton({ variant }: { variant: "bachelor" | "master" }) {
+function CourseCardSkeleton({ variant: _ }: { variant: "bachelor" | "master" }) {
 	return (
 		<div className="group relative">
 			<div className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
