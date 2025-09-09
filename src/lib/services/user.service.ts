@@ -149,19 +149,37 @@ export class UserService {
 			}
 		}
 
+		if (
+			!permissions.accessibleSectionIds ||
+			permissions.accessibleSectionIds.length === 0
+		) {
+			return {
+				classId,
+				name: {
+					not: "Exam Simulation",
+				},
+				isPublic: true,
+			};
+		}
+
+		const orCondition: Array<{ isPublic: boolean } | { id: { in: string[] } }> = [
+			{ isPublic: true },
+		];
+
+		if (permissions.accessibleSectionIds.length > 0) {
+			orCondition.push({
+				id: {
+					in: permissions.accessibleSectionIds,
+				},
+			});
+		}
+
 		return {
 			classId,
 			name: {
 				not: "Exam Simulation",
 			},
-			OR: [
-				{ isPublic: true },
-				{
-					id: {
-						in: permissions.accessibleSectionIds,
-					},
-				},
-			],
+			OR: orCondition,
 		};
 	}
 
