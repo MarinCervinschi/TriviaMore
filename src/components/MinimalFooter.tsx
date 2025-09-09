@@ -17,8 +17,8 @@ export function MinimalFooter() {
 
 					{/* Links */}
 					<div className="flex items-center gap-6 text-sm text-muted-foreground">
-						<Link href="/browse" className="transition-colors hover:text-foreground">
-							Esplora i contenuti
+						<Link href="https://github.com/MarinCervinschi/TriviaMore" className="transition-colors hover:text-foreground">
+							Git Hub
 						</Link>
 						<Link href="/about" className="transition-colors hover:text-foreground">
 							Chi siamo
