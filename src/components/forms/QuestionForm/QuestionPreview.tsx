@@ -75,7 +75,9 @@ export function QuestionPreview({ control }: QuestionPreviewProps) {
 						<h4 className="mb-2 font-medium">Opzioni:</h4>
 						<div className="space-y-2">
 							{options.map((option: string, index: number) => {
-								if (!option.trim()) {return null;}
+								if (!option.trim()) {
+									return null;
+								}
 								const isCorrect = correctAnswer.includes(option);
 								return (
 									<div

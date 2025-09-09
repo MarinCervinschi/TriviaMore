@@ -44,9 +44,15 @@ function getRoleLabel(role: string): string {
 function getScoreBadgeVariant(
 	score: number
 ): "default" | "secondary" | "destructive" | "outline" {
-	if (score >= 30) {return "default";} // Eccellente - verde
-	if (score >= 25) {return "secondary";} // Buono - blu
-	if (score >= 20) {return "outline";} // Sufficiente - giallo
+	if (score >= 30) {
+		return "default";
+	} // Eccellente - verde
+	if (score >= 25) {
+		return "secondary";
+	} // Buono - blu
+	if (score >= 20) {
+		return "outline";
+	} // Sufficiente - giallo
 	return "destructive"; // Insufficiente - rosso
 }
 

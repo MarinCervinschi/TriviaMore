@@ -44,8 +44,12 @@ export function QuizTimer({ timeLimit, onTimeUp }: QuizTimerProps) {
 	};
 
 	const getTimerColor = () => {
-		if (timeRemaining <= 60) {return "text-red-600 dark:text-red-400";} // Ultimo minuto
-		if (timeRemaining <= 300) {return "text-orange-600 dark:text-orange-400";} // Ultimi 5 minuti
+		if (timeRemaining <= 60) {
+			return "text-red-600 dark:text-red-400";
+		} // Ultimo minuto
+		if (timeRemaining <= 300) {
+			return "text-orange-600 dark:text-orange-400";
+		} // Ultimi 5 minuti
 		return "text-gray-700 dark:text-gray-300";
 	};
 

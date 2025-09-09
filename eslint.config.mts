@@ -72,7 +72,7 @@ export default tseslint.config(
 			"no-var": "error",
 			"no-console": ["warn", { allow: ["warn", "error"] }],
 			eqeqeq: ["error", "always"],
-			"curly": ["error", "all"],
+			curly: ["error", "all"],
 		},
 	}
 );
