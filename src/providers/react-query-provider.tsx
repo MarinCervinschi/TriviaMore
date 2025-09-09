@@ -1,21 +1,26 @@
 "use client";
 
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
-const persistentClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: 1000 * 60 * 60, // 1 ora
-			gcTime: 1000 * 60 * 60 * 24 * 7, // 1 settimana
-		},
-	},
-});
-
 export function ReactQueryProviders({ children }: { children: ReactNode }) {
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						staleTime: 1000 * 60 * 60, // 1 ora
+						gcTime: 1000 * 60 * 60 * 24 * 7, // 1 settimana
+					},
+				},
+			})
+	);
+
+	const [isHydrated, setIsHydrated] = useState(false);
+
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			const persister = createAsyncStoragePersister({
@@ -24,8 +29,8 @@ export function ReactQueryProviders({ children }: { children: ReactNode }) {
 				throttleTime: 1000,
 			});
 
-			persistQueryClient({
-				queryClient: persistentClient,
+			const [, persistPromise] = persistQueryClient({
+				queryClient,
 				persister,
 				maxAge: 1000 * 60 * 60 * 24 * 7, // 1 settimana
 				dehydrateOptions: {
@@ -33,12 +38,20 @@ export function ReactQueryProviders({ children }: { children: ReactNode }) {
 						query.gcTime !== 0 && !query.queryKey.includes("volatile"),
 				},
 			});
-		}
-	}, []);
 
-	return (
-		<QueryClientProvider client={persistentClient}>{children}</QueryClientProvider>
-	);
+			persistPromise.then(() => {
+				setIsHydrated(true);
+			});
+		} else {
+			setIsHydrated(true);
+		}
+	}, [queryClient]);
+
+	if (!isHydrated) {
+		return null;
+	}
+
+	return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
 export function useVolatileQuery<TQueryFnData = unknown, TError = Error>(options: any) {
