@@ -10,9 +10,7 @@ interface ClassFiltersProps {
 	totalResults: number;
 }
 
-export default function ClassFilters({
-	onSearchChange,
-}: ClassFiltersProps) {
+export default function ClassFilters({ onSearchChange }: ClassFiltersProps) {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 
 	const updateSearch = (query: string) => {

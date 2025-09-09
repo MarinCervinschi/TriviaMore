@@ -601,7 +601,9 @@ export class UserService {
 				}),
 			]);
 
-			if (!user) {return null;}
+			if (!user) {
+				return null;
+			}
 
 			const stats = this.calculateUserStatsFromProgress(progressData);
 
@@ -642,7 +644,9 @@ export class UserService {
 		targetUserId: string
 	): Promise<boolean> {
 		// Users can always view their own profile
-		if (viewerUserId === targetUserId) {return true;}
+		if (viewerUserId === targetUserId) {
+			return true;
+		}
 
 		// For now, all profiles are public (you can change this logic)
 		// You could add privacy settings to the User model
@@ -669,8 +673,12 @@ export class UserService {
 	 * Generate display name for user
 	 */
 	static getDisplayName(user: { name?: string | null; email?: string | null }): string {
-		if (user.name) {return user.name;}
-		if (user.email) {return user.email.split("@")[0];}
+		if (user.name) {
+			return user.name;
+		}
+		if (user.email) {
+			return user.email.split("@")[0];
+		}
 		return "Utente Anonimo";
 	}
 
