@@ -54,28 +54,7 @@ export const useUserClasses = (userId: string) => {
 	});
 };
 
-const fetchUserSectionsAccessCountByCourse = async (courseId: string) => {
-	const response = await fetch(
-		`/api/protected/user/sections-access?courseId=${courseId}`
-	);
-	if (!response.ok) {
-		throw new Error("Failed to fetch user sections access");
-	}
-	return response.json();
-};
-
-export const useUserSectionsAccessCountByCourse = (
-	userId: string,
-	courseId: string
-) => {
-	return useVolatileQuery<Record<string, number>>({
-		queryKey: ["userSectionsAccess", userId, courseId],
-		queryFn: () => fetchUserSectionsAccessCountByCourse(courseId),
-		enabled: !!userId && !!courseId,
-	});
-};
-
-const fetchUserSectionsAccessByClass = async (classId: string) => {
+const fetchUserSectionsAccess = async (classId: string) => {
 	const response = await fetch(
 		`/api/protected/user/sections-access?classId=${classId}`
 	);
@@ -85,10 +64,10 @@ const fetchUserSectionsAccessByClass = async (classId: string) => {
 	return response.json();
 };
 
-export const useUserSectionsAccessByClass = (userId: string, classId: string) => {
+export const useUserSectionsAccess = (userId: string, classId: string) => {
 	return useVolatileQuery<Section[]>({
 		queryKey: ["userSectionsAccess", userId, classId],
-		queryFn: () => fetchUserSectionsAccessByClass(classId),
+		queryFn: () => fetchUserSectionsAccess(classId),
 		enabled: !!userId && !!classId,
 	});
 };
