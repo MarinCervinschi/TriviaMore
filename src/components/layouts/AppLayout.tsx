@@ -1,7 +1,5 @@
 "use client";
 
-import { User } from "next-auth";
-
 import { MinimalFooter } from "@/components/MinimalFooter";
 import { Navigation } from "@/components/Navigation";
 

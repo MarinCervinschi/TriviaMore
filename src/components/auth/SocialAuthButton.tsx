@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import { useRouter } from "next/navigation";
-
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
@@ -66,7 +64,6 @@ export const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const config = providerConfig[provider];
 	const IconComponent = config.icon;
-	const router = useRouter();
 
 	const handleSocialSignIn = async () => {
 		// Feedback haptic per dispositivi mobili

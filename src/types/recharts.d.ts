@@ -44,11 +44,6 @@ declare module "recharts" {
 		height?: number;
 		fontSize?: number;
 	}
-
-	export interface YAxisProps {}
-
-	export interface TooltipProps {}
-
 	export interface BarProps {
 		dataKey?: string;
 		fill?: string;

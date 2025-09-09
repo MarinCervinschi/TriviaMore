@@ -34,9 +34,9 @@ export function FlashcardResults({
 	};
 
 	const getCompletionColor = () => {
-		if (completionPercentage === 100) return "text-green-600 dark:text-green-400";
-		if (completionPercentage >= 80) return "text-blue-600 dark:text-blue-400";
-		if (completionPercentage >= 60) return "text-yellow-600 dark:text-yellow-400";
+		if (completionPercentage === 100) {return "text-green-600 dark:text-green-400";}
+		if (completionPercentage >= 80) {return "text-blue-600 dark:text-blue-400";}
+		if (completionPercentage >= 60) {return "text-yellow-600 dark:text-yellow-400";}
 		return "text-purple-600 dark:text-purple-400";
 	};
 

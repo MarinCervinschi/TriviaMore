@@ -588,7 +588,7 @@ export class QuizService extends UserService {
 		timeSpent: number;
 		totalQuestions: number;
 	}): Promise<void> {
-		const { userId, sectionId, quizMode, score, timeSpent, totalQuestions } = params;
+		const { userId, sectionId, quizMode, score, timeSpent } = params;
 
 		const existingProgress = await prisma.progress.findUnique({
 			where: {

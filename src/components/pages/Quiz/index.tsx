@@ -51,7 +51,7 @@ export default function QuizPageComponent({ quizId, isGuest }: QuizPageComponent
 			router.back();
 		}
 
-		if (!attemptId) return;
+		if (!attemptId) {return;}
 
 		exitQuiz.mutateAsync({ quizAttemptId: attemptId });
 	};

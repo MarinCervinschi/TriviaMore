@@ -45,7 +45,7 @@ export function calculateAnswerScore(
 
 	if (correctGiven > 0) {
 		if (evaluationMode.partialCreditEnabled) {
-			if (incorrectGiven > 0 && evaluationMode.incorrectAnswerPoints == 0) {
+			if (incorrectGiven > 0 && evaluationMode.incorrectAnswerPoints === 0) {
 				return { score: 0, isCorrect: false };
 			}
 
@@ -82,7 +82,6 @@ export function calculateQuizResults(params: CalculateResultsParams): QuizResult
 		const question = questions.find(q => q.id === userAnswer.questionId);
 
 		if (!question) {
-			console.warn(`Question not found for ID: ${userAnswer.questionId}`);
 			return userAnswer;
 		}
 
