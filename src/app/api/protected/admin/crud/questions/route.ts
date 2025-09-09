@@ -28,9 +28,10 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 
 		return NextResponse.json(questions);
 	} catch (error) {
+		console.error("Errore nel recupero delle domande:", error);
 		return NextResponse.json({ error: "Errore interno del server" }, { status: 500 });
 	}
-})
+});
 
 // api/protected/admin/crud/questions?JSON=boolean
 

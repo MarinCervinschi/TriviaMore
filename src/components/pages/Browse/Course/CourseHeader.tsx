@@ -38,7 +38,6 @@ export function CourseHeader({
 }: CourseHeaderProps) {
 	const courseTypeLabel =
 		course.courseType === "BACHELOR" ? "Laurea Triennale" : "Laurea Magistrale";
-	const courseTypeColor = course.courseType === "BACHELOR" ? "blue" : "purple";
 
 	const content = (
 		<div className="mb-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">

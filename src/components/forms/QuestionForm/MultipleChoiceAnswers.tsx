@@ -26,7 +26,7 @@ export function MultipleChoiceAnswers({
 					<FormItem>
 						<div className="space-y-3">
 							{options.map((option: string, index: number) => {
-								if (!option.trim()) return null;
+								if (!option.trim()) {return null;}
 
 								const isChecked = correctAnswers.includes(option);
 

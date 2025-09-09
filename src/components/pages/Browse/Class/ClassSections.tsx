@@ -1,4 +1,3 @@
-import SectionCardSkeleton from "../Section/SectionCardSkeleton";
 import SectionCard from "./SectionCard";
 
 interface Section {

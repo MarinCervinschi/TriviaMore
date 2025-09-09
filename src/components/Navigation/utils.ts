@@ -4,7 +4,7 @@
  * @returns Iniziali maiuscole (max 2 caratteri)
  */
 export function getUserInitials(name?: string | null): string {
-	if (!name) return "U";
+	if (!name) {return "U";}
 	return name
 		.split(" ")
 		.map(n => n[0])

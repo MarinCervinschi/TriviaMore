@@ -18,7 +18,7 @@ export function AddClassButton({ classId, className }: AddClassButtonProps) {
 	const { data: session } = useSession();
 	const userId = session?.user.id;
 	const { addClass, removeClass, isLoading } = useClassMutations(userId);
-	const [hasClass, setHasClass] = useState<Boolean | undefined>(undefined);
+	const [hasClass, setHasClass] = useState<boolean | undefined>(undefined);
 
 	const { data: userClasses, isLoading: isLoadingUserClasses } = useUserClasses(userId);
 

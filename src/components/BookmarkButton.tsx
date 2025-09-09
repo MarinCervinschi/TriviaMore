@@ -39,7 +39,7 @@ export function BookmarkButton({
 
 	const handleToggle = (e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (isGuest) return;
+		if (isGuest) {return;}
 		toggleBookmark.mutate();
 	};
 

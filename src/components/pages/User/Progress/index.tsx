@@ -13,7 +13,6 @@ import {
 	TrendingUp,
 	Trophy,
 } from "lucide-react";
-import type { User } from "next-auth";
 import {
 	Bar,
 	BarChart,

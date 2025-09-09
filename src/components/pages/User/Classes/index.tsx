@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import { ChevronRight, ExternalLink, Filter, Home, Search, X } from "lucide-react";
-import { User } from "next-auth";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,7 +56,7 @@ export default function UserClassesComponent({
 
 	// Filter and sort classes
 	const filteredAndSortedClasses = useMemo(() => {
-		let filtered = userClasses.filter(userClass => {
+		const filtered = userClasses.filter(userClass => {
 			const matchesSearch =
 				userClass.class.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 				userClass.class.course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

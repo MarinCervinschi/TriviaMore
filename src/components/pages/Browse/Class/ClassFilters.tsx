@@ -12,7 +12,6 @@ interface ClassFiltersProps {
 
 export default function ClassFilters({
 	onSearchChange,
-	totalResults,
 }: ClassFiltersProps) {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 

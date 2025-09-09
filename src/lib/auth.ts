@@ -22,9 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 			return token;
 		},
-		async session({ session, token }) {
+		async session({ session }) {
 			if (session && session.user) {
-				const { password, ...userWithoutPassword } = session.user as any;
+				const { password: _, ...userWithoutPassword } = session.user as any;
 				session.user = userWithoutPassword;
 			}
 
