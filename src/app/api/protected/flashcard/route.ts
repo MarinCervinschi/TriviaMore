@@ -51,4 +51,4 @@ export const GET = auth(async function GET(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});

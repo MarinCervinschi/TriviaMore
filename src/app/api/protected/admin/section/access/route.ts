@@ -34,7 +34,7 @@ export const POST = auth(async function POST(request: NextAuthRequest) {
 
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
 
 // api/protected/admin/section/access
 export const DELETE = auth(async function DELETE(request: NextAuthRequest) {
@@ -68,4 +68,4 @@ export const DELETE = auth(async function DELETE(request: NextAuthRequest) {
 			{ status: 500 }
 		);
 	}
-}) as unknown as (request: NextAuthRequest) => Promise<NextResponse>;
+});
