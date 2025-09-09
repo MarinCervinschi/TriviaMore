@@ -362,7 +362,6 @@ export class BrowseService extends UserService {
 				const sectionsCount = await prisma.section.count({
 					where: {
 						classId: cls.id,
-						isPublic: true,
 						name: {
 							not: "Exam Simulation",
 						},
@@ -486,7 +485,7 @@ export class BrowseService extends UserService {
 				},
 				_count: {
 					select: {
-						sections: { where: { isPublic: true, name: { not: "Exam Simulation" } } },
+						sections: { where: { name: { not: "Exam Simulation" } } },
 					},
 				},
 			},
@@ -499,7 +498,6 @@ export class BrowseService extends UserService {
 		const sections = await prisma.section.findMany({
 			where: {
 				classId: classData.id,
-				isPublic: true,
 				name: { not: "Exam Simulation" },
 			},
 			orderBy: { position: "asc" },
@@ -607,19 +605,23 @@ export class BrowseService extends UserService {
 		// Cerca la sezione per nome (case insensitive)
 		const section = await prisma.section.findFirst({
 			where: {
-				...sectionWhereClause,
-				OR: [
+				AND: [
+					sectionWhereClause,
 					{
-						name: {
-							equals: originalSectionName,
-							mode: "insensitive" as const,
-						},
-					},
-					{
-						name: {
-							equals: sectionName,
-							mode: "insensitive" as const,
-						},
+						OR: [
+							{
+								name: {
+									equals: originalSectionName,
+									mode: "insensitive" as const,
+								},
+							},
+							{
+								name: {
+									equals: sectionName,
+									mode: "insensitive" as const,
+								},
+							},
+						],
 					},
 				],
 			},
