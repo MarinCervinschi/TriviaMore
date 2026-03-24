@@ -1,15 +1,15 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/providers/theme-provider'
-import { ReactQueryProvider } from '@/providers/react-query-provider'
 import { Toaster } from '@/components/ui/sonner'
 
 import globalsCss from '@/styles/globals.css?url'
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=window.matchMedia('(prefers-color-scheme:dark)').matches;var r=t==='system'?(d?'dark':'light'):t;document.documentElement.classList.toggle('dark',r==='dark');document.documentElement.style.colorScheme=r;}catch(e){}})();`
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -43,19 +43,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function RootLayout() {
   return (
     <ThemeProvider defaultTheme="system">
-      <ReactQueryProvider>
-        <Outlet />
-        <Toaster />
-        <TanStackDevtools
-          config={{ position: 'bottom-right' }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      </ReactQueryProvider>
+      <Outlet />
+      <Toaster />
+      <TanStackDevtools
+        config={{ position: 'bottom-right' }}
+        plugins={[
+          {
+            name: 'Tanstack Router',
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
     </ThemeProvider>
   )
 }
