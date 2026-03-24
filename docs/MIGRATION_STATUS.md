@@ -29,7 +29,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 
 - [x] **Fase 0** — Setup progetto TanStack Start
 - [x] **Fase 1** — Setup Supabase e migrazione database
-- [ ] **Fase 2** — Autenticazione con Supabase Auth
+- [x] **Fase 2** — Autenticazione con Supabase Auth
 - [ ] **Fase 3** — Row Level Security (RLS)
 - [ ] **Fase 4** — Routing e layout TanStack Start
 - [ ] **Fase 5** — Pagine pubbliche e browse
@@ -79,3 +79,13 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - User ID: `CUID (text)` → `UUID`
 - `@prisma/client` types → `supabase gen types typescript`
 - Prisma queries → `supabase.from('table').select()`
+
+### Da NextAuth a Supabase Auth (Fase 2)
+- `next-auth` → `@supabase/ssr` + `createServerFn`
+- Password hashing: `bcryptjs` manuale → gestito da Supabase Auth
+- Session: NextAuth session token → Supabase JWT + refresh token (cookie-based)
+- Account/OAuth: tabella `accounts` → `auth.identities` (gestito da Supabase)
+- Email verification: `VerificationToken` custom → built-in Supabase
+- Middleware auth: `middleware.ts` → `requireAuth()` in `beforeLoad`
+- Cookie handling: `getCookies`/`setCookie` da `@tanstack/react-start/server`
+- Auth state client: custom context → React Query `useVolatileQuery` (non persisted)

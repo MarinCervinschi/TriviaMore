@@ -1,6 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { Moon, Sun, Monitor, LogIn, LogOut, User } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -12,18 +13,62 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { theme, setTheme, resolvedTheme, isDark, mounted } = useTheme()
+  const { theme, setTheme, resolvedTheme, mounted } = useTheme()
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12">
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-4xl font-bold">TriviaMore</h1>
         <p className="text-muted-foreground">
-          TanStack Start — Fase 0 setup completo
+          TanStack Start — Fase 2: Autenticazione
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Auth status */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" /> Autenticazione
+            </CardTitle>
+            <CardDescription>
+              {isLoading ? 'Caricamento...' : isAuthenticated ? `Accesso come ${user?.name ?? user?.email}` : 'Non autenticato'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {isAuthenticated && user ? (
+              <>
+                <div className="text-sm space-y-1">
+                  <p><span className="text-muted-foreground">Nome:</span> {user.name ?? '—'}</p>
+                  <p><span className="text-muted-foreground">Email:</span> {user.email}</p>
+                  <p><span className="text-muted-foreground">Ruolo:</span> <Badge variant="secondary">{user.role}</Badge></p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => logout.mutate({})}
+                  disabled={logout.isPending}
+                >
+                  <LogOut className="mr-1 h-4 w-4" />
+                  {logout.isPending ? 'Uscita...' : 'Esci'}
+                </Button>
+              </>
+            ) : (
+              <div className="flex gap-2">
+                <Button size="sm" asChild>
+                  <Link to="/auth/login">
+                    <LogIn className="mr-1 h-4 w-4" /> Accedi
+                  </Link>
+                </Button>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/auth/register">Registrati</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Theme test */}
         <Card>
           <CardHeader>
