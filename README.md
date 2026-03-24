@@ -43,6 +43,36 @@ pnpm dev:no-secrets
 | `pnpm build:no-secrets` | Build without Infisical |
 | `pnpm test` | Run tests with Vitest |
 
+## Environment Variables (Infisical)
+
+These secrets must be configured in Infisical for the app to work:
+
+| Variable | Scope | Value from `supabase status` |
+|---|---|---|
+| `VITE_SUPABASE_URL` | Client + Server | **Project URL** (local: `http://127.0.0.1:54321`) |
+| `VITE_SUPABASE_ANON_KEY` | Client + Server | **Publishable** key (`sb_publishable_...`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server only | **Secret** key (`sb_secret_...`) |
+
+Run `supabase status` to see all local credentials after `supabase start`.
+
+> Variables prefixed with `VITE_` are exposed to the browser. Never prefix secret keys with `VITE_`.
+
+## Supabase Local Development
+
+```bash
+supabase start          # Start all services (requires Docker)
+supabase status         # Show URLs and keys
+supabase stop           # Stop all services
+supabase db reset       # Re-apply all migrations from scratch
+```
+
+| Service | URL |
+|---|---|
+| Studio (dashboard) | http://127.0.0.1:54323 |
+| API | http://127.0.0.1:54321 |
+| Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Mailpit (email testing) | http://127.0.0.1:54324 |
+
 ## Project Structure
 
 ```
