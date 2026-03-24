@@ -28,7 +28,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 ## Stato delle Fasi
 
 - [x] **Fase 0** — Setup progetto TanStack Start
-- [ ] **Fase 1** — Setup Supabase e migrazione database
+- [x] **Fase 1** — Setup Supabase e migrazione database
 - [ ] **Fase 2** — Autenticazione con Supabase Auth
 - [ ] **Fase 3** — Row Level Security (RLS)
 - [ ] **Fase 4** — Routing e layout TanStack Start
