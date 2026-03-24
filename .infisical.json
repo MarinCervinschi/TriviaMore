@@ -1,0 +1,5 @@
+{
+    "workspaceId": "<infisical-prod-project-id>",
+    "defaultEnvironment": "dev",
+    "gitBranchToEnvironmentMapping": null
+}
