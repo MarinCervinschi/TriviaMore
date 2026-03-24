@@ -1,6 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { useVolatileQuery } from "@/providers/react-query-provider"
 import {
   getSessionFn,
   loginFn,
@@ -16,15 +15,16 @@ export function useAuth() {
     data: session,
     isLoading,
     error,
-  } = useVolatileQuery<AuthSession | null>({
+  } = useQuery<AuthSession | null>({
     queryKey: ["auth", "session"],
     queryFn: () => getSessionFn(),
     retry: false,
+    staleTime: 1000 * 60 * 5,
   })
 
   const invalidate = () =>
     queryClient.invalidateQueries({
-      queryKey: ["volatile", "auth", "session"],
+      queryKey: ["auth", "session"],
     })
 
   const login = useMutation({
