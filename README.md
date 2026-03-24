@@ -9,6 +9,7 @@ Quiz and flashcard platform for better studying.
 - [Tailwind CSS v4](https://tailwindcss.com)
 - [shadcn/ui](https://ui.shadcn.com) (New York style, Radix UI)
 - [TanStack React Query](https://tanstack.com/query) with persistent caching
+- [Supabase](https://supabase.com) (database, auth, realtime)
 - [Infisical](https://infisical.com) for secrets management
 
 ## Setup
@@ -16,6 +17,9 @@ Quiz and flashcard platform for better studying.
 ```bash
 # Install dependencies
 pnpm install
+
+# Start local Supabase (requires Docker)
+supabase start
 
 # Login to Infisical (first time only)
 infisical login
@@ -54,6 +58,7 @@ src/
 ├── hooks/
 │   └── useTheme         Theme hook (isDark, toggleTheme, etc.)
 ├── lib/
+│   ├── supabase/        Supabase clients (browser, server, admin) + generated types
 │   └── utils            cn() for Tailwind classes, serializeId()
 └── styles/
     ├── globals.css       CSS variables, @theme, custom styles
