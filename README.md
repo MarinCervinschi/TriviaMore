@@ -52,8 +52,14 @@ These secrets must be configured in Infisical for the app to work:
 | `VITE_SUPABASE_URL` | Client + Server | **Project URL** (local: `http://127.0.0.1:54321`) |
 | `VITE_SUPABASE_ANON_KEY` | Client + Server | **Publishable** key (`sb_publishable_...`) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | **Secret** key (`sb_secret_...`) |
+| `GITHUB_CLIENT_ID` | Server only | GitHub OAuth app Client ID |
+| `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app Client Secret |
+| `GOOGLE_CLIENT_ID` | Server only | Google OAuth app Client ID |
+| `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app Client Secret |
 
 Run `supabase status` to see all local credentials after `supabase start`.
+
+> OAuth providers are optional for local development. Email/password auth works without them.
 
 > Variables prefixed with `VITE_` are exposed to the browser. Never prefix secret keys with `VITE_`.
 
@@ -73,21 +79,49 @@ supabase db reset       # Re-apply all migrations from scratch
 | Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 | Mailpit (email testing) | http://127.0.0.1:54324 |
 
+## Authentication
+
+Supabase Auth with email/password and OAuth (GitHub, Google).
+
+- **Login:** `/auth/login`
+- **Register:** `/auth/register`
+- **OAuth callback:** `/auth/callback`
+
+Auth state is managed via React Query (`useAuth` hook). Route protection uses `requireAuth`/`requireGuest` guards in `beforeLoad`.
+
+```typescript
+// Protect a route
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: () => requireAuth(),
+  component: Dashboard,
+})
+
+// Use auth in components
+const { user, isAuthenticated, login, logout } = useAuth()
+```
+
 ## Project Structure
 
 ```
 src/
-├── routes/              File-based routing (TanStack Router)
+├── routes/
 │   ├── __root.tsx       Root layout (providers, toaster, devtools)
-│   └── index.tsx        Home page
+│   ├── index.tsx        Home page with auth status
+│   └── auth/
+│       ├── login.tsx    Login page
+│       ├── register.tsx Register page
+│       └── callback.tsx OAuth callback
 ├── components/
-│   └── ui/              34 shadcn/Radix components
+│   ├── ui/              34 shadcn/Radix components
+│   └── auth/            Auth forms, OAuth buttons, auth card
 ├── providers/
 │   ├── theme-provider   Dark mode (localStorage + .dark class)
 │   └── react-query      Query client with persistent cache
 ├── hooks/
-│   └── useTheme         Theme hook (isDark, toggleTheme, etc.)
+│   ├── useTheme         Theme hook (isDark, toggleTheme, etc.)
+│   └── useAuth          Auth hook (user, login, signup, logout)
 ├── lib/
+│   ├── auth/            Auth types, schemas, server functions, guards
 │   ├── supabase/        Supabase clients (browser, server, admin) + generated types
 │   └── utils            cn() for Tailwind classes, serializeId()
 └── styles/
