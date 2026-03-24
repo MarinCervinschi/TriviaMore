@@ -56,6 +56,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 | Dark mode | **Custom ThemeProvider** | Sostituto di `next-themes`, usa `localStorage` + classe `dark` |
 | Naming convention DB | **snake_case** | Convenzione Supabase (camelCase → snake_case) |
 | ID utenti | **UUID** (da `auth.users`) | CUIDs solo per entity di contenuto |
+| React Query | **Integrazione nativa TanStack Start** | `setupRouterSsrQueryIntegration`, niente provider manuale né localStorage persistence |
 
 ---
 
@@ -88,4 +89,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - Email verification: `VerificationToken` custom → built-in Supabase
 - Middleware auth: `middleware.ts` → `requireAuth()` in `beforeLoad`
 - Cookie handling: `getCookies`/`setCookie` da `@tanstack/react-start/server`
-- Auth state client: custom context → React Query `useVolatileQuery` (non persisted)
+- Auth state client: custom context → React Query `useQuery` standard
+- React Query: `ReactQueryProvider` custom con localStorage persistence → integrazione nativa via `setupRouterSsrQueryIntegration` + `createRootRouteWithContext`
+
+> **Nota per fasi successive**: il vecchio codice (branch `trivia-more-3.0`) usa `useVolatileQuery` e `PERSISTENT_QUERY_CACHE` con localStorage. Nella migrazione, sostituire tutte le query persistenti/volatili con `useQuery` standard di `@tanstack/react-query` — la persistenza in localStorage è stata rimossa, l'SSR hydration è gestita nativamente dal router.
