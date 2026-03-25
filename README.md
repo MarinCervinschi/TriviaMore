@@ -42,6 +42,7 @@ pnpm dev:no-secrets
 | `pnpm dev:no-secrets` | Dev server without Infisical |
 | `pnpm build:no-secrets` | Build without Infisical |
 | `pnpm test` | Run tests with Vitest |
+| `pnpm db:seed` | Seed local DB with sample data |
 
 ## Environment Variables (Infisical)
 
@@ -78,6 +79,20 @@ supabase db reset       # Re-apply all migrations from scratch
 | API | http://127.0.0.1:54321 |
 | Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 | Mailpit (email testing) | http://127.0.0.1:54324 |
+
+## Database Seed
+
+Populates the local Supabase database with sample public data for development:
+
+```bash
+pnpm db:seed
+```
+
+Creates 3 departments (DIEF, DSV, DEM), 5 courses, 8 classes, 12 sections, 9 questions (MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER), and 2 evaluation modes.
+
+Idempotent — safe to run multiple times. Cleans previous seed data (IDs prefixed with `clseed_`) before reinserting.
+
+Requires `SUPABASE_SERVICE_ROLE_KEY` (injected via Infisical).
 
 ## Authentication
 
@@ -123,7 +138,10 @@ src/
 ├── components/
 │   ├── ui/              34 shadcn/Radix components
 │   ├── auth/            Auth forms, OAuth buttons, auth card
-│   └── layout/          Navbar, Footer
+│   ├── browse/          Browse cards, breadcrumb, stats, filters
+│   ├── contact/         Contact form
+│   ├── landing/         Hero, features, benefits, footer
+│   └── layout/          Navbar
 ├── providers/
 │   └── theme-provider   Dark mode (localStorage + .dark class)
 ├── hooks/
@@ -131,6 +149,7 @@ src/
 │   └── useAuth          Auth hook (user, login, signup, logout)
 ├── lib/
 │   ├── auth/            Auth types, schemas, server functions, guards
+│   ├── browse/          Browse types, server functions, query options, contact schema
 │   ├── supabase/        Supabase clients (browser, server, admin) + generated types
 │   └── utils            cn() for Tailwind classes, serializeId()
 └── styles/
