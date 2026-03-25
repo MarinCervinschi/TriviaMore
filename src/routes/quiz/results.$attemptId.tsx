@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
-import type { Json } from "@/lib/supabase/database.types"
+import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
 import {
   formatThirtyScaleGrade,
@@ -36,13 +36,6 @@ export const Route = createFileRoute("/quiz/results/$attemptId")({
   }),
   component: ResultsPage,
 })
-
-function getOptionsAsArray(options: Json | null): string[] {
-  if (Array.isArray(options)) {
-    return options.filter((item): item is string => typeof item === "string")
-  }
-  return []
-}
 
 function ResultsPage() {
   const { attemptId } = Route.useParams()
@@ -156,9 +149,10 @@ function ResultsPage() {
             const answer = result.answers.find(
               (a) => a.question_id === question.id,
             )
-            const options = getOptionsAsArray(question.options)
+            const options = parseOptions(question.options)
+            const userAnswers = answer?.user_answer ?? []
 
-            const userAnswerSet = new Set(answer?.user_answer ?? [])
+            const userAnswerSet = new Set(userAnswers)
             const correctAnswerSet = new Set(question.correct_answer)
             const isCorrect =
               userAnswerSet.size === correctAnswerSet.size &&
@@ -176,7 +170,7 @@ function ResultsPage() {
                     >
                       {isCorrect
                         ? "Corretta"
-                        : answer && answer.user_answer.length > 0
+                        : userAnswers.length > 0
                           ? "Errata"
                           : "Non risposta"}{" "}
                       ({answer?.score ?? 0} pt)
@@ -193,9 +187,11 @@ function ResultsPage() {
                   {options.length > 0 && (
                     <ul className="space-y-1">
                       {options.map((option, optIndex) => {
-                        const isOptionCorrect =
-                          question.correct_answer.includes(option)
-                        const isSelected = userAnswerSet.has(option)
+                        const isOptionCorrect = isCorrectOption(
+                          option.id,
+                          question.correct_answer,
+                        )
+                        const isSelected = userAnswerSet.has(option.id)
 
                         let bgClass = "bg-muted/50"
                         if (isOptionCorrect && isSelected)
@@ -210,13 +206,13 @@ function ResultsPage() {
 
                         return (
                           <li
-                            key={optIndex}
+                            key={option.id}
                             className={`rounded p-2 text-sm ${bgClass}`}
                           >
                             <span className="mr-2 font-medium">
                               {String.fromCharCode(65 + optIndex)})
                             </span>
-                            {option}
+                            {option.text}
                             {isOptionCorrect && (
                               <span className="ml-2 text-xs font-medium">
                                 &#10003; Corretta

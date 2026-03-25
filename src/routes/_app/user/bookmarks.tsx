@@ -13,7 +13,7 @@ import { UserEmptyState } from "@/components/user/user-empty-state"
 import { useToggleBookmark } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
 import type { UserBookmark } from "@/lib/user/types"
-import type { Json } from "@/lib/supabase/database.types"
+import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 
 export const Route = createFileRoute("/_app/user/bookmarks")({
   loader: ({ context }) =>
@@ -64,13 +64,6 @@ function getQuestionTypeLabel(type: string) {
     default:
       return type
   }
-}
-
-function getOptionsAsArray(options: Json | null): string[] {
-  if (Array.isArray(options)) {
-    return options.filter((item): item is string => typeof item === "string")
-  }
-  return []
 }
 
 function BookmarksPage() {
@@ -201,11 +194,11 @@ function BookmarkCard({
               Opzioni:
             </p>
             <ul className="space-y-1">
-              {getOptionsAsArray(question.options).map((option, index) => (
+              {parseOptions(question.options).map((option, index) => (
                 <li
-                  key={index}
+                  key={option.id}
                   className={`rounded p-2 text-sm ${
-                    question.correct_answer.includes(option)
+                    isCorrectOption(option.id, question.correct_answer)
                       ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
                       : "bg-muted/50"
                   }`}
@@ -213,8 +206,8 @@ function BookmarkCard({
                   <span className="mr-2 font-medium">
                     {String.fromCharCode(65 + index)})
                   </span>
-                  {option}
-                  {question.correct_answer.includes(option) && (
+                  {option.text}
+                  {isCorrectOption(option.id, question.correct_answer) && (
                     <span className="ml-2 text-xs font-medium">
                       &#10003; Corretta
                     </span>

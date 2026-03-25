@@ -6,6 +6,11 @@ import type { Json } from "@/lib/supabase/database.types"
 import { selectRandomItems, shuffleArray } from "./randomization"
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types"
 
+function shuffleJsonOptions(options: Json | null): Json | null {
+  if (!Array.isArray(options)) return options
+  return shuffleArray(options) as Json[]
+}
+
 async function getAuthenticatedUser() {
   const supabase = createServerSupabaseClient()
   const {
@@ -14,13 +19,6 @@ async function getAuthenticatedUser() {
   } = await supabase.auth.getUser()
   if (error || !user) return { supabase, user: null }
   return { supabase, user }
-}
-
-function getOptionsAsArray(options: Json | null): string[] {
-  if (Array.isArray(options)) {
-    return options.filter((item): item is string => typeof item === "string")
-  }
-  return []
 }
 
 export const getEvaluationModesFn = createServerFn({ method: "GET" }).handler(
@@ -188,9 +186,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
         id: q.id,
         content: q.content,
         question_type: q.question_type,
-        options: q.options
-          ? shuffleArray(getOptionsAsArray(q.options))
-          : null,
+        options: shuffleJsonOptions(q.options),
         correct_answer: q.correct_answer,
         explanation: q.explanation,
         difficulty: q.difficulty,
@@ -266,9 +262,7 @@ export const generateGuestQuizFn = createServerFn({ method: "GET" })
       id: q.id,
       content: q.content,
       question_type: q.question_type,
-      options: q.options
-        ? shuffleArray(getOptionsAsArray(q.options))
-        : null,
+      options: shuffleJsonOptions(q.options),
       correct_answer: q.correct_answer,
       explanation: q.explanation,
       difficulty: q.difficulty,

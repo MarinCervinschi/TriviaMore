@@ -8,21 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
-import type { Json } from "@/lib/supabase/database.types"
 import type { QuizResults } from "@/lib/quiz/types"
+import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import {
   formatThirtyScaleGrade,
   getGradeColor,
   getGradeDescription,
 } from "@/lib/utils/grading"
 import { formatTimeSpent, getScoreBadgeVariant } from "@/lib/utils/quiz-results"
-
-function getOptionsAsArray(options: Json | null): string[] {
-  if (Array.isArray(options)) {
-    return options.filter((item): item is string => typeof item === "string")
-  }
-  return []
-}
 
 export function QuizInlineResults({
   results,
@@ -119,7 +112,7 @@ export function QuizInlineResults({
             const answer = results.answers.find(
               (a) => a.questionId === question.id,
             )
-            const options = getOptionsAsArray(question.options)
+            const options = parseOptions(question.options)
 
             return (
               <Card key={question.id}>
@@ -128,7 +121,7 @@ export function QuizInlineResults({
                     <span className="text-sm font-medium text-muted-foreground">
                       Domanda {index + 1}
                     </span>
-                    <Badge variant={getScoreBadgeVariant(answer?.score ? (answer.isCorrect ? 30 : 0) : 0)}>
+                    <Badge variant={getScoreBadgeVariant(answer?.isCorrect ? 30 : 0)}>
                       {answer?.isCorrect
                         ? "Corretta"
                         : answer && answer.answer.length > 0
@@ -149,10 +142,12 @@ export function QuizInlineResults({
                   {options.length > 0 && (
                     <ul className="space-y-1">
                       {options.map((option, optIndex) => {
-                        const isCorrect =
-                          question.correctAnswer.includes(option)
+                        const isCorrect = isCorrectOption(
+                          option.id,
+                          question.correctAnswer,
+                        )
                         const isSelected =
-                          answer?.answer.includes(option) ?? false
+                          answer?.answer.includes(option.id) ?? false
 
                         let bgClass = "bg-muted/50"
                         if (isCorrect && isSelected)
@@ -167,13 +162,13 @@ export function QuizInlineResults({
 
                         return (
                           <li
-                            key={optIndex}
+                            key={option.id}
                             className={`rounded p-2 text-sm ${bgClass}`}
                           >
                             <span className="mr-2 font-medium">
                               {String.fromCharCode(65 + optIndex)})
                             </span>
-                            {option}
+                            {option.text}
                             {isCorrect && (
                               <span className="ml-2 text-xs font-medium">
                                 &#10003; Corretta
