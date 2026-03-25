@@ -13,7 +13,8 @@
     "preview": "infisical run -- vite preview",
     "dev:no-secrets": "vite dev --port 3000",
     "build:no-secrets": "vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:seed": "infisical run -- pnpm tsx supabase/scripts/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
