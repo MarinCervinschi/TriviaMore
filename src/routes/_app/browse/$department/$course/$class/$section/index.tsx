@@ -5,6 +5,7 @@ import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { FlashcardCard } from "@/components/browse/flashcard-card"
 import { QuizCard } from "@/components/browse/quiz-card"
 import { SectionHeader } from "@/components/browse/section-header"
+import { useAuth } from "@/hooks/useAuth"
 import { browseQueries } from "@/lib/browse/queries"
 
 export const Route = createFileRoute(
@@ -46,6 +47,8 @@ function SectionPage() {
     browseQueries.section(deptCode, courseCode, classCode, sectionSlug),
   )
 
+  const { isAuthenticated } = useAuth()
+
   if (!section) return null
 
   return (
@@ -70,7 +73,11 @@ function SectionPage() {
       />
       <SectionHeader section={section} />
       <div className="grid gap-6 md:grid-cols-2">
-        <QuizCard questionCount={section.quiz_question_count} />
+        <QuizCard
+          questionCount={section.quiz_question_count}
+          sectionId={section.id}
+          isAuthenticated={isAuthenticated}
+        />
         <FlashcardCard questionCount={section.flashcard_question_count} />
       </div>
     </div>
