@@ -2,15 +2,8 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
-import type { Json } from "@/lib/supabase/database.types"
 import type { QuizQuestion } from "@/lib/quiz/types"
-
-function getOptionsAsArray(options: Json | null): string[] {
-  if (Array.isArray(options)) {
-    return options.filter((item): item is string => typeof item === "string")
-  }
-  return []
-}
+import { parseOptions } from "@/lib/quiz/options"
 
 function getDifficultyColor(difficulty: string) {
   switch (difficulty) {
@@ -49,22 +42,20 @@ export function QuestionCard({
   selectedAnswers: string[]
   onAnswerChange: (answers: string[]) => void
 }) {
-  const options = getOptionsAsArray(question.options)
+  const options = parseOptions(question.options)
 
-  const handleOptionToggle = (option: string) => {
+  const handleOptionToggle = (optionId: string) => {
     if (question.question_type === "TRUE_FALSE") {
-      // Single selection for true/false
-      if (selectedAnswers.includes(option)) {
+      if (selectedAnswers.includes(optionId)) {
         onAnswerChange([])
       } else {
-        onAnswerChange([option])
+        onAnswerChange([optionId])
       }
     } else {
-      // Multi selection for multiple choice
-      if (selectedAnswers.includes(option)) {
-        onAnswerChange(selectedAnswers.filter((a) => a !== option))
+      if (selectedAnswers.includes(optionId)) {
+        onAnswerChange(selectedAnswers.filter((a) => a !== optionId))
       } else {
-        onAnswerChange([...selectedAnswers, option])
+        onAnswerChange([...selectedAnswers, optionId])
       }
     }
   }
@@ -91,17 +82,20 @@ export function QuestionCard({
 
         {question.question_type === "TRUE_FALSE" ? (
           <div className="grid grid-cols-2 gap-4">
-            {["Vero", "Falso"].map((option) => (
+            {[
+              { id: "true", text: "Vero" },
+              { id: "false", text: "Falso" },
+            ].map((option) => (
               <button
-                key={option}
-                onClick={() => handleOptionToggle(option)}
+                key={option.id}
+                onClick={() => handleOptionToggle(option.id)}
                 className={`rounded-lg border-2 p-4 text-center text-lg font-medium transition-colors ${
-                  selectedAnswers.includes(option)
+                  selectedAnswers.includes(option.id)
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border hover:border-primary/50 hover:bg-muted/50"
                 }`}
               >
-                {option}
+                {option.text}
               </button>
             ))}
           </div>
@@ -109,23 +103,23 @@ export function QuestionCard({
           <div className="space-y-3">
             {options.map((option, index) => (
               <label
-                key={index}
+                key={option.id}
                 className={`flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-colors ${
-                  selectedAnswers.includes(option)
+                  selectedAnswers.includes(option.id)
                     ? "border-primary bg-primary/10"
                     : "border-border hover:border-primary/50 hover:bg-muted/50"
                 }`}
               >
                 <Checkbox
-                  checked={selectedAnswers.includes(option)}
-                  onCheckedChange={() => handleOptionToggle(option)}
+                  checked={selectedAnswers.includes(option.id)}
+                  onCheckedChange={() => handleOptionToggle(option.id)}
                   className="mt-0.5"
                 />
                 <span className="flex-1">
                   <span className="mr-2 font-medium text-muted-foreground">
                     {String.fromCharCode(65 + index)})
                   </span>
-                  {option}
+                  {option.text}
                 </span>
               </label>
             ))}
