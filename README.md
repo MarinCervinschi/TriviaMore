@@ -105,18 +105,27 @@ const { user, isAuthenticated, login, logout } = useAuth()
 ```
 src/
 ├── routes/
-│   ├── __root.tsx       Root layout (providers, toaster, devtools)
-│   ├── index.tsx        Home page with auth status
-│   └── auth/
-│       ├── login.tsx    Login page
-│       ├── register.tsx Register page
-│       └── callback.tsx OAuth callback
+│   ├── __root.tsx              Root layout (providers, toaster, devtools)
+│   ├── _app.tsx                App layout (navbar + footer)
+│   ├── _app/
+│   │   ├── index.tsx           Home page
+│   │   ├── about.tsx           About page
+│   │   ├── contact.tsx         Contact page
+│   │   ├── browse/             Browse hierarchy ($department/$course/$class/$section)
+│   │   └── user/               Protected area (dashboard, classes, progress, bookmarks, settings)
+│   │       └── route.tsx       Auth guard layout (requireAuth)
+│   ├── auth/
+│   │   ├── login.tsx           Login page
+│   │   ├── register.tsx        Register page
+│   │   └── callback.tsx        OAuth callback
+│   ├── quiz/$quizId.tsx        Quiz (standalone, no layout)
+│   └── flashcard/$sessionId.tsx Flashcard (standalone, no layout)
 ├── components/
 │   ├── ui/              34 shadcn/Radix components
-│   └── auth/            Auth forms, OAuth buttons, auth card
+│   ├── auth/            Auth forms, OAuth buttons, auth card
+│   └── layout/          Navbar, Footer
 ├── providers/
-│   ├── theme-provider   Dark mode (localStorage + .dark class)
-│   └── react-query      Query client with persistent cache
+│   └── theme-provider   Dark mode (localStorage + .dark class)
 ├── hooks/
 │   ├── useTheme         Theme hook (isDark, toggleTheme, etc.)
 │   └── useAuth          Auth hook (user, login, signup, logout)

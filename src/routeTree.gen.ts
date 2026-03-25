@@ -9,14 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as QuizQuizIdRouteImport } from './routes/quiz/$quizId'
+import { Route as FlashcardSessionIdRouteImport } from './routes/flashcard/$sessionId'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AppContactRouteImport } from './routes/_app/contact'
+import { Route as AppAboutRouteImport } from './routes/_app/about'
+import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
+import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
+import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
+import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
+import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
+import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
+import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
+import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/browse/$department/index'
+import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
+import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './routes/_app/browse/$department/$course/$class/index'
+import { Route as AppBrowseDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/browse/$department/$course/$class/$section/index'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const QuizQuizIdRoute = QuizQuizIdRouteImport.update({
+  id: '/quiz/$quizId',
+  path: '/quiz/$quizId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlashcardSessionIdRoute = FlashcardSessionIdRouteImport.update({
+  id: '/flashcard/$sessionId',
+  path: '/flashcard/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -34,48 +64,243 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppContactRoute = AppContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAboutRoute = AppAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUserRouteRoute = AppUserRouteRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUserIndexRoute = AppUserIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppBrowseIndexRoute = AppBrowseIndexRouteImport.update({
+  id: '/browse/',
+  path: '/browse/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserProgressRoute = AppUserProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserClassesRoute = AppUserClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserBookmarksRoute = AppUserBookmarksRouteImport.update({
+  id: '/bookmarks',
+  path: '/bookmarks',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppBrowseDepartmentIndexRoute =
+  AppBrowseDepartmentIndexRouteImport.update({
+    id: '/browse/$department/',
+    path: '/browse/$department/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppBrowseDepartmentCourseIndexRoute =
+  AppBrowseDepartmentCourseIndexRouteImport.update({
+    id: '/browse/$department/$course/',
+    path: '/browse/$department/$course/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppBrowseDepartmentCourseClassIndexRoute =
+  AppBrowseDepartmentCourseClassIndexRouteImport.update({
+    id: '/browse/$department/$course/$class/',
+    path: '/browse/$department/$course/$class/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppBrowseDepartmentCourseClassSectionIndexRoute =
+  AppBrowseDepartmentCourseClassSectionIndexRouteImport.update({
+    id: '/browse/$department/$course/$class/$section/',
+    path: '/browse/$department/$course/$class/$section/',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/user': typeof AppUserRouteRouteWithChildren
+  '/about': typeof AppAboutRoute
+  '/contact': typeof AppContactRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
+  '/quiz/$quizId': typeof QuizQuizIdRoute
+  '/user/bookmarks': typeof AppUserBookmarksRoute
+  '/user/classes': typeof AppUserClassesRoute
+  '/user/progress': typeof AppUserProgressRoute
+  '/user/settings': typeof AppUserSettingsRoute
+  '/browse/': typeof AppBrowseIndexRoute
+  '/user/': typeof AppUserIndexRoute
+  '/browse/$department/': typeof AppBrowseDepartmentIndexRoute
+  '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
+  '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/browse/$department/$course/$class/$section/': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/about': typeof AppAboutRoute
+  '/contact': typeof AppContactRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
+  '/quiz/$quizId': typeof QuizQuizIdRoute
+  '/': typeof AppIndexRoute
+  '/user/bookmarks': typeof AppUserBookmarksRoute
+  '/user/classes': typeof AppUserClassesRoute
+  '/user/progress': typeof AppUserProgressRoute
+  '/user/settings': typeof AppUserSettingsRoute
+  '/browse': typeof AppBrowseIndexRoute
+  '/user': typeof AppUserIndexRoute
+  '/browse/$department': typeof AppBrowseDepartmentIndexRoute
+  '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
+  '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/browse/$department/$course/$class/$section': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/user': typeof AppUserRouteRouteWithChildren
+  '/_app/about': typeof AppAboutRoute
+  '/_app/contact': typeof AppContactRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
+  '/quiz/$quizId': typeof QuizQuizIdRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/user/bookmarks': typeof AppUserBookmarksRoute
+  '/_app/user/classes': typeof AppUserClassesRoute
+  '/_app/user/progress': typeof AppUserProgressRoute
+  '/_app/user/settings': typeof AppUserSettingsRoute
+  '/_app/browse/': typeof AppBrowseIndexRoute
+  '/_app/user/': typeof AppUserIndexRoute
+  '/_app/browse/$department/': typeof AppBrowseDepartmentIndexRoute
+  '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
+  '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/_app/browse/$department/$course/$class/$section/': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/callback' | '/auth/login' | '/auth/register'
+  fullPaths:
+    | '/'
+    | '/user'
+    | '/about'
+    | '/contact'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/flashcard/$sessionId'
+    | '/quiz/$quizId'
+    | '/user/bookmarks'
+    | '/user/classes'
+    | '/user/progress'
+    | '/user/settings'
+    | '/browse/'
+    | '/user/'
+    | '/browse/$department/'
+    | '/browse/$department/$course/'
+    | '/browse/$department/$course/$class/'
+    | '/browse/$department/$course/$class/$section/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/callback' | '/auth/login' | '/auth/register'
-  id: '__root__' | '/' | '/auth/callback' | '/auth/login' | '/auth/register'
+  to:
+    | '/about'
+    | '/contact'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/flashcard/$sessionId'
+    | '/quiz/$quizId'
+    | '/'
+    | '/user/bookmarks'
+    | '/user/classes'
+    | '/user/progress'
+    | '/user/settings'
+    | '/browse'
+    | '/user'
+    | '/browse/$department'
+    | '/browse/$department/$course'
+    | '/browse/$department/$course/$class'
+    | '/browse/$department/$course/$class/$section'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_app/user'
+    | '/_app/about'
+    | '/_app/contact'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/flashcard/$sessionId'
+    | '/quiz/$quizId'
+    | '/_app/'
+    | '/_app/user/bookmarks'
+    | '/_app/user/classes'
+    | '/_app/user/progress'
+    | '/_app/user/settings'
+    | '/_app/browse/'
+    | '/_app/user/'
+    | '/_app/browse/$department/'
+    | '/_app/browse/$department/$course/'
+    | '/_app/browse/$department/$course/$class/'
+    | '/_app/browse/$department/$course/$class/$section/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
+  QuizQuizIdRoute: typeof QuizQuizIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/quiz/$quizId': {
+      id: '/quiz/$quizId'
+      path: '/quiz/$quizId'
+      fullPath: '/quiz/$quizId'
+      preLoaderRoute: typeof QuizQuizIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flashcard/$sessionId': {
+      id: '/flashcard/$sessionId'
+      path: '/flashcard/$sessionId'
+      fullPath: '/flashcard/$sessionId'
+      preLoaderRoute: typeof FlashcardSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -99,14 +324,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/contact': {
+      id: '/_app/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof AppContactRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/about': {
+      id: '/_app/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AppAboutRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/user': {
+      id: '/_app/user'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof AppUserRouteRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/user/': {
+      id: '/_app/user/'
+      path: '/'
+      fullPath: '/user/'
+      preLoaderRoute: typeof AppUserIndexRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/browse/': {
+      id: '/_app/browse/'
+      path: '/browse'
+      fullPath: '/browse/'
+      preLoaderRoute: typeof AppBrowseIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/user/settings': {
+      id: '/_app/user/settings'
+      path: '/settings'
+      fullPath: '/user/settings'
+      preLoaderRoute: typeof AppUserSettingsRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/progress': {
+      id: '/_app/user/progress'
+      path: '/progress'
+      fullPath: '/user/progress'
+      preLoaderRoute: typeof AppUserProgressRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/classes': {
+      id: '/_app/user/classes'
+      path: '/classes'
+      fullPath: '/user/classes'
+      preLoaderRoute: typeof AppUserClassesRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/bookmarks': {
+      id: '/_app/user/bookmarks'
+      path: '/bookmarks'
+      fullPath: '/user/bookmarks'
+      preLoaderRoute: typeof AppUserBookmarksRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/browse/$department/': {
+      id: '/_app/browse/$department/'
+      path: '/browse/$department'
+      fullPath: '/browse/$department/'
+      preLoaderRoute: typeof AppBrowseDepartmentIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/browse/$department/$course/': {
+      id: '/_app/browse/$department/$course/'
+      path: '/browse/$department/$course'
+      fullPath: '/browse/$department/$course/'
+      preLoaderRoute: typeof AppBrowseDepartmentCourseIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/browse/$department/$course/$class/': {
+      id: '/_app/browse/$department/$course/$class/'
+      path: '/browse/$department/$course/$class'
+      fullPath: '/browse/$department/$course/$class/'
+      preLoaderRoute: typeof AppBrowseDepartmentCourseClassIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/browse/$department/$course/$class/$section/': {
+      id: '/_app/browse/$department/$course/$class/$section/'
+      path: '/browse/$department/$course/$class/$section'
+      fullPath: '/browse/$department/$course/$class/$section/'
+      preLoaderRoute: typeof AppBrowseDepartmentCourseClassSectionIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppUserRouteRouteChildren {
+  AppUserBookmarksRoute: typeof AppUserBookmarksRoute
+  AppUserClassesRoute: typeof AppUserClassesRoute
+  AppUserProgressRoute: typeof AppUserProgressRoute
+  AppUserSettingsRoute: typeof AppUserSettingsRoute
+  AppUserIndexRoute: typeof AppUserIndexRoute
+}
+
+const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
+  AppUserBookmarksRoute: AppUserBookmarksRoute,
+  AppUserClassesRoute: AppUserClassesRoute,
+  AppUserProgressRoute: AppUserProgressRoute,
+  AppUserSettingsRoute: AppUserSettingsRoute,
+  AppUserIndexRoute: AppUserIndexRoute,
+}
+
+const AppUserRouteRouteWithChildren = AppUserRouteRoute._addFileChildren(
+  AppUserRouteRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppUserRouteRoute: typeof AppUserRouteRouteWithChildren
+  AppAboutRoute: typeof AppAboutRoute
+  AppContactRoute: typeof AppContactRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppBrowseIndexRoute: typeof AppBrowseIndexRoute
+  AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
+  AppBrowseDepartmentCourseIndexRoute: typeof AppBrowseDepartmentCourseIndexRoute
+  AppBrowseDepartmentCourseClassIndexRoute: typeof AppBrowseDepartmentCourseClassIndexRoute
+  AppBrowseDepartmentCourseClassSectionIndexRoute: typeof AppBrowseDepartmentCourseClassSectionIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppUserRouteRoute: AppUserRouteRouteWithChildren,
+  AppAboutRoute: AppAboutRoute,
+  AppContactRoute: AppContactRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppBrowseIndexRoute: AppBrowseIndexRoute,
+  AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
+  AppBrowseDepartmentCourseIndexRoute: AppBrowseDepartmentCourseIndexRoute,
+  AppBrowseDepartmentCourseClassIndexRoute:
+    AppBrowseDepartmentCourseClassIndexRoute,
+  AppBrowseDepartmentCourseClassSectionIndexRoute:
+    AppBrowseDepartmentCourseClassSectionIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  FlashcardSessionIdRoute: FlashcardSessionIdRoute,
+  QuizQuizIdRoute: QuizQuizIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
