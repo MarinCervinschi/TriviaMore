@@ -30,7 +30,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 0** — Setup progetto TanStack Start
 - [x] **Fase 1** — Setup Supabase e migrazione database
 - [x] **Fase 2** — Autenticazione con Supabase Auth
-- [ ] **Fase 3** — Row Level Security (RLS)
+- [x] **Fase 3** — Row Level Security (RLS)
 - [ ] **Fase 4** — Routing e layout TanStack Start
 - [ ] **Fase 5** — Pagine pubbliche e browse
 - [ ] **Fase 6** — Area utente (dashboard, classi, bookmarks, progress)
@@ -57,6 +57,9 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 | Naming convention DB | **snake_case** | Convenzione Supabase (camelCase → snake_case) |
 | ID utenti | **UUID** (da `auth.users`) | CUIDs solo per entity di contenuto |
 | React Query | **Integrazione nativa TanStack Start** | `setupRouterSsrQueryIntegration`, niente provider manuale né localStorage persistence |
+| RLS | **Helper functions gerarchiche** | `SECURITY DEFINER` functions per check a cascata (superadmin → dept admin → maintainer → class → section) |
+| Protezione ruoli | **Trigger `protect_profile_role`** | RLS non limita colonne, serve trigger BEFORE UPDATE per impedire role escalation |
+| Accesso sezioni | **`can_access_section()` function** | `is_public=true` OR admin gerarchico OR riga in `section_access` |
 
 ---
 
@@ -91,5 +94,14 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - Cookie handling: `getCookies`/`setCookie` da `@tanstack/react-start/server`
 - Auth state client: custom context → React Query `useQuery` standard
 - React Query: `ReactQueryProvider` custom con localStorage persistence → integrazione nativa via `setupRouterSsrQueryIntegration` + `createRootRouteWithContext`
+
+### Row Level Security (Fase 3)
+- RLS abilitato su tutte le 18 tabelle
+- 6 helper functions `SECURITY DEFINER` per check gerarchici: `is_superadmin()`, `is_department_admin()`, `is_course_maintainer()`, `is_class_admin()`, `is_section_admin()`, `can_access_section()`
+- Tabelle pubbliche in lettura: `departments`, `courses`, `classes`, `evaluation_modes`
+- Contenuti controllati via sezione: `sections`, `questions`, `quizzes`, `quiz_questions`
+- Dati utente isolati: `bookmarks`, `user_classes`, `user_recent_classes`, `quiz_attempts`, `answer_attempts`, `progress`
+- Trigger `protect_profile_role` impedisce role escalation (solo superadmin o service_role possono cambiare ruoli)
+- Script di verifica: `supabase/scripts/verify-rls.ts` (36 test)
 
 > **Nota per fasi successive**: il vecchio codice (branch `trivia-more-3.0`) usa `useVolatileQuery` e `PERSISTENT_QUERY_CACHE` con localStorage. Nella migrazione, sostituire tutte le query persistenti/volatili con `useQuery` standard di `@tanstack/react-query` — la persistenza in localStorage è stata rimossa, l'SSR hydration è gestita nativamente dal router.
