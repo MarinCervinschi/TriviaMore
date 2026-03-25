@@ -1,9 +1,15 @@
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import { BookOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { StartQuizDialog } from "@/components/quiz/start-quiz-dialog"
+
+const StartQuizDialog = lazy(
+  () =>
+    import("@/components/quiz/start-quiz-dialog").then((m) => ({
+      default: m.StartQuizDialog,
+    })),
+)
 
 export function QuizCard({
   questionCount,
@@ -36,13 +42,17 @@ export function QuizCard({
           </Button>
         </CardContent>
       </Card>
-      <StartQuizDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        sectionId={sectionId}
-        maxQuestions={questionCount}
-        isAuthenticated={isAuthenticated}
-      />
+      {dialogOpen && (
+        <Suspense>
+          <StartQuizDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            sectionId={sectionId}
+            maxQuestions={questionCount}
+            isAuthenticated={isAuthenticated}
+          />
+        </Suspense>
+      )}
     </>
   )
 }
