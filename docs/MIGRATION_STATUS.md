@@ -32,7 +32,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 2** — Autenticazione con Supabase Auth
 - [x] **Fase 3** — Row Level Security (RLS)
 - [x] **Fase 4** — Routing e layout TanStack Start
-- [ ] **Fase 5** — Pagine pubbliche e browse
+- [x] **Fase 5** — Pagine pubbliche e browse
 - [ ] **Fase 6** — Area utente (dashboard, classi, bookmarks, progress)
 - [ ] **Fase 7** — Quiz system
 - [ ] **Fase 8** — Flashcard system
@@ -113,3 +113,17 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - Route auth (`/auth/*`) fuori dal layout app (mantengono AuthCard centrato)
 
 > **Nota per fasi successive**: il vecchio codice (branch `trivia-more-3.0`) usa `useVolatileQuery` e `PERSISTENT_QUERY_CACHE` con localStorage. Nella migrazione, sostituire tutte le query persistenti/volatili con `useQuery` standard di `@tanstack/react-query` — la persistenza in localStorage è stata rimossa, l'SSR hydration è gestita nativamente dal router.
+
+### Pagine Pubbliche e Browse (Fase 5)
+- Landing page completa: hero, features (4 cards), benefits, CTA, footer 3 colonne
+- About page: missione, valori (4 cards), stack tecnologico, CTA GitHub
+- Contact page: form (react-hook-form + zod), cards metodi contatto, FAQ, linee guida community
+- Browse service: `src/lib/browse/` (types, server functions, query options)
+- Data fetching: `ensureQueryData` in loader + `useSuspenseQuery` in component (SSR pattern)
+- 5 livelli browse: dipartimenti → corsi → classi → sezioni → dettaglio sezione
+- Componenti condivisi: breadcrumb, hero, stats, empty state, search filter, item grid
+- Cards per livello: DepartmentCard, CourseCard, ClassCard, SectionCard
+- Filtri client-side: ricerca per nome + filtro tipo corso (Triennale/Magistrale)
+- SEO: `head` function con title e description su ogni route
+- Sezione dettaglio: QuizCard e FlashcardCard placeholder (funzionalità in Fase 7-8)
+- Permessi sezioni: delegati a RLS via `can_access_section()`, nessuna logica custom
