@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query"
 import { QuestionCard } from "@/components/quiz/question-card"
 import { QuizHeader } from "@/components/quiz/quiz-header"
 import { QuizNavigation } from "@/components/quiz/quiz-navigation"
@@ -27,6 +28,7 @@ function QuizPage() {
   const { quizId } = Route.useParams()
   const isGuest = quizId.startsWith("guest-")
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const loaderData = Route.useLoaderData()
 
   // For guests, load from session; for auth users, use loader data
@@ -97,6 +99,8 @@ function QuizPage() {
             timeSpent: quizResults.timeSpent,
           },
         })
+        // Invalidate user data caches so dashboard shows updated stats
+        queryClient.invalidateQueries({ queryKey: ["user"] })
         navigate({
           to: "/quiz/results/$attemptId",
           params: { attemptId },

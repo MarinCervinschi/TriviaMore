@@ -42,7 +42,8 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
       supabase
         .from("quiz_attempts")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id),
+        .eq("user_id", user.id)
+        .not("completed_at", "is", null),
       supabase
         .from("user_classes")
         .select("*", { count: "exact", head: true })
@@ -69,6 +70,7 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
           "id, score, completed_at, quiz:quizzes(section:sections(*, class:classes(*, course:courses(*, department:departments(*)))))",
         )
         .eq("user_id", user.id)
+        .not("completed_at", "is", null)
         .order("completed_at", { ascending: false })
         .limit(3),
     ])
