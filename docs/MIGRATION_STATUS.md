@@ -31,7 +31,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 1** — Setup Supabase e migrazione database
 - [x] **Fase 2** — Autenticazione con Supabase Auth
 - [x] **Fase 3** — Row Level Security (RLS)
-- [ ] **Fase 4** — Routing e layout TanStack Start
+- [x] **Fase 4** — Routing e layout TanStack Start
 - [ ] **Fase 5** — Pagine pubbliche e browse
 - [ ] **Fase 6** — Area utente (dashboard, classi, bookmarks, progress)
 - [ ] **Fase 7** — Quiz system
@@ -103,5 +103,13 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - Dati utente isolati: `bookmarks`, `user_classes`, `user_recent_classes`, `quiz_attempts`, `answer_attempts`, `progress`
 - Trigger `protect_profile_role` impedisce role escalation (solo superadmin o service_role possono cambiare ruoli)
 - Script di verifica: `supabase/scripts/verify-rls.ts` (36 test)
+
+### Routing e Layout (Fase 4)
+- Layout pathless `_app.tsx`: wrappa navbar + footer attorno a tutte le pagine app (non auth, non quiz/flashcard standalone)
+- Navbar responsive: logo gradient, nav links con `activeProps`, theme toggle, auth-aware (guest buttons o user dropdown menu), mobile Sheet
+- Route browse con segmenti dinamici: `/browse/$department/$course/$class/$section`
+- Route protette `/user/*`: layout `route.tsx` con `requireAuth()` in `beforeLoad`
+- Route standalone: `/quiz/$quizId` e `/flashcard/$sessionId` (fullscreen, senza layout app)
+- Route auth (`/auth/*`) fuori dal layout app (mantengono AuthCard centrato)
 
 > **Nota per fasi successive**: il vecchio codice (branch `trivia-more-3.0`) usa `useVolatileQuery` e `PERSISTENT_QUERY_CACHE` con localStorage. Nella migrazione, sostituire tutte le query persistenti/volatili con `useQuery` standard di `@tanstack/react-query` — la persistenza in localStorage è stata rimossa, l'SSR hydration è gestita nativamente dal router.
