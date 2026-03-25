@@ -21,6 +21,7 @@ import { Route as AppAboutRouteImport } from './routes/_app/about'
 import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
+import { Route as QuizResultsAttemptIdRouteImport } from './routes/quiz/results.$attemptId'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
 import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
@@ -89,6 +90,11 @@ const AppBrowseIndexRoute = AppBrowseIndexRouteImport.update({
   path: '/browse/',
   getParentRoute: () => AppRoute,
 } as any)
+const QuizResultsAttemptIdRoute = QuizResultsAttemptIdRouteImport.update({
+  id: '/quiz/results/$attemptId',
+  path: '/quiz/results/$attemptId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/user/classes': typeof AppUserClassesRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/user/': typeof AppUserIndexRoute
   '/browse/$department/': typeof AppBrowseDepartmentIndexRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/user/classes': typeof AppUserClassesRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/browse': typeof AppBrowseIndexRoute
   '/user': typeof AppUserIndexRoute
   '/browse/$department': typeof AppBrowseDepartmentIndexRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/progress': typeof AppUserProgressRoute
   '/_app/user/settings': typeof AppUserSettingsRoute
+  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
   '/_app/browse/$department/': typeof AppBrowseDepartmentIndexRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/user/classes'
     | '/user/progress'
     | '/user/settings'
+    | '/quiz/results/$attemptId'
     | '/browse/'
     | '/user/'
     | '/browse/$department/'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/user/classes'
     | '/user/progress'
     | '/user/settings'
+    | '/quiz/results/$attemptId'
     | '/browse'
     | '/user'
     | '/browse/$department'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/_app/user/classes'
     | '/_app/user/progress'
     | '/_app/user/settings'
+    | '/quiz/results/$attemptId'
     | '/_app/browse/'
     | '/_app/user/'
     | '/_app/browse/$department/'
@@ -271,6 +283,7 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
+  QuizResultsAttemptIdRoute: typeof QuizResultsAttemptIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/browse/'
       preLoaderRoute: typeof AppBrowseIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/quiz/results/$attemptId': {
+      id: '/quiz/results/$attemptId'
+      path: '/quiz/results/$attemptId'
+      fullPath: '/quiz/results/$attemptId'
+      preLoaderRoute: typeof QuizResultsAttemptIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/user/settings': {
       id: '/_app/user/settings'
@@ -473,6 +493,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
+  QuizResultsAttemptIdRoute: QuizResultsAttemptIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
