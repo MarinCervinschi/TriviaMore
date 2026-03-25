@@ -34,7 +34,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 4** — Routing e layout TanStack Start
 - [x] **Fase 5** — Pagine pubbliche e browse
 - [x] **Fase 6** — Area utente (dashboard, classi, bookmarks, progress)
-- [ ] **Fase 7** — Quiz system
+- [x] **Fase 7** — Quiz system
 - [ ] **Fase 8** — Flashcard system
 - [ ] **Fase 9** — Admin CRUD e gestione contenuti
 - [ ] **Fase 10** — SEO, analytics, e polish
