@@ -1,14 +1,20 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { Heart } from "lucide-react"
 
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
+import { Button } from "@/components/ui/button"
 import { ItemGrid } from "@/components/browse/item-grid"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { SectionCard } from "@/components/browse/section-card"
+import { useAuth } from "@/hooks/useAuth"
 import { browseQueries } from "@/lib/browse/queries"
+import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
+import { userQueries } from "@/lib/user/queries"
+import { updateRecentClassFn } from "@/lib/user/server"
 
 export const Route = createFileRoute(
   "/_app/browse/$department/$course/$class/",
@@ -45,6 +51,22 @@ function ClassPage() {
 
   const [search, setSearch] = useState("")
 
+  const { isAuthenticated } = useAuth()
+  const addClass = useAddClass()
+  const removeClass = useRemoveClass()
+
+  const { data: isSaved } = useQuery({
+    ...userQueries.isClassSaved(classData?.id ?? ""),
+    enabled: isAuthenticated && !!classData,
+  })
+
+  // Track recent class visit for authenticated users
+  useEffect(() => {
+    if (isAuthenticated && classData?.id) {
+      updateRecentClassFn({ data: { classId: classData.id } })
+    }
+  }, [isAuthenticated, classData?.id])
+
   if (!classData) return null
 
   const totalQuestions = classData.sections.reduce(
@@ -56,6 +78,14 @@ function ClassPage() {
     (s) =>
       !search || s.name.toLowerCase().includes(search.toLowerCase()),
   )
+
+  const handleToggleSave = () => {
+    if (isSaved) {
+      removeClass.mutate(classData.id)
+    } else {
+      addClass.mutate(classData.id)
+    }
+  }
 
   return (
     <div className="container py-8">
@@ -73,12 +103,28 @@ function ClassPage() {
         ]}
         current={classData.name}
       />
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">{classData.name}</h1>
-        {classData.description && (
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            {classData.description}
-          </p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">{classData.name}</h1>
+          {classData.description && (
+            <p className="mt-2 max-w-2xl text-muted-foreground">
+              {classData.description}
+            </p>
+          )}
+        </div>
+        {isAuthenticated && (
+          <Button
+            variant={isSaved ? "default" : "outline"}
+            size="sm"
+            onClick={handleToggleSave}
+            disabled={addClass.isPending || removeClass.isPending}
+            className="shrink-0"
+          >
+            <Heart
+              className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+            />
+            {isSaved ? "Salvato" : "Salva"}
+          </Button>
         )}
       </div>
       <BrowseStats
