@@ -125,6 +125,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Center container and set max-width */
+.container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  max-width: 80rem;
+}
+
+@media (min-width: 640px) {
+  .container { padding-inline: 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .container { padding-inline: 2rem; }
+}
+
 /* ===== Custom TriviaMore styles ===== */
 .gradient-bg {
   background: linear-gradient(135deg, #d14124 0%, #f56565 100%);
