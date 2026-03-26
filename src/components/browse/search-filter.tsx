@@ -13,13 +13,13 @@ export function SearchFilter({
 }) {
   return (
     <div className="relative mb-6">
-      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="search"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-10"
+        className="h-11 pl-10"
       />
     </div>
   )

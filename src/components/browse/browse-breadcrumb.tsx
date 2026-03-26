@@ -23,7 +23,7 @@ export function BrowseBreadcrumb({
   current: string
 }) {
   return (
-    <Breadcrumb className="mb-6">
+    <Breadcrumb className="mb-6 text-sm">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
