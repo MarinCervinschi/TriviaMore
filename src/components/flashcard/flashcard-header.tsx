@@ -19,13 +19,13 @@ export function FlashcardHeader({
   onExit: () => void
 }) {
   return (
-    <header className="flex items-center justify-between border-b bg-background px-4 py-3">
+    <header className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-4 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggleSidebar}
-          className="h-8 w-8"
+          className="h-9 w-9 rounded-xl"
         >
           {sidebarOpen ? (
             <PanelLeftClose className="h-4 w-4" />
@@ -33,21 +33,25 @@ export function FlashcardHeader({
             <PanelLeft className="h-4 w-4" />
           )}
         </Button>
-        <span className="text-sm font-medium text-muted-foreground">
-          Carta {questionIndex + 1} di {totalQuestions}
+        <span className="rounded-lg bg-muted px-3 py-1 text-sm font-medium">
+          {questionIndex + 1}
+          <span className="text-muted-foreground"> / {totalQuestions}</span>
         </span>
       </div>
 
       <div className="flex items-center gap-3">
-        <Badge variant="secondary" className="gap-1">
-          <Eye className="h-3 w-3" />
+        <Badge
+          variant="secondary"
+          className="gap-1.5 rounded-xl px-3 py-1"
+        >
+          <Eye className="h-3.5 w-3.5" />
           {studiedCount}/{totalQuestions}
         </Badge>
         <Button
           variant="ghost"
           size="sm"
           onClick={onExit}
-          className="text-muted-foreground hover:text-destructive"
+          className="rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
           <LogOut className="mr-1.5 h-4 w-4" />
           Esci

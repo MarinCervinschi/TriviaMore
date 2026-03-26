@@ -1,12 +1,7 @@
+import { CheckCircle, Clock, Eye } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { FlashcardQuestion } from "@/lib/flashcard/types"
 
@@ -47,76 +42,94 @@ export function FlashcardResults({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-4xl space-y-6 p-6">
-        {/* Summary */}
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl">Sessione Completata</CardTitle>
-            <CardDescription>{sectionName}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-6 text-center sm:grid-cols-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Carte Studiate</p>
-                <p className="text-4xl font-bold text-primary">
-                  {studiedCount}/{totalCards}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Completamento</p>
-                <p className="text-4xl font-bold">{percentage}%</p>
-                <p className="text-sm text-muted-foreground">
-                  {getCompletionMessage(percentage)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tempo</p>
-                <p className="text-4xl font-bold">{formatTime(timeSpent)}</p>
-              </div>
+      <div className="mx-auto max-w-4xl space-y-8 p-6">
+        {/* Score Hero */}
+        <div className="relative overflow-hidden rounded-3xl border bg-card p-8 text-center sm:p-12">
+          <div className="pointer-events-none absolute -left-20 -top-20 h-48 w-48 rounded-full bg-green-500/10 blur-[60px]" />
+          <div className="pointer-events-none absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-emerald-300/10 blur-[60px]" />
+
+          <p className="relative mb-2 text-sm font-medium text-muted-foreground">
+            {sectionName}
+          </p>
+          <p className="relative text-6xl font-bold text-green-600 sm:text-7xl">
+            {percentage}%
+          </p>
+          <p className="relative mt-2 text-lg text-muted-foreground">
+            {getCompletionMessage(percentage)}
+          </p>
+
+          {/* Stats row */}
+          <div className="relative mt-8 grid grid-cols-3 gap-4">
+            <div className="rounded-2xl bg-muted/50 p-4">
+              <Eye className="mx-auto mb-2 h-5 w-5 text-green-500" />
+              <p className="text-2xl font-bold">
+                {studiedCount}/{totalCards}
+              </p>
+              <p className="text-xs text-muted-foreground">Studiate</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="rounded-2xl bg-muted/50 p-4">
+              <CheckCircle className="mx-auto mb-2 h-5 w-5 text-primary" />
+              <p className="text-2xl font-bold">{percentage}%</p>
+              <p className="text-xs text-muted-foreground">Completamento</p>
+            </div>
+            <div className="rounded-2xl bg-muted/50 p-4">
+              <Clock className="mx-auto mb-2 h-5 w-5 text-blue-500" />
+              <p className="text-2xl font-bold">{formatTime(timeSpent)}</p>
+              <p className="text-xs text-muted-foreground">Tempo</p>
+            </div>
+          </div>
+        </div>
 
         {/* Card Review */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold">Riepilogo Carte</h2>
-          {questions.map((question, index) => {
-            const wasStudied = studiedCards.has(index)
-            return (
-              <Card key={question.id}>
-                <CardHeader className="pb-3">
+        <div>
+          <h2 className="mb-4 text-xl font-bold tracking-tight">
+            Riepilogo Carte
+          </h2>
+          <div className="space-y-3">
+            {questions.map((question, index) => {
+              const wasStudied = studiedCards.has(index)
+              return (
+                <div
+                  key={question.id}
+                  className="overflow-hidden rounded-2xl border bg-card p-4"
+                >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Carta {index + 1}
-                    </span>
-                    <Badge variant={wasStudied ? "default" : "secondary"}>
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold">
+                        {index + 1}
+                      </span>
+                      <span className="line-clamp-1 text-sm font-medium">
+                        {question.content.slice(0, 80)}
+                        {question.content.length > 80 && "..."}
+                      </span>
+                    </div>
+                    <Badge
+                      variant={wasStudied ? "default" : "secondary"}
+                      className={
+                        wasStudied
+                          ? "bg-green-500/10 text-green-600 border-green-500/20"
+                          : ""
+                      }
+                    >
                       {wasStudied ? "Studiata" : "Non vista"}
                     </Badge>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="font-medium">
-                    <MarkdownRenderer
-                      content={question.content}
-                      className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-                    />
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-3 text-sm">
-                    <span className="font-medium text-primary">Risposta: </span>
-                    {question.correct_answer.join(" / ")}
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         {/* Actions */}
         <div className="flex justify-center gap-4 pb-8">
-          <Button variant="outline" onClick={onExit}>
-            Torna alla Sezione
+          <Button variant="outline" size="lg" onClick={onExit}>
+            Torna alla Home
           </Button>
-          {onRetry && <Button onClick={onRetry}>Ricomincia</Button>}
+          {onRetry && (
+            <Button size="lg" onClick={onRetry}>
+              Ricomincia
+            </Button>
+          )}
         </div>
       </div>
     </div>
