@@ -1,5 +1,3 @@
-import { Progress } from "@/components/ui/progress"
-
 export function QuizProgress({
   current,
   total,
@@ -11,7 +9,12 @@ export function QuizProgress({
 
   return (
     <div className="px-4 py-2">
-      <Progress value={percentage} className="h-2" />
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-primary to-red-400 transition-all duration-300"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
     </div>
   )
 }

@@ -211,7 +211,7 @@ function QuizPage() {
             onJump={handleJump}
           />
         )}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           {currentQuestion && (
             <QuestionCard
               question={currentQuestion}
