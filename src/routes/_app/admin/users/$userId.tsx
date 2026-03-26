@@ -97,13 +97,13 @@ function AdminUserDetailPage() {
       <div className="grid gap-6">
         {/* Profile + Stats */}
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle>Profilo</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-20 w-20 ring-4 ring-primary/10">
                   <AvatarImage src={user.image ?? undefined} />
                   <AvatarFallback className="text-lg">{initials}</AvatarFallback>
                 </Avatar>
@@ -128,7 +128,7 @@ function AdminUserDetailPage() {
                     value={user.role}
                     onValueChange={(v) => setRoleConfirm(v as UserRole)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -142,7 +142,7 @@ function AdminUserDetailPage() {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant="outline" className="text-sm">
+                  <Badge variant="outline" className="rounded-full text-sm">
                     {ROLE_LABELS[user.role]}
                   </Badge>
                 )}
@@ -150,7 +150,7 @@ function AdminUserDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle>Statistiche</CardTitle>
             </CardHeader>
@@ -167,7 +167,7 @@ function AdminUserDetailPage() {
                   <dt className="text-sm text-muted-foreground">Punteggio medio</dt>
                   <dd className="text-2xl font-bold">
                     {user.stats.average_score != null
-                      ? `${Math.round(user.stats.average_score * 100)}%`
+                      ? `${Math.round((user.stats.average_score / 33) * 100)}%`
                       : "—"}
                   </dd>
                 </div>
@@ -191,7 +191,7 @@ function AdminUserDetailPage() {
         </div>
 
         {/* Department Admin assignments */}
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -207,7 +207,7 @@ function AdminUserDetailPage() {
             {user.managed_departments.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
                 {user.managed_departments.map((dept) => (
-                  <Badge key={dept.id} variant="secondary" className="gap-1 pr-1">
+                  <Badge key={dept.id} variant="secondary" className="gap-1 rounded-xl pr-1">
                     {dept.name} ({dept.code})
                     <Button
                       variant="ghost"
@@ -229,7 +229,7 @@ function AdminUserDetailPage() {
             {availableDepts.length > 0 && (
               <div className="flex items-center gap-2">
                 <Select value={addDeptId} onValueChange={setAddDeptId}>
-                  <SelectTrigger className="w-64">
+                  <SelectTrigger className="w-64 rounded-xl">
                     <SelectValue placeholder="Seleziona dipartimento..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -267,7 +267,7 @@ function AdminUserDetailPage() {
         </Card>
 
         {/* Course Maintainer assignments */}
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <GraduationCap className="h-5 w-5" />
@@ -281,7 +281,7 @@ function AdminUserDetailPage() {
             {user.maintained_courses.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
                 {user.maintained_courses.map((course) => (
-                  <Badge key={course.id} variant="secondary" className="gap-1 pr-1">
+                  <Badge key={course.id} variant="secondary" className="gap-1 rounded-xl pr-1">
                     {course.name} ({course.department_name})
                     <Button
                       variant="ghost"
@@ -303,7 +303,7 @@ function AdminUserDetailPage() {
             {availableCourses.length > 0 && (
               <div className="flex items-center gap-2">
                 <Select value={addCourseId} onValueChange={setAddCourseId}>
-                  <SelectTrigger className="w-64">
+                  <SelectTrigger className="w-64 rounded-xl">
                     <SelectValue placeholder="Seleziona corso..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -341,7 +341,7 @@ function AdminUserDetailPage() {
         </Card>
 
         {/* Section Access */}
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
@@ -355,7 +355,7 @@ function AdminUserDetailPage() {
             {user.section_accesses.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
                 {user.section_accesses.map((section) => (
-                  <Badge key={section.id} variant="secondary" className="gap-1 pr-1">
+                  <Badge key={section.id} variant="secondary" className="gap-1 rounded-xl pr-1">
                     {section.name} ({section.class_name})
                     <Button
                       variant="ghost"
@@ -381,7 +381,7 @@ function AdminUserDetailPage() {
               return availableSections.length > 0 ? (
                 <div className="flex items-center gap-2">
                   <Select value={addSectionId} onValueChange={setAddSectionId}>
-                    <SelectTrigger className="w-64">
+                    <SelectTrigger className="w-64 rounded-xl">
                       <SelectValue placeholder="Seleziona sezione..." />
                     </SelectTrigger>
                     <SelectContent>

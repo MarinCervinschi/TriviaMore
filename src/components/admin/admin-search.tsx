@@ -20,7 +20,7 @@ export function AdminSearch({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pl-9"
+        className="rounded-xl pl-9"
       />
     </div>
   )

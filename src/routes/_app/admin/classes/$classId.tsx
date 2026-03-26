@@ -88,9 +88,9 @@ function AdminClassDetailPage() {
         backLabel={course.name}
       />
 
-      <div className="grid gap-8">
-        <Card>
-          <CardHeader>
+      <div className="grid gap-6">
+        <Card className="rounded-2xl">
+          <CardHeader className="pb-4">
             <CardTitle>Modifica classe</CardTitle>
           </CardHeader>
           <CardContent>
@@ -105,7 +105,7 @@ function AdminClassDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
               <CardTitle>Sezioni ({sections.length})</CardTitle>
@@ -122,6 +122,7 @@ function AdminClassDetailPage() {
                 </div>
                 <Button
                   size="sm"
+                  className="rounded-xl"
                   onClick={() => setCreateSectionOpen(true)}
                 >
                   <Plus className="mr-1 h-4 w-4" />
@@ -141,20 +142,20 @@ function AdminClassDetailPage() {
               <>
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted/50">
                       <TableHead>
                         <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead className="text-center">
                         <SortableHeader label="Visibilità" sortKey="is_public" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-center">Domande</TableHead>
-                      <TableHead className="text-right">Azioni</TableHead>
+                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Domande</TableHead>
+                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paged.map((section) => (
-                      <TableRow key={section.id}>
+                      <TableRow key={section.id} className="transition-colors hover:bg-muted/30">
                         <TableCell>
                           <Link
                             to="/admin/sections/$sectionId"
@@ -166,12 +167,12 @@ function AdminClassDetailPage() {
                         </TableCell>
                         <TableCell className="text-center">
                           {section.is_public ? (
-                            <Badge variant="default" className="gap-1">
+                            <Badge variant="default" className="gap-1 rounded-full">
                               <Eye className="h-3 w-3" />
                               Pubblica
                             </Badge>
                           ) : (
-                            <Badge variant="secondary" className="gap-1">
+                            <Badge variant="secondary" className="gap-1 rounded-full">
                               <EyeOff className="h-3 w-3" />
                               Privata
                             </Badge>
@@ -182,7 +183,7 @@ function AdminClassDetailPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                               <Link
                                 to="/admin/sections/$sectionId"
                                 params={{ sectionId: section.id }}
@@ -193,6 +194,7 @@ function AdminClassDetailPage() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="rounded-lg"
                               onClick={() =>
                                 setDeleteSectionId(section.id)
                               }

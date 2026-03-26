@@ -20,9 +20,9 @@ export function BrowseAdminButton({ to, params }: BrowseAdminButtonProps) {
   if (!isAdmin) return null
 
   return (
-    <Button variant="outline" size="sm" asChild>
+    <Button variant="outline" size="sm" className="rounded-xl" asChild>
       <Link to={to} params={params}>
-        <Settings className="mr-1.5 h-4 w-4" />
+        <Settings className="mr-1.5 h-4 w-4 text-primary" />
         Gestisci
       </Link>
     </Button>
