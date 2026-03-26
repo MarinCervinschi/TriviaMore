@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { oauthSignInFn } from "@/lib/auth/server"
@@ -50,24 +51,32 @@ export function OAuthButtons() {
   }
 
   return (
-    <div className="grid gap-2">
+    <div className="grid grid-cols-2 gap-3">
       <Button
         variant="outline"
-        className="w-full"
+        className="h-11"
         disabled={loading !== null}
         onClick={() => handleOAuth("github")}
       >
-        <GitHubIcon />
-        {loading === "github" ? "Reindirizzamento..." : "Continua con GitHub"}
+        {loading === "github" ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <GitHubIcon />
+        )}
+        GitHub
       </Button>
       <Button
         variant="outline"
-        className="w-full"
+        className="h-11"
         disabled={loading !== null}
         onClick={() => handleOAuth("google")}
       >
-        <GoogleIcon />
-        {loading === "google" ? "Reindirizzamento..." : "Continua con Google"}
+        {loading === "google" ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <GoogleIcon />
+        )}
+        Google
       </Button>
     </div>
   )

@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -19,6 +21,7 @@ import { registerSchema, type RegisterInput } from "@/lib/auth/schemas"
 export function RegisterForm() {
   const navigate = useNavigate()
   const { signup } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<RegisterInput>({
     resolver: standardSchemaResolver(registerSchema),
@@ -41,7 +44,7 @@ export function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
         <FormField
           control={form.control}
           name="name"
@@ -84,12 +87,30 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Min. 6 caratteri, maiuscola e numero"
-                  autoComplete="new-password"
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Min. 6 caratteri, maiuscola e numero"
+                    autoComplete="new-password"
+                    className="pr-10"
+                    {...field}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">
+                      {showPassword ? "Nascondi password" : "Mostra password"}
+                    </span>
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,10 +118,18 @@ export function RegisterForm() {
         />
         <Button
           type="submit"
-          className="w-full"
+          size="lg"
+          className="w-full shadow-lg shadow-primary/25"
           disabled={signup.isPending}
         >
-          {signup.isPending ? "Registrazione in corso..." : "Registrati"}
+          {signup.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Registrazione in corso...
+            </>
+          ) : (
+            "Registrati"
+          )}
         </Button>
       </form>
     </Form>
