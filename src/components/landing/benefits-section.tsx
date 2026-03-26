@@ -1,19 +1,26 @@
 import { Link } from "@tanstack/react-router"
-import { CheckCircle } from "lucide-react"
+import { ArrowRight, CheckCircle, Github } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { BenefitItem, CTACardProps } from "./data"
 
-function BenefitItemComponent({ benefit }: { benefit: BenefitItem }) {
+function BenefitItemComponent({
+  benefit,
+  index,
+}: {
+  benefit: BenefitItem
+  index: number
+}) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="inline-flex shrink-0 rounded-full bg-green-500/10 p-1.5">
-        <CheckCircle className="h-5 w-5 text-green-500" />
+    <div className="flex gap-4">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+        {index + 1}
       </div>
       <div>
-        <h3 className="font-semibold">{benefit.title}</h3>
-        <p className="text-sm text-muted-foreground">{benefit.description}</p>
+        <h3 className="mb-1 font-semibold tracking-tight">{benefit.title}</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {benefit.description}
+        </p>
       </div>
     </div>
   )
@@ -29,40 +36,45 @@ function CTACard({
   disclaimer,
 }: CTACardProps) {
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-      <CardHeader>
-        <CardTitle className="text-2xl tracking-tight">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="mb-6 text-muted-foreground">{description}</p>
-        <div className="space-y-3">
-          <Button size="lg" className="w-full shadow-lg" asChild>
-            <Link to={buttonHref}>{buttonText}</Link>
-          </Button>
-          {secondaryButtonText && secondaryButtonHref && (
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full"
-              asChild
+    <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-8 sm:p-10">
+      {/* Decorative orb */}
+      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
+
+      <h3 className="mb-3 text-2xl font-bold tracking-tight">{title}</h3>
+      <p className="mb-8 text-muted-foreground">{description}</p>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button size="lg" className="shadow-lg shadow-primary/25" asChild>
+          <Link to={buttonHref}>
+            {buttonText}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+        {secondaryButtonText && secondaryButtonHref && (
+          <Button size="lg" variant="outline" asChild>
+            <a
+              href={secondaryButtonHref}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <a
-                href={secondaryButtonHref}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {secondaryButtonText}
-              </a>
-            </Button>
-          )}
-        </div>
-        {disclaimer && (
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            {disclaimer}
-          </p>
+              <Github className="mr-2 h-4 w-4" />
+              {secondaryButtonText}
+            </a>
+          </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {disclaimer && (
+        <div className="mt-6 flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+          {disclaimer.split("•").map((item, i) => (
+            <span key={i} className="flex items-center gap-1">
+              <CheckCircle className="h-3 w-3 text-green-500" />
+              {item.trim()}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -74,21 +86,35 @@ export function BenefitsSection({
   ctaCard: CTACardProps
 }) {
   return (
-    <section className="py-16 sm:py-24">
+    <section className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        {/* Benefits */}
+        <div className="mb-20 grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="mb-8 text-3xl font-bold tracking-tight">
-              Perché gli studenti scelgono Trivia More
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">
+              Perche' TriviaMore
+            </p>
+            <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
+              Progettato per il tuo successo
             </h2>
-            <div className="space-y-5">
-              {benefits.map((benefit) => (
-                <BenefitItemComponent key={benefit.title} benefit={benefit} />
-              ))}
-            </div>
+            <p className="mb-8 text-lg text-muted-foreground">
+              Ogni funzionalita' e' pensata per aiutarti a prepararti meglio,
+              piu' velocemente e con piu' sicurezza.
+            </p>
           </div>
-          <CTACard {...ctaCard} />
+          <div className="space-y-6">
+            {benefits.map((benefit, i) => (
+              <BenefitItemComponent
+                key={benefit.title}
+                benefit={benefit}
+                index={i}
+              />
+            ))}
+          </div>
         </div>
+
+        {/* CTA */}
+        <CTACard {...ctaCard} />
       </div>
     </section>
   )

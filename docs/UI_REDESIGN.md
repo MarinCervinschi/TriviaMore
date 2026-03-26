@@ -93,18 +93,41 @@ Note: Poppins has letterforms piu' arrotondate rispetto a Inter, che si sposano 
 - **Size**: `size-4` (16px) inline, `size-5` (20px) buttons, `size-8`+ (32px+) decorative
 - **Style**: Consistent `strokeWidth={1.5}` for a lighter, modern feel
 
-### Style Direction: Modern & Vibrant
+### Style Direction: Modern & Vibrant — BOLD redesign
 
-The overall aesthetic is polished and energetic — subtle gradients, glass effects, elevated cards with hover motion, and a warm color identity. Not flat/minimal, not over-the-top. Think Vercel meets Duolingo.
+The redesign must be **total, not incremental**. Each page should be completely rethought with new layouts, new compositions, bold visual identity. Don't preserve existing structure — rebuild from scratch using existing data/props.
+
+### Background System (NO flat mono-color backgrounds)
+
+Every page uses a **rich, textured background** — never plain white/dark:
+
+**Light mode base**: Warm off-white with mesh gradient overlay
+```css
+background: #fafaf9;
+/* Overlay with radial gradients using primary color at low opacity */
+```
+
+**Dark mode base**: Deep navy with subtle aurora/mesh gradient
+```css
+background: hsl(224 71% 4%);
+/* Overlay with radial gradients using primary color warmth */
+```
+
+**Dot grid pattern** (reusable): CSS background-image with tiny dots for texture
+```css
+background-image: radial-gradient(circle, hsl(var(--foreground) / 0.07) 1px, transparent 1px);
+background-size: 24px 24px;
+```
+
+**Mesh gradient blobs**: Multiple absolute-positioned blurred circles with primary/accent colors at very low opacity, creating depth without distraction.
 
 ### Glass & Decorative Effects
 
 - **Glass cards** (auth, special sections): `backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20`
 - **Gradient text** (hero, CTAs): `bg-gradient-to-r from-primary to-red-400 bg-clip-text text-transparent`
-- **Gradient backgrounds**: Subtle radial or linear gradients on hero/CTA sections
-- **Dot/grid patterns**: SVG background patterns for hero and auth pages
 - **Glow effects**: `shadow-primary/20` on primary buttons, `shadow-primary/10` on cards
 - **Glassmorphism**: Used sparingly for auth cards, floating elements, navbar
+- **Animated gradient orbs**: Slow-moving blurred circles in hero sections for dynamism
 
 ### Custom SVG Illustrations
 
@@ -433,16 +456,17 @@ The overall aesthetic is polished and energetic — subtle gradients, glass effe
 
 ## Implementation Rules
 
-1. **One phase at a time** — Complete and verify each phase before moving to the next
-2. **Component-first** — Update base UI components (Phase 1) before page-level changes
-3. **Dark mode always** — Every change must work in both light and dark themes
-4. **Mobile-first** — Design for mobile, enhance for desktop
-5. **No breaking changes** — Preserve all functionality, only change appearance
-6. **Consistent patterns** — Use the same card style, spacing, and hover effects everywhere
-7. **Commit per sub-phase** — e.g., "Phase 2A: redesign landing hero section"
+1. **Bold, not incremental** — Each page redesign is a total rebuild, not small tweaks
+2. **One phase at a time** — Complete and verify each phase before moving to the next
+3. **Component-first** — Update base UI components (Phase 1) before page-level changes
+4. **Dark mode always** — Every change must work in both light and dark themes
+5. **Mobile-first** — Design for mobile, enhance for desktop
+6. **No breaking changes** — Preserve all functionality, only change appearance
+7. **Consistent patterns** — Use the same card style, spacing, and hover effects everywhere
 8. **21st.dev as reference** — Use their components as inspiration for layout/patterns, adapt to our design tokens
 9. **Accessibility** — Maintain WCAG AA contrast, focus states, screen reader support
 10. **Performance** — No heavy animations, lazy-load images, minimize CSS bundle
+11. **Rich backgrounds** — Never plain mono-color backgrounds; use mesh gradients, dot patterns, gradient overlays
 
 ---
 
