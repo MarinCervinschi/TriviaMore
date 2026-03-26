@@ -37,16 +37,21 @@ pnpm dev:no-secrets
 | Command | Description |
 |---|---|
 | `pnpm dev` | Dev server with Infisical secrets |
-| `pnpm build` | Production build with secrets |
-| `pnpm preview` | Preview the production build |
 | `pnpm dev:no-secrets` | Dev server without Infisical |
-| `pnpm build:no-secrets` | Build without Infisical |
+| `pnpm build` | Production build + sitemap (secrets from SDK or env) |
+| `pnpm build:dev` | Dev build with Infisical CLI |
+| `pnpm start` | Start production server (`node .output/server/index.mjs`) |
+| `pnpm preview` | Preview the production build |
 | `pnpm test` | Run tests with Vitest |
 | `pnpm db:seed` | Seed local DB with sample data |
+| `pnpm generate:sitemap` | Generate sitemap.xml (runs automatically after build) |
+| `pnpm generate:sitemap:dev` | Generate sitemap.xml with Infisical CLI |
 
-## Environment Variables (Infisical)
+## Environment Variables
 
-These secrets must be configured in Infisical for the app to work:
+### Development (managed by Infisical CLI)
+
+These secrets are stored in Infisical and injected via `infisical run --` in dev scripts:
 
 | Variable | Scope | Value from `supabase status` |
 |---|---|---|
@@ -57,13 +62,30 @@ These secrets must be configured in Infisical for the app to work:
 | `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app Client Secret |
 | `GOOGLE_CLIENT_ID` | Server only | Google OAuth app Client ID |
 | `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app Client Secret |
-| `VITE_APP_URL` | Server only | App URL for OAuth redirects (prod only, defaults to `http://localhost:3000`) |
+| `VITE_APP_URL` | Server only | App URL for OAuth redirects (defaults to `http://localhost:3000`) |
+| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://triviamore.it`) |
 
 Run `supabase status` to see all local credentials after `supabase start`.
 
 > OAuth providers are optional for local development. Email/password auth works without them.
 
 > Variables prefixed with `VITE_` are exposed to the browser. Never prefix secret keys with `VITE_`.
+
+### Production (Infisical SDK)
+
+In production, the Infisical CLI is not available. The app uses `@infisical/sdk` to load secrets at server startup via Universal Auth (Machine Identity).
+
+Set these environment variables on your hosting platform:
+
+| Variable | Required | Description |
+|---|---|---|
+| `INFISICAL_CLIENT_ID` | Yes | Machine Identity client ID |
+| `INFISICAL_CLIENT_SECRET` | Yes | Machine Identity client secret |
+| `INFISICAL_PROJECT_ID` | Yes | Infisical project ID |
+| `INFISICAL_ENV` | No | Infisical environment slug (default: `prod`) |
+| `INFISICAL_SITE_URL` | No | Infisical instance URL (default: `https://app.infisical.com`) |
+
+All other secrets (Supabase, OAuth, etc.) are loaded automatically from Infisical at runtime and injected into `process.env`.
 
 ## Supabase Local Development
 

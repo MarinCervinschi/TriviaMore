@@ -37,7 +37,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 7** — Quiz system
 - [x] **Fase 8** — Flashcard system
 - [x] **Fase 9** — Admin CRUD, gestione contenuti e utenti
-- [ ] **Fase 10** — SEO, analytics, e polish
+- [~] **Fase 10** — SEO, analytics, e polish (in corso)
 - [ ] **Fase 11** — Cleanup e dismissione Next.js
 
 ---
@@ -47,7 +47,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 | Decisione | Scelta | Motivazione |
 |---|---|---|
 | Package manager | **pnpm** | Performance, disk space, strict dependency resolution |
-| Secrets management | **Infisical** | Centralizzato, niente `.env` lunghi, team-friendly |
+| Secrets management | **Infisical** (CLI dev, SDK prod) | CLI per dev locale, `@infisical/sdk` con Universal Auth per produzione |
 | Struttura branch | **Branch orfano** | Progetto pulito, nessun file residuo Next.js |
 | Database client | **Supabase JS diretto** | Meno dipendenze, RLS integrato, realtime gratis (no Prisma) |
 | Tabella utenti | **`profiles` separata** | FK a `auth.users(id)`, trigger `on_auth_user_created` |
