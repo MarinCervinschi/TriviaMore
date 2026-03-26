@@ -134,7 +134,7 @@ export const oauthSignInFn = createServerFn({ method: "POST" })
     const { data: authData, error } = await supabase.auth.signInWithOAuth({
       provider: data.provider,
       options: {
-        redirectTo: `${process.env.VITE_SUPABASE_URL}/auth/v1/callback`,
+        redirectTo: `${process.env.VITE_APP_URL ?? "http://localhost:3000"}/auth/callback`,
       },
     })
 
