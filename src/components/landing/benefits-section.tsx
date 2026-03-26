@@ -7,11 +7,13 @@ import type { BenefitItem, CTACardProps } from "./data"
 
 function BenefitItemComponent({ benefit }: { benefit: BenefitItem }) {
   return (
-    <div className="flex items-start gap-3">
-      <CheckCircle className="mt-0.5 h-6 w-6 text-green-500" />
+    <div className="flex items-start gap-4">
+      <div className="inline-flex shrink-0 rounded-full bg-green-500/10 p-1.5">
+        <CheckCircle className="h-5 w-5 text-green-500" />
+      </div>
       <div>
         <h3 className="font-semibold">{benefit.title}</h3>
-        <p className="text-muted-foreground">{benefit.description}</p>
+        <p className="text-sm text-muted-foreground">{benefit.description}</p>
       </div>
     </div>
   )
@@ -27,14 +29,14 @@ function CTACard({
   disclaimer,
 }: CTACardProps) {
   return (
-    <Card>
+    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
       <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle className="text-2xl tracking-tight">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="mb-6 text-muted-foreground">{description}</p>
         <div className="space-y-3">
-          <Button size="lg" className="w-full" asChild>
+          <Button size="lg" className="w-full shadow-lg" asChild>
             <Link to={buttonHref}>{buttonText}</Link>
           </Button>
           {secondaryButtonText && secondaryButtonHref && (
@@ -55,7 +57,7 @@ function CTACard({
           )}
         </div>
         {disclaimer && (
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-4 text-center text-xs text-muted-foreground">
             {disclaimer}
           </p>
         )}
@@ -72,14 +74,14 @@ export function BenefitsSection({
   ctaCard: CTACardProps
 }) {
   return (
-    <section className="py-16">
+    <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="mb-6 text-3xl font-bold">
+            <h2 className="mb-8 text-3xl font-bold tracking-tight">
               Perché gli studenti scelgono Trivia More
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {benefits.map((benefit) => (
                 <BenefitItemComponent key={benefit.title} benefit={benefit} />
               ))}

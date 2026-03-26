@@ -7,6 +7,7 @@ export interface FeatureCard {
   title: string
   description: string
   iconColor: string
+  iconBg: string
 }
 
 export interface BenefitItem {
@@ -58,6 +59,7 @@ export const features: FeatureCard[] = [
     description:
       "Quiz, domande e contenuti basati su appunti di studenti reali. Creato dalla community per la community.",
     iconColor: "text-blue-600",
+    iconBg: "bg-blue-500/10",
   },
   {
     icon: Target,
@@ -65,6 +67,7 @@ export const features: FeatureCard[] = [
     description:
       "Nata per supportare la preparazione degli esami all'Università di Modena e Reggio Emilia, ma pensata per tutti gli studenti.",
     iconColor: "text-green-600",
+    iconBg: "bg-green-500/10",
   },
   {
     icon: Github,
@@ -72,6 +75,7 @@ export const features: FeatureCard[] = [
     description:
       "Codice e contenuti aperti, ospitati su GitHub. Chiunque può contribuire e migliorare la piattaforma.",
     iconColor: "text-purple-600",
+    iconBg: "bg-purple-500/10",
   },
   {
     icon: Users,
@@ -79,6 +83,7 @@ export const features: FeatureCard[] = [
     description:
       "Un progetto creato per necessità reali, con l'obiettivo di aiutare altri studenti ad affrontare esami universitari con più sicurezza.",
     iconColor: "text-orange-600",
+    iconBg: "bg-orange-500/10",
   },
 ]
 
