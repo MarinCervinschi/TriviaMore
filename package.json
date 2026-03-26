@@ -14,7 +14,8 @@
     "dev:no-secrets": "vite dev --port 3000",
     "build:no-secrets": "vite build",
     "test": "vitest run",
-    "db:seed": "infisical run -- pnpm tsx supabase/scripts/seed.ts"
+    "db:seed": "infisical run -- pnpm tsx supabase/scripts/seed.ts",
+    "generate:sitemap": "infisical run -- pnpm tsx scripts/generate-sitemap.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
