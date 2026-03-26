@@ -1,6 +1,10 @@
 import { createClient } from "@supabase/supabase-js"
 import { writeFileSync } from "node:fs"
 import { resolve } from "node:path"
+import { loadSecrets } from "../src/lib/secrets/server"
+
+// Load secrets from Infisical SDK if available (prod), otherwise assume env is already set (CLI)
+await loadSecrets()
 
 const SITE_URL = process.env.VITE_SITE_URL ?? "https://triviamore.it"
 
