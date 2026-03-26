@@ -35,7 +35,7 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - [x] **Fase 5** — Pagine pubbliche e browse
 - [x] **Fase 6** — Area utente (dashboard, classi, bookmarks, progress)
 - [x] **Fase 7** — Quiz system
-- [ ] **Fase 8** — Flashcard system
+- [x] **Fase 8** — Flashcard system
 - [ ] **Fase 9** — Admin CRUD e gestione contenuti
 - [ ] **Fase 10** — SEO, analytics, e polish
 - [ ] **Fase 11** — Cleanup e dismissione Next.js
@@ -125,5 +125,33 @@ git diff trivia-more-3.0 -- src/components/ui/button.tsx
 - Cards per livello: DepartmentCard, CourseCard, ClassCard, SectionCard
 - Filtri client-side: ricerca per nome + filtro tipo corso (Triennale/Magistrale)
 - SEO: `head` function con title e description su ogni route
-- Sezione dettaglio: QuizCard e FlashcardCard placeholder (funzionalità in Fase 7-8)
+- Sezione dettaglio: QuizCard e FlashcardCard (funzionalità in Fase 7-8)
 - Permessi sezioni: delegati a RLS via `can_access_section()`, nessuna logica custom
+
+### Area Utente (Fase 6)
+- Dashboard con profilo, statistiche quiz, attività recente con link cliccabili ai risultati
+- My Classes con ricerca/filtri e gestione classi salvate
+- Bookmarks con revisione domande e toggle risposte
+- Progress con grafici e tracking performance
+- Settings con informazioni profilo e account
+
+### Quiz System (Fase 7)
+- Tipi domanda: MULTIPLE_CHOICE, TRUE_FALSE (filtrati da `question_type`)
+- Modalità: STUDY (timing flessibile), EXAM_SIMULATION (timing rigido, domande da tutta la classe)
+- Scoring configurabile via `evaluation_modes` (punti corretta/errata, credito parziale)
+- Flusso duale: guest (sessionStorage, nessun salvataggio DB) e autenticato (quiz_attempts, progress tracking)
+- Componenti: start-quiz-dialog, question-card, quiz-header con timer, quiz-navigation, quiz-sidebar, quiz-progress
+- Risultati inline per guest, pagina risultati persistente per utenti autenticati (`/quiz/results/$attemptId`)
+- Randomizzazione domande e opzioni, bookmark durante il quiz, conferma uscita con dialog
+- Shortcut tastiera: frecce per navigazione
+
+### Flashcard System (Fase 8)
+- **Architettura stateless**: nessuna tabella DB, nessun salvataggio sessione/punteggio — coerente con la vecchia app
+- Tipi domanda: SHORT_ANSWER (filtrati da `question_type`)
+- Flusso duale: guest (sessionStorage + randomizzazione casuale) e autenticato (sessionId codificato con base64 + randomizzazione deterministica con seed)
+- Formato sessionId auth: `user.{timestamp}.{base64(sectionId:cardCount)}` — parsato server-side, nessuna tabella lookup
+- Componenti: start-flashcard-dialog (selezione numero carte), flashcard-question-card (animazione 3D flip CSS), flashcard-header, flashcard-navigation, flashcard-sidebar, flashcard-progress, flashcard-results
+- Tracking "studiato": `Set<number>` client-side delle carte girate, mostrato come percentuale completamento
+- Shortcut tastiera: frecce per navigazione, Spazio/Invio per girare carta
+- Conferma uscita con dialog, risultati inline con riepilogo carte e possibilità di ricominciare
+- Server functions read-only: `generateGuestFlashcardFn`, `startFlashcardFn`, `getFlashcardSessionFn`

@@ -88,7 +88,7 @@ Populates the local Supabase database with sample public data for development:
 pnpm db:seed
 ```
 
-Creates 3 departments (DIEF, DSV, DEM), 5 courses, 8 classes, 12 sections, 9 questions (MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER), and 2 evaluation modes.
+Creates 3 departments (DIEF, DSV, DEM), 5 courses, 8 classes, 12 sections, 16 questions (MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER), and 2 evaluation modes.
 
 Idempotent — safe to run multiple times. Cleans previous seed data (IDs prefixed with `clseed_`) before reinserting.
 
@@ -140,8 +140,11 @@ src/
 │   ├── auth/            Auth forms, OAuth buttons, auth card
 │   ├── browse/          Browse cards, breadcrumb, stats, filters
 │   ├── contact/         Contact form
+│   ├── flashcard/       Flashcard UI (flip card, sidebar, results)
 │   ├── landing/         Hero, features, benefits, footer
-│   └── layout/          Navbar
+│   ├── layout/          Navbar, footer
+│   ├── quiz/            Quiz UI (questions, timer, navigation, results)
+│   └── user/            User dashboard components
 ├── providers/
 │   └── theme-provider   Dark mode (localStorage + .dark class)
 ├── hooks/
@@ -150,8 +153,11 @@ src/
 ├── lib/
 │   ├── auth/            Auth types, schemas, server functions, guards
 │   ├── browse/          Browse types, server functions, query options, contact schema
+│   ├── flashcard/       Flashcard types, server functions, guest session helpers
+│   ├── quiz/            Quiz types, server functions, scoring, randomization, session
+│   ├── user/            User data types, server functions, queries
 │   ├── supabase/        Supabase clients (browser, server, admin) + generated types
-│   └── utils            cn() for Tailwind classes, serializeId()
+│   └── utils/           cn(), grading, quiz results formatting
 └── styles/
     ├── globals.css       CSS variables, @theme, custom styles
     └── markdown.css      Markdown/KaTeX rendering styles
