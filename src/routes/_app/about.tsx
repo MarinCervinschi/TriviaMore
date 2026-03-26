@@ -26,21 +26,23 @@ export const Route = createFileRoute("/_app/about")({
 
 function AboutPage() {
   return (
-      <div className="container max-w-4xl py-8">
+      <div className="container max-w-4xl py-8 sm:py-12">
         {/* Hero */}
         <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold">Chi Siamo</h1>
-          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight">Chi Siamo</h1>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
             Trivia More è una piattaforma open source creata da studenti per
             studenti dell&apos;Università di Modena e Reggio Emilia
           </p>
         </div>
 
         {/* Mission */}
-        <Card className="mb-8">
+        <Card className="mb-8 hover:shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-6 w-6 text-blue-600" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="inline-flex rounded-xl bg-blue-500/10 p-3">
+                <Target className="h-5 w-5 text-blue-600" />
+              </div>
               La Nostra Missione
             </CardTitle>
           </CardHeader>
@@ -57,15 +59,17 @@ function AboutPage() {
 
         {/* Values */}
         <div className="mb-8 grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="hover:-translate-y-1 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-red-500" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="inline-flex rounded-xl bg-red-500/10 p-2">
+                  <Heart className="h-5 w-5 text-red-500" />
+                </div>
                 Open Source
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
+              <p className="text-muted-foreground">
                 Il nostro codice è completamente aperto e disponibile su GitHub.
                 Crediamo nella trasparenza e nella collaborazione della
                 community.
@@ -73,15 +77,17 @@ function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:-translate-y-1 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-green-500" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="inline-flex rounded-xl bg-green-500/10 p-2">
+                  <Users className="h-5 w-5 text-green-500" />
+                </div>
                 Community-Driven
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
+              <p className="text-muted-foreground">
                 Ogni funzionalità nasce dalle esigenze reali degli studenti. La
                 community guida lo sviluppo e contribuisce attivamente al
                 progetto.
@@ -89,15 +95,17 @@ function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:-translate-y-1 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-500" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="inline-flex rounded-xl bg-blue-500/10 p-2">
+                  <BookOpen className="h-5 w-5 text-blue-500" />
+                </div>
                 Focalizzato su UNIMORE
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
+              <p className="text-muted-foreground">
                 Progettato specificamente per i corsi e gli esami
                 dell&apos;Università di Modena e Reggio Emilia, con contenuti
                 curati dagli studenti.
@@ -105,15 +113,17 @@ function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:-translate-y-1 hover:shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-yellow-500" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="inline-flex rounded-xl bg-yellow-500/10 p-2">
+                  <Lightbulb className="h-5 w-5 text-yellow-500" />
+                </div>
                 Innovazione Continua
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
+              <p className="text-muted-foreground">
                 Utilizziamo le tecnologie più moderne per offrire
                 un&apos;esperienza di apprendimento coinvolgente e sempre
                 aggiornata.
@@ -144,8 +154,8 @@ function AboutPage() {
         </Card>
 
         {/* CTA */}
-        <div className="rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 p-8 text-center dark:from-blue-950/20 dark:to-indigo-950/20">
-          <h2 className="mb-4 text-2xl font-bold">Unisciti alla Community</h2>
+        <div className="rounded-2xl bg-gradient-to-r from-primary/5 to-primary/10 p-8 text-center dark:from-primary/10 dark:to-primary/5 sm:p-12">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight">Unisciti alla Community</h2>
           <p className="mx-auto mb-6 max-w-2xl text-muted-foreground">
             Trivia More è un progetto collaborativo. Che tu sia uno
             sviluppatore, un designer o semplicemente uno studente con idee, il
