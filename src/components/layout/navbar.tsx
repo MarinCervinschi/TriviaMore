@@ -68,8 +68,11 @@ const USER_MENU_LINKS: NavLink[] = [
 
 function NavLogo() {
   return (
-    <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-      <LogoIcon size={22} />
+    <Link
+      to="/"
+      className="flex items-center gap-2 font-bold text-lg transition-transform hover:scale-105"
+    >
+      <LogoIcon size={26} />
       <span className="gradient-text">TriviaMore</span>
     </Link>
   )
@@ -79,12 +82,28 @@ function ThemeToggle() {
   const { mounted, isDark, toggleTheme } = useTheme()
 
   if (!mounted) {
-    return <Button variant="ghost" size="icon" className="h-9 w-9" disabled />
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-10 w-10 rounded-xl"
+        disabled
+      />
+    )
   }
 
   return (
-    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={toggleTheme}>
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-10 w-10 rounded-xl"
+      onClick={toggleTheme}
+    >
+      {isDark ? (
+        <Sun className="h-4 w-4" />
+      ) : (
+        <Moon className="h-4 w-4" />
+      )}
       <span className="sr-only">Cambia tema</span>
     </Button>
   )
@@ -94,16 +113,29 @@ function UserMenu() {
   const { user, logout } = useAuth()
 
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
     : user?.email?.[0]?.toUpperCase() ?? "?"
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? "Utente"} />
-            <AvatarFallback>{initials}</AvatarFallback>
+        <Button
+          variant="ghost"
+          className="relative h-10 w-10 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20 hover:ring-offset-2"
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage
+              src={user?.image ?? undefined}
+              alt={user?.name ?? "Utente"}
+            />
+            <AvatarFallback className="text-xs font-semibold">
+              {initials}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -124,7 +156,10 @@ function UserMenu() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout.mutate({})}>
+        <DropdownMenuItem
+          onClick={() => logout.mutate({})}
+          className="text-destructive focus:text-destructive"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Esci
         </DropdownMenuItem>
@@ -137,7 +172,7 @@ function AuthSection() {
   const { isLoading, isAuthenticated } = useAuth()
 
   if (isLoading) {
-    return <Skeleton className="h-9 w-20" />
+    return <Skeleton className="h-10 w-24 rounded-xl" />
   }
 
   if (isAuthenticated) {
@@ -149,7 +184,7 @@ function AuthSection() {
       <Button variant="ghost" size="sm" asChild>
         <Link to="/auth/login">Accedi</Link>
       </Button>
-      <Button size="sm" asChild>
+      <Button size="sm" className="shadow-sm" asChild>
         <Link to="/auth/register">Registrati</Link>
       </Button>
     </div>
@@ -164,58 +199,80 @@ function MobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-xl md:hidden"
+        >
           <Menu className="h-5 w-5" />
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-72">
+      <SheetContent side="right" className="w-72 backdrop-blur-xl bg-background/95">
         <SheetHeader>
-          <SheetTitle className="gradient-text text-left">TriviaMore</SheetTitle>
+          <SheetTitle className="gradient-text text-left text-lg">
+            TriviaMore
+          </SheetTitle>
         </SheetHeader>
 
-        {/* User info for authenticated */}
+        {/* User info */}
         {isAuthenticated && user && (
-          <>
-            <div className="mt-4 flex items-center gap-3 border-b px-3 pb-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user.image ?? undefined} alt={user.name ?? "Utente"} />
-                <AvatarFallback>
-                  {user.name
-                    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-                    : user.email?.[0]?.toUpperCase() ?? "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">{user.name ?? "Utente"}</p>
-                <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-              </div>
+          <div className="mt-4 flex items-center gap-3 rounded-2xl bg-muted/50 p-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={user.image ?? undefined}
+                alt={user.name ?? "Utente"}
+              />
+              <AvatarFallback className="text-xs font-semibold">
+                {user.name
+                  ? user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : user.email?.[0]?.toUpperCase() ?? "?"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-col">
+              <p className="text-sm font-medium">{user.name ?? "Utente"}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user.email}
+              </p>
             </div>
-          </>
+          </div>
         )}
 
-        <nav className="mt-4 flex flex-col gap-1">
+        <nav className="mt-6 flex flex-col gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
-              activeProps={{ className: "bg-accent text-primary font-semibold" }}
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              activeProps={{
+                className: "bg-primary/10 text-primary font-semibold",
+              }}
             >
-              {link.icon && <link.icon className="h-4 w-4" />}
+              {link.icon && (
+                <link.icon className="h-4 w-4" strokeWidth={1.5} />
+              )}
               {link.label}
             </Link>
           ))}
         </nav>
+
         <Separator className="my-4" />
-        <div className="flex items-center justify-between px-3">
+
+        <div className="flex items-center justify-between rounded-xl bg-muted/30 px-3 py-2">
           <span className="text-sm text-muted-foreground">Tema</span>
           <ThemeToggle />
         </div>
+
         <Separator className="my-4" />
+
         {isLoading ? (
-          <Skeleton className="mx-3 h-9" />
+          <Skeleton className="mx-3 h-10 rounded-xl" />
         ) : isAuthenticated ? (
           <div className="flex flex-col gap-1">
             {USER_MENU_LINKS.map((link) => (
@@ -223,9 +280,11 @@ function MobileMenu() {
                 key={link.to}
                 to={link.to}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
               >
-                {link.icon && <link.icon className="h-4 w-4" />}
+                {link.icon && (
+                  <link.icon className="h-4 w-4" strokeWidth={1.5} />
+                )}
                 {link.label}
               </Link>
             ))}
@@ -235,14 +294,14 @@ function MobileMenu() {
                 logout.mutate({})
                 setOpen(false)
               }}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-destructive hover:bg-accent"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4" strokeWidth={1.5} />
               Esci
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-2 px-3">
+          <div className="flex flex-col gap-2 px-1">
             <Button asChild onClick={() => setOpen(false)}>
               <Link to="/auth/login">Accedi</Link>
             </Button>
@@ -272,22 +331,27 @@ export function Navbar() {
   const navLinks = useNavLinks()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/70 backdrop-blur-xl">
+      <div className="container flex h-16 items-center">
         <NavLogo />
-        <nav className="ml-6 hidden md:flex md:gap-4">
+
+        {/* Desktop nav — pill style, no icons */}
+        <nav className="ml-8 hidden md:flex md:gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-primary font-semibold" }}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{
+                className:
+                  "bg-primary/10 text-primary font-semibold hover:text-primary",
+              }}
             >
-              {link.icon && <link.icon className="h-4 w-4" />}
               {link.label}
             </Link>
           ))}
         </nav>
+
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden md:flex md:items-center md:gap-2">
             <ThemeToggle />
