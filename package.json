@@ -21,6 +21,7 @@
     "postbuild": "pnpm generate:sitemap"
   },
   "dependencies": {
+    "@fontsource/poppins": "^5.2.7",
     "@hookform/resolvers": "^5.2.2",
     "@infisical/sdk": "^5.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
