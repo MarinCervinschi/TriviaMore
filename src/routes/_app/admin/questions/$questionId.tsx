@@ -84,12 +84,12 @@ function AdminQuestionPage() {
 
       {isNew ? (
         <Tabs defaultValue="single">
-          <TabsList className="mb-4">
-            <TabsTrigger value="single">Singola</TabsTrigger>
-            <TabsTrigger value="bulk">Import JSON</TabsTrigger>
+          <TabsList className="mb-4 rounded-2xl bg-muted/50 p-1">
+            <TabsTrigger value="single" className="rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">Singola</TabsTrigger>
+            <TabsTrigger value="bulk" className="rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">Import JSON</TabsTrigger>
           </TabsList>
           <TabsContent value="single">
-            <Card>
+            <Card className="rounded-2xl">
               <CardHeader>
                 <CardTitle>Crea domanda</CardTitle>
               </CardHeader>
@@ -103,7 +103,7 @@ function AdminQuestionPage() {
             </Card>
           </TabsContent>
           <TabsContent value="bulk">
-            <Card>
+            <Card className="rounded-2xl">
               <CardHeader>
                 <CardTitle>Importa domande da JSON</CardTitle>
               </CardHeader>
@@ -118,7 +118,7 @@ function AdminQuestionPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>Modifica domanda</CardTitle>
           </CardHeader>

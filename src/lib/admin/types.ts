@@ -24,6 +24,33 @@ export type AdminSection = Section & {
   class: Class & { course: Course & { department: Department } }
 }
 
+// Content tree for sidebar navigation
+export type ContentTreeDepartment = {
+  id: string
+  name: string
+  code: string
+  courses: ContentTreeCourse[]
+}
+
+export type ContentTreeCourse = {
+  id: string
+  name: string
+  code: string
+  classes: ContentTreeClass[]
+}
+
+export type ContentTreeClass = {
+  id: string
+  name: string
+  code: string
+  sections: ContentTreeSection[]
+}
+
+export type ContentTreeSection = {
+  id: string
+  name: string
+}
+
 // Admin dashboard stats
 export type AdminStats = {
   departmentCount: number

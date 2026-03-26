@@ -31,7 +31,7 @@ export function AdminPagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-xl"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
@@ -62,7 +62,7 @@ export function AdminPagination({
                 key={p}
                 variant={p === page ? "default" : "outline"}
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-xl"
                 onClick={() => onPageChange(p)}
               >
                 {p}
@@ -72,7 +72,7 @@ export function AdminPagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-xl"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >

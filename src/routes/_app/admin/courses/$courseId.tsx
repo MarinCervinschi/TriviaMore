@@ -90,9 +90,9 @@ function AdminCourseDetailPage() {
         backLabel={department.name}
       />
 
-      <div className="grid gap-8">
-        <Card>
-          <CardHeader>
+      <div className="grid gap-6">
+        <Card className="rounded-2xl">
+          <CardHeader className="pb-4">
             <CardTitle>Modifica corso</CardTitle>
           </CardHeader>
           <CardContent>
@@ -107,7 +107,7 @@ function AdminCourseDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
               <CardTitle>Classi ({classes.length})</CardTitle>
@@ -122,7 +122,7 @@ function AdminCourseDetailPage() {
                     placeholder="Cerca classi..."
                   />
                 </div>
-                <Button size="sm" onClick={() => setCreateClassOpen(true)}>
+                <Button size="sm" className="rounded-xl" onClick={() => setCreateClassOpen(true)}>
                   <Plus className="mr-1 h-4 w-4" />
                   Nuova
                 </Button>
@@ -140,7 +140,7 @@ function AdminCourseDetailPage() {
               <>
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted/50">
                       <TableHead>
                         <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
                       </TableHead>
@@ -150,13 +150,13 @@ function AdminCourseDetailPage() {
                       <TableHead className="text-center">
                         <SortableHeader label="Anno" sortKey="class_year" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-center">Sezioni</TableHead>
-                      <TableHead className="text-right">Azioni</TableHead>
+                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Sezioni</TableHead>
+                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paged.map((cls) => (
-                      <TableRow key={cls.id}>
+                      <TableRow key={cls.id} className="transition-colors hover:bg-muted/30">
                         <TableCell>
                           <Link
                             to="/admin/classes/$classId"
@@ -167,7 +167,7 @@ function AdminCourseDetailPage() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{cls.code}</Badge>
+                          <Badge variant="secondary" className="rounded-full">{cls.code}</Badge>
                         </TableCell>
                         <TableCell className="text-center">
                           {cls.class_year}
@@ -177,7 +177,7 @@ function AdminCourseDetailPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                               <Link
                                 to="/admin/classes/$classId"
                                 params={{ classId: cls.id }}
@@ -188,6 +188,7 @@ function AdminCourseDetailPage() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="rounded-lg"
                               onClick={() => setDeleteClassId(cls.id)}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />

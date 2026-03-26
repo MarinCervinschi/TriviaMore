@@ -107,10 +107,10 @@ function AdminSectionDetailPage() {
         backLabel={cls.name}
       />
 
-      <div className="grid gap-8">
-        <div className="grid gap-8 md:grid-cols-2">
-          <Card>
-            <CardHeader>
+      <div className="grid gap-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="rounded-2xl">
+            <CardHeader className="pb-4">
               <CardTitle>Modifica sezione</CardTitle>
             </CardHeader>
             <CardContent>
@@ -125,25 +125,25 @@ function AdminSectionDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle>Statistiche</CardTitle>
             </CardHeader>
             <CardContent>
               <dl className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">
                     Totale domande
                   </dt>
                   <dd className="text-2xl font-bold">{questions.length}</dd>
                 </div>
-                <div>
+                <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">Visibilità</dt>
                   <dd className="text-2xl font-bold">
                     {section.is_public ? "Pubblica" : "Privata"}
                   </dd>
                 </div>
-                <div>
+                <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">
                     Scelta multipla
                   </dt>
@@ -155,7 +155,7 @@ function AdminSectionDetailPage() {
                     }
                   </dd>
                 </div>
-                <div>
+                <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">
                     Vero/Falso
                   </dt>
@@ -167,7 +167,7 @@ function AdminSectionDetailPage() {
                     }
                   </dd>
                 </div>
-                <div>
+                <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">
                     Risposta breve
                   </dt>
@@ -186,7 +186,7 @@ function AdminSectionDetailPage() {
 
         {/* Section access management (only for private sections) */}
         {!section.is_public && (
-          <Card>
+          <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
@@ -203,7 +203,7 @@ function AdminSectionDetailPage() {
                     <Badge
                       key={u.id}
                       variant="secondary"
-                      className="gap-1 pr-1"
+                      className="gap-1 rounded-full pr-1"
                     >
                       {u.name ?? u.email ?? u.id}
                       <Button
@@ -230,7 +230,7 @@ function AdminSectionDetailPage() {
                 return availableUsers.length > 0 ? (
                   <div className="flex items-center gap-2">
                     <Select value={addUserId} onValueChange={setAddUserId}>
-                      <SelectTrigger className="w-64">
+                      <SelectTrigger className="w-64 rounded-xl">
                         <SelectValue placeholder="Seleziona utente..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -264,7 +264,7 @@ function AdminSectionDetailPage() {
           </Card>
         )}
 
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
               <CardTitle>Domande ({questions.length})</CardTitle>
@@ -302,7 +302,7 @@ function AdminSectionDetailPage() {
               <>
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted/50">
                       <TableHead className="w-[50%]">
                         <SortableHeader label="Contenuto" sortKey="content" sort={sort} onSort={toggleSort} />
                       </TableHead>
@@ -312,12 +312,12 @@ function AdminSectionDetailPage() {
                       <TableHead>
                         <SortableHeader label="Difficoltà" sortKey="difficulty" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-right">Azioni</TableHead>
+                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paged.map((question) => (
-                      <TableRow key={question.id}>
+                      <TableRow key={question.id} className="transition-colors hover:bg-muted/30">
                         <TableCell className="max-w-xs truncate">
                           <Link
                             to="/admin/questions/$questionId"
@@ -330,13 +330,14 @@ function AdminSectionDetailPage() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="rounded-full">
                             {TYPE_LABELS[question.question_type] ??
                               question.question_type}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <Badge
+                            className="rounded-full"
                             variant={
                               question.difficulty === "HARD"
                                 ? "destructive"
@@ -351,7 +352,7 @@ function AdminSectionDetailPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                               <Link
                                 to="/admin/questions/$questionId"
                                 params={{ questionId: question.id }}
@@ -362,6 +363,7 @@ function AdminSectionDetailPage() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="rounded-lg"
                               onClick={() =>
                                 setDeleteQuestionId(question.id)
                               }

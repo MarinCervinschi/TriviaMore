@@ -89,9 +89,9 @@ function AdminDepartmentDetailPage() {
         backLabel="Dipartimenti"
       />
 
-      <div className="grid gap-8">
-        <Card>
-          <CardHeader>
+      <div className="grid gap-6">
+        <Card className="rounded-2xl">
+          <CardHeader className="pb-4">
             <CardTitle>Modifica dipartimento</CardTitle>
           </CardHeader>
           <CardContent>
@@ -105,7 +105,7 @@ function AdminDepartmentDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
               <CardTitle>Corsi ({courses.length})</CardTitle>
@@ -120,7 +120,7 @@ function AdminDepartmentDetailPage() {
                     placeholder="Cerca corsi..."
                   />
                 </div>
-                <Button size="sm" onClick={() => setCreateCourseOpen(true)}>
+                <Button size="sm" className="rounded-xl" onClick={() => setCreateCourseOpen(true)}>
                   <Plus className="mr-1 h-4 w-4" />
                   Nuovo
                 </Button>
@@ -138,7 +138,7 @@ function AdminDepartmentDetailPage() {
               <>
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted/50">
                       <TableHead>
                         <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
                       </TableHead>
@@ -148,13 +148,13 @@ function AdminDepartmentDetailPage() {
                       <TableHead>
                         <SortableHeader label="Tipo" sortKey="course_type" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-center">Classi</TableHead>
-                      <TableHead className="text-right">Azioni</TableHead>
+                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Classi</TableHead>
+                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paged.map((course) => (
-                      <TableRow key={course.id}>
+                      <TableRow key={course.id} className="transition-colors hover:bg-muted/30">
                         <TableCell>
                           <Link
                             to="/admin/courses/$courseId"
@@ -165,10 +165,10 @@ function AdminDepartmentDetailPage() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{course.code}</Badge>
+                          <Badge variant="secondary" className="rounded-full">{course.code}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="rounded-full">
                             {course.course_type === "BACHELOR"
                               ? "Triennale"
                               : "Magistrale"}
@@ -179,7 +179,7 @@ function AdminDepartmentDetailPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                               <Link
                                 to="/admin/courses/$courseId"
                                 params={{ courseId: course.id }}
@@ -190,6 +190,7 @@ function AdminDepartmentDetailPage() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="rounded-lg"
                               onClick={() => setDeleteCourseId(course.id)}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />

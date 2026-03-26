@@ -12,6 +12,7 @@ import type {
   AdminUser,
   AdminUserDetail,
   AdminUserStats,
+  ContentTreeDepartment,
   UserRole,
 } from "./types"
 
@@ -79,6 +80,25 @@ export const getAdminPermissionsFn = createServerFn({
       (c) => c.course_id,
     ),
   }
+})
+
+// ─── Content Tree ───
+
+export const getContentTreeFn = createServerFn({
+  method: "GET",
+}).handler(async (): Promise<ContentTreeDepartment[]> => {
+  await requireAdmin()
+  const supabase = createServerSupabaseClient()
+
+  const { data, error } = await supabase
+    .from("departments")
+    .select(
+      "id, name, code, courses(id, name, code, classes(id, name, code, sections(id, name)))",
+    )
+    .order("position")
+
+  if (error) throw new Error(error.message)
+  return data as ContentTreeDepartment[]
 })
 
 // ─── Departments ───

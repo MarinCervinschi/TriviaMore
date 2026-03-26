@@ -87,7 +87,7 @@ function AdminUsersPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         <Badge
           variant={roleFilter === "all" ? "default" : "outline"}
-          className="cursor-pointer"
+          className="cursor-pointer rounded-xl"
           onClick={() => {
             setRoleFilter("all")
             setPage(1)
@@ -100,7 +100,7 @@ function AdminUsersPage() {
             <Badge
               key={role}
               variant={roleFilter === role ? ROLE_VARIANTS[role] : "outline"}
-              className="cursor-pointer"
+              className="cursor-pointer rounded-xl"
               onClick={() => {
                 setRoleFilter(role)
                 setPage(1)
@@ -112,7 +112,7 @@ function AdminUsersPage() {
         )}
       </div>
 
-      <Card>
+      <Card className="rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <CardTitle>Lista utenti</CardTitle>
@@ -139,7 +139,7 @@ function AdminUsersPage() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-muted/50">
                     <TableHead>Utente</TableHead>
                     <TableHead>
                       <SortableHeader
@@ -165,15 +165,15 @@ function AdminUsersPage() {
                         onSort={toggleSort}
                       />
                     </TableHead>
-                    <TableHead className="text-right">Azioni</TableHead>
+                    <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paged.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.id} className="transition-colors hover:bg-muted/30">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
+                          <Avatar className="h-8 w-8 ring-2 ring-background">
                             <AvatarImage
                               src={user.image ?? undefined}
                               alt={user.name ?? ""}
@@ -204,7 +204,7 @@ function AdminUsersPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={ROLE_VARIANTS[user.role]}>
+                        <Badge variant={ROLE_VARIANTS[user.role]} className="rounded-full">
                           {ROLE_LABELS[user.role] ?? user.role}
                         </Badge>
                       </TableCell>
@@ -215,7 +215,7 @@ function AdminUsersPage() {
                         {new Date(user.created_at).toLocaleDateString("it-IT")}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" asChild>
+                        <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                           <Link
                             to="/admin/users/$userId"
                             params={{ userId: user.id }}

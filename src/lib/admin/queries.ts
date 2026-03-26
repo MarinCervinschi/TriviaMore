@@ -13,11 +13,19 @@ import {
   getAdminUserStatsFn,
   getAdminUsersFn,
   getAllCoursesFn,
+  getContentTreeFn,
   getPrivateSectionsFn,
   getSectionAccessUsersFn,
 } from "./server"
 
 export const adminQueries = {
+  contentTree: () =>
+    queryOptions({
+      queryKey: ["admin", "contentTree"],
+      queryFn: () => getContentTreeFn(),
+      staleTime: 1000 * 60 * 2,
+    }),
+
   stats: () =>
     queryOptions({
       queryKey: ["admin", "stats"],

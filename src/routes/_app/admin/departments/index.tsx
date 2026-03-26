@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { Pencil, Plus, Trash2 } from "lucide-react"
+import { Library, Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import {
@@ -71,17 +71,18 @@ function AdminDepartmentsPage() {
       <AdminPageHeader
         title="Dipartimenti"
         description={`${departments.length} dipartimenti totali`}
+        icon={Library}
         backTo="/admin"
         backLabel="Dashboard"
         actions={
-          <Button onClick={() => setCreateOpen(true)}>
+          <Button className="rounded-xl" onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Nuovo dipartimento
           </Button>
         }
       />
 
-      <Card>
+      <Card className="rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <CardTitle>Lista dipartimenti</CardTitle>
@@ -108,20 +109,20 @@ function AdminDepartmentsPage() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-muted/50">
                     <TableHead>
                       <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
                     </TableHead>
                     <TableHead>
                       <SortableHeader label="Codice" sortKey="code" sort={sort} onSort={toggleSort} />
                     </TableHead>
-                    <TableHead className="text-center">Corsi</TableHead>
-                    <TableHead className="text-right">Azioni</TableHead>
+                    <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Corsi</TableHead>
+                    <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paged.map((dept) => (
-                    <TableRow key={dept.id}>
+                    <TableRow key={dept.id} className="transition-colors hover:bg-muted/30">
                       <TableCell>
                         <Link
                           to="/admin/departments/$departmentId"
@@ -132,14 +133,14 @@ function AdminDepartmentsPage() {
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{dept.code}</Badge>
+                        <Badge variant="secondary" className="rounded-full">{dept.code}</Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         {dept.courses[0]?.count ?? 0}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" asChild>
+                          <Button variant="ghost" size="icon" className="rounded-lg" asChild>
                             <Link
                               to="/admin/departments/$departmentId"
                               params={{ departmentId: dept.id }}
@@ -150,6 +151,7 @@ function AdminDepartmentsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            className="rounded-lg"
                             onClick={() => setDeleteId(dept.id)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
