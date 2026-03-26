@@ -3,18 +3,17 @@ import { useMemo, useState } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ExternalLink, Filter, GraduationCap, Search, X } from "lucide-react"
+import {
+  ArrowRight,
+  GraduationCap,
+  Search,
+  X,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { BrowseTable } from "@/components/browse/browse-table"
 import {
   Select,
   SelectContent,
@@ -24,9 +23,9 @@ import {
 } from "@/components/ui/select"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserEmptyState } from "@/components/user/user-empty-state"
+import { UserHero } from "@/components/user/user-hero"
 import { useRemoveClass } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
-import type { UserClass } from "@/lib/user/types"
 
 export const Route = createFileRoute("/_app/user/classes")({
   loader: ({ context }) =>
@@ -113,124 +112,105 @@ function ClassesPage() {
   }
 
   return (
-    <div className="container space-y-8 py-8">
-      <UserBreadcrumb current="I Miei Corsi" />
+    <div className="space-y-8 pb-8">
+      <UserHero
+        icon={GraduationCap}
+        title="I Miei Corsi"
+        description="Gestisci i corsi che stai seguendo"
+        stats={[
+          { label: "corsi totali", value: userClasses.length },
+          { label: "visualizzati", value: filtered.length },
+        ]}
+      />
 
-      <div>
-        <h1 className="text-3xl font-bold">I Miei Corsi</h1>
-        <p className="text-muted-foreground">
-          Gestisci i corsi che stai seguendo ({filtered.length} di{" "}
-          {userClasses.length} corsi)
-        </p>
-      </div>
+      <div className="container space-y-6">
+        <UserBreadcrumb current="I Miei Corsi" />
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filtri
-            </CardTitle>
+        {/* Search + Filters — inline toolbar */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative max-w-sm flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Cerca corso, dipartimento..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-10 rounded-xl pl-10"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={selectedDepartment}
+              onValueChange={setSelectedDepartment}
+            >
+              <SelectTrigger className="h-10 w-auto min-w-[160px] rounded-xl">
+                <SelectValue placeholder="Dipartimento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutti i dipartimenti</SelectItem>
+                {departments.map((dept) => (
+                  <SelectItem key={dept} value={dept}>
+                    {dept}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={selectedCourseType}
+              onValueChange={setSelectedCourseType}
+            >
+              <SelectTrigger className="h-10 w-auto min-w-[140px] rounded-xl">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutti i tipi</SelectItem>
+                {courseTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-10 w-auto min-w-[140px] rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Nome</SelectItem>
+                <SelectItem value="department">Dipartimento</SelectItem>
+                <SelectItem value="year">Anno</SelectItem>
+                <SelectItem value="dateAdded">Data Aggiunta</SelectItem>
+              </SelectContent>
+            </Select>
+
             {hasActiveFilters && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="flex items-center gap-1"
+                className="rounded-full text-muted-foreground hover:text-foreground"
               >
-                <X className="h-4 w-4" />
-                Pulisci Filtri
+                <X className="mr-1 h-3.5 w-3.5" />
+                Pulisci
               </Button>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Cerca</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Nome corso, dipartimento..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+        </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Dipartimento</label>
-              <Select
-                value={selectedDepartment}
-                onValueChange={setSelectedDepartment}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tutti i dipartimenti" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tutti i dipartimenti</SelectItem>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept} value={dept}>
-                      {dept}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tipo di Corso</label>
-              <Select
-                value={selectedCourseType}
-                onValueChange={setSelectedCourseType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tutti i tipi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tutti i tipi</SelectItem>
-                  {courseTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Ordina per</label>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name">Nome Corso</SelectItem>
-                  <SelectItem value="department">Dipartimento</SelectItem>
-                  <SelectItem value="year">Anno</SelectItem>
-                  <SelectItem value="dateAdded">Data Aggiunta</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Classes Grid */}
-      {filtered.length === 0 ? (
-        userClasses.length === 0 ? (
-          <UserEmptyState
-            icon={GraduationCap}
-            title="Nessun corso salvato"
-            description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
-            actionLabel="Esplora Corsi"
-            actionHref="/browse"
-          />
-        ) : (
-          <Card>
-            <CardContent className="p-12">
+        {/* Classes Table */}
+        {filtered.length === 0 ? (
+          userClasses.length === 0 ? (
+            <UserEmptyState
+              icon={GraduationCap}
+              title="Nessun corso salvato"
+              description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
+              actionLabel="Esplora Corsi"
+              actionHref="/browse"
+            />
+          ) : (
+            <div className="relative overflow-hidden rounded-3xl border bg-card p-12">
               <div className="text-center">
                 <h2 className="mb-2 text-xl font-semibold">
                   Nessun corso trovato
@@ -238,95 +218,79 @@ function ClassesPage() {
                 <p className="mb-4 text-muted-foreground">
                   Prova a modificare i filtri di ricerca.
                 </p>
-                <Button onClick={clearFilters} variant="outline">
+                <Button
+                  onClick={clearFilters}
+                  variant="outline"
+                  className="rounded-xl"
+                >
                   Pulisci Filtri
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        )
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((userClass) => (
-            <ClassCard
-              key={userClass.class_id}
-              userClass={userClass}
-              onRemove={() => removeClass.mutate(userClass.class_id)}
-              isRemoving={removeClass.isPending}
-            />
-          ))}
-        </div>
-      )}
+            </div>
+          )
+        ) : (
+          <BrowseTable
+            headers={["Corso", "Dipartimento", "Tipo", "Anno", "Aggiunto", ""]}
+          >
+            {filtered.map((userClass) => (
+              <tr key={userClass.class_id} className="group">
+                <td className="py-4 pl-6">
+                  <Link
+                    to="/browse/$department/$course/$class"
+                    params={{
+                      department:
+                        userClass.class.course.department.code.toLowerCase(),
+                      course: userClass.class.course.code,
+                      class: userClass.class.code.toLowerCase(),
+                    }}
+                    className="block"
+                  >
+                    <span className="font-medium text-foreground transition-colors group-hover:text-primary">
+                      {userClass.class.name}
+                    </span>
+                    <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                      {userClass.class.course.name} &bull;{" "}
+                      {userClass.class.code}
+                    </p>
+                  </Link>
+                </td>
+                <td className="px-4 py-4 text-center text-sm text-muted-foreground">
+                  {userClass.class.course.department.name}
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <Badge variant="outline" className="rounded-full text-xs">
+                    {userClass.class.course.course_type}
+                  </Badge>
+                </td>
+                <td className="px-4 py-4 text-center text-sm text-muted-foreground">
+                  {userClass.class.class_year}
+                </td>
+                <td className="px-4 py-4 text-center text-xs text-muted-foreground">
+                  {new Date(userClass.created_at).toLocaleDateString("it-IT")}
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      removeClass.mutate(userClass.class_id)
+                    }}
+                    disabled={removeClass.isPending}
+                    className="h-8 w-8 rounded-lg p-0 text-muted-foreground hover:text-destructive"
+                    title="Rimuovi corso"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </td>
+                <td className="pr-6 py-4">
+                  <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                </td>
+              </tr>
+            ))}
+          </BrowseTable>
+        )}
+      </div>
     </div>
-  )
-}
-
-function ClassCard({
-  userClass,
-  onRemove,
-  isRemoving,
-}: {
-  userClass: UserClass
-  onRemove: () => void
-  isRemoving: boolean
-}) {
-  return (
-    <Card className="transition-shadow hover:shadow-lg">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg">{userClass.class.name}</CardTitle>
-            <CardDescription>
-              {userClass.class.course.department.name}
-            </CardDescription>
-          </div>
-          <Badge variant="outline">
-            {userClass.class.course.course_type}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <p className="font-medium">{userClass.class.course.name}</p>
-            <p className="text-sm text-muted-foreground">
-              Anno {userClass.class.class_year} &bull; Codice:{" "}
-              {userClass.class.code}
-            </p>
-          </div>
-
-          <div className="flex gap-2">
-            <Button asChild size="sm" className="flex-1">
-              <Link
-                to="/browse/$department/$course/$class"
-                params={{
-                  department:
-                    userClass.class.course.department.code.toLowerCase(),
-                  course: userClass.class.course.code,
-                  class: userClass.class.code.toLowerCase(),
-                }}
-                className="flex items-center gap-2"
-              >
-                Apri Corso
-                <ExternalLink className="h-3 w-3" />
-              </Link>
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={onRemove}
-              disabled={isRemoving}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="text-xs text-muted-foreground">
-            Aggiunto il{" "}
-            {new Date(userClass.created_at).toLocaleDateString("it-IT")}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   )
 }

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import {
+  ArrowRight,
   BookmarkIcon,
   Calendar,
   ExternalLink,
@@ -15,16 +16,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { BrowseTable } from "@/components/browse/browse-table"
+import { UserHero } from "@/components/user/user-hero"
 import { UserStatsCard } from "@/components/user/user-stats-card"
 import { userQueries } from "@/lib/user/queries"
-import type { RecentClass, RecentQuizAttempt, UserProfile } from "@/lib/user/types"
+import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
+import type { RecentClass, RecentQuizAttempt } from "@/lib/user/types"
 import { getScoreBadgeVariant } from "@/lib/utils/quiz-results"
 
 export const Route = createFileRoute("/_app/user/")({
@@ -33,38 +30,6 @@ export const Route = createFileRoute("/_app/user/")({
   head: () => seoHead({ title: "Dashboard", noindex: true }),
   component: DashboardPage,
 })
-
-function getRoleLabel(role: string): string {
-  switch (role) {
-    case "SUPERADMIN":
-      return "Super Amministratore"
-    case "ADMIN":
-      return "Amministratore"
-    case "MAINTAINER":
-      return "Manutentore"
-    case "STUDENT":
-      return "Studente"
-    default:
-      return role
-  }
-}
-
-function getDisplayName(profile: UserProfile): string {
-  if (profile.name) return profile.name
-  if (profile.email) return profile.email.split("@")[0]
-  return "Utente Anonimo"
-}
-
-function getInitials(profile: UserProfile): string {
-  if (profile.name) {
-    return profile.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-  }
-  return profile.email?.charAt(0).toUpperCase() ?? "U"
-}
 
 function DashboardPage() {
   const { data: profile } = useSuspenseQuery(userQueries.profile())
@@ -75,36 +40,37 @@ function DashboardPage() {
   const initials = getInitials(profile)
 
   return (
-    <div className="container space-y-8 py-8">
-      {/* Header */}
-      <div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Avatar className="h-20 w-20 border-4 border-white/20">
+    <div className="space-y-8 pb-8">
+      {/* Hero */}
+      <UserHero
+        icon={Trophy}
+        title=""
+        description=""
+      >
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+          <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/20">
             <AvatarImage src={profile.image ?? undefined} alt={displayName} />
-            <AvatarFallback className="bg-white/20 text-xl font-bold">
+            <AvatarFallback className="bg-primary/10 text-2xl font-bold text-primary">
               {initials}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="mb-2 text-2xl font-bold sm:text-3xl">
-              {displayName}
+            <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">
+              Ciao, <span className="gradient-text">{displayName}</span>
             </h1>
-            <div className="mb-2 flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className="border-white/20 bg-white/20 text-white"
-              >
+            <div className="mb-3 flex items-center gap-2">
+              <Badge className="rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
                 {getRoleLabel(profile.role)}
               </Badge>
             </div>
-            <div className="flex flex-col gap-2 text-blue-100 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex flex-col gap-2 text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
               {profile.email && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <Mail className="h-4 w-4" />
                   <span className="text-sm">{profile.email}</span>
                 </div>
               )}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm">
                   Membro dal{" "}
@@ -114,186 +80,216 @@ function DashboardPage() {
             </div>
           </div>
         </div>
+      </UserHero>
+
+      <div className="container space-y-8">
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <UserStatsCard
+            label="Quiz Completati"
+            value={profile.stats.total_quizzes}
+            icon={Trophy}
+            iconColor="text-yellow-500"
+            iconBg="yellow"
+          />
+          <UserStatsCard
+            label="Punteggio Medio"
+            value={`${profile.stats.average_score}/33`}
+            icon={TrendingUp}
+            iconColor="text-green-500"
+            iconBg="green"
+          />
+          <UserStatsCard
+            label="Corsi Seguiti"
+            value={profile.stats.user_classes_count}
+            icon={GraduationCap}
+            iconColor="text-blue-500"
+            iconBg="blue"
+          />
+          <UserStatsCard
+            label="Segnalibri"
+            value={profile.stats.bookmarks_count}
+            icon={BookmarkIcon}
+            iconColor="text-purple-500"
+            iconBg="purple"
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <QuickActionCard
+            icon={TrendingUp}
+            color="green"
+            title="I Miei Progressi"
+            description="Visualizza i tuoi progressi dettagliati per ogni materia"
+            href="/user/progress"
+          />
+          <QuickActionCard
+            icon={GraduationCap}
+            color="blue"
+            title="I Miei Corsi"
+            description="Gestisci i corsi che stai seguendo al meglio"
+            href="/user/classes"
+          />
+          <QuickActionCard
+            icon={Settings}
+            color="primary"
+            title="Impostazioni Profilo"
+            description="Personalizza il tuo profilo e le preferenze dell'account"
+            href="/user/settings"
+          />
+          <QuickActionCard
+            icon={BookmarkIcon}
+            color="purple"
+            title="I Miei Segnalibri"
+            description="Accedi alle domande che hai salvato per dopo"
+            href="/user/bookmarks"
+          />
+        </div>
+
+        {/* Recent Classes */}
+        {profile.recent_classes.length > 0 && (
+          <RecentClassesSection classes={profile.recent_classes} />
+        )}
+
+        {/* Recent Activity */}
+        {profile.recent_quiz_attempts.length > 0 && (
+          <RecentActivitySection attempts={profile.recent_quiz_attempts} />
+        )}
       </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <UserStatsCard
-          label="Quiz Completati"
-          value={profile.stats.total_quizzes}
-          icon={Trophy}
-          iconColor="text-yellow-500"
-        />
-        <UserStatsCard
-          label="Punteggio Medio"
-          value={`${profile.stats.average_score}/33`}
-          icon={TrendingUp}
-          iconColor="text-green-500"
-        />
-        <UserStatsCard
-          label="Corsi Seguiti"
-          value={profile.stats.user_classes_count}
-          icon={GraduationCap}
-          iconColor="text-blue-500"
-        />
-        <UserStatsCard
-          label="Segnalibri"
-          value={profile.stats.bookmarks_count}
-          icon={BookmarkIcon}
-          iconColor="text-purple-500"
-        />
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <QuickActionCard
-          icon={TrendingUp}
-          iconColor="text-green-500"
-          title="I Miei Progressi"
-          description="Visualizza i tuoi progressi dettagliati per ogni materia"
-          href="/user/progress"
-          variant="default"
-        />
-        <QuickActionCard
-          icon={GraduationCap}
-          iconColor="text-blue-500"
-          title="I Miei Corsi"
-          description="Gestisci i corsi che stai seguendo al meglio"
-          href="/user/classes"
-          variant="outline"
-        />
-        <QuickActionCard
-          icon={Settings}
-          iconColor="text-gray-500"
-          title="Impostazioni Profilo"
-          description="Personalizza il tuo profilo e le preferenze dell'account"
-          href="/user/settings"
-          variant="outline"
-        />
-        <QuickActionCard
-          icon={BookmarkIcon}
-          iconColor="text-purple-500"
-          title="I Miei Segnalibri"
-          description="Accedi alle domande che hai salvato per dopo"
-          href="/user/bookmarks"
-          variant="outline"
-        />
-      </div>
-
-      {/* Recent Classes */}
-      {profile.recent_classes.length > 0 && (
-        <RecentClassesSection classes={profile.recent_classes} />
-      )}
-
-      {/* Recent Activity */}
-      {profile.recent_quiz_attempts.length > 0 && (
-        <RecentActivitySection attempts={profile.recent_quiz_attempts} />
-      )}
     </div>
   )
 }
 
+const actionColorMap: Record<string, { border: string; gradient: string; orb: string; badge: string; iconColor: string }> = {
+  green: {
+    border: "border-green-500/20",
+    gradient: "from-green-500/5 via-card to-card",
+    orb: "bg-green-500/10",
+    badge: "bg-green-500/10",
+    iconColor: "text-green-500",
+  },
+  blue: {
+    border: "border-blue-500/20",
+    gradient: "from-blue-500/5 via-card to-card",
+    orb: "bg-blue-500/10",
+    badge: "bg-blue-500/10",
+    iconColor: "text-blue-500",
+  },
+  primary: {
+    border: "border-primary/20",
+    gradient: "from-primary/5 via-card to-card",
+    orb: "bg-primary/10",
+    badge: "bg-primary/10",
+    iconColor: "text-primary",
+  },
+  purple: {
+    border: "border-purple-500/20",
+    gradient: "from-purple-500/5 via-card to-card",
+    orb: "bg-purple-500/10",
+    badge: "bg-purple-500/10",
+    iconColor: "text-purple-500",
+  },
+}
+
 function QuickActionCard({
   icon: Icon,
-  iconColor,
+  color,
   title,
   description,
   href,
-  variant,
 }: {
   icon: typeof Trophy
-  iconColor: string
+  color: string
   title: string
   description: string
   href: string
-  variant: "default" | "outline"
 }) {
+  const colors = actionColorMap[color] ?? actionColorMap.primary
+
   return (
-    <Card className="transition-shadow hover:shadow-lg">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Icon className={`h-5 w-5 ${iconColor}`} />
-          {title}
-        </CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button asChild variant={variant} className="w-full">
-          <Link to={href}>
-            {variant === "default" ? "Visualizza" : "Gestisci"}
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+    <Link
+      to={href}
+      className={`group relative overflow-hidden rounded-2xl border ${colors.border} bg-gradient-to-br ${colors.gradient} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+    >
+      {/* Decorative orb */}
+      <div
+        className={`pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full ${colors.orb} blur-[30px]`}
+      />
+
+      <div className="relative">
+        <div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
+          <Icon className={`h-6 w-6 ${colors.iconColor}`} strokeWidth={1.5} />
+        </div>
+        <h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
+        <p className="mb-4 text-sm text-muted-foreground">{description}</p>
+        <div className="flex items-center gap-1 text-sm font-medium text-primary">
+          Vai
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+        </div>
+      </div>
+    </Link>
   )
 }
 
 function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <CardTitle>Corsi Visti Recentemente</CardTitle>
-            <CardDescription>I corsi che hai visitato di recente</CardDescription>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link to="/user/classes" className="flex items-center gap-1">
-              <GraduationCap className="h-4 w-4" />
-              Tutti i Corsi
-            </Link>
-          </Button>
+    <div className="space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+            I tuoi corsi
+          </p>
+          <h2 className="text-xl font-bold">Corsi Visti Recentemente</h2>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {classes.map((item) => (
-            <Card key={item.class.id} className="transition-shadow hover:shadow-md">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-base">
-                      {item.class.name}
-                    </CardTitle>
-                    <CardDescription className="text-sm">
-                      {item.class.course.department.name}
-                    </CardDescription>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {item.class.course.course_type}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">
-                    {item.class.course.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Anno {item.class.class_year} &bull; {item.class.code}
-                  </p>
-                  <Button asChild size="sm" className="w-full">
-                    <Link
-                      to="/browse/$department/$course/$class"
-                      params={{
-                        department:
-                          item.class.course.department.code.toLowerCase(),
-                        course: item.class.course.code,
-                        class: item.class.code.toLowerCase(),
-                      }}
-                      className="flex items-center gap-1"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      Apri Corso
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+        <Button asChild variant="ghost" size="sm" className="group">
+          <Link to="/user/classes" className="flex items-center gap-1">
+            <GraduationCap className="h-4 w-4" />
+            Tutti i Corsi
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </Link>
+        </Button>
+      </div>
+
+      <BrowseTable headers={["Corso", "Dipartimento", "Tipo", "Anno"]}>
+        {classes.map((item) => (
+          <tr key={item.class.id} className="group">
+            <td className="py-4 pl-6">
+              <Link
+                to="/browse/$department/$course/$class"
+                params={{
+                  department: item.class.course.department.code.toLowerCase(),
+                  course: item.class.course.code,
+                  class: item.class.code.toLowerCase(),
+                }}
+                className="block"
+              >
+                <span className="font-medium text-foreground transition-colors group-hover:text-primary">
+                  {item.class.name}
+                </span>
+                <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                  {item.class.course.name}
+                </p>
+              </Link>
+            </td>
+            <td className="px-4 py-4 text-center text-sm text-muted-foreground">
+              {item.class.course.department.name}
+            </td>
+            <td className="px-4 py-4 text-center">
+              <Badge variant="outline" className="rounded-full text-xs">
+                {item.class.course.course_type}
+              </Badge>
+            </td>
+            <td className="px-4 py-4 text-center text-sm text-muted-foreground">
+              {item.class.class_year}
+            </td>
+            <td className="pr-6 py-4">
+              <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+            </td>
+          </tr>
+        ))}
+      </BrowseTable>
+    </div>
   )
 }
 
@@ -303,64 +299,63 @@ function RecentActivitySection({
   attempts: RecentQuizAttempt[]
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Attività Recenti</CardTitle>
-        <CardDescription>
-          I tuoi ultimi {attempts.length} quiz completati
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {attempts.map((attempt) => (
-            <div
-              key={attempt.id}
-              className="flex flex-col gap-3 rounded-lg bg-muted/50 p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-start gap-3">
-                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
-                  <Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium">
-                    {attempt.quiz.section.name}
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    <span className="font-medium">
-                      {attempt.quiz.section.class.course.department.name}
-                    </span>
-                    {" \u2022 "}
-                    {attempt.quiz.section.class.course.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Classe: {attempt.quiz.section.class.name}
-                  </p>
-                </div>
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          La tua attivita
+        </p>
+        <h2 className="text-xl font-bold">
+          Ultimi {attempts.length} Quiz Completati
+        </h2>
+      </div>
+
+      <div className="space-y-3">
+        {attempts.map((attempt) => (
+          <div
+            key={attempt.id}
+            className="flex flex-col gap-3 rounded-2xl border bg-card p-4 transition-all duration-300 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-3">
+              <div className="rounded-xl bg-primary/10 p-2">
+                <Trophy className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <Badge variant={getScoreBadgeVariant(attempt.score)}>
-                    {attempt.score}/33
-                  </Badge>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {new Date(attempt.completed_at).toLocaleDateString("it-IT")}
-                  </p>
-                </div>
-                <Button asChild variant="outline" size="sm">
-                  <Link
-                    to="/quiz/results/$attemptId"
-                    params={{ attemptId: attempt.id }}
-                    className="flex items-center gap-1"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    Vedi
-                  </Link>
-                </Button>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium">{attempt.quiz.section.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  <span className="font-medium">
+                    {attempt.quiz.section.class.course.department.name}
+                  </span>
+                  {" \u2022 "}
+                  {attempt.quiz.section.class.course.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Classe: {attempt.quiz.section.class.name}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <Badge variant={getScoreBadgeVariant(attempt.score)}>
+                  {attempt.score}/33
+                </Badge>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {new Date(attempt.completed_at).toLocaleDateString("it-IT")}
+                </p>
+              </div>
+              <Button asChild variant="outline" size="sm" className="rounded-xl">
+                <Link
+                  to="/quiz/results/$attemptId"
+                  params={{ attemptId: attempt.id }}
+                  className="flex items-center gap-1"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Vedi
+                </Link>
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

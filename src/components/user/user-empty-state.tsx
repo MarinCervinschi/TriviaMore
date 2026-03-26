@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 
 export function UserEmptyState({
   icon: Icon,
@@ -18,19 +17,22 @@ export function UserEmptyState({
   actionHref?: string
 }) {
   return (
-    <Card>
-      <CardContent className="p-12">
-        <div className="text-center">
-          <Icon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-          <h2 className="mb-2 text-xl font-semibold">{title}</h2>
-          <p className="mb-4 text-muted-foreground">{description}</p>
-          {actionLabel && actionHref && (
-            <Button asChild>
-              <Link to={actionHref}>{actionLabel}</Link>
-            </Button>
-          )}
+    <div className="relative overflow-hidden rounded-3xl border bg-card p-12">
+      {/* Decorative orb */}
+      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
+
+      <div className="relative text-center">
+        <div className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4">
+          <Icon className="h-10 w-10 text-primary" strokeWidth={1.5} />
         </div>
-      </CardContent>
-    </Card>
+        <h2 className="mb-2 text-xl font-semibold">{title}</h2>
+        <p className="mb-6 text-muted-foreground">{description}</p>
+        {actionLabel && actionHref && (
+          <Button asChild className="shadow-lg shadow-primary/25">
+            <Link to={actionHref}>{actionLabel}</Link>
+          </Button>
+        )}
+      </div>
+    </div>
   )
 }
