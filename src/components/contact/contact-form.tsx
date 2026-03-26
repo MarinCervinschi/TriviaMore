@@ -89,7 +89,7 @@ export function ContactForm() {
               <FormLabel>Tipo</FormLabel>
               <FormControl>
                 <select
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="flex h-10 w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
