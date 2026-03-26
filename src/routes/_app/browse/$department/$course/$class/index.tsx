@@ -128,7 +128,7 @@ function ClassPage() {
       />
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{classData.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{classData.name}</h1>
           {classData.description && (
             <p className="mt-2 max-w-2xl text-muted-foreground">
               {classData.description}

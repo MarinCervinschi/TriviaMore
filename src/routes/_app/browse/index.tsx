@@ -6,7 +6,6 @@ import { Library } from "lucide-react"
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseHero } from "@/components/browse/browse-hero"
-import { BrowseStats } from "@/components/browse/browse-stats"
 import { DepartmentCard } from "@/components/browse/department-card"
 import { ItemGrid } from "@/components/browse/item-grid"
 import { browseQueries } from "@/lib/browse/queries"
@@ -39,15 +38,13 @@ function BrowsePage() {
           icon={Library}
           title="Esplora i Contenuti"
           description="Scopri tutti i dipartimenti e i corsi disponibili. Seleziona un dipartimento per iniziare."
+          stats={[
+            { label: "dipartimenti", value: departments.length },
+            { label: "corsi", value: totalCourses },
+          ]}
         />
         <BrowseAdminButton to="/admin/departments" />
       </div>
-      <BrowseStats
-        stats={[
-          { label: "dipartimenti", value: departments.length },
-          { label: "corsi", value: totalCourses },
-        ]}
-      />
       {departments.length === 0 ? (
         <BrowseEmptyState message="Nessun dipartimento disponibile." />
       ) : (
