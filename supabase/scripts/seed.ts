@@ -455,6 +455,100 @@ const questions = [
     section_id: ids.basi_dati_sql,
   },
   // TRUE_FALSE
+  // More SHORT_ANSWER for Fondamenti Java
+  {
+    id: "clseed_q_java_sa_01",
+    content: "Cos'è la JVM (Java Virtual Machine)?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "La JVM è una macchina virtuale che esegue il bytecode Java, fornendo indipendenza dalla piattaforma hardware e sistema operativo.",
+    ],
+    explanation:
+      "La JVM interpreta il bytecode compilato (.class) e lo traduce in istruzioni native della macchina ospite.",
+    difficulty: "EASY" as const,
+    section_id: ids.prog1_java,
+  },
+  {
+    id: "clseed_q_java_sa_02",
+    content: "Qual è la differenza tra == e equals() in Java?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "== confronta i riferimenti (indirizzi di memoria), equals() confronta il contenuto degli oggetti.",
+    ],
+    explanation:
+      "Per i tipi primitivi == confronta i valori. Per gli oggetti, == verifica se puntano allo stesso oggetto in memoria, mentre equals() confronta il contenuto logico.",
+    difficulty: "MEDIUM" as const,
+    section_id: ids.prog1_java,
+  },
+  {
+    id: "clseed_q_java_sa_03",
+    content: "Cos'è il garbage collector in Java?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "Il garbage collector è il meccanismo automatico della JVM che libera la memoria occupata da oggetti non più referenziati.",
+    ],
+    explanation:
+      "Il GC monitora gli oggetti in heap e dealloca quelli non più raggiungibili, evitando memory leak.",
+    difficulty: "EASY" as const,
+    section_id: ids.prog1_java,
+  },
+  // SHORT_ANSWER for OOP
+  {
+    id: "clseed_q_oop_sa_01",
+    content: "Cos'è l'incapsulamento nella programmazione ad oggetti?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "L'incapsulamento è il principio di nascondere i dettagli implementativi di un oggetto, esponendo solo un'interfaccia pubblica attraverso metodi getter/setter.",
+    ],
+    explanation:
+      "Si ottiene dichiarando i campi private e fornendo metodi pubblici per accedere e modificare i dati.",
+    difficulty: "EASY" as const,
+    section_id: ids.prog1_oop,
+  },
+  {
+    id: "clseed_q_oop_sa_02",
+    content: "Spiega il concetto di ereditarietà in Java.",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "L'ereditarietà permette a una classe (sottoclasse) di ereditare attributi e metodi da un'altra classe (superclasse), favorendo il riuso del codice.",
+    ],
+    explanation:
+      "Si usa la parola chiave 'extends'. Java supporta solo ereditarietà singola per le classi.",
+    difficulty: "MEDIUM" as const,
+    section_id: ids.prog1_oop,
+  },
+  // SHORT_ANSWER for Analisi
+  {
+    id: "clseed_q_limiti_sa_01",
+    content: "Cos'è un limite di una funzione?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "Il limite descrive il comportamento di una funzione quando la variabile indipendente si avvicina a un determinato valore, senza necessariamente raggiungerlo.",
+    ],
+    explanation:
+      "Formalmente: lim(x→c) f(x) = L se per ogni ε>0 esiste δ>0 tale che |f(x)-L|<ε quando 0<|x-c|<δ.",
+    difficulty: "MEDIUM" as const,
+    section_id: ids.analisi1_limiti,
+  },
+  {
+    id: "clseed_q_derivate_sa_01",
+    content: "Qual è il significato geometrico della derivata?",
+    question_type: "SHORT_ANSWER" as const,
+    options: null,
+    correct_answer: [
+      "La derivata di una funzione in un punto rappresenta la pendenza (coefficiente angolare) della retta tangente al grafico della funzione in quel punto.",
+    ],
+    explanation:
+      "f'(x₀) = lim(h→0) [f(x₀+h) - f(x₀)] / h, che è il limite del rapporto incrementale.",
+    difficulty: "EASY" as const,
+    section_id: ids.analisi1_derivate,
+  },
   {
     id: "clseed_q_limiti_01",
     content:
