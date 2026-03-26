@@ -2,6 +2,7 @@ import { useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
+import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
@@ -59,13 +60,19 @@ function CoursePage() {
         ]}
         current={course.name}
       />
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">{course.name}</h1>
-        {course.description && (
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            {course.description}
-          </p>
-        )}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">{course.name}</h1>
+          {course.description && (
+            <p className="mt-2 max-w-2xl text-muted-foreground">
+              {course.description}
+            </p>
+          )}
+        </div>
+        <BrowseAdminButton
+          to="/admin/courses/$courseId"
+          params={{ courseId: course.id }}
+        />
       </div>
       <BrowseStats
         stats={[{ label: "classi", value: course.classes.length }]}
