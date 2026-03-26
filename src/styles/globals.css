@@ -143,6 +143,13 @@ body {
 }
 
 /* ===== Custom TriviaMore styles ===== */
+
+/* Dot grid background pattern */
+.dot-pattern {
+  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 .gradient-bg {
   background: linear-gradient(135deg, #d14124 0%, #f56565 100%);
 }

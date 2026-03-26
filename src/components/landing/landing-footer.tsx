@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router"
+import { Github } from "lucide-react"
 
 import { LogoIcon } from "@/components/ui/logo"
 
@@ -6,37 +7,55 @@ import type { FooterSection } from "./data"
 
 export function LandingFooter({ sections }: { sections: FooterSection[] }) {
   return (
-    <footer className="border-t bg-muted/40 py-12 sm:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div>
-            <div className="mb-4 flex items-center gap-2">
+    <footer className="relative border-t">
+      {/* Subtle gradient background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-muted/40 to-muted/60" />
+
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <Link to="/" className="mb-4 inline-flex items-center gap-2">
               <LogoIcon size={24} />
-              <span className="text-xl font-bold">Trivia More</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
+              <span className="text-lg font-bold gradient-text">TriviaMore</span>
+            </Link>
+            <p className="mb-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               La piattaforma open source creata da studenti per studenti.
               Preparati agli esami universitari con la community.
             </p>
+            <a
+              href="https://github.com/MarinCervinschi/TriviaMore"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+            >
+              <Github className="h-4 w-4" />
+              GitHub
+            </a>
           </div>
 
           {sections.map((section) => (
             <div key={section.title}>
-              <h4 className="mb-4 font-semibold">{section.title}</h4>
-              <ul className="space-y-2 text-muted-foreground">
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground/70">
+                {section.title}
+              </h4>
+              <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     {link.href.startsWith("http") ? (
                       <a
                         href={link.href}
-                        className="transition-colors duration-200 hover:text-foreground"
+                        className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         {link.label}
                       </a>
                     ) : (
-                      <Link to={link.href} className="transition-colors duration-200 hover:text-foreground">
+                      <Link
+                        to={link.href}
+                        className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                      >
                         {link.label}
                       </Link>
                     )}
@@ -47,10 +66,13 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
           ))}
         </div>
 
-        <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground/70">
+        <div className="mt-12 border-t pt-8 flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground/60 sm:flex-row">
           <p>
-            &copy; {new Date().getFullYear()} Trivia More. Progetto open source
+            &copy; {new Date().getFullYear()} TriviaMore. Progetto open source
             per la community studentesca.
+          </p>
+          <p>
+            Fatto con cura a Modena
           </p>
         </div>
       </div>
