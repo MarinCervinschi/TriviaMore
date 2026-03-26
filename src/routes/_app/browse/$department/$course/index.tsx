@@ -84,7 +84,7 @@ function CoursePage() {
       />
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{course.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{course.name}</h1>
           {course.description && (
             <p className="mt-2 max-w-2xl text-muted-foreground">
               {course.description}

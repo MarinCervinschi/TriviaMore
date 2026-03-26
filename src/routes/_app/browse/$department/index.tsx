@@ -12,7 +12,7 @@ import { BrowseStats } from "@/components/browse/browse-stats"
 import { CourseCard } from "@/components/browse/course-card"
 import { ItemGrid } from "@/components/browse/item-grid"
 import { SearchFilter } from "@/components/browse/search-filter"
-import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 import { browseQueries } from "@/lib/browse/queries"
 
 export const Route = createFileRoute("/_app/browse/$department/")({
@@ -77,9 +77,11 @@ function DepartmentPage() {
         segments={[{ label: "Esplora", href: "/browse" }]}
         current={department.name}
       />
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{department.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {department.name}
+          </h1>
           {department.description && (
             <p className="mt-2 max-w-2xl text-muted-foreground">
               {department.description}
@@ -92,20 +94,22 @@ function DepartmentPage() {
         />
       </div>
       <BrowseStats
-        stats={[
-          { label: "corsi", value: department.courses.length },
-        ]}
+        stats={[{ label: "corsi", value: department.courses.length }]}
       />
       <div className="mb-4 flex flex-wrap gap-2">
         {courseTypeFilters.map((f) => (
-          <Badge
+          <button
             key={f.value}
-            variant={typeFilter === f.value ? "default" : "outline"}
-            className="cursor-pointer"
             onClick={() => setTypeFilter(f.value)}
+            className={cn(
+              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+              typeFilter === f.value
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
           >
             {f.label}
-          </Badge>
+          </button>
         ))}
       </div>
       <SearchFilter
