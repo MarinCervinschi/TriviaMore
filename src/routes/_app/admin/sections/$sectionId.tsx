@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2, Users } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
@@ -57,9 +58,7 @@ export const Route = createFileRoute("/_app/admin/sections/$sectionId")({
       adminQueries.section(params.sectionId),
     ),
   component: AdminSectionDetailPage,
-  head: () => ({
-    meta: [{ title: "Dettaglio Sezione | Gestione | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Dettaglio Sezione | Gestione", noindex: true }),
 })
 
 function AdminSectionDetailPage() {

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
@@ -43,9 +44,7 @@ export const Route = createFileRoute("/_app/admin/classes/$classId")({
       adminQueries.class(params.classId),
     ),
   component: AdminClassDetailPage,
-  head: () => ({
-    meta: [{ title: "Dettaglio Classe | Gestione | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Dettaglio Classe | Gestione", noindex: true }),
 })
 
 function AdminClassDetailPage() {

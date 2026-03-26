@@ -1,5 +1,8 @@
 import { useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
+import { NotFoundPage } from "@/components/error/not-found-page"
+import { breadcrumbJsonLd, courseJsonLd } from "@/lib/json-ld"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
@@ -19,16 +22,35 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
     if (!data) throw notFound()
     return data
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.name ?? "Corso"} | Esplora | TriviaMore` },
-      {
-        name: "description",
-        content: loaderData?.description ?? `Classi del corso ${loaderData?.name ?? ""}`,
-      },
+  head: ({ loaderData, match }) => ({
+    ...seoHead({
+      title: `${loaderData?.name ?? "Corso"} | Esplora`,
+      description:
+        loaderData?.description ??
+        `Classi del corso ${loaderData?.name ?? ""}`,
+      path: match.pathname,
+    }),
+    scripts: [
+      breadcrumbJsonLd([
+        { name: "Esplora", path: "/browse" },
+        {
+          name: loaderData?.department?.name ?? "Dipartimento",
+          path: `/browse/${match.params.department}`,
+        },
+        { name: loaderData?.name ?? "Corso", path: match.pathname },
+      ]),
+      courseJsonLd({
+        name: loaderData?.name ?? "Corso",
+        description: loaderData?.description ?? undefined,
+        path: match.pathname,
+        provider: loaderData?.department?.name,
+      }),
     ],
   }),
   component: CoursePage,
+  notFoundComponent: () => (
+    <NotFoundPage message="Il corso che stai cercando non esiste." />
+  ),
 })
 
 function CoursePage() {

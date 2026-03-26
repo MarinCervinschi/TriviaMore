@@ -1,4 +1,6 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { ErrorPage } from '@/components/error/error-page'
+import { NotFoundPage } from '@/components/error/not-found-page'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
@@ -14,8 +16,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'TriviaMore' },
-      { name: 'description', content: 'La piattaforma di quiz e flashcard per studiare meglio.' },
     ],
     links: [
       { rel: 'stylesheet', href: globalsCss },
@@ -23,6 +23,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   shellComponent: RootDocument,
   component: RootLayout,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
+  notFoundComponent: () => <NotFoundPage />,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -33,6 +35,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="min-h-screen antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:ring-2 focus:ring-ring"
+        >
+          Vai al contenuto principale
+        </a>
         {children}
         <Scripts />
       </body>

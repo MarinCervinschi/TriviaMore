@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
@@ -39,9 +40,7 @@ export const Route = createFileRoute("/_app/admin/departments/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(adminQueries.departments()),
   component: AdminDepartmentsPage,
-  head: () => ({
-    meta: [{ title: "Dipartimenti | Gestione | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Dipartimenti | Gestione", noindex: true }),
 })
 
 function AdminDepartmentsPage() {

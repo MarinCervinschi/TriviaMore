@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { BulkImportForm } from "@/components/admin/forms/bulk-import-form"
@@ -23,9 +24,7 @@ export const Route = createFileRoute("/_app/admin/questions/$questionId")({
     return null
   },
   component: AdminQuestionPage,
-  head: () => ({
-    meta: [{ title: "Domanda | Gestione | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Domanda | Gestione", noindex: true }),
 })
 
 function AdminQuestionPage() {

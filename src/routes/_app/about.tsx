@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import {
   BookOpen,
   Github,
@@ -14,16 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const Route = createFileRoute("/_app/about")({
   component: AboutPage,
-  head: () => ({
-    meta: [
-      { title: "Chi Siamo | TriviaMore" },
-      {
-        name: "description",
-        content:
-          "Trivia More è una piattaforma open source creata da studenti per studenti dell'Università di Modena e Reggio Emilia.",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: "Chi Siamo",
+      description:
+        "Trivia More è una piattaforma open source creata da studenti per studenti dell'Università di Modena e Reggio Emilia.",
+      path: "/about",
+    }),
 })
 
 function AboutPage() {

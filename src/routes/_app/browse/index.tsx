@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Library } from "lucide-react"
 
@@ -13,16 +14,13 @@ import { browseQueries } from "@/lib/browse/queries"
 export const Route = createFileRoute("/_app/browse/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(browseQueries.departments()),
-  head: () => ({
-    meta: [
-      { title: "Esplora | TriviaMore" },
-      {
-        name: "description",
-        content:
-          "Scopri tutti i dipartimenti e i corsi disponibili su TriviaMore.",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: "Esplora",
+      description:
+        "Scopri tutti i dipartimenti e i corsi disponibili su TriviaMore.",
+      path: "/browse",
+    }),
   component: BrowsePage,
 })
 

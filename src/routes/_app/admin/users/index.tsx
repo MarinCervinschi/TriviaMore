@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { Pencil } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
@@ -43,9 +44,7 @@ export const Route = createFileRoute("/_app/admin/users/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(adminQueries.users()),
   component: AdminUsersPage,
-  head: () => ({
-    meta: [{ title: "Utenti | Gestione | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Utenti | Gestione", noindex: true }),
 })
 
 function AdminUsersPage() {

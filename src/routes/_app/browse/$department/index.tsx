@@ -1,5 +1,8 @@
 import { useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
+import { NotFoundPage } from "@/components/error/not-found-page"
+import { breadcrumbJsonLd } from "@/lib/json-ld"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
@@ -20,16 +23,25 @@ export const Route = createFileRoute("/_app/browse/$department/")({
     if (!data) throw notFound()
     return data
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.name ?? "Dipartimento"} | Esplora | TriviaMore` },
-      {
-        name: "description",
-        content: loaderData?.description ?? `Corsi del dipartimento ${loaderData?.name ?? ""}`,
-      },
+  head: ({ loaderData, match }) => ({
+    ...seoHead({
+      title: `${loaderData?.name ?? "Dipartimento"} | Esplora`,
+      description:
+        loaderData?.description ??
+        `Corsi del dipartimento ${loaderData?.name ?? ""}`,
+      path: match.pathname,
+    }),
+    scripts: [
+      breadcrumbJsonLd([
+        { name: "Esplora", path: "/browse" },
+        { name: loaderData?.name ?? "Dipartimento", path: match.pathname },
+      ]),
     ],
   }),
   component: DepartmentPage,
+  notFoundComponent: () => (
+    <NotFoundPage message="Il dipartimento che stai cercando non esiste." />
+  ),
 })
 
 const courseTypeFilters = [
