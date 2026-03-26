@@ -19,11 +19,11 @@ export const Route = createFileRoute("/_app/contact")({
 
 function ContactPage() {
   return (
-      <div className="container max-w-4xl py-8">
+      <div className="container max-w-4xl py-8 sm:py-12">
         {/* Hero */}
         <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold">Contattaci</h1>
-          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight">Contattaci</h1>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
             Hai domande, suggerimenti o vuoi contribuire al progetto? Siamo qui
             per ascoltarti!
           </p>
@@ -33,8 +33,10 @@ function ContactPage() {
           {/* Form */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-blue-600" />
+              <CardTitle className="flex items-center gap-3">
+                <div className="inline-flex rounded-xl bg-blue-500/10 p-3">
+                  <MessageSquare className="h-5 w-5 text-blue-600" />
+                </div>
                 Invia un Messaggio
               </CardTitle>
             </CardHeader>
@@ -74,10 +76,12 @@ function ContactPage() {
             </Card>
 
             <div className="grid gap-4">
-              <Card>
+              <Card className="hover:-translate-y-0.5 hover:shadow-md">
                 <CardContent className="pt-6">
                   <div className="mb-2 flex items-center gap-3">
-                    <Bug className="h-5 w-5 text-red-500" />
+                    <div className="inline-flex rounded-lg bg-red-500/10 p-1.5">
+                      <Bug className="h-4 w-4 text-red-500" />
+                    </div>
                     <h3 className="font-semibold">Segnala un Bug</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -87,10 +91,12 @@ function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="hover:-translate-y-0.5 hover:shadow-md">
                 <CardContent className="pt-6">
                   <div className="mb-2 flex items-center gap-3">
-                    <Lightbulb className="h-5 w-5 text-yellow-500" />
+                    <div className="inline-flex rounded-lg bg-yellow-500/10 p-1.5">
+                      <Lightbulb className="h-4 w-4 text-yellow-500" />
+                    </div>
                     <h3 className="font-semibold">Proponi una Funzionalità</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -100,10 +106,12 @@ function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="hover:-translate-y-0.5 hover:shadow-md">
                 <CardContent className="pt-6">
                   <div className="mb-2 flex items-center gap-3">
-                    <Heart className="h-5 w-5 text-pink-500" />
+                    <div className="inline-flex rounded-lg bg-pink-500/10 p-1.5">
+                      <Heart className="h-4 w-4 text-pink-500" />
+                    </div>
                     <h3 className="font-semibold">Contribuisci</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -120,19 +128,11 @@ function ContactPage() {
                 <CardTitle>Linee Guida della Community</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    &bull; Sii rispettoso e costruttivo nelle comunicazioni
-                  </li>
-                  <li>
-                    &bull; Fornisci dettagli chiari quando segnali problemi
-                  </li>
-                  <li>
-                    &bull; Cerca nelle issue esistenti prima di crearne una nuova
-                  </li>
-                  <li>
-                    &bull; Contribuisci seguendo le linee guida del progetto
-                  </li>
+                <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
+                  <li>Sii rispettoso e costruttivo nelle comunicazioni</li>
+                  <li>Fornisci dettagli chiari quando segnali problemi</li>
+                  <li>Cerca nelle issue esistenti prima di crearne una nuova</li>
+                  <li>Contribuisci seguendo le linee guida del progetto</li>
                 </ul>
               </CardContent>
             </Card>
@@ -145,8 +145,8 @@ function ContactPage() {
             <CardTitle>Domande Frequenti</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
+            <div className="divide-y divide-border/50">
+              <div className="pb-4">
                 <h4 className="mb-2 font-semibold">
                   Come posso contribuire al progetto?
                 </h4>
@@ -156,7 +156,7 @@ function ContactPage() {
                   i corsi, o semplicemente segnalando bug e suggerimenti.
                 </p>
               </div>
-              <div>
+              <div className="py-4">
                 <h4 className="mb-2 font-semibold">
                   Trivia More è davvero gratuito?
                 </h4>
@@ -165,7 +165,7 @@ function ContactPage() {
                   gratuito e sempre lo sarà. È fatto da studenti per studenti.
                 </p>
               </div>
-              <div>
+              <div className="pt-4">
                 <h4 className="mb-2 font-semibold">
                   Posso aggiungere contenuti per il mio corso?
                 </h4>
