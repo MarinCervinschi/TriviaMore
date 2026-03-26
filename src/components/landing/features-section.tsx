@@ -4,9 +4,11 @@ import type { FeatureCard } from "./data"
 function FeatureCardComponent({ feature }: { feature: FeatureCard }) {
   const Icon = feature.icon
   return (
-    <Card>
+    <Card className="hover:-translate-y-1 hover:shadow-lg">
       <CardHeader>
-        <Icon className={`mb-2 h-10 w-10 ${feature.iconColor}`} />
+        <div className={`mb-3 inline-flex rounded-xl p-3 ${feature.iconBg}`}>
+          <Icon className={`h-6 w-6 ${feature.iconColor}`} />
+        </div>
         <CardTitle>{feature.title}</CardTitle>
       </CardHeader>
       <CardContent>
@@ -18,10 +20,10 @@ function FeatureCardComponent({ feature }: { feature: FeatureCard }) {
 
 export function FeaturesSection({ features }: { features: FeatureCard[] }) {
   return (
-    <section className="border-y bg-muted/50 py-16">
+    <section className="border-y bg-muted/50 py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold">
+          <h2 className="mb-3 text-3xl font-bold tracking-tight">
             Tutto quello che ti serve per avere successo
           </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">
@@ -30,7 +32,7 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
             esami.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <FeatureCardComponent key={feature.title} feature={feature} />
           ))}
