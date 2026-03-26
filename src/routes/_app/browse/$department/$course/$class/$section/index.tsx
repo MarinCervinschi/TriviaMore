@@ -78,7 +78,11 @@ function SectionPage() {
           sectionId={section.id}
           isAuthenticated={isAuthenticated}
         />
-        <FlashcardCard questionCount={section.flashcard_question_count} />
+        <FlashcardCard
+          questionCount={section.flashcard_question_count}
+          sectionId={section.id}
+          isAuthenticated={isAuthenticated}
+        />
       </div>
     </div>
   )
