@@ -351,6 +351,16 @@ function RecentActivitySection({
                     {new Date(attempt.completed_at).toLocaleDateString("it-IT")}
                   </p>
                 </div>
+                <Button asChild variant="outline" size="sm">
+                  <Link
+                    to="/quiz/results/$attemptId"
+                    params={{ attemptId: attempt.id }}
+                    className="flex items-center gap-1"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    Vedi
+                  </Link>
+                </Button>
               </div>
             </div>
           ))}

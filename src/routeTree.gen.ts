@@ -21,12 +21,12 @@ import { Route as AppAboutRouteImport } from './routes/_app/about'
 import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
-import { Route as QuizResultsAttemptIdRouteImport } from './routes/quiz/results.$attemptId'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
 import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
 import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/browse/$department/index'
+import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
 import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './routes/_app/browse/$department/$course/$class/index'
 import { Route as AppBrowseDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/browse/$department/$course/$class/$section/index'
@@ -90,11 +90,6 @@ const AppBrowseIndexRoute = AppBrowseIndexRouteImport.update({
   path: '/browse/',
   getParentRoute: () => AppRoute,
 } as any)
-const QuizResultsAttemptIdRoute = QuizResultsAttemptIdRouteImport.update({
-  id: '/quiz/results/$attemptId',
-  path: '/quiz/results/$attemptId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -121,6 +116,11 @@ const AppBrowseDepartmentIndexRoute =
     path: '/browse/$department/',
     getParentRoute: () => AppRoute,
   } as any)
+const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
+  id: '/quiz/results/$attemptId',
+  path: '/quiz/results/$attemptId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBrowseDepartmentCourseIndexRoute =
   AppBrowseDepartmentCourseIndexRouteImport.update({
     id: '/browse/$department/$course/',
@@ -154,9 +154,9 @@ export interface FileRoutesByFullPath {
   '/user/classes': typeof AppUserClassesRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
-  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/user/': typeof AppUserIndexRoute
+  '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/browse/$department/': typeof AppBrowseDepartmentIndexRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -175,9 +175,9 @@ export interface FileRoutesByTo {
   '/user/classes': typeof AppUserClassesRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
-  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/browse': typeof AppBrowseIndexRoute
   '/user': typeof AppUserIndexRoute
+  '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/browse/$department': typeof AppBrowseDepartmentIndexRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -199,9 +199,9 @@ export interface FileRoutesById {
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/progress': typeof AppUserProgressRoute
   '/_app/user/settings': typeof AppUserSettingsRoute
-  '/quiz/results/$attemptId': typeof QuizResultsAttemptIdRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
+  '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/_app/browse/$department/': typeof AppBrowseDepartmentIndexRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -223,9 +223,9 @@ export interface FileRouteTypes {
     | '/user/classes'
     | '/user/progress'
     | '/user/settings'
-    | '/quiz/results/$attemptId'
     | '/browse/'
     | '/user/'
+    | '/quiz/results/$attemptId'
     | '/browse/$department/'
     | '/browse/$department/$course/'
     | '/browse/$department/$course/$class/'
@@ -244,9 +244,9 @@ export interface FileRouteTypes {
     | '/user/classes'
     | '/user/progress'
     | '/user/settings'
-    | '/quiz/results/$attemptId'
     | '/browse'
     | '/user'
+    | '/quiz/results/$attemptId'
     | '/browse/$department'
     | '/browse/$department/$course'
     | '/browse/$department/$course/$class'
@@ -267,9 +267,9 @@ export interface FileRouteTypes {
     | '/_app/user/classes'
     | '/_app/user/progress'
     | '/_app/user/settings'
-    | '/quiz/results/$attemptId'
     | '/_app/browse/'
     | '/_app/user/'
+    | '/_app/quiz/results/$attemptId'
     | '/_app/browse/$department/'
     | '/_app/browse/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
@@ -283,7 +283,6 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
-  QuizResultsAttemptIdRoute: typeof QuizResultsAttemptIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,13 +371,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrowseIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/quiz/results/$attemptId': {
-      id: '/quiz/results/$attemptId'
-      path: '/quiz/results/$attemptId'
-      fullPath: '/quiz/results/$attemptId'
-      preLoaderRoute: typeof QuizResultsAttemptIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app/user/settings': {
       id: '/_app/user/settings'
       path: '/settings'
@@ -412,6 +404,13 @@ declare module '@tanstack/react-router' {
       path: '/browse/$department'
       fullPath: '/browse/$department/'
       preLoaderRoute: typeof AppBrowseDepartmentIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/quiz/results/$attemptId': {
+      id: '/_app/quiz/results/$attemptId'
+      path: '/quiz/results/$attemptId'
+      fullPath: '/quiz/results/$attemptId'
+      preLoaderRoute: typeof AppQuizResultsAttemptIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/browse/$department/$course/': {
@@ -464,6 +463,7 @@ interface AppRouteChildren {
   AppContactRoute: typeof AppContactRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBrowseIndexRoute: typeof AppBrowseIndexRoute
+  AppQuizResultsAttemptIdRoute: typeof AppQuizResultsAttemptIdRoute
   AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
   AppBrowseDepartmentCourseIndexRoute: typeof AppBrowseDepartmentCourseIndexRoute
   AppBrowseDepartmentCourseClassIndexRoute: typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -476,6 +476,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppContactRoute: AppContactRoute,
   AppIndexRoute: AppIndexRoute,
   AppBrowseIndexRoute: AppBrowseIndexRoute,
+  AppQuizResultsAttemptIdRoute: AppQuizResultsAttemptIdRoute,
   AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
   AppBrowseDepartmentCourseIndexRoute: AppBrowseDepartmentCourseIndexRoute,
   AppBrowseDepartmentCourseClassIndexRoute:
@@ -493,7 +494,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
-  QuizResultsAttemptIdRoute: QuizResultsAttemptIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
