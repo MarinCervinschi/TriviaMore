@@ -71,6 +71,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",
     "@testing-library/dom": "^10.4.1",
@@ -82,6 +83,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "eslint": "^10.1.0",
     "jsdom": "^28.1.0",
+    "png-to-ico": "^3.0.1",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tsx": "^4.21.0",
