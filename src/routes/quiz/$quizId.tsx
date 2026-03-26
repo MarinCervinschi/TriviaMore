@@ -6,6 +6,7 @@ import { QuizHeader } from "@/components/quiz/quiz-header"
 import { QuizNavigation } from "@/components/quiz/quiz-navigation"
 import { QuizProgress } from "@/components/quiz/quiz-progress"
 import { QuizSidebar } from "@/components/quiz/quiz-sidebar"
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import { quizQueries } from "@/lib/quiz/queries"
 import { calculateQuizResults } from "@/lib/quiz/scoring"
 import { completeQuizFn, cancelQuizFn } from "@/lib/quiz/server"
@@ -46,6 +47,7 @@ function QuizPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState<QuizResults | null>(null)
+  const [showExitDialog, setShowExitDialog] = useState(false)
 
   // Initialize answers when quiz loads
   useEffect(() => {
@@ -114,12 +116,7 @@ function QuizPage() {
     }
   }, [quiz, userAnswers, startTime, isGuest, navigate])
 
-  const handleExit = useCallback(async () => {
-    const confirmed = window.confirm(
-      "Sei sicuro di voler uscire? Il quiz verrà eliminato e i progressi persi.",
-    )
-    if (!confirmed) return
-
+  const confirmExit = useCallback(async () => {
     if (isGuest) {
       clearGuestQuizSession(quizId)
     } else if (quiz?.attempt_id) {
@@ -202,7 +199,7 @@ function QuizPage() {
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         onTimeUp={handleComplete}
-        onExit={handleExit}
+        onExit={() => setShowExitDialog(true)}
       />
       <QuizProgress current={currentIndex} total={quiz.questions.length} />
       <div className="flex flex-1 overflow-hidden">
@@ -223,6 +220,7 @@ function QuizPage() {
               onAnswerChange={(answers) =>
                 handleAnswerChange(currentQuestion.id, answers)
               }
+              isGuest={isGuest}
             />
           )}
         </div>
@@ -237,6 +235,16 @@ function QuizPage() {
           )
         }
         onComplete={handleComplete}
+      />
+      <ConfirmationDialog
+        open={showExitDialog}
+        onOpenChange={setShowExitDialog}
+        title="Esci dal Quiz"
+        description="Sei sicuro di voler uscire? Il quiz verrà eliminato e i progressi persi."
+        confirmText="Esci"
+        cancelText="Continua"
+        variant="destructive"
+        onConfirm={confirmExit}
       />
     </div>
   )

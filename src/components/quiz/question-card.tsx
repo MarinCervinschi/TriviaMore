@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { QuizQuestion } from "@/lib/quiz/types"
 import { parseOptions } from "@/lib/quiz/options"
+import { BookmarkButton } from "./bookmark-button"
 
 function getDifficultyColor(difficulty: string) {
   switch (difficulty) {
@@ -36,11 +37,13 @@ export function QuestionCard({
   questionNumber,
   selectedAnswers,
   onAnswerChange,
+  isGuest = false,
 }: {
   question: QuizQuestion
   questionNumber: number
   selectedAnswers: string[]
   onAnswerChange: (answers: string[]) => void
+  isGuest?: boolean
 }) {
   const options = parseOptions(question.options)
 
@@ -63,13 +66,16 @@ export function QuestionCard({
   return (
     <Card className="mx-auto max-w-3xl">
       <CardHeader className="pb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            Domanda {questionNumber}
-          </span>
-          <Badge className={getDifficultyColor(question.difficulty)}>
-            {getDifficultyLabel(question.difficulty)}
-          </Badge>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Domanda {questionNumber}
+            </span>
+            <Badge className={getDifficultyColor(question.difficulty)}>
+              {getDifficultyLabel(question.difficulty)}
+            </Badge>
+          </div>
+          <BookmarkButton questionId={question.id} isGuest={isGuest} />
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
