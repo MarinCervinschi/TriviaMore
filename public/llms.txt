@@ -1,0 +1,35 @@
+# TriviaMore
+
+> La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti dell'Universita di Modena e Reggio Emilia.
+
+TriviaMore e una web app open source per lo studio universitario tramite quiz a risposta multipla, vero/falso e flashcard. I contenuti sono organizzati in una gerarchia: Dipartimenti > Corsi > Classi > Sezioni > Domande.
+
+## Funzionalita principali
+
+- **Quiz**: modalita Studio (senza timer) e Simulazione Esame (con timer, domande randomizzate). Supporta scelta multipla, vero/falso e risposta breve.
+- **Flashcard**: sessioni di studio con carte girabili e tracking dei progressi.
+- **Navigazione contenuti**: esplorazione gerarchica di dipartimenti, corsi, classi e sezioni.
+- **Area utente**: dashboard, classi seguite, segnalibri, progressi con grafici.
+- **Pannello admin**: gestione completa di contenuti e utenti con import massivo.
+
+## Struttura del sito
+
+- `/` - Homepage
+- `/about` - Chi siamo
+- `/contact` - Contatti
+- `/browse` - Esplora tutti i dipartimenti
+- `/browse/{dipartimento}` - Corsi di un dipartimento
+- `/browse/{dipartimento}/{corso}` - Classi di un corso
+- `/browse/{dipartimento}/{corso}/{classe}` - Sezioni di una classe
+- `/browse/{dipartimento}/{corso}/{classe}/{sezione}` - Dettaglio sezione con quiz e flashcard
+
+## Informazioni tecniche
+
+- Lingua: Italiano
+- Stack: TanStack Start, React 19, Supabase, Tailwind CSS
+- Accesso: contenuti pubblici esplorabilili senza autenticazione, quiz e flashcard disponibili anche come ospite
+- Autenticazione: email/password e OAuth (Google, GitHub)
+
+## Contatti
+
+- Sito: https://triviamore.it
