@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 
+import { LoadingPage } from '@/components/loading/loading-page'
 import { routeTree } from './routeTree.gen'
 
 const FIVE_MINUTES = 1000 * 60 * 5
@@ -21,6 +22,8 @@ export function getRouter() {
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
+    defaultPendingMs: 200,
+    defaultPendingComponent: LoadingPage,
   })
 
   setupRouterSsrQueryIntegration({ router, queryClient })
