@@ -138,17 +138,17 @@ function CoursePage() {
                     )}
                   </Link>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 text-center">
                   <Badge variant="outline" className="text-xs">
                     {classData.code}
                   </Badge>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 text-center">
                   <span className="text-sm text-muted-foreground">
                     Anno {classData.class_year}
                   </span>
                 </td>
-                <td className="px-4 py-4 text-muted-foreground">
+                <td className="px-4 py-4 text-center text-muted-foreground">
                   <span className="font-semibold text-foreground">
                     {sectionCount}
                   </span>{" "}
