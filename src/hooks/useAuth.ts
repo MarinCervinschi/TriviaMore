@@ -39,7 +39,9 @@ export function useAuth() {
 
   const logout = useMutation({
     mutationFn: logoutFn,
-    onSuccess: invalidate,
+    onSuccess: () => {
+      queryClient.clear()
+    },
   })
 
   return {
