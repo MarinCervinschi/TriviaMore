@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react"
-import { createFileRoute, notFound } from "@tanstack/react-router"
+import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { Heart } from "lucide-react"
+import { ArrowRight, BookOpen, Heart, Lock, Sparkles } from "lucide-react"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
-import { Button } from "@/components/ui/button"
-import { ItemGrid } from "@/components/browse/item-grid"
+import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
-import { SectionCard } from "@/components/browse/section-card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { browseQueries } from "@/lib/browse/queries"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
@@ -81,7 +81,6 @@ function ClassPage() {
     enabled: isAuthenticated && !!classData,
   })
 
-  // Track recent class visit for authenticated users
   useEffect(() => {
     if (isAuthenticated && classData?.id) {
       updateRecentClassFn({ data: { classId: classData.id } }).then(() => {
@@ -128,7 +127,9 @@ function ClassPage() {
       />
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{classData.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {classData.name}
+          </h1>
           {classData.description && (
             <p className="mt-2 max-w-2xl text-muted-foreground">
               {classData.description}
@@ -169,17 +170,62 @@ function ClassPage() {
       {filtered.length === 0 ? (
         <BrowseEmptyState message="Nessuna sezione trovata." />
       ) : (
-        <ItemGrid>
-          {filtered.map((section) => (
-            <SectionCard
-              key={section.id}
-              section={section}
-              deptCode={deptCode}
-              courseCode={courseCode}
-              classCode={classCode}
-            />
-          ))}
-        </ItemGrid>
+        <BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
+          {filtered.map((section) => {
+            const sectionSlug = section.name
+              .replace(/ /g, "-")
+              .toLowerCase()
+            return (
+              <tr key={section.id} className="group">
+                <td className="pl-6 py-4">
+                  <Link
+                    to="/browse/$department/$course/$class/$section"
+                    params={{
+                      department: deptCode.toLowerCase(),
+                      course: courseCode.toLowerCase(),
+                      class: classCode.toLowerCase(),
+                      section: sectionSlug,
+                    }}
+                    className="block"
+                  >
+                    <span className="flex items-center gap-2 font-medium text-foreground group-hover:text-primary transition-colors">
+                      {!section.is_public && (
+                        <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                      )}
+                      {section.name}
+                    </span>
+                  </Link>
+                </td>
+                <td className="px-4 py-4">
+                  {section.quiz_question_count > 0 ? (
+                    <Badge className="gap-1.5 bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
+                      <BookOpen className="h-3 w-3" />
+                      {section.quiz_question_count}
+                    </Badge>
+                  ) : (
+                    <span className="text-xs text-muted-foreground/50">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-4">
+                  {section.flashcard_question_count > 0 ? (
+                    <Badge className="gap-1.5 bg-purple-500/10 text-purple-600 border-purple-500/20 text-xs">
+                      <Sparkles className="h-3 w-3" />
+                      {section.flashcard_question_count}
+                    </Badge>
+                  ) : (
+                    <span className="text-xs text-muted-foreground/50">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-4 text-sm text-muted-foreground">
+                  {section.question_count}
+                </td>
+                <td className="pr-6 py-4">
+                  <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                </td>
+              </tr>
+            )
+          })}
+        </BrowseTable>
       )}
     </div>
   )
