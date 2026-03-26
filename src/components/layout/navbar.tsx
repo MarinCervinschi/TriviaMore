@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/hooks/useAuth"
 import { useTheme } from "@/hooks/useTheme"
 import { Button } from "@/components/ui/button"
+import { LogoIcon } from "@/components/ui/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -68,6 +69,7 @@ const USER_MENU_LINKS: NavLink[] = [
 function NavLogo() {
   return (
     <Link to="/" className="flex items-center gap-2 font-bold text-lg">
+      <LogoIcon size={22} />
       <span className="gradient-text">TriviaMore</span>
     </Link>
   )

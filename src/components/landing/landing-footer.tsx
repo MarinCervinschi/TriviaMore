@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
-import { BookOpen } from "lucide-react"
+
+import { LogoIcon } from "@/components/ui/logo"
 
 import type { FooterSection } from "./data"
 
@@ -10,7 +11,7 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
+              <LogoIcon size={24} />
               <span className="text-xl font-bold">Trivia More</span>
             </div>
             <p className="text-muted-foreground">
