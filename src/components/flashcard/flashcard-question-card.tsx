@@ -1,16 +1,15 @@
 import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { FlashcardQuestion } from "@/lib/flashcard/types"
 
 function getDifficultyColor(difficulty: string) {
   switch (difficulty) {
     case "EASY":
-      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+      return "bg-green-500/10 text-green-600 border-green-500/20"
     case "MEDIUM":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+      return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
     case "HARD":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+      return "bg-red-500/10 text-red-600 border-red-500/20"
     default:
       return ""
   }
@@ -51,11 +50,11 @@ export function FlashcardQuestionCard({
         }`}
       >
         {/* Front */}
-        <Card className="min-h-[300px] p-6 [backface-visibility:hidden]">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                Carta {questionNumber}
+        <div className="min-h-[400px] overflow-hidden rounded-2xl border bg-card p-6 shadow-sm [backface-visibility:hidden] sm:p-8">
+          <div className="flex items-center justify-between pb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold gradient-text">
+                {questionNumber}
               </span>
               <Badge className={getDifficultyColor(question.difficulty)}>
                 {getDifficultyLabel(question.difficulty)}
@@ -65,35 +64,35 @@ export function FlashcardQuestionCard({
               Clicca per girare
             </span>
           </div>
-          <div className="flex min-h-[200px] items-center justify-center">
-            <div className="text-lg">
+          <div className="flex min-h-[280px] items-center justify-center">
+            <div className="text-lg leading-relaxed">
               <MarkdownRenderer
                 content={question.content}
                 className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
               />
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Back */}
-        <Card className="absolute inset-0 min-h-[300px] p-6 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          <div className="flex items-center justify-between pb-4">
-            <span className="text-sm font-medium text-muted-foreground">
+        <div className="absolute inset-0 min-h-[400px] overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-6 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+          <div className="flex items-center justify-between pb-6">
+            <span className="text-sm font-medium text-primary">
               Risposta
             </span>
             <span className="text-xs text-muted-foreground">
               Clicca per girare
             </span>
           </div>
-          <div className="flex min-h-[200px] flex-col items-center justify-center gap-4">
-            <div className="text-lg font-medium text-primary">
+          <div className="flex min-h-[280px] flex-col items-center justify-center gap-6">
+            <div className="text-lg font-medium">
               <MarkdownRenderer
                 content={question.correct_answer.join(" / ")}
                 className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
               />
             </div>
             {question.explanation && (
-              <div className="w-full rounded-lg bg-muted/50 p-4 text-sm text-muted-foreground">
+              <div className="w-full rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
                 <MarkdownRenderer
                   content={question.explanation}
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
@@ -101,7 +100,7 @@ export function FlashcardQuestionCard({
               </div>
             )}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   )

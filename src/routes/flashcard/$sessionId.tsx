@@ -168,7 +168,7 @@ function FlashcardPage() {
             onJump={goToCard}
           />
         )}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           {currentQuestion && (
             <FlashcardQuestionCard
               question={currentQuestion}
