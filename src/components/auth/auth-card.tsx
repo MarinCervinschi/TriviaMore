@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { Link } from "@tanstack/react-router"
-import { ArrowLeft, BookOpen, Moon, Sun } from "lucide-react"
+import { ArrowLeft, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { LogoIcon } from "@/components/ui/logo"
 import { useTheme } from "@/hooks/useTheme"
 
 export function AuthCard({
@@ -45,7 +46,7 @@ export function AuthCard({
             Torna alla home
           </Link>
           <div className="mt-3 flex items-center justify-center gap-2">
-            <BookOpen className="h-7 w-7 text-primary" />
+            <LogoIcon size={28} />
             <span className="text-xl font-bold gradient-text">TriviaMore</span>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
-import { BookOpen } from "lucide-react"
+
+import { LogoIcon } from "@/components/ui/logo"
 
 export function MinimalFooter() {
   return (
@@ -7,7 +8,7 @@ export function MinimalFooter() {
       <div className="container">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-blue-600" />
+            <LogoIcon size={20} />
             <span className="text-lg font-bold">TriviaMore</span>
           </Link>
 
