@@ -1,7 +1,8 @@
-import { Eye, LogOut, PanelLeftClose, PanelLeft } from "lucide-react"
+import { Eye, LogOut, Moon, PanelLeftClose, PanelLeft, Sun } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useTheme } from "@/hooks/useTheme"
 
 export function FlashcardHeader({
   questionIndex,
@@ -18,6 +19,8 @@ export function FlashcardHeader({
   onToggleSidebar: () => void
   onExit: () => void
 }) {
+  const { mounted, isDark, toggleTheme } = useTheme()
+
   return (
     <header className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-4 backdrop-blur-xl">
       <div className="flex items-center gap-3">
@@ -47,6 +50,17 @@ export function FlashcardHeader({
           <Eye className="h-3.5 w-3.5" />
           {studiedCount}/{totalQuestions}
         </Badge>
+        {mounted && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-9 w-9 rounded-xl"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <span className="sr-only">Cambia tema</span>
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
