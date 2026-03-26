@@ -13,10 +13,10 @@ export function BrowseTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              {headers.map((header) => (
+              {headers.map((header, i) => (
                 <th
                   key={header}
-                  className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground first:pl-6 last:pr-6"
+                  className={`px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground first:pl-6 last:pr-6 ${i === 0 ? "text-left" : "text-center"}`}
                 >
                   {header}
                 </th>

@@ -196,7 +196,7 @@ function ClassPage() {
                     </span>
                   </Link>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 text-center">
                   {section.quiz_question_count > 0 ? (
                     <Badge className="gap-1.5 bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
                       <BookOpen className="h-3 w-3" />
@@ -206,7 +206,7 @@ function ClassPage() {
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-4 text-center">
                   {section.flashcard_question_count > 0 ? (
                     <Badge className="gap-1.5 bg-purple-500/10 text-purple-600 border-purple-500/20 text-xs">
                       <Sparkles className="h-3 w-3" />
@@ -216,7 +216,7 @@ function ClassPage() {
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
-                <td className="px-4 py-4 text-sm text-muted-foreground">
+                <td className="px-4 py-4 text-center text-sm text-muted-foreground">
                   {section.question_count}
                 </td>
                 <td className="pr-6 py-4">
