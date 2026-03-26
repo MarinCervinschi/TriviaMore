@@ -20,7 +20,7 @@ import {
 } from "@/lib/utils/grading"
 import { formatTimeSpent, getScoreBadgeVariant } from "@/lib/utils/quiz-results"
 
-export const Route = createFileRoute("/quiz/results/$attemptId")({
+export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
   loader: async ({ context, params }) => {
     const data = await context.queryClient.ensureQueryData(
       quizQueries.results(params.attemptId),

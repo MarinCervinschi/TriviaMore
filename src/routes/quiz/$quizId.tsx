@@ -115,6 +115,11 @@ function QuizPage() {
   }, [quiz, userAnswers, startTime, isGuest, navigate])
 
   const handleExit = useCallback(async () => {
+    const confirmed = window.confirm(
+      "Sei sicuro di voler uscire? Il quiz verrà eliminato e i progressi persi.",
+    )
+    if (!confirmed) return
+
     if (isGuest) {
       clearGuestQuizSession(quizId)
     } else if (quiz?.attempt_id) {
