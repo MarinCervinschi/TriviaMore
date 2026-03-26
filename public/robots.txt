@@ -1,3 +1,10 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /user
+Disallow: /quiz/
+Disallow: /flashcard/
+Disallow: /auth/
+
+Sitemap: https://triviamore.it/sitemap.xml

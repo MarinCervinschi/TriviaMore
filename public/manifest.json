@@ -1,6 +1,7 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "TriviaMore",
+  "name": "TriviaMore - Quiz e Flashcard per Studiare",
+  "description": "La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1a1a2e",
+  "background_color": "#ffffff",
+  "lang": "it"
 }
