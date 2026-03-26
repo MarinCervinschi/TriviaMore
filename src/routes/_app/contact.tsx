@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { Bug, Github, Heart, Lightbulb, MessageSquare } from "lucide-react"
 
 import { ContactForm } from "@/components/contact/contact-form"
@@ -7,16 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const Route = createFileRoute("/_app/contact")({
   component: ContactPage,
-  head: () => ({
-    meta: [
-      { title: "Contatti | TriviaMore" },
-      {
-        name: "description",
-        content:
-          "Hai domande, suggerimenti o vuoi contribuire al progetto? Contattaci!",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: "Contatti",
+      description:
+        "Hai domande, suggerimenti o vuoi contribuire al progetto? Contattaci!",
+      path: "/contact",
+    }),
 })
 
 function ContactPage() {

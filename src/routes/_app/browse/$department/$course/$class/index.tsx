@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
+import { NotFoundPage } from "@/components/error/not-found-page"
+import { breadcrumbJsonLd } from "@/lib/json-ld"
+import { seoHead } from "@/lib/seo"
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { Heart } from "lucide-react"
 
@@ -27,17 +30,33 @@ export const Route = createFileRoute(
     if (!data) throw notFound()
     return data
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.name ?? "Classe"} | Esplora | TriviaMore` },
-      {
-        name: "description",
-        content:
-          loaderData?.description ?? `Sezioni della classe ${loaderData?.name ?? ""}`,
-      },
+  head: ({ loaderData, match }) => ({
+    ...seoHead({
+      title: `${loaderData?.name ?? "Classe"} | Esplora`,
+      description:
+        loaderData?.description ??
+        `Sezioni della classe ${loaderData?.name ?? ""}`,
+      path: match.pathname,
+    }),
+    scripts: [
+      breadcrumbJsonLd([
+        { name: "Esplora", path: "/browse" },
+        {
+          name: loaderData?.course?.department?.name ?? "Dipartimento",
+          path: `/browse/${match.params.department}`,
+        },
+        {
+          name: loaderData?.course?.name ?? "Corso",
+          path: `/browse/${match.params.department}/${match.params.course}`,
+        },
+        { name: loaderData?.name ?? "Classe", path: match.pathname },
+      ]),
     ],
   }),
   component: ClassPage,
+  notFoundComponent: () => (
+    <NotFoundPage message="La classe che stai cercando non esiste." />
+  ),
 })
 
 function ClassPage() {

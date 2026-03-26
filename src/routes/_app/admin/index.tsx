@@ -1,5 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import {
   BookOpen,
   FileQuestion,
@@ -18,9 +19,7 @@ export const Route = createFileRoute("/_app/admin/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(adminQueries.stats()),
   component: AdminDashboard,
-  head: () => ({
-    meta: [{ title: "Gestione Contenuti | TriviaMore" }],
-  }),
+  head: () => seoHead({ title: "Gestione Contenuti", noindex: true }),
 })
 
 function AdminDashboard() {

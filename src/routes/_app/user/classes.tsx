@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ExternalLink, Filter, GraduationCap, Search, X } from "lucide-react"
 
@@ -30,12 +31,7 @@ import type { UserClass } from "@/lib/user/types"
 export const Route = createFileRoute("/_app/user/classes")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.classes()),
-  head: () => ({
-    meta: [
-      { title: "I Miei Corsi | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "I Miei Corsi", noindex: true }),
   component: ClassesPage,
 })
 

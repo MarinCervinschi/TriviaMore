@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -20,12 +21,7 @@ import type { UserProfile } from "@/lib/user/types"
 export const Route = createFileRoute("/_app/user/settings")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.profile()),
-  head: () => ({
-    meta: [
-      { title: "Impostazioni | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "Impostazioni", noindex: true }),
   component: SettingsPage,
 })
 

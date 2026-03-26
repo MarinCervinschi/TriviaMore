@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Clock, Target, TrendingUp, Trophy } from "lucide-react"
 import {
@@ -37,12 +38,7 @@ import { formatTimeSpent } from "@/lib/utils/quiz-results"
 export const Route = createFileRoute("/_app/user/progress")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.progress()),
-  head: () => ({
-    meta: [
-      { title: "Progressi | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "Progressi", noindex: true }),
   component: ProgressPage,
 })
 

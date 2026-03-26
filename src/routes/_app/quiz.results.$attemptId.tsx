@@ -1,4 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
+import { NotFoundPage } from "@/components/error/not-found-page"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { Badge } from "@/components/ui/badge"
@@ -28,13 +30,11 @@ export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
     if (!data) throw notFound()
     return data
   },
-  head: () => ({
-    meta: [
-      { title: "Risultati Quiz | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "Risultati Quiz", noindex: true }),
   component: ResultsPage,
+  notFoundComponent: () => (
+    <NotFoundPage message="Il risultato del quiz non è stato trovato." />
+  ),
 })
 
 function ResultsPage() {

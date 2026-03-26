@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import { createFileRoute } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Bookmark, Eye, EyeOff } from "lucide-react"
 
@@ -18,12 +19,7 @@ import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 export const Route = createFileRoute("/_app/user/bookmarks")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.bookmarks()),
-  head: () => ({
-    meta: [
-      { title: "Segnalibri | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "Segnalibri", noindex: true }),
   component: BookmarksPage,
 })
 

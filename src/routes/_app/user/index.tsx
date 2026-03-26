@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Link } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
+import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import {
   BookmarkIcon,
@@ -30,12 +30,7 @@ import { getScoreBadgeVariant } from "@/lib/utils/quiz-results"
 export const Route = createFileRoute("/_app/user/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.profile()),
-  head: () => ({
-    meta: [
-      { title: "Dashboard | TriviaMore" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
+  head: () => seoHead({ title: "Dashboard", noindex: true }),
   component: DashboardPage,
 })
 
