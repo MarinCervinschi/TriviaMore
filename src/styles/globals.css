@@ -122,6 +122,8 @@
 body {
   font-family: var(--font-sans);
   background-color: hsl(var(--background));
+  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: hsl(var(--foreground));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

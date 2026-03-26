@@ -1,8 +1,10 @@
-import { CheckCircle, Clock, Target, XCircle } from "lucide-react"
+import { CheckCircle, Clock, Moon, Sun, Target, XCircle } from "lucide-react"
 import { useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
+import { useTheme } from "@/hooks/useTheme"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { QuizResults } from "@/lib/quiz/types"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
@@ -25,6 +27,7 @@ export function QuizInlineResults({
 }) {
   return (
     <div className="min-h-screen bg-background">
+      <ResultsHeader />
       <div className="mx-auto max-w-4xl space-y-8 p-6">
         {/* Score Hero */}
         <div className="relative overflow-hidden rounded-3xl border bg-card p-8 text-center sm:p-12">
@@ -221,5 +224,25 @@ function QuestionReviewItem({
         </div>
       )}
     </div>
+  )
+}
+
+function ResultsHeader() {
+  const { mounted, isDark, toggleTheme } = useTheme()
+  return (
+    <header className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-3 backdrop-blur-xl">
+      <Logo size="sm" />
+      {mounted && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          className="h-9 w-9 rounded-xl"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <span className="sr-only">Cambia tema</span>
+        </Button>
+      )}
+    </header>
   )
 }
