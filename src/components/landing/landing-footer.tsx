@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { Github } from "lucide-react"
 
-import { LogoIcon } from "@/components/ui/logo"
+import { Logo } from "@/components/ui/logo"
 
 import type { FooterSection } from "./data"
 
@@ -15,9 +15,8 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="mb-4 inline-flex items-center gap-2">
-              <LogoIcon size={24} />
-              <span className="text-lg font-bold gradient-text">TriviaMore</span>
+            <Link to="/" className="mb-4 inline-block">
+              <Logo size="md" />
             </Link>
             <p className="mb-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               La piattaforma open source creata da studenti per studenti.

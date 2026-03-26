@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { ArrowLeft, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { LogoIcon } from "@/components/ui/logo"
+import { Logo } from "@/components/ui/logo"
 import { useTheme } from "@/hooks/useTheme"
 
 export function AuthCard({
@@ -63,11 +63,8 @@ export function AuthCard({
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 p-8 shadow-2xl backdrop-blur-xl dark:border-white/5 dark:bg-card/60">
           {/* Logo + title */}
           <div className="mb-8 text-center">
-            <div className="mb-4 flex items-center justify-center gap-2.5">
-              <LogoIcon size={32} />
-              <span className="text-2xl font-bold gradient-text">
-                TriviaMore
-              </span>
+            <div className="mb-4 flex justify-center">
+              <Logo size="lg" />
             </div>
             <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{description}</p>
