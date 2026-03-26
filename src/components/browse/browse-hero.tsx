@@ -12,8 +12,8 @@ export function BrowseHero({
   stats?: { label: string; value: number }[]
 }) {
   return (
-    <section className="relative -mx-4 mb-8 overflow-hidden px-4 py-12 sm:-mx-6 sm:px-6 sm:py-16 lg:-mx-8 lg:px-8">
-      {/* Mesh gradient bg */}
+    <section className="relative w-full overflow-hidden py-12 sm:py-16">
+      {/* Mesh gradient bg — full viewport width */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent dark:from-primary/10" />
         <div className="absolute -left-32 top-0 h-[300px] w-[300px] rounded-full bg-primary/8 blur-[80px]" />
@@ -21,7 +21,8 @@ export function BrowseHero({
         <div className="absolute inset-0 dot-pattern opacity-50" />
       </div>
 
-      <div className="mx-auto max-w-7xl">
+      {/* Content constrained to container */}
+      <div className="container">
         <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-3">
           <Icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
         </div>
