@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 
-import { LogoIcon } from "@/components/ui/logo"
+import { Logo } from "@/components/ui/logo"
 
 const footerLinks = [
   {
@@ -23,12 +23,8 @@ export function MinimalFooter() {
     <footer className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/30">
       <div className="container py-8">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <Link
-            to="/"
-            className="flex items-center gap-2 transition-transform hover:scale-105"
-          >
-            <LogoIcon size={20} />
-            <span className="text-lg font-bold gradient-text">TriviaMore</span>
+          <Link to="/" className="transition-transform hover:scale-105">
+            <Logo size="sm" />
           </Link>
 
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-2">

@@ -1,5 +1,26 @@
 import { cn } from "@/lib/utils"
 
+type LogoProps = {
+  size?: "sm" | "md" | "lg"
+  className?: string
+}
+
+const logoSizes = {
+  sm: { icon: 22, text: "text-lg", gap: "gap-2" },
+  md: { icon: 28, text: "text-xl", gap: "gap-2.5" },
+  lg: { icon: 36, text: "text-2xl", gap: "gap-3" },
+}
+
+export function Logo({ size = "md", className }: LogoProps) {
+  const s = logoSizes[size]
+  return (
+    <span className={cn("inline-flex items-center font-bold", s.gap, className)}>
+      <LogoIcon size={s.icon} />
+      <span className={cn("gradient-text", s.text)}>TriviaMore</span>
+    </span>
+  )
+}
+
 type LogoIconProps = {
   className?: string
   size?: number

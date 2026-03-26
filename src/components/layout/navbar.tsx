@@ -18,7 +18,7 @@ import {
 import { useAuth } from "@/hooks/useAuth"
 import { useTheme } from "@/hooks/useTheme"
 import { Button } from "@/components/ui/button"
-import { LogoIcon } from "@/components/ui/logo"
+import { Logo } from "@/components/ui/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -70,10 +70,9 @@ function NavLogo() {
   return (
     <Link
       to="/"
-      className="flex items-center gap-2 font-bold text-lg transition-transform hover:scale-105"
+      className="transition-transform hover:scale-105"
     >
-      <LogoIcon size={26} />
-      <span className="gradient-text">TriviaMore</span>
+      <Logo size="md" />
     </Link>
   )
 }
@@ -210,8 +209,8 @@ function MobileMenu() {
       </SheetTrigger>
       <SheetContent side="right" className="w-72 backdrop-blur-xl bg-background/95">
         <SheetHeader>
-          <SheetTitle className="gradient-text text-left text-lg">
-            TriviaMore
+          <SheetTitle className="text-left">
+            <Logo size="sm" />
           </SheetTitle>
         </SheetHeader>
 
