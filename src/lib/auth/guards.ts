@@ -37,6 +37,18 @@ export const requireAuth = createServerFn({ method: "GET" }).handler(
   },
 )
 
+export const requireAdmin = createServerFn({ method: "GET" }).handler(
+  async (): Promise<AuthUser> => {
+    const user = await requireAuth()
+
+    if (user.role === "STUDENT") {
+      throw redirect({ to: "/" })
+    }
+
+    return user
+  },
+)
+
 export const requireGuest = createServerFn({ method: "GET" }).handler(
   async () => {
     const supabase = createServerSupabaseClient()
