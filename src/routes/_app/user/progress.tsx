@@ -253,8 +253,8 @@ function ProgressPage() {
           <div className="col-span-2 group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <div className="pointer-events-none absolute -right-4 -top-4 h-20 w-20 rounded-full bg-primary/10 blur-[30px]" />
             <div className="relative flex items-center gap-4">
-              <div className="h-24 w-24 shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="shrink-0">
+                <ResponsiveContainer width={96} height={96}>
                   <RadialBarChart
                     cx="50%"
                     cy="50%"
