@@ -24,17 +24,17 @@ function RegisterPage() {
             <Separator />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              O continua con
+            <span className="bg-card/80 px-3 text-muted-foreground backdrop-blur-sm">
+              oppure
             </span>
           </div>
         </div>
         <OAuthButtons />
         <p className="text-center text-sm text-muted-foreground">
-          Hai già un account?{" "}
+          Hai gia' un account?{" "}
           <Link
             to="/auth/login"
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
           >
             Accedi
           </Link>

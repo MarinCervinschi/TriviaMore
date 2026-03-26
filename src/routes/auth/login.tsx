@@ -13,7 +13,7 @@ export const Route = createFileRoute("/auth/login")({
 
 function LoginPage() {
   return (
-    <AuthCard title="Accedi" description="Accedi al tuo account TriviaMore">
+    <AuthCard title="Bentornato" description="Accedi al tuo account TriviaMore">
       <div className="grid gap-6">
         <LoginForm />
         <div className="relative">
@@ -21,8 +21,8 @@ function LoginPage() {
             <Separator />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              O continua con
+            <span className="bg-card/80 px-3 text-muted-foreground backdrop-blur-sm">
+              oppure
             </span>
           </div>
         </div>
@@ -31,7 +31,7 @@ function LoginPage() {
           Non hai un account?{" "}
           <Link
             to="/auth/register"
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
           >
             Registrati
           </Link>
