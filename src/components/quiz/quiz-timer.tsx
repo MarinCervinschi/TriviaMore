@@ -26,17 +26,17 @@ export function QuizTimer({
 
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = secondsLeft % 60
-  const isWarning = secondsLeft < 300 // < 5 min
+  const isWarning = secondsLeft < 300
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-mono font-medium ${
+      className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 font-mono text-sm font-medium transition-colors ${
         isWarning
-          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          ? "bg-gradient-to-r from-red-500/10 to-orange-500/10 text-red-600 dark:text-red-400"
           : "bg-muted text-muted-foreground"
       }`}
     >
-      <Clock className="h-4 w-4" />
+      <Clock className="h-3.5 w-3.5" />
       {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
     </div>
   )

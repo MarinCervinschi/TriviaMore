@@ -42,7 +42,7 @@ export function BookmarkButton({
               variant="ghost"
               size="icon"
               disabled
-              className={cn("h-8 w-8 opacity-50", className)}
+              className={cn("h-9 w-9 rounded-xl opacity-50", className)}
             >
               <Bookmark className="h-4 w-4" />
             </Button>
@@ -65,8 +65,8 @@ export function BookmarkButton({
             onClick={handleToggle}
             disabled={toggleBookmark.isPending}
             className={cn(
-              "h-8 w-8",
-              isBookmarked && "text-blue-600 hover:text-blue-700",
+              "h-9 w-9 rounded-xl transition-all",
+              isBookmarked && "text-primary hover:text-primary/80",
               className,
             )}
           >
