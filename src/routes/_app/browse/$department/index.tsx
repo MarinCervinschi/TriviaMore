@@ -2,6 +2,7 @@ import { useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
+import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
@@ -64,13 +65,19 @@ function DepartmentPage() {
         segments={[{ label: "Esplora", href: "/browse" }]}
         current={department.name}
       />
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">{department.name}</h1>
-        {department.description && (
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            {department.description}
-          </p>
-        )}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">{department.name}</h1>
+          {department.description && (
+            <p className="mt-2 max-w-2xl text-muted-foreground">
+              {department.description}
+            </p>
+          )}
+        </div>
+        <BrowseAdminButton
+          to="/admin/departments/$departmentId"
+          params={{ departmentId: department.id }}
+        />
       </div>
       <BrowseStats
         stats={[

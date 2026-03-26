@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
+import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { FlashcardCard } from "@/components/browse/flashcard-card"
 import { QuizCard } from "@/components/browse/quiz-card"
@@ -71,7 +72,13 @@ function SectionPage() {
         ]}
         current={section.name}
       />
-      <SectionHeader section={section} />
+      <div className="flex items-start justify-between">
+        <SectionHeader section={section} />
+        <BrowseAdminButton
+          to="/admin/sections/$sectionId"
+          params={{ sectionId: section.id }}
+        />
+      </div>
       <div className="grid gap-6 md:grid-cols-2">
         <QuizCard
           questionCount={section.quiz_question_count}
