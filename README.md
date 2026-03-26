@@ -57,6 +57,7 @@ These secrets must be configured in Infisical for the app to work:
 | `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app Client Secret |
 | `GOOGLE_CLIENT_ID` | Server only | Google OAuth app Client ID |
 | `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app Client Secret |
+| `VITE_APP_URL` | Server only | App URL for OAuth redirects (prod only, defaults to `http://localhost:3000`) |
 
 Run `supabase status` to see all local credentials after `supabase start`.
 
@@ -127,6 +128,8 @@ src/
 │   │   ├── about.tsx           About page
 │   │   ├── contact.tsx         Contact page
 │   │   ├── browse/             Browse hierarchy ($department/$course/$class/$section)
+│   │   ├── admin/              Admin panel (CRUD, user management, dashboard)
+│   │   │   └── route.tsx       Auth guard layout (requireAdmin)
 │   │   └── user/               Protected area (dashboard, classes, progress, bookmarks, settings)
 │   │       └── route.tsx       Auth guard layout (requireAuth)
 │   ├── auth/
@@ -137,6 +140,7 @@ src/
 │   └── flashcard/$sessionId.tsx Flashcard (standalone, no layout)
 ├── components/
 │   ├── ui/              34 shadcn/Radix components
+│   ├── admin/           Admin panel (sidebar, forms, search, pagination, sortable headers)
 │   ├── auth/            Auth forms, OAuth buttons, auth card
 │   ├── browse/          Browse cards, breadcrumb, stats, filters
 │   ├── contact/         Contact form
@@ -151,6 +155,7 @@ src/
 │   ├── useTheme         Theme hook (isDark, toggleTheme, etc.)
 │   └── useAuth          Auth hook (user, login, signup, logout)
 ├── lib/
+│   ├── admin/           Admin types, schemas, server functions, queries, mutations
 │   ├── auth/            Auth types, schemas, server functions, guards
 │   ├── browse/          Browse types, server functions, query options, contact schema
 │   ├── flashcard/       Flashcard types, server functions, guest session helpers
