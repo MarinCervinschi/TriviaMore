@@ -1,22 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { Calendar, Settings } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
+import { UserHero } from "@/components/user/user-hero"
+import { UserStatsCard } from "@/components/user/user-stats-card"
 import { userQueries } from "@/lib/user/queries"
-import type { UserProfile } from "@/lib/user/types"
+import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
+import {
+  BookmarkIcon,
+  GraduationCap,
+  TrendingUp,
+  Trophy,
+} from "lucide-react"
 
 export const Route = createFileRoute("/_app/user/settings")({
   loader: ({ context }) =>
@@ -24,38 +26,6 @@ export const Route = createFileRoute("/_app/user/settings")({
   head: () => seoHead({ title: "Impostazioni", noindex: true }),
   component: SettingsPage,
 })
-
-function getRoleLabel(role: string): string {
-  switch (role) {
-    case "SUPERADMIN":
-      return "Super Amministratore"
-    case "ADMIN":
-      return "Amministratore"
-    case "MAINTAINER":
-      return "Manutentore"
-    case "STUDENT":
-      return "Studente"
-    default:
-      return role
-  }
-}
-
-function getDisplayName(profile: UserProfile): string {
-  if (profile.name) return profile.name
-  if (profile.email) return profile.email.split("@")[0]
-  return "Utente Anonimo"
-}
-
-function getInitials(profile: UserProfile): string {
-  if (profile.name) {
-    return profile.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-  }
-  return profile.email?.charAt(0).toUpperCase() ?? "U"
-}
 
 function SettingsPage() {
   const { data: profile } = useSuspenseQuery(userQueries.profile())
@@ -66,39 +36,42 @@ function SettingsPage() {
   const initials = getInitials(profile)
 
   return (
-    <div className="container space-y-8 py-8">
-      <UserBreadcrumb current="Impostazioni" />
+    <div className="space-y-8 pb-8">
+      <UserHero
+        icon={Settings}
+        title="Impostazioni Profilo"
+        description="Gestisci le informazioni del tuo account e le preferenze"
+      />
 
-      <div>
-        <h1 className="text-3xl font-bold">Impostazioni Profilo</h1>
-        <p className="text-muted-foreground">
-          Gestisci le informazioni del tuo account e le preferenze
-        </p>
-      </div>
+      <div className="container space-y-6">
+        <UserBreadcrumb current="Impostazioni" />
 
-      <div className="grid gap-6">
         {/* Profile Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Informazioni Profilo</CardTitle>
-            <CardDescription>
+        <div className="relative overflow-hidden rounded-3xl border bg-card">
+          {/* Decorative orb */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
+
+          <div className="relative p-6 sm:p-8">
+            <h2 className="mb-1 text-xl font-bold">Informazioni Profilo</h2>
+            <p className="mb-6 text-sm text-muted-foreground">
               Le tue informazioni personali e i dettagli dell'account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
+            </p>
+
+            <div className="mb-6 flex items-center gap-4">
+              <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/20">
                 <AvatarImage
                   src={profile.image ?? undefined}
                   alt={displayName}
                 />
-                <AvatarFallback className="text-lg font-bold">
+                <AvatarFallback className="bg-primary/10 text-xl font-bold text-primary">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="text-lg font-semibold">{displayName}</h3>
-                <Badge variant="outline">{getRoleLabel(profile.role)}</Badge>
+                <Badge className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
+                  {getRoleLabel(profile.role)}
+                </Badge>
               </div>
             </div>
 
@@ -110,6 +83,7 @@ function SettingsPage() {
                   value={profile.name ?? ""}
                   placeholder="Il tuo nome completo"
                   disabled
+                  className="rounded-xl bg-muted/30"
                 />
               </div>
               <div className="space-y-2">
@@ -119,79 +93,80 @@ function SettingsPage() {
                   value={profile.email ?? ""}
                   placeholder="La tua email"
                   disabled
+                  className="rounded-xl bg-muted/30"
                 />
               </div>
             </div>
 
-            <div className="pt-4">
-              <Button disabled>Salva Modifiche</Button>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Le modifiche al profilo saranno disponibili in una versione
-                futura
-              </p>
+            <div className="mt-6">
+              <Button disabled className="shadow-lg shadow-primary/25">
+                Salva Modifiche
+              </Button>
+              <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <p className="text-sm text-muted-foreground">
+                  Le modifiche al profilo saranno disponibili in una versione
+                  futura
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Account Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistiche Account</CardTitle>
-            <CardDescription>
-              Informazioni sul tuo utilizzo della piattaforma
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-lg border p-4 text-center">
-                <p className="text-2xl font-bold">
-                  {profile.stats.total_quizzes}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Quiz Completati
-                </p>
-              </div>
-              <div className="rounded-lg border p-4 text-center">
-                <p className="text-2xl font-bold">
-                  {profile.stats.user_classes_count}
-                </p>
-                <p className="text-sm text-muted-foreground">Corsi Seguiti</p>
-              </div>
-              <div className="rounded-lg border p-4 text-center">
-                <p className="text-2xl font-bold">
-                  {profile.stats.bookmarks_count}
-                </p>
-                <p className="text-sm text-muted-foreground">Segnalibri</p>
-              </div>
-              <div className="rounded-lg border p-4 text-center">
-                <p className="text-2xl font-bold">
-                  {profile.stats.average_score}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Punteggio Medio
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Statistiche Account</h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Informazioni sul tuo utilizzo della piattaforma
+          </p>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <UserStatsCard
+              label="Quiz Completati"
+              value={profile.stats.total_quizzes}
+              icon={Trophy}
+              iconColor="text-yellow-500"
+              iconBg="yellow"
+            />
+            <UserStatsCard
+              label="Corsi Seguiti"
+              value={profile.stats.user_classes_count}
+              icon={GraduationCap}
+              iconColor="text-blue-500"
+              iconBg="blue"
+            />
+            <UserStatsCard
+              label="Segnalibri"
+              value={profile.stats.bookmarks_count}
+              icon={BookmarkIcon}
+              iconColor="text-purple-500"
+              iconBg="purple"
+            />
+            <UserStatsCard
+              label="Punteggio Medio"
+              value={profile.stats.average_score}
+              icon={TrendingUp}
+              iconColor="text-green-500"
+              iconBg="green"
+            />
+          </div>
+        </div>
 
         {/* Account Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Dettagli Account</CardTitle>
-            <CardDescription>
+        <div className="relative overflow-hidden rounded-3xl border bg-card">
+          <div className="p-6 sm:p-8">
+            <h2 className="mb-1 text-xl font-bold">Dettagli Account</h2>
+            <p className="mb-6 text-sm text-muted-foreground">
               Informazioni tecniche sul tuo account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+
             <div className="space-y-4">
-              <div className="grid gap-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-medium">ID Utente</Label>
-                <p className="rounded bg-muted p-2 font-mono text-sm">
+                <p className="rounded-xl bg-muted/50 p-3 font-mono text-sm">
                   {profile.id}
                 </p>
               </div>
-              <div className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <Label className="text-sm font-medium">Membro dal</Label>
                 <p className="text-sm">
                   {new Date(profile.created_at).toLocaleDateString("it-IT", {
@@ -201,7 +176,8 @@ function SettingsPage() {
                   })}
                 </p>
               </div>
-              <div className="grid gap-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <Label className="text-sm font-medium">
                   Ultimo aggiornamento
                 </Label>
@@ -214,8 +190,8 @@ function SettingsPage() {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
