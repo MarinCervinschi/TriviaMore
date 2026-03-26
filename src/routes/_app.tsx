@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 import { Navbar } from "@/components/layout/navbar"
-import { LandingFooter, footerSections } from "@/components/landing"
+import { MinimalFooter } from "@/components/layout/minimal-footer"
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -13,7 +13,7 @@ function AppLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <LandingFooter sections={footerSections} />
+      <MinimalFooter />
     </div>
   )
 }

@@ -4,9 +4,11 @@ import {
   BenefitsSection,
   FeaturesSection,
   HeroSection,
+  LandingFooter,
   benefits,
   ctaCardContent,
   features,
+  footerSections,
   heroContent,
 } from "@/components/landing"
 
@@ -20,6 +22,7 @@ function HomePage() {
       <HeroSection {...heroContent} />
       <FeaturesSection features={features} />
       <BenefitsSection benefits={benefits} ctaCard={ctaCardContent} />
+      <LandingFooter sections={footerSections} />
     </>
   )
 }
