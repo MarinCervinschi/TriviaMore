@@ -10,6 +10,7 @@ import {
   Menu,
   Moon,
   Settings,
+  Shield,
   Sun,
   User,
 } from "lucide-react"
@@ -51,6 +52,12 @@ const AUTH_NAV_LINKS: NavLink[] = [
   { to: "/browse", label: "Contenuti", icon: BookOpen },
   { to: "/user/classes", label: "I Miei Corsi", icon: GraduationCap },
 ]
+
+const ADMIN_NAV_LINK: NavLink = {
+  to: "/admin",
+  label: "Gestione",
+  icon: Shield,
+}
 
 const USER_MENU_LINKS: NavLink[] = [
   { to: "/user", label: "Il Mio Profilo", icon: User },
@@ -150,7 +157,7 @@ function AuthSection() {
 function MobileMenu() {
   const [open, setOpen] = useState(false)
   const { isLoading, isAuthenticated, user, logout } = useAuth()
-  const navLinks = isAuthenticated ? AUTH_NAV_LINKS : GUEST_NAV_LINKS
+  const navLinks = useNavLinks()
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -247,9 +254,20 @@ function MobileMenu() {
   )
 }
 
+function useNavLinks() {
+  const { isAuthenticated, user } = useAuth()
+  const isAdmin =
+    user?.role === "SUPERADMIN" ||
+    user?.role === "ADMIN" ||
+    user?.role === "MAINTAINER"
+
+  if (!isAuthenticated) return GUEST_NAV_LINKS
+  if (isAdmin) return [...AUTH_NAV_LINKS, ADMIN_NAV_LINK]
+  return AUTH_NAV_LINKS
+}
+
 export function Navbar() {
-  const { isAuthenticated } = useAuth()
-  const navLinks = isAuthenticated ? AUTH_NAV_LINKS : GUEST_NAV_LINKS
+  const navLinks = useNavLinks()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Library } from "lucide-react"
 
+import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseHero } from "@/components/browse/browse-hero"
 import { BrowseStats } from "@/components/browse/browse-stats"
@@ -35,11 +36,14 @@ function BrowsePage() {
 
   return (
     <div className="container py-8">
-      <BrowseHero
-        icon={Library}
-        title="Esplora i Contenuti"
-        description="Scopri tutti i dipartimenti e i corsi disponibili. Seleziona un dipartimento per iniziare."
-      />
+      <div className="flex items-start justify-between">
+        <BrowseHero
+          icon={Library}
+          title="Esplora i Contenuti"
+          description="Scopri tutti i dipartimenti e i corsi disponibili. Seleziona un dipartimento per iniziare."
+        />
+        <BrowseAdminButton to="/admin/departments" />
+      </div>
       <BrowseStats
         stats={[
           { label: "dipartimenti", value: departments.length },
