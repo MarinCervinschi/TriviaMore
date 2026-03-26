@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { createFileRoute, notFound } from "@tanstack/react-router"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { Heart } from "lucide-react"
 
+import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
@@ -50,6 +51,7 @@ function ClassPage() {
   )
 
   const [search, setSearch] = useState("")
+  const queryClient = useQueryClient()
 
   const { isAuthenticated } = useAuth()
   const addClass = useAddClass()
@@ -63,9 +65,11 @@ function ClassPage() {
   // Track recent class visit for authenticated users
   useEffect(() => {
     if (isAuthenticated && classData?.id) {
-      updateRecentClassFn({ data: { classId: classData.id } })
+      updateRecentClassFn({ data: { classId: classData.id } }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
+      })
     }
-  }, [isAuthenticated, classData?.id])
+  }, [isAuthenticated, classData?.id, queryClient])
 
   if (!classData) return null
 
@@ -112,20 +116,25 @@ function ClassPage() {
             </p>
           )}
         </div>
-        {isAuthenticated && (
-          <Button
-            variant={isSaved ? "default" : "outline"}
-            size="sm"
-            onClick={handleToggleSave}
-            disabled={addClass.isPending || removeClass.isPending}
-            className="shrink-0"
-          >
-            <Heart
-              className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
-            />
-            {isSaved ? "Salvato" : "Salva"}
-          </Button>
-        )}
+        <div className="flex shrink-0 items-center gap-2">
+          <BrowseAdminButton
+            to="/admin/classes/$classId"
+            params={{ classId: classData.id }}
+          />
+          {isAuthenticated && (
+            <Button
+              variant={isSaved ? "default" : "outline"}
+              size="sm"
+              onClick={handleToggleSave}
+              disabled={addClass.isPending || removeClass.isPending}
+            >
+              <Heart
+                className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+              />
+              {isSaved ? "Salvato" : "Salva"}
+            </Button>
+          )}
+        </div>
       </div>
       <BrowseStats
         stats={[
