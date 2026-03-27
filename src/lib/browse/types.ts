@@ -42,6 +42,11 @@ export type ClassWithSections = Class & {
     department: Department
   }
   sections: BrowseSection[]
+  examSimulation?: {
+    sectionId: string
+    totalQuizQuestions: number
+    totalFlashcardQuestions: number
+  }
 }
 
 export type SectionDetail = Section & {

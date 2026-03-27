@@ -67,15 +67,63 @@ export const startFlashcardFn = createServerFn({ method: "POST" })
     return { sessionId }
   })
 
+export const startExamFlashcardFn = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      sectionId: z.string(),
+      cardCount: z.number().min(1).max(100).default(20),
+    }),
+  )
+  .handler(async ({ data }): Promise<{ sessionId: string }> => {
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) throw new Error("Non autenticato")
+
+    // Get class_id from sentinel section
+    const { data: sentinel } = await supabase
+      .from("sections")
+      .select("class_id")
+      .eq("id", data.sectionId)
+      .single()
+    if (!sentinel) throw new Error("Sezione non trovata")
+
+    // Get all real sections in the class
+    const { data: classSections } = await supabase
+      .from("sections")
+      .select("id")
+      .eq("class_id", sentinel.class_id)
+      .neq("name", "Exam Simulation")
+
+    const sectionIds = (classSections ?? []).map((s) => s.id)
+    if (sectionIds.length === 0) throw new Error("Nessuna sezione trovata")
+
+    // Fetch SHORT_ANSWER questions from all sections
+    const { data: questions } = await supabase
+      .from("questions")
+      .select("id")
+      .in("section_id", sectionIds)
+      .eq("question_type", "SHORT_ANSWER")
+
+    if (!questions || questions.length === 0)
+      throw new Error("Nessuna flashcard disponibile per questa classe")
+
+    const params = btoa(`${data.sectionId}:${Math.min(data.cardCount, questions.length)}`)
+    const sessionId = `exam.${Date.now()}.${params}`
+
+    return { sessionId }
+  })
+
 export const getFlashcardSessionFn = createServerFn({ method: "GET" })
   .inputValidator((input: { sessionId: string }) => input)
   .handler(async ({ data }): Promise<FlashcardSession | null> => {
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) return null
 
-    // Parse session ID: user.{timestamp}.{base64(sectionId:cardCount)}
+    // Parse session ID: {prefix}.{timestamp}.{base64(sectionId:cardCount)}
+    // prefix: "user" for section-level, "exam" for class-level
     const parts = data.sessionId.split(".")
-    if (parts.length !== 3 || parts[0] !== "user") return null
+    const prefix = parts[0]
+    if (parts.length !== 3 || (prefix !== "user" && prefix !== "exam"))
+      return null
 
     let sectionId: string
     let cardCount: number
@@ -92,7 +140,34 @@ export const getFlashcardSessionFn = createServerFn({ method: "GET" })
     const section = await fetchSectionWithChain(supabase, sectionId)
     if (!section) return null
 
-    const questions = await fetchFlashcardQuestions(supabase, sectionId)
+    let questions: Awaited<ReturnType<typeof fetchFlashcardQuestions>>
+
+    if (prefix === "exam") {
+      // Exam mode: fetch from all sections in the class
+      const { data: sentinel } = await supabase
+        .from("sections")
+        .select("class_id")
+        .eq("id", sectionId)
+        .single()
+      if (!sentinel) return null
+
+      const { data: classSections } = await supabase
+        .from("sections")
+        .select("id")
+        .eq("class_id", sentinel.class_id)
+        .neq("name", "Exam Simulation")
+
+      const sectionIds = (classSections ?? []).map((s) => s.id)
+      const { data: qs } = await supabase
+        .from("questions")
+        .select("id, content, correct_answer, explanation, difficulty")
+        .in("section_id", sectionIds)
+        .eq("question_type", "SHORT_ANSWER")
+      questions = qs ?? []
+    } else {
+      questions = await fetchFlashcardQuestions(supabase, sectionId)
+    }
+
     if (questions.length === 0) return null
 
     // Use timestamp from sessionId as seed for deterministic selection
