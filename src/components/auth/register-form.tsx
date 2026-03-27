@@ -53,8 +53,8 @@ export function RegisterForm() {
               <FormLabel>Nome utente</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="mario.rossi"
-                  autoComplete="username"
+                  placeholder="Mario Rossi"
+                  autoComplete="name"
                   {...field}
                 />
               </FormControl>
