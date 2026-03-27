@@ -27,6 +27,15 @@ function ScreenshotPlaceholder({ feature }: { feature: ShowcaseFeature }) {
 
       {/* Content based on feature type */}
       {feature.id === "quiz" && <QuizMockup />}
+      {/* TODO: replace with real screenshot when ready */}
+      {/* {feature.id === "dashboard" && (
+        <img
+          src="/screenshots/dashboard.png"
+          alt="Dashboard utente"
+          className="w-full rounded-xl"
+          loading="lazy"
+        />
+      )} */}
       {feature.id === "dashboard" && <DashboardMockup />}
       {feature.id === "flashcards" && <FlashcardMockup />}
       {feature.id === "progress" && <ProgressMockup />}
