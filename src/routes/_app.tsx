@@ -6,6 +6,7 @@ import {
 import { useAuth } from "@/hooks/useAuth"
 import { getSessionFn } from "@/lib/auth/server"
 import { Navbar } from "@/components/layout/navbar"
+import { LumaBar } from "@/components/layout/luma-bar"
 import { MinimalFooter } from "@/components/layout/minimal-footer"
 
 export const Route = createFileRoute("/_app")({
@@ -22,12 +23,15 @@ function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      {!isAuthenticated && <Navbar />}
       <main id="main-content" className="flex-1">
         <Outlet />
       </main>
       {isAuthenticated ? (
-        <MinimalFooter />
+        <>
+          <MinimalFooter />
+          <LumaBar />
+        </>
       ) : (
         <LandingFooter sections={footerSections} />
       )}

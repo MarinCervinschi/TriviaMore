@@ -42,7 +42,7 @@ export const requireAdmin = createServerFn({ method: "GET" }).handler(
     const user = await requireAuth()
 
     if (user.role === "STUDENT") {
-      throw redirect({ to: "/" })
+      throw redirect({ to: "/user" })
     }
 
     return user
@@ -58,7 +58,7 @@ export const requireGuest = createServerFn({ method: "GET" }).handler(
     } = await supabase.auth.getUser()
 
     if (user) {
-      throw redirect({ to: "/" })
+      throw redirect({ to: "/user" })
     }
   },
 )
