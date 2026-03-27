@@ -26,38 +26,34 @@ export function FlashcardCard({
 
   return (
     <>
-      <div className="group relative overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/5 via-card to-card p-6 transition-all duration-300 hover:shadow-xl sm:p-8">
-        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-purple-500/10 blur-[40px]" />
-
-        <div className="relative">
-          <div className="mb-4 inline-flex rounded-2xl bg-purple-500/10 p-3">
-            <Sparkles
-              className="h-7 w-7 text-purple-600"
-              strokeWidth={1.5}
-            />
+      <div className="rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-500/5 via-card to-card p-4 sm:p-5">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex shrink-0 rounded-xl bg-purple-500/10 p-2.5">
+            <Sparkles className="h-5 w-5 text-purple-600" />
           </div>
-          <h3 className="mb-2 text-xl font-semibold tracking-tight">
-            Flashcard
-          </h3>
-          <p className="mb-6 text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {questionCount}
-            </span>{" "}
-            flashcard disponibili. Memorizza i concetti chiave.
-          </p>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold tracking-tight">Flashcard</h3>
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                {questionCount}
+              </span>{" "}
+              carte disponibili
+            </p>
+          </div>
           {isAuthenticated ? (
             <Button
-              className="w-full shadow-sm"
+              size="sm"
+              className="shrink-0 shadow-sm"
               onClick={() => setDialogOpen(true)}
             >
-              Inizia Flashcard
-              <ArrowRight className="ml-2 h-4 w-4" />
+              Inizia
+              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Button>
           ) : (
-            <Button className="w-full shadow-sm" asChild>
-              <Link to="/auth/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Accedi per iniziare
+            <Button size="sm" className="shrink-0 shadow-sm" asChild>
+              <Link to="/auth/register">
+                <LogIn className="mr-1.5 h-3.5 w-3.5" />
+                Registrati
               </Link>
             </Button>
           )}
