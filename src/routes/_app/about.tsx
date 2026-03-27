@@ -39,32 +39,48 @@ const values = [
     title: "Open Source",
     description:
       "Codice completamente aperto su GitHub. Trasparenza e collaborazione guidano ogni decisione.",
+    detail:
+      "Ogni riga di codice, ogni decisione di design, ogni contenuto e' visibile e modificabile. Non crediamo nei muri — crediamo nella condivisione.",
     color: "text-red-500",
     bg: "bg-red-500/10",
+    accent: "from-red-500/10 to-transparent",
+    span: "sm:col-span-2" as const,
   },
   {
     icon: Users,
     title: "Community-Driven",
     description:
-      "Ogni funzionalita' nasce dalle esigenze reali degli studenti. La community guida lo sviluppo.",
+      "La community guida lo sviluppo.",
+    detail:
+      "Ogni funzionalita' nasce da un'esigenza reale. Studenti che hanno affrontato gli stessi esami contribuiscono con domande, correzioni e idee.",
     color: "text-green-500",
     bg: "bg-green-500/10",
+    accent: "from-green-500/10 to-transparent",
+    span: "" as const,
   },
   {
     icon: GraduationCap,
     title: "Focalizzato su UNIMORE",
     description:
-      "Progettato per i corsi dell'Universita' di Modena e Reggio Emilia, con contenuti curati dagli studenti.",
+      "Contenuti mirati per l'Universita' di Modena e Reggio Emilia.",
+    detail:
+      "Non un quiz generico ma materiale organizzato per dipartimento, corso e sezione — esattamente come il tuo piano di studi.",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
+    accent: "from-blue-500/10 to-transparent",
+    span: "" as const,
   },
   {
     icon: Lightbulb,
     title: "Innovazione Continua",
     description:
-      "Tecnologie moderne per un'esperienza di apprendimento coinvolgente e sempre aggiornata.",
+      "Tecnologie moderne per un'esperienza coinvolgente.",
+    detail:
+      "React 19, TanStack Start, Framer Motion, Drizzle ORM — scegliamo gli strumenti migliori per offrire un'esperienza fluida e veloce.",
     color: "text-yellow-500",
     bg: "bg-yellow-500/10",
+    accent: "from-yellow-500/10 to-transparent",
+    span: "sm:col-span-2" as const,
   },
 ]
 
@@ -171,7 +187,7 @@ function AboutPage() {
         </motion.div>
       </section>
 
-      {/* Values */}
+      {/* Values — Bento grid */}
       <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
@@ -185,7 +201,7 @@ function AboutPage() {
 
           <motion.div
             ref={valuesRef}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
             variants={container}
             initial="hidden"
             animate={valuesVisible ? "visible" : "hidden"}
@@ -195,24 +211,33 @@ function AboutPage() {
               return (
                 <motion.div
                   key={value.title}
-                  className="group relative overflow-hidden rounded-2xl border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className={`group relative overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${value.span}`}
                   variants={item}
                 >
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div
-                    className={`mb-4 inline-flex rounded-2xl p-3 ${value.bg}`}
-                  >
-                    <Icon
-                      className={`h-6 w-6 ${value.color}`}
-                      strokeWidth={1.5}
-                    />
+                  {/* Accent gradient on hover */}
+                  <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${value.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
+
+                  <div className={`relative flex flex-col gap-4 p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}>
+                    {/* Icon badge */}
+                    <div className={`inline-flex shrink-0 rounded-2xl p-4 ${value.bg}`}>
+                      <Icon
+                        className={`h-7 w-7 ${value.color}`}
+                        strokeWidth={1.5}
+                      />
+                    </div>
+
+                    <div className="min-w-0">
+                      <h3 className="mb-1.5 text-lg font-semibold tracking-tight">
+                        {value.title}
+                      </h3>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {value.description}
+                      </p>
+                      <p className="mt-3 leading-relaxed text-muted-foreground">
+                        {value.detail}
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold tracking-tight">
-                    {value.title}
-                  </h3>
-                  <p className="leading-relaxed text-muted-foreground">
-                    {value.description}
-                  </p>
                 </motion.div>
               )
             })}
