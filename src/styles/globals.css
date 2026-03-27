@@ -286,6 +286,14 @@ body {
   }
 }
 
+/* Orbit animations for tech stack */
+@keyframes orbit {
+  to { transform: rotate(360deg); }
+}
+@keyframes counter-orbit {
+  to { transform: rotate(-360deg); }
+}
+
 /* Social auth buttons */
 .social-auth-btn {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
