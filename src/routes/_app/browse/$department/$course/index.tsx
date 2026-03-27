@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd, courseJsonLd } from "@/lib/json-ld"
@@ -14,6 +14,7 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { browseQueries } from "@/lib/browse/queries"
+import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/browse/$department/$course/")({
   loader: async ({ context, params }) => {
@@ -61,14 +62,21 @@ function CoursePage() {
   )
 
   const [search, setSearch] = useState("")
+  const [yearFilter, setYearFilter] = useState<number | "all">("all")
 
   if (!course) return null
 
+  const availableYears = useMemo(() => {
+    const years = [...new Set(course.classes.map((c) => c.class_year))].sort()
+    return years
+  }, [course.classes])
+
   const filtered = course.classes.filter(
     (c) =>
-      !search ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.code.toLowerCase().includes(search.toLowerCase()),
+      (yearFilter === "all" || c.class_year === yearFilter) &&
+      (!search ||
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.code.toLowerCase().includes(search.toLowerCase())),
   )
 
   return (
@@ -103,6 +111,36 @@ function CoursePage() {
       <BrowseStats
         stats={[{ label: "classi", value: course.classes.length }]}
       />
+
+      {availableYears.length > 1 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => setYearFilter("all")}
+            className={cn(
+              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+              yearFilter === "all"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
+            )}
+          >
+            Tutti
+          </button>
+          {availableYears.map((year) => (
+            <button
+              key={year}
+              onClick={() => setYearFilter(year)}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                yearFilter === year
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
+              )}
+            >
+              Anno {year}
+            </button>
+          ))}
+        </div>
+      )}
 
       <SearchFilter
         value={search}
