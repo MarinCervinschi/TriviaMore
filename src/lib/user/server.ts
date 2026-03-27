@@ -296,35 +296,7 @@ export const updateProfileFn = createServerFn({ method: "POST" })
     return { success: true }
   })
 
-export const deleteAccountFn = createServerFn({ method: "POST" }).handler(
-  async () => {
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) throw new Error("Non autenticato")
-
-    // Delete user data from all tables (cascade should handle most,
-    // but be explicit for safety)
-    const tables = [
-      "bookmarks",
-      "quiz_attempts",
-      "user_classes",
-      "user_recent_classes",
-      "progress",
-    ] as const
-
-    for (const table of tables) {
-      await supabase.from(table).delete().eq("user_id", user.id)
-    }
-
-    // Delete profile
-    await supabase.from("profiles").delete().eq("id", user.id)
-
-    // Delete auth user — requires admin client or the user deletes themselves
-    // Sign out first, then the Supabase trigger/RLS should handle auth cleanup
-    await supabase.auth.signOut()
-
-    return { success: true }
-  },
-)
+// TODO: implement deleteAccountFn with proper RLS DELETE policies
 
 export const updateRecentClassFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ classId: z.string() }))

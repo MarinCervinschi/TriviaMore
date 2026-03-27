@@ -3,7 +3,6 @@ import { toast } from "sonner"
 
 import {
   addUserClassFn,
-  deleteAccountFn,
   removeUserClassFn,
   toggleBookmarkFn,
   updateProfileFn,
@@ -61,20 +60,7 @@ export function useUpdateProfile() {
   })
 }
 
-export function useDeleteAccount() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: () => deleteAccountFn(),
-    onSuccess: () => {
-      queryClient.clear()
-      window.location.href = "/"
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
+// TODO: implement useDeleteAccount when proper RLS DELETE policies are in place
 
 export function useToggleBookmark() {
   const queryClient = useQueryClient()
