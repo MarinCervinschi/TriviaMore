@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { ArrowRight, BookOpen, Heart, Lock, Sparkles } from "lucide-react"
+import {
+  ArrowRight,
+  BookOpen,
+  GraduationCap,
+  Heart,
+  Lock,
+  LogIn,
+  Sparkles,
+} from "lucide-react"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
@@ -19,6 +27,13 @@ import { browseQueries } from "@/lib/browse/queries"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
 import { updateRecentClassFn } from "@/lib/user/server"
+
+const StartExamDialog = lazy(
+  () =>
+    import("@/components/exam/start-exam-dialog").then((m) => ({
+      default: m.StartExamDialog,
+    })),
+)
 
 export const Route = createFileRoute(
   "/_app/browse/$department/$course/$class/",
@@ -162,6 +177,14 @@ function ClassPage() {
           { label: "domande", value: totalQuestions },
         ]}
       />
+      {classData.examSimulation &&
+        (classData.examSimulation.totalQuizQuestions > 0 ||
+          classData.examSimulation.totalFlashcardQuestions > 0) && (
+          <ExamSimulationSection
+            examSimulation={classData.examSimulation}
+            isAuthenticated={isAuthenticated}
+          />
+        )}
       <SearchFilter
         value={search}
         onChange={setSearch}
@@ -226,6 +249,79 @@ function ClassPage() {
             )
           })}
         </BrowseTable>
+      )}
+    </div>
+  )
+}
+
+function ExamSimulationSection({
+  examSimulation,
+  isAuthenticated,
+}: {
+  examSimulation: NonNullable<
+    import("@/lib/browse/types").ClassWithSections["examSimulation"]
+  >
+  isAuthenticated: boolean
+}) {
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  return (
+    <div className="mb-6">
+      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-card to-card p-4 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex shrink-0 rounded-xl bg-amber-500/10 p-2.5">
+              <GraduationCap className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="font-semibold tracking-tight">
+                Simulazione Esame
+              </h2>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                {examSimulation.totalQuizQuestions > 0 && (
+                  <Badge className="gap-1 bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
+                    <BookOpen className="h-3 w-3" />
+                    {examSimulation.totalQuizQuestions} quiz
+                  </Badge>
+                )}
+                {examSimulation.totalFlashcardQuestions > 0 && (
+                  <Badge className="gap-1 bg-purple-500/10 text-purple-600 border-purple-500/20 text-xs">
+                    <Sparkles className="h-3 w-3" />
+                    {examSimulation.totalFlashcardQuestions} flashcard
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+          {isAuthenticated ? (
+            <Button
+              size="sm"
+              className="shrink-0 shadow-sm"
+              onClick={() => setDialogOpen(true)}
+            >
+              Simula Esame
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button size="sm" className="shrink-0 shadow-sm" asChild>
+              <Link to="/auth/register">
+                <LogIn className="mr-2 h-4 w-4" />
+                Registrati per iniziare
+              </Link>
+            </Button>
+          )}
+        </div>
+      </div>
+      {dialogOpen && (
+        <Suspense>
+          <StartExamDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            sectionId={examSimulation.sectionId}
+            maxQuizQuestions={examSimulation.totalQuizQuestions}
+            maxFlashcardQuestions={examSimulation.totalFlashcardQuestions}
+          />
+        </Suspense>
       )}
     </div>
   )
