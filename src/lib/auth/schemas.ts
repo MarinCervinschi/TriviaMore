@@ -6,20 +6,12 @@ const userBaseSchema = z.object({
     .min(2, "Il nome deve essere di almeno 2 caratteri")
     .max(50, "Il nome non può superare i 50 caratteri")
     .regex(
-      /^[a-zA-Z0-9._]+$/,
-      "Il nome può contenere solo lettere, numeri, punti e underscore",
+      /^[\p{L}\p{M}][\p{L}\p{M}\s'.,-]*[\p{L}\p{M}.]$/u,
+      "Il nome deve iniziare e finire con una lettera e può contenere spazi, apostrofi e trattini",
     )
     .refine(
-      (name) => !name.startsWith(".") && !name.endsWith("."),
-      "Il nome non può iniziare o finire con un punto",
-    )
-    .refine(
-      (name) => !name.startsWith("_") && !name.endsWith("_"),
-      "Il nome non può iniziare o finire con un underscore",
-    )
-    .refine(
-      (name) => !/[._]{2,}/.test(name),
-      "Il nome non può contenere punti o underscore consecutivi",
+      (name) => !/\s{2,}/.test(name),
+      "Il nome non può contenere spazi consecutivi",
     ),
   email: z
     .email("Email non valida")
