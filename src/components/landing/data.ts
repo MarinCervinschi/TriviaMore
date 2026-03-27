@@ -3,7 +3,6 @@ import {
   BookOpen,
   CheckCircle,
   Github,
-  Layers,
   Target,
   Timer,
   Users,
@@ -108,24 +107,24 @@ export const features: FeatureCard[] = [
 
 export const benefits: BenefitItem[] = [
   {
-    title: "Quiz interattivi con timer",
+    title: "Preparazione che funziona",
     description:
-      "Metti alla prova le tue conoscenze con quiz cronometrati, feedback istantaneo e spiegazioni dettagliate.",
+      "Domande scritte da chi ha gia' superato gli esami, non estratte da manuali generici. Studi quello che conta davvero.",
   },
   {
-    title: "Flashcard intelligenti",
+    title: "Trova subito il tuo corso",
     description:
-      "Memorizza i concetti chiave con il nostro sistema di flashcard e salva le domande più difficili nei preferiti.",
+      "Contenuti organizzati per dipartimento, corso e sezione — esattamente come il tuo piano di studi UNIMORE.",
   },
   {
-    title: "Tracciamento progressi",
+    title: "Studia come preferisci",
     description:
-      "Monitora i tuoi miglioramenti con analisi dettagliate e statistiche personalizzate sui tuoi risultati.",
+      "Quiz con timer per simulare l'esame, modalita' studio per ripassare con calma, flashcard per memorizzare i concetti chiave.",
   },
   {
-    title: "Non a scopo di lucro",
+    title: "Zero costi, zero pubblicita'",
     description:
-      "Sviluppata solo per supporto reciproco e come palestra per mettere in pratica competenze tecniche. Completamente gratuita.",
+      "Nessun paywall, nessun abbonamento. Tutto il materiale e' accessibile subito, gratis, per sempre.",
   },
 ]
 
@@ -171,21 +170,6 @@ export const showcaseFeatures: ShowcaseFeature[] = [
     ],
     iconColor: "text-green-600",
     iconBg: "bg-green-500/10",
-  },
-  {
-    id: "flashcards",
-    icon: Layers,
-    title: "Flashcard intelligenti",
-    description:
-      "Memorizza i concetti chiave con il nostro sistema di flashcard con animazione flip 3D.",
-    highlights: [
-      "Animazione flip 3D interattiva",
-      "Salva le domande difficili nei preferiti",
-      "Ripasso mirato per argomento",
-      "Navigazione con tastiera e swipe",
-    ],
-    iconColor: "text-purple-600",
-    iconBg: "bg-purple-500/10",
   },
   {
     id: "progress",
