@@ -335,16 +335,22 @@ function DockProfileIcon({
 
 function useHideAtBottom(offset = 80) {
   const [hidden, setHidden] = useState(false)
+  const lastScrollY = useRef(0)
 
   const check = useCallback(() => {
-    const scrollBottom = window.innerHeight + window.scrollY
+    const currentY = window.scrollY
+    const scrollingDown = currentY > lastScrollY.current
+    lastScrollY.current = currentY
+
+    const scrollBottom = window.innerHeight + currentY
     const atBottom = scrollBottom >= document.documentElement.scrollHeight - offset
-    setHidden(atBottom)
+
+    // Only hide when actively scrolling down AND at the bottom
+    setHidden(scrollingDown && atBottom)
   }, [offset])
 
   useEffect(() => {
     window.addEventListener("scroll", check, { passive: true })
-    check()
     return () => window.removeEventListener("scroll", check)
   }, [check])
 
