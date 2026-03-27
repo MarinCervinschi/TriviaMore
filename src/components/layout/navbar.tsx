@@ -8,15 +8,12 @@ import {
   LogOut,
   Mail,
   Menu,
-  Moon,
   Settings,
   Shield,
-  Sun,
   User,
 } from "lucide-react"
 
 import { useAuth } from "@/hooks/useAuth"
-import { useTheme } from "@/hooks/useTheme"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -37,6 +34,7 @@ import {
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ThemeToggle } from "./theme-toggle"
 
 import type { LucideIcon } from "lucide-react"
 
@@ -74,37 +72,6 @@ function NavLogo() {
     >
       <Logo size="md" />
     </Link>
-  )
-}
-
-function ThemeToggle() {
-  const { mounted, isDark, toggleTheme } = useTheme()
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-10 w-10 rounded-xl"
-        disabled
-      />
-    )
-  }
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="h-10 w-10 rounded-xl"
-      onClick={toggleTheme}
-    >
-      {isDark ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
-      <span className="sr-only">Cambia tema</span>
-    </Button>
   )
 }
 
