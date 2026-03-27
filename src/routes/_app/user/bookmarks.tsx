@@ -3,7 +3,7 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Bookmark, Eye, EyeOff } from "lucide-react"
+import { Bookmark, ChevronDown } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,16 +31,6 @@ export const Route = createFileRoute("/_app/user/bookmarks")({
 function BookmarksPage() {
   const { data: bookmarks } = useSuspenseQuery(userQueries.bookmarks())
   const toggleBookmark = useToggleBookmark()
-  const [visibleAnswers, setVisibleAnswers] = useState<Set<string>>(new Set())
-
-  const toggleAnswerVisibility = (questionId: string) => {
-    setVisibleAnswers((prev) => {
-      const next = new Set(prev)
-      if (next.has(questionId)) next.delete(questionId)
-      else next.add(questionId)
-      return next
-    })
-  }
 
   return (
     <div className="space-y-8 pb-8">
@@ -67,15 +57,11 @@ function BookmarksPage() {
             actionHref="/browse"
           />
         ) : (
-          <div className="grid gap-6">
+          <div className="space-y-3">
             {bookmarks.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.question_id}
                 bookmark={bookmark}
-                isAnswerVisible={visibleAnswers.has(bookmark.question_id)}
-                onToggleAnswer={() =>
-                  toggleAnswerVisibility(bookmark.question_id)
-                }
                 onRemoveBookmark={() =>
                   toggleBookmark.mutate(bookmark.question_id)
                 }
@@ -90,165 +76,146 @@ function BookmarksPage() {
 
 function BookmarkCard({
   bookmark,
-  isAnswerVisible,
-  onToggleAnswer,
   onRemoveBookmark,
 }: {
   bookmark: UserBookmark
-  isAnswerVisible: boolean
-  onToggleAnswer: () => void
   onRemoveBookmark: () => void
 }) {
+  const [open, setOpen] = useState(false)
   const { question } = bookmark
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:shadow-xl">
-      {/* Gradient top accent */}
-      <div className="h-1 w-full bg-gradient-to-r from-primary to-orange-400" />
-
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-4 flex items-start justify-between">
-          <div className="flex-1 space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                className={`rounded-full ${getDifficultyColor(question.difficulty)}`}
-              >
-                {getDifficultyLabel(question.difficulty)}
-              </Badge>
-              <Badge variant="outline" className="rounded-full">
-                {getQuestionTypeLabel(question.question_type)}
-              </Badge>
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                {question.section.name}
-              </h3>
-              <div className="flex flex-wrap gap-1">
-                <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                  {question.section.class.name}
-                </span>
-                <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                  {question.section.class.course.name}
-                </span>
-                <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                  {question.section.class.course.department.name}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              Salvato il{" "}
-              {new Date(bookmark.created_at).toLocaleDateString("it-IT")}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemoveBookmark}
-              title="Rimuovi segnalibro"
-              className="rounded-xl"
-            >
-              <Bookmark className="h-4 w-4 fill-current" />
-            </Button>
-          </div>
+    <div className="overflow-hidden rounded-2xl border bg-card">
+      {/* Collapsed header — always visible */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-muted/30"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <span className="line-clamp-1 text-sm font-medium">
+            {question.content.slice(0, 100)}
+            {question.content.length > 100 && "..."}
+          </span>
         </div>
-
-        {/* Question content */}
-        <div className="mb-4 text-lg font-medium">
-          <MarkdownRenderer
-            content={question.content}
-            className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+        <div className="flex shrink-0 items-center gap-2">
+          <Badge
+            className={`rounded-full ${getDifficultyColor(question.difficulty)}`}
+          >
+            {getDifficultyLabel(question.difficulty)}
+          </Badge>
+          <Badge variant="outline" className="rounded-full">
+            {getQuestionTypeLabel(question.question_type)}
+          </Badge>
+          <ChevronDown
+            className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
         </div>
+      </button>
 
-        {/* Options */}
-        {question.options && (
-          <div className="mb-4 space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">
-              Opzioni:
-            </p>
-            <ul className="space-y-2">
+      {/* Expanded content */}
+      {open && (
+        <div className="border-t px-4 pb-4 pt-3 space-y-4">
+          {/* Meta info */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-1">
+              <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
+                {question.section.name}
+              </span>
+              <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
+                {question.section.class.name}
+              </span>
+              <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
+                {question.section.class.course.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                Salvato il{" "}
+                {new Date(bookmark.created_at).toLocaleDateString("it-IT")}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRemoveBookmark()
+                }}
+                title="Rimuovi segnalibro"
+                className="rounded-xl"
+              >
+                <Bookmark className="h-4 w-4 fill-current" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Question content */}
+          <div className="text-sm">
+            <MarkdownRenderer
+              content={question.content}
+              className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+            />
+          </div>
+
+          {/* Options */}
+          {question.options && (
+            <ul className="space-y-1.5">
               {parseOptions(question.options).map((option, index) => (
                 <li
                   key={option.id}
                   className={`rounded-xl p-3 text-sm ${
                     isCorrectOption(option.id, question.correct_answer)
-                      ? "border-l-4 border-green-500 bg-green-500/5 dark:bg-green-900/20"
+                      ? "bg-green-500/10 text-green-700 dark:text-green-400"
                       : "bg-muted/30"
                   }`}
                 >
-                  <span className="mr-2 font-medium">
+                  <span className="mr-2 font-semibold">
                     {String.fromCharCode(65 + index)})
                   </span>
                   {option.text}
                   {isCorrectOption(option.id, question.correct_answer) && (
-                    <span className="ml-2 text-xs font-medium text-green-600 dark:text-green-400">
+                    <span className="ml-2 text-xs font-medium">
                       &#10003; Corretta
                     </span>
                   )}
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          )}
 
-        {/* Short answer */}
-        {question.question_type === "SHORT_ANSWER" && (
-          <div className="mb-4 space-y-3">
-            <Button
-              onClick={onToggleAnswer}
-              variant={isAnswerVisible ? "secondary" : "default"}
-              size="sm"
-              className="w-full rounded-xl sm:w-auto"
-            >
-              {isAnswerVisible ? (
-                <>
-                  <EyeOff className="mr-2 h-4 w-4" />
-                  Nascondi risposta
-                </>
-              ) : (
-                <>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Mostra risposta
-                </>
-              )}
-            </Button>
-
-            {isAnswerVisible && (
-              <div className="rounded-xl border-l-4 border-green-400 bg-green-500/5 p-4 dark:bg-green-900/20">
-                <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                  Risposta corretta:
-                </p>
-                <div className="mt-1 text-sm text-green-700 dark:text-green-300">
-                  <MarkdownRenderer
-                    content={
-                      question.correct_answer[0] ??
-                      "Nessuna risposta disponibile"
-                    }
-                    className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-                  />
-                </div>
+          {/* Short answer */}
+          {question.question_type === "SHORT_ANSWER" && (
+            <div className="rounded-xl bg-green-500/10 p-4">
+              <p className="mb-1 text-xs font-semibold text-green-600 dark:text-green-400">
+                Risposta corretta
+              </p>
+              <div className="text-sm text-green-700 dark:text-green-300">
+                <MarkdownRenderer
+                  content={
+                    question.correct_answer[0] ??
+                    "Nessuna risposta disponibile"
+                  }
+                  className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                />
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Explanation */}
-        {question.explanation && (
-          <div className="rounded-xl border-l-4 border-blue-400 bg-blue-500/5 p-4 dark:bg-blue-900/20">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-              Spiegazione:
-            </p>
-            <div className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-              <MarkdownRenderer
-                content={question.explanation}
-                className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-              />
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* Explanation */}
+          {question.explanation && (
+            <div className="rounded-xl bg-blue-500/10 p-4">
+              <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                Spiegazione
+              </p>
+              <div className="text-sm text-blue-700 dark:text-blue-300">
+                <MarkdownRenderer
+                  content={question.explanation}
+                  className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
