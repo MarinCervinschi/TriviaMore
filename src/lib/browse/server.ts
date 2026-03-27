@@ -165,10 +165,53 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
       }),
     )
 
+    // Exam simulation: find or create sentinel section
+    const totalQuizQuestions = sectionsWithCounts.reduce(
+      (sum, s) => sum + s.quiz_question_count, 0,
+    )
+    const totalFlashcardQuestions = sectionsWithCounts.reduce(
+      (sum, s) => sum + s.flashcard_question_count, 0,
+    )
+
+    let examSimulation: ClassWithSections["examSimulation"] = undefined
+
+    if (totalQuizQuestions > 0 || totalFlashcardQuestions > 0) {
+      let { data: examSection } = await supabase
+        .from("sections")
+        .select("id")
+        .eq("class_id", classData.id)
+        .eq("name", "Exam Simulation")
+        .maybeSingle()
+
+      if (!examSection) {
+        const { data: newSection } = await supabase
+          .from("sections")
+          .insert({
+            id: crypto.randomUUID(),
+            class_id: classData.id,
+            name: "Exam Simulation",
+            is_public: true,
+            position: 9999,
+          })
+          .select("id")
+          .single()
+        examSection = newSection
+      }
+
+      if (examSection) {
+        examSimulation = {
+          sectionId: examSection.id,
+          totalQuizQuestions,
+          totalFlashcardQuestions,
+        }
+      }
+    }
+
     return {
       ...classData,
       course: { ...course, department },
       sections: sectionsWithCounts,
+      examSimulation,
     }
   })
 
