@@ -3,8 +3,10 @@ import { toast } from "sonner"
 
 import {
   addUserClassFn,
+  deleteAccountFn,
   removeUserClassFn,
   toggleBookmarkFn,
+  updateProfileFn,
 } from "./server"
 
 export function useAddClass() {
@@ -35,6 +37,38 @@ export function useRemoveClass() {
       queryClient.invalidateQueries({ queryKey: ["user", "class-saved"] })
       queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
       toast.success("Classe rimossa dalla tua lista")
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { name: string; image?: string | null }) =>
+      updateProfileFn({ data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
+      queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
+      toast.success("Profilo aggiornato")
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => deleteAccountFn(),
+    onSuccess: () => {
+      queryClient.clear()
+      window.location.href = "/"
     },
     onError: (error: Error) => {
       toast.error(error.message)
