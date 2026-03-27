@@ -41,6 +41,7 @@ export function useAuth() {
     mutationFn: logoutFn,
     onSuccess: () => {
       queryClient.clear()
+      window.location.href = "/"
     },
   })
 
