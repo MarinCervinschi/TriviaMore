@@ -4,10 +4,16 @@ import {
   footerSections,
 } from "@/components/landing"
 import { useAuth } from "@/hooks/useAuth"
+import { getSessionFn } from "@/lib/auth/server"
 import { Navbar } from "@/components/layout/navbar"
 import { MinimalFooter } from "@/components/layout/minimal-footer"
 
 export const Route = createFileRoute("/_app")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["auth", "session"],
+      queryFn: () => getSessionFn(),
+    }),
   component: AppLayout,
 })
 
