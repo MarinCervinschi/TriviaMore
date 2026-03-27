@@ -3,8 +3,10 @@ import { cn } from "@/lib/utils";
 function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 	return (
 		<div
+			aria-hidden="true"
+			role="presentation"
 			className={cn(
-				"animate-pulse rounded-xl bg-muted",
+				"shimmer rounded-xl",
 				className
 			)}
 			{...props}

@@ -1,3 +1,13 @@
+import { motion } from "framer-motion"
+
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { useScrollReveal } from "@/hooks/useScrollReveal"
+import {
+  fadeInUp,
+  staggerContainer,
+  staggerItem,
+  withReducedMotion,
+} from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import type { FeatureCard } from "./data"
 
@@ -33,6 +43,14 @@ function FeatureCardComponent({
 }
 
 export function FeaturesSection({ features }: { features: FeatureCard[] }) {
+  const prefersReduced = useReducedMotion()
+  const { ref: headingRef, isVisible: headingVisible } = useScrollReveal()
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal()
+
+  const fadeUp = withReducedMotion(fadeInUp, prefersReduced)
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
+
   return (
     <section className="relative py-20 sm:py-28">
       {/* Background */}
@@ -42,7 +60,13 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-16 text-center">
+        <motion.div
+          ref={headingRef}
+          className="mb-16 text-center"
+          variants={fadeUp}
+          initial="hidden"
+          animate={headingVisible ? "visible" : "hidden"}
+        >
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">
             Funzionalita'
           </p>
@@ -53,18 +77,25 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
             Strumenti pensati per uno studio efficace e una preparazione
             ottimale agli esami.
           </p>
-        </div>
+        </motion.div>
 
         {/* Bento-style grid: 2 large + 2 small */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+        <motion.div
+          ref={gridRef}
+          className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2"
+          variants={container}
+          initial="hidden"
+          animate={gridVisible ? "visible" : "hidden"}
+        >
           {features.map((feature, i) => (
-            <FeatureCardComponent
-              key={feature.title}
-              feature={feature}
-              className={i < 2 ? "md:min-h-[220px]" : ""}
-            />
+            <motion.div key={feature.title} variants={item}>
+              <FeatureCardComponent
+                feature={feature}
+                className={i < 2 ? "md:min-h-[220px]" : ""}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
