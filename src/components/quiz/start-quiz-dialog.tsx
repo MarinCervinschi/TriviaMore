@@ -21,21 +21,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { quizQueries } from "@/lib/quiz/queries"
-import { startQuizFn, generateGuestQuizFn } from "@/lib/quiz/server"
-import { setGuestQuizSession } from "@/lib/quiz/session"
+import { startQuizFn } from "@/lib/quiz/server"
 
 export function StartQuizDialog({
   open,
   onOpenChange,
   sectionId,
   maxQuestions,
-  isAuthenticated,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   sectionId: string
   maxQuestions: number
-  isAuthenticated: boolean
 }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -54,40 +51,21 @@ export function StartQuizDialog({
   const handleStart = async () => {
     setLoading(true)
     try {
-      if (isAuthenticated) {
-        const result = await startQuizFn({
-          data: {
-            sectionId,
-            questionCount: Math.min(
-              parseInt(questionCount),
-              maxQuestions,
-            ),
-            timeLimit:
-              timeLimit === "unlimited" ? null : parseInt(timeLimit),
-            quizMode,
-            evaluationModeId: evalModeId,
-          },
-        })
-        onOpenChange(false)
-        navigate({ to: "/quiz/$quizId", params: { quizId: result.quizId } })
-      } else {
-        const quiz = await generateGuestQuizFn({
-          data: {
-            sectionId,
-            questionCount: Math.min(
-              parseInt(questionCount),
-              maxQuestions,
-            ),
-            timeLimit:
-              timeLimit === "unlimited" ? undefined : parseInt(timeLimit),
-          },
-        })
-        if (quiz) {
-          setGuestQuizSession(quiz.id, quiz)
-          onOpenChange(false)
-          navigate({ to: "/quiz/$quizId", params: { quizId: quiz.id } })
-        }
-      }
+      const result = await startQuizFn({
+        data: {
+          sectionId,
+          questionCount: Math.min(
+            parseInt(questionCount),
+            maxQuestions,
+          ),
+          timeLimit:
+            timeLimit === "unlimited" ? null : parseInt(timeLimit),
+          quizMode,
+          evaluationModeId: evalModeId,
+        },
+      })
+      onOpenChange(false)
+      navigate({ to: "/quiz/$quizId", params: { quizId: result.quizId } })
     } catch (error) {
       console.error("Failed to start quiz:", error)
     } finally {
@@ -142,49 +120,45 @@ export function StartQuizDialog({
             </Select>
           </div>
 
-          {isAuthenticated && (
-            <>
-              <div className="space-y-2">
-                <Label>Modalità</Label>
-                <Select
-                  value={quizMode}
-                  onValueChange={(v) =>
-                    setQuizMode(v as "STUDY" | "EXAM_SIMULATION")
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="STUDY">Studio</SelectItem>
-                    <SelectItem value="EXAM_SIMULATION">
-                      Simulazione Esame
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <div className="space-y-2">
+            <Label>Modalità</Label>
+            <Select
+              value={quizMode}
+              onValueChange={(v) =>
+                setQuizMode(v as "STUDY" | "EXAM_SIMULATION")
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="STUDY">Studio</SelectItem>
+                <SelectItem value="EXAM_SIMULATION">
+                  Simulazione Esame
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-              {evalModes && evalModes.length > 1 && (
-                <div className="space-y-2">
-                  <Label>Valutazione</Label>
-                  <Select
-                    value={evalModeId ?? evalModes[0]?.id}
-                    onValueChange={setEvalModeId}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {evalModes.map((mode) => (
-                        <SelectItem key={mode.id} value={mode.id}>
-                          {mode.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </>
+          {evalModes && evalModes.length > 1 && (
+            <div className="space-y-2">
+              <Label>Valutazione</Label>
+              <Select
+                value={evalModeId ?? evalModes[0]?.id}
+                onValueChange={setEvalModeId}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {evalModes.map((mode) => (
+                    <SelectItem key={mode.id} value={mode.id}>
+                      {mode.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
         </div>
 

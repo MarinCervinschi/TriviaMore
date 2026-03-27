@@ -1,7 +1,9 @@
 import { lazy, Suspense, useState } from "react"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { Link } from "@tanstack/react-router"
+import { ArrowRight, LogIn, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/useAuth"
 
 const StartFlashcardDialog = lazy(
   () =>
@@ -13,12 +15,11 @@ const StartFlashcardDialog = lazy(
 export function FlashcardCard({
   questionCount,
   sectionId,
-  isAuthenticated,
 }: {
   questionCount: number
   sectionId: string
-  isAuthenticated: boolean
 }) {
+  const { isAuthenticated } = useAuth()
   const [dialogOpen, setDialogOpen] = useState(false)
 
   if (questionCount === 0) return null
@@ -44,13 +45,22 @@ export function FlashcardCard({
             </span>{" "}
             flashcard disponibili. Memorizza i concetti chiave.
           </p>
-          <Button
-            className="w-full shadow-sm"
-            onClick={() => setDialogOpen(true)}
-          >
-            Inizia Flashcard
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          {isAuthenticated ? (
+            <Button
+              className="w-full shadow-sm"
+              onClick={() => setDialogOpen(true)}
+            >
+              Inizia Flashcard
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button className="w-full shadow-sm" asChild>
+              <Link to="/auth/login">
+                <LogIn className="mr-2 h-4 w-4" />
+                Accedi per iniziare
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
       {dialogOpen && (
@@ -60,7 +70,6 @@ export function FlashcardCard({
             onOpenChange={setDialogOpen}
             sectionId={sectionId}
             maxQuestions={questionCount}
-            isAuthenticated={isAuthenticated}
           />
         </Suspense>
       )}

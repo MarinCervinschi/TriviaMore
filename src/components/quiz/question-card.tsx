@@ -36,13 +36,11 @@ export function QuestionCard({
   questionNumber,
   selectedAnswers,
   onAnswerChange,
-  isGuest = false,
 }: {
   question: QuizQuestion
   questionNumber: number
   selectedAnswers: string[]
   onAnswerChange: (answers: string[]) => void
-  isGuest?: boolean
 }) {
   const options = parseOptions(question.options)
 
@@ -74,7 +72,7 @@ export function QuestionCard({
             {getDifficultyLabel(question.difficulty)}
           </Badge>
         </div>
-        <BookmarkButton questionId={question.id} isGuest={isGuest} />
+        <BookmarkButton questionId={question.id} />
       </div>
 
       {/* Question content */}

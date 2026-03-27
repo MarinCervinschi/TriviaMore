@@ -13,11 +13,9 @@ import { cn } from "@/lib/utils"
 
 export function BookmarkButton({
   questionId,
-  isGuest,
   className,
 }: {
   questionId: string
-  isGuest: boolean
   className?: string
 }) {
   const toggleBookmark = useToggleBookmark()
@@ -25,34 +23,10 @@ export function BookmarkButton({
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isGuest) return
-
     setIsBookmarked((prev) => !prev)
     toggleBookmark.mutate(questionId, {
       onError: () => setIsBookmarked((prev) => !prev),
     })
-  }
-
-  if (isGuest) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled
-              className={cn("h-9 w-9 rounded-xl opacity-50", className)}
-            >
-              <Bookmark className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Accedi per salvare le domande</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    )
   }
 
   return (

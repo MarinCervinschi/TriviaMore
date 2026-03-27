@@ -9,35 +9,18 @@ import { FlashcardResults } from "@/components/flashcard/flashcard-results"
 import { FlashcardSidebar } from "@/components/flashcard/flashcard-sidebar"
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import { getFlashcardSessionFn } from "@/lib/flashcard/server"
-import {
-  getGuestFlashcardSession,
-  clearGuestFlashcardSession,
-} from "@/lib/flashcard/session"
 import type { FlashcardSession } from "@/lib/flashcard/types"
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
   loader: async ({ params }) => {
-    // Guest sessions are loaded client-side from sessionStorage
-    if (params.sessionId.startsWith("guest-")) return null
-    // Auth sessions have format user.{timestamp}.{base64}
     return getFlashcardSessionFn({ data: { sessionId: params.sessionId } })
   },
   component: FlashcardPage,
 })
 
 function FlashcardPage() {
-  const { sessionId } = Route.useParams()
-  const isGuest = sessionId.startsWith("guest-")
   const navigate = useNavigate()
-  const loaderData = Route.useLoaderData()
-
-  const [guestSession] = useState<FlashcardSession | null>(() =>
-    isGuest ? getGuestFlashcardSession(sessionId) : null,
-  )
-
-  const session: FlashcardSession | null = isGuest
-    ? guestSession
-    : (loaderData as FlashcardSession | null)
+  const session = Route.useLoaderData() as FlashcardSession | null
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set())
@@ -87,12 +70,8 @@ function FlashcardPage() {
   }, [])
 
   const confirmExit = useCallback(() => {
-    if (isGuest) {
-      clearGuestFlashcardSession(sessionId)
-    }
-    // Navigate back to home — no section route info available in flashcard context
     navigate({ to: "/" })
-  }, [isGuest, sessionId, navigate])
+  }, [navigate])
 
   const handleRetry = useMemo(() => {
     if (!session) return undefined

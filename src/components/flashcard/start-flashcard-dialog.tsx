@@ -19,21 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { startFlashcardFn, generateGuestFlashcardFn } from "@/lib/flashcard/server"
-import { setGuestFlashcardSession } from "@/lib/flashcard/session"
+import { startFlashcardFn } from "@/lib/flashcard/server"
 
 export function StartFlashcardDialog({
   open,
   onOpenChange,
   sectionId,
   maxQuestions,
-  isAuthenticated,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   sectionId: string
   maxQuestions: number
-  isAuthenticated: boolean
 }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -42,34 +39,17 @@ export function StartFlashcardDialog({
   const handleStart = async () => {
     setLoading(true)
     try {
-      if (isAuthenticated) {
-        const result = await startFlashcardFn({
-          data: {
-            sectionId,
-            cardCount: Math.min(parseInt(cardCount), maxQuestions),
-          },
-        })
-        onOpenChange(false)
-        navigate({
-          to: "/flashcard/$sessionId",
-          params: { sessionId: result.sessionId },
-        })
-      } else {
-        const session = await generateGuestFlashcardFn({
-          data: {
-            sectionId,
-            cardCount: Math.min(parseInt(cardCount), maxQuestions),
-          },
-        })
-        if (session) {
-          setGuestFlashcardSession(session.id, session)
-          onOpenChange(false)
-          navigate({
-            to: "/flashcard/$sessionId",
-            params: { sessionId: session.id },
-          })
-        }
-      }
+      const result = await startFlashcardFn({
+        data: {
+          sectionId,
+          cardCount: Math.min(parseInt(cardCount), maxQuestions),
+        },
+      })
+      onOpenChange(false)
+      navigate({
+        to: "/flashcard/$sessionId",
+        params: { sessionId: result.sessionId },
+      })
     } catch (error) {
       console.error("Failed to start flashcard session:", error)
     } finally {
