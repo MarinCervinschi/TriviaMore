@@ -12,13 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
 import { startFlashcardFn } from "@/lib/flashcard/server"
 
 export function StartFlashcardDialog({
@@ -34,7 +28,7 @@ export function StartFlashcardDialog({
 }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [cardCount, setCardCount] = useState("20")
+  const [cardCount, setCardCount] = useState(Math.min(20, maxQuestions))
 
   const handleStart = async () => {
     setLoading(true)
@@ -42,7 +36,7 @@ export function StartFlashcardDialog({
       const result = await startFlashcardFn({
         data: {
           sectionId,
-          cardCount: Math.min(parseInt(cardCount), maxQuestions),
+          cardCount: Math.min(cardCount, maxQuestions),
         },
       })
       onOpenChange(false)
@@ -57,9 +51,6 @@ export function StartFlashcardDialog({
     }
   }
 
-  const countOptions = [5, 10, 20].filter((n) => n <= maxQuestions)
-  if (!countOptions.includes(maxQuestions)) countOptions.push(maxQuestions)
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -70,21 +61,23 @@ export function StartFlashcardDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Numero di carte</Label>
-            <Select value={cardCount} onValueChange={setCardCount}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {countOptions.map((n) => (
-                  <SelectItem key={n} value={n.toString()}>
-                    {n === maxQuestions ? `Tutte (${n})` : n.toString()}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="grid gap-5 py-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Numero di carte</Label>
+              <span className="text-sm font-medium tabular-nums">
+                {cardCount === maxQuestions
+                  ? `Tutte (${cardCount})`
+                  : cardCount}
+              </span>
+            </div>
+            <Slider
+              value={[cardCount]}
+              onValueChange={([v]) => setCardCount(v)}
+              min={1}
+              max={maxQuestions}
+              step={1}
+            />
           </div>
         </div>
 

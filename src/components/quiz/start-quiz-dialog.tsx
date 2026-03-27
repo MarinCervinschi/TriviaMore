@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { Loader2 } from "lucide-react"
+import { Info, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -20,8 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
 import { quizQueries } from "@/lib/quiz/queries"
 import { startQuizFn } from "@/lib/quiz/server"
+import type { EvaluationMode } from "@/lib/quiz/types"
+
+const TIME_STEPS = [5, 10, 15, 20, 30, 45, 60, 90, 120]
 
 export function StartQuizDialog({
   open,
@@ -36,10 +40,11 @@ export function StartQuizDialog({
 }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [questionCount, setQuestionCount] = useState("30")
-  const [timeLimit, setTimeLimit] = useState("30")
-  const [quizMode, setQuizMode] = useState<"STUDY" | "EXAM_SIMULATION">(
-    "STUDY",
+  const [questionCount, setQuestionCount] = useState(
+    Math.min(30, maxQuestions),
+  )
+  const [timeStepIndex, setTimeStepIndex] = useState(
+    TIME_STEPS.indexOf(30),
   )
   const [evalModeId, setEvalModeId] = useState<string | undefined>()
 
@@ -48,19 +53,20 @@ export function StartQuizDialog({
     enabled: open,
   })
 
+  const selectedEvalMode = evalModes?.find(
+    (m) => m.id === (evalModeId ?? evalModes?.[0]?.id),
+  )
+
   const handleStart = async () => {
     setLoading(true)
     try {
+      const time = TIME_STEPS[timeStepIndex]
       const result = await startQuizFn({
         data: {
           sectionId,
-          questionCount: Math.min(
-            parseInt(questionCount),
-            maxQuestions,
-          ),
-          timeLimit:
-            timeLimit === "unlimited" ? null : parseInt(timeLimit),
-          quizMode,
+          questionCount: Math.min(questionCount, maxQuestions),
+          timeLimit: time === undefined ? null : time,
+          quizMode: "STUDY" as const,
           evaluationModeId: evalModeId,
         },
       })
@@ -73,11 +79,6 @@ export function StartQuizDialog({
     }
   }
 
-  const questionOptions = [10, 20, 30].filter((n) => n <= maxQuestions)
-  if (maxQuestions > 30) questionOptions.push(maxQuestions)
-  else if (!questionOptions.includes(maxQuestions))
-    questionOptions.push(maxQuestions)
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -88,56 +89,41 @@ export function StartQuizDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Numero di domande</Label>
-            <Select value={questionCount} onValueChange={setQuestionCount}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {questionOptions.map((n) => (
-                  <SelectItem key={n} value={n.toString()}>
-                    {n === maxQuestions ? `Tutte (${n})` : n.toString()}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="grid gap-5 py-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Numero di domande</Label>
+              <span className="text-sm font-medium tabular-nums">
+                {questionCount === maxQuestions
+                  ? `Tutte (${questionCount})`
+                  : questionCount}
+              </span>
+            </div>
+            <Slider
+              value={[questionCount]}
+              onValueChange={([v]) => setQuestionCount(v)}
+              min={1}
+              max={maxQuestions}
+              step={1}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label>Tempo limite</Label>
-            <Select value={timeLimit} onValueChange={setTimeLimit}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="15">15 minuti</SelectItem>
-                <SelectItem value="30">30 minuti</SelectItem>
-                <SelectItem value="45">45 minuti</SelectItem>
-                <SelectItem value="unlimited">Illimitato</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Modalità</Label>
-            <Select
-              value={quizMode}
-              onValueChange={(v) =>
-                setQuizMode(v as "STUDY" | "EXAM_SIMULATION")
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="STUDY">Studio</SelectItem>
-                <SelectItem value="EXAM_SIMULATION">
-                  Simulazione Esame
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Tempo limite</Label>
+              <span className="text-sm font-medium tabular-nums">
+                {timeStepIndex >= TIME_STEPS.length
+                  ? "Illimitato"
+                  : `${TIME_STEPS[timeStepIndex]} min`}
+              </span>
+            </div>
+            <Slider
+              value={[timeStepIndex]}
+              onValueChange={([v]) => setTimeStepIndex(v)}
+              min={0}
+              max={TIME_STEPS.length}
+              step={1}
+            />
           </div>
 
           {evalModes && evalModes.length > 1 && (
@@ -158,7 +144,14 @@ export function StartQuizDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {selectedEvalMode && (
+                <EvalModeInfo mode={selectedEvalMode} />
+              )}
             </div>
+          )}
+
+          {evalModes && evalModes.length === 1 && evalModes[0] && (
+            <EvalModeInfo mode={evalModes[0]} />
           )}
         </div>
 
@@ -177,5 +170,21 @@ export function StartQuizDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function EvalModeInfo({ mode }: { mode: EvaluationMode }) {
+  return (
+    <div className="flex gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+      <div className="space-y-0.5">
+        {mode.description && <p>{mode.description}</p>}
+        <p>
+          Corretta: <span className="font-medium text-foreground">+{mode.correct_answer_points}</span>
+          {" · "}Errata: <span className="font-medium text-foreground">{mode.incorrect_answer_points}</span>
+          {mode.partial_credit_enabled && " · Credito parziale attivo"}
+        </p>
+      </div>
+    </div>
   )
 }
