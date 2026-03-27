@@ -36,7 +36,9 @@ import { Label } from "@/components/ui/label"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserHero } from "@/components/user/user-hero"
 import { UserStatsCard } from "@/components/user/user-stats-card"
-import { useDeleteAccount, useUpdateProfile } from "@/lib/user/mutations"
+import { useUpdateProfile } from "@/lib/user/mutations"
+// TODO: uncomment when RLS DELETE policies are in place
+// import { useDeleteAccount } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
 import type { UserProfile } from "@/lib/user/types"
@@ -147,7 +149,8 @@ function SettingsPage() {
           </div>
         </div>
 
-        <DeleteAccountSection />
+        {/* TODO: implement account deletion with proper RLS policies */}
+        {/* <DeleteAccountSection /> */}
       </div>
     </div>
   )
@@ -279,102 +282,103 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
   )
 }
 
-function DeleteAccountSection() {
-  const deleteAccount = useDeleteAccount()
-  const [confirmText, setConfirmText] = useState("")
-
-  const canDelete = confirmText === "ELIMINA"
-
-  return (
-    <div className="relative overflow-hidden rounded-3xl border border-destructive/30 bg-card">
-      <div className="p-6 sm:p-8">
-        <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-destructive/10 p-3">
-            <AlertTriangle className="h-6 w-6 text-destructive" strokeWidth={1.5} />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-destructive">
-              Elimina Account
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Questa azione è permanente e irreversibile. Tutti i tuoi dati
-              verranno eliminati: profilo, progressi, segnalibri, corsi salvati
-              e cronologia quiz.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="rounded-xl">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Elimina il mio account
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Conferma eliminazione account
-                </AlertDialogTitle>
-                <AlertDialogDescription className="space-y-3">
-                  <span className="block">
-                    Stai per eliminare permanentemente il tuo account. Questa
-                    azione non può essere annullata.
-                  </span>
-                  <span className="block font-medium text-foreground">
-                    Verranno eliminati:
-                  </span>
-                  <span className="block text-sm">
-                    • Tutti i progressi e i risultati dei quiz
-                    <br />
-                    • I segnalibri salvati
-                    <br />
-                    • I corsi seguiti
-                    <br />
-                    • Le informazioni del profilo
-                  </span>
-                  <span className="block">
-                    Scrivi{" "}
-                    <span className="font-mono font-bold text-destructive">
-                      ELIMINA
-                    </span>{" "}
-                    per confermare:
-                  </span>
-                </AlertDialogDescription>
-                <Input
-                  value={confirmText}
-                  onChange={(e) => setConfirmText(e.target.value)}
-                  placeholder="Scrivi ELIMINA"
-                  className="mt-2 rounded-xl"
-                  autoComplete="off"
-                />
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setConfirmText("")}>
-                  Annulla
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  disabled={!canDelete || deleteAccount.isPending}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    deleteAccount.mutate()
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {deleteAccount.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="mr-2 h-4 w-4" />
-                  )}
-                  Elimina definitivamente
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>
-    </div>
-  )
-}
+// TODO: uncomment when RLS DELETE policies are in place
+// function DeleteAccountSection() {
+//   const deleteAccount = useDeleteAccount()
+//   const [confirmText, setConfirmText] = useState("")
+//
+//   const canDelete = confirmText === "ELIMINA"
+//
+//   return (
+//     <div className="relative overflow-hidden rounded-3xl border border-destructive/30 bg-card">
+//       <div className="p-6 sm:p-8">
+//         <div className="flex items-start gap-3">
+//           <div className="rounded-2xl bg-destructive/10 p-3">
+//             <AlertTriangle className="h-6 w-6 text-destructive" strokeWidth={1.5} />
+//           </div>
+//           <div className="flex-1">
+//             <h2 className="text-xl font-bold text-destructive">
+//               Elimina Account
+//             </h2>
+//             <p className="mt-1 text-sm text-muted-foreground">
+//               Questa azione è permanente e irreversibile. Tutti i tuoi dati
+//               verranno eliminati: profilo, progressi, segnalibri, corsi salvati
+//               e cronologia quiz.
+//             </p>
+//           </div>
+//         </div>
+//
+//         <div className="mt-6">
+//           <AlertDialog>
+//             <AlertDialogTrigger asChild>
+//               <Button variant="destructive" className="rounded-xl">
+//                 <Trash2 className="mr-2 h-4 w-4" />
+//                 Elimina il mio account
+//               </Button>
+//             </AlertDialogTrigger>
+//             <AlertDialogContent>
+//               <AlertDialogHeader>
+//                 <AlertDialogTitle className="flex items-center gap-2">
+//                   <AlertTriangle className="h-5 w-5 text-destructive" />
+//                   Conferma eliminazione account
+//                 </AlertDialogTitle>
+//                 <AlertDialogDescription className="space-y-3">
+//                   <span className="block">
+//                     Stai per eliminare permanentemente il tuo account. Questa
+//                     azione non può essere annullata.
+//                   </span>
+//                   <span className="block font-medium text-foreground">
+//                     Verranno eliminati:
+//                   </span>
+//                   <span className="block text-sm">
+//                     • Tutti i progressi e i risultati dei quiz
+//                     <br />
+//                     • I segnalibri salvati
+//                     <br />
+//                     • I corsi seguiti
+//                     <br />
+//                     • Le informazioni del profilo
+//                   </span>
+//                   <span className="block">
+//                     Scrivi{" "}
+//                     <span className="font-mono font-bold text-destructive">
+//                       ELIMINA
+//                     </span>{" "}
+//                     per confermare:
+//                   </span>
+//                 </AlertDialogDescription>
+//                 <Input
+//                   value={confirmText}
+//                   onChange={(e) => setConfirmText(e.target.value)}
+//                   placeholder="Scrivi ELIMINA"
+//                   className="mt-2 rounded-xl"
+//                   autoComplete="off"
+//                 />
+//               </AlertDialogHeader>
+//               <AlertDialogFooter>
+//                 <AlertDialogCancel onClick={() => setConfirmText("")}>
+//                   Annulla
+//                 </AlertDialogCancel>
+//                 <AlertDialogAction
+//                   disabled={!canDelete || deleteAccount.isPending}
+//                   onClick={(e) => {
+//                     e.preventDefault()
+//                     deleteAccount.mutate()
+//                   }}
+//                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+//                 >
+//                   {deleteAccount.isPending ? (
+//                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+//                   ) : (
+//                     <Trash2 className="mr-2 h-4 w-4" />
+//                   )}
+//                   Elimina definitivamente
+//                 </AlertDialogAction>
+//               </AlertDialogFooter>
+//             </AlertDialogContent>
+//           </AlertDialog>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
