@@ -249,6 +249,33 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
     }
   })
 
+export interface PlatformStats {
+  departments: number
+  courses: number
+  classes: number
+  sections: number
+}
+
+export const getPlatformStatsFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PlatformStats> => {
+    const supabase = createServerSupabaseClient()
+
+    const [depts, courses, classes, sections] = await Promise.all([
+      supabase.from("departments").select("*", { count: "exact", head: true }),
+      supabase.from("courses").select("*", { count: "exact", head: true }),
+      supabase.from("classes").select("*", { count: "exact", head: true }),
+      supabase.from("sections").select("*", { count: "exact", head: true }),
+    ])
+
+    return {
+      departments: depts.count ?? 0,
+      courses: courses.count ?? 0,
+      classes: classes.count ?? 0,
+      sections: sections.count ?? 0,
+    }
+  },
+)
+
 export const submitContactFn = createServerFn({ method: "POST" })
   .inputValidator(contactSchema)
   .handler(async ({ data }) => {

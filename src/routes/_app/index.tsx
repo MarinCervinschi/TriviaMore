@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { websiteJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
+import { browseQueries } from "@/lib/browse/queries"
 
 import {
   BenefitsSection,
+  ContentExplorer,
   FeatureShowcase,
   HeroSection,
+  PlatformStatsSection,
   benefits,
   ctaCardContent,
   heroContent,
@@ -13,6 +17,8 @@ import {
 } from "@/components/landing"
 
 export const Route = createFileRoute("/_app/")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(browseQueries.platformStats()),
   head: () => ({
     ...seoHead({
       title: "TriviaMore",
@@ -26,10 +32,14 @@ export const Route = createFileRoute("/_app/")({
 })
 
 function HomePage() {
+  const { data: stats } = useSuspenseQuery(browseQueries.platformStats())
+
   return (
     <>
       <HeroSection {...heroContent} />
       <FeatureShowcase features={showcaseFeatures} />
+      <ContentExplorer />
+      <PlatformStatsSection stats={stats} />
       <BenefitsSection benefits={benefits} ctaCard={ctaCardContent} />
     </>
   )

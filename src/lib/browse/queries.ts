@@ -5,10 +5,18 @@ import {
   getCourseWithClassesFn,
   getDepartmentWithCoursesFn,
   getDepartmentsFn,
+  getPlatformStatsFn,
   getSectionDetailFn,
 } from "./server"
 
 export const browseQueries = {
+  platformStats: () =>
+    queryOptions({
+      queryKey: ["browse", "platform-stats"],
+      queryFn: () => getPlatformStatsFn(),
+      staleTime: 1000 * 60 * 10,
+    }),
+
   departments: () =>
     queryOptions({
       queryKey: ["browse", "departments"],
