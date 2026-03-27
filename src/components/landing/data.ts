@@ -1,4 +1,13 @@
-import { BookOpen, Github, Target, Users } from "lucide-react"
+import {
+  BarChart3,
+  BookOpen,
+  CheckCircle,
+  Github,
+  Layers,
+  Target,
+  Timer,
+  Users,
+} from "lucide-react"
 
 import type { LucideIcon } from "lucide-react"
 
@@ -28,6 +37,16 @@ export interface CTACardProps {
 export interface FooterSection {
   title: string
   links: { href: string; label: string }[]
+}
+
+export interface ShowcaseFeature {
+  id: string
+  icon: LucideIcon
+  title: string
+  description: string
+  highlights: string[]
+  iconColor: string
+  iconBg: string
 }
 
 export interface HeroContent {
@@ -121,6 +140,69 @@ export const ctaCardContent: CTACardProps = {
   disclaimer:
     "Nessuna carta di credito richiesta • Sempre gratuito • Open Source",
 }
+
+export const showcaseFeatures: ShowcaseFeature[] = [
+  {
+    id: "quiz",
+    icon: Timer,
+    title: "Quiz interattivi con timer",
+    description:
+      "Metti alla prova le tue conoscenze con quiz cronometrati che simulano l'esperienza d'esame reale.",
+    highlights: [
+      "Modalita' studio e simulazione esame",
+      "Timer configurabile con avvisi",
+      "Feedback istantaneo con spiegazioni",
+      "Navigazione rapida tra domande",
+    ],
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-500/10",
+  },
+  {
+    id: "dashboard",
+    icon: BarChart3,
+    title: "Dashboard personale",
+    description:
+      "Tieni sotto controllo la tua preparazione con statistiche dettagliate e attivita' recenti.",
+    highlights: [
+      "Statistiche quiz e punteggi",
+      "Corsi visualizzati di recente",
+      "Panoramica progressi per materia",
+      "Accesso rapido alle azioni frequenti",
+    ],
+    iconColor: "text-green-600",
+    iconBg: "bg-green-500/10",
+  },
+  {
+    id: "flashcards",
+    icon: Layers,
+    title: "Flashcard intelligenti",
+    description:
+      "Memorizza i concetti chiave con il nostro sistema di flashcard con animazione flip 3D.",
+    highlights: [
+      "Animazione flip 3D interattiva",
+      "Salva le domande difficili nei preferiti",
+      "Ripasso mirato per argomento",
+      "Navigazione con tastiera e swipe",
+    ],
+    iconColor: "text-purple-600",
+    iconBg: "bg-purple-500/10",
+  },
+  {
+    id: "progress",
+    icon: CheckCircle,
+    title: "Tracciamento progressi",
+    description:
+      "Monitora i tuoi miglioramenti con grafici dettagliati e analisi personalizzate.",
+    highlights: [
+      "Grafici interattivi con Recharts",
+      "Analisi per materia e periodo",
+      "Trend di miglioramento nel tempo",
+      "Dettaglio performance per quiz",
+    ],
+    iconColor: "text-orange-600",
+    iconBg: "bg-orange-500/10",
+  },
+]
 
 export const footerSections: FooterSection[] = [
   {

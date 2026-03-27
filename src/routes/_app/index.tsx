@@ -4,12 +4,12 @@ import { seoHead } from "@/lib/seo"
 
 import {
   BenefitsSection,
-  FeaturesSection,
+  FeatureShowcase,
   HeroSection,
   benefits,
   ctaCardContent,
-  features,
   heroContent,
+  showcaseFeatures,
 } from "@/components/landing"
 
 export const Route = createFileRoute("/_app/")({
@@ -29,7 +29,7 @@ function HomePage() {
   return (
     <>
       <HeroSection {...heroContent} />
-      <FeaturesSection features={features} />
+      <FeatureShowcase features={showcaseFeatures} />
       <BenefitsSection benefits={benefits} ctaCard={ctaCardContent} />
     </>
   )

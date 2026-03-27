@@ -1,19 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
 import {
   ArrowRight,
-  BookOpen,
-  Code2,
   Github,
   GraduationCap,
   Heart,
   Lightbulb,
-  Rocket,
   Target,
   Users,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { OrbitingTechStack } from "@/components/landing"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { useScrollReveal } from "@/hooks/useScrollReveal"
+import {
+  fadeInUp,
+  staggerContainer,
+  staggerItem,
+  withReducedMotion,
+} from "@/lib/motion"
 
 export const Route = createFileRoute("/_app/about")({
   component: AboutPage,
@@ -61,16 +68,17 @@ const values = [
   },
 ]
 
-const techStack = [
-  { name: "TanStack Start", icon: Rocket },
-  { name: "TypeScript", icon: Code2 },
-  { name: "Tailwind CSS", icon: Code2 },
-  { name: "Supabase", icon: Code2 },
-  { name: "PostgreSQL", icon: Code2 },
-  { name: "React Query", icon: Code2 },
-]
-
 function AboutPage() {
+  const prefersReduced = useReducedMotion()
+
+  const { ref: heroRef, isVisible: heroVisible } = useScrollReveal()
+  const { ref: missionRef, isVisible: missionVisible } = useScrollReveal()
+  const { ref: valuesRef, isVisible: valuesVisible } = useScrollReveal()
+
+  const fadeUp = withReducedMotion(fadeInUp, prefersReduced)
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
+
   return (
     <div className="relative">
       {/* Hero with mesh background */}
@@ -82,28 +90,49 @@ function AboutPage() {
           <div className="absolute inset-0 dot-pattern" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          ref={heroRef}
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          variants={container}
+          initial="hidden"
+          animate={heroVisible ? "visible" : "hidden"}
+        >
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary">
+            <motion.p
+              className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary"
+              variants={item}
+            >
               Chi Siamo
-            </p>
-            <h1 className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+            </motion.p>
+            <motion.h1
+              className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+              variants={item}
+            >
               Studiare insieme,{" "}
               <span className="gradient-text">crescere insieme</span>
-            </h1>
-            <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            </motion.h1>
+            <motion.p
+              className="text-lg leading-relaxed text-muted-foreground sm:text-xl"
+              variants={item}
+            >
               TriviaMore e' una piattaforma open source creata da studenti per
               studenti dell&apos;Universita' di Modena e Reggio Emilia. Nata da
               un&apos;esigenza reale, cresciuta con la community.
-            </p>
+            </motion.p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Mission — full-width accent band */}
       <section className="relative border-y bg-muted/30">
         <div className="absolute inset-0 dot-pattern opacity-40" />
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <motion.div
+          ref={missionRef}
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
+          variants={fadeUp}
+          initial="hidden"
+          animate={missionVisible ? "visible" : "hidden"}
+        >
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <div className="mb-4 inline-flex rounded-2xl bg-blue-500/10 p-4">
@@ -121,27 +150,25 @@ function AboutPage() {
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl border bg-card p-6 text-center">
-                <p className="text-3xl font-bold text-primary">100%</p>
-                <p className="mt-1 text-sm text-muted-foreground">Gratuito</p>
-              </div>
-              <div className="rounded-2xl border bg-card p-6 text-center">
-                <p className="text-3xl font-bold text-primary">Open</p>
-                <p className="mt-1 text-sm text-muted-foreground">Source</p>
-              </div>
-              <div className="rounded-2xl border bg-card p-6 text-center">
-                <p className="text-3xl font-bold text-primary">UNIMORE</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Focalizzato
-                </p>
-              </div>
-              <div className="rounded-2xl border bg-card p-6 text-center">
-                <p className="text-3xl font-bold text-primary">Community</p>
-                <p className="mt-1 text-sm text-muted-foreground">Driven</p>
-              </div>
+              {[
+                { value: "100%", label: "Gratuito" },
+                { value: "Open", label: "Source" },
+                { value: "UNIMORE", label: "Focalizzato" },
+                { value: "Community", label: "Driven" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-2xl border bg-card p-6 text-center"
+                >
+                  <p className="text-3xl font-bold text-primary">{stat.value}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Values */}
@@ -156,13 +183,20 @@ function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <motion.div
+            ref={valuesRef}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+            variants={container}
+            initial="hidden"
+            animate={valuesVisible ? "visible" : "hidden"}
+          >
             {values.map((value) => {
               const Icon = value.icon
               return (
-                <div
+                <motion.div
                   key={value.title}
                   className="group relative overflow-hidden rounded-2xl border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  variants={item}
                 >
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   <div
@@ -179,15 +213,15 @@ function AboutPage() {
                   <p className="leading-relaxed text-muted-foreground">
                     {value.description}
                   </p>
-                </div>
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Tech Stack — horizontal scroll on mobile */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
+      {/* Tech Stack — Orbiting animation */}
+      <section className="border-y bg-muted/20 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">
@@ -197,17 +231,7 @@ function AboutPage() {
               Costruito con tecnologie moderne
             </h2>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className="inline-flex items-center gap-2 rounded-full border bg-card px-5 py-2.5 text-sm font-medium transition-all duration-200 hover:shadow-md"
-              >
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                {tech.name}
-              </div>
-            ))}
-          </div>
+          <OrbitingTechStack />
         </div>
       </section>
 
