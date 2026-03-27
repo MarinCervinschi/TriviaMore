@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { selectRandomItems } from "@/lib/quiz/randomization"
 import type { FlashcardQuestion, FlashcardSession } from "./types"
 
 async function getAuthenticatedUser() {
@@ -40,44 +39,6 @@ async function fetchFlashcardQuestions(
     .eq("question_type", "SHORT_ANSWER")
   return questions ?? []
 }
-
-function buildFlashcardQuestions(
-  questions: { id: string; content: string; correct_answer: string[]; explanation: string | null; difficulty: "EASY" | "MEDIUM" | "HARD" }[],
-  count: number,
-): FlashcardQuestion[] {
-  const selected = selectRandomItems(questions, count)
-  return selected.map((q, i) => ({
-    id: q.id,
-    content: q.content,
-    correct_answer: q.correct_answer,
-    explanation: q.explanation,
-    difficulty: q.difficulty,
-    order: i + 1,
-  }))
-}
-
-export const generateGuestFlashcardFn = createServerFn({ method: "GET" })
-  .inputValidator(
-    (input: { sectionId: string; cardCount?: number }) => input,
-  )
-  .handler(async ({ data }): Promise<FlashcardSession | null> => {
-    const supabase = createServerSupabaseClient()
-
-    const section = await fetchSectionWithChain(supabase, data.sectionId)
-    if (!section || !section.is_public) return null
-
-    const questions = await fetchFlashcardQuestions(supabase, data.sectionId)
-    if (questions.length === 0) return null
-
-    const count = data.cardCount ?? 20
-    const flashcardQuestions = buildFlashcardQuestions(questions, count)
-
-    return {
-      id: `guest-${Date.now()}`,
-      section: section as unknown as FlashcardSession["section"],
-      questions: flashcardQuestions,
-    }
-  })
 
 export const startFlashcardFn = createServerFn({ method: "POST" })
   .inputValidator(

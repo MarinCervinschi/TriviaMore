@@ -10,14 +10,10 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import { quizQueries } from "@/lib/quiz/queries"
 import { calculateQuizResults } from "@/lib/quiz/scoring"
 import { completeQuizFn, cancelQuizFn } from "@/lib/quiz/server"
-import { getGuestQuizSession, clearGuestQuizSession } from "@/lib/quiz/session"
-import type { Quiz, QuizResults, UserAnswer } from "@/lib/quiz/types"
-import { QuizInlineResults } from "@/components/quiz/quiz-inline-results"
+import type { Quiz, UserAnswer } from "@/lib/quiz/types"
 
 export const Route = createFileRoute("/quiz/$quizId")({
   loader: async ({ context, params }) => {
-    // Guest quizzes loaded from session, not from server
-    if (params.quizId.startsWith("guest-")) return null
     return context.queryClient.ensureQueryData(
       quizQueries.quiz(params.quizId),
     )
@@ -26,27 +22,14 @@ export const Route = createFileRoute("/quiz/$quizId")({
 })
 
 function QuizPage() {
-  const { quizId } = Route.useParams()
-  const isGuest = quizId.startsWith("guest-")
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const loaderData = Route.useLoaderData()
-
-  // For guests, load from session; for auth users, use loader data
-  const [guestQuiz] = useState<Quiz | null>(() =>
-    isGuest ? getGuestQuizSession(quizId) : null,
-  )
-
-  const quiz: Quiz | null = isGuest
-    ? guestQuiz
-    : (loaderData as Quiz | null)
+  const quiz = Route.useLoaderData() as Quiz | null
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([])
   const [startTime] = useState(Date.now())
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [showResults, setShowResults] = useState(false)
-  const [results, setResults] = useState<QuizResults | null>(null)
   const [showExitDialog, setShowExitDialog] = useState(false)
 
   // Initialize answers when quiz loads
@@ -73,7 +56,7 @@ function QuizPage() {
   )
 
   const handleComplete = useCallback(async () => {
-    if (!quiz) return
+    if (!quiz || !quiz.attempt_id) return
 
     const quizResults = calculateQuizResults({
       userAnswers,
@@ -84,42 +67,32 @@ function QuizPage() {
       quizTitle: `Quiz: ${quiz.section.name}`,
     })
 
-    if (isGuest) {
-      setResults(quizResults)
-      setShowResults(true)
-    } else if (quiz.attempt_id) {
-      try {
-        const { attemptId } = await completeQuizFn({
-          data: {
-            quizAttemptId: quiz.attempt_id,
-            answers: quizResults.answers.map((a) => ({
-              questionId: a.questionId,
-              userAnswer: a.answer,
-              score: a.score,
-            })),
-            totalScore: quizResults.totalScore,
-            timeSpent: quizResults.timeSpent,
-          },
-        })
-        // Invalidate user data caches so dashboard shows updated stats
-        queryClient.invalidateQueries({ queryKey: ["user"] })
-        navigate({
-          to: "/quiz/results/$attemptId",
-          params: { attemptId },
-        })
-      } catch (error) {
-        console.error("Failed to complete quiz:", error)
-        // Show inline results as fallback
-        setResults(quizResults)
-        setShowResults(true)
-      }
+    try {
+      const { attemptId } = await completeQuizFn({
+        data: {
+          quizAttemptId: quiz.attempt_id,
+          answers: quizResults.answers.map((a) => ({
+            questionId: a.questionId,
+            userAnswer: a.answer,
+            score: a.score,
+          })),
+          totalScore: quizResults.totalScore,
+          timeSpent: quizResults.timeSpent,
+        },
+      })
+      // Invalidate user data caches so dashboard shows updated stats
+      queryClient.invalidateQueries({ queryKey: ["user"] })
+      navigate({
+        to: "/quiz/results/$attemptId",
+        params: { attemptId },
+      })
+    } catch (error) {
+      console.error("Failed to complete quiz:", error)
     }
-  }, [quiz, userAnswers, startTime, isGuest, navigate])
+  }, [quiz, userAnswers, startTime, navigate, queryClient])
 
   const confirmExit = useCallback(async () => {
-    if (isGuest) {
-      clearGuestQuizSession(quizId)
-    } else if (quiz?.attempt_id) {
+    if (quiz?.attempt_id) {
       try {
         await cancelQuizFn({ data: { quizAttemptId: quiz.attempt_id } })
       } catch {
@@ -127,7 +100,7 @@ function QuizPage() {
       }
     }
     navigate({ to: "/" })
-  }, [isGuest, quizId, quiz, navigate])
+  }, [quiz, navigate])
 
   const handleJump = useCallback((index: number) => {
     setCurrentIndex(index)
@@ -154,30 +127,6 @@ function QuizPage() {
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Quiz non trovato.</p>
       </div>
-    )
-  }
-
-  if (showResults && results) {
-    return (
-      <QuizInlineResults
-        results={results}
-        onExit={() => navigate({ to: "/" })}
-        onRetry={
-          isGuest
-            ? () => {
-                setUserAnswers(
-                  quiz.questions.map((q) => ({
-                    questionId: q.id,
-                    answer: [],
-                  })),
-                )
-                setCurrentIndex(0)
-                setShowResults(false)
-                setResults(null)
-              }
-            : undefined
-        }
-      />
     )
   }
 
@@ -220,7 +169,6 @@ function QuizPage() {
               onAnswerChange={(answers) =>
                 handleAnswerChange(currentQuestion.id, answers)
               }
-              isGuest={isGuest}
             />
           )}
         </div>
