@@ -9,6 +9,8 @@
   },
   "scripts": {
     "dev": "infisical run -- vite dev --port 3000",
+    "dev:staging": "infisical run --env=staging -- vite dev --port 3000",
+    "dev:prod": "infisical run --env=prod -- vite dev --port 3000",
     "dev:no-secrets": "vite dev --port 3000",
     "build": "vite build",
     "build:dev": "infisical run -- vite build",
