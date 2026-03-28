@@ -1,14 +1,31 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
+  Check,
+  ChevronsUpDown,
+  FileUp,
   FolderPlus,
   MessageSquarePlus,
   Plus,
   Trash2,
+  Upload,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -19,11 +36,17 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { requestQueries } from "@/lib/requests/queries"
 import { useCreateRequest } from "@/lib/requests/mutations"
+import { useAuth } from "@/hooks/useAuth"
+import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 import type { SubmittedQuestion } from "@/lib/requests/types"
 
-type SubmissionType = "section" | "questions" | null
+type SubmissionType = "section" | "questions" | "file_upload" | null
+
+const ACCEPTED_EXTENSIONS = ".pdf,.docx"
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
 const EMPTY_QUESTION: SubmittedQuestion = {
   content: "",
@@ -61,7 +84,13 @@ export function RequestForm({
   // Questions form
   const [questions, setQuestions] = useState<SubmittedQuestion[]>([{ ...EMPTY_QUESTION }])
 
+  // File upload form
+  const [file, setFile] = useState<File | null>(null)
+  const [fileComment, setFileComment] = useState("")
+  const [uploading, setUploading] = useState(false)
+
   const { data: tree = [] } = useQuery(requestQueries.contentTree())
+  const { user } = useAuth()
   const createRequest = useCreateRequest(onSuccess)
 
   const courses = useMemo(() => {
@@ -84,13 +113,15 @@ export function RequestForm({
 
   const canProceedToStep3 =
     (type === "section" && selectedClassId) ||
-    (type === "questions" && selectedSectionId)
+    (type === "questions" && selectedSectionId) ||
+    (type === "file_upload" && selectedClassId)
 
   const canSubmit =
     (type === "section" && sectionName.trim().length >= 2) ||
-    (type === "questions" && questions.every((q) => q.content.trim().length >= 10 && q.correct_answer.length > 0))
+    (type === "questions" && questions.every((q) => q.content.trim().length >= 10 && q.correct_answer.length > 0)) ||
+    (type === "file_upload" && file !== null)
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (type === "section") {
       createRequest.mutate({
         type: "section",
@@ -105,20 +136,48 @@ export function RequestForm({
       createRequest.mutate({
         type: "questions",
         target_section_id: selectedSectionId,
-        submitted_content: {
-          type: "questions",
-          questions,
-        },
+        submitted_content: { type: "questions", questions },
       })
+    } else if (type === "file_upload" && file && user) {
+      setUploading(true)
+      try {
+        const supabase = createClient()
+        const ext = file.name.split(".").pop() ?? "bin"
+        const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`
+
+        const { error: uploadError } = await supabase.storage
+          .from("contributions")
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        createRequest.mutate({
+          type: "file_upload",
+          target_class_id: selectedClassId,
+          submitted_content: {
+            type: "file_upload",
+            file_name: file.name,
+            file_path: filePath,
+            file_size: file.size,
+            comment: fileComment.trim() || null,
+          },
+        })
+      } catch {
+        toast.error("Errore nel caricamento del file")
+      } finally {
+        setUploading(false)
+      }
     }
   }
 
-  // Step 1: Choose type
+  const isPending = createRequest.isPending || uploading
+
+  // ─── Step 1: Choose type ───
   if (step === 1) {
     return (
       <div className="space-y-4">
         <p className="text-sm font-medium">Cosa vuoi proporre?</p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3">
           <TypeCard
             icon={FolderPlus}
             title="Nuova sezione"
@@ -133,6 +192,13 @@ export function RequestForm({
             selected={type === "questions"}
             onClick={() => setType("questions")}
           />
+          <TypeCard
+            icon={FileUp}
+            title="Carica file"
+            description="Carica un file con domande gia pronte (PDF, DOCX)"
+            selected={type === "file_upload"}
+            onClick={() => setType("file_upload")}
+          />
         </div>
         <Button
           onClick={() => setStep(hasPrefilledTarget ? 3 : 2)}
@@ -145,50 +211,52 @@ export function RequestForm({
     )
   }
 
-  // Step 2: Pick target
+  // ─── Step 2: Pick target ───
   if (step === 2) {
+    const needsSection = type === "questions"
+
     return (
       <div className="space-y-4">
         <Button variant="ghost" size="sm" onClick={() => setStep(1)} className="gap-1 rounded-xl">
           ← Indietro
         </Button>
         <p className="text-sm font-medium">
-          {type === "section" ? "Seleziona la classe" : "Seleziona la sezione"}
+          {needsSection ? "Seleziona la sezione" : "Seleziona la classe"}
         </p>
 
         <div className="grid gap-3">
-          <Select value={selectedDeptId} onValueChange={(v) => { setSelectedDeptId(v); setSelectedCourseId(""); setSelectedClassId(""); setSelectedSectionId("") }}>
-            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Dipartimento" /></SelectTrigger>
-            <SelectContent>
-              {tree.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            items={tree.map((d) => ({ value: d.id, label: d.name }))}
+            value={selectedDeptId}
+            onValueChange={(v) => { setSelectedDeptId(v); setSelectedCourseId(""); setSelectedClassId(""); setSelectedSectionId("") }}
+            placeholder="Cerca dipartimento..."
+          />
 
           {courses.length > 0 && (
-            <Select value={selectedCourseId} onValueChange={(v) => { setSelectedCourseId(v); setSelectedClassId(""); setSelectedSectionId("") }}>
-              <SelectTrigger className="rounded-xl"><SelectValue placeholder="Corso" /></SelectTrigger>
-              <SelectContent>
-                {courses.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              items={courses.map((c) => ({ value: c.id, label: c.name }))}
+              value={selectedCourseId}
+              onValueChange={(v) => { setSelectedCourseId(v); setSelectedClassId(""); setSelectedSectionId("") }}
+              placeholder="Cerca corso..."
+            />
           )}
 
           {classes.length > 0 && (
-            <Select value={selectedClassId} onValueChange={(v) => { setSelectedClassId(v); setSelectedSectionId("") }}>
-              <SelectTrigger className="rounded-xl"><SelectValue placeholder="Classe" /></SelectTrigger>
-              <SelectContent>
-                {classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              items={classes.map((c) => ({ value: c.id, label: c.name }))}
+              value={selectedClassId}
+              onValueChange={(v) => { setSelectedClassId(v); setSelectedSectionId("") }}
+              placeholder="Cerca classe..."
+            />
           )}
 
-          {type === "questions" && sections.length > 0 && (
-            <Select value={selectedSectionId} onValueChange={setSelectedSectionId}>
-              <SelectTrigger className="rounded-xl"><SelectValue placeholder="Sezione" /></SelectTrigger>
-              <SelectContent>
-                {sections.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+          {needsSection && sections.length > 0 && (
+            <SearchableSelect
+              items={sections.map((s) => ({ value: s.id, label: s.name }))}
+              value={selectedSectionId}
+              onValueChange={setSelectedSectionId}
+              placeholder="Cerca sezione..."
+            />
           )}
         </div>
 
@@ -199,7 +267,7 @@ export function RequestForm({
     )
   }
 
-  // Step 3: Content form
+  // ─── Step 3: Content form ───
   return (
     <div className="space-y-4">
       {!hasPrefilledTarget && (
@@ -208,7 +276,7 @@ export function RequestForm({
         </Button>
       )}
 
-      {type === "section" ? (
+      {type === "section" && (
         <div className="space-y-4">
           <p className="text-sm font-medium">Dettagli sezione</p>
           <Input
@@ -225,7 +293,9 @@ export function RequestForm({
             className="rounded-xl"
           />
         </div>
-      ) : (
+      )}
+
+      {type === "questions" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">Domande ({questions.length})</p>
@@ -239,7 +309,6 @@ export function RequestForm({
               Aggiungi
             </Button>
           </div>
-
           <div className="space-y-4">
             {questions.map((q, qi) => (
               <QuestionEditor
@@ -258,13 +327,179 @@ export function RequestForm({
         </div>
       )}
 
+      {type === "file_upload" && (
+        <FileUploadForm
+          file={file}
+          onFileChange={setFile}
+          comment={fileComment}
+          onCommentChange={setFileComment}
+        />
+      )}
+
       <Button
         onClick={handleSubmit}
-        disabled={!canSubmit || createRequest.isPending}
+        disabled={!canSubmit || isPending}
         className="w-full rounded-xl"
       >
-        {createRequest.isPending ? "Invio in corso..." : "Invia proposta"}
+        {isPending ? "Invio in corso..." : "Invia proposta"}
       </Button>
+    </div>
+  )
+}
+
+// ─── Searchable Select ───
+
+function SearchableSelect({
+  items,
+  value,
+  onValueChange,
+  placeholder,
+}: {
+  items: { value: string; label: string }[]
+  value: string
+  onValueChange: (value: string) => void
+  placeholder: string
+}) {
+  const [open, setOpen] = useState(false)
+  const selected = items.find((i) => i.value === value)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between rounded-xl font-normal"
+        >
+          <span className={cn("truncate", !selected && "text-muted-foreground")}>
+            {selected?.label ?? placeholder}
+          </span>
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+        <Command>
+          <CommandInput placeholder={placeholder} />
+          <CommandList>
+            <CommandEmpty>Nessun risultato</CommandEmpty>
+            <CommandGroup>
+              {items.map((item) => (
+                <CommandItem
+                  key={item.value}
+                  value={item.label}
+                  onSelect={() => {
+                    onValueChange(item.value)
+                    setOpen(false)
+                  }}
+                >
+                  <Check className={cn("mr-2 size-4", value === item.value ? "opacity-100" : "opacity-0")} />
+                  {item.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+// ─── File Upload Form ───
+
+function FileUploadForm({
+  file,
+  onFileChange,
+  comment,
+  onCommentChange,
+}: {
+  file: File | null
+  onFileChange: (file: File | null) => void
+  comment: string
+  onCommentChange: (comment: string) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0]
+    if (!selected) return
+
+    if (selected.size > MAX_FILE_SIZE) {
+      toast.error("Il file supera il limite di 10 MB")
+      return
+    }
+
+    onFileChange(selected)
+  }
+
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm font-medium">Carica file</p>
+
+      <div className="rounded-xl border border-dashed p-6 text-center">
+        {file ? (
+          <div className="space-y-2">
+            <div className="mx-auto inline-flex rounded-2xl bg-primary/10 p-3">
+              <FileUp className="size-6 text-primary" strokeWidth={1.5} />
+            </div>
+            <p className="text-sm font-medium">{file.name}</p>
+            <p className="text-xs text-muted-foreground">{formatSize(file.size)}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { onFileChange(null); if (inputRef.current) inputRef.current.value = "" }}
+              className="text-xs text-destructive"
+            >
+              Rimuovi
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="mx-auto inline-flex rounded-2xl bg-muted p-3">
+              <Upload className="size-6 text-muted-foreground" strokeWidth={1.5} />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Clicca o trascina un file qui
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              PDF o DOCX, max 10 MB
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => inputRef.current?.click()}
+              className="rounded-xl"
+            >
+              Scegli file
+            </Button>
+          </div>
+        )}
+        <input
+          ref={inputRef}
+          type="file"
+          accept={ACCEPTED_EXTENSIONS}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        Carica un file contenente domande gia pronte. Limitati a file con domande strutturate per facilitare la revisione.
+      </p>
+
+      <Textarea
+        value={comment}
+        onChange={(e) => onCommentChange(e.target.value)}
+        placeholder="Commento (opzionale) — es. materia, argomento, note per lo staff"
+        rows={2}
+        className="rounded-xl"
+      />
     </div>
   )
 }
@@ -294,10 +529,7 @@ function TypeCard({
           : "border-transparent bg-muted/50 hover:bg-accent/50",
       )}
     >
-      <div className={cn(
-        "rounded-xl p-2",
-        selected ? "bg-primary/10" : "bg-muted",
-      )}>
+      <div className={cn("rounded-xl p-2", selected ? "bg-primary/10" : "bg-muted")}>
         <Icon className={cn("size-5", selected ? "text-primary" : "text-muted-foreground")} strokeWidth={1.5} />
       </div>
       <div>
@@ -371,12 +603,11 @@ function QuestionEditor({
         </Select>
       </div>
 
-      {/* MC Options */}
       {isMC && (
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground">Opzioni (clicca per selezionare la risposta corretta)</p>
           {(question.options ?? []).map((opt, oi) => {
-            const optId = String.fromCharCode(97 + oi) // a, b, c, ...
+            const optId = String.fromCharCode(97 + oi)
             const isCorrect = question.correct_answer.includes(optId)
             return (
               <div key={oi} className="flex items-center gap-2">
@@ -437,7 +668,6 @@ function QuestionEditor({
         </div>
       )}
 
-      {/* True/False */}
       {question.question_type === "TRUE_FALSE" && (
         <div className="flex gap-2">
           {[{ id: "true", label: "Vero" }, { id: "false", label: "Falso" }].map((opt) => (
@@ -458,7 +688,6 @@ function QuestionEditor({
         </div>
       )}
 
-      {/* Short answer */}
       {question.question_type === "SHORT_ANSWER" && (
         <Input
           value={question.correct_answer[0] ?? ""}
