@@ -1,9 +1,4 @@
-import {
-  AlertTriangle,
-  FileQuestion,
-  FolderPlus,
-  MessageSquarePlus,
-} from "lucide-react"
+import { FolderPlus, MessageSquarePlus } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -24,16 +19,6 @@ const typeConfig: Record<
     label: "Nuove domande",
     icon: MessageSquarePlus,
     className: "border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  },
-  ERROR_REPORT: {
-    label: "Segnalazione errore",
-    icon: AlertTriangle,
-    className: "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400",
-  },
-  CONTENT_REQUEST: {
-    label: "Richiesta contenuto",
-    icon: FileQuestion,
-    className: "border-primary/30 bg-primary/10 text-primary",
   },
 }
 
