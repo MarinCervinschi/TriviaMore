@@ -297,7 +297,7 @@ export const completeQuizFn = createServerFn({ method: "POST" })
           data.totalScore,
         )
 
-        await supabase
+        const { error: progressError } = await supabase
           .from("progress")
           .update({
             quizzes_taken: newQuizzesTaken,
@@ -308,8 +308,9 @@ export const completeQuizFn = createServerFn({ method: "POST" })
             last_accessed_at: new Date().toISOString(),
           })
           .eq("id", existingProgress.id)
+        if (progressError) throw new Error("Errore nell'aggiornamento del progresso")
       } else {
-        await supabase.from("progress").insert({
+        const { error: progressError } = await supabase.from("progress").insert({
           id: crypto.randomUUID(),
           user_id: user.id,
           section_id: quiz.section_id,
@@ -319,6 +320,7 @@ export const completeQuizFn = createServerFn({ method: "POST" })
           best_score: data.totalScore,
           total_time_spent: data.timeSpent,
         })
+        if (progressError) throw new Error("Errore nel salvataggio del progresso")
       }
     }
 
@@ -381,7 +383,7 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
     if (!attempt || !attempt.completed_at) return null
 
     // Get quiz questions in order
-    const quizId = (attempt.quiz as any).id
+    const quizId = (attempt.quiz as unknown as { id: string }).id
     const { data: quizQuestions } = await supabase
       .from("quiz_questions")
       .select("question_id, order")

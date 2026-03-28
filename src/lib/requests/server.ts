@@ -354,7 +354,7 @@ export const getAdminRequestCountFn = createServerFn({
 export const getRequestDetailFn = createServerFn({ method: "GET" })
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ data: { id } }): Promise<ContentRequestWithMeta> => {
-    const { supabase } = await getAuthUser()
+    const { supabase, user } = await getAuthUser()
 
     const { data: request, error } = await supabase
       .from("content_requests")
@@ -363,6 +363,11 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
       .single()
 
     if (error || !request) throw new Error("Proposta non trovata")
+
+    // Verify ownership or admin access
+    if (request.user_id !== user.id) {
+      await requireAdmin()
+    }
 
     const target_label = await buildTargetLabel(supabase, request)
     const submitted = request.submitted_content as unknown as SubmittedContent
@@ -437,9 +442,14 @@ export const approveRequestFn = createServerFn({ method: "POST" })
       .single()
 
     if (fetchError || !request) throw new Error("Proposta non trovata")
-    if (request.status !== "PENDING") throw new Error("La proposta non e in attesa")
+    if (request.status !== "PENDING") throw new Error("La proposta non è in attesa")
 
     const submitted = request.submitted_content as unknown as SubmittedContent
+
+    // Reports and file uploads are acknowledged, not approved
+    if (submitted.type === "report" || submitted.type === "file_upload") {
+      throw new Error("Questo tipo di richiesta non può essere approvato")
+    }
 
     // Create the actual content in the main DB
     if (submitted.type === "section") {
@@ -552,6 +562,10 @@ export const getFileDownloadUrlFn = createServerFn({ method: "GET" })
   .inputValidator((input: { filePath: string }) => input)
   .handler(async ({ data }): Promise<string> => {
     await requireAdmin()
+
+    if (data.filePath.includes("..")) {
+      throw new Error("Percorso file non valido")
+    }
 
     const { data: urlData, error } = await supabaseAdmin.storage
       .from("contributions")
