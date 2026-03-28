@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
 import { BellOff } from "lucide-react"
 
 import { notificationQueries } from "@/lib/notifications/queries"
@@ -9,6 +10,8 @@ import {
 } from "@/lib/notifications/mutations"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import { NotificationItem } from "./notification-item"
 
 export function NotificationList() {
@@ -16,6 +19,7 @@ export function NotificationList() {
   const markRead = useMarkRead()
   const markAllRead = useMarkAllRead()
   const deleteNotification = useDeleteNotification()
+  const prefersReduced = useReducedMotion()
 
   const hasUnread = notifications.some((n) => !n.is_read)
 
@@ -28,6 +32,9 @@ export function NotificationList() {
       />
     )
   }
+
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
 
   return (
     <div className="space-y-4">
@@ -45,10 +52,16 @@ export function NotificationList() {
         </div>
       )}
 
-      <div className="space-y-2">
+      <motion.div
+        className="space-y-2"
+        variants={container}
+        initial="hidden"
+        animate="visible"
+      >
         {notifications.map((notification) => (
-          <div
+          <motion.div
             key={notification.id}
+            variants={item}
             className="rounded-2xl border bg-card transition-all duration-300 hover:shadow-md"
           >
             <NotificationItem
@@ -56,9 +69,9 @@ export function NotificationList() {
               onMarkRead={(id) => markRead.mutate(id)}
               onDelete={(id) => deleteNotification.mutate(id)}
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
