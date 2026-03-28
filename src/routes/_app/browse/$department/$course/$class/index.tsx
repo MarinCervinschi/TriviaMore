@@ -11,6 +11,7 @@ import {
   Heart,
   Lock,
   LogIn,
+  MessageSquarePlus,
   Sparkles,
 } from "lucide-react"
 
@@ -19,6 +20,7 @@ import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
 import { BrowseTable } from "@/components/browse/browse-table"
+import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -157,17 +159,32 @@ function ClassPage() {
             params={{ classId: classData.id }}
           />
           {isAuthenticated && (
-            <Button
-              variant={isSaved ? "default" : "outline"}
-              size="sm"
-              onClick={handleToggleSave}
-              disabled={addClass.isPending || removeClass.isPending}
-            >
-              <Heart
-                className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+            <>
+              <RequestFormDialog
+                defaultValues={{
+                  target_class_id: classData.id,
+                  target_course_id: classData.course.id,
+                  target_department_id: classData.course.department.id,
+                }}
+                trigger={
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <MessageSquarePlus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Richiedi contenuto</span>
+                  </Button>
+                }
               />
-              {isSaved ? "Salvato" : "Salva"}
-            </Button>
+              <Button
+                variant={isSaved ? "default" : "outline"}
+                size="sm"
+                onClick={handleToggleSave}
+                disabled={addClass.isPending || removeClass.isPending}
+              >
+                <Heart
+                  className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+                />
+                {isSaved ? "Salvato" : "Salva"}
+              </Button>
+            </>
           )}
         </div>
       </div>

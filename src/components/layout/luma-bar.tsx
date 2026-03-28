@@ -11,6 +11,7 @@ import {
   BookOpen,
   GraduationCap,
   Home,
+  Inbox,
   LogOut,
   Mail,
   Moon,
@@ -25,6 +26,7 @@ import { useTheme } from "@/hooks/useTheme"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { DockNotificationBell } from "@/components/notifications/notification-bell"
 import {
   Tooltip,
   TooltipContent,
@@ -52,6 +54,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/browse", icon: BookOpen, label: "Contenuti", fuzzy: true },
   { to: "/user/classes", icon: GraduationCap, label: "I Miei Corsi", fuzzy: false },
   { to: "/user/bookmarks", icon: Bookmark, label: "Segnalibri", fuzzy: false },
+  { to: "/user/requests", icon: Inbox, label: "Inbox", fuzzy: true },
 ]
 
 const ADMIN_ITEM: NavItem = {
@@ -397,6 +400,9 @@ export function LumaBar() {
 
           {/* Separator dot */}
           <div className="mx-0.5 mb-1 h-1 w-1 self-center rounded-full bg-border" />
+
+          {/* Notification bell */}
+          <DockNotificationBell mouseX={mouseX} prefersReduced={prefersReduced} />
 
           {/* Theme toggle */}
           <DockThemeToggle mouseX={mouseX} prefersReduced={prefersReduced} />
