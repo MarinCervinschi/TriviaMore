@@ -17,7 +17,10 @@ import {
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
-import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
+import {
+  BrowseContributeState,
+  BrowseEmptyState,
+} from "@/components/browse/browse-empty-state"
 import { BrowseStats } from "@/components/browse/browse-stats"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
@@ -203,7 +206,11 @@ function ClassPage() {
         onChange={setSearch}
         placeholder="Cerca sezioni..."
       />
-      {filtered.length === 0 ? (
+      {classData.sections.length === 0 ? (
+        <BrowseContributeState message="Nessuna sezione disponibile per questa classe.">
+          <RequestFormDialog defaultTargetClassId={classData.id} />
+        </BrowseContributeState>
+      ) : filtered.length === 0 ? (
         <BrowseEmptyState message="Nessuna sezione trovata." />
       ) : (
         <BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
