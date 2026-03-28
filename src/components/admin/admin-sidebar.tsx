@@ -7,6 +7,7 @@ import {
   FileQuestion,
   FolderOpen,
   GraduationCap,
+  Inbox,
   LayoutDashboard,
   Library,
   Shield,
@@ -16,6 +17,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { adminQueries } from "@/lib/admin/queries"
+import { requestQueries } from "@/lib/requests/queries"
 import type {
   ContentTreeClass,
   ContentTreeCourse,
@@ -28,9 +30,12 @@ export function AdminSidebar() {
   const { data: tree } = useQuery(adminQueries.contentTree())
   const matchRoute = useMatchRoute()
 
+  const { data: requestCount } = useQuery(requestQueries.adminRequestCount())
+
   const isDashboardActive = matchRoute({ to: "/admin", fuzzy: false })
   const isDeptActive = matchRoute({ to: "/admin/departments", fuzzy: true })
   const isUsersActive = matchRoute({ to: "/admin/users", fuzzy: true })
+  const isRequestsActive = matchRoute({ to: "/admin/requests", fuzzy: true })
 
   return (
     <nav className="rounded-2xl border bg-card/50 p-4">
@@ -67,6 +72,23 @@ export function AdminSidebar() {
         >
           <Users className="h-4 w-4" />
           Utenti
+        </Link>
+
+        {/* Richieste */}
+        <Link
+          to="/admin/requests"
+          className={cn(
+            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50",
+            isRequestsActive && "bg-primary/10 text-primary font-semibold",
+          )}
+        >
+          <Inbox className="h-4 w-4" />
+          Richieste
+          {(requestCount ?? 0) > 0 && (
+            <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+              {requestCount}
+            </span>
+          )}
         </Link>
       </div>
 

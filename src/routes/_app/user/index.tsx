@@ -7,8 +7,8 @@ import {
   Calendar,
   ExternalLink,
   GraduationCap,
+  Inbox,
   Mail,
-  Settings,
   TrendingUp,
   Trophy,
 } from "lucide-react"
@@ -118,6 +118,13 @@ function DashboardPage() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <QuickActionCard
+            icon={Inbox}
+            color="amber"
+            title="Inbox"
+            description="Le tue conversazioni con il team di TriviaMore"
+            href="/user/requests"
+          />
+          <QuickActionCard
             icon={TrendingUp}
             color="green"
             title="I Miei Progressi"
@@ -130,13 +137,6 @@ function DashboardPage() {
             title="I Miei Corsi"
             description="Gestisci i corsi che stai seguendo al meglio"
             href="/user/classes"
-          />
-          <QuickActionCard
-            icon={Settings}
-            color="primary"
-            title="Impostazioni Profilo"
-            description="Personalizza il tuo profilo e le preferenze dell'account"
-            href="/user/settings"
           />
           <QuickActionCard
             icon={BookmarkIcon}
@@ -162,6 +162,13 @@ function DashboardPage() {
 }
 
 const actionColorMap: Record<string, { border: string; gradient: string; orb: string; badge: string; iconColor: string }> = {
+  amber: {
+    border: "border-amber-500/20",
+    gradient: "from-amber-500/5 via-card to-card",
+    orb: "bg-amber-500/10",
+    badge: "bg-amber-500/10",
+    iconColor: "text-amber-500",
+  },
   green: {
     border: "border-green-500/20",
     gradient: "from-green-500/5 via-card to-card",
