@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronDown,
+  FileUp,
   Flag,
   FolderPlus,
   Inbox,
@@ -63,8 +64,15 @@ function generateTitle(submitted: SubmittedContent): string {
     const label = REASON_LABELS[submitted.reasons[0]] ?? submitted.reasons[0]
     return `Segnalazione: ${label}`
   }
+  if (submitted.type === "file_upload") return `File: ${submitted.file_name}`
   const count = submitted.questions.length
   return `${count} ${count === 1 ? "domanda" : "domande"}`
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 function timeAgo(dateStr: string): string {
@@ -161,11 +169,12 @@ function ContributionRow({
   onToggle: () => void
   prefersReduced: boolean
 }) {
-  const iconMap = { NEW_SECTION: FolderPlus, NEW_QUESTIONS: MessageSquarePlus, REPORT: Flag }
+  const iconMap = { NEW_SECTION: FolderPlus, NEW_QUESTIONS: MessageSquarePlus, REPORT: Flag, FILE_UPLOAD: FileUp }
   const colorMap = {
     NEW_SECTION: { bg: "bg-blue-500/10", text: "text-blue-500" },
     NEW_QUESTIONS: { bg: "bg-purple-500/10", text: "text-purple-500" },
     REPORT: { bg: "bg-red-500/10", text: "text-red-500" },
+    FILE_UPLOAD: { bg: "bg-emerald-500/10", text: "text-emerald-500" },
   }
   const Icon = iconMap[request.request_type]
   const colors = colorMap[request.request_type]
@@ -238,6 +247,26 @@ function ContributionRow({
 function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent }) {
   if (submitted.type === "report") {
     return <ReportPreview report={submitted} />
+  }
+
+  if (submitted.type === "file_upload") {
+    return (
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">File caricato</p>
+        <div className="flex items-center gap-3 rounded-xl border bg-muted/30 p-4">
+          <div className="rounded-xl bg-emerald-500/10 p-2">
+            <FileUp className="size-5 text-emerald-500" strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-sm font-medium">{submitted.file_name}</p>
+            <p className="text-xs text-muted-foreground">{formatFileSize(submitted.file_size)}</p>
+          </div>
+        </div>
+        {submitted.comment && (
+          <p className="text-sm text-muted-foreground">{submitted.comment}</p>
+        )}
+      </div>
+    )
   }
 
   if (submitted.type === "section") {

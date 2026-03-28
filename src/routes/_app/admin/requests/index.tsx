@@ -30,6 +30,7 @@ import type { AdminContentRequest, SubmittedContent } from "@/lib/requests/types
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
   if (submitted.type === "report") return "Segnalazione"
+  if (submitted.type === "file_upload") return `File: ${submitted.file_name}`
   const count = submitted.questions.length
   return `${count} ${count === 1 ? "domanda" : "domande"}`
 }

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { ArrowLeft, CheckCircle2, Eye, MapPin, Settings2 } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Download, Eye, FileUp, MapPin, Settings2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { Badge } from "@/components/ui/badge"
@@ -12,10 +12,12 @@ import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { Textarea } from "@/components/ui/textarea"
 import { requestQueries } from "@/lib/requests/queries"
-import { useAcknowledgeReport, useApproveRequest } from "@/lib/requests/mutations"
+import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations"
+import { getFileDownloadUrlFn } from "@/lib/requests/server"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
-import type { SubmittedContent, SubmittedQuestion } from "@/lib/requests/types"
+import type { SubmittedContent, SubmittedFileUpload, SubmittedQuestion } from "@/lib/requests/types"
 
 export const Route = createFileRoute("/_app/admin/requests/$requestId")({
   loader: ({ context, params }) =>
@@ -34,10 +36,12 @@ function AdminRequestDetailPage() {
   const [handleOpen, setHandleOpen] = useState(false)
   const [reportNote, setReportNote] = useState("")
   const approve = useApproveRequest()
-  const acknowledge = useAcknowledgeReport()
+  const acknowledge = useAcknowledgeRequest()
 
   const isPending = request.status === "PENDING"
   const isReport = request.request_type === "REPORT"
+  const isFileUpload = request.request_type === "FILE_UPLOAD"
+  const isAcknowledgeOnly = isReport || isFileUpload
 
   return (
     <div className="space-y-6">
@@ -52,7 +56,7 @@ function AdminRequestDetailPage() {
           </Link>
         </Button>
 
-        {isPending && !isReport && (
+        {isPending && !isAcknowledgeOnly && (
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -112,13 +116,13 @@ function AdminRequestDetailPage() {
       {/* Submitted content preview */}
       <div className="rounded-2xl border bg-card p-6 space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
-          {isReport ? "Dettagli segnalazione" : "Contenuto proposto"}
+          {isReport ? "Dettagli segnalazione" : isFileUpload ? "File caricato" : "Contenuto proposto"}
         </h3>
         <ContentPreview submitted={request.submitted} />
       </div>
 
-      {/* Report acknowledge section */}
-      {isReport && isPending && (
+      {/* Acknowledge section (reports + file uploads) */}
+      {isAcknowledgeOnly && isPending && (
         <div className="rounded-2xl border bg-card p-6 space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
             Rispondi alla segnalazione
@@ -159,7 +163,17 @@ const REASON_LABELS: Record<string, string> = {
   altro: "Altro",
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
 function ContentPreview({ submitted }: { submitted: SubmittedContent }) {
+  if (submitted.type === "file_upload") {
+    return <FileUploadPreview file={submitted} />
+  }
+
   if (submitted.type === "report") {
     return (
       <div className="space-y-4">
@@ -273,6 +287,61 @@ function QuestionCard({ question, index }: { question: SubmittedQuestion; index:
         <div className="rounded-lg bg-muted/50 px-3 py-2">
           <p className="text-xs font-medium text-muted-foreground">Spiegazione</p>
           <p className="mt-0.5 text-sm">{question.explanation}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
+  const [downloading, setDownloading] = useState(false)
+
+  async function handleDownload() {
+    setDownloading(true)
+    try {
+      const signedUrl = await getFileDownloadUrlFn({ data: { filePath: file.file_path } })
+      const response = await fetch(signedUrl)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = file.file_name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error("Errore nel download del file")
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4 rounded-xl border p-5">
+        <div className="rounded-xl bg-emerald-500/10 p-3">
+          <FileUp className="size-6 text-emerald-500" strokeWidth={1.5} />
+        </div>
+        <div className="flex-1">
+          <p className="font-medium">{file.file_name}</p>
+          <p className="text-sm text-muted-foreground">{formatFileSize(file.file_size)}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 rounded-xl"
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          <Download className="size-4" />
+          {downloading ? "Download..." : "Scarica"}
+        </Button>
+      </div>
+      {file.comment && (
+        <div className="rounded-xl border p-4">
+          <p className="text-xs font-medium text-muted-foreground mb-1">Commento utente</p>
+          <p className="text-sm">{file.comment}</p>
         </div>
       )}
     </div>
