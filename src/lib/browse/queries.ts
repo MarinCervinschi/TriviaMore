@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
+import { STALE_TIME } from "@/lib/shared/cache"
+
 import {
   getClassWithSectionsFn,
   getCourseWithClassesFn,
@@ -14,19 +16,21 @@ export const browseQueries = {
     queryOptions({
       queryKey: ["browse", "platform-stats"],
       queryFn: () => getPlatformStatsFn(),
-      staleTime: 1000 * 60 * 10,
+      staleTime: STALE_TIME.SLOW,
     }),
 
   departments: () =>
     queryOptions({
       queryKey: ["browse", "departments"],
       queryFn: () => getDepartmentsFn(),
+      staleTime: STALE_TIME.SLOW,
     }),
 
   department: (code: string) =>
     queryOptions({
       queryKey: ["browse", "department", code],
       queryFn: () => getDepartmentWithCoursesFn({ data: { code } }),
+      staleTime: STALE_TIME.SLOW,
     }),
 
   course: (deptCode: string, courseCode: string) =>
@@ -34,6 +38,7 @@ export const browseQueries = {
       queryKey: ["browse", "course", deptCode, courseCode],
       queryFn: () =>
         getCourseWithClassesFn({ data: { deptCode, courseCode } }),
+      staleTime: STALE_TIME.SLOW,
     }),
 
   class: (deptCode: string, courseCode: string, classCode: string) =>
@@ -41,6 +46,7 @@ export const browseQueries = {
       queryKey: ["browse", "class", deptCode, courseCode, classCode],
       queryFn: () =>
         getClassWithSectionsFn({ data: { deptCode, courseCode, classCode } }),
+      staleTime: STALE_TIME.SLOW,
     }),
 
   section: (
@@ -62,5 +68,6 @@ export const browseQueries = {
         getSectionDetailFn({
           data: { deptCode, courseCode, classCode, sectionSlug },
         }),
+      staleTime: STALE_TIME.SLOW,
     }),
 }

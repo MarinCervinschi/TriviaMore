@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
+import { STALE_TIME } from "@/lib/shared/cache"
+
 import {
   getAdminRequestCountFn,
   getAdminRequestsFn,
@@ -13,31 +15,34 @@ export const requestQueries = {
     queryOptions({
       queryKey: ["requests", "mine"],
       queryFn: () => getUserRequestsFn(),
+      staleTime: STALE_TIME.STANDARD,
     }),
 
   requestDetail: (id: string) =>
     queryOptions({
       queryKey: ["requests", "detail", id],
       queryFn: () => getRequestDetailFn({ data: { id } }),
+      staleTime: STALE_TIME.STANDARD,
     }),
 
   contentTree: () =>
     queryOptions({
       queryKey: ["requests", "contentTree"],
       queryFn: () => getContentTreeForRequestsFn(),
-      staleTime: 1000 * 60 * 5,
+      staleTime: STALE_TIME.STANDARD,
     }),
 
   adminRequests: () =>
     queryOptions({
       queryKey: ["admin", "requests"],
       queryFn: () => getAdminRequestsFn(),
+      staleTime: STALE_TIME.STANDARD,
     }),
 
   adminRequestCount: () =>
     queryOptions({
       queryKey: ["admin", "requestCount"],
       queryFn: () => getAdminRequestCountFn(),
-      staleTime: 1000 * 30,
+      staleTime: STALE_TIME.FAST,
     }),
 }
