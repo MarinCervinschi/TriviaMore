@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import {
-  AlertTriangle,
   BookmarkIcon,
   Calendar,
   Camera,
@@ -11,23 +10,10 @@ import {
   Loader2,
   Save,
   Settings,
-  Trash2,
   TrendingUp,
   Trophy,
   X,
 } from "lucide-react"
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
