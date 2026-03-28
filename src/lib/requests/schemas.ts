@@ -103,6 +103,54 @@ export const reportSubmissionSchema = z
 
 export type ReportSubmissionInput = z.infer<typeof reportSubmissionSchema>
 
+// File upload submission: user uploads a file contribution
+export const fileUploadSubmissionSchema = z.object({
+  type: z.literal("file_upload"),
+  file_name: z.string().min(1, "Il nome del file è obbligatorio").trim(),
+  file_path: z.string().min(1, "Il percorso del file è obbligatorio"),
+  file_size: z.number().min(0),
+  comment: z.string().max(1000).nullable(),
+})
+
+export type FileUploadSubmissionInput = z.infer<typeof fileUploadSubmissionSchema>
+
+// ─── Stored JSONB validation (content only, no target fields) ───
+
+const storedSectionSchema = z.object({
+  type: z.literal("section"),
+  name: z.string().min(1),
+  description: z.string(),
+})
+
+const storedQuestionsSchema = z.object({
+  type: z.literal("questions"),
+  questions: z.array(
+    z.object({
+      content: z.string().min(1),
+      question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"]),
+      options: z.array(z.string()).nullable(),
+      correct_answer: z.array(z.string()),
+      explanation: z.string().nullable(),
+      difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+    }),
+  ),
+})
+
+const storedReportSchema = z.object({
+  type: z.literal("report"),
+  question_id: z.string().min(1),
+  question_content: z.string(),
+  reasons: z.array(z.string()).min(1),
+  comment: z.string().nullable(),
+})
+
+export const storedContentSchema = z.discriminatedUnion("type", [
+  storedSectionSchema,
+  storedQuestionsSchema,
+  storedReportSchema,
+  fileUploadSubmissionSchema,
+])
+
 // Admin action schema (unchanged)
 export const handleRequestSchema = z.object({
   id: z.string(),

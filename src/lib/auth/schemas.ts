@@ -16,6 +16,7 @@ const userBaseSchema = z.object({
   email: z
     .email("Email non valida")
     .max(100, "L'email non può superare i 100 caratteri")
+    .trim()
     .toLowerCase(),
 })
 
@@ -38,6 +39,7 @@ export const loginSchema = z.object({
   email: z
     .email("Email non valida")
     .max(100, "L'email non può superare i 100 caratteri")
+    .trim()
     .toLowerCase(),
   password: z
     .string()

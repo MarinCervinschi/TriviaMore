@@ -188,3 +188,31 @@ export type UpdateCourseInput = z.infer<typeof updateCourseSchema>
 export type UpdateClassInput = z.infer<typeof updateClassSchema>
 export type UpdateSectionInput = z.infer<typeof updateSectionSchema>
 export type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>
+
+// ─── Server-side validation schemas ───
+
+export const idSchema = z.object({
+  id: z.string().min(1, "ID obbligatorio"),
+})
+
+export const userRoleSchema = z.object({
+  id: z.string().min(1),
+  role: z.enum(["STUDENT", "MAINTAINER", "ADMIN", "SUPERADMIN"], {
+    message: "Ruolo non valido",
+  }),
+})
+
+export const departmentAdminSchema = z.object({
+  user_id: z.string().min(1),
+  department_id: z.string().min(1),
+})
+
+export const courseMaintainerSchema = z.object({
+  user_id: z.string().min(1),
+  course_id: z.string().min(1),
+})
+
+export const sectionAccessSchema = z.object({
+  user_id: z.string().min(1),
+  section_id: z.string().min(1),
+})
