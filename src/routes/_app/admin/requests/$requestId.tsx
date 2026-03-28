@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { ArrowLeft, CheckCircle2, MapPin, Settings2 } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Eye, MapPin, Settings2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { Badge } from "@/components/ui/badge"
@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button"
 import { HandleRequestDialog } from "@/components/requests/handle-request-dialog"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
+import { Textarea } from "@/components/ui/textarea"
 import { requestQueries } from "@/lib/requests/queries"
-import { useApproveRequest } from "@/lib/requests/mutations"
+import { useAcknowledgeReport, useApproveRequest } from "@/lib/requests/mutations"
 import { cn } from "@/lib/utils"
 
 import type { SubmittedContent, SubmittedQuestion } from "@/lib/requests/types"
@@ -31,9 +32,12 @@ function AdminRequestDetailPage() {
     requestQueries.requestDetail(requestId),
   )
   const [handleOpen, setHandleOpen] = useState(false)
+  const [reportNote, setReportNote] = useState("")
   const approve = useApproveRequest()
+  const acknowledge = useAcknowledgeReport()
 
   const isPending = request.status === "PENDING"
+  const isReport = request.request_type === "REPORT"
 
   return (
     <div className="space-y-6">
@@ -48,7 +52,7 @@ function AdminRequestDetailPage() {
           </Link>
         </Button>
 
-        {isPending && (
+        {isPending && !isReport && (
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -108,10 +112,34 @@ function AdminRequestDetailPage() {
       {/* Submitted content preview */}
       <div className="rounded-2xl border bg-card p-6 space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
-          Contenuto proposto
+          {isReport ? "Dettagli segnalazione" : "Contenuto proposto"}
         </h3>
         <ContentPreview submitted={request.submitted} />
       </div>
+
+      {/* Report acknowledge section */}
+      {isReport && isPending && (
+        <div className="rounded-2xl border bg-card p-6 space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
+            Rispondi alla segnalazione
+          </h3>
+          <Textarea
+            value={reportNote}
+            onChange={(e) => setReportNote(e.target.value)}
+            placeholder="Lascia una nota per l'utente (opzionale)"
+            rows={3}
+            className="rounded-xl"
+          />
+          <Button
+            className="gap-1.5 rounded-xl"
+            onClick={() => acknowledge.mutate({ id: request.id, admin_note: reportNote })}
+            disabled={acknowledge.isPending}
+          >
+            <Eye className="size-4" />
+            {acknowledge.isPending ? "Salvataggio..." : "Presa visione"}
+          </Button>
+        </div>
+      )}
 
       <HandleRequestDialog
         requestId={request.id}
@@ -124,7 +152,38 @@ function AdminRequestDetailPage() {
 
 // ─── Content Preview ───
 
+const REASON_LABELS: Record<string, string> = {
+  errata: "Errata",
+  imprecisa: "Imprecisa",
+  fuori_contesto: "Fuori contesto",
+  altro: "Altro",
+}
+
 function ContentPreview({ submitted }: { submitted: SubmittedContent }) {
+  if (submitted.type === "report") {
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-1.5">
+          {submitted.reasons.map((r) => (
+            <Badge key={r} variant="outline" className="rounded-full border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400">
+              {REASON_LABELS[r] ?? r}
+            </Badge>
+          ))}
+        </div>
+        {submitted.comment && (
+          <div className="rounded-xl border p-4">
+            <p className="text-xs font-medium text-muted-foreground mb-1">Commento utente</p>
+            <p className="text-sm">{submitted.comment}</p>
+          </div>
+        )}
+        <div className="rounded-xl border p-4">
+          <p className="text-xs font-medium text-muted-foreground mb-1">Domanda segnalata</p>
+          <p className="text-sm">{submitted.question_content}</p>
+        </div>
+      </div>
+    )
+  }
+
   if (submitted.type === "section") {
     return (
       <div className="rounded-xl border p-5 space-y-2">

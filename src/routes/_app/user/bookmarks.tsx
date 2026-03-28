@@ -8,6 +8,7 @@ import { Bookmark, ChevronDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
+import { ReportButton } from "@/components/requests/report-button"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserEmptyState } from "@/components/user/user-empty-state"
 import { UserHero } from "@/components/user/user-hero"
@@ -133,6 +134,10 @@ function BookmarkCard({
                 Salvato il{" "}
                 {new Date(bookmark.created_at).toLocaleDateString("it-IT")}
               </span>
+              <ReportButton
+                questionId={question.id}
+                questionContent={question.content}
+              />
               <Button
                 variant="ghost"
                 size="sm"

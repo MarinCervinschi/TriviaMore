@@ -8,6 +8,7 @@ import { CheckCircle, Clock, XCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
+import { ReportButton } from "@/components/requests/report-button"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
 import {
@@ -199,14 +200,17 @@ function ReviewItem({
             {question.content.length > 80 && "..."}
           </span>
         </div>
-        <Badge variant={getScoreBadgeVariant(isCorrect ? 30 : 0)}>
-          {isCorrect
-            ? "Corretta"
-            : userAnswerSet.size > 0
-              ? "Errata"
-              : "Non risposta"}{" "}
-          ({score} pt)
-        </Badge>
+        <div className="flex items-center gap-1">
+          <ReportButton questionId={question.id} questionContent={question.content} />
+          <Badge variant={getScoreBadgeVariant(isCorrect ? 30 : 0)}>
+            {isCorrect
+              ? "Corretta"
+              : userAnswerSet.size > 0
+                ? "Errata"
+                : "Non risposta"}{" "}
+            ({score} pt)
+          </Badge>
+        </div>
       </button>
 
       {open && (
