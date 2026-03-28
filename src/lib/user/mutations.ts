@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+import { useMutationWithToast } from "@/hooks/useMutationWithToast"
+
 import {
   addUserClassFn,
   removeUserClassFn,
@@ -8,15 +10,17 @@ import {
   updateProfileFn,
 } from "./server"
 
+const CLASS_INVALIDATE_KEYS = [["user", "classes"], ["user", "class-saved"], ["user", "profile"]]
+
 export function useAddClass() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (classId: string) => addUserClassFn({ data: { classId } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", "classes"] })
-      queryClient.invalidateQueries({ queryKey: ["user", "class-saved"] })
-      queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
+      for (const key of CLASS_INVALIDATE_KEYS) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
       toast.success("Classe aggiunta alla tua lista")
     },
     onError: (error: Error) => {
@@ -29,12 +33,11 @@ export function useRemoveClass() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (classId: string) =>
-      removeUserClassFn({ data: { classId } }),
+    mutationFn: (classId: string) => removeUserClassFn({ data: { classId } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", "classes"] })
-      queryClient.invalidateQueries({ queryKey: ["user", "class-saved"] })
-      queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
+      for (const key of CLASS_INVALIDATE_KEYS) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
       toast.success("Classe rimossa dalla tua lista")
     },
     onError: (error: Error) => {
@@ -44,19 +47,9 @@ export function useRemoveClass() {
 }
 
 export function useUpdateProfile() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: { name: string; image?: string | null }) =>
-      updateProfileFn({ data }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
-      queryClient.invalidateQueries({ queryKey: ["auth", "session"] })
-      toast.success("Profilo aggiornato")
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
+  return useMutationWithToast(updateProfileFn, {
+    successMessage: "Profilo aggiornato",
+    invalidateKeys: [["user", "profile"], ["auth", "session"]],
   })
 }
 

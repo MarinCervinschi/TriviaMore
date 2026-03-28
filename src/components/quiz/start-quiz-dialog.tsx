@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { Info, Loader2 } from "lucide-react"
 
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { quizQueries } from "@/lib/quiz/queries"
-import { startQuizFn } from "@/lib/quiz/server"
+import { useStartQuiz } from "@/lib/quiz/mutations"
 import type { EvaluationMode } from "@/lib/quiz/types"
 
 const TIME_STEPS = [5, 10, 15, 20, 30, 45, 60, 90, 120]
@@ -38,8 +37,6 @@ export function StartQuizDialog({
   sectionId: string
   maxQuestions: number
 }) {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const [questionCount, setQuestionCount] = useState(
     Math.min(30, maxQuestions),
   )
@@ -57,26 +54,17 @@ export function StartQuizDialog({
     (m) => m.id === (evalModeId ?? evalModes?.[0]?.id),
   )
 
-  const handleStart = async () => {
-    setLoading(true)
-    try {
-      const time = TIME_STEPS[timeStepIndex]
-      const result = await startQuizFn({
-        data: {
-          sectionId,
-          questionCount: Math.min(questionCount, maxQuestions),
-          timeLimit: time === undefined ? null : time,
-          quizMode: "STUDY" as const,
-          evaluationModeId: evalModeId,
-        },
-      })
-      onOpenChange(false)
-      navigate({ to: "/quiz/$quizId", params: { quizId: result.quizId } })
-    } catch (error) {
-      console.error("Failed to start quiz:", error)
-    } finally {
-      setLoading(false)
-    }
+  const mutation = useStartQuiz(() => onOpenChange(false))
+
+  const handleStart = () => {
+    const time = TIME_STEPS[timeStepIndex]
+    mutation.mutate({
+      sectionId,
+      questionCount: Math.min(questionCount, maxQuestions),
+      timeLimit: time === undefined ? null : time,
+      quizMode: "STUDY",
+      evaluationModeId: evalModeId,
+    })
   }
 
   return (
@@ -159,12 +147,12 @@ export function StartQuizDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={loading}
+            disabled={mutation.isPending}
           >
             Annulla
           </Button>
-          <Button onClick={handleStart} disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleStart} disabled={mutation.isPending}>
+            {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Inizia Quiz
           </Button>
         </DialogFooter>

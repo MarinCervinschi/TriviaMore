@@ -407,9 +407,15 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
     // Order questions by quiz order
     const orderedQuestions = quizQuestions
       .map((qq) => questions?.find((q) => q.id === qq.question_id))
-      .filter(Boolean)
+      .filter((q): q is NonNullable<typeof q> => Boolean(q))
 
-    const quiz = attempt.quiz as any
+    const quiz = attempt.quiz as unknown as {
+      id: string
+      quiz_mode: "STUDY" | "EXAM_SIMULATION"
+      time_limit: number | null
+      section: QuizAttemptResult["quiz"]["section"]
+      evaluation_mode: EvaluationMode
+    }
 
     return {
       id: attempt.id,
@@ -422,8 +428,8 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
         time_limit: quiz.time_limit,
         section: quiz.section,
         evaluation_mode: quiz.evaluation_mode,
-        questions: orderedQuestions as any,
+        questions: orderedQuestions as QuizAttemptResult["quiz"]["questions"],
       },
-      answers: (answers ?? []) as any,
+      answers: (answers ?? []) as QuizAttemptResult["answers"],
     }
   })

@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+import { useMutationWithToast } from "@/hooks/useMutationWithToast"
+
 import {
   addCourseMaintainerFn,
   addDepartmentAdminFn,
@@ -27,35 +29,10 @@ import {
   updateUserRoleFn,
 } from "./server"
 
-function useAdminMutation<TInput, TOutput>(
-  mutationFn: (input: { data: TInput }) => Promise<TOutput>,
-  options: {
-    successMessage: string
-    invalidateKeys: string[][]
-    onSuccess?: () => void
-  },
-) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: TInput) => mutationFn({ data }),
-    onSuccess: () => {
-      for (const key of options.invalidateKeys) {
-        queryClient.invalidateQueries({ queryKey: key })
-      }
-      toast.success(options.successMessage)
-      options.onSuccess?.()
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
-
 // ─── Departments ───
 
 export function useCreateDepartment(onSuccess?: () => void) {
-  return useAdminMutation(createDepartmentFn, {
+  return useMutationWithToast(createDepartmentFn, {
     successMessage: "Dipartimento creato con successo",
     invalidateKeys: [["admin", "departments"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -63,7 +40,7 @@ export function useCreateDepartment(onSuccess?: () => void) {
 }
 
 export function useUpdateDepartment(onSuccess?: () => void) {
-  return useAdminMutation(updateDepartmentFn, {
+  return useMutationWithToast(updateDepartmentFn, {
     successMessage: "Dipartimento aggiornato con successo",
     invalidateKeys: [["admin", "departments"], ["admin", "department"], ["browse"]],
     onSuccess,
@@ -71,7 +48,7 @@ export function useUpdateDepartment(onSuccess?: () => void) {
 }
 
 export function useDeleteDepartment(onSuccess?: () => void) {
-  return useAdminMutation(deleteDepartmentFn, {
+  return useMutationWithToast(deleteDepartmentFn, {
     successMessage: "Dipartimento eliminato con successo",
     invalidateKeys: [["admin", "departments"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -81,7 +58,7 @@ export function useDeleteDepartment(onSuccess?: () => void) {
 // ─── Courses ───
 
 export function useCreateCourse(onSuccess?: () => void) {
-  return useAdminMutation(createCourseFn, {
+  return useMutationWithToast(createCourseFn, {
     successMessage: "Corso creato con successo",
     invalidateKeys: [
       ["admin", "department"],
@@ -93,7 +70,7 @@ export function useCreateCourse(onSuccess?: () => void) {
 }
 
 export function useUpdateCourse(onSuccess?: () => void) {
-  return useAdminMutation(updateCourseFn, {
+  return useMutationWithToast(updateCourseFn, {
     successMessage: "Corso aggiornato con successo",
     invalidateKeys: [["admin", "department"], ["admin", "course"], ["browse"]],
     onSuccess,
@@ -101,7 +78,7 @@ export function useUpdateCourse(onSuccess?: () => void) {
 }
 
 export function useDeleteCourse(onSuccess?: () => void) {
-  return useAdminMutation(deleteCourseFn, {
+  return useMutationWithToast(deleteCourseFn, {
     successMessage: "Corso eliminato con successo",
     invalidateKeys: [
       ["admin", "department"],
@@ -115,7 +92,7 @@ export function useDeleteCourse(onSuccess?: () => void) {
 // ─── Classes ───
 
 export function useCreateClass(onSuccess?: () => void) {
-  return useAdminMutation(createClassFn, {
+  return useMutationWithToast(createClassFn, {
     successMessage: "Classe creata con successo",
     invalidateKeys: [["admin", "course"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -123,7 +100,7 @@ export function useCreateClass(onSuccess?: () => void) {
 }
 
 export function useUpdateClass(onSuccess?: () => void) {
-  return useAdminMutation(updateClassFn, {
+  return useMutationWithToast(updateClassFn, {
     successMessage: "Classe aggiornata con successo",
     invalidateKeys: [["admin", "course"], ["admin", "class"], ["browse"]],
     onSuccess,
@@ -131,7 +108,7 @@ export function useUpdateClass(onSuccess?: () => void) {
 }
 
 export function useDeleteClass(onSuccess?: () => void) {
-  return useAdminMutation(deleteClassFn, {
+  return useMutationWithToast(deleteClassFn, {
     successMessage: "Classe eliminata con successo",
     invalidateKeys: [["admin", "course"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -141,7 +118,7 @@ export function useDeleteClass(onSuccess?: () => void) {
 // ─── Sections ───
 
 export function useCreateSection(onSuccess?: () => void) {
-  return useAdminMutation(createSectionFn, {
+  return useMutationWithToast(createSectionFn, {
     successMessage: "Sezione creata con successo",
     invalidateKeys: [["admin", "class"], ["admin", "stats"], ["admin", "privateSections"], ["browse"]],
     onSuccess,
@@ -149,7 +126,7 @@ export function useCreateSection(onSuccess?: () => void) {
 }
 
 export function useUpdateSection(onSuccess?: () => void) {
-  return useAdminMutation(updateSectionFn, {
+  return useMutationWithToast(updateSectionFn, {
     successMessage: "Sezione aggiornata con successo",
     invalidateKeys: [["admin", "class"], ["admin", "section"], ["admin", "privateSections"], ["browse"]],
     onSuccess,
@@ -157,7 +134,7 @@ export function useUpdateSection(onSuccess?: () => void) {
 }
 
 export function useDeleteSection(onSuccess?: () => void) {
-  return useAdminMutation(deleteSectionFn, {
+  return useMutationWithToast(deleteSectionFn, {
     successMessage: "Sezione eliminata con successo",
     invalidateKeys: [["admin", "class"], ["admin", "stats"], ["admin", "privateSections"], ["browse"]],
     onSuccess,
@@ -167,7 +144,7 @@ export function useDeleteSection(onSuccess?: () => void) {
 // ─── Questions ───
 
 export function useCreateQuestion(onSuccess?: () => void) {
-  return useAdminMutation(createQuestionFn, {
+  return useMutationWithToast(createQuestionFn, {
     successMessage: "Domanda creata con successo",
     invalidateKeys: [["admin", "section"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -195,7 +172,7 @@ export function useCreateQuestionsBulk(onSuccess?: () => void) {
 }
 
 export function useUpdateQuestion(onSuccess?: () => void) {
-  return useAdminMutation(updateQuestionFn, {
+  return useMutationWithToast(updateQuestionFn, {
     successMessage: "Domanda aggiornata con successo",
     invalidateKeys: [
       ["admin", "section"],
@@ -207,7 +184,7 @@ export function useUpdateQuestion(onSuccess?: () => void) {
 }
 
 export function useDeleteQuestion(onSuccess?: () => void) {
-  return useAdminMutation(deleteQuestionFn, {
+  return useMutationWithToast(deleteQuestionFn, {
     successMessage: "Domanda eliminata con successo",
     invalidateKeys: [["admin", "section"], ["admin", "stats"], ["browse"]],
     onSuccess,
@@ -223,7 +200,7 @@ const USER_INVALIDATE_KEYS = [
 ]
 
 export function useUpdateUserRole(onSuccess?: () => void) {
-  return useAdminMutation(updateUserRoleFn, {
+  return useMutationWithToast(updateUserRoleFn, {
     successMessage: "Ruolo aggiornato con successo",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -231,7 +208,7 @@ export function useUpdateUserRole(onSuccess?: () => void) {
 }
 
 export function useAddDepartmentAdmin(onSuccess?: () => void) {
-  return useAdminMutation(addDepartmentAdminFn, {
+  return useMutationWithToast(addDepartmentAdminFn, {
     successMessage: "Admin dipartimento aggiunto",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -239,7 +216,7 @@ export function useAddDepartmentAdmin(onSuccess?: () => void) {
 }
 
 export function useRemoveDepartmentAdmin(onSuccess?: () => void) {
-  return useAdminMutation(removeDepartmentAdminFn, {
+  return useMutationWithToast(removeDepartmentAdminFn, {
     successMessage: "Admin dipartimento rimosso",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -247,7 +224,7 @@ export function useRemoveDepartmentAdmin(onSuccess?: () => void) {
 }
 
 export function useAddCourseMaintainer(onSuccess?: () => void) {
-  return useAdminMutation(addCourseMaintainerFn, {
+  return useMutationWithToast(addCourseMaintainerFn, {
     successMessage: "Maintainer corso aggiunto",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -255,7 +232,7 @@ export function useAddCourseMaintainer(onSuccess?: () => void) {
 }
 
 export function useRemoveCourseMaintainer(onSuccess?: () => void) {
-  return useAdminMutation(removeCourseMaintainerFn, {
+  return useMutationWithToast(removeCourseMaintainerFn, {
     successMessage: "Maintainer corso rimosso",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -263,7 +240,7 @@ export function useRemoveCourseMaintainer(onSuccess?: () => void) {
 }
 
 export function useAddSectionAccess(onSuccess?: () => void) {
-  return useAdminMutation(addSectionAccessFn, {
+  return useMutationWithToast(addSectionAccessFn, {
     successMessage: "Accesso sezione concesso",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,
@@ -271,7 +248,7 @@ export function useAddSectionAccess(onSuccess?: () => void) {
 }
 
 export function useRemoveSectionAccess(onSuccess?: () => void) {
-  return useAdminMutation(removeSectionAccessFn, {
+  return useMutationWithToast(removeSectionAccessFn, {
     successMessage: "Accesso sezione revocato",
     invalidateKeys: USER_INVALIDATE_KEYS,
     onSuccess,

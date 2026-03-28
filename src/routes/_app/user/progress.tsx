@@ -374,8 +374,8 @@ function ProgressPage() {
                           name === "averageScore" ? "Media" : "Migliore",
                         ]}
                         labelFormatter={(_label, payload) => {
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          const item = (payload as any)?.[0]?.payload
+                          const items = payload as unknown as ReadonlyArray<{ payload?: { fullName?: string } }>
+                          const item = items?.[0]?.payload
                           return item?.fullName ?? _label
                         }}
                       />
