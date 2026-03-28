@@ -106,58 +106,17 @@ export type Database = {
           },
         ]
       }
-      content_request_comments: {
-        Row: {
-          id: string
-          request_id: string
-          user_id: string
-          content: string
-          created_at: string
-        }
-        Insert: {
-          id: string
-          request_id: string
-          user_id: string
-          content: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          request_id?: string
-          user_id?: string
-          content?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "content_request_comments_request_id_fkey"
-            columns: ["request_id"]
-            isOneToOne: false
-            referencedRelation: "content_requests"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "content_request_comments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       content_requests: {
         Row: {
           id: string
           user_id: string
           request_type: Database["public"]["Enums"]["content_request_type"]
           status: Database["public"]["Enums"]["content_request_status"]
-          title: string
-          description: string
+          submitted_content: Json
           target_department_id: string | null
           target_course_id: string | null
           target_class_id: string | null
           target_section_id: string | null
-          question_id: string | null
           handled_by: string | null
           handled_at: string | null
           admin_note: string | null
@@ -169,13 +128,11 @@ export type Database = {
           user_id: string
           request_type: Database["public"]["Enums"]["content_request_type"]
           status?: Database["public"]["Enums"]["content_request_status"]
-          title: string
-          description: string
+          submitted_content: Json
           target_department_id?: string | null
           target_course_id?: string | null
           target_class_id?: string | null
           target_section_id?: string | null
-          question_id?: string | null
           handled_by?: string | null
           handled_at?: string | null
           admin_note?: string | null
@@ -187,13 +144,11 @@ export type Database = {
           user_id?: string
           request_type?: Database["public"]["Enums"]["content_request_type"]
           status?: Database["public"]["Enums"]["content_request_status"]
-          title?: string
-          description?: string
+          submitted_content?: Json
           target_department_id?: string | null
           target_course_id?: string | null
           target_class_id?: string | null
           target_section_id?: string | null
-          question_id?: string | null
           handled_by?: string | null
           handled_at?: string | null
           admin_note?: string | null
@@ -234,13 +189,6 @@ export type Database = {
             columns: ["target_section_id"]
             isOneToOne: false
             referencedRelation: "sections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "content_requests_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "questions"
             referencedColumns: ["id"]
           },
           {
@@ -934,7 +882,7 @@ export type Database = {
     }
     Enums: {
       content_request_status: "PENDING" | "APPROVED" | "REJECTED" | "NEEDS_REVISION"
-      content_request_type: "NEW_SECTION" | "NEW_QUESTIONS" | "ERROR_REPORT" | "CONTENT_REQUEST"
+      content_request_type: "NEW_SECTION" | "NEW_QUESTIONS"
       course_type: "BACHELOR" | "MASTER"
       difficulty: "EASY" | "MEDIUM" | "HARD"
       notification_type: "REQUEST_STATUS_CHANGED" | "NEW_REQUEST_RECEIVED" | "REQUEST_NEEDS_REVISION" | "REQUEST_REVISED" | "CONTENT_UPDATED" | "NEW_SECTION_ADDED"
@@ -1072,7 +1020,7 @@ export const Constants = {
   public: {
     Enums: {
       content_request_status: ["PENDING", "APPROVED", "REJECTED", "NEEDS_REVISION"],
-      content_request_type: ["NEW_SECTION", "NEW_QUESTIONS", "ERROR_REPORT", "CONTENT_REQUEST"],
+      content_request_type: ["NEW_SECTION", "NEW_QUESTIONS"],
       course_type: ["BACHELOR", "MASTER"],
       difficulty: ["EASY", "MEDIUM", "HARD"],
       notification_type: ["REQUEST_STATUS_CHANGED", "NEW_REQUEST_RECEIVED", "REQUEST_NEEDS_REVISION", "REQUEST_REVISED", "CONTENT_UPDATED", "NEW_SECTION_ADDED"],

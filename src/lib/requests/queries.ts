@@ -9,7 +9,6 @@ import {
 } from "./server"
 
 export const requestQueries = {
-  // User queries
   userRequests: () =>
     queryOptions({
       queryKey: ["requests", "mine"],
@@ -29,7 +28,6 @@ export const requestQueries = {
       staleTime: 1000 * 60 * 5,
     }),
 
-  // Admin queries
   adminRequests: () =>
     queryOptions({
       queryKey: ["admin", "requests"],

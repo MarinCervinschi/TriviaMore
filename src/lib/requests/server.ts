@@ -5,11 +5,14 @@ import { createNotification, notifyAdminsInScope } from "@/lib/notifications/hel
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
-import type {
-  ContentRequestCommentWithUser,
-  ContentRequestDetail,
-  ContentRequestWithMeta,
-} from "./types"
+import type { AdminContentRequest, ContentRequestWithMeta, SubmittedContent } from "./types"
+
+const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
+
+function toDbOptions(options: string[] | null | undefined) {
+  if (!options) return null
+  return options.map((text, i) => ({ id: ID_LETTERS[i], text }))
+}
 
 // Helper: get authenticated user or throw
 async function getAuthUser() {
@@ -22,7 +25,7 @@ async function getAuthUser() {
   return { supabase, user }
 }
 
-// Helper: build a human-readable target label from the hierarchy
+// Helper: build target label from hierarchy
 async function buildTargetLabel(
   supabase: ReturnType<typeof createServerSupabaseClient>,
   request: {
@@ -70,15 +73,22 @@ async function buildTargetLabel(
       .select("name")
       .eq("id", request.target_department_id)
       .single()
-    if (data) {
-      parts.push(data.name)
-    }
+    if (data) parts.push(data.name)
   }
 
   return parts.join(" > ") || "Sconosciuto"
 }
 
-// ─── Content Tree (for target selection in request form) ───
+// Helper: generate a display title from submitted content
+function generateTitle(submitted: SubmittedContent): string {
+  if (submitted.type === "section") {
+    return `Nuova sezione: ${submitted.name}`
+  }
+  const count = submitted.questions.length
+  return `${count} ${count === 1 ? "domanda" : "domande"}`
+}
+
+// ─── Content Tree (for target selection in form) ───
 
 export type RequestTargetTree = {
   id: string
@@ -101,9 +111,7 @@ export const getContentTreeForRequestsFn = createServerFn({
 
   const { data, error } = await supabase
     .from("departments")
-    .select(
-      "id, name, courses(id, name, classes(id, name, sections(id, name)))",
-    )
+    .select("id, name, courses(id, name, classes(id, name, sections(id, name)))")
     .order("position")
 
   if (error) throw new Error("Errore nel caricamento della struttura")
@@ -122,147 +130,92 @@ export const getUserRequestsFn = createServerFn({ method: "GET" }).handler(
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
 
-    if (error) throw new Error("Errore nel caricamento delle richieste")
+    if (error) throw new Error("Errore nel caricamento delle proposte")
 
-    // Build target labels
     const requests: ContentRequestWithMeta[] = []
     for (const req of data ?? []) {
       const target_label = await buildTargetLabel(supabase, req)
-      requests.push({
-        ...req,
-        user: { id: user.id, name: null, email: null, image: null },
-        target_label,
-      })
+      const submitted = req.submitted_content as unknown as SubmittedContent
+      requests.push({ ...req, target_label, submitted })
     }
 
     return requests
   },
 )
 
-export const getRequestDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }): Promise<ContentRequestDetail> => {
-    const { supabase } = await getAuthUser()
-
-    // Fetch request (RLS ensures user sees own + admin scope)
-    const { data: request, error } = await supabase
-      .from("content_requests")
-      .select("*")
-      .eq("id", id)
-      .single()
-
-    if (error || !request) throw new Error("Richiesta non trovata")
-
-    // Fetch request owner profile (own profile is always accessible via RLS)
-    const { data: ownerProfile } = await supabase
-      .from("profiles")
-      .select("id, name, email, image")
-      .eq("id", request.user_id)
-      .single()
-
-    // Fetch comments
-    const { data: commentsData } = await supabase
-      .from("content_request_comments")
-      .select("*")
-      .eq("request_id", id)
-      .order("created_at", { ascending: true })
-
-    // Try to fetch profiles for all comment authors
-    // RLS: students can only see their own profile, admins/superadmins can see all
-    const commentUserIds = [
-      ...new Set((commentsData ?? []).map((c) => c.user_id)),
-    ]
-    const { data: commentProfiles } = commentUserIds.length > 0
-      ? await supabase
-          .from("profiles")
-          .select("id, name, email, image, role")
-          .in("id", commentUserIds)
-      : { data: [] }
-
-    const profileMap = new Map(
-      (commentProfiles ?? []).map((p) => [p.id, p]),
-    )
-
-    // For comment authors not visible via RLS (staff profiles seen by students),
-    // brand them as "TriviaMore Team"
-    const comments: ContentRequestCommentWithUser[] = (commentsData ?? []).map(
-      (c) => {
-        const profile = profileMap.get(c.user_id)
-        if (profile) {
-          return { ...c, user: profile }
-        }
-        // Profile not accessible via RLS — this is a staff member seen by a student
-        return {
-          ...c,
-          user: {
-            id: c.user_id,
-            name: "TriviaMore Team",
-            email: null,
-            image: "/logo192.png",
-            role: "ADMIN" as const,
-          },
-        }
-      },
-    )
-
-    const target_label = await buildTargetLabel(supabase, request)
-
-    return {
-      ...request,
-      user: ownerProfile ?? {
-        id: request.user_id,
-        name: null,
-        email: null,
-        image: null,
-      },
-      target_label,
-      comments,
-    }
-  })
-
 // ─── User Mutations ───
 
 export const createRequestFn = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
-      request_type: string
-      title: string
-      description: string
-      target_department_id?: string | null
-      target_course_id?: string | null
-      target_class_id?: string | null
-      target_section_id?: string | null
-      question_id?: string | null
+      type: "section" | "questions"
+      target_class_id?: string
+      target_section_id?: string
+      submitted_content: unknown
     }) => input,
   )
   .handler(async ({ data }) => {
     const { supabase, user } = await getAuthUser()
 
+    const submitted = data.submitted_content as SubmittedContent
     const id = crypto.randomUUID()
+
+    // Resolve target hierarchy for the request
+    let targetDeptId: string | null = null
+    let targetCourseId: string | null = null
+    let targetClassId = data.target_class_id ?? null
+    let targetSectionId = data.target_section_id ?? null
+
+    // Walk up to fill parent IDs
+    if (targetSectionId) {
+      const { data: section } = await supabase
+        .from("sections")
+        .select("class_id")
+        .eq("id", targetSectionId)
+        .single()
+      if (section) targetClassId = section.class_id
+    }
+
+    if (targetClassId) {
+      const { data: cls } = await supabase
+        .from("classes")
+        .select("course_id")
+        .eq("id", targetClassId)
+        .single()
+      if (cls) {
+        targetCourseId = cls.course_id
+        const { data: course } = await supabase
+          .from("courses")
+          .select("department_id")
+          .eq("id", cls.course_id)
+          .single()
+        if (course) targetDeptId = course.department_id
+      }
+    }
+
+    const requestType = data.type === "section" ? "NEW_SECTION" as const : "NEW_QUESTIONS" as const
 
     const { error } = await supabase.from("content_requests").insert({
       id,
       user_id: user.id,
-      request_type: data.request_type as "NEW_SECTION" | "NEW_QUESTIONS" | "ERROR_REPORT" | "CONTENT_REQUEST",
-      title: data.title,
-      description: data.description,
-      target_department_id: data.target_department_id ?? null,
-      target_course_id: data.target_course_id ?? null,
-      target_class_id: data.target_class_id ?? null,
-      target_section_id: data.target_section_id ?? null,
-      question_id: data.question_id ?? null,
+      request_type: requestType,
+      submitted_content: JSON.parse(JSON.stringify(data.submitted_content)),
+      target_department_id: targetDeptId,
+      target_course_id: targetCourseId,
+      target_class_id: targetClassId,
+      target_section_id: targetSectionId,
     })
 
-    if (error) throw new Error("Errore nella creazione della richiesta")
+    if (error) throw new Error("Errore nell'invio della proposta")
 
     // Notify admins in scope
     await notifyAdminsInScope(supabaseAdmin, {
       id,
-      title: data.title,
-      target_department_id: data.target_department_id ?? null,
-      target_course_id: data.target_course_id ?? null,
-      target_class_id: data.target_class_id ?? null,
-      target_section_id: data.target_section_id ?? null,
+      title: generateTitle(submitted),
+      target_department_id: targetDeptId,
+      target_course_id: targetCourseId,
+      target_class_id: targetClassId,
+      target_section_id: targetSectionId,
     })
 
     return { id }
@@ -270,12 +223,11 @@ export const createRequestFn = createServerFn({ method: "POST" })
 
 export const reviseRequestFn = createServerFn({ method: "POST" })
   .inputValidator(
-    (input: { id: string; title?: string; description?: string }) => input,
+    (input: { id: string; submitted_content: unknown }) => input,
   )
   .handler(async ({ data }) => {
     const { supabase, user } = await getAuthUser()
 
-    // Verify the request belongs to the user and is NEEDS_REVISION
     const { data: existing, error: fetchError } = await supabase
       .from("content_requests")
       .select("*")
@@ -285,26 +237,25 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
       .single()
 
     if (fetchError || !existing)
-      throw new Error("Richiesta non trovata o non modificabile")
-
-    const updates: Record<string, unknown> = { status: "PENDING" }
-    if (data.title) updates.title = data.title
-    if (data.description) updates.description = data.description
+      throw new Error("Proposta non trovata o non modificabile")
 
     const { error } = await supabase
       .from("content_requests")
-      .update(updates)
+      .update({
+        status: "PENDING" as const,
+        submitted_content: JSON.parse(JSON.stringify(data.submitted_content)),
+        admin_note: null,
+      })
       .eq("id", data.id)
 
-    if (error) throw new Error("Errore nell'aggiornamento della richiesta")
+    if (error) throw new Error("Errore nell'aggiornamento della proposta")
 
-    // Notify the admin who handled it
     if (existing.handled_by) {
       await createNotification(supabaseAdmin, {
         userId: existing.handled_by,
         type: "REQUEST_REVISED",
-        title: "Richiesta revisionata",
-        body: existing.title,
+        title: "Proposta aggiornata",
+        body: generateTitle(data.submitted_content as SubmittedContent),
         referenceId: data.id,
         referenceType: "content_request",
         link: `/admin/requests/${data.id}`,
@@ -315,39 +266,39 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
 // ─── Admin Queries ───
 
 export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ContentRequestWithMeta[]> => {
+  async (): Promise<AdminContentRequest[]> => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    // RLS ensures admin only sees requests in their scope
     const { data, error } = await supabase
       .from("content_requests")
       .select("*")
       .order("created_at", { ascending: false })
 
-    if (error) throw new Error("Errore nel caricamento delle richieste")
+    if (error) throw new Error("Errore nel caricamento delle proposte")
 
-    // Fetch user profiles for all requests
     const userIds = [...new Set((data ?? []).map((r) => r.user_id))]
-    const { data: profiles } = await supabase
+    const { data: profiles } = await supabaseAdmin
       .from("profiles")
       .select("id, name, email, image")
       .in("id", userIds.length > 0 ? userIds : ["__none__"])
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]))
 
-    const requests: ContentRequestWithMeta[] = []
+    const requests: AdminContentRequest[] = []
     for (const req of data ?? []) {
       const target_label = await buildTargetLabel(supabase, req)
+      const submitted = req.submitted_content as unknown as SubmittedContent
       requests.push({
         ...req,
+        target_label,
+        submitted,
         user: profileMap.get(req.user_id) ?? {
           id: req.user_id,
           name: null,
           email: null,
           image: null,
         },
-        target_label,
       })
     }
 
@@ -366,10 +317,28 @@ export const getAdminRequestCountFn = createServerFn({
     .select("*", { count: "exact", head: true })
     .eq("status", "PENDING")
 
-  if (error) throw new Error("Errore nel conteggio delle richieste")
-
+  if (error) throw new Error("Errore nel conteggio delle proposte")
   return count ?? 0
 })
+
+export const getRequestDetailFn = createServerFn({ method: "GET" })
+  .inputValidator((input: { id: string }) => input)
+  .handler(async ({ data: { id } }): Promise<ContentRequestWithMeta> => {
+    const { supabase } = await getAuthUser()
+
+    const { data: request, error } = await supabase
+      .from("content_requests")
+      .select("*")
+      .eq("id", id)
+      .single()
+
+    if (error || !request) throw new Error("Proposta non trovata")
+
+    const target_label = await buildTargetLabel(supabase, request)
+    const submitted = request.submitted_content as unknown as SubmittedContent
+
+    return { ...request, target_label, submitted }
+  })
 
 // ─── Admin Mutations ───
 
@@ -377,7 +346,7 @@ export const handleRequestFn = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
       id: string
-      status: "APPROVED" | "REJECTED" | "NEEDS_REVISION"
+      status: "REJECTED" | "NEEDS_REVISION"
       admin_note?: string
     }) => input,
   )
@@ -385,14 +354,13 @@ export const handleRequestFn = createServerFn({ method: "POST" })
     const admin = await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    // Fetch request to get the owner
     const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id, title")
+      .select("user_id")
       .eq("id", data.id)
       .single()
 
-    if (fetchError || !request) throw new Error("Richiesta non trovata")
+    if (fetchError || !request) throw new Error("Proposta non trovata")
 
     const { error } = await supabase
       .from("content_requests")
@@ -404,13 +372,11 @@ export const handleRequestFn = createServerFn({ method: "POST" })
       })
       .eq("id", data.id)
 
-    if (error) throw new Error("Errore nella gestione della richiesta")
+    if (error) throw new Error("Errore nella gestione della proposta")
 
-    // Notify the request owner
-    const statusLabels: Record<string, string> = {
-      APPROVED: "approvata",
+    const statusLabels = {
       REJECTED: "rifiutata",
-      NEEDS_REVISION: "necessita di revisione",
+      NEEDS_REVISION: "necessita di modifiche",
     }
 
     const notificationType =
@@ -421,77 +387,91 @@ export const handleRequestFn = createServerFn({ method: "POST" })
     await createNotification(supabaseAdmin, {
       userId: request.user_id,
       type: notificationType,
-      title: `Richiesta ${statusLabels[data.status]}`,
-      body: request.title,
+      title: `Proposta ${statusLabels[data.status]}`,
       referenceId: data.id,
       referenceType: "content_request",
-      link: `/user/requests/${data.id}`,
+      link: `/user/requests`,
     })
   })
 
-export const addRequestCommentFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { request_id: string; content: string }) => input,
-  )
+export const approveRequestFn = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string }) => input)
   .handler(async ({ data }) => {
-    const { supabase, user } = await getAuthUser()
+    const admin = await requireAdmin()
+    const supabase = createServerSupabaseClient()
 
-    const id = crypto.randomUUID()
-
-    const { error } = await supabase
-      .from("content_request_comments")
-      .insert({
-        id,
-        request_id: data.request_id,
-        user_id: user.id,
-        content: data.content,
-      })
-
-    if (error) throw new Error("Errore nell'aggiunta del commento")
-
-    // Notify the other party about the new comment
-    const { data: commenterProfile } = await supabase
-      .from("profiles")
-      .select("role, name")
-      .eq("id", user.id)
-      .single()
-
-    const { data: request } = await supabase
+    const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id, title, handled_by, target_department_id, target_course_id, target_class_id, target_section_id")
-      .eq("id", data.request_id)
+      .select("*")
+      .eq("id", data.id)
       .single()
 
-    if (request && commenterProfile) {
-      const isStaff = commenterProfile.role !== "STUDENT"
-      const snippet = data.content.slice(0, 100)
+    if (fetchError || !request) throw new Error("Proposta non trovata")
+    if (request.status !== "PENDING") throw new Error("La proposta non e in attesa")
 
-      if (isStaff && request.user_id !== user.id) {
-        // Staff commenting → notify the request owner
-        await createNotification(supabaseAdmin, {
-          userId: request.user_id,
-          type: "REQUEST_STATUS_CHANGED",
-          title: "Nuovo commento sulla tua richiesta",
-          body: `TriviaMore Team: ${snippet}`,
-          referenceId: data.request_id,
-          referenceType: "content_request",
-          link: `/user/requests/${data.request_id}`,
+    const submitted = request.submitted_content as unknown as SubmittedContent
+
+    // Create the actual content in the main DB
+    if (submitted.type === "section") {
+      const targetClassId = request.target_class_id
+      if (!targetClassId) throw new Error("Classe target mancante")
+
+      const { count } = await supabaseAdmin
+        .from("sections")
+        .select("*", { count: "exact", head: true })
+        .eq("class_id", targetClassId)
+
+      const { error } = await supabaseAdmin
+        .from("sections")
+        .insert({
+          id: crypto.randomUUID(),
+          name: submitted.name,
+          description: submitted.description || null,
+          class_id: targetClassId,
+          is_public: true,
+          position: (count ?? 0) + 1,
         })
-      } else if (!isStaff) {
-        // Student commenting → notify admins in scope
-        await notifyAdminsInScope(supabaseAdmin, {
-          id: data.request_id,
-          title: `${commenterProfile.name ?? "Utente"}: ${snippet}`,
-          target_department_id: request.target_department_id,
-          target_course_id: request.target_course_id,
-          target_class_id: request.target_class_id,
-          target_section_id: request.target_section_id,
-        }, {
-          notificationTitle: "Nuovo commento su una richiesta",
-          notificationType: "REQUEST_REVISED",
-        })
-      }
+
+      if (error) throw new Error("Errore nella creazione della sezione: " + error.message)
+    } else if (submitted.type === "questions") {
+      const targetSectionId = request.target_section_id
+      if (!targetSectionId) throw new Error("Sezione target mancante")
+
+      const rows = submitted.questions.map((q) => ({
+        id: crypto.randomUUID(),
+        content: q.content,
+        question_type: q.question_type,
+        options: toDbOptions(q.options),
+        correct_answer: q.correct_answer,
+        explanation: q.explanation || null,
+        difficulty: q.difficulty,
+        section_id: targetSectionId,
+      }))
+
+      const { error } = await supabaseAdmin.from("questions").insert(rows)
+      if (error) throw new Error("Errore nella creazione delle domande: " + error.message)
     }
 
-    return { id }
+    // Mark request as approved
+    const { error: updateError } = await supabase
+      .from("content_requests")
+      .update({
+        status: "APPROVED" as const,
+        handled_by: admin.id,
+        handled_at: new Date().toISOString(),
+      })
+      .eq("id", data.id)
+
+    if (updateError) throw new Error("Errore nell'aggiornamento della proposta")
+
+    // Notify the user
+    await createNotification(supabaseAdmin, {
+      userId: request.user_id,
+      type: "REQUEST_STATUS_CHANGED",
+      title: "Proposta approvata!",
+      body: generateTitle(submitted),
+      referenceId: data.id,
+      referenceType: "content_request",
+      link: `/user/requests`,
+    })
   })

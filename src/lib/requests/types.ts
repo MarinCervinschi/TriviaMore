@@ -1,33 +1,44 @@
 import type { Tables } from "@/lib/supabase/database.types"
 
 export type ContentRequest = Tables<"content_requests">
-export type ContentRequestComment = Tables<"content_request_comments">
-
 export type ContentRequestType = ContentRequest["request_type"]
 export type ContentRequestStatus = ContentRequest["status"]
 
-// Request with user info and target breadcrumb for list views
+// Typed submitted content structures
+export type SubmittedSection = {
+  type: "section"
+  name: string
+  description: string
+}
+
+export type SubmittedQuestion = {
+  content: string
+  question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
+  options: string[] | null
+  correct_answer: string[]
+  explanation: string | null
+  difficulty: "EASY" | "MEDIUM" | "HARD"
+}
+
+export type SubmittedQuestions = {
+  type: "questions"
+  questions: SubmittedQuestion[]
+}
+
+export type SubmittedContent = SubmittedSection | SubmittedQuestions
+
+// Request with target breadcrumb for list views
 export type ContentRequestWithMeta = ContentRequest & {
-  user: {
-    id: string
-    name: string | null
-    email: string | null
-    image: string | null
-  }
   target_label: string
+  submitted: SubmittedContent
 }
 
-// Request detail with comments for detail view
-export type ContentRequestDetail = ContentRequestWithMeta & {
-  comments: ContentRequestCommentWithUser[]
-}
-
-export type ContentRequestCommentWithUser = ContentRequestComment & {
+// Admin view includes user info
+export type AdminContentRequest = ContentRequestWithMeta & {
   user: {
     id: string
     name: string | null
     email: string | null
     image: string | null
-    role: string
   }
 }
