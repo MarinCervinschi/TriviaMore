@@ -8,7 +8,8 @@ import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import type { HeroContent } from "./data"
 
 export function HeroSection({
-  title,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  title: _title,
   subtitle,
   primaryCTA,
   secondaryCTA,
@@ -62,7 +63,9 @@ export function HeroSection({
           className="mx-auto mb-8 max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
           variants={item}
         >
-          {title}
+          <span className="gradient-text">Studia meglio,</span>
+          <br />
+          supera gli esami
         </motion.h1>
 
         <motion.p
