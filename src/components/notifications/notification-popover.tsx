@@ -13,15 +13,14 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
   const markRead = useMarkRead()
   const markAllRead = useMarkAllRead()
 
-  const recent = notifications.slice(0, 5)
-  const hasUnread = notifications.some((n) => !n.is_read)
+  const unread = notifications.filter((n) => !n.is_read).slice(0, 5)
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <h3 className="text-sm font-semibold">Notifiche</h3>
-        {hasUnread && (
+        {unread.length > 0 && (
           <Button
             variant="ghost"
             size="sm"
@@ -37,16 +36,16 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
       <Separator />
 
       {/* Notification list */}
-      {recent.length === 0 ? (
+      {unread.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
           <BellOff className="size-8 text-muted-foreground/40" strokeWidth={1.5} />
           <p className="text-sm text-muted-foreground">
-            Nessuna notifica
+            Nessuna notifica non letta
           </p>
         </div>
       ) : (
         <div className="max-h-[300px] overflow-y-auto py-1">
-          {recent.map((notification) => (
+          {unread.map((notification) => (
             <NotificationItem
               key={notification.id}
               notification={notification}
