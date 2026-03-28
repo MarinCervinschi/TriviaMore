@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import {
-  acknowledgeReportFn,
+  acknowledgeRequestFn,
   approveRequestFn,
   createRequestFn,
   handleRequestFn,
@@ -97,8 +97,8 @@ export function useApproveRequest(onSuccess?: () => void) {
   })
 }
 
-export function useAcknowledgeReport(onSuccess?: () => void) {
-  return useMutationWithToast(acknowledgeReportFn, {
+export function useAcknowledgeRequest(onSuccess?: () => void) {
+  return useMutationWithToast(acknowledgeRequestFn, {
     successMessage: "Segnalazione presa in carico",
     invalidateKeys: [
       ["admin", "requests"],

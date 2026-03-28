@@ -95,6 +95,9 @@ function generateTitle(submitted: SubmittedContent): string {
     const firstReason = submitted.reasons[0]
     return `Segnalazione: ${REPORT_REASON_LABELS[firstReason] ?? firstReason}`
   }
+  if (submitted.type === "file_upload") {
+    return `File: ${submitted.file_name}`
+  }
   const count = submitted.questions.length
   return `${count} ${count === 1 ? "domanda" : "domande"}`
 }
@@ -159,7 +162,7 @@ export const getUserRequestsFn = createServerFn({ method: "GET" }).handler(
 export const createRequestFn = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
-      type: "section" | "questions" | "report"
+      type: "section" | "questions" | "report" | "file_upload"
       target_class_id?: string
       target_section_id?: string
       submitted_content: unknown
@@ -218,6 +221,7 @@ export const createRequestFn = createServerFn({ method: "POST" })
       section: "NEW_SECTION" as const,
       questions: "NEW_QUESTIONS" as const,
       report: "REPORT" as const,
+      file_upload: "FILE_UPLOAD" as const,
     }
     const requestType = requestTypeMap[data.type]
 
@@ -502,7 +506,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
     })
   })
 
-export const acknowledgeReportFn = createServerFn({ method: "POST" })
+export const acknowledgeRequestFn = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string; admin_note?: string }) => input)
   .handler(async ({ data }) => {
     const admin = await requireAdmin()
@@ -514,8 +518,7 @@ export const acknowledgeReportFn = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .single()
 
-    if (fetchError || !request) throw new Error("Segnalazione non trovata")
-    if (request.request_type !== "REPORT") throw new Error("Non e una segnalazione")
+    if (fetchError || !request) throw new Error("Proposta non trovata")
 
     const { error } = await supabase
       .from("content_requests")
@@ -527,15 +530,33 @@ export const acknowledgeReportFn = createServerFn({ method: "POST" })
       })
       .eq("id", data.id)
 
-    if (error) throw new Error("Errore nella gestione della segnalazione")
+    if (error) throw new Error("Errore nella gestione della proposta")
+
+    const titleMap: Record<string, string> = {
+      REPORT: "Segnalazione presa in carico",
+      FILE_UPLOAD: "Contributo preso in carico",
+    }
 
     await createNotification(supabaseAdmin, {
       userId: request.user_id,
       type: "REQUEST_STATUS_CHANGED",
-      title: "Segnalazione presa in carico",
+      title: titleMap[request.request_type] ?? "Proposta presa in carico",
       body: data.admin_note?.trim() || undefined,
       referenceId: data.id,
       referenceType: "content_request",
       link: `/user/requests`,
     })
+  })
+
+export const getFileDownloadUrlFn = createServerFn({ method: "GET" })
+  .inputValidator((input: { filePath: string }) => input)
+  .handler(async ({ data }): Promise<string> => {
+    await requireAdmin()
+
+    const { data: urlData, error } = await supabaseAdmin.storage
+      .from("contributions")
+      .createSignedUrl(data.filePath, 3600)
+
+    if (error || !urlData?.signedUrl) throw new Error("Errore nel download del file")
+    return urlData.signedUrl
   })
