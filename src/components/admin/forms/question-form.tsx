@@ -1,14 +1,12 @@
 import { useState } from "react"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { useFieldArray, useForm } from "react-hook-form"
-import { Eye, Plus, Trash2 } from "lucide-react"
+import { useFieldArray, useForm, type FieldValues } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,6 +23,8 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { parseOptions, type QuestionOption } from "@/lib/quiz/options"
+import { QuestionContentField } from "./question-content-field"
+import { MultipleChoiceOptions } from "./multiple-choice-options"
 import type { Question } from "@/lib/admin/types"
 import type { Json } from "@/lib/supabase/database.types"
 
@@ -64,8 +64,6 @@ type QuestionFormProps = {
   }) => void
   isPending: boolean
 }
-
-const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
 
 export function QuestionForm({
   question,
@@ -144,49 +142,11 @@ export function QuestionForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4">
         {/* Content with preview */}
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Domanda</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPreview(!showPreview)}
-                >
-                  <Eye className="mr-1 h-3.5 w-3.5" />
-                  {showPreview ? "Editor" : "Anteprima"}
-                </Button>
-              </div>
-              {showPreview ? (
-                <div className="rounded-md border p-3">
-                  {content ? (
-                    <MarkdownRenderer content={content} />
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Nessun contenuto da visualizzare
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <FormControl>
-                  <Textarea
-                    placeholder="Scrivi la domanda (supporta Markdown e formule LaTeX)..."
-                    rows={4}
-                    {...field}
-                  />
-                </FormControl>
-              )}
-              <FormDescription>
-                Supporta Markdown e formule LaTeX ($..$ inline, $$..$$
-                blocco)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+        <QuestionContentField
+          control={form.control as unknown as import("react-hook-form").Control<FieldValues>}
+          showPreview={showPreview}
+          setShowPreview={setShowPreview}
+          watchedContent={content}
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -267,76 +227,17 @@ export function QuestionForm({
 
         {/* Multiple choice options */}
         {questionType === "MULTIPLE_CHOICE" && (
-          <div className="space-y-3">
-            <FormLabel>Opzioni</FormLabel>
-            <FormDescription>
-              Seleziona le risposte corrette con la checkbox. Supporta
-              Markdown.
-            </FormDescription>
-            {fields.map((field, index) => {
-              const optionId = options?.[index]?.id ?? ID_LETTERS[index]
-              const isCorrect = correctAnswer?.includes(optionId)
-
-              return (
-                <div key={field.id} className="flex items-start gap-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleCorrectAnswer(optionId)}
-                    className={`mt-2.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs font-bold transition-colors ${
-                      isCorrect
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-muted-foreground/30 hover:border-primary"
-                    }`}
-                  >
-                    {isCorrect ? "✓" : ID_LETTERS[index]?.toUpperCase()}
-                  </button>
-                  <div className="flex-1 space-y-1">
-                    <Input
-                      placeholder={`Opzione ${ID_LETTERS[index]?.toUpperCase()}`}
-                      {...form.register(`options.${index}.text`)}
-                    />
-                    {showPreview && options?.[index]?.text && (
-                      <div className="rounded border bg-muted/30 px-2 py-1">
-                        <MarkdownRenderer
-                          content={options[index].text}
-                          className="text-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  {fields.length > 2 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="mt-1"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
-                </div>
-              )
-            })}
-            {fields.length < 6 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  append({ id: ID_LETTERS[fields.length], text: "" })
-                }
-              >
-                <Plus className="mr-1 h-4 w-4" />
-                Aggiungi opzione
-              </Button>
-            )}
-            <FormField
-              control={form.control}
-              name="correct_answer"
-              render={() => <FormMessage />}
-            />
-          </div>
+          <MultipleChoiceOptions
+            control={form.control as unknown as import("react-hook-form").Control<FieldValues>}
+            fields={fields}
+            options={options}
+            correctAnswer={correctAnswer}
+            showPreview={showPreview}
+            register={form.register as unknown as import("react-hook-form").UseFormRegister<FieldValues>}
+            append={append}
+            remove={remove}
+            toggleCorrectAnswer={toggleCorrectAnswer}
+          />
         )}
 
         {/* True/False */}
