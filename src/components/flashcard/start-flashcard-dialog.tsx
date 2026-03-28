@@ -1,6 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
-import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +11,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { startFlashcardFn } from "@/lib/flashcard/server"
+import { Loader2 } from "lucide-react"
+import { useStartFlashcard } from "@/lib/flashcard/mutations"
 
 export function StartFlashcardDialog({
   open,
@@ -26,30 +25,8 @@ export function StartFlashcardDialog({
   sectionId: string
   maxQuestions: number
 }) {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const [cardCount, setCardCount] = useState(Math.min(20, maxQuestions))
-
-  const handleStart = async () => {
-    setLoading(true)
-    try {
-      const result = await startFlashcardFn({
-        data: {
-          sectionId,
-          cardCount: Math.min(cardCount, maxQuestions),
-        },
-      })
-      onOpenChange(false)
-      navigate({
-        to: "/flashcard/$sessionId",
-        params: { sessionId: result.sessionId },
-      })
-    } catch (error) {
-      console.error("Failed to start flashcard session:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const mutation = useStartFlashcard(() => onOpenChange(false))
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -85,12 +62,20 @@ export function StartFlashcardDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={loading}
+            disabled={mutation.isPending}
           >
             Annulla
           </Button>
-          <Button onClick={handleStart} disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button
+            onClick={() =>
+              mutation.mutate({
+                sectionId,
+                cardCount: Math.min(cardCount, maxQuestions),
+              })
+            }
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Inizia Flashcard
           </Button>
         </DialogFooter>

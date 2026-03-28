@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { BookOpen, Info, Loader2, Sparkles } from "lucide-react"
 
@@ -22,9 +21,9 @@ import {
 } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useStartExamFlashcard } from "@/lib/flashcard/mutations"
+import { useStartQuiz } from "@/lib/quiz/mutations"
 import { quizQueries } from "@/lib/quiz/queries"
-import { startQuizFn } from "@/lib/quiz/server"
-import { startExamFlashcardFn } from "@/lib/flashcard/server"
 import type { EvaluationMode } from "@/lib/quiz/types"
 
 const TIME_STEPS = [5, 10, 15, 20, 30, 45, 60, 90, 120]
@@ -42,8 +41,6 @@ export function StartExamDialog({
   maxQuizQuestions: number
   maxFlashcardQuestions: number
 }) {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
   const hasQuiz = maxQuizQuestions > 0
   const hasFlashcard = maxFlashcardQuestions > 0
   const [tab, setTab] = useState<string>(hasQuiz ? "quiz" : "flashcard")
@@ -71,47 +68,26 @@ export function StartExamDialog({
     (m) => m.id === (evalModeId ?? evalModes?.[0]?.id),
   )
 
-  const handleStartQuiz = async () => {
-    setLoading(true)
-    try {
-      const time = TIME_STEPS[timeStepIndex]
-      const result = await startQuizFn({
-        data: {
-          sectionId,
-          questionCount: Math.min(questionCount, maxQuizQuestions),
-          timeLimit: time === undefined ? null : time,
-          quizMode: "EXAM_SIMULATION",
-          evaluationModeId: evalModeId,
-        },
-      })
-      onOpenChange(false)
-      navigate({ to: "/quiz/$quizId", params: { quizId: result.quizId } })
-    } catch (error) {
-      console.error("Failed to start exam quiz:", error)
-    } finally {
-      setLoading(false)
-    }
+  const quizMutation = useStartQuiz(() => onOpenChange(false))
+  const flashcardMutation = useStartExamFlashcard(() => onOpenChange(false))
+  const loading = quizMutation.isPending || flashcardMutation.isPending
+
+  const handleStartQuiz = () => {
+    const time = TIME_STEPS[timeStepIndex]
+    quizMutation.mutate({
+      sectionId,
+      questionCount: Math.min(questionCount, maxQuizQuestions),
+      timeLimit: time === undefined ? null : time,
+      quizMode: "EXAM_SIMULATION",
+      evaluationModeId: evalModeId,
+    })
   }
 
-  const handleStartFlashcard = async () => {
-    setLoading(true)
-    try {
-      const result = await startExamFlashcardFn({
-        data: {
-          sectionId,
-          cardCount: Math.min(cardCount, maxFlashcardQuestions),
-        },
-      })
-      onOpenChange(false)
-      navigate({
-        to: "/flashcard/$sessionId",
-        params: { sessionId: result.sessionId },
-      })
-    } catch (error) {
-      console.error("Failed to start exam flashcard:", error)
-    } finally {
-      setLoading(false)
-    }
+  const handleStartFlashcard = () => {
+    flashcardMutation.mutate({
+      sectionId,
+      cardCount: Math.min(cardCount, maxFlashcardQuestions),
+    })
   }
 
   return (

@@ -321,9 +321,7 @@ export const getPlatformStatsFn = createServerFn({ method: "GET" }).handler(
 
 export const submitContactFn = createServerFn({ method: "POST" })
   .inputValidator(contactSchema)
-  .handler(async ({ data }) => {
-    // For now, log the contact submission
+  .handler(async () => {
     // TODO: integrate Resend email or store in Supabase table
-    console.log("Contact form submission:", data)
     return { success: true }
   })
