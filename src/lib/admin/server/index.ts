@@ -1,0 +1,7 @@
+export * from "./dashboard"
+export * from "./departments"
+export * from "./courses"
+export * from "./classes"
+export * from "./sections"
+export * from "./questions"
+export * from "./users"
