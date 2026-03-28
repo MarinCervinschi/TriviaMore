@@ -29,12 +29,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { EmptyState } from "@/components/ui/empty-state"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { UserHero } from "@/components/user/user-hero"
 import { requestQueries } from "@/lib/requests/queries"
 import { useReviseRequest } from "@/lib/requests/mutations"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 import type {
@@ -128,28 +130,30 @@ function UserContributionsPage() {
         </div>
 
         {requests.length === 0 ? (
-          <div className="rounded-3xl border bg-card p-12 text-center">
-            <div className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4">
-              <Inbox className="size-10 text-primary" strokeWidth={1.5} />
-            </div>
-            <h2 className="mb-2 text-xl font-semibold">Nessuna proposta</h2>
-            <p className="text-muted-foreground">
-              Contribuisci proponendo sezioni o domande!
-            </p>
-          </div>
+          <EmptyState
+            icon={Inbox}
+            title="Nessuna proposta"
+            description="Contribuisci proponendo sezioni o domande!"
+          />
         ) : (
-          <div className="overflow-hidden rounded-2xl border bg-card">
+          <motion.div
+            className="overflow-hidden rounded-2xl border bg-card"
+            variants={withReducedMotion(staggerContainer, prefersReduced)}
+            initial="hidden"
+            animate="visible"
+          >
             {requests.map((request, i) => (
-              <ContributionRow
-                key={request.id}
-                request={request}
-                isLast={i === requests.length - 1}
-                isExpanded={expandedId === request.id}
-                onToggle={() => setExpandedId(expandedId === request.id ? null : request.id)}
-                prefersReduced={prefersReduced}
-              />
+              <motion.div key={request.id} variants={withReducedMotion(staggerItem, prefersReduced)}>
+                <ContributionRow
+                  request={request}
+                  isLast={i === requests.length - 1}
+                  isExpanded={expandedId === request.id}
+                  onToggle={() => setExpandedId(expandedId === request.id ? null : request.id)}
+                  prefersReduced={prefersReduced}
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -253,7 +257,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
     return (
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">File caricato</p>
-        <div className="flex items-center gap-3 rounded-xl border bg-muted/30 p-4">
+        <div className="flex items-center gap-3 rounded-2xl border bg-muted/30 p-4">
           <div className="rounded-xl bg-emerald-500/10 p-2">
             <FileUp className="size-5 text-emerald-500" strokeWidth={1.5} />
           </div>
@@ -273,7 +277,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
     return (
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Sezione proposta</p>
-        <div className="rounded-xl border bg-muted/30 p-4">
+        <div className="rounded-2xl border bg-muted/30 p-4">
           <p className="text-sm font-medium">{submitted.name}</p>
           {submitted.description && (
             <p className="mt-1 text-xs text-muted-foreground">{submitted.description}</p>
@@ -322,7 +326,7 @@ function RevisionForm({ requestId, submitted }: { requestId: string; submitted: 
   }
 
   return (
-    <div className="space-y-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4">
+    <div className="space-y-4 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5">
       <p className="text-xs font-semibold text-orange-600 dark:text-orange-400">Modifica la tua proposta</p>
 
       {content.type === "section" ? (
@@ -572,7 +576,7 @@ function ReportPreview({ report }: { report: SubmittedReport }) {
   return (
     <div className="space-y-2">
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Segnalazione</p>
-      <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+      <div className="rounded-2xl border bg-muted/30 p-4 space-y-3">
         <div className="flex flex-wrap gap-1.5">
           {report.reasons.map((r) => (
             <Badge key={r} variant="outline" className="rounded-full border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 text-xs">
@@ -596,7 +600,7 @@ function QuestionPreview({ question, index }: { question: SubmittedQuestion; ind
   const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" }
 
   return (
-    <div className="rounded-xl border bg-muted/30 p-3 space-y-2">
+    <div className="rounded-2xl border bg-muted/30 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium text-muted-foreground">Domanda {index + 1}</p>
         <div className="flex gap-1.5">

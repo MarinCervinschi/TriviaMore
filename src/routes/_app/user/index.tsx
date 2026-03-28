@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
 import {
   ArrowRight,
   BookmarkIcon,
@@ -21,6 +22,8 @@ import { UserHero } from "@/components/user/user-hero"
 import { UserStatsCard } from "@/components/user/user-stats-card"
 import { userQueries } from "@/lib/user/queries"
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import type { RecentClass, RecentQuizAttempt } from "@/lib/user/types"
 import { getScoreBadgeVariant } from "@/lib/utils/quiz-results"
 
@@ -305,6 +308,10 @@ function RecentActivitySection({
 }: {
   attempts: RecentQuizAttempt[]
 }) {
+  const prefersReduced = useReducedMotion()
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
+
   return (
     <div className="space-y-4">
       <div>
@@ -316,10 +323,11 @@ function RecentActivitySection({
         </h2>
       </div>
 
-      <div className="space-y-3">
+      <motion.div className="space-y-3" variants={container} initial="hidden" animate="visible">
         {attempts.map((attempt) => (
-          <div
+          <motion.div
             key={attempt.id}
+            variants={item}
             className="flex flex-col gap-3 rounded-2xl border bg-card p-4 transition-all duration-300 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex items-start gap-3">
@@ -360,9 +368,9 @@ function RecentActivitySection({
                 </Link>
               </Button>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }

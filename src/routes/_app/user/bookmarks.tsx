@@ -3,6 +3,7 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
 import { Bookmark, ChevronDown } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -20,6 +21,8 @@ import {
   getDifficultyLabel,
   getQuestionTypeLabel,
 } from "@/lib/user/utils"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 
 export const Route = createFileRoute("/_app/user/bookmarks")({
@@ -32,6 +35,9 @@ export const Route = createFileRoute("/_app/user/bookmarks")({
 function BookmarksPage() {
   const { data: bookmarks } = useSuspenseQuery(userQueries.bookmarks())
   const toggleBookmark = useToggleBookmark()
+  const prefersReduced = useReducedMotion()
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
 
   return (
     <div className="space-y-8 pb-8">
@@ -58,17 +64,23 @@ function BookmarksPage() {
             actionHref="/browse"
           />
         ) : (
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            variants={container}
+            initial="hidden"
+            animate="visible"
+          >
             {bookmarks.map((bookmark) => (
-              <BookmarkCard
-                key={bookmark.question_id}
-                bookmark={bookmark}
-                onRemoveBookmark={() =>
-                  toggleBookmark.mutate(bookmark.question_id)
-                }
-              />
+              <motion.div key={bookmark.question_id} variants={item}>
+                <BookmarkCard
+                  bookmark={bookmark}
+                  onRemoveBookmark={() =>
+                    toggleBookmark.mutate(bookmark.question_id)
+                  }
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -86,7 +98,7 @@ function BookmarkCard({
   const { question } = bookmark
 
   return (
-    <div className="overflow-hidden rounded-2xl border bg-card">
+    <div className="overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:shadow-md">
       {/* Collapsed header — always visible */}
       <button
         onClick={() => setOpen(!open)}
