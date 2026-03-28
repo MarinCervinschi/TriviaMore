@@ -6,8 +6,10 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
+import { BrowseContributeState } from "@/components/browse/browse-empty-state"
 import { FlashcardCard } from "@/components/browse/flashcard-card"
 import { QuizCard } from "@/components/browse/quiz-card"
+import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { SectionHeader } from "@/components/browse/section-header"
 import { browseQueries } from "@/lib/browse/queries"
 
@@ -99,16 +101,26 @@ function SectionPage() {
           params={{ sectionId: section.id }}
         />
       </div>
-      <div className="grid gap-6 md:grid-cols-2">
-        <QuizCard
-          questionCount={section.quiz_question_count}
-          sectionId={section.id}
-        />
-        <FlashcardCard
-          questionCount={section.flashcard_question_count}
-          sectionId={section.id}
-        />
-      </div>
+      {section.quiz_question_count === 0 &&
+      section.flashcard_question_count === 0 ? (
+        <BrowseContributeState message="Nessuna domanda disponibile per questa sezione.">
+          <RequestFormDialog
+            defaultTargetClassId={section.class.id}
+            defaultTargetSectionId={section.id}
+          />
+        </BrowseContributeState>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2">
+          <QuizCard
+            questionCount={section.quiz_question_count}
+            sectionId={section.id}
+          />
+          <FlashcardCard
+            questionCount={section.flashcard_question_count}
+            sectionId={section.id}
+          />
+        </div>
+      )}
     </div>
   )
 }

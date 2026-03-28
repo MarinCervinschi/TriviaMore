@@ -15,6 +15,7 @@ interface EmptyStateProps {
   actionHref?: string
   onAction?: () => void
   className?: string
+  children?: React.ReactNode
 }
 
 export function EmptyState({
@@ -25,6 +26,7 @@ export function EmptyState({
   actionHref,
   onAction,
   className,
+  children,
 }: EmptyStateProps) {
   const prefersReduced = useReducedMotion()
   const container = withReducedMotion(staggerContainer, prefersReduced)
@@ -74,6 +76,8 @@ export function EmptyState({
             </Button>
           </motion.div>
         )}
+
+        {children && <motion.div variants={item}>{children}</motion.div>}
       </div>
     </motion.div>
   )
