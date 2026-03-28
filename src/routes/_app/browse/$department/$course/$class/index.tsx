@@ -161,15 +161,11 @@ function ClassPage() {
           {isAuthenticated && (
             <>
               <RequestFormDialog
-                defaultValues={{
-                  target_class_id: classData.id,
-                  target_course_id: classData.course.id,
-                  target_department_id: classData.course.department.id,
-                }}
+                defaultTargetClassId={classData.id}
                 trigger={
                   <Button variant="outline" size="sm" className="gap-1.5">
                     <MessageSquarePlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Richiedi contenuto</span>
+                    <span className="hidden sm:inline">Proponi contenuto</span>
                   </Button>
                 }
               />

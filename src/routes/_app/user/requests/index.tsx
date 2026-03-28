@@ -1,23 +1,34 @@
 import { useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ArrowLeft,
+  ChevronDown,
+  FolderPlus,
   Inbox,
+  Info,
   MapPin,
+  MessageSquarePlus,
+  Pencil,
   Plus,
+  Send,
+  Trash2,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { RequestCommentForm } from "@/components/requests/request-comment-form"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
-import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { UserHero } from "@/components/user/user-hero"
 import { requestQueries } from "@/lib/requests/queries"
 import { useReviseRequest } from "@/lib/requests/mutations"
@@ -25,18 +36,23 @@ import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { cn } from "@/lib/utils"
 
 import type {
-  ContentRequestCommentWithUser,
   ContentRequestWithMeta,
+  SubmittedContent,
+  SubmittedQuestion,
 } from "@/lib/requests/types"
 
 export const Route = createFileRoute("/_app/user/requests/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(requestQueries.userRequests()),
-  head: () => seoHead({ title: "Inbox", noindex: true }),
-  component: UserInboxPage,
+  head: () => seoHead({ title: "Contributi", noindex: true }),
+  component: UserContributionsPage,
 })
 
-// ─── Utils ───
+function generateTitle(submitted: SubmittedContent): string {
+  if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
+  const count = submitted.questions.length
+  return `${count} ${count === 1 ? "domanda" : "domande"}`
+}
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -50,40 +66,41 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("it-IT", { day: "numeric", month: "short" })
 }
 
-function formatTimestamp(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("it-IT", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-}
-
-// ─── Main Page ───
-
-function UserInboxPage() {
+function UserContributionsPage() {
   const { data: requests } = useSuspenseQuery(requestQueries.userRequests())
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const prefersReduced = useReducedMotion()
 
   return (
     <div className="space-y-8 pb-8">
       <UserHero
         icon={Inbox}
-        title="Inbox"
-        description="Le tue conversazioni con il team di TriviaMore."
+        title="I Miei Contributi"
+        description="Proponi nuovi contenuti per la piattaforma."
       />
 
       <div className="container max-w-3xl space-y-4">
+        {/* Info banner */}
+        <div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+          <Info className="size-4 shrink-0 text-blue-500" strokeWidth={1.5} />
+          <p className="text-xs text-muted-foreground">
+            Per segnalare bug o fare richieste particolari, visita la pagina{" "}
+            <Link to="/contact" className="font-medium text-primary hover:underline">
+              Contatti
+            </Link>
+            .
+          </p>
+        </div>
+
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {requests.length} {requests.length === 1 ? "conversazione" : "conversazioni"}
+            {requests.length} {requests.length === 1 ? "proposta" : "proposte"}
           </p>
           <RequestFormDialog
             trigger={
               <Button size="sm" className="gap-1.5 rounded-xl shadow-lg shadow-primary/25">
                 <Plus className="size-4" />
-                Nuovo messaggio
+                Proponi contenuto
               </Button>
             }
           />
@@ -94,46 +111,23 @@ function UserInboxPage() {
             <div className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4">
               <Inbox className="size-10 text-primary" strokeWidth={1.5} />
             </div>
-            <h2 className="mb-2 text-xl font-semibold">Nessun messaggio</h2>
+            <h2 className="mb-2 text-xl font-semibold">Nessuna proposta</h2>
             <p className="text-muted-foreground">
-              Invia il tuo primo messaggio al team!
+              Contribuisci proponendo sezioni o domande!
             </p>
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
-            <AnimatePresence mode="wait">
-              {selectedId ? (
-                <motion.div
-                  key="conversation"
-                  initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={prefersReduced ? { opacity: 1 } : { opacity: 0, x: 60 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                >
-                  <ConversationView
-                    requestId={selectedId}
-                    onBack={() => setSelectedId(null)}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="list"
-                  initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: -60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={prefersReduced ? { opacity: 1 } : { opacity: 0, x: -60 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                >
-                  {requests.map((request, i) => (
-                    <InboxRow
-                      key={request.id}
-                      request={request}
-                      isLast={i === requests.length - 1}
-                      onSelect={() => setSelectedId(request.id)}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {requests.map((request, i) => (
+              <ContributionRow
+                key={request.id}
+                request={request}
+                isLast={i === requests.length - 1}
+                isExpanded={expandedId === request.id}
+                onToggle={() => setExpandedId(expandedId === request.id ? null : request.id)}
+                prefersReduced={prefersReduced}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -141,228 +135,421 @@ function UserInboxPage() {
   )
 }
 
-// ─── Inbox Row ───
-
-function InboxRow({
+function ContributionRow({
   request,
   isLast,
-  onSelect,
+  isExpanded,
+  onToggle,
+  prefersReduced,
 }: {
   request: ContentRequestWithMeta
   isLast: boolean
-  onSelect: () => void
+  isExpanded: boolean
+  onToggle: () => void
+  prefersReduced: boolean
 }) {
-  const isActive = request.status === "PENDING" || request.status === "NEEDS_REVISION"
+  const isSection = request.request_type === "NEW_SECTION"
+  const Icon = isSection ? FolderPlus : MessageSquarePlus
+  const title = generateTitle(request.submitted)
 
   return (
-    <button
-      onClick={onSelect}
-      className={cn(
-        "flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-accent/50",
-        !isLast && "border-b border-border/50",
-      )}
-    >
-      {/* Unread dot */}
-      <div className="flex w-2 shrink-0 justify-center">
-        {isActive && <span className="h-2 w-2 rounded-full bg-primary" />}
-      </div>
-
-      {/* Content */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className={cn(
-            "truncate text-sm",
-            isActive ? "font-semibold" : "font-medium text-muted-foreground",
-          )}>
-            {request.title}
-          </span>
-          <RequestTypeBadge type={request.request_type} />
+    <div className={cn(!isLast && !isExpanded && "border-b border-border/50")}>
+      {/* Row header */}
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-accent/30"
+      >
+        <div className={cn("rounded-xl p-2", isSection ? "bg-blue-500/10" : "bg-purple-500/10")}>
+          <Icon className={cn("size-4", isSection ? "text-blue-500" : "text-purple-500")} strokeWidth={1.5} />
         </div>
-        <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
-          <MapPin className="size-3 shrink-0" strokeWidth={1.5} />
-          {request.target_label}
-        </p>
-      </div>
 
-      {/* Right side */}
-      <div className="flex shrink-0 flex-col items-end gap-1.5">
-        <span className="text-xs text-muted-foreground">{timeAgo(request.updated_at)}</span>
-        <RequestStatusBadge status={request.status} />
-      </div>
-    </button>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{title}</p>
+          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+            <MapPin className="size-3 shrink-0" strokeWidth={1.5} />
+            {request.target_label}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-xs text-muted-foreground">{timeAgo(request.updated_at)}</span>
+          <RequestStatusBadge status={request.status} />
+          <ChevronDown className={cn(
+            "size-4 text-muted-foreground transition-transform",
+            isExpanded && "rotate-180",
+          )} />
+        </div>
+      </button>
+
+      {/* Expanded detail */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={prefersReduced ? { opacity: 1 } : { height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={prefersReduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="overflow-hidden"
+          >
+            <div className="border-t px-5 py-4 space-y-4">
+              {/* Admin note */}
+              {request.admin_note && (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+                  <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                    Nota dello staff
+                  </p>
+                  <p className="mt-1 text-sm">{request.admin_note}</p>
+                </div>
+              )}
+
+              {/* Editable form or read-only preview */}
+              {request.status === "NEEDS_REVISION" ? (
+                <RevisionForm requestId={request.id} submitted={request.submitted} />
+              ) : (
+                <SubmittedContentPreview submitted={request.submitted} />
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
-// ─── Conversation View ───
-
-function ConversationView({
-  requestId,
-  onBack,
-}: {
-  requestId: string
-  onBack: () => void
-}) {
-  const { data: request, isLoading } = useQuery(
-    requestQueries.requestDetail(requestId),
-  )
-
-  if (isLoading || !request) {
+function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent }) {
+  if (submitted.type === "section") {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Sezione proposta</p>
+        <div className="rounded-xl border bg-muted/30 p-4">
+          <p className="text-sm font-medium">{submitted.name}</p>
+          {submitted.description && (
+            <p className="mt-1 text-xs text-muted-foreground">{submitted.description}</p>
+          )}
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-3 border-b px-4 py-3">
-        <Button variant="ghost" size="icon" className="shrink-0 rounded-xl" onClick={onBack}>
-          <ArrowLeft className="size-4" />
-        </Button>
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-sm font-semibold">{request.title}</h2>
-          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <MapPin className="size-3 shrink-0" strokeWidth={1.5} />
-            <span className="truncate">{request.target_label}</span>
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <RequestTypeBadge type={request.request_type} />
-          <RequestStatusBadge status={request.status} />
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="max-h-[60vh] space-y-4 overflow-y-auto px-5 py-5">
-        {/* Original message */}
-        <MessageBubble name="Tu" initials="TU" isOwn timestamp={request.created_at}>
-          <p className="text-sm leading-relaxed">{request.description}</p>
-        </MessageBubble>
-
-        {/* Admin note */}
-        {request.admin_note && (
-          <MessageBubble
-            name="TriviaMore Team"
-            image="/logo192.png"
-            initials="TM"
-            timestamp={request.handled_at ?? request.updated_at}
-          >
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2">
-              <p className="text-xs font-medium text-amber-600 dark:text-amber-400">Nota</p>
-              <p className="mt-0.5 text-sm">{request.admin_note}</p>
-            </div>
-          </MessageBubble>
-        )}
-
-        {/* Comments */}
-        {request.comments.map((comment) => (
-          <CommentBubble key={comment.id} comment={comment} />
+    <div className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        Domande proposte ({submitted.questions.length})
+      </p>
+      <div className="space-y-2">
+        {submitted.questions.map((q, i) => (
+          <QuestionPreview key={i} question={q} index={i} />
         ))}
+      </div>
+    </div>
+  )
+}
 
-        {/* Revise form */}
-        {request.status === "NEEDS_REVISION" && (
-          <ReviseForm requestId={request.id} currentTitle={request.title} currentDescription={request.description} />
+// ─── Revision Form ───
+
+function RevisionForm({ requestId, submitted }: { requestId: string; submitted: SubmittedContent }) {
+  const [editing, setEditing] = useState(false)
+  const [content, setContent] = useState(submitted)
+  const revise = useReviseRequest(() => setEditing(false))
+
+  if (!editing) {
+    return (
+      <div className="space-y-3">
+        <SubmittedContentPreview submitted={submitted} />
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 rounded-xl"
+          onClick={() => setEditing(true)}
+        >
+          <Pencil className="size-3.5" />
+          Modifica e reinvia
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4">
+      <p className="text-xs font-semibold text-orange-600 dark:text-orange-400">Modifica la tua proposta</p>
+
+      {content.type === "section" ? (
+        <SectionEditor
+          content={content}
+          onChange={(updated) => setContent(updated)}
+        />
+      ) : (
+        <QuestionsEditor
+          content={content}
+          onChange={(updated) => setContent(updated)}
+        />
+      )}
+
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="rounded-xl"
+          onClick={() => { setContent(submitted); setEditing(false) }}
+        >
+          Annulla
+        </Button>
+        <Button
+          size="sm"
+          className="gap-1.5 rounded-xl"
+          onClick={() => revise.mutate({ id: requestId, submitted_content: content })}
+          disabled={revise.isPending}
+        >
+          <Send className="size-3.5" />
+          {revise.isPending ? "Invio..." : "Reinvia proposta"}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function SectionEditor({
+  content,
+  onChange,
+}: {
+  content: { type: "section"; name: string; description: string }
+  onChange: (c: SubmittedContent) => void
+}) {
+  return (
+    <div className="space-y-3">
+      <Input
+        value={content.name}
+        onChange={(e) => onChange({ ...content, name: e.target.value })}
+        placeholder="Nome della sezione"
+        className="rounded-xl"
+      />
+      <Textarea
+        value={content.description}
+        onChange={(e) => onChange({ ...content, description: e.target.value })}
+        placeholder="Descrizione (opzionale)"
+        rows={3}
+        className="rounded-xl"
+      />
+    </div>
+  )
+}
+
+function QuestionsEditor({
+  content,
+  onChange,
+}: {
+  content: { type: "questions"; questions: SubmittedQuestion[] }
+  onChange: (c: SubmittedContent) => void
+}) {
+  function updateQuestion(index: number, updated: SubmittedQuestion) {
+    const copy = [...content.questions]
+    copy[index] = updated
+    onChange({ ...content, questions: copy })
+  }
+
+  function removeQuestion(index: number) {
+    onChange({ ...content, questions: content.questions.filter((_, i) => i !== index) })
+  }
+
+  function addQuestion() {
+    onChange({
+      ...content,
+      questions: [...content.questions, {
+        content: "",
+        question_type: "MULTIPLE_CHOICE",
+        options: ["", ""],
+        correct_answer: [],
+        explanation: null,
+        difficulty: "MEDIUM",
+      }],
+    })
+  }
+
+  return (
+    <div className="space-y-3">
+      {content.questions.map((q, i) => (
+        <RevisionQuestionEditor
+          key={i}
+          index={i}
+          question={q}
+          onChange={(updated) => updateQuestion(i, updated)}
+          onRemove={content.questions.length > 1 ? () => removeQuestion(i) : undefined}
+        />
+      ))}
+      <Button variant="ghost" size="sm" onClick={addQuestion} className="gap-1 text-xs">
+        <Plus className="size-3" /> Aggiungi domanda
+      </Button>
+    </div>
+  )
+}
+
+function RevisionQuestionEditor({
+  index,
+  question,
+  onChange,
+  onRemove,
+}: {
+  index: number
+  question: SubmittedQuestion
+  onChange: (q: SubmittedQuestion) => void
+  onRemove?: () => void
+}) {
+  const isMC = question.question_type === "MULTIPLE_CHOICE"
+
+  return (
+    <div className="space-y-2 rounded-xl border bg-card p-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-muted-foreground">Domanda {index + 1}</p>
+        {onRemove && (
+          <Button variant="ghost" size="icon" className="size-6" onClick={onRemove}>
+            <Trash2 className="size-3 text-destructive" />
+          </Button>
         )}
       </div>
 
-      {/* Input */}
-      <div className="border-t px-5 py-3">
-        <RequestCommentForm requestId={request.id} />
+      <Textarea
+        value={question.content}
+        onChange={(e) => onChange({ ...question, content: e.target.value })}
+        placeholder="Testo della domanda"
+        rows={2}
+        className="rounded-xl text-sm"
+      />
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Select
+          value={question.question_type}
+          onValueChange={(v) => {
+            const qt = v as SubmittedQuestion["question_type"]
+            onChange({
+              ...question,
+              question_type: qt,
+              options: qt === "MULTIPLE_CHOICE" ? ["", ""] : null,
+              correct_answer: [],
+            })
+          }}
+        >
+          <SelectTrigger className="rounded-xl text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="MULTIPLE_CHOICE">Scelta multipla</SelectItem>
+            <SelectItem value="TRUE_FALSE">Vero/Falso</SelectItem>
+            <SelectItem value="SHORT_ANSWER">Risposta breve</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={question.difficulty} onValueChange={(v) => onChange({ ...question, difficulty: v as SubmittedQuestion["difficulty"] })}>
+          <SelectTrigger className="rounded-xl text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="EASY">Facile</SelectItem>
+            <SelectItem value="MEDIUM">Medio</SelectItem>
+            <SelectItem value="HARD">Difficile</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      {isMC && (
+        <div className="space-y-1.5">
+          {(question.options ?? []).map((opt, oi) => {
+            const optId = String.fromCharCode(97 + oi)
+            const isCorrect = question.correct_answer.includes(optId)
+            return (
+              <div key={oi} className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newAnswer = isCorrect
+                      ? question.correct_answer.filter((a) => a !== optId)
+                      : [...question.correct_answer, optId]
+                    onChange({ ...question, correct_answer: newAnswer })
+                  }}
+                  className={cn(
+                    "flex size-5 shrink-0 items-center justify-center rounded-full border-2 text-[9px] font-bold transition-colors",
+                    isCorrect ? "border-green-500 bg-green-500 text-white" : "border-border hover:border-green-500/50",
+                  )}
+                >
+                  {optId.toUpperCase()}
+                </button>
+                <Input
+                  value={opt}
+                  onChange={(e) => {
+                    const newOptions = [...(question.options ?? [])]
+                    newOptions[oi] = e.target.value
+                    onChange({ ...question, options: newOptions })
+                  }}
+                  placeholder={`Opzione ${optId.toUpperCase()}`}
+                  className="rounded-xl text-sm"
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {question.question_type === "TRUE_FALSE" && (
+        <div className="flex gap-2">
+          {[{ id: "true", label: "Vero" }, { id: "false", label: "Falso" }].map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onChange({ ...question, correct_answer: [opt.id] })}
+              className={cn(
+                "flex-1 rounded-xl border-2 py-1.5 text-sm font-medium transition-colors",
+                question.correct_answer.includes(opt.id) ? "border-green-500 bg-green-500/10 text-green-600" : "border-border",
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {question.question_type === "SHORT_ANSWER" && (
+        <Input
+          value={question.correct_answer[0] ?? ""}
+          onChange={(e) => onChange({ ...question, correct_answer: [e.target.value] })}
+          placeholder="Risposta corretta"
+          className="rounded-xl text-sm"
+        />
+      )}
     </div>
   )
 }
 
-// ─── Message Bubbles ───
+// ─── Previews ───
 
-function MessageBubble({
-  name,
-  image,
-  initials,
-  isOwn = false,
-  timestamp,
-  children,
-}: {
-  name: string
-  image?: string | null
-  initials: string
-  isOwn?: boolean
-  timestamp: string
-  children: React.ReactNode
-}) {
+function QuestionPreview({ question, index }: { question: SubmittedQuestion; index: number }) {
+  const typeLabels = { MULTIPLE_CHOICE: "Scelta multipla", TRUE_FALSE: "Vero/Falso", SHORT_ANSWER: "Risposta breve" }
+  const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" }
+
   return (
-    <div className={cn("flex gap-3", isOwn && "flex-row-reverse")}>
-      <Avatar className="h-7 w-7 shrink-0">
-        <AvatarImage src={image ?? undefined} />
-        <AvatarFallback className="text-[10px] font-semibold">{initials}</AvatarFallback>
-      </Avatar>
-      <div className={cn("max-w-[80%] space-y-1", isOwn && "items-end text-right")}>
-        <div className={cn("flex items-center gap-2", isOwn && "flex-row-reverse")}>
-          <span className="text-xs font-medium">{name}</span>
-          <span className="text-[10px] text-muted-foreground/60">{formatTimestamp(timestamp)}</span>
-        </div>
-        <div className={cn(
-          "rounded-2xl px-4 py-3",
-          isOwn ? "rounded-tr-md bg-primary/10" : "rounded-tl-md bg-muted",
-        )}>
-          {children}
+    <div className="rounded-xl border bg-muted/30 p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium text-muted-foreground">Domanda {index + 1}</p>
+        <div className="flex gap-1.5">
+          <Badge variant="outline" className="rounded-full text-[10px]">{typeLabels[question.question_type]}</Badge>
+          <Badge variant="outline" className="rounded-full text-[10px]">{diffLabels[question.difficulty]}</Badge>
         </div>
       </div>
-    </div>
-  )
-}
-
-function CommentBubble({ comment }: { comment: ContentRequestCommentWithUser }) {
-  const isStaff = comment.user.role !== "STUDENT"
-
-  return (
-    <MessageBubble
-      name={isStaff ? (comment.user.name ?? "TriviaMore Team") : "Tu"}
-      image={isStaff ? (comment.user.image ?? "/logo192.png") : undefined}
-      initials={isStaff ? "TM" : "TU"}
-      isOwn={!isStaff}
-      timestamp={comment.created_at}
-    >
-      <p className="text-sm leading-relaxed">{comment.content}</p>
-    </MessageBubble>
-  )
-}
-
-// ─── Revise Form ───
-
-function ReviseForm({
-  requestId,
-  currentTitle,
-  currentDescription,
-}: {
-  requestId: string
-  currentTitle: string
-  currentDescription: string
-}) {
-  const [title, setTitle] = useState(currentTitle)
-  const [description, setDescription] = useState(currentDescription)
-  const revise = useReviseRequest()
-
-  return (
-    <div className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-5 space-y-4">
-      <div>
-        <h3 className="text-sm font-semibold text-orange-600 dark:text-orange-400">Revisione richiesta</h3>
-        <p className="text-xs text-muted-foreground">Modifica e reinvia la tua richiesta.</p>
-      </div>
-      <div className="space-y-3">
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titolo" className="rounded-xl" />
-        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Descrizione" className="rounded-xl" />
-      </div>
-      <Button
-        size="sm"
-        onClick={() => revise.mutate({ id: requestId, title, description })}
-        disabled={revise.isPending}
-        className="rounded-xl"
-      >
-        {revise.isPending ? "Invio..." : "Reinvia"}
-      </Button>
+      <p className="text-sm">{question.content}</p>
+      {question.options && (
+        <div className="flex flex-wrap gap-1.5">
+          {question.options.map((opt, oi) => {
+            const optId = String.fromCharCode(97 + oi)
+            const isCorrect = question.correct_answer.includes(optId)
+            return (
+              <Badge
+                key={oi}
+                variant="outline"
+                className={cn(
+                  "rounded-full text-xs",
+                  isCorrect && "border-green-500/40 bg-green-500/10 text-green-600 dark:text-green-400",
+                )}
+              >
+                {optId.toUpperCase()}: {opt}
+              </Badge>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

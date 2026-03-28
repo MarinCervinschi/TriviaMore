@@ -53,8 +53,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/user", icon: Home, label: "Dashboard", fuzzy: false },
   { to: "/browse", icon: BookOpen, label: "Contenuti", fuzzy: true },
   { to: "/user/classes", icon: GraduationCap, label: "I Miei Corsi", fuzzy: false },
+  { to: "/user/requests", icon: Inbox, label: "Contributi", fuzzy: true },
   { to: "/user/bookmarks", icon: Bookmark, label: "Segnalibri", fuzzy: false },
-  { to: "/user/requests", icon: Inbox, label: "Inbox", fuzzy: true },
 ]
 
 const ADMIN_ITEM: NavItem = {
