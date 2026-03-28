@@ -1,5 +1,5 @@
 -- ============================================================
--- Migration 00009: Supabase Storage for file contributions
+-- Supabase Storage for file contributions
 -- Private bucket with RLS: users upload own files, admins read all
 -- ============================================================
 
@@ -21,12 +21,12 @@ CREATE POLICY storage_contributions_select_own ON storage.objects
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- Admins (non-STUDENT) can read all files
+-- Admins (SUPERADMIN, ADMIN) can read all files
 CREATE POLICY storage_contributions_select_admin ON storage.objects
   FOR SELECT USING (
     bucket_id = 'contributions'
     AND EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role != 'STUDENT'
+      WHERE id = auth.uid() AND role IN ('SUPERADMIN', 'ADMIN')
     )
   );
