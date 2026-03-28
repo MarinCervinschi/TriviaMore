@@ -106,6 +106,152 @@ export type Database = {
           },
         ]
       }
+      content_request_comments: {
+        Row: {
+          id: string
+          request_id: string
+          user_id: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id: string
+          request_id: string
+          user_id: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          request_id?: string
+          user_id?: string
+          content?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_request_comments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "content_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_request_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_requests: {
+        Row: {
+          id: string
+          user_id: string
+          request_type: Database["public"]["Enums"]["content_request_type"]
+          status: Database["public"]["Enums"]["content_request_status"]
+          title: string
+          description: string
+          target_department_id: string | null
+          target_course_id: string | null
+          target_class_id: string | null
+          target_section_id: string | null
+          question_id: string | null
+          handled_by: string | null
+          handled_at: string | null
+          admin_note: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          user_id: string
+          request_type: Database["public"]["Enums"]["content_request_type"]
+          status?: Database["public"]["Enums"]["content_request_status"]
+          title: string
+          description: string
+          target_department_id?: string | null
+          target_course_id?: string | null
+          target_class_id?: string | null
+          target_section_id?: string | null
+          question_id?: string | null
+          handled_by?: string | null
+          handled_at?: string | null
+          admin_note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          request_type?: Database["public"]["Enums"]["content_request_type"]
+          status?: Database["public"]["Enums"]["content_request_status"]
+          title?: string
+          description?: string
+          target_department_id?: string | null
+          target_course_id?: string | null
+          target_class_id?: string | null
+          target_section_id?: string | null
+          question_id?: string | null
+          handled_by?: string | null
+          handled_at?: string | null
+          admin_note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_department_id_fkey"
+            columns: ["target_department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_course_id_fkey"
+            columns: ["target_course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_class_id_fkey"
+            columns: ["target_class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_section_id_fkey"
+            columns: ["target_section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_requests_handled_by_fkey"
+            columns: ["handled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           class_year: number
@@ -322,6 +468,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+          title: string
+          body: string | null
+          reference_id: string | null
+          reference_type: string | null
+          link: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id: string
+          user_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+          title: string
+          body?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          title?: string
+          body?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -740,8 +933,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      content_request_status: "PENDING" | "APPROVED" | "REJECTED" | "NEEDS_REVISION"
+      content_request_type: "NEW_SECTION" | "NEW_QUESTIONS" | "ERROR_REPORT" | "CONTENT_REQUEST"
       course_type: "BACHELOR" | "MASTER"
       difficulty: "EASY" | "MEDIUM" | "HARD"
+      notification_type: "REQUEST_STATUS_CHANGED" | "NEW_REQUEST_RECEIVED" | "REQUEST_NEEDS_REVISION" | "REQUEST_REVISED" | "CONTENT_UPDATED" | "NEW_SECTION_ADDED"
       question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
       quiz_mode: "STUDY" | "EXAM_SIMULATION"
       role: "SUPERADMIN" | "ADMIN" | "MAINTAINER" | "STUDENT"
@@ -875,8 +1071,11 @@ export const Constants = {
   },
   public: {
     Enums: {
+      content_request_status: ["PENDING", "APPROVED", "REJECTED", "NEEDS_REVISION"],
+      content_request_type: ["NEW_SECTION", "NEW_QUESTIONS", "ERROR_REPORT", "CONTENT_REQUEST"],
       course_type: ["BACHELOR", "MASTER"],
       difficulty: ["EASY", "MEDIUM", "HARD"],
+      notification_type: ["REQUEST_STATUS_CHANGED", "NEW_REQUEST_RECEIVED", "REQUEST_NEEDS_REVISION", "REQUEST_REVISED", "CONTENT_UPDATED", "NEW_SECTION_ADDED"],
       question_type: ["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"],
       quiz_mode: ["STUDY", "EXAM_SIMULATION"],
       role: ["SUPERADMIN", "ADMIN", "MAINTAINER", "STUDENT"],
