@@ -5,9 +5,19 @@ import { createNotification, notifyAdminsInScope } from "@/lib/notifications/hel
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
+import { storedContentSchema } from "./schemas"
 import type { AdminContentRequest, ContentRequestWithMeta, SubmittedContent } from "./types"
 
 const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
+
+/** Validate JSONB content from DB against Zod schema at runtime */
+function parseSubmittedContent(raw: unknown): SubmittedContent {
+  const result = storedContentSchema.safeParse(raw)
+  if (!result.success) {
+    throw new Error("Contenuto della proposta non valido")
+  }
+  return result.data as SubmittedContent
+}
 
 function toDbOptions(options: string[] | null | undefined) {
   if (!options) return null
@@ -149,7 +159,7 @@ export const getUserRequestsFn = createServerFn({ method: "GET" }).handler(
     const requests: ContentRequestWithMeta[] = []
     for (const req of data ?? []) {
       const target_label = await buildTargetLabel(supabase, req)
-      const submitted = req.submitted_content as unknown as SubmittedContent
+      const submitted = parseSubmittedContent(req.submitted_content)
       requests.push({ ...req, target_label, submitted })
     }
 
@@ -171,7 +181,7 @@ export const createRequestFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabase, user } = await getAuthUser()
 
-    const submitted = data.submitted_content as SubmittedContent
+    const submitted = parseSubmittedContent(data.submitted_content)
     const id = crypto.randomUUID()
 
     // Resolve target hierarchy for the request
@@ -285,7 +295,7 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
         userId: existing.handled_by,
         type: "REQUEST_REVISED",
         title: "Proposta aggiornata",
-        body: generateTitle(data.submitted_content as SubmittedContent),
+        body: generateTitle(parseSubmittedContent(data.submitted_content)),
         referenceId: data.id,
         referenceType: "content_request",
         link: `/admin/requests/${data.id}`,
@@ -318,7 +328,7 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
     const requests: AdminContentRequest[] = []
     for (const req of data ?? []) {
       const target_label = await buildTargetLabel(supabase, req)
-      const submitted = req.submitted_content as unknown as SubmittedContent
+      const submitted = parseSubmittedContent(req.submitted_content)
       requests.push({
         ...req,
         target_label,
@@ -370,7 +380,7 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
     }
 
     const target_label = await buildTargetLabel(supabase, request)
-    const submitted = request.submitted_content as unknown as SubmittedContent
+    const submitted = parseSubmittedContent(request.submitted_content)
 
     return { ...request, target_label, submitted }
   })
@@ -444,7 +454,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
     if (fetchError || !request) throw new Error("Proposta non trovata")
     if (request.status !== "PENDING") throw new Error("La proposta non è in attesa")
 
-    const submitted = request.submitted_content as unknown as SubmittedContent
+    const submitted = parseSubmittedContent(request.submitted_content)
 
     // Reports and file uploads are acknowledged, not approved
     if (submitted.type === "report" || submitted.type === "file_upload") {

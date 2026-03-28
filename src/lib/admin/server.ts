@@ -1,9 +1,27 @@
 import { createServerFn } from "@tanstack/react-start"
+import { z } from "zod"
 
-import { requireAdmin } from "@/lib/auth/guards"
+import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
+import {
+  classSchema,
+  courseSchema,
+  departmentAdminSchema,
+  departmentSchema,
+  courseMaintainerSchema,
+  idSchema,
+  questionSchema,
+  sectionAccessSchema,
+  sectionSchema,
+  updateClassSchema,
+  updateCourseSchema,
+  updateDepartmentSchema,
+  updateQuestionSchema,
+  updateSectionSchema,
+  userRoleSchema,
+} from "./schemas"
 import type {
   AdminCourse,
   AdminDepartment,
@@ -13,7 +31,6 @@ import type {
   AdminUserDetail,
   AdminUserStats,
   ContentTreeDepartment,
-  UserRole,
 } from "./types"
 
 const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
@@ -119,7 +136,7 @@ export const getAdminDepartmentsFn = createServerFn({
 })
 
 export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -149,9 +166,7 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
   })
 
 export const createDepartmentFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { name: string; code: string; description?: string }) => input,
-  )
+  .inputValidator(departmentSchema)
   .handler(async ({ data }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -184,15 +199,7 @@ export const createDepartmentFn = createServerFn({ method: "POST" })
   })
 
 export const updateDepartmentFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      id: string
-      name?: string
-      code?: string
-      description?: string
-      position?: number
-    }) => input,
-  )
+  .inputValidator(idSchema.merge(updateDepartmentSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -222,7 +229,7 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
   })
 
 export const deleteDepartmentFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -250,7 +257,7 @@ export const deleteDepartmentFn = createServerFn({ method: "POST" })
 // ─── Courses ───
 
 export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -275,15 +282,7 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
   })
 
 export const createCourseFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      name: string
-      code: string
-      description?: string
-      department_id: string
-      course_type: "BACHELOR" | "MASTER"
-    }) => input,
-  )
+  .inputValidator(courseSchema)
   .handler(async ({ data }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -318,16 +317,7 @@ export const createCourseFn = createServerFn({ method: "POST" })
   })
 
 export const updateCourseFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      id: string
-      name?: string
-      code?: string
-      description?: string
-      course_type?: "BACHELOR" | "MASTER"
-      position?: number
-    }) => input,
-  )
+  .inputValidator(idSchema.merge(updateCourseSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -359,7 +349,7 @@ export const updateCourseFn = createServerFn({ method: "POST" })
   })
 
 export const deleteCourseFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -382,7 +372,7 @@ export const deleteCourseFn = createServerFn({ method: "POST" })
 // ─── Classes ───
 
 export const getAdminClassDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -407,15 +397,7 @@ export const getAdminClassDetailFn = createServerFn({ method: "GET" })
   })
 
 export const createClassFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      name: string
-      code: string
-      description?: string
-      course_id: string
-      class_year: number
-    }) => input,
-  )
+  .inputValidator(classSchema)
   .handler(async ({ data }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -450,16 +432,7 @@ export const createClassFn = createServerFn({ method: "POST" })
   })
 
 export const updateClassFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      id: string
-      name?: string
-      code?: string
-      description?: string
-      class_year?: number
-      position?: number
-    }) => input,
-  )
+  .inputValidator(idSchema.merge(updateClassSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -491,7 +464,7 @@ export const updateClassFn = createServerFn({ method: "POST" })
   })
 
 export const deleteClassFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -514,7 +487,7 @@ export const deleteClassFn = createServerFn({ method: "POST" })
 // ─── Sections ───
 
 export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -539,14 +512,7 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
   })
 
 export const createSectionFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      name: string
-      description?: string
-      class_id: string
-      is_public?: boolean
-    }) => input,
-  )
+  .inputValidator(sectionSchema)
   .handler(async ({ data }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -574,15 +540,7 @@ export const createSectionFn = createServerFn({ method: "POST" })
   })
 
 export const updateSectionFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      id: string
-      name?: string
-      description?: string
-      is_public?: boolean
-      position?: number
-    }) => input,
-  )
+  .inputValidator(idSchema.merge(updateSectionSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -607,7 +565,7 @@ export const updateSectionFn = createServerFn({ method: "POST" })
   })
 
 export const deleteSectionFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -630,7 +588,7 @@ export const deleteSectionFn = createServerFn({ method: "POST" })
 // ─── Questions ───
 
 export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -648,17 +606,7 @@ export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
   })
 
 export const createQuestionFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      content: string
-      question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-      options?: string[] | null
-      correct_answer: string[]
-      explanation?: string
-      difficulty: "EASY" | "MEDIUM" | "HARD"
-      section_id: string
-    }) => input,
-  )
+  .inputValidator(questionSchema)
   .handler(async ({ data }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -683,19 +631,7 @@ export const createQuestionFn = createServerFn({ method: "POST" })
   })
 
 export const createQuestionsBulkFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (
-      input: Array<{
-        content: string
-        question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-        options?: string[] | null
-        correct_answer: string[]
-        explanation?: string
-        difficulty: "EASY" | "MEDIUM" | "HARD"
-        section_id: string
-      }>,
-    ) => input,
-  )
+  .inputValidator(z.array(questionSchema))
   .handler(async ({ data: questions }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -721,17 +657,7 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
   })
 
 export const updateQuestionFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      id: string
-      content?: string
-      question_type?: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-      options?: string[] | null
-      correct_answer?: string[]
-      explanation?: string
-      difficulty?: "EASY" | "MEDIUM" | "HARD"
-    }) => input,
-  )
+  .inputValidator(idSchema.merge(updateQuestionSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -761,7 +687,7 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
   })
 
 export const deleteQuestionFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireAdmin()
     const supabase = createServerSupabaseClient()
@@ -774,7 +700,7 @@ export const deleteQuestionFn = createServerFn({ method: "POST" })
 
 export const getAdminUsersFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdminUser[]> => {
-    await requireAdmin()
+    await requireSuperadmin()
 
     const { data: profiles, error } = await supabaseAdmin
       .from("profiles")
@@ -807,9 +733,9 @@ export const getAdminUsersFn = createServerFn({ method: "GET" }).handler(
 )
 
 export const getAdminUserDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(idSchema)
   .handler(async ({ data: { id } }): Promise<AdminUserDetail> => {
-    await requireAdmin()
+    await requireSuperadmin()
 
     const [profileRes, deptAdminsRes, maintainersRes, accessRes, statsRes] =
       await Promise.all([
@@ -895,12 +821,9 @@ export const getAdminUserDetailFn = createServerFn({ method: "GET" })
   })
 
 export const updateUserRoleFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string; role: UserRole }) => input)
+  .inputValidator(userRoleSchema)
   .handler(async ({ data: { id, role } }) => {
-    const user = await requireAdmin()
-    if (user.role !== "SUPERADMIN") {
-      throw new Error("Solo i superadmin possono modificare i ruoli")
-    }
+    await requireSuperadmin()
 
     const { error } = await supabaseAdmin
       .from("profiles")
@@ -911,11 +834,9 @@ export const updateUserRoleFn = createServerFn({ method: "POST" })
   })
 
 export const addDepartmentAdminFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; department_id: string }) => input,
-  )
+  .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("department_admins")
       .insert(data)
@@ -929,11 +850,9 @@ export const addDepartmentAdminFn = createServerFn({ method: "POST" })
   })
 
 export const removeDepartmentAdminFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; department_id: string }) => input,
-  )
+  .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("department_admins")
       .delete()
@@ -944,11 +863,9 @@ export const removeDepartmentAdminFn = createServerFn({ method: "POST" })
   })
 
 export const addCourseMaintainerFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; course_id: string }) => input,
-  )
+  .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("course_maintainers")
       .insert(data)
@@ -962,11 +879,9 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
   })
 
 export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; course_id: string }) => input,
-  )
+  .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("course_maintainers")
       .delete()
@@ -977,11 +892,9 @@ export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
   })
 
 export const addSectionAccessFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; section_id: string }) => input,
-  )
+  .inputValidator(sectionAccessSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("section_access")
       .insert(data)
@@ -995,11 +908,9 @@ export const addSectionAccessFn = createServerFn({ method: "POST" })
   })
 
 export const removeSectionAccessFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { user_id: string; section_id: string }) => input,
-  )
+  .inputValidator(sectionAccessSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireSuperadmin()
     const { error } = await supabaseAdmin
       .from("section_access")
       .delete()
@@ -1031,7 +942,7 @@ export const getAllCoursesFn = createServerFn({ method: "GET" }).handler(
 
 export const getAdminUserStatsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdminUserStats> => {
-    await requireAdmin()
+    await requireSuperadmin()
 
     const [profilesRes, attemptsRes, recentRes] = await Promise.all([
       supabaseAdmin.from("profiles").select("role"),
@@ -1077,7 +988,7 @@ export const getAdminUserStatsFn = createServerFn({ method: "GET" }).handler(
 
 export const getPrivateSectionsFn = createServerFn({ method: "GET" }).handler(
   async () => {
-    await requireAdmin()
+    await requireSuperadmin()
 
     const { data, error } = await supabaseAdmin
       .from("sections")
@@ -1095,9 +1006,9 @@ export const getPrivateSectionsFn = createServerFn({ method: "GET" }).handler(
 )
 
 export const getSectionAccessUsersFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { section_id: string }) => input)
+  .inputValidator(sectionAccessSchema.pick({ section_id: true }))
   .handler(async ({ data: { section_id } }) => {
-    await requireAdmin()
+    await requireSuperadmin()
 
     const { data, error } = await supabaseAdmin
       .from("section_access")
