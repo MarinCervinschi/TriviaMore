@@ -11,7 +11,8 @@
 CREATE TYPE public.content_request_type AS ENUM (
   'NEW_SECTION',
   'NEW_QUESTIONS',
-  'REPORT'
+  'REPORT',
+  'FILE_UPLOAD'
 );
 
 CREATE TYPE public.content_request_status AS ENUM (

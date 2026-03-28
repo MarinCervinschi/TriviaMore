@@ -33,7 +33,15 @@ export type SubmittedReport = {
   comment: string | null
 }
 
-export type SubmittedContent = SubmittedSection | SubmittedQuestions | SubmittedReport
+export type SubmittedFileUpload = {
+  type: "file_upload"
+  file_name: string
+  file_path: string
+  file_size: number
+  comment: string | null
+}
+
+export type SubmittedContent = SubmittedSection | SubmittedQuestions | SubmittedReport | SubmittedFileUpload
 
 // Request with target breadcrumb for list views
 export type ContentRequestWithMeta = ContentRequest & {
