@@ -25,7 +25,15 @@ export type SubmittedQuestions = {
   questions: SubmittedQuestion[]
 }
 
-export type SubmittedContent = SubmittedSection | SubmittedQuestions
+export type SubmittedReport = {
+  type: "report"
+  question_id: string
+  question_content: string
+  reasons: string[]
+  comment: string | null
+}
+
+export type SubmittedContent = SubmittedSection | SubmittedQuestions | SubmittedReport
 
 // Request with target breadcrumb for list views
 export type ContentRequestWithMeta = ContentRequest & {

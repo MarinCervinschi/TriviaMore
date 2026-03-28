@@ -882,7 +882,7 @@ export type Database = {
     }
     Enums: {
       content_request_status: "PENDING" | "APPROVED" | "REJECTED" | "NEEDS_REVISION"
-      content_request_type: "NEW_SECTION" | "NEW_QUESTIONS"
+      content_request_type: "NEW_SECTION" | "NEW_QUESTIONS" | "REPORT"
       course_type: "BACHELOR" | "MASTER"
       difficulty: "EASY" | "MEDIUM" | "HARD"
       notification_type: "REQUEST_STATUS_CHANGED" | "NEW_REQUEST_RECEIVED" | "REQUEST_NEEDS_REVISION" | "REQUEST_REVISED" | "CONTENT_UPDATED" | "NEW_SECTION_ADDED"
@@ -1020,7 +1020,7 @@ export const Constants = {
   public: {
     Enums: {
       content_request_status: ["PENDING", "APPROVED", "REJECTED", "NEEDS_REVISION"],
-      content_request_type: ["NEW_SECTION", "NEW_QUESTIONS"],
+      content_request_type: ["NEW_SECTION", "NEW_QUESTIONS", "REPORT"],
       course_type: ["BACHELOR", "MASTER"],
       difficulty: ["EASY", "MEDIUM", "HARD"],
       notification_type: ["REQUEST_STATUS_CHANGED", "NEW_REQUEST_RECEIVED", "REQUEST_NEEDS_REVISION", "REQUEST_REVISED", "CONTENT_UPDATED", "NEW_SECTION_ADDED"],
