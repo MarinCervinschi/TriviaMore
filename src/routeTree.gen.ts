@@ -33,7 +33,6 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
-import { Route as AppUserRequestsRequestIdRouteImport } from './routes/_app/user/requests/$requestId'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppAdminUsersUserIdRouteImport } from './routes/_app/admin/users/$userId'
 import { Route as AppAdminSectionsSectionIdRouteImport } from './routes/_app/admin/sections/$sectionId'
@@ -167,12 +166,6 @@ const AppAdminDepartmentsIndexRoute =
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
   } as any)
-const AppUserRequestsRequestIdRoute =
-  AppUserRequestsRequestIdRouteImport.update({
-    id: '/requests/$requestId',
-    path: '/requests/$requestId',
-    getParentRoute: () => AppUserRouteRoute,
-  } as any)
 const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
   id: '/quiz/results/$attemptId',
   path: '/quiz/results/$attemptId',
@@ -263,7 +256,6 @@ export interface FileRoutesByFullPath {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/user/requests/$requestId': typeof AppUserRequestsRequestIdRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -298,7 +290,6 @@ export interface FileRoutesByTo {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/user/requests/$requestId': typeof AppUserRequestsRequestIdRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -337,7 +328,6 @@ export interface FileRoutesById {
   '/_app/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/_app/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/_app/user/requests/$requestId': typeof AppUserRequestsRequestIdRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -376,7 +366,6 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/user/requests/$requestId'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -411,7 +400,6 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/user/requests/$requestId'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -449,7 +437,6 @@ export interface FileRouteTypes {
     | '/_app/admin/sections/$sectionId'
     | '/_app/admin/users/$userId'
     | '/_app/quiz/results/$attemptId'
-    | '/_app/user/requests/$requestId'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -639,13 +626,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/user/requests/$requestId': {
-      id: '/_app/user/requests/$requestId'
-      path: '/requests/$requestId'
-      fullPath: '/user/requests/$requestId'
-      preLoaderRoute: typeof AppUserRequestsRequestIdRouteImport
-      parentRoute: typeof AppUserRouteRoute
-    }
     '/_app/quiz/results/$attemptId': {
       id: '/_app/quiz/results/$attemptId'
       path: '/quiz/results/$attemptId'
@@ -765,7 +745,6 @@ interface AppUserRouteRouteChildren {
   AppUserProgressRoute: typeof AppUserProgressRoute
   AppUserSettingsRoute: typeof AppUserSettingsRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
-  AppUserRequestsRequestIdRoute: typeof AppUserRequestsRequestIdRoute
   AppUserRequestsIndexRoute: typeof AppUserRequestsIndexRoute
 }
 
@@ -776,7 +755,6 @@ const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserProgressRoute: AppUserProgressRoute,
   AppUserSettingsRoute: AppUserSettingsRoute,
   AppUserIndexRoute: AppUserIndexRoute,
-  AppUserRequestsRequestIdRoute: AppUserRequestsRequestIdRoute,
   AppUserRequestsIndexRoute: AppUserRequestsIndexRoute,
 }
 

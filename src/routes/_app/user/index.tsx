@@ -120,8 +120,8 @@ function DashboardPage() {
           <QuickActionCard
             icon={Inbox}
             color="amber"
-            title="Inbox"
-            description="Le tue conversazioni con il team di TriviaMore"
+            title="I Miei Contributi"
+            description="Proponi nuovi contenuti per la piattaforma"
             href="/user/requests"
           />
           <QuickActionCard

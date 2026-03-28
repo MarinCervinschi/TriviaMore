@@ -2,25 +2,26 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { ArrowLeft, MapPin, Settings2 } from "lucide-react"
+import { ArrowLeft, CheckCircle2, MapPin, Settings2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { HandleRequestDialog } from "@/components/requests/handle-request-dialog"
-import { RequestCommentForm } from "@/components/requests/request-comment-form"
-import { RequestCommentList } from "@/components/requests/request-comment-list"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { requestQueries } from "@/lib/requests/queries"
+import { useApproveRequest } from "@/lib/requests/mutations"
+import { cn } from "@/lib/utils"
+
+import type { SubmittedContent, SubmittedQuestion } from "@/lib/requests/types"
 
 export const Route = createFileRoute("/_app/admin/requests/$requestId")({
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
       requestQueries.requestDetail(params.requestId),
     ),
-  head: () => seoHead({ title: "Dettaglio Richiesta", noindex: true }),
+  head: () => seoHead({ title: "Dettaglio Proposta", noindex: true }),
   component: AdminRequestDetailPage,
 })
 
@@ -30,138 +31,86 @@ function AdminRequestDetailPage() {
     requestQueries.requestDetail(requestId),
   )
   const [handleOpen, setHandleOpen] = useState(false)
+  const approve = useApproveRequest()
+
+  const isPending = request.status === "PENDING"
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        title="Dettaglio Richiesta"
-        description=""
-      />
+      <AdminPageHeader title="Dettaglio Proposta" description="" />
 
       {/* Back + Actions */}
       <div className="flex items-center justify-between">
         <Button asChild variant="ghost" size="sm" className="gap-1 rounded-xl">
           <Link to="/admin/requests">
             <ArrowLeft className="size-4" />
-            Torna alle richieste
+            Torna alle proposte
           </Link>
         </Button>
 
-        {request.status === "PENDING" || request.status === "NEEDS_REVISION" ? (
-          <Button
-            onClick={() => setHandleOpen(true)}
-            className="gap-2 rounded-xl"
-          >
-            <Settings2 className="size-4" />
-            Gestisci
-          </Button>
-        ) : null}
+        {isPending && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 rounded-xl"
+              onClick={() => setHandleOpen(true)}
+            >
+              <Settings2 className="size-4" />
+              Rifiuta / Modifiche
+            </Button>
+            <Button
+              size="sm"
+              className="gap-1.5 rounded-xl bg-green-600 hover:bg-green-700"
+              onClick={() => approve.mutate({ id: request.id })}
+              disabled={approve.isPending}
+            >
+              <CheckCircle2 className="size-4" />
+              {approve.isPending ? "Approvazione..." : "Approva e pubblica"}
+            </Button>
+          </div>
+        )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main content */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Request card */}
-          <div className="rounded-2xl border bg-card p-6 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <RequestTypeBadge type={request.request_type} />
-              <RequestStatusBadge status={request.status} />
-            </div>
-
-            <h2 className="text-xl font-bold tracking-tight">
-              {request.title}
-            </h2>
-
-            <p className="text-sm leading-relaxed text-foreground/90">
-              {request.description}
-            </p>
-
-            {request.admin_note && (
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                  Nota amministratore
-                </p>
-                <p className="mt-1 text-sm">{request.admin_note}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Comments */}
-          <div className="rounded-2xl border bg-card p-6 space-y-4">
-            <h3 className="text-lg font-semibold">Commenti</h3>
-            <RequestCommentList comments={request.comments} />
-            <Separator />
-            <RequestCommentForm requestId={request.id} />
-          </div>
+      {/* Request info */}
+      <div className="rounded-2xl border bg-card p-6 space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <RequestTypeBadge type={request.request_type} />
+          <RequestStatusBadge status={request.status} />
         </div>
 
-        {/* Sidebar info */}
-        <div className="space-y-4">
-          {/* User info */}
-          <div className="rounded-2xl border bg-card p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Richiedente
-            </p>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={request.user.image ?? undefined} />
-                <AvatarFallback className="text-xs font-semibold">
-                  {(request.user.name?.[0] ?? request.user.email?.[0] ?? "?").toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-medium">
-                  {request.user.name ?? "Utente"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {request.user.email}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Target */}
-          <div className="rounded-2xl border bg-card p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Target
-            </p>
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="size-4 text-muted-foreground" strokeWidth={1.5} />
-              <span>{request.target_label}</span>
-            </div>
-          </div>
-
-          {/* Metadata */}
-          <div className="rounded-2xl border bg-card p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Dettagli
-            </p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Creata</span>
-                <span>
-                  {new Date(request.created_at).toLocaleDateString("it-IT", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-              {request.handled_at && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Gestita</span>
-                  <span>
-                    {new Date(request.handled_at).toLocaleDateString("it-IT", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <MapPin className="size-4 shrink-0" strokeWidth={1.5} />
+          {request.target_label}
         </div>
+
+        <p className="text-xs text-muted-foreground">
+          Inviata il{" "}
+          {new Date(request.created_at).toLocaleDateString("it-IT", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
+
+        {request.admin_note && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+            <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+              Nota amministratore
+            </p>
+            <p className="mt-1 text-sm">{request.admin_note}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Submitted content preview */}
+      <div className="rounded-2xl border bg-card p-6 space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
+          Contenuto proposto
+        </h3>
+        <ContentPreview submitted={request.submitted} />
       </div>
 
       <HandleRequestDialog
@@ -169,6 +118,104 @@ function AdminRequestDetailPage() {
         open={handleOpen}
         onOpenChange={setHandleOpen}
       />
+    </div>
+  )
+}
+
+// ─── Content Preview ───
+
+function ContentPreview({ submitted }: { submitted: SubmittedContent }) {
+  if (submitted.type === "section") {
+    return (
+      <div className="rounded-xl border p-5 space-y-2">
+        <p className="text-lg font-semibold">{submitted.name}</p>
+        {submitted.description && (
+          <p className="text-sm text-muted-foreground">{submitted.description}</p>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-3">
+      {submitted.questions.map((q, i) => (
+        <QuestionCard key={i} question={q} index={i} />
+      ))}
+    </div>
+  )
+}
+
+function QuestionCard({ question, index }: { question: SubmittedQuestion; index: number }) {
+  const typeLabels = { MULTIPLE_CHOICE: "Scelta multipla", TRUE_FALSE: "Vero/Falso", SHORT_ANSWER: "Risposta breve" }
+  const diffColors = { EASY: "text-green-500", MEDIUM: "text-amber-500", HARD: "text-red-500" }
+  const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" }
+
+  return (
+    <div className="rounded-xl border p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-muted-foreground">Domanda {index + 1}</p>
+        <div className="flex gap-1.5">
+          <Badge variant="outline" className="rounded-full text-[10px]">
+            {typeLabels[question.question_type]}
+          </Badge>
+          <Badge variant="outline" className={cn("rounded-full text-[10px]", diffColors[question.difficulty])}>
+            {diffLabels[question.difficulty]}
+          </Badge>
+        </div>
+      </div>
+
+      <p className="text-sm font-medium">{question.content}</p>
+
+      {/* Options */}
+      {question.options && question.options.length > 0 && (
+        <div className="space-y-1.5">
+          {question.options.map((opt, oi) => {
+            const optId = String.fromCharCode(97 + oi)
+            const isCorrect = question.correct_answer.includes(optId)
+            return (
+              <div
+                key={oi}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+                  isCorrect
+                    ? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
+                    : "bg-muted/50",
+                )}
+              >
+                <span className="font-mono text-xs text-muted-foreground">
+                  {optId.toUpperCase()}
+                </span>
+                {opt}
+                {isCorrect && (
+                  <CheckCircle2 className="ml-auto size-4 text-green-500" />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* True/False answer */}
+      {question.question_type === "TRUE_FALSE" && (
+        <p className="text-sm">
+          Risposta: <span className="font-medium text-green-600">{question.correct_answer[0] === "true" ? "Vero" : "Falso"}</span>
+        </p>
+      )}
+
+      {/* Short answer */}
+      {question.question_type === "SHORT_ANSWER" && (
+        <p className="text-sm">
+          Risposta: <span className="font-medium text-green-600">{question.correct_answer[0]}</span>
+        </p>
+      )}
+
+      {/* Explanation */}
+      {question.explanation && (
+        <div className="rounded-lg bg-muted/50 px-3 py-2">
+          <p className="text-xs font-medium text-muted-foreground">Spiegazione</p>
+          <p className="mt-0.5 text-sm">{question.explanation}</p>
+        </div>
+      )}
     </div>
   )
 }

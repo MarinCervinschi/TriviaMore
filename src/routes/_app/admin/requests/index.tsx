@@ -25,7 +25,13 @@ import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { requestQueries } from "@/lib/requests/queries"
 
-import type { ContentRequestWithMeta } from "@/lib/requests/types"
+import type { AdminContentRequest, SubmittedContent } from "@/lib/requests/types"
+
+function generateTitle(submitted: SubmittedContent): string {
+  if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
+  const count = submitted.questions.length
+  return `${count} ${count === 1 ? "domanda" : "domande"}`
+}
 
 export const Route = createFileRoute("/_app/admin/requests/")({
   loader: ({ context }) =>
@@ -39,7 +45,7 @@ function AdminRequestsPage() {
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState<string>("all")
-  const { sort, toggleSort } = useSort<ContentRequestWithMeta>()
+  const { sort, toggleSort } = useSort<AdminContentRequest>()
 
   const filtered = statusFilter === "all"
     ? requests
@@ -48,7 +54,7 @@ function AdminRequestsPage() {
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     filtered,
     (item, query) =>
-      item.title.toLowerCase().includes(query) ||
+      generateTitle(item.submitted).toLowerCase().includes(query) ||
       item.target_label.toLowerCase().includes(query) ||
       (item.user.name?.toLowerCase().includes(query) ?? false),
     search,
