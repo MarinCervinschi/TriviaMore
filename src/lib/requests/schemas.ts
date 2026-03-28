@@ -1,43 +1,83 @@
 import { z } from "zod"
 
-export const contentRequestSchema = z
-  .object({
-    request_type: z.enum([
-      "NEW_SECTION",
-      "NEW_QUESTIONS",
-      "ERROR_REPORT",
-      "CONTENT_REQUEST",
-    ]),
-    title: z
-      .string()
-      .min(5, "Il titolo deve essere di almeno 5 caratteri")
-      .max(200, "Il titolo non puo superare i 200 caratteri")
-      .trim(),
-    description: z
-      .string()
-      .min(10, "La descrizione deve essere di almeno 10 caratteri")
-      .max(2000, "La descrizione non puo superare i 2000 caratteri")
-      .trim(),
-    target_department_id: z.string().nullish(),
-    target_course_id: z.string().nullish(),
-    target_class_id: z.string().nullish(),
-    target_section_id: z.string().nullish(),
-    question_id: z.string().nullish(),
-  })
-  .refine(
-    (data) =>
-      data.target_department_id ||
-      data.target_course_id ||
-      data.target_class_id ||
-      data.target_section_id,
-    {
-      message: "Devi selezionare un target per la richiesta",
-      path: ["target_department_id"],
-    },
-  )
+// Shared question schema (same validation as admin)
+const submittedQuestionSchema = z.object({
+  content: z
+    .string()
+    .min(10, "Il contenuto deve essere di almeno 10 caratteri")
+    .max(2000, "Il contenuto non puo superare i 2000 caratteri")
+    .trim(),
+  question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"], {
+    message: "Il tipo di domanda e obbligatorio",
+  }),
+  options: z
+    .array(z.string().min(1, "L'opzione non puo essere vuota"))
+    .min(2, "Devono esserci almeno 2 opzioni")
+    .max(6, "Non possono esserci piu di 6 opzioni")
+    .optional()
+    .nullable(),
+  correct_answer: z
+    .array(z.string().min(1, "La risposta corretta non puo essere vuota"))
+    .min(1, "Deve esserci almeno una risposta corretta")
+    .max(6, "Non possono esserci piu di 6 risposte corrette"),
+  explanation: z
+    .string()
+    .max(1000, "La spiegazione non puo superare i 1000 caratteri")
+    .optional()
+    .or(z.literal("")),
+  difficulty: z.enum(["EASY", "MEDIUM", "HARD"], {
+    message: "La difficolta e obbligatoria",
+  }),
+})
 
-export type ContentRequestInput = z.infer<typeof contentRequestSchema>
+// Section submission: user proposes a new section for a class
+export const sectionSubmissionSchema = z.object({
+  type: z.literal("section"),
+  target_class_id: z.string().min(1, "La classe e obbligatoria"),
+  name: z
+    .string()
+    .min(2, "Il nome deve essere di almeno 2 caratteri")
+    .max(100, "Il nome non puo superare i 100 caratteri")
+    .trim(),
+  description: z
+    .string()
+    .max(500, "La descrizione non puo superare i 500 caratteri")
+    .optional()
+    .or(z.literal("")),
+})
 
+// Questions submission: user proposes questions for an existing section
+export const questionsSubmissionSchema = z.object({
+  type: z.literal("questions"),
+  target_section_id: z.string().min(1, "La sezione e obbligatoria"),
+  questions: z
+    .array(
+      submittedQuestionSchema.superRefine((data, ctx) => {
+        if (data.question_type === "MULTIPLE_CHOICE") {
+          if (!data.options || data.options.length < 2) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Le domande a scelta multipla devono avere almeno 2 opzioni",
+              path: ["options"],
+            })
+          }
+        }
+      }),
+    )
+    .min(1, "Devi proporre almeno una domanda"),
+})
+
+// Union — the form submits one of these
+export const contentSubmissionSchema = z.discriminatedUnion("type", [
+  sectionSubmissionSchema,
+  questionsSubmissionSchema,
+])
+
+export type SectionSubmissionInput = z.infer<typeof sectionSubmissionSchema>
+export type QuestionsSubmissionInput = z.infer<typeof questionsSubmissionSchema>
+export type ContentSubmissionInput = z.infer<typeof contentSubmissionSchema>
+
+// Admin action schema (unchanged)
 export const handleRequestSchema = z.object({
   id: z.string(),
   status: z.enum(["APPROVED", "REJECTED", "NEEDS_REVISION"]),
@@ -45,32 +85,3 @@ export const handleRequestSchema = z.object({
 })
 
 export type HandleRequestInput = z.infer<typeof handleRequestSchema>
-
-export const reviseRequestSchema = z.object({
-  id: z.string(),
-  title: z
-    .string()
-    .min(5, "Il titolo deve essere di almeno 5 caratteri")
-    .max(200)
-    .trim()
-    .optional(),
-  description: z
-    .string()
-    .min(10, "La descrizione deve essere di almeno 10 caratteri")
-    .max(2000)
-    .trim()
-    .optional(),
-})
-
-export type ReviseRequestInput = z.infer<typeof reviseRequestSchema>
-
-export const requestCommentSchema = z.object({
-  request_id: z.string(),
-  content: z
-    .string()
-    .min(1, "Il commento non puo essere vuoto")
-    .max(1000, "Il commento non puo superare i 1000 caratteri")
-    .trim(),
-})
-
-export type RequestCommentInput = z.infer<typeof requestCommentSchema>

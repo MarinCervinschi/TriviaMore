@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import {
-  addRequestCommentFn,
+  approveRequestFn,
   createRequestFn,
   handleRequestFn,
   reviseRequestFn,
@@ -37,7 +37,7 @@ function useMutationWithToast<TInput, TOutput>(
 
 export function useCreateRequest(onSuccess?: () => void) {
   return useMutationWithToast(createRequestFn, {
-    successMessage: "Richiesta inviata con successo",
+    successMessage: "Proposta inviata con successo",
     invalidateKeys: [
       ["requests", "mine"],
       ["admin", "requests"],
@@ -51,7 +51,7 @@ export function useCreateRequest(onSuccess?: () => void) {
 
 export function useReviseRequest(onSuccess?: () => void) {
   return useMutationWithToast(reviseRequestFn, {
-    successMessage: "Richiesta aggiornata con successo",
+    successMessage: "Proposta aggiornata con successo",
     invalidateKeys: [
       ["requests", "mine"],
       ["requests", "detail"],
@@ -66,7 +66,7 @@ export function useReviseRequest(onSuccess?: () => void) {
 
 export function useHandleRequest(onSuccess?: () => void) {
   return useMutationWithToast(handleRequestFn, {
-    successMessage: "Richiesta gestita con successo",
+    successMessage: "Proposta gestita con successo",
     invalidateKeys: [
       ["admin", "requests"],
       ["admin", "requestCount"],
@@ -79,13 +79,18 @@ export function useHandleRequest(onSuccess?: () => void) {
   })
 }
 
-export function useAddRequestComment(onSuccess?: () => void) {
-  return useMutationWithToast(addRequestCommentFn, {
-    successMessage: "Commento aggiunto",
+export function useApproveRequest(onSuccess?: () => void) {
+  return useMutationWithToast(approveRequestFn, {
+    successMessage: "Contenuto approvato e pubblicato!",
     invalidateKeys: [
+      ["admin", "requests"],
+      ["admin", "requestCount"],
+      ["admin", "stats"],
+      ["requests", "mine"],
       ["requests", "detail"],
       ["notifications"],
       ["notifications", "unreadCount"],
+      ["browse"],
     ],
     onSuccess,
   })
