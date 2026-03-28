@@ -1,10 +1,15 @@
 -- ============================================================
--- Content hierarchy: departments → courses → classes → sections → questions
--- Entity IDs are TEXT (CUIDs generated client-side)
--- User FKs are UUID → profiles(id)
+-- All application tables
+-- Content hierarchy: departments > courses > classes > sections > questions
+-- Quiz system: evaluation_modes > quizzes > quiz_questions > quiz_attempts > answer_attempts
+-- User data: bookmarks, progress, user_classes, user_recent_classes
+-- Contributions: content_requests, notifications
 -- ============================================================
 
--- departments
+-- ============================================================
+-- 1. Content hierarchy
+-- ============================================================
+
 CREATE TABLE public.departments (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -21,7 +26,6 @@ CREATE TRIGGER set_departments_updated_at
   BEFORE UPDATE ON public.departments
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- department_admins (junction: user ↔ department)
 CREATE TABLE public.department_admins (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   department_id TEXT NOT NULL REFERENCES public.departments(id) ON DELETE CASCADE,
@@ -29,7 +33,6 @@ CREATE TABLE public.department_admins (
   PRIMARY KEY (user_id, department_id)
 );
 
--- courses
 CREATE TABLE public.courses (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -49,7 +52,6 @@ CREATE TRIGGER set_courses_updated_at
   BEFORE UPDATE ON public.courses
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- course_maintainers (junction: user ↔ course)
 CREATE TABLE public.course_maintainers (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
@@ -57,7 +59,6 @@ CREATE TABLE public.course_maintainers (
   PRIMARY KEY (user_id, course_id)
 );
 
--- classes
 CREATE TABLE public.classes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -78,7 +79,6 @@ CREATE TRIGGER set_classes_updated_at
   BEFORE UPDATE ON public.classes
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- user_recent_classes (junction: user ↔ class, with visit tracking)
 CREATE TABLE public.user_recent_classes (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   class_id TEXT NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
@@ -87,7 +87,6 @@ CREATE TABLE public.user_recent_classes (
   PRIMARY KEY (user_id, class_id)
 );
 
--- user_classes (junction: user ↔ class, saved classes)
 CREATE TABLE public.user_classes (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   class_id TEXT NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
@@ -100,7 +99,6 @@ CREATE TRIGGER set_user_classes_updated_at
   BEFORE UPDATE ON public.user_classes
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- sections
 CREATE TABLE public.sections (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -118,7 +116,6 @@ CREATE TRIGGER set_sections_updated_at
   BEFORE UPDATE ON public.sections
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- section_access (junction: user ↔ section, for private sections)
 CREATE TABLE public.section_access (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   section_id TEXT NOT NULL REFERENCES public.sections(id) ON DELETE CASCADE,
@@ -126,7 +123,6 @@ CREATE TABLE public.section_access (
   PRIMARY KEY (user_id, section_id)
 );
 
--- questions
 CREATE TABLE public.questions (
   id TEXT PRIMARY KEY,
   content TEXT NOT NULL,
@@ -149,11 +145,9 @@ CREATE TRIGGER set_questions_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ============================================================
--- Quiz system: evaluation_modes → quizzes → quiz_questions
---              quiz_attempts → answer_attempts
+-- 2. Quiz system
 -- ============================================================
 
--- evaluation_modes
 CREATE TABLE public.evaluation_modes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
@@ -169,7 +163,6 @@ CREATE TRIGGER set_evaluation_modes_updated_at
   BEFORE UPDATE ON public.evaluation_modes
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- quizzes
 CREATE TABLE public.quizzes (
   id TEXT PRIMARY KEY,
   time_limit INT,
@@ -183,7 +176,6 @@ CREATE INDEX idx_quizzes_section_id ON public.quizzes(section_id);
 CREATE INDEX idx_quizzes_quiz_mode ON public.quizzes(quiz_mode);
 CREATE INDEX idx_quizzes_evaluation_mode_id ON public.quizzes(evaluation_mode_id);
 
--- quiz_questions (junction: quiz ↔ question, ordered)
 CREATE TABLE public.quiz_questions (
   id TEXT PRIMARY KEY,
   quiz_id TEXT NOT NULL REFERENCES public.quizzes(id) ON DELETE CASCADE,
@@ -193,21 +185,19 @@ CREATE TABLE public.quiz_questions (
   UNIQUE(quiz_id, question_id)
 );
 
--- quiz_attempts
 CREATE TABLE public.quiz_attempts (
   id TEXT PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   quiz_id TEXT NOT NULL REFERENCES public.quizzes(id) ON DELETE CASCADE,
   score FLOAT NOT NULL,
   time_spent INT,
-  completed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  completed_at TIMESTAMPTZ
 );
 
 CREATE INDEX idx_quiz_attempts_user_id ON public.quiz_attempts(user_id);
 CREATE INDEX idx_quiz_attempts_quiz_id ON public.quiz_attempts(quiz_id);
 CREATE INDEX idx_quiz_attempts_completed_at ON public.quiz_attempts(completed_at);
 
--- answer_attempts
 CREATE TABLE public.answer_attempts (
   id TEXT PRIMARY KEY,
   quiz_attempt_id TEXT NOT NULL REFERENCES public.quiz_attempts(id) ON DELETE CASCADE,
@@ -218,10 +208,9 @@ CREATE TABLE public.answer_attempts (
 );
 
 -- ============================================================
--- User data: bookmarks, progress
+-- 3. User data
 -- ============================================================
 
--- bookmarks (junction: user ↔ question)
 CREATE TABLE public.bookmarks (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   question_id TEXT NOT NULL REFERENCES public.questions(id) ON DELETE CASCADE,
@@ -229,7 +218,6 @@ CREATE TABLE public.bookmarks (
   PRIMARY KEY (user_id, question_id)
 );
 
--- progress (per user, section, quiz_mode)
 CREATE TABLE public.progress (
   id TEXT PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -250,3 +238,49 @@ CREATE TABLE public.progress (
 CREATE TRIGGER set_progress_updated_at
   BEFORE UPDATE ON public.progress
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- ============================================================
+-- 4. Content contributions & notifications
+-- ============================================================
+
+CREATE TABLE public.content_requests (
+  id TEXT PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  request_type public.content_request_type NOT NULL,
+  status public.content_request_status NOT NULL DEFAULT 'PENDING',
+  submitted_content JSONB NOT NULL,
+  target_department_id TEXT REFERENCES public.departments(id) ON DELETE CASCADE,
+  target_course_id TEXT REFERENCES public.courses(id) ON DELETE CASCADE,
+  target_class_id TEXT REFERENCES public.classes(id) ON DELETE CASCADE,
+  target_section_id TEXT REFERENCES public.sections(id) ON DELETE CASCADE,
+  handled_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  handled_at TIMESTAMPTZ,
+  admin_note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_content_requests_user_id ON public.content_requests(user_id);
+CREATE INDEX idx_content_requests_status ON public.content_requests(status);
+CREATE INDEX idx_content_requests_created_at ON public.content_requests(created_at DESC);
+
+CREATE TRIGGER set_content_requests_updated_at
+  BEFORE UPDATE ON public.content_requests
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TABLE public.notifications (
+  id TEXT PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  type public.notification_type NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT,
+  reference_id TEXT,
+  reference_type TEXT,
+  link TEXT,
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_notifications_user_id ON public.notifications(user_id);
+CREATE INDEX idx_notifications_unread ON public.notifications(user_id) WHERE is_read = false;
+CREATE INDEX idx_notifications_created_at ON public.notifications(created_at DESC);
