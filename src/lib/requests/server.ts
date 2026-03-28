@@ -80,9 +80,20 @@ async function buildTargetLabel(
 }
 
 // Helper: generate a display title from submitted content
+const REPORT_REASON_LABELS: Record<string, string> = {
+  errata: "Errata",
+  imprecisa: "Imprecisa",
+  fuori_contesto: "Fuori contesto",
+  altro: "Altro",
+}
+
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") {
     return `Nuova sezione: ${submitted.name}`
+  }
+  if (submitted.type === "report") {
+    const firstReason = submitted.reasons[0]
+    return `Segnalazione: ${REPORT_REASON_LABELS[firstReason] ?? firstReason}`
   }
   const count = submitted.questions.length
   return `${count} ${count === 1 ? "domanda" : "domande"}`
@@ -148,7 +159,7 @@ export const getUserRequestsFn = createServerFn({ method: "GET" }).handler(
 export const createRequestFn = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
-      type: "section" | "questions"
+      type: "section" | "questions" | "report"
       target_class_id?: string
       target_section_id?: string
       submitted_content: unknown
@@ -165,6 +176,16 @@ export const createRequestFn = createServerFn({ method: "POST" })
     let targetCourseId: string | null = null
     let targetClassId = data.target_class_id ?? null
     let targetSectionId = data.target_section_id ?? null
+
+    // For reports, resolve hierarchy from question_id
+    if (data.type === "report" && submitted.type === "report") {
+      const { data: question } = await supabase
+        .from("questions")
+        .select("section_id")
+        .eq("id", submitted.question_id)
+        .single()
+      if (question) targetSectionId = question.section_id
+    }
 
     // Walk up to fill parent IDs
     if (targetSectionId) {
@@ -193,7 +214,12 @@ export const createRequestFn = createServerFn({ method: "POST" })
       }
     }
 
-    const requestType = data.type === "section" ? "NEW_SECTION" as const : "NEW_QUESTIONS" as const
+    const requestTypeMap = {
+      section: "NEW_SECTION" as const,
+      questions: "NEW_QUESTIONS" as const,
+      report: "REPORT" as const,
+    }
+    const requestType = requestTypeMap[data.type]
 
     const { error } = await supabase.from("content_requests").insert({
       id,
@@ -470,6 +496,44 @@ export const approveRequestFn = createServerFn({ method: "POST" })
       type: "REQUEST_STATUS_CHANGED",
       title: "Proposta approvata!",
       body: generateTitle(submitted),
+      referenceId: data.id,
+      referenceType: "content_request",
+      link: `/user/requests`,
+    })
+  })
+
+export const acknowledgeReportFn = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string; admin_note?: string }) => input)
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin()
+    const supabase = createServerSupabaseClient()
+
+    const { data: request, error: fetchError } = await supabase
+      .from("content_requests")
+      .select("user_id, request_type")
+      .eq("id", data.id)
+      .single()
+
+    if (fetchError || !request) throw new Error("Segnalazione non trovata")
+    if (request.request_type !== "REPORT") throw new Error("Non e una segnalazione")
+
+    const { error } = await supabase
+      .from("content_requests")
+      .update({
+        status: "APPROVED" as const,
+        handled_by: admin.id,
+        handled_at: new Date().toISOString(),
+        admin_note: data.admin_note?.trim() || null,
+      })
+      .eq("id", data.id)
+
+    if (error) throw new Error("Errore nella gestione della segnalazione")
+
+    await createNotification(supabaseAdmin, {
+      userId: request.user_id,
+      type: "REQUEST_STATUS_CHANGED",
+      title: "Segnalazione presa in carico",
+      body: data.admin_note?.trim() || undefined,
       referenceId: data.id,
       referenceType: "content_request",
       link: `/user/requests`,

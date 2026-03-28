@@ -77,6 +77,32 @@ export type SectionSubmissionInput = z.infer<typeof sectionSubmissionSchema>
 export type QuestionsSubmissionInput = z.infer<typeof questionsSubmissionSchema>
 export type ContentSubmissionInput = z.infer<typeof contentSubmissionSchema>
 
+// Report submission: user flags a question
+export const reportSubmissionSchema = z
+  .object({
+    type: z.literal("report"),
+    question_id: z.string().min(1, "La domanda e obbligatoria"),
+    question_content: z.string(),
+    reasons: z
+      .array(z.enum(["errata", "imprecisa", "fuori_contesto", "altro"]))
+      .min(1, "Seleziona almeno un motivo"),
+    comment: z.string().max(1000).nullable(),
+  })
+  .refine(
+    (data) => {
+      if (data.reasons.includes("altro")) {
+        return data.comment && data.comment.trim().length > 0
+      }
+      return true
+    },
+    {
+      message: "Il commento e obbligatorio quando si seleziona 'Altro'",
+      path: ["comment"],
+    },
+  )
+
+export type ReportSubmissionInput = z.infer<typeof reportSubmissionSchema>
+
 // Admin action schema (unchanged)
 export const handleRequestSchema = z.object({
   id: z.string(),
