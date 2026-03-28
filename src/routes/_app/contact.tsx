@@ -7,7 +7,6 @@ import {
   Github,
   Heart,
   Lightbulb,
-  MessageSquare,
   Send,
 } from "lucide-react"
 import { useState } from "react"

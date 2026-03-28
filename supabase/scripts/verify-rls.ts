@@ -42,7 +42,7 @@ async function createTestUser(
   if (error) throw new Error(`Failed to create ${email}: ${error.message}`)
 
   // Sign in to get a session
-  const { data: session, error: signInError } = await admin.auth.admin.generateLink({
+  const { error: signInError } = await admin.auth.admin.generateLink({
     type: "magiclink",
     email,
   })
