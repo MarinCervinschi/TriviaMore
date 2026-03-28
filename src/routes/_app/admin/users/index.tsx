@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { Pencil } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import {
@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import {
   Table,
   TableBody,
@@ -23,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useDeleteUser } from "@/lib/admin/mutations"
 import { adminQueries } from "@/lib/admin/queries"
 import type { AdminUser } from "@/lib/admin/types"
 
@@ -51,8 +53,10 @@ function AdminUsersPage() {
   const { data: users } = useSuspenseQuery(adminQueries.users())
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const { sort, toggleSort } = useSort<AdminUser>()
+  const deleteUser = useDeleteUser(() => setDeleteId(null))
 
   const filtered = roleFilter === "all"
     ? users
@@ -215,14 +219,24 @@ function AdminUsersPage() {
                         {new Date(user.created_at).toLocaleDateString("it-IT")}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="rounded-lg" asChild>
-                          <Link
-                            to="/admin/users/$userId"
-                            params={{ userId: user.id }}
+                        <div className="flex items-center justify-end gap-1">
+                          <Button variant="ghost" size="icon" className="rounded-lg" asChild>
+                            <Link
+                              to="/admin/users/$userId"
+                              params={{ userId: user.id }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-lg"
+                            onClick={() => setDeleteId(user.id)}
                           >
-                            <Pencil className="h-4 w-4" />
-                          </Link>
-                        </Button>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -239,6 +253,18 @@ function AdminUsersPage() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmationDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Elimina utente"
+        description="Sei sicuro di voler eliminare questo utente? Tutti i suoi dati (quiz, progressi, segnalibri) verranno eliminati. L'operazione è irreversibile."
+        confirmText="Elimina"
+        variant="destructive"
+        onConfirm={() => {
+          if (deleteId) deleteUser.mutate({ id: deleteId })
+        }}
+      />
     </div>
   )
 }

@@ -21,6 +21,7 @@ import {
   removeCourseMaintainerFn,
   removeDepartmentAdminFn,
   removeSectionAccessFn,
+  deleteUserFn,
   updateClassFn,
   updateCourseFn,
   updateDepartmentFn,
@@ -198,6 +199,14 @@ const USER_INVALIDATE_KEYS = [
   ["admin", "user"],
   ["admin", "userStats"],
 ]
+
+export function useDeleteUser(onSuccess?: () => void) {
+  return useMutationWithToast(deleteUserFn, {
+    successMessage: "Utente eliminato con successo",
+    invalidateKeys: USER_INVALIDATE_KEYS,
+    onSuccess,
+  })
+}
 
 export function useUpdateUserRole(onSuccess?: () => void) {
   return useMutationWithToast(updateUserRoleFn, {
