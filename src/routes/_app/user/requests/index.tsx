@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronDown,
+  Flag,
   FolderPlus,
   Inbox,
   Info,
@@ -39,6 +40,7 @@ import type {
   ContentRequestWithMeta,
   SubmittedContent,
   SubmittedQuestion,
+  SubmittedReport,
 } from "@/lib/requests/types"
 
 export const Route = createFileRoute("/_app/user/requests/")({
@@ -48,8 +50,19 @@ export const Route = createFileRoute("/_app/user/requests/")({
   component: UserContributionsPage,
 })
 
+const REASON_LABELS: Record<string, string> = {
+  errata: "Errata",
+  imprecisa: "Imprecisa",
+  fuori_contesto: "Fuori contesto",
+  altro: "Altro",
+}
+
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
+  if (submitted.type === "report") {
+    const label = REASON_LABELS[submitted.reasons[0]] ?? submitted.reasons[0]
+    return `Segnalazione: ${label}`
+  }
   const count = submitted.questions.length
   return `${count} ${count === 1 ? "domanda" : "domande"}`
 }
@@ -148,8 +161,14 @@ function ContributionRow({
   onToggle: () => void
   prefersReduced: boolean
 }) {
-  const isSection = request.request_type === "NEW_SECTION"
-  const Icon = isSection ? FolderPlus : MessageSquarePlus
+  const iconMap = { NEW_SECTION: FolderPlus, NEW_QUESTIONS: MessageSquarePlus, REPORT: Flag }
+  const colorMap = {
+    NEW_SECTION: { bg: "bg-blue-500/10", text: "text-blue-500" },
+    NEW_QUESTIONS: { bg: "bg-purple-500/10", text: "text-purple-500" },
+    REPORT: { bg: "bg-red-500/10", text: "text-red-500" },
+  }
+  const Icon = iconMap[request.request_type]
+  const colors = colorMap[request.request_type]
   const title = generateTitle(request.submitted)
 
   return (
@@ -159,8 +178,8 @@ function ContributionRow({
         onClick={onToggle}
         className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-accent/30"
       >
-        <div className={cn("rounded-xl p-2", isSection ? "bg-blue-500/10" : "bg-purple-500/10")}>
-          <Icon className={cn("size-4", isSection ? "text-blue-500" : "text-purple-500")} strokeWidth={1.5} />
+        <div className={cn("rounded-xl p-2", colors.bg)}>
+          <Icon className={cn("size-4", colors.text)} strokeWidth={1.5} />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -217,6 +236,10 @@ function ContributionRow({
 }
 
 function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent }) {
+  if (submitted.type === "report") {
+    return <ReportPreview report={submitted} />
+  }
+
   if (submitted.type === "section") {
     return (
       <div className="space-y-2">
@@ -278,12 +301,12 @@ function RevisionForm({ requestId, submitted }: { requestId: string; submitted: 
           content={content}
           onChange={(updated) => setContent(updated)}
         />
-      ) : (
+      ) : content.type === "questions" ? (
         <QuestionsEditor
           content={content}
           onChange={(updated) => setContent(updated)}
         />
-      )}
+      ) : null}
 
       <div className="flex gap-2">
         <Button
@@ -515,6 +538,29 @@ function RevisionQuestionEditor({
 }
 
 // ─── Previews ───
+
+function ReportPreview({ report }: { report: SubmittedReport }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Segnalazione</p>
+      <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+        <div className="flex flex-wrap gap-1.5">
+          {report.reasons.map((r) => (
+            <Badge key={r} variant="outline" className="rounded-full border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 text-xs">
+              {REASON_LABELS[r] ?? r}
+            </Badge>
+          ))}
+        </div>
+        {report.comment && (
+          <p className="text-sm text-foreground/90">{report.comment}</p>
+        )}
+        <p className="line-clamp-2 text-xs text-muted-foreground italic">
+          &quot;{report.question_content}&quot;
+        </p>
+      </div>
+    </div>
+  )
+}
 
 function QuestionPreview({ question, index }: { question: SubmittedQuestion; index: number }) {
   const typeLabels = { MULTIPLE_CHOICE: "Scelta multipla", TRUE_FALSE: "Vero/Falso", SHORT_ANSWER: "Risposta breve" }

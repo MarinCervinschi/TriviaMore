@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { QuizQuestion } from "@/lib/quiz/types"
 import { parseOptions } from "@/lib/quiz/options"
+import { ReportButton } from "@/components/requests/report-button"
 import { BookmarkButton } from "./bookmark-button"
 
 function getDifficultyColor(difficulty: string) {
@@ -72,7 +73,10 @@ export function QuestionCard({
             {getDifficultyLabel(question.difficulty)}
           </Badge>
         </div>
-        <BookmarkButton questionId={question.id} />
+        <div className="flex items-center gap-1">
+          <ReportButton questionId={question.id} questionContent={question.content} />
+          <BookmarkButton questionId={question.id} />
+        </div>
       </div>
 
       {/* Question content */}
