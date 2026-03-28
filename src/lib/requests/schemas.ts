@@ -1,34 +1,6 @@
 import { z } from "zod"
 
-// Shared question schema (same validation as admin)
-const submittedQuestionSchema = z.object({
-  content: z
-    .string()
-    .min(10, "Il contenuto deve essere di almeno 10 caratteri")
-    .max(2000, "Il contenuto non può superare i 2000 caratteri")
-    .trim(),
-  question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"], {
-    message: "Il tipo di domanda è obbligatorio",
-  }),
-  options: z
-    .array(z.string().min(1, "L'opzione non può essere vuota"))
-    .min(2, "Devono esserci almeno 2 opzioni")
-    .max(6, "Non possono esserci più di 6 opzioni")
-    .optional()
-    .nullable(),
-  correct_answer: z
-    .array(z.string().min(1, "La risposta corretta non può essere vuota"))
-    .min(1, "Deve esserci almeno una risposta corretta")
-    .max(6, "Non possono esserci più di 6 risposte corrette"),
-  explanation: z
-    .string()
-    .max(1000, "La spiegazione non può superare i 1000 caratteri")
-    .optional()
-    .or(z.literal("")),
-  difficulty: z.enum(["EASY", "MEDIUM", "HARD"], {
-    message: "La difficoltà è obbligatoria",
-  }),
-})
+import { questionFieldsSchema, questionMcRefinement } from "@/lib/shared/question-schema"
 
 // Section submission: user proposes a new section for a class
 export const sectionSubmissionSchema = z.object({
@@ -51,19 +23,7 @@ export const questionsSubmissionSchema = z.object({
   type: z.literal("questions"),
   target_section_id: z.string().min(1, "La sezione è obbligatoria"),
   questions: z
-    .array(
-      submittedQuestionSchema.superRefine((data, ctx) => {
-        if (data.question_type === "MULTIPLE_CHOICE") {
-          if (!data.options || data.options.length < 2) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Le domande a scelta multipla devono avere almeno 2 opzioni",
-              path: ["options"],
-            })
-          }
-        }
-      }),
-    )
+    .array(questionFieldsSchema.superRefine(questionMcRefinement))
     .min(1, "Devi proporre almeno una domanda"),
 })
 

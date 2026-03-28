@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { questionFieldsSchema, questionMcRefinement } from "@/lib/shared/question-schema"
+
 // Department
 export const departmentSchema = z.object({
   name: z
@@ -115,51 +117,13 @@ export const sectionSchema = z.object({
     .optional(),
 })
 
-// Question (base object without refinement — needed for .partial())
-const questionBaseSchema = z.object({
-  content: z
-    .string()
-    .min(10, "Il contenuto deve essere di almeno 10 caratteri")
-    .max(2000, "Il contenuto non può superare i 2000 caratteri")
-    .trim(),
-  question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"], {
-    message:
-      "Il tipo di domanda è obbligatorio. Seleziona un tipo valido",
-  }),
-  options: z
-    .array(z.string().min(1, "L'opzione non può essere vuota"))
-    .min(2, "Devono esserci almeno 2 opzioni")
-    .max(6, "Non possono esserci più di 6 opzioni")
-    .optional()
-    .nullable(),
-  correct_answer: z
-    .array(z.string().min(1, "La risposta corretta non può essere vuota"))
-    .min(1, "Deve esserci almeno una risposta corretta")
-    .max(6, "Non possono esserci più di 6 risposte corrette"),
-  explanation: z
-    .string()
-    .max(1000, "La spiegazione non può superare i 1000 caratteri")
-    .optional()
-    .or(z.literal("")),
-  difficulty: z.enum(["EASY", "MEDIUM", "HARD"], {
-    message: "La difficoltà è obbligatoria. Seleziona EASY, MEDIUM o HARD",
-  }),
+// Question (extends shared fields with section_id)
+const questionBaseSchema = questionFieldsSchema.extend({
   section_id: z.string().min(1, "La sezione è obbligatoria"),
 })
 
 // Question with refinement (for create forms)
-export const questionSchema = questionBaseSchema.superRefine((data, ctx) => {
-  if (data.question_type === "MULTIPLE_CHOICE") {
-    if (!data.options || data.options.length < 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "Le domande a scelta multipla devono avere almeno 2 opzioni",
-        path: ["options"],
-      })
-    }
-  }
-})
+export const questionSchema = questionBaseSchema.superRefine(questionMcRefinement)
 
 // Type exports
 export type DepartmentInput = z.infer<typeof departmentSchema>
