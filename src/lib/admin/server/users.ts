@@ -237,6 +237,19 @@ export const removeSectionAccessFn = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message)
   })
 
+export const deleteUserFn = createServerFn({ method: "POST" })
+  .inputValidator(idSchema)
+  .handler(async ({ data: { id } }) => {
+    const currentUser = await requireSuperadmin()
+
+    if (currentUser.id === id) {
+      throw new Error("Non puoi eliminare il tuo stesso account")
+    }
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(id)
+    if (error) throw new Error("Errore nell'eliminazione dell'utente: " + error.message)
+  })
+
 export const getAllCoursesFn = createServerFn({ method: "GET" }).handler(
   async () => {
     await requireAdmin()
