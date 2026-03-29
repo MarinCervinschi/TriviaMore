@@ -71,10 +71,10 @@ export const createDepartmentFn = createServerFn({ method: "POST" })
     const { data: department, error } = await catalogQuery(supabase)
       .from("departments")
       .insert({
-        id: crypto.randomUUID(),
         name: data.name,
         code: data.code,
         description: data.description || null,
+        area: data.area || null,
         position: (count ?? 0) + 1,
       })
       .select()
@@ -101,6 +101,7 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
     if (updates.code !== undefined) updateData.code = updates.code
     if (updates.description !== undefined)
       updateData.description = updates.description || null
+    if (updates.area !== undefined) updateData.area = updates.area || null
     if (updates.position !== undefined) updateData.position = updates.position
 
     const { data: department, error } = await catalogQuery(supabase)

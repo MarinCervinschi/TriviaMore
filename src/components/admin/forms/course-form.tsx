@@ -43,6 +43,8 @@ export function CourseForm({
       description: course?.description ?? "",
       department_id: course?.department_id ?? departmentId,
       course_type: course?.course_type ?? "BACHELOR",
+      location: course?.location ?? "",
+      cfu: course?.cfu ?? undefined,
     },
   })
 
@@ -94,8 +96,48 @@ export function CourseForm({
                 <SelectContent>
                   <SelectItem value="BACHELOR">Triennale</SelectItem>
                   <SelectItem value="MASTER">Magistrale</SelectItem>
+                  <SelectItem value="SINGLE_CYCLE">Ciclo Unico</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sede</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="es. Campus Luigi Einaudi (opzionale)"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cfu"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CFU totali</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="es. 180"
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value ? Number(e.target.value) : undefined,
+                    )
+                  }
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

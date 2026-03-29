@@ -46,12 +46,13 @@ export const createCourseFn = createServerFn({ method: "POST" })
     const { data: course, error } = await catalogQuery(supabase)
       .from("courses")
       .insert({
-        id: crypto.randomUUID(),
         name: data.name,
         code: data.code,
         description: data.description || null,
         department_id: data.department_id,
         course_type: data.course_type,
+        location: data.location || null,
+        cfu: data.cfu ?? null,
         position: (count ?? 0) + 1,
       })
       .select()
@@ -80,6 +81,9 @@ export const updateCourseFn = createServerFn({ method: "POST" })
       updateData.description = updates.description || null
     if (updates.course_type !== undefined)
       updateData.course_type = updates.course_type
+    if (updates.location !== undefined)
+      updateData.location = updates.location || null
+    if (updates.cfu !== undefined) updateData.cfu = updates.cfu ?? null
     if (updates.position !== undefined) updateData.position = updates.position
 
     const { data: course, error } = await catalogQuery(supabase)

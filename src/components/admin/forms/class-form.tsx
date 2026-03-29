@@ -43,6 +43,9 @@ export function ClassForm({
       description: cls?.description ?? "",
       course_id: cls?.course_id ?? courseId,
       class_year: cls?.class_year ?? 1,
+      cfu: cls?.cfu ?? undefined,
+      catalogue_url: cls?.catalogue_url ?? "",
+      curriculum: cls?.curriculum ?? "",
     },
   })
 
@@ -102,6 +105,61 @@ export function ClassForm({
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cfu"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CFU</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="es. 6"
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value ? Number(e.target.value) : undefined,
+                    )
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="catalogue_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL catalogo</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://... (opzionale)"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="curriculum"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Curriculum</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="es. Informatica Applicata (opzionale)"
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
