@@ -1,13 +1,11 @@
-import type { Database } from "@/lib/supabase/database.types"
+import type { CatalogTables, Database } from "@/lib/supabase/database.types"
 
-type Tables = Database["public"]["Tables"]
-
-// Row types
-export type Department = Tables["departments"]["Row"]
-export type Course = Tables["courses"]["Row"]
-export type Class = Tables["classes"]["Row"]
-export type Section = Tables["sections"]["Row"]
-export type Question = Tables["questions"]["Row"]
+// Row types (catalog schema)
+export type Department = CatalogTables<"departments">
+export type Course = CatalogTables<"courses">
+export type Class = CatalogTables<"classes">
+export type Section = CatalogTables<"sections">
+export type Question = CatalogTables<"questions">
 
 // Admin list types (with child counts)
 export type AdminDepartment = Department & { courses: { count: number }[] }

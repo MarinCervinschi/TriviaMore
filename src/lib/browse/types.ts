@@ -1,10 +1,10 @@
-import type { Tables } from "@/lib/supabase/database.types"
+import type { CatalogTables } from "@/lib/supabase/database.types"
 
-// Base table types from Supabase
-type Department = Tables<"departments">
-type Course = Tables<"courses">
-type Class = Tables<"classes">
-type Section = Tables<"sections">
+// Base table types from Supabase (catalog schema)
+type Department = CatalogTables<"departments">
+type Course = CatalogTables<"courses">
+type Class = CatalogTables<"classes">
+type Section = CatalogTables<"sections">
 
 // Browse listing types (with relation counts)
 

@@ -201,12 +201,31 @@ export const getQuizFn = createServerFn({ method: "GET" })
       .is("completed_at", null)
       .single()
 
+    // Get evaluation mode
+    const { data: evalMode } = await quizQuery(supabase)
+      .from("evaluation_modes")
+      .select("*")
+      .eq("id", quiz.evaluation_mode_id!)
+      .single()
+
     return {
-      id: quiz.id,
+      id: quiz.id!,
       time_limit: quiz.time_limit,
-      quiz_mode: quiz.quiz_mode,
-      evaluation_mode: quiz.evaluation_mode as unknown as EvaluationMode,
-      section: quiz.section as unknown as Quiz["section"],
+      quiz_mode: quiz.quiz_mode!,
+      evaluation_mode: evalMode as EvaluationMode,
+      section: {
+        id: quiz.section_id!,
+        name: quiz.section_name!,
+        class: {
+          name: quiz.class_name!,
+          course: {
+            name: quiz.course_name!,
+            department: {
+              name: quiz.department_name!,
+            },
+          },
+        },
+      },
       questions: orderedQuestions,
       attempt_id: attempt?.id,
     }
@@ -379,11 +398,10 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
     if (!attempt || !attempt.completed_at) return null
 
     // Get quiz questions in order
-    const quizId = (attempt.quiz as unknown as { id: string }).id
     const { data: quizQuestions } = await quizQuery(supabase)
       .from("quiz_questions")
       .select("question_id, order")
-      .eq("quiz_id", quizId)
+      .eq("quiz_id", attempt.quiz_id!)
       .order("order")
 
     if (!quizQuestions) return null
@@ -400,30 +418,41 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
       .select("question_id, user_answer, score")
       .eq("quiz_attempt_id", data.attemptId)
 
+    // Get evaluation mode
+    const { data: evalMode } = await quizQuery(supabase)
+      .from("evaluation_modes")
+      .select("*")
+      .eq("id", attempt.evaluation_mode_id!)
+      .single()
+
     // Order questions by quiz order
     const orderedQuestions = quizQuestions
       .map((qq) => questions?.find((q) => q.id === qq.question_id))
       .filter((q): q is NonNullable<typeof q> => Boolean(q))
 
-    const quiz = attempt.quiz as unknown as {
-      id: string
-      quiz_mode: "STUDY" | "EXAM_SIMULATION"
-      time_limit: number | null
-      section: QuizAttemptResult["quiz"]["section"]
-      evaluation_mode: EvaluationMode
-    }
-
     return {
-      id: attempt.id,
-      score: attempt.score,
+      id: attempt.id!,
+      score: attempt.score!,
       time_spent: attempt.time_spent,
       completed_at: attempt.completed_at,
       quiz: {
-        id: quiz.id,
-        quiz_mode: quiz.quiz_mode,
-        time_limit: quiz.time_limit,
-        section: quiz.section,
-        evaluation_mode: quiz.evaluation_mode,
+        id: attempt.quiz_id!,
+        quiz_mode: attempt.quiz_mode!,
+        time_limit: attempt.time_limit,
+        section: {
+          id: attempt.section_id!,
+          name: attempt.section_name!,
+          class: {
+            name: attempt.class_name!,
+            course: {
+              name: attempt.course_name!,
+              department: {
+                name: attempt.department_name!,
+              },
+            },
+          },
+        },
+        evaluation_mode: evalMode as EvaluationMode,
         questions: orderedQuestions as QuizAttemptResult["quiz"]["questions"],
       },
       answers: (answers ?? []) as QuizAttemptResult["answers"],
