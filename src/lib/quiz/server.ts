@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
 import type { Json } from "@/lib/supabase/database.types"
 import { selectRandomItems, shuffleArray } from "./randomization"
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types"
@@ -24,7 +24,7 @@ async function getAuthenticatedUser() {
 export const getEvaluationModesFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<EvaluationMode[]> => {
     const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase
+    const { data, error } = await quizQuery(supabase)
       .from("evaluation_modes")
       .select("*")
       .order("name")
@@ -53,7 +53,7 @@ export const startQuizFn = createServerFn({ method: "POST" })
       // Get evaluation mode
       let evalModeId = data.evaluationModeId
       if (!evalModeId) {
-        const { data: modes } = await supabase
+        const { data: modes } = await quizQuery(supabase)
           .from("evaluation_modes")
           .select("id")
           .limit(1)
@@ -67,21 +67,21 @@ export const startQuizFn = createServerFn({ method: "POST" })
 
       if (data.quizMode === "EXAM_SIMULATION") {
         // Get all sections in the same class
-        const { data: section } = await supabase
+        const { data: section } = await catalogQuery(supabase)
           .from("sections")
           .select("class_id")
           .eq("id", data.sectionId)
           .single()
         if (!section) throw new Error("Sezione non trovata")
 
-        const { data: classSections } = await supabase
+        const { data: classSections } = await catalogQuery(supabase)
           .from("sections")
           .select("id")
           .eq("class_id", section.class_id)
 
         const sectionIds = (classSections ?? []).map((s) => s.id)
 
-        const { data: qs } = await supabase
+        const { data: qs } = await catalogQuery(supabase)
           .from("questions")
           .select("id, options")
           .in("section_id", sectionIds)
@@ -89,7 +89,7 @@ export const startQuizFn = createServerFn({ method: "POST" })
 
         questions = qs ?? []
       } else {
-        const { data: qs } = await supabase
+        const { data: qs } = await catalogQuery(supabase)
           .from("questions")
           .select("id, options")
           .eq("section_id", data.sectionId)
@@ -106,7 +106,7 @@ export const startQuizFn = createServerFn({ method: "POST" })
 
       // Create quiz
       const quizId = crypto.randomUUID()
-      const { error: quizError } = await supabase.from("quizzes").insert({
+      const { error: quizError } = await quizQuery(supabase).from("quizzes").insert({
         id: quizId,
         section_id: data.sectionId,
         evaluation_mode_id: evalModeId,
@@ -123,14 +123,14 @@ export const startQuizFn = createServerFn({ method: "POST" })
         order: index + 1,
       }))
 
-      const { error: qqError } = await supabase
+      const { error: qqError } = await quizQuery(supabase)
         .from("quiz_questions")
         .insert(quizQuestions)
       if (qqError) throw new Error(qqError.message)
 
       // Create quiz_attempt
       const attemptId = crypto.randomUUID()
-      const { error: attemptError } = await supabase
+      const { error: attemptError } = await quizQuery(supabase)
         .from("quiz_attempts")
         .insert({
           id: attemptId,
@@ -151,18 +151,16 @@ export const getQuizFn = createServerFn({ method: "GET" })
     if (!user) return null
 
     // Get quiz with section chain
-    const { data: quiz } = await supabase
-      .from("quizzes")
-      .select(
-        "*, section:sections(id, name, class:classes(name, course:courses(name, department:departments(name)))), evaluation_mode:evaluation_modes(*)",
-      )
+    const { data: quiz } = await quizQuery(supabase)
+      .from("quizzes_detail")
+      .select("*")
       .eq("id", data.quizId)
       .single()
 
     if (!quiz) return null
 
     // Get quiz questions in order
-    const { data: quizQuestions } = await supabase
+    const { data: quizQuestions } = await quizQuery(supabase)
       .from("quiz_questions")
       .select("question_id, order")
       .eq("quiz_id", data.quizId)
@@ -172,7 +170,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
 
     // Get full question data
     const questionIds = quizQuestions.map((qq) => qq.question_id)
-    const { data: questions } = await supabase
+    const { data: questions } = await catalogQuery(supabase)
       .from("questions")
       .select("*")
       .in("id", questionIds)
@@ -195,7 +193,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
     })
 
     // Get attempt ID
-    const { data: attempt } = await supabase
+    const { data: attempt } = await quizQuery(supabase)
       .from("quiz_attempts")
       .select("id")
       .eq("quiz_id", data.quizId)
@@ -234,7 +232,7 @@ export const completeQuizFn = createServerFn({ method: "POST" })
     if (!user) throw new Error("Non autenticato")
 
     // Verify attempt belongs to user and not completed
-    const { data: attempt } = await supabase
+    const { data: attempt } = await quizQuery(supabase)
       .from("quiz_attempts")
       .select("id, quiz_id, user_id, completed_at")
       .eq("id", data.quizAttemptId)
@@ -253,13 +251,13 @@ export const completeQuizFn = createServerFn({ method: "POST" })
       score: a.score,
     }))
 
-    const { error: answersError } = await supabase
+    const { error: answersError } = await quizQuery(supabase)
       .from("answer_attempts")
       .insert(answerAttempts)
     if (answersError) throw new Error(answersError.message)
 
     // Update quiz attempt
-    const { error: updateError } = await supabase
+    const { error: updateError } = await quizQuery(supabase)
       .from("quiz_attempts")
       .update({
         score: data.totalScore,
@@ -270,7 +268,7 @@ export const completeQuizFn = createServerFn({ method: "POST" })
     if (updateError) throw new Error(updateError.message)
 
     // Update progress
-    const { data: quiz } = await supabase
+    const { data: quiz } = await quizQuery(supabase)
       .from("quizzes")
       .select("section_id, quiz_mode")
       .eq("id", attempt.quiz_id)
@@ -334,7 +332,7 @@ export const cancelQuizFn = createServerFn({ method: "POST" })
     if (!user) throw new Error("Non autenticato")
 
     // Get attempt to find quiz ID
-    const { data: attempt } = await supabase
+    const { data: attempt } = await quizQuery(supabase)
       .from("quiz_attempts")
       .select("id, quiz_id, user_id")
       .eq("id", data.quizAttemptId)
@@ -343,24 +341,24 @@ export const cancelQuizFn = createServerFn({ method: "POST" })
     if (!attempt || attempt.user_id !== user.id) return
 
     // Delete the attempt
-    await supabase
+    await quizQuery(supabase)
       .from("quiz_attempts")
       .delete()
       .eq("id", data.quizAttemptId)
 
     // Check if quiz has other attempts
-    const { count } = await supabase
+    const { count } = await quizQuery(supabase)
       .from("quiz_attempts")
       .select("*", { count: "exact", head: true })
       .eq("quiz_id", attempt.quiz_id)
 
     // If no other attempts, delete the quiz (cascades to quiz_questions)
     if ((count ?? 0) === 0) {
-      await supabase
+      await quizQuery(supabase)
         .from("quiz_questions")
         .delete()
         .eq("quiz_id", attempt.quiz_id)
-      await supabase.from("quizzes").delete().eq("id", attempt.quiz_id)
+      await quizQuery(supabase).from("quizzes").delete().eq("id", attempt.quiz_id)
     }
   })
 
@@ -371,11 +369,9 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
     if (!user) return null
 
     // Get attempt with quiz info
-    const { data: attempt } = await supabase
-      .from("quiz_attempts")
-      .select(
-        "id, score, time_spent, completed_at, quiz:quizzes(id, quiz_mode, time_limit, section:sections(id, name, class:classes(name, course:courses(name, department:departments(name)))), evaluation_mode:evaluation_modes(*))",
-      )
+    const { data: attempt } = await quizQuery(supabase)
+      .from("quiz_attempts_detail")
+      .select("*")
       .eq("id", data.attemptId)
       .eq("user_id", user.id)
       .single()
@@ -384,7 +380,7 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
 
     // Get quiz questions in order
     const quizId = (attempt.quiz as unknown as { id: string }).id
-    const { data: quizQuestions } = await supabase
+    const { data: quizQuestions } = await quizQuery(supabase)
       .from("quiz_questions")
       .select("question_id, order")
       .eq("quiz_id", quizId)
@@ -393,13 +389,13 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
     if (!quizQuestions) return null
 
     const questionIds = quizQuestions.map((qq) => qq.question_id)
-    const { data: questions } = await supabase
+    const { data: questions } = await catalogQuery(supabase)
       .from("questions")
       .select("*")
       .in("id", questionIds)
 
     // Get answer attempts
-    const { data: answers } = await supabase
+    const { data: answers } = await quizQuery(supabase)
       .from("answer_attempts")
       .select("question_id, user_answer, score")
       .eq("quiz_attempt_id", data.attemptId)

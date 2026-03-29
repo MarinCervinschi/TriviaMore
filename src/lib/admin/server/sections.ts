@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import { idSchema, sectionSchema, updateSectionSchema } from "../schemas"
 
@@ -13,7 +13,7 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data: section, error: secError } = await supabase
+    const { data: section, error: secError } = await catalogQuery(supabase)
       .from("sections")
       .select("*, class:classes(*, course:courses(*, department:departments(*)))")
       .eq("id", id)
@@ -21,7 +21,7 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
 
     if (secError) throw new Error(secError.message)
 
-    const { data: questions, error: questionsError } = await supabase
+    const { data: questions, error: questionsError } = await catalogQuery(supabase)
       .from("questions")
       .select("*")
       .eq("section_id", id)
@@ -38,12 +38,12 @@ export const createSectionFn = createServerFn({ method: "POST" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { count } = await supabase
+    const { count } = await catalogQuery(supabase)
       .from("sections")
       .select("*", { count: "exact", head: true })
       .eq("class_id", data.class_id)
 
-    const { data: section, error } = await supabase
+    const { data: section, error } = await catalogQuery(supabase)
       .from("sections")
       .insert({
         id: crypto.randomUUID(),
@@ -74,7 +74,7 @@ export const updateSectionFn = createServerFn({ method: "POST" })
       updateData.is_public = updates.is_public
     if (updates.position !== undefined) updateData.position = updates.position
 
-    const { data: section, error } = await supabase
+    const { data: section, error } = await catalogQuery(supabase)
       .from("sections")
       .update(updateData)
       .eq("id", id)
@@ -91,7 +91,7 @@ export const deleteSectionFn = createServerFn({ method: "POST" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { count } = await supabase
+    const { count } = await catalogQuery(supabase)
       .from("questions")
       .select("*", { count: "exact", head: true })
       .eq("section_id", id)
@@ -102,6 +102,6 @@ export const deleteSectionFn = createServerFn({ method: "POST" })
       )
     }
 
-    const { error } = await supabase.from("sections").delete().eq("id", id)
+    const { error } = await catalogQuery(supabase).from("sections").delete().eq("id", id)
     if (error) throw new Error(error.message)
   })

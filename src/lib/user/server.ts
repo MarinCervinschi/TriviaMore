@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
 import type {
   RecentClass,
   RecentQuizAttempt,
@@ -39,7 +39,7 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
       recentAttemptsResult,
     ] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", user.id).single(),
-      supabase
+      quizQuery(supabase)
         .from("quiz_attempts")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id)
@@ -57,18 +57,14 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
         .select("quizzes_taken, average_score")
         .eq("user_id", user.id),
       supabase
-        .from("user_recent_classes")
-        .select(
-          "last_visited, visit_count, class:classes(*, course:courses(*, department:departments(*)))",
-        )
+        .from("user_recent_classes_detail")
+        .select("*")
         .eq("user_id", user.id)
         .order("last_visited", { ascending: false })
         .limit(6),
-      supabase
-        .from("quiz_attempts")
-        .select(
-          "id, score, completed_at, quiz:quizzes(section:sections(*, class:classes(*, course:courses(*, department:departments(*)))))",
-        )
+      quizQuery(supabase)
+        .from("quiz_attempts_detail")
+        .select("*")
         .eq("user_id", user.id)
         .not("completed_at", "is", null)
         .order("completed_at", { ascending: false })
@@ -116,10 +112,8 @@ export const getUserClassesFn = createServerFn({ method: "GET" }).handler(
     if (!user) return []
 
     const { data, error } = await supabase
-      .from("user_classes")
-      .select(
-        "class_id, created_at, updated_at, class:classes(*, course:courses(*, department:departments(*)))",
-      )
+      .from("user_classes_detail")
+      .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
 
@@ -184,10 +178,8 @@ export const getUserBookmarksFn = createServerFn({ method: "GET" }).handler(
     if (!user) return []
 
     const { data, error } = await supabase
-      .from("bookmarks")
-      .select(
-        "question_id, created_at, question:questions(*, section:sections(*, class:classes(*, course:courses(*, department:departments(*)))))",
-      )
+      .from("bookmarks_detail")
+      .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
 
@@ -235,10 +227,8 @@ export const getUserProgressFn = createServerFn({ method: "GET" }).handler(
     if (!user) return []
 
     const { data, error } = await supabase
-      .from("progress")
-      .select(
-        "id, quiz_mode, quizzes_taken, average_score, best_score, total_time_spent, last_accessed_at, section:sections(*, class:classes(*, course:courses(*, department:departments(*))))",
-      )
+      .from("progress_detail")
+      .select("*")
       .eq("user_id", user.id)
       .order("last_accessed_at", { ascending: false })
 
@@ -253,10 +243,8 @@ export const getRecentClassesFn = createServerFn({ method: "GET" }).handler(
     if (!user) return []
 
     const { data, error } = await supabase
-      .from("user_recent_classes")
-      .select(
-        "last_visited, visit_count, class:classes(*, course:courses(*, department:departments(*)))",
-      )
+      .from("user_recent_classes_detail")
+      .select("*")
       .eq("user_id", user.id)
       .order("last_visited", { ascending: false })
       .limit(6)

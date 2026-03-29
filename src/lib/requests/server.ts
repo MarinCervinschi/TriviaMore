@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/helpers"
-import { supabaseAdmin } from "@/lib/supabase/admin"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { supabaseAdmin, catalogAdmin } from "@/lib/supabase/admin"
+import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
 
 import { storedContentSchema } from "./schemas"
 import type { AdminContentRequest, ContentRequestWithMeta, SubmittedContent } from "./types"
@@ -48,7 +48,7 @@ async function buildTargetLabel(
   const parts: string[] = []
 
   if (request.target_section_id) {
-    const { data } = await supabase
+    const { data } = await catalogQuery(supabase)
       .from("sections")
       .select("name, class:classes(name, course:courses(name, department:departments(name)))")
       .eq("id", request.target_section_id)
@@ -58,7 +58,7 @@ async function buildTargetLabel(
       parts.push(cls.course.department.name, cls.course.name, cls.name, data.name)
     }
   } else if (request.target_class_id) {
-    const { data } = await supabase
+    const { data } = await catalogQuery(supabase)
       .from("classes")
       .select("name, course:courses(name, department:departments(name))")
       .eq("id", request.target_class_id)
@@ -68,7 +68,7 @@ async function buildTargetLabel(
       parts.push(course.department.name, course.name, data.name)
     }
   } else if (request.target_course_id) {
-    const { data } = await supabase
+    const { data } = await catalogQuery(supabase)
       .from("courses")
       .select("name, department:departments(name)")
       .eq("id", request.target_course_id)
@@ -78,7 +78,7 @@ async function buildTargetLabel(
       parts.push(dept.name, data.name)
     }
   } else if (request.target_department_id) {
-    const { data } = await supabase
+    const { data } = await catalogQuery(supabase)
       .from("departments")
       .select("name")
       .eq("id", request.target_department_id)
@@ -133,7 +133,7 @@ export const getContentTreeForRequestsFn = createServerFn({
 }).handler(async (): Promise<RequestTargetTree> => {
   const { supabase } = await getAuthUser()
 
-  const { data, error } = await supabase
+  const { data, error } = await catalogQuery(supabase)
     .from("departments")
     .select("id, name, courses(id, name, classes(id, name, sections(id, name)))")
     .order("position")
@@ -192,7 +192,7 @@ export const createRequestFn = createServerFn({ method: "POST" })
 
     // For reports, resolve hierarchy from question_id
     if (data.type === "report" && submitted.type === "report") {
-      const { data: question } = await supabase
+      const { data: question } = await catalogQuery(supabase)
         .from("questions")
         .select("section_id")
         .eq("id", submitted.question_id)
@@ -202,7 +202,7 @@ export const createRequestFn = createServerFn({ method: "POST" })
 
     // Walk up to fill parent IDs
     if (targetSectionId) {
-      const { data: section } = await supabase
+      const { data: section } = await catalogQuery(supabase)
         .from("sections")
         .select("class_id")
         .eq("id", targetSectionId)
@@ -211,14 +211,14 @@ export const createRequestFn = createServerFn({ method: "POST" })
     }
 
     if (targetClassId) {
-      const { data: cls } = await supabase
+      const { data: cls } = await catalogQuery(supabase)
         .from("classes")
         .select("course_id")
         .eq("id", targetClassId)
         .single()
       if (cls) {
         targetCourseId = cls.course_id
-        const { data: course } = await supabase
+        const { data: course } = await catalogQuery(supabase)
           .from("courses")
           .select("department_id")
           .eq("id", cls.course_id)
@@ -466,12 +466,12 @@ export const approveRequestFn = createServerFn({ method: "POST" })
       const targetClassId = request.target_class_id
       if (!targetClassId) throw new Error("Classe target mancante")
 
-      const { count } = await supabaseAdmin
+      const { count } = await catalogAdmin
         .from("sections")
         .select("*", { count: "exact", head: true })
         .eq("class_id", targetClassId)
 
-      const { error } = await supabaseAdmin
+      const { error } = await catalogAdmin
         .from("sections")
         .insert({
           id: crypto.randomUUID(),
@@ -498,7 +498,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
         section_id: targetSectionId,
       }))
 
-      const { error } = await supabaseAdmin.from("questions").insert(rows)
+      const { error } = await catalogAdmin.from("questions").insert(rows)
       if (error) throw new Error("Errore nella creazione delle domande: " + error.message)
     }
 

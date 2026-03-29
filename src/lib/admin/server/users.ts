@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
-import { supabaseAdmin } from "@/lib/supabase/admin"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogAdmin, quizAdmin, supabaseAdmin } from "@/lib/supabase/admin"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import {
   courseMaintainerSchema,
@@ -27,7 +27,7 @@ export const getAdminUsersFn = createServerFn({ method: "GET" }).handler(
     if (error) throw new Error(error.message)
 
     // Get quiz attempt counts per user
-    const { data: counts } = await supabaseAdmin
+    const { data: counts } = await quizAdmin
       .from("quiz_attempts")
       .select("user_id")
       .not("completed_at", "is", null)
@@ -57,21 +57,21 @@ export const getAdminUserDetailFn = createServerFn({ method: "GET" })
     const [profileRes, deptAdminsRes, maintainersRes, accessRes, statsRes] =
       await Promise.all([
         supabaseAdmin.from("profiles").select("*").eq("id", id).single(),
-        supabaseAdmin
+        catalogAdmin
           .from("department_admins")
           .select("department_id, departments(id, name, code)")
           .eq("user_id", id),
-        supabaseAdmin
+        catalogAdmin
           .from("course_maintainers")
           .select(
             "course_id, courses(id, name, code, department:departments(name))",
           )
           .eq("user_id", id),
-        supabaseAdmin
+        catalogAdmin
           .from("section_access")
           .select("section_id, sections(id, name, class:classes(name))")
           .eq("user_id", id),
-        supabaseAdmin
+        quizAdmin
           .from("quiz_attempts")
           .select("score, completed_at")
           .eq("user_id", id)
@@ -154,7 +154,7 @@ export const addDepartmentAdminFn = createServerFn({ method: "POST" })
   .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("department_admins")
       .insert(data)
 
@@ -170,7 +170,7 @@ export const removeDepartmentAdminFn = createServerFn({ method: "POST" })
   .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("department_admins")
       .delete()
       .eq("user_id", data.user_id)
@@ -183,7 +183,7 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
   .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("course_maintainers")
       .insert(data)
 
@@ -199,7 +199,7 @@ export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
   .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("course_maintainers")
       .delete()
       .eq("user_id", data.user_id)
@@ -212,7 +212,7 @@ export const addSectionAccessFn = createServerFn({ method: "POST" })
   .inputValidator(sectionAccessSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("section_access")
       .insert(data)
 
@@ -228,7 +228,7 @@ export const removeSectionAccessFn = createServerFn({ method: "POST" })
   .inputValidator(sectionAccessSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
-    const { error } = await supabaseAdmin
+    const { error } = await catalogAdmin
       .from("section_access")
       .delete()
       .eq("user_id", data.user_id)
@@ -255,7 +255,7 @@ export const getAllCoursesFn = createServerFn({ method: "GET" }).handler(
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data, error } = await supabase
+    const { data, error } = await catalogQuery(supabase)
       .from("courses")
       .select("id, name, code, department:departments(name)")
       .order("name")
@@ -276,11 +276,11 @@ export const getAdminUserStatsFn = createServerFn({ method: "GET" }).handler(
 
     const [profilesRes, attemptsRes, recentRes] = await Promise.all([
       supabaseAdmin.from("profiles").select("role"),
-      supabaseAdmin
+      quizAdmin
         .from("quiz_attempts")
         .select("user_id, score")
         .not("completed_at", "is", null),
-      supabaseAdmin
+      quizAdmin
         .from("quiz_attempts")
         .select("*", { count: "exact", head: true })
         .not("completed_at", "is", null)
@@ -320,7 +320,7 @@ export const getPrivateSectionsFn = createServerFn({ method: "GET" }).handler(
   async () => {
     await requireSuperadmin()
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await catalogAdmin
       .from("sections")
       .select("id, name, class:classes(name)")
       .eq("is_public", false)
@@ -340,7 +340,7 @@ export const getSectionAccessUsersFn = createServerFn({ method: "GET" })
   .handler(async ({ data: { section_id } }) => {
     await requireSuperadmin()
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await catalogAdmin
       .from("section_access")
       .select("user_id, profiles(id, name, email)")
       .eq("section_id", section_id)

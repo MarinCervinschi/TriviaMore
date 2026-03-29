@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 import type { FlashcardQuestion, FlashcardSession } from "./types"
 
 async function getAuthenticatedUser() {
@@ -18,7 +18,7 @@ async function fetchSectionWithChain(
   supabase: ReturnType<typeof createServerSupabaseClient>,
   sectionId: string,
 ) {
-  const { data: section } = await supabase
+  const { data: section } = await catalogQuery(supabase)
     .from("sections")
     .select(
       "id, name, is_public, class:classes(name, course:courses(name, department:departments(name)))",
@@ -32,7 +32,7 @@ async function fetchFlashcardQuestions(
   supabase: ReturnType<typeof createServerSupabaseClient>,
   sectionId: string,
 ) {
-  const { data: questions } = await supabase
+  const { data: questions } = await catalogQuery(supabase)
     .from("questions")
     .select("id, content, correct_answer, explanation, difficulty")
     .eq("section_id", sectionId)
@@ -79,7 +79,7 @@ export const startExamFlashcardFn = createServerFn({ method: "POST" })
     if (!user) throw new Error("Non autenticato")
 
     // Get class_id from sentinel section
-    const { data: sentinel } = await supabase
+    const { data: sentinel } = await catalogQuery(supabase)
       .from("sections")
       .select("class_id")
       .eq("id", data.sectionId)
@@ -87,7 +87,7 @@ export const startExamFlashcardFn = createServerFn({ method: "POST" })
     if (!sentinel) throw new Error("Sezione non trovata")
 
     // Get all real sections in the class
-    const { data: classSections } = await supabase
+    const { data: classSections } = await catalogQuery(supabase)
       .from("sections")
       .select("id")
       .eq("class_id", sentinel.class_id)
@@ -97,7 +97,7 @@ export const startExamFlashcardFn = createServerFn({ method: "POST" })
     if (sectionIds.length === 0) throw new Error("Nessuna sezione trovata")
 
     // Fetch SHORT_ANSWER questions from all sections
-    const { data: questions } = await supabase
+    const { data: questions } = await catalogQuery(supabase)
       .from("questions")
       .select("id")
       .in("section_id", sectionIds)
@@ -144,21 +144,21 @@ export const getFlashcardSessionFn = createServerFn({ method: "GET" })
 
     if (prefix === "exam") {
       // Exam mode: fetch from all sections in the class
-      const { data: sentinel } = await supabase
+      const { data: sentinel } = await catalogQuery(supabase)
         .from("sections")
         .select("class_id")
         .eq("id", sectionId)
         .single()
       if (!sentinel) return null
 
-      const { data: classSections } = await supabase
+      const { data: classSections } = await catalogQuery(supabase)
         .from("sections")
         .select("id")
         .eq("class_id", sentinel.class_id)
         .neq("name", "Exam Simulation")
 
       const sectionIds = (classSections ?? []).map((s) => s.id)
-      const { data: qs } = await supabase
+      const { data: qs } = await catalogQuery(supabase)
         .from("questions")
         .select("id, content, correct_answer, explanation, difficulty")
         .in("section_id", sectionIds)

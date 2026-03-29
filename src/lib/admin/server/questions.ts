@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import { idSchema, questionSchema, updateQuestionSchema } from "../schemas"
 
@@ -24,7 +24,7 @@ export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data: question, error } = await supabase
+    const { data: question, error } = await catalogQuery(supabase)
       .from("questions")
       .select(
         "*, section:sections(*, class:classes(*, course:courses(*, department:departments(*))))",
@@ -42,7 +42,7 @@ export const createQuestionFn = createServerFn({ method: "POST" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data: question, error } = await supabase
+    const { data: question, error } = await catalogQuery(supabase)
       .from("questions")
       .insert({
         id: crypto.randomUUID(),
@@ -78,7 +78,7 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
       section_id: q.section_id,
     }))
 
-    const { data, error } = await supabase
+    const { data, error } = await catalogQuery(supabase)
       .from("questions")
       .insert(rows)
       .select()
@@ -106,7 +106,7 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
     if (updates.difficulty !== undefined)
       updateData.difficulty = updates.difficulty
 
-    const { data: question, error } = await supabase
+    const { data: question, error } = await catalogQuery(supabase)
       .from("questions")
       .update(updateData)
       .eq("id", id)
@@ -123,6 +123,6 @@ export const deleteQuestionFn = createServerFn({ method: "POST" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { error } = await supabase.from("questions").delete().eq("id", id)
+    const { error } = await catalogQuery(supabase).from("questions").delete().eq("id", id)
     if (error) throw new Error(error.message)
   })

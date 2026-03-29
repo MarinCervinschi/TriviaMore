@@ -1,5 +1,5 @@
 import { getCookies, setCookie } from "@tanstack/react-start/server"
-import { createServerClient } from "@supabase/ssr"
+import { createServerClient, type SupabaseClient } from "@supabase/ssr"
 
 import type { Database } from "./database.types"
 
@@ -24,4 +24,12 @@ export function createServerSupabaseClient() {
       },
     },
   )
+}
+
+export function catalogQuery(supabase: SupabaseClient) {
+  return supabase.schema("catalog")
+}
+
+export function quizQuery(supabase: SupabaseClient) {
+  return supabase.schema("quiz")
 }

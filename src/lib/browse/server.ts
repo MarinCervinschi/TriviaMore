@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 import { contactSchema } from "./contact-schema"
 import type {
   BrowseDepartment,
@@ -15,7 +15,7 @@ export const getDepartmentsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<BrowseDepartment[]> => {
     const supabase = createServerSupabaseClient()
 
-    const { data, error } = await supabase
+    const { data, error } = await catalogQuery(supabase)
       .from("departments")
       .select("*, courses(count)")
       .order("position")
@@ -30,7 +30,7 @@ export const getDepartmentWithCoursesFn = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<DepartmentWithCourses | null> => {
     const supabase = createServerSupabaseClient()
 
-    const { data: department, error: deptError } = await supabase
+    const { data: department, error: deptError } = await catalogQuery(supabase)
       .from("departments")
       .select("*")
       .ilike("code", data.code)
@@ -38,7 +38,7 @@ export const getDepartmentWithCoursesFn = createServerFn({ method: "GET" })
 
     if (deptError || !department) return null
 
-    const { data: courses, error: coursesError } = await supabase
+    const { data: courses, error: coursesError } = await catalogQuery(supabase)
       .from("courses")
       .select("*, classes(count)")
       .eq("department_id", department.id)
@@ -55,7 +55,7 @@ export const getCourseWithClassesFn = createServerFn({ method: "GET" })
     const supabase = createServerSupabaseClient()
 
     // Find department first
-    const { data: department } = await supabase
+    const { data: department } = await catalogQuery(supabase)
       .from("departments")
       .select("*")
       .ilike("code", data.deptCode)
@@ -64,7 +64,7 @@ export const getCourseWithClassesFn = createServerFn({ method: "GET" })
     if (!department) return null
 
     // Find course in that department
-    const { data: course } = await supabase
+    const { data: course } = await catalogQuery(supabase)
       .from("courses")
       .select("*")
       .eq("department_id", department.id)
@@ -74,7 +74,7 @@ export const getCourseWithClassesFn = createServerFn({ method: "GET" })
     if (!course) return null
 
     // Get classes with section counts
-    const { data: classes, error } = await supabase
+    const { data: classes, error } = await catalogQuery(supabase)
       .from("classes")
       .select("*, sections(count)")
       .eq("course_id", course.id)
@@ -98,7 +98,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     const supabase = createServerSupabaseClient()
 
     // Find department
-    const { data: department } = await supabase
+    const { data: department } = await catalogQuery(supabase)
       .from("departments")
       .select("*")
       .ilike("code", data.deptCode)
@@ -107,7 +107,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     if (!department) return null
 
     // Find course
-    const { data: course } = await supabase
+    const { data: course } = await catalogQuery(supabase)
       .from("courses")
       .select("*")
       .eq("department_id", department.id)
@@ -117,7 +117,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     if (!course) return null
 
     // Find class
-    const { data: classData } = await supabase
+    const { data: classData } = await catalogQuery(supabase)
       .from("classes")
       .select("*")
       .eq("course_id", course.id)
@@ -127,7 +127,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     if (!classData) return null
 
     // Get sections with question type breakdown
-    const { data: sections } = await supabase
+    const { data: sections } = await catalogQuery(supabase)
       .from("sections")
       .select("*")
       .eq("class_id", classData.id)
@@ -139,18 +139,18 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     // Get question counts per section
     const sectionsWithCounts: BrowseSection[] = await Promise.all(
       sections.map(async (section) => {
-        const { count: totalCount } = await supabase
+        const { count: totalCount } = await catalogQuery(supabase)
           .from("questions")
           .select("*", { count: "exact", head: true })
           .eq("section_id", section.id)
 
-        const { count: quizCount } = await supabase
+        const { count: quizCount } = await catalogQuery(supabase)
           .from("questions")
           .select("*", { count: "exact", head: true })
           .eq("section_id", section.id)
           .in("question_type", ["MULTIPLE_CHOICE", "TRUE_FALSE"])
 
-        const { count: flashcardCount } = await supabase
+        const { count: flashcardCount } = await catalogQuery(supabase)
           .from("questions")
           .select("*", { count: "exact", head: true })
           .eq("section_id", section.id)
@@ -176,7 +176,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     let examSimulation: ClassWithSections["examSimulation"] = undefined
 
     if (totalQuizQuestions > 0 || totalFlashcardQuestions > 0) {
-      let { data: examSection } = await supabase
+      let { data: examSection } = await catalogQuery(supabase)
         .from("sections")
         .select("id")
         .eq("class_id", classData.id)
@@ -184,7 +184,7 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
         .maybeSingle()
 
       if (!examSection) {
-        const { data: newSection } = await supabase
+        const { data: newSection } = await catalogQuery(supabase)
           .from("sections")
           .insert({
             id: crypto.randomUUID(),
@@ -228,7 +228,7 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
     const supabase = createServerSupabaseClient()
 
     // Build parent chain
-    const { data: department } = await supabase
+    const { data: department } = await catalogQuery(supabase)
       .from("departments")
       .select("*")
       .ilike("code", data.deptCode)
@@ -236,7 +236,7 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     if (!department) return null
 
-    const { data: course } = await supabase
+    const { data: course } = await catalogQuery(supabase)
       .from("courses")
       .select("*")
       .eq("department_id", department.id)
@@ -245,7 +245,7 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     if (!course) return null
 
-    const { data: classData } = await supabase
+    const { data: classData } = await catalogQuery(supabase)
       .from("classes")
       .select("*")
       .eq("course_id", course.id)
@@ -256,7 +256,7 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     // Find section by slug (hyphens → spaces)
     const sectionName = data.sectionSlug.replace(/-/g, " ")
-    const { data: section } = await supabase
+    const { data: section } = await catalogQuery(supabase)
       .from("sections")
       .select("*")
       .eq("class_id", classData.id)
@@ -266,18 +266,18 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
     if (!section) return null
 
     // Get question counts
-    const { count: totalCount } = await supabase
+    const { count: totalCount } = await catalogQuery(supabase)
       .from("questions")
       .select("*", { count: "exact", head: true })
       .eq("section_id", section.id)
 
-    const { count: quizCount } = await supabase
+    const { count: quizCount } = await catalogQuery(supabase)
       .from("questions")
       .select("*", { count: "exact", head: true })
       .eq("section_id", section.id)
       .in("question_type", ["MULTIPLE_CHOICE", "TRUE_FALSE"])
 
-    const { count: flashcardCount } = await supabase
+    const { count: flashcardCount } = await catalogQuery(supabase)
       .from("questions")
       .select("*", { count: "exact", head: true })
       .eq("section_id", section.id)
@@ -304,10 +304,10 @@ export const getPlatformStatsFn = createServerFn({ method: "GET" }).handler(
     const supabase = createServerSupabaseClient()
 
     const [depts, courses, classes, sections] = await Promise.all([
-      supabase.from("departments").select("*", { count: "exact", head: true }),
-      supabase.from("courses").select("*", { count: "exact", head: true }),
-      supabase.from("classes").select("*", { count: "exact", head: true }),
-      supabase.from("sections").select("*", { count: "exact", head: true }),
+      catalogQuery(supabase).from("departments").select("*", { count: "exact", head: true }),
+      catalogQuery(supabase).from("courses").select("*", { count: "exact", head: true }),
+      catalogQuery(supabase).from("classes").select("*", { count: "exact", head: true }),
+      catalogQuery(supabase).from("sections").select("*", { count: "exact", head: true }),
     ])
 
     return {

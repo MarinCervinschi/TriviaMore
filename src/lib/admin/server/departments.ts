@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import {
   departmentSchema,
@@ -18,7 +18,7 @@ export const getAdminDepartmentsFn = createServerFn({
   await requireAdmin()
   const supabase = createServerSupabaseClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await catalogQuery(supabase)
     .from("departments")
     .select("*, courses(count)")
     .order("position")
@@ -33,7 +33,7 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data: department, error: deptError } = await supabase
+    const { data: department, error: deptError } = await catalogQuery(supabase)
       .from("departments")
       .select("*")
       .eq("id", id)
@@ -41,7 +41,7 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
 
     if (deptError) throw new Error(deptError.message)
 
-    const { data: courses, error: coursesError } = await supabase
+    const { data: courses, error: coursesError } = await catalogQuery(supabase)
       .from("courses")
       .select("*, classes(count)")
       .eq("department_id", id)
@@ -64,11 +64,11 @@ export const createDepartmentFn = createServerFn({ method: "POST" })
     const supabase = createServerSupabaseClient()
 
     // Get next position
-    const { count } = await supabase
+    const { count } = await catalogQuery(supabase)
       .from("departments")
       .select("*", { count: "exact", head: true })
 
-    const { data: department, error } = await supabase
+    const { data: department, error } = await catalogQuery(supabase)
       .from("departments")
       .insert({
         id: crypto.randomUUID(),
@@ -103,7 +103,7 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
       updateData.description = updates.description || null
     if (updates.position !== undefined) updateData.position = updates.position
 
-    const { data: department, error } = await supabase
+    const { data: department, error } = await catalogQuery(supabase)
       .from("departments")
       .update(updateData)
       .eq("id", id)
@@ -127,7 +127,7 @@ export const deleteDepartmentFn = createServerFn({ method: "POST" })
     const supabase = createServerSupabaseClient()
 
     // Check for child courses
-    const { count } = await supabase
+    const { count } = await catalogQuery(supabase)
       .from("courses")
       .select("*", { count: "exact", head: true })
       .eq("department_id", id)
@@ -138,7 +138,7 @@ export const deleteDepartmentFn = createServerFn({ method: "POST" })
       )
     }
 
-    const { error } = await supabase
+    const { error } = await catalogQuery(supabase)
       .from("departments")
       .delete()
       .eq("id", id)
