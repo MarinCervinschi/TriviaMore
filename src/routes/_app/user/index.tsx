@@ -263,35 +263,35 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 
       <BrowseTable headers={["Corso", "Dipartimento", "Tipo", "Anno"]}>
         {classes.map((item) => (
-          <tr key={item.class.id} className="group">
+          <tr key={item.class_id} className="group">
             <td className="py-4 pl-6">
               <Link
                 to="/browse/$department/$course/$class"
                 params={{
-                  department: item.class.course.department.code.toLowerCase(),
-                  course: item.class.course.code,
-                  class: item.class.code.toLowerCase(),
+                  department: item.department_code.toLowerCase(),
+                  course: item.course_code.toLowerCase(),
+                  class: item.class_code.toLowerCase(),
                 }}
                 className="block"
               >
                 <span className="font-medium text-foreground transition-colors group-hover:text-primary">
-                  {item.class.name}
+                  {item.class_name}
                 </span>
                 <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                  {item.class.course.name}
+                  {item.course_name}
                 </p>
               </Link>
             </td>
             <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-              {item.class.course.department.name}
+              {item.department_name}
             </td>
             <td className="px-4 py-4 text-center">
               <Badge variant="outline" className="rounded-full text-xs">
-                {item.class.course.course_type}
+                {item.course_type}
               </Badge>
             </td>
             <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-              {item.class.class_year}
+              {item.class_year}
             </td>
             <td className="pr-6 py-4">
               <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
@@ -335,16 +335,16 @@ function RecentActivitySection({
                 <Trophy className="h-4 w-4 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-medium">{attempt.quiz.section.name}</p>
+                <p className="font-medium">{attempt.section_name}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   <span className="font-medium">
-                    {attempt.quiz.section.class.course.department.name}
+                    {attempt.department_name}
                   </span>
                   {" \u2022 "}
-                  {attempt.quiz.section.class.course.name}
+                  {attempt.course_name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Classe: {attempt.quiz.section.class.name}
+                  Classe: {attempt.class_name}
                 </p>
               </div>
             </div>

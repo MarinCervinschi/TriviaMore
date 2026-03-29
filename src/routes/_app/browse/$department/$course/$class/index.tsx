@@ -7,6 +7,7 @@ import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-quer
 import {
   ArrowRight,
   BookOpen,
+  ExternalLink,
   GraduationCap,
   Heart,
   Lock,
@@ -154,6 +155,31 @@ function ClassPage() {
             <p className="mt-2 max-w-2xl text-muted-foreground">
               {classData.description}
             </p>
+          )}
+          {(classData.cfu || classData.curriculum || classData.catalogue_url) && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {classData.cfu && (
+                <Badge variant="secondary" className="text-xs">
+                  {classData.cfu} CFU
+                </Badge>
+              )}
+              {classData.curriculum && (
+                <Badge variant="outline" className="text-xs">
+                  {classData.curriculum}
+                </Badge>
+              )}
+              {classData.catalogue_url && (
+                <a
+                  href={classData.catalogue_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Catalogo
+                </a>
+              )}
+            </div>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-2">

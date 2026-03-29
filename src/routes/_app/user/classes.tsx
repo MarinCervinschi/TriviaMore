@@ -45,14 +45,14 @@ function ClassesPage() {
 
   const departments = useMemo(() => {
     const depts = [
-      ...new Set(userClasses.map((uc) => uc.class.course.department.name)),
+      ...new Set(userClasses.map((uc) => uc.department_name)),
     ]
     return depts.sort()
   }, [userClasses])
 
   const courseTypes = useMemo(() => {
     const types = [
-      ...new Set(userClasses.map((uc) => uc.class.course.course_type)),
+      ...new Set(userClasses.map((uc) => uc.course_type)),
     ]
     return types.sort()
   }, [userClasses])
@@ -62,18 +62,18 @@ function ClassesPage() {
       const search = searchTerm.toLowerCase()
       const matchesSearch =
         !search ||
-        uc.class.name.toLowerCase().includes(search) ||
-        uc.class.course.name.toLowerCase().includes(search) ||
-        uc.class.course.department.name.toLowerCase().includes(search) ||
-        uc.class.code.toLowerCase().includes(search)
+        uc.class_name.toLowerCase().includes(search) ||
+        uc.course_name.toLowerCase().includes(search) ||
+        uc.department_name.toLowerCase().includes(search) ||
+        uc.class_code.toLowerCase().includes(search)
 
       const matchesDept =
         selectedDepartment === "all" ||
-        uc.class.course.department.name === selectedDepartment
+        uc.department_name === selectedDepartment
 
       const matchesType =
         selectedCourseType === "all" ||
-        uc.class.course.course_type === selectedCourseType
+        uc.course_type === selectedCourseType
 
       return matchesSearch && matchesDept && matchesType
     })
@@ -81,13 +81,13 @@ function ClassesPage() {
     result.sort((a, b) => {
       switch (sortBy) {
         case "name":
-          return a.class.name.localeCompare(b.class.name)
+          return a.class_name.localeCompare(b.class_name)
         case "department":
-          return a.class.course.department.name.localeCompare(
-            b.class.course.department.name,
+          return a.department_name.localeCompare(
+            b.department_name,
           )
         case "year":
-          return a.class.class_year - b.class.class_year
+          return a.class_year - b.class_year
         case "dateAdded":
           return (
             new Date(b.created_at).getTime() -
@@ -239,31 +239,31 @@ function ClassesPage() {
                     to="/browse/$department/$course/$class"
                     params={{
                       department:
-                        userClass.class.course.department.code.toLowerCase(),
-                      course: userClass.class.course.code,
-                      class: userClass.class.code.toLowerCase(),
+                        userClass.department_code.toLowerCase(),
+                      course: userClass.course_code,
+                      class: userClass.class_code.toLowerCase(),
                     }}
                     className="block"
                   >
                     <span className="font-medium text-foreground transition-colors group-hover:text-primary">
-                      {userClass.class.name}
+                      {userClass.class_name}
                     </span>
                     <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                      {userClass.class.course.name} &bull;{" "}
-                      {userClass.class.code}
+                      {userClass.course_name} &bull;{" "}
+                      {userClass.class_code}
                     </p>
                   </Link>
                 </td>
                 <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-                  {userClass.class.course.department.name}
+                  {userClass.department_name}
                 </td>
                 <td className="px-4 py-4 text-center">
                   <Badge variant="outline" className="rounded-full text-xs">
-                    {userClass.class.course.course_type}
+                    {userClass.course_type}
                   </Badge>
                 </td>
                 <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-                  {userClass.class.class_year}
+                  {userClass.class_year}
                 </td>
                 <td className="px-4 py-4 text-center text-xs text-muted-foreground">
                   {new Date(userClass.created_at).toLocaleDateString("it-IT")}

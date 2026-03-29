@@ -10,6 +10,14 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { Badge } from "@/components/ui/badge"
 import { browseQueries } from "@/lib/browse/queries"
 
+const AREA_LABELS: Record<string, string> = {
+  SCIENZE: "Scienze",
+  TECNOLOGIA: "Tecnologia",
+  SALUTE: "Salute",
+  VITA: "Vita",
+  SOCIETA_CULTURA: "Societa e Cultura",
+}
+
 export const Route = createFileRoute("/_app/browse/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(browseQueries.departments()),
@@ -54,7 +62,7 @@ function BrowsePage() {
         {departments.length === 0 ? (
           <BrowseEmptyState message="Nessun dipartimento disponibile." />
         ) : (
-          <BrowseTable headers={["Nome", "Codice", "Corsi"]}>
+          <BrowseTable headers={["Nome", "Codice", "Area", "Corsi"]}>
             {departments.map((dept) => {
               const courseCount = dept.courses[0]?.count ?? 0
               return (
@@ -79,6 +87,15 @@ function BrowsePage() {
                     <Badge variant="outline" className="text-xs">
                       {dept.code}
                     </Badge>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    {dept.area ? (
+                      <Badge variant="secondary" className="text-xs">
+                        {AREA_LABELS[dept.area]}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/50">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-4 text-center text-muted-foreground">
                     <span className="font-semibold text-foreground">

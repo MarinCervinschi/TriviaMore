@@ -67,13 +67,13 @@ export function useProgressData(progressData: UserProgress[]) {
 
     const studyChart = study
       .map((p) => ({
-        name: p.section.name.length > 20
-          ? p.section.name.substring(0, 18) + "..."
-          : p.section.name,
-        fullName: p.section.name,
+        name: p.section_name.length > 20
+          ? p.section_name.substring(0, 18) + "..."
+          : p.section_name,
+        fullName: p.section_name,
         averageScore: +(p.average_score ?? 0).toFixed(1),
         bestScore: +(p.best_score ?? 0).toFixed(1),
-        className: p.section.class.name,
+        className: p.class_name,
       }))
       .sort((a, b) => b.averageScore - a.averageScore)
 
@@ -82,7 +82,7 @@ export function useProgressData(progressData: UserProgress[]) {
       { courseName: string; averageScore: number; quizzesTaken: number }
     > = {}
     for (const p of exam) {
-      const name = p.section.class.course.name
+      const name = p.course_name
       examByCourseName[name] = {
         courseName: name,
         averageScore: +(p.average_score ?? 0).toFixed(1),
