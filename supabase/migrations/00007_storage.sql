@@ -4,7 +4,8 @@
 -- ============================================================
 
 INSERT INTO storage.buckets (id, name, public, file_size_limit)
-VALUES ('contributions', 'contributions', false, 10485760); -- 10 MB
+VALUES ('contributions', 'contributions', false, 10485760)
+ON CONFLICT (id) DO NOTHING;
 
 -- Users can upload files to their own folder
 CREATE POLICY storage_contributions_insert ON storage.objects

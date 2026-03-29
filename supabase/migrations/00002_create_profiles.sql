@@ -1,4 +1,8 @@
--- Reusable updated_at trigger function
+-- ============================================================
+-- Reusable trigger function + profiles table
+-- ============================================================
+
+-- Updated_at trigger function (used across all schemas)
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -7,14 +11,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
--- Profiles table (replaces Prisma User model)
--- password and emailVerified are handled by Supabase Auth
+-- Profiles table
 CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT,
   email TEXT UNIQUE,
   image TEXT,
   role public.role NOT NULL DEFAULT 'STUDENT',
+  department_id UUID, -- FK added in 00003 after catalog.departments exists
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
