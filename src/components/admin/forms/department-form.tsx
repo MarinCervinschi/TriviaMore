@@ -11,6 +11,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import {
   departmentSchema,
@@ -35,6 +42,7 @@ export function DepartmentForm({
       name: department?.name ?? "",
       code: department?.code ?? "",
       description: department?.description ?? "",
+      area: department?.area ?? "",
     },
   })
 
@@ -72,6 +80,35 @@ export function DepartmentForm({
                   }
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="area"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Area</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value || undefined}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona area (opzionale)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="SCIENZE">Scienze</SelectItem>
+                  <SelectItem value="TECNOLOGIA">Tecnologia</SelectItem>
+                  <SelectItem value="SALUTE">Salute</SelectItem>
+                  <SelectItem value="VITA">Vita</SelectItem>
+                  <SelectItem value="SOCIETA_CULTURA">
+                    Societa e Cultura
+                  </SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

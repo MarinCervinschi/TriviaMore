@@ -23,6 +23,10 @@ export const departmentSchema = z.object({
     .max(500, "La descrizione non può superare i 500 caratteri")
     .optional()
     .or(z.literal("")),
+  area: z
+    .enum(["SCIENZE", "TECNOLOGIA", "SALUTE", "VITA", "SOCIETA_CULTURA"])
+    .optional()
+    .or(z.literal("")),
   position: z
     .number()
     .int("La posizione deve essere un numero intero")
@@ -52,9 +56,20 @@ export const courseSchema = z.object({
     .optional()
     .or(z.literal("")),
   department_id: z.string().min(1, "Il dipartimento è obbligatorio"),
-  course_type: z.enum(["BACHELOR", "MASTER"], {
-    message: "Il tipo di corso è obbligatorio. Seleziona Triennale o Magistrale",
+  course_type: z.enum(["BACHELOR", "MASTER", "SINGLE_CYCLE"], {
+    message: "Il tipo di corso è obbligatorio",
   }),
+  location: z
+    .string()
+    .max(200, "La sede non può superare i 200 caratteri")
+    .optional()
+    .or(z.literal("")),
+  cfu: z
+    .number()
+    .int()
+    .min(1, "I CFU devono essere almeno 1")
+    .max(360, "I CFU non possono superare 360")
+    .optional(),
   position: z
     .number()
     .int("La posizione deve essere un numero intero")
@@ -89,6 +104,22 @@ export const classSchema = z.object({
     .int("L'anno deve essere un numero intero")
     .min(1, "L'anno deve essere maggiore di 0")
     .max(10, "L'anno non può essere maggiore di 10"),
+  cfu: z
+    .number()
+    .int()
+    .min(1, "I CFU devono essere almeno 1")
+    .max(30, "I CFU non possono superare 30")
+    .optional(),
+  catalogue_url: z
+    .string()
+    .url("L'URL del catalogo non è valido")
+    .optional()
+    .or(z.literal("")),
+  curriculum: z
+    .string()
+    .max(500, "Il curriculum non può superare i 500 caratteri")
+    .optional()
+    .or(z.literal("")),
   position: z
     .number()
     .int("La posizione deve essere un numero intero")
