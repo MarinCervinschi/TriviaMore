@@ -116,10 +116,10 @@ export function ProgressDetails({
               className="group transition-colors hover:bg-muted/30"
             >
               <td className="py-3 pl-6 font-medium">
-                {record.section.name}
+                {record.section_name}
               </td>
               <td className="px-4 py-3 text-center text-sm text-muted-foreground">
-                {record.section.class.name}
+                {record.class_name}
               </td>
               <td className="px-4 py-3 text-center">
                 <Badge

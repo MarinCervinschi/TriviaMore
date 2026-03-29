@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
-import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
+import { createServerSupabaseClient, quizQuery } from "@/lib/supabase/server"
 import type {
   RecentClass,
   RecentQuizAttempt,
@@ -97,11 +97,41 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
       average_score: averageScore,
     }
 
+    const recent_classes: RecentClass[] = (recentClassesResult.data ?? []).map((r) => ({
+      last_visited: r.last_visited!,
+      visit_count: r.visit_count!,
+      class_id: r.class_id!,
+      class_name: r.class_name!,
+      class_code: r.class_code!,
+      class_year: r.class_year!,
+      course_id: r.course_id!,
+      course_name: r.course_name!,
+      course_code: r.course_code!,
+      course_type: r.course_type!,
+      department_id: r.department_id!,
+      department_name: r.department_name!,
+      department_code: r.department_code!,
+    }))
+
+    const recent_quiz_attempts: RecentQuizAttempt[] = (recentAttemptsResult.data ?? []).map((a) => ({
+      id: a.id!,
+      score: a.score!,
+      completed_at: a.completed_at!,
+      section_id: a.section_id!,
+      section_name: a.section_name!,
+      class_id: a.class_id!,
+      class_name: a.class_name!,
+      course_id: a.course_id!,
+      course_name: a.course_name!,
+      department_id: a.department_id!,
+      department_name: a.department_name!,
+    }))
+
     return {
       ...profileResult.data,
       stats,
-      recent_classes: (recentClassesResult.data ?? []) as unknown as RecentClass[],
-      recent_quiz_attempts: (recentAttemptsResult.data ?? []) as unknown as RecentQuizAttempt[],
+      recent_classes,
+      recent_quiz_attempts,
     }
   },
 )
@@ -118,7 +148,20 @@ export const getUserClassesFn = createServerFn({ method: "GET" }).handler(
       .order("created_at", { ascending: false })
 
     if (error) throw new Error(error.message)
-    return (data ?? []) as unknown as UserClass[]
+    return (data ?? []).map((r) => ({
+      created_at: r.created_at!,
+      class_id: r.class_id!,
+      class_name: r.class_name!,
+      class_code: r.class_code!,
+      class_year: r.class_year!,
+      course_id: r.course_id!,
+      course_name: r.course_name!,
+      course_code: r.course_code!,
+      course_type: r.course_type!,
+      department_id: r.department_id!,
+      department_name: r.department_name!,
+      department_code: r.department_code!,
+    })) satisfies UserClass[]
   },
 )
 
@@ -184,7 +227,24 @@ export const getUserBookmarksFn = createServerFn({ method: "GET" }).handler(
       .order("created_at", { ascending: false })
 
     if (error) throw new Error(error.message)
-    return (data ?? []) as unknown as UserBookmark[]
+    return (data ?? []).map((r) => ({
+      question_id: r.question_id!,
+      created_at: r.created_at!,
+      content: r.content!,
+      question_type: r.question_type!,
+      options: r.options,
+      correct_answer: r.correct_answer!,
+      explanation: r.explanation,
+      difficulty: r.difficulty!,
+      section_id: r.section_id!,
+      section_name: r.section_name!,
+      class_id: r.class_id!,
+      class_name: r.class_name!,
+      course_id: r.course_id!,
+      course_name: r.course_name!,
+      department_id: r.department_id!,
+      department_name: r.department_name!,
+    })) satisfies UserBookmark[]
   },
 )
 
@@ -233,7 +293,23 @@ export const getUserProgressFn = createServerFn({ method: "GET" }).handler(
       .order("last_accessed_at", { ascending: false })
 
     if (error) throw new Error(error.message)
-    return (data ?? []) as unknown as UserProgress[]
+    return (data ?? []).map((r) => ({
+      id: r.id!,
+      quiz_mode: r.quiz_mode!,
+      quizzes_taken: r.quizzes_taken!,
+      average_score: r.average_score,
+      best_score: r.best_score,
+      total_time_spent: r.total_time_spent!,
+      last_accessed_at: r.last_accessed_at!,
+      section_id: r.section_id!,
+      section_name: r.section_name!,
+      class_id: r.class_id!,
+      class_name: r.class_name!,
+      course_id: r.course_id!,
+      course_name: r.course_name!,
+      department_id: r.department_id!,
+      department_name: r.department_name!,
+    })) satisfies UserProgress[]
   },
 )
 

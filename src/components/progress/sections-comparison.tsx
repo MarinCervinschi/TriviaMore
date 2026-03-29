@@ -50,10 +50,10 @@ export function SectionsComparison({
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {item.section.name}
+                    {item.section_name}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.section.class.name} &bull; {item.quizzes_taken}{" "}
+                    {item.class_name} &bull; {item.quizzes_taken}{" "}
                     quiz
                   </p>
                 </div>
@@ -92,10 +92,10 @@ export function SectionsComparison({
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {item.section.name}
+                    {item.section_name}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.section.class.name} &bull; {item.quizzes_taken}{" "}
+                    {item.class_name} &bull; {item.quizzes_taken}{" "}
                     quiz
                   </p>
                 </div>

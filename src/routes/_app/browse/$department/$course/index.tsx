@@ -151,7 +151,7 @@ function CoursePage() {
       {filtered.length === 0 ? (
         <BrowseEmptyState message="Nessuna classe trovata." />
       ) : (
-        <BrowseTable headers={["Nome", "Codice", "Anno", "Sezioni"]}>
+        <BrowseTable headers={["Nome", "Codice", "Anno", "CFU", "Sezioni"]}>
           {filtered.map((classData) => {
             const sectionCount = classData.sections[0]?.count ?? 0
             return (
@@ -185,6 +185,15 @@ function CoursePage() {
                   <span className="text-sm text-muted-foreground">
                     Anno {classData.class_year}
                   </span>
+                </td>
+                <td className="px-4 py-4 text-center">
+                  {classData.cfu ? (
+                    <span className="text-sm text-muted-foreground">
+                      {classData.cfu}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground/50">—</span>
+                  )}
                 </td>
                 <td className="px-4 py-4 text-center text-muted-foreground">
                   <span className="font-semibold text-foreground">

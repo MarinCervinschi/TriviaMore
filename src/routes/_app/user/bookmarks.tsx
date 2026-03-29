@@ -95,7 +95,6 @@ function BookmarkCard({
   onRemoveBookmark: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const { question } = bookmark
 
   return (
     <div className="overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:shadow-md">
@@ -106,18 +105,18 @@ function BookmarkCard({
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <span className="line-clamp-1 text-sm font-medium">
-            {question.content.slice(0, 100)}
-            {question.content.length > 100 && "..."}
+            {bookmark.content.slice(0, 100)}
+            {bookmark.content.length > 100 && "..."}
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Badge
-            className={`rounded-full ${getDifficultyColor(question.difficulty)}`}
+            className={`rounded-full ${getDifficultyColor(bookmark.difficulty)}`}
           >
-            {getDifficultyLabel(question.difficulty)}
+            {getDifficultyLabel(bookmark.difficulty)}
           </Badge>
           <Badge variant="outline" className="rounded-full">
-            {getQuestionTypeLabel(question.question_type)}
+            {getQuestionTypeLabel(bookmark.question_type)}
           </Badge>
           <ChevronDown
             className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -132,13 +131,13 @@ function BookmarkCard({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1">
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {question.section.name}
+                {bookmark.section_name}
               </span>
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {question.section.class.name}
+                {bookmark.class_name}
               </span>
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {question.section.class.course.name}
+                {bookmark.course_name}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -147,8 +146,8 @@ function BookmarkCard({
                 {new Date(bookmark.created_at).toLocaleDateString("it-IT")}
               </span>
               <ReportButton
-                questionId={question.id}
-                questionContent={question.content}
+                questionId={bookmark.question_id}
+                questionContent={bookmark.content}
               />
               <Button
                 variant="ghost"
@@ -168,19 +167,19 @@ function BookmarkCard({
           {/* Question content */}
           <div className="text-sm">
             <MarkdownRenderer
-              content={question.content}
+              content={bookmark.content}
               className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
             />
           </div>
 
           {/* Options */}
-          {question.options && (
+          {bookmark.options && (
             <ul className="space-y-1.5">
-              {parseOptions(question.options).map((option, index) => (
+              {parseOptions(bookmark.options).map((option, index) => (
                 <li
                   key={option.id}
                   className={`rounded-xl p-3 text-sm ${
-                    isCorrectOption(option.id, question.correct_answer)
+                    isCorrectOption(option.id, bookmark.correct_answer)
                       ? "bg-green-500/10 text-green-700 dark:text-green-400"
                       : "bg-muted/30"
                   }`}
@@ -189,7 +188,7 @@ function BookmarkCard({
                     {String.fromCharCode(65 + index)})
                   </span>
                   {option.text}
-                  {isCorrectOption(option.id, question.correct_answer) && (
+                  {isCorrectOption(option.id, bookmark.correct_answer) && (
                     <span className="ml-2 text-xs font-medium">
                       &#10003; Corretta
                     </span>
@@ -200,7 +199,7 @@ function BookmarkCard({
           )}
 
           {/* Short answer */}
-          {question.question_type === "SHORT_ANSWER" && (
+          {bookmark.question_type === "SHORT_ANSWER" && (
             <div className="rounded-xl bg-green-500/10 p-4">
               <p className="mb-1 text-xs font-semibold text-green-600 dark:text-green-400">
                 Risposta corretta
@@ -208,7 +207,7 @@ function BookmarkCard({
               <div className="text-sm text-green-700 dark:text-green-300">
                 <MarkdownRenderer
                   content={
-                    question.correct_answer[0] ??
+                    bookmark.correct_answer[0] ??
                     "Nessuna risposta disponibile"
                   }
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
@@ -218,14 +217,14 @@ function BookmarkCard({
           )}
 
           {/* Explanation */}
-          {question.explanation && (
+          {bookmark.explanation && (
             <div className="rounded-xl bg-blue-500/10 p-4">
               <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
                 Spiegazione
               </p>
               <div className="text-sm text-blue-700 dark:text-blue-300">
                 <MarkdownRenderer
-                  content={question.explanation}
+                  content={bookmark.explanation}
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
                 />
               </div>
