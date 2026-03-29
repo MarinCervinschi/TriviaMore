@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 import type { Database } from "@/lib/supabase/database.types"
+import { catalogAdmin } from "@/lib/supabase/admin"
 
 type NotificationType = Database["public"]["Enums"]["notification_type"]
 
@@ -67,13 +68,13 @@ export async function notifyAdminsInScope(
   let courseId = request.target_course_id
 
   if (request.target_section_id) {
-    const { data: section } = await supabaseAdmin
+    const { data: section } = await catalogAdmin
       .from("sections")
       .select("class_id")
       .eq("id", request.target_section_id)
       .single()
     if (section) {
-      const { data: cls } = await supabaseAdmin
+      const { data: cls } = await catalogAdmin
         .from("classes")
         .select("course_id")
         .eq("id", section.class_id)
@@ -85,7 +86,7 @@ export async function notifyAdminsInScope(
   }
 
   if (request.target_class_id && !courseId) {
-    const { data: cls } = await supabaseAdmin
+    const { data: cls } = await catalogAdmin
       .from("classes")
       .select("course_id")
       .eq("id", request.target_class_id)
@@ -97,7 +98,7 @@ export async function notifyAdminsInScope(
 
   if (courseId) {
     // Add course maintainers
-    const { data: maintainers } = await supabaseAdmin
+    const { data: maintainers } = await catalogAdmin
       .from("course_maintainers")
       .select("user_id")
       .eq("course_id", courseId)
@@ -108,7 +109,7 @@ export async function notifyAdminsInScope(
 
     // Resolve department from course
     if (!departmentId) {
-      const { data: course } = await supabaseAdmin
+      const { data: course } = await catalogAdmin
         .from("courses")
         .select("department_id")
         .eq("id", courseId)
@@ -121,7 +122,7 @@ export async function notifyAdminsInScope(
 
   if (departmentId) {
     // Add department admins
-    const { data: deptAdmins } = await supabaseAdmin
+    const { data: deptAdmins } = await catalogAdmin
       .from("department_admins")
       .select("user_id")
       .eq("department_id", departmentId)

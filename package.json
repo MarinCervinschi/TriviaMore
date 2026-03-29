@@ -18,6 +18,8 @@
     "preview": "infisical run -- vite preview",
     "test": "vitest run",
     "db:seed": "infisical run -- pnpm tsx supabase/scripts/seed.ts",
+    "db:import-catalog": "infisical run --env=staging -- pnpm tsx supabase/scripts/import-catalog.ts",
+    "db:restore-dump": "infisical run --env=staging -- pnpm tsx supabase/scripts/restore-dump.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
     "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap",
     "postbuild": "pnpm generate:sitemap"

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import type {
   AdminPermissions,
@@ -16,15 +16,17 @@ export const getAdminStatsFn = createServerFn({ method: "GET" }).handler(
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
+    const catalog = catalogQuery(supabase)
+
     const [departments, courses, classes, sections, questions] =
       await Promise.all([
-        supabase
+        catalog
           .from("departments")
           .select("*", { count: "exact", head: true }),
-        supabase.from("courses").select("*", { count: "exact", head: true }),
-        supabase.from("classes").select("*", { count: "exact", head: true }),
-        supabase.from("sections").select("*", { count: "exact", head: true }),
-        supabase.from("questions").select("*", { count: "exact", head: true }),
+        catalog.from("courses").select("*", { count: "exact", head: true }),
+        catalog.from("classes").select("*", { count: "exact", head: true }),
+        catalog.from("sections").select("*", { count: "exact", head: true }),
+        catalog.from("questions").select("*", { count: "exact", head: true }),
       ])
 
     return {
@@ -43,12 +45,14 @@ export const getAdminPermissionsFn = createServerFn({
   const user = await requireAdmin()
   const supabase = createServerSupabaseClient()
 
+  const catalog = catalogQuery(supabase)
+
   const [deptAdmins, courseMaintainers] = await Promise.all([
-    supabase
+    catalog
       .from("department_admins")
       .select("department_id")
       .eq("user_id", user.id),
-    supabase
+    catalog
       .from("course_maintainers")
       .select("course_id")
       .eq("user_id", user.id),
@@ -73,7 +77,7 @@ export const getContentTreeFn = createServerFn({
   await requireAdmin()
   const supabase = createServerSupabaseClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await catalogQuery(supabase)
     .from("departments")
     .select(
       "id, name, code, courses(id, name, code, classes(id, name, code, sections(id, name)))",
