@@ -13,8 +13,10 @@ import { BrowseStats } from "@/components/browse/browse-stats"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/browse/$department/")({
   loader: async ({ context, params }) => {
@@ -47,20 +49,11 @@ export const Route = createFileRoute("/_app/browse/$department/")({
 
 const courseTypeFilters = [
   { value: "all", label: "Tutti" },
-  { value: "BACHELOR", label: "Triennale" },
-  { value: "MASTER", label: "Magistrale" },
-] as const
-
-const courseTypeConfig: Record<string, { label: string; className: string }> = {
-  BACHELOR: {
-    label: "Triennale",
-    className: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-  },
-  MASTER: {
-    label: "Magistrale",
-    className: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-  },
-}
+  ...Object.entries(COURSE_TYPE_CONFIG).map(([value, { label }]) => ({
+    value,
+    label,
+  })),
+]
 
 function DepartmentPage() {
   const { department: deptCode } = Route.useParams()
@@ -70,18 +63,24 @@ function DepartmentPage() {
 
   const [search, setSearch] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
+  const [page, setPage] = useState(1)
 
   if (!department) return null
 
-  const filtered = department.courses.filter((c) => {
-    const matchesSearch =
-      !search ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.code.toLowerCase().includes(search.toLowerCase())
-    const matchesType =
-      typeFilter === "all" || c.course_type === typeFilter
-    return matchesSearch && matchesType
-  })
+  const typeFiltered =
+    typeFilter === "all"
+      ? department.courses
+      : department.courses.filter((c) => c.course_type === typeFilter)
+
+  const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
+    typeFiltered,
+    (c, q) =>
+      c.name.toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q),
+    search,
+    page,
+    10,
+  )
 
   return (
     <div className="container py-8">
@@ -114,7 +113,7 @@ function DepartmentPage() {
         {courseTypeFilters.map((f) => (
           <button
             key={f.value}
-            onClick={() => setTypeFilter(f.value)}
+            onClick={() => { setTypeFilter(f.value); setPage(1) }}
             className={cn(
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               typeFilter === f.value
@@ -129,67 +128,85 @@ function DepartmentPage() {
 
       <SearchFilter
         value={search}
-        onChange={setSearch}
+        onChange={(v) => { setSearch(v); setPage(1) }}
         placeholder="Cerca corsi..."
       />
 
-      {filtered.length === 0 ? (
+      {paged.length === 0 ? (
         <BrowseEmptyState message="Nessun corso trovato." />
       ) : (
-        <BrowseTable headers={["Nome", "Codice", "Tipo", "Classi"]}>
-          {filtered.map((course) => {
-            const classCount = course.classes[0]?.count ?? 0
-            const typeConf = courseTypeConfig[course.course_type]
-            return (
-              <tr key={course.id} className="group">
-                <td className="pl-6 py-4">
-                  <Link
-                    to="/browse/$department/$course"
-                    params={{
-                      department: deptCode.toLowerCase(),
-                      course: course.code.toLowerCase(),
-                    }}
-                    className="block"
-                  >
-                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                      {course.name}
-                    </span>
-                    {course.description && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                        {course.description}
-                      </p>
-                    )}
-                  </Link>
-                </td>
-                <td className="px-4 py-4 text-center">
-                  <Badge variant="outline" className="text-xs">
-                    {course.code}
-                  </Badge>
-                </td>
-                <td className="px-4 py-4 text-center">
-                  {typeConf ? (
-                    <Badge className={cn("text-xs", typeConf.className)}>
-                      {typeConf.label}
+        <>
+          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Classi"]}>
+            {paged.map((course) => {
+              const classCount = course.classes[0]?.count ?? 0
+              const typeConf = COURSE_TYPE_CONFIG[course.course_type]
+              return (
+                <tr key={course.id} className="group">
+                  <td className="pl-6 py-4">
+                    <Link
+                      to="/browse/$department/$course"
+                      params={{
+                        department: deptCode.toLowerCase(),
+                        course: course.code.toLowerCase(),
+                      }}
+                      className="block"
+                    >
+                      <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                        {course.name}
+                      </span>
+                      {course.description && (
+                        <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
+                          {course.description}
+                        </p>
+                      )}
+                    </Link>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    <Badge variant="outline" className="text-xs">
+                      {course.code}
                     </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      {course.course_type}
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-4 text-center text-muted-foreground">
-                  <span className="font-semibold text-foreground">
-                    {classCount}
-                  </span>{" "}
-                  {classCount === 1 ? "classe" : "classi"}
-                </td>
-                <td className="pr-6 py-4">
-                  <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                </td>
-              </tr>
-            )
-          })}
-        </BrowseTable>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    {typeConf ? (
+                      <Badge className={cn("text-xs", typeConf.className)}>
+                        {typeConf.label}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        {course.course_type}
+                      </span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    {course.cfu ? (
+                      <span className="text-sm text-muted-foreground">
+                        {course.cfu}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/50">—</span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-muted-foreground">
+                    <span className="font-semibold text-foreground">
+                      {classCount}
+                    </span>{" "}
+                    {classCount === 1 ? "classe" : "classi"}
+                  </td>
+                  <td className="pr-6 py-4">
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                  </td>
+                </tr>
+              )
+            })}
+          </BrowseTable>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={totalItems}
+            pageSize={10}
+          />
+        </>
       )}
     </div>
   )

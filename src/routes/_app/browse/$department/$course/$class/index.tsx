@@ -28,6 +28,7 @@ import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
 import { useAuth } from "@/hooks/useAuth"
 import { browseQueries } from "@/lib/browse/queries"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
@@ -91,6 +92,7 @@ function ClassPage() {
   )
 
   const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
   const queryClient = useQueryClient()
 
   const { isAuthenticated } = useAuth()
@@ -117,9 +119,12 @@ function ClassPage() {
     0,
   )
 
-  const filtered = classData.sections.filter(
-    (s) =>
-      !search || s.name.toLowerCase().includes(search.toLowerCase()),
+  const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
+    classData.sections,
+    (s, q) => s.name.toLowerCase().includes(q),
+    search,
+    page,
+    10,
   )
 
   const handleToggleSave = () => {
@@ -229,18 +234,19 @@ function ClassPage() {
         )}
       <SearchFilter
         value={search}
-        onChange={setSearch}
+        onChange={(v) => { setSearch(v); setPage(1) }}
         placeholder="Cerca sezioni..."
       />
       {classData.sections.length === 0 ? (
         <BrowseContributeState message="Nessuna sezione disponibile per questa classe.">
           <RequestFormDialog defaultTargetClassId={classData.id} />
         </BrowseContributeState>
-      ) : filtered.length === 0 ? (
+      ) : paged.length === 0 ? (
         <BrowseEmptyState message="Nessuna sezione trovata." />
       ) : (
+        <>
         <BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
-          {filtered.map((section) => {
+          {paged.map((section) => {
             const sectionSlug = section.name
               .replace(/ /g, "-")
               .toLowerCase()
@@ -265,7 +271,7 @@ function ClassPage() {
                     </span>
                   </Link>
                 </td>
-                <td className="px-4 py-4 text-center">
+                <td className="whitespace-nowrap px-3 py-4 text-center">
                   {section.quiz_question_count > 0 ? (
                     <Badge className="gap-1.5 bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
                       <BookOpen className="h-3 w-3" />
@@ -275,7 +281,7 @@ function ClassPage() {
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
-                <td className="px-4 py-4 text-center">
+                <td className="whitespace-nowrap px-3 py-4 text-center">
                   {section.flashcard_question_count > 0 ? (
                     <Badge className="gap-1.5 bg-purple-500/10 text-purple-600 border-purple-500/20 text-xs">
                       <Sparkles className="h-3 w-3" />
@@ -285,7 +291,7 @@ function ClassPage() {
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
-                <td className="px-4 py-4 text-center text-sm text-muted-foreground">
+                <td className="whitespace-nowrap px-3 py-4 text-center text-sm text-muted-foreground">
                   {section.question_count}
                 </td>
                 <td className="pr-6 py-4">
@@ -295,6 +301,14 @@ function ClassPage() {
             )
           })}
         </BrowseTable>
+        <Pagination
+          page={safePage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          totalItems={totalItems}
+          pageSize={10}
+        />
+        </>
       )}
     </div>
   )

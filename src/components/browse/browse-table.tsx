@@ -10,13 +10,13 @@ export function BrowseTable({
   return (
     <div className="overflow-hidden rounded-2xl border">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm table-fixed">
           <thead>
             <tr className="border-b bg-muted/50">
               {headers.map((header, i) => (
                 <th
                   key={header}
-                  className={`px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground first:pl-6 last:pr-6 ${i === 0 ? "text-left" : "text-center"}`}
+                  className={`px-3 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap first:pl-6 last:pr-6 ${i === 0 ? "text-left w-[40%]" : "text-center"}`}
                 >
                   {header}
                 </th>
