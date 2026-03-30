@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import {
   AdminPagination,
   usePaginatedSearch,
@@ -169,9 +170,7 @@ function AdminDepartmentDetailPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="rounded-full">
-                            {course.course_type === "BACHELOR"
-                              ? "Triennale"
-                              : "Magistrale"}
+                            {COURSE_TYPE_CONFIG[course.course_type]?.label ?? course.course_type}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">

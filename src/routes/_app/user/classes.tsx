@@ -13,7 +13,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Pagination } from "@/components/ui/pagination"
 import { BrowseTable } from "@/components/browse/browse-table"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import {
   Select,
   SelectContent,
@@ -42,10 +44,11 @@ function ClassesPage() {
   const [selectedDepartment, setSelectedDepartment] = useState("all")
   const [selectedCourseType, setSelectedCourseType] = useState("all")
   const [sortBy, setSortBy] = useState("name")
+  const [page, setPage] = useState(1)
 
   const departments = useMemo(() => {
     const depts = [
-      ...new Set(userClasses.map((uc) => uc.department_name)),
+      ...new Set(userClasses.map((uc) => uc.department_code)),
     ]
     return depts.sort()
   }, [userClasses])
@@ -64,12 +67,12 @@ function ClassesPage() {
         !search ||
         uc.class_name.toLowerCase().includes(search) ||
         uc.course_name.toLowerCase().includes(search) ||
-        uc.department_name.toLowerCase().includes(search) ||
+        uc.department_code.toLowerCase().includes(search) ||
         uc.class_code.toLowerCase().includes(search)
 
       const matchesDept =
         selectedDepartment === "all" ||
-        uc.department_name === selectedDepartment
+        uc.department_code === selectedDepartment
 
       const matchesType =
         selectedCourseType === "all" ||
@@ -83,8 +86,8 @@ function ClassesPage() {
         case "name":
           return a.class_name.localeCompare(b.class_name)
         case "department":
-          return a.department_name.localeCompare(
-            b.department_name,
+          return a.department_code.localeCompare(
+            b.department_code,
           )
         case "year":
           return a.class_year - b.class_year
@@ -101,6 +104,11 @@ function ClassesPage() {
     return result
   }, [userClasses, searchTerm, selectedDepartment, selectedCourseType, sortBy])
 
+  const pageSize = 10
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const safePage = Math.min(page, totalPages)
+  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+
   const hasActiveFilters =
     searchTerm || selectedDepartment !== "all" || selectedCourseType !== "all"
 
@@ -109,6 +117,7 @@ function ClassesPage() {
     setSelectedDepartment("all")
     setSelectedCourseType("all")
     setSortBy("name")
+    setPage(1)
   }
 
   return (
@@ -133,7 +142,7 @@ function ClassesPage() {
             <Input
               placeholder="Cerca corso, dipartimento..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(1) }}
               className="h-10 rounded-xl pl-10"
             />
           </div>
@@ -141,7 +150,7 @@ function ClassesPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Select
               value={selectedDepartment}
-              onValueChange={setSelectedDepartment}
+              onValueChange={(v) => { setSelectedDepartment(v); setPage(1) }}
             >
               <SelectTrigger className="h-10 w-auto min-w-[160px] rounded-xl">
                 <SelectValue placeholder="Dipartimento" />
@@ -158,7 +167,7 @@ function ClassesPage() {
 
             <Select
               value={selectedCourseType}
-              onValueChange={setSelectedCourseType}
+              onValueChange={(v) => { setSelectedCourseType(v); setPage(1) }}
             >
               <SelectTrigger className="h-10 w-auto min-w-[140px] rounded-xl">
                 <SelectValue placeholder="Tipo" />
@@ -167,7 +176,7 @@ function ClassesPage() {
                 <SelectItem value="all">Tutti i tipi</SelectItem>
                 {courseTypes.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type}
+                    {COURSE_TYPE_CONFIG[type]?.label ?? type}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -229,10 +238,11 @@ function ClassesPage() {
             </div>
           )
         ) : (
+          <>
           <BrowseTable
             headers={["Corso", "Dipartimento", "Tipo", "Anno", "Aggiunto", ""]}
           >
-            {filtered.map((userClass) => (
+            {paged.map((userClass) => (
               <tr key={userClass.class_id} className="group">
                 <td className="py-4 pl-6">
                   <Link
@@ -254,12 +264,14 @@ function ClassesPage() {
                     </p>
                   </Link>
                 </td>
-                <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-                  {userClass.department_name}
+                <td className="whitespace-nowrap px-3 py-4 text-center">
+                  <Badge variant="outline" className="text-xs">
+                    {userClass.department_code}
+                  </Badge>
                 </td>
-                <td className="px-4 py-4 text-center">
-                  <Badge variant="outline" className="rounded-full text-xs">
-                    {userClass.course_type}
+                <td className="whitespace-nowrap px-3 py-4 text-center">
+                  <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[userClass.course_type]?.className ?? ""}`}>
+                    {COURSE_TYPE_CONFIG[userClass.course_type]?.label ?? userClass.course_type}
                   </Badge>
                 </td>
                 <td className="px-4 py-4 text-center text-sm text-muted-foreground">
@@ -289,6 +301,14 @@ function ClassesPage() {
               </tr>
             ))}
           </BrowseTable>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filtered.length}
+            pageSize={pageSize}
+          />
+          </>
         )}
       </div>
     </div>
