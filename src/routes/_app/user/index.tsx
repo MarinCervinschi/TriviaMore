@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BrowseTable } from "@/components/browse/browse-table"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { UserHero } from "@/components/user/user-hero"
 import { UserStatsCard } from "@/components/user/user-stats-card"
 import { userQueries } from "@/lib/user/queries"
@@ -282,12 +283,14 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
                 </p>
               </Link>
             </td>
-            <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-              {item.department_name}
+            <td className="whitespace-nowrap px-3 py-4 text-center">
+              <Badge variant="outline" className="text-xs">
+                {item.department_code}
+              </Badge>
             </td>
-            <td className="px-4 py-4 text-center">
-              <Badge variant="outline" className="rounded-full text-xs">
-                {item.course_type}
+            <td className="whitespace-nowrap px-3 py-4 text-center">
+              <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[item.course_type]?.className ?? ""}`}>
+                {COURSE_TYPE_CONFIG[item.course_type]?.label ?? item.course_type}
               </Badge>
             </td>
             <td className="px-4 py-4 text-center text-sm text-muted-foreground">
