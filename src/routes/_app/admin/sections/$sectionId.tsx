@@ -101,7 +101,7 @@ function AdminSectionDetailPage() {
     <div className="py-2">
       <AdminPageHeader
         title={section.name}
-        description={`${cls.course.department.name} / ${cls.course.name} / ${cls.name}`}
+        description={`${cls.course_classes?.[0]?.course?.department?.name ?? ""} / ${cls.course_classes?.[0]?.course?.name ?? ""} / ${cls.name}`}
         backTo="/admin/classes/$classId"
         backParams={{ classId: cls.id }}
         backLabel={cls.name}

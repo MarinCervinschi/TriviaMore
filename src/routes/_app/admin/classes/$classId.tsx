@@ -67,7 +67,8 @@ function AdminClassDetailPage() {
   const createSection = useCreateSection(() => setCreateSectionOpen(false))
   const deleteSection = useDeleteSection(() => setDeleteSectionId(null))
 
-  const { sections, course, ...cls } = data
+  const { sections, course_classes, ...cls } = data
+  const course = course_classes?.[0]?.course
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     sections as SectionRow[],
@@ -82,10 +83,10 @@ function AdminClassDetailPage() {
     <div className="py-2">
       <AdminPageHeader
         title={cls.name}
-        description={`${course.department.name} / ${course.name} / ${cls.code}`}
-        backTo="/admin/courses/$courseId"
-        backParams={{ courseId: course.id }}
-        backLabel={course.name}
+        description={course ? `${course.department.name} / ${course.name}` : undefined}
+        backTo={course ? "/admin/courses/$courseId" : "/admin"}
+        backParams={course ? { courseId: course.id } : undefined}
+        backLabel={course?.name ?? "Admin"}
       />
 
       <div className="grid gap-6">
@@ -96,7 +97,6 @@ function AdminClassDetailPage() {
           <CardContent>
             <ClassForm
               cls={cls}
-              courseId={course.id}
               onSubmit={(formData) =>
                 updateClass.mutate({ id: cls.id, ...formData })
               }

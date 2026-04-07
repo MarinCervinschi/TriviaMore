@@ -68,10 +68,15 @@ function AdminCourseDetailPage() {
   const createClass = useCreateClass(() => setCreateClassOpen(false))
   const deleteClass = useDeleteClass(() => setDeleteClassId(null))
 
-  const { classes, department, ...course } = data
+  const { course_classes, department, ...course } = data
+
+  const classes = course_classes.map((cc: any) => ({
+    ...cc.class,
+    class_year: cc.class_year,
+  })) as ClassRow[]
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    classes as ClassRow[],
+    classes,
     (c, q) =>
       c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
     search,
@@ -110,7 +115,7 @@ function AdminCourseDetailPage() {
         <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle>Classi ({classes.length})</CardTitle>
+              <CardTitle>Classi ({course_classes.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="w-56">
                   <AdminSearch
@@ -218,7 +223,6 @@ function AdminCourseDetailPage() {
             <DialogTitle>Nuova classe</DialogTitle>
           </DialogHeader>
           <ClassForm
-            courseId={course.id}
             onSubmit={(formData) => createClass.mutate(formData)}
             isPending={createClass.isPending}
           />

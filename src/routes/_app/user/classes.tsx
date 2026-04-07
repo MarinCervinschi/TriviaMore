@@ -68,7 +68,7 @@ function ClassesPage() {
         uc.class_name.toLowerCase().includes(search) ||
         uc.course_name.toLowerCase().includes(search) ||
         uc.department_code.toLowerCase().includes(search) ||
-        uc.class_code.toLowerCase().includes(search)
+        (uc.class_code ?? "").toLowerCase().includes(search)
 
       const matchesDept =
         selectedDepartment === "all" ||
@@ -90,7 +90,7 @@ function ClassesPage() {
             b.department_code,
           )
         case "year":
-          return a.class_year - b.class_year
+          return (a.class_year ?? 0) - (b.class_year ?? 0)
         case "dateAdded":
           return (
             new Date(b.created_at).getTime() -
@@ -251,7 +251,7 @@ function ClassesPage() {
                       department:
                         userClass.department_code.toLowerCase(),
                       course: userClass.course_code,
-                      class: userClass.class_code.toLowerCase(),
+                      class: (userClass.class_code ?? "").toLowerCase(),
                     }}
                     className="block"
                   >

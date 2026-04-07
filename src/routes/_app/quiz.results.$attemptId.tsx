@@ -64,7 +64,7 @@ function ResultsPage() {
 
           <p className="relative mb-1 text-sm text-muted-foreground">
             {result.quiz.section.name} &bull;{" "}
-            {result.quiz.section.class.course.name}
+            {result.quiz.section.course_name}
           </p>
           <p
             className={cn(

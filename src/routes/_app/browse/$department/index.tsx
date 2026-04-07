@@ -138,7 +138,7 @@ function DepartmentPage() {
         <>
           <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Classi"]}>
             {paged.map((course) => {
-              const classCount = course.classes[0]?.count ?? 0
+              const classCount = course.course_classes[0]?.count ?? 0
               const typeConf = COURSE_TYPE_CONFIG[course.course_type]
               return (
                 <tr key={course.id} className="group">
