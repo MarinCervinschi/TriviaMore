@@ -96,7 +96,7 @@ function CoursePage() {
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     preFiltered,
     (c, q) =>
-      c.name.toLowerCase().includes(q) ||
+      c.class.name.toLowerCase().includes(q) ||
       c.code.toLowerCase().includes(q),
     search,
     page,
@@ -208,9 +208,9 @@ function CoursePage() {
         <>
         <BrowseTable headers={["Nome", "Codice", "Anno", "CFU", "Sezioni"]}>
           {paged.map((classData) => {
-            const sectionCount = classData.sections[0]?.count ?? 0
+            const sectionCount = classData.class.sections[0]?.count ?? 0
             return (
-              <tr key={classData.id} className="group">
+              <tr key={classData.class.id} className="group">
                 <td className="pl-6 py-4">
                   <Link
                     to="/browse/$department/$course/$class"
@@ -222,11 +222,11 @@ function CoursePage() {
                     className="block"
                   >
                     <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                      {classData.name}
+                      {classData.class.name}
                     </span>
-                    {classData.description && (
+                    {classData.class.description && (
                       <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
-                        {classData.description}
+                        {classData.class.description}
                       </p>
                     )}
                   </Link>
@@ -242,9 +242,9 @@ function CoursePage() {
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center">
-                  {classData.cfu ? (
+                  {classData.class.cfu ? (
                     <span className="text-sm text-muted-foreground">
-                      {classData.cfu}
+                      {classData.class.cfu}
                     </span>
                   ) : (
                     <span className="text-xs text-muted-foreground/50">—</span>

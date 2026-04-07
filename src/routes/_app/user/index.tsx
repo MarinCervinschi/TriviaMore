@@ -271,7 +271,7 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
                 params={{
                   department: item.department_code.toLowerCase(),
                   course: item.course_code.toLowerCase(),
-                  class: item.class_code.toLowerCase(),
+                  class: (item.class_code ?? "").toLowerCase(),
                 }}
                 className="block"
               >

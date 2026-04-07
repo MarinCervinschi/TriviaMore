@@ -67,7 +67,11 @@ function AdminQuestionPage() {
   const updateQuestion = useUpdateQuestion()
 
   const breadcrumb = questionData?.section
-    ? `${(questionData.section as { class: { course: { department: { name: string }; name: string }; name: string } }).class.course.department.name} / ${(questionData.section as { class: { course: { name: string } } }).class.course.name} / ${(questionData.section as { class: { name: string } }).class.name} / ${(questionData.section as { name: string }).name}`
+    ? (() => {
+        const sec = questionData.section as { class: { course_classes: { course: { department: { name: string }; name: string } }[]; name: string }; name: string }
+        const course = sec.class.course_classes?.[0]?.course
+        return `${course?.department?.name ?? ""} / ${course?.name ?? ""} / ${sec.class.name} / ${sec.name}`
+      })()
     : undefined
 
   return (

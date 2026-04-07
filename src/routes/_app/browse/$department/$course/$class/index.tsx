@@ -105,12 +105,12 @@ function ClassPage() {
   })
 
   useEffect(() => {
-    if (isAuthenticated && classData?.id) {
-      updateRecentClassFn({ data: { classId: classData.id } }).then(() => {
+    if (isAuthenticated && classData?.id && classData?.course?.id) {
+      updateRecentClassFn({ data: { classId: classData.id, courseId: classData.course.id } }).then(() => {
         queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
       })
     }
-  }, [isAuthenticated, classData?.id, queryClient])
+  }, [isAuthenticated, classData?.id, classData?.course?.id, queryClient])
 
   if (!classData) return null
 
@@ -131,7 +131,7 @@ function ClassPage() {
     if (isSaved) {
       removeClass.mutate(classData.id)
     } else {
-      addClass.mutate(classData.id)
+      addClass.mutate({ classId: classData.id, courseId: classData.course.id })
     }
   }
 
@@ -161,21 +161,21 @@ function ClassPage() {
               {classData.description}
             </p>
           )}
-          {(classData.cfu || classData.curriculum || classData.catalogue_url) && (
+          {(classData.cfu || classData.courseClass?.curriculum || classData.courseClass?.catalogue_url) && (
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {classData.cfu && (
                 <Badge variant="secondary" className="text-xs">
                   {classData.cfu} CFU
                 </Badge>
               )}
-              {classData.curriculum && (
+              {classData.courseClass?.curriculum && (
                 <Badge variant="outline" className="text-xs">
-                  {classData.curriculum}
+                  {classData.courseClass.curriculum}
                 </Badge>
               )}
-              {classData.catalogue_url && (
+              {classData.courseClass?.catalogue_url && (
                 <a
-                  href={classData.catalogue_url}
+                  href={classData.courseClass.catalogue_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"

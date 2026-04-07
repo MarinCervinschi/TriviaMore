@@ -11,27 +11,18 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { classSchema, type ClassInput } from "@/lib/admin/schemas"
 import type { Class } from "@/lib/admin/types"
 
 type ClassFormProps = {
   cls?: Class
-  courseId: string
   onSubmit: (data: ClassInput) => void
   isPending: boolean
 }
 
 export function ClassForm({
   cls,
-  courseId,
   onSubmit,
   isPending,
 }: ClassFormProps) {
@@ -39,13 +30,8 @@ export function ClassForm({
     resolver: standardSchemaResolver(classSchema),
     defaultValues: {
       name: cls?.name ?? "",
-      code: cls?.code ?? "",
       description: cls?.description ?? "",
-      course_id: cls?.course_id ?? courseId,
-      class_year: cls?.class_year ?? 1,
       cfu: cls?.cfu ?? undefined,
-      catalogue_url: cls?.catalogue_url ?? "",
-      curriculum: cls?.curriculum ?? "",
     },
   })
 
@@ -67,50 +53,6 @@ export function ClassForm({
         />
         <FormField
           control={form.control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Codice</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="es. AM1"
-                  {...field}
-                  onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="class_year"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Anno</FormLabel>
-              <Select
-                onValueChange={(v) => field.onChange(Number(v))}
-                defaultValue={String(field.value)}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleziona anno" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5].map((y) => (
-                    <SelectItem key={y} value={String(y)}>
-                      Anno {y}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="cfu"
           render={({ field }) => (
             <FormItem>
@@ -126,38 +68,6 @@ export function ClassForm({
                       e.target.value ? Number(e.target.value) : undefined,
                     )
                   }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="catalogue_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL catalogo</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://... (opzionale)"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="curriculum"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Curriculum</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="es. Informatica Applicata (opzionale)"
-                  {...field}
                 />
               </FormControl>
               <FormMessage />
