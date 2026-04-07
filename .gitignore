@@ -14,3 +14,7 @@ dist-ssr
 __unconfig*
 todos.json
 package-lock.json
+
+
+data/
+supabase/snippets/
