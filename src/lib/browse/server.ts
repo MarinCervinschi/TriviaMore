@@ -40,7 +40,7 @@ export const getDepartmentWithCoursesFn = createServerFn({ method: "GET" })
 
     const { data: courses, error: coursesError } = await catalogQuery(supabase)
       .from("courses")
-      .select("*, classes(count)")
+      .select("*, course_classes(count)")
       .eq("department_id", department.id)
       .order("position")
 
@@ -73,10 +73,10 @@ export const getCourseWithClassesFn = createServerFn({ method: "GET" })
 
     if (!course) return null
 
-    // Get classes with section counts
-    const { data: classes, error } = await catalogQuery(supabase)
-      .from("classes")
-      .select("*, sections(count)")
+    // Get classes via junction with section counts
+    const { data: courseClasses, error } = await catalogQuery(supabase)
+      .from("course_classes")
+      .select("code, class_year, mandatory, catalogue_url, curriculum, position, class:classes(*, sections(count))")
       .eq("course_id", course.id)
       .order("class_year")
       .order("position")
@@ -86,7 +86,7 @@ export const getCourseWithClassesFn = createServerFn({ method: "GET" })
     return {
       ...course,
       department,
-      classes: classes as CourseWithClasses["classes"],
+      classes: (courseClasses ?? []) as CourseWithClasses["classes"],
     }
   })
 
@@ -116,15 +116,17 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
 
     if (!course) return null
 
-    // Find class
-    const { data: classData } = await catalogQuery(supabase)
-      .from("classes")
-      .select("*")
+    // Find class via junction (classCode matches course_classes.code)
+    const { data: courseClass } = await catalogQuery(supabase)
+      .from("course_classes")
+      .select("*, class:classes(*)")
       .eq("course_id", course.id)
       .ilike("code", data.classCode)
       .single()
 
-    if (!classData) return null
+    if (!courseClass || !courseClass.class) return null
+
+    const classData = courseClass.class as any
 
     // Get sections with question type breakdown
     const { data: sections } = await catalogQuery(supabase)
@@ -209,6 +211,14 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
 
     return {
       ...classData,
+      courseClass: {
+        code: courseClass.code,
+        class_year: courseClass.class_year,
+        mandatory: courseClass.mandatory,
+        catalogue_url: courseClass.catalogue_url,
+        curriculum: courseClass.curriculum,
+        position: courseClass.position,
+      },
       course: { ...course, department },
       sections: sectionsWithCounts,
       examSimulation,
@@ -245,14 +255,17 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     if (!course) return null
 
-    const { data: classData } = await catalogQuery(supabase)
-      .from("classes")
-      .select("*")
+    // Find class via junction
+    const { data: courseClassRow } = await catalogQuery(supabase)
+      .from("course_classes")
+      .select("*, class:classes(*)")
       .eq("course_id", course.id)
       .ilike("code", data.classCode)
       .single()
 
-    if (!classData) return null
+    if (!courseClassRow || !courseClassRow.class) return null
+
+    const classData = courseClassRow.class as any
 
     // Find section by slug (hyphens → spaces)
     const sectionName = data.sectionSlug.replace(/-/g, " ")
@@ -285,7 +298,18 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     return {
       ...section,
-      class: { ...classData, course: { ...course, department } },
+      class: {
+        ...classData,
+        courseClass: {
+          code: courseClassRow.code,
+          class_year: courseClassRow.class_year,
+          mandatory: courseClassRow.mandatory,
+          catalogue_url: courseClassRow.catalogue_url,
+          curriculum: courseClassRow.curriculum,
+          position: courseClassRow.position,
+        },
+        course: { ...course, department },
+      },
       question_count: totalCount ?? 0,
       quiz_question_count: quizCount ?? 0,
       flashcard_question_count: flashcardCount ?? 0,

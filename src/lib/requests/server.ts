@@ -50,22 +50,31 @@ async function buildTargetLabel(
   if (request.target_section_id) {
     const { data } = await catalogQuery(supabase)
       .from("sections")
-      .select("name, class:classes(name, course:courses(name, department:departments(name)))")
+      .select("name, class:classes(name, course_classes(course:courses(name, department:departments(name))))")
       .eq("id", request.target_section_id)
       .single()
     if (data) {
-      const cls = data.class as { name: string; course: { name: string; department: { name: string } } }
-      parts.push(cls.course.department.name, cls.course.name, cls.name, data.name)
+      const cls = data.class as any
+      const cc = cls?.course_classes?.[0]?.course
+      if (cc) {
+        parts.push(cc.department.name, cc.name, cls.name, data.name)
+      } else {
+        parts.push(cls?.name ?? "", data.name)
+      }
     }
   } else if (request.target_class_id) {
     const { data } = await catalogQuery(supabase)
       .from("classes")
-      .select("name, course:courses(name, department:departments(name))")
+      .select("name, course_classes(course:courses(name, department:departments(name)))")
       .eq("id", request.target_class_id)
       .single()
     if (data) {
-      const course = data.course as { name: string; department: { name: string } }
-      parts.push(course.department.name, course.name, data.name)
+      const cc = (data as any).course_classes?.[0]?.course
+      if (cc) {
+        parts.push(cc.department.name, cc.name, data.name)
+      } else {
+        parts.push(data.name)
+      }
     }
   } else if (request.target_course_id) {
     const { data } = await catalogQuery(supabase)
@@ -211,19 +220,15 @@ export const createRequestFn = createServerFn({ method: "POST" })
     }
 
     if (targetClassId) {
-      const { data: cls } = await catalogQuery(supabase)
-        .from("classes")
-        .select("course_id")
-        .eq("id", targetClassId)
+      const { data: courseClass } = await catalogQuery(supabase)
+        .from("course_classes")
+        .select("course_id, course:courses(department_id)")
+        .eq("class_id", targetClassId)
+        .limit(1)
         .single()
-      if (cls) {
-        targetCourseId = cls.course_id
-        const { data: course } = await catalogQuery(supabase)
-          .from("courses")
-          .select("department_id")
-          .eq("id", cls.course_id)
-          .single()
-        if (course) targetDeptId = course.department_id
+      if (courseClass) {
+        targetCourseId = courseClass.course_id
+        if (courseClass.course) targetDeptId = courseClass.course.department_id
       }
     }
 

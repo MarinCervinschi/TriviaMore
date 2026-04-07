@@ -16,7 +16,7 @@ export function useAddClass() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (classId: string) => addUserClassFn({ data: { classId } }),
+    mutationFn: ({ classId, courseId }: { classId: string; courseId: string }) => addUserClassFn({ data: { classId, courseId } }),
     onSuccess: () => {
       for (const key of CLASS_INVALIDATE_KEYS) {
         queryClient.invalidateQueries({ queryKey: key })

@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { useMutationWithToast } from "@/hooks/useMutationWithToast"
 
 import {
+  addClassToCourseFn,
   addCourseMaintainerFn,
   addDepartmentAdminFn,
   addSectionAccessFn,
@@ -18,11 +19,13 @@ import {
   deleteDepartmentFn,
   deleteQuestionFn,
   deleteSectionFn,
+  removeClassFromCourseFn,
   removeCourseMaintainerFn,
   removeDepartmentAdminFn,
   removeSectionAccessFn,
   deleteUserFn,
   updateClassFn,
+  updateCourseClassFn,
   updateCourseFn,
   updateDepartmentFn,
   updateQuestionFn,
@@ -112,6 +115,32 @@ export function useDeleteClass(onSuccess?: () => void) {
   return useMutationWithToast(deleteClassFn, {
     successMessage: "Classe eliminata con successo",
     invalidateKeys: [["admin", "course"], ["admin", "stats"], ["browse"]],
+    onSuccess,
+  })
+}
+
+// ─── Course-Class Junction ───
+
+export function useAddClassToCourse(onSuccess?: () => void) {
+  return useMutationWithToast(addClassToCourseFn, {
+    successMessage: "Classe collegata al corso",
+    invalidateKeys: [["admin", "course"], ["admin", "class"], ["browse"]],
+    onSuccess,
+  })
+}
+
+export function useRemoveClassFromCourse(onSuccess?: () => void) {
+  return useMutationWithToast(removeClassFromCourseFn, {
+    successMessage: "Classe scollegata dal corso",
+    invalidateKeys: [["admin", "course"], ["admin", "class"], ["browse"]],
+    onSuccess,
+  })
+}
+
+export function useUpdateCourseClass(onSuccess?: () => void) {
+  return useMutationWithToast(updateCourseClassFn, {
+    successMessage: "Collegamento aggiornato",
+    invalidateKeys: [["admin", "course"], ["admin", "class"], ["browse"]],
     onSuccess,
   })
 }

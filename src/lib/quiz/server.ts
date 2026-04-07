@@ -218,13 +218,9 @@ export const getQuizFn = createServerFn({ method: "GET" })
         name: quiz.section_name!,
         class: {
           name: quiz.class_name!,
-          course: {
-            name: quiz.course_name!,
-            department: {
-              name: quiz.department_name!,
-            },
-          },
         },
+        course_name: quiz.course_name,
+        department_name: quiz.department_name,
       },
       questions: orderedQuestions,
       attempt_id: attempt?.id,
@@ -444,13 +440,9 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
           name: attempt.section_name!,
           class: {
             name: attempt.class_name!,
-            course: {
-              name: attempt.course_name!,
-              department: {
-                name: attempt.department_name!,
-              },
-            },
           },
+          course_name: attempt.course_name,
+          department_name: attempt.department_name,
         },
         evaluation_mode: evalMode as EvaluationMode,
         questions: orderedQuestions as QuizAttemptResult["quiz"]["questions"],
