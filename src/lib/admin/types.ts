@@ -10,16 +10,18 @@ export type Question = CatalogTables<"questions">
 // Admin list types (with child counts)
 export type AdminDepartment = Department & { courses: { count: number }[] }
 export type AdminCourse = Course & {
-  classes: { count: number }[]
+  course_classes: { count: number }[]
   department: Department
 }
+export type CourseClassRow = CatalogTables<"course_classes">
+
 export type AdminClass = Class & {
   sections: { count: number }[]
-  course: Course & { department: Department }
+  course_classes: (CourseClassRow & { course: Course & { department: Department } })[]
 }
 export type AdminSection = Section & {
   questions: { count: number }[]
-  class: Class & { course: Course & { department: Department } }
+  class: Class
 }
 
 // Content tree for sidebar navigation

@@ -5,6 +5,13 @@ type Department = CatalogTables<"departments">
 type Course = CatalogTables<"courses">
 type Class = CatalogTables<"classes">
 type Section = CatalogTables<"sections">
+type CourseClass = CatalogTables<"course_classes">
+
+// Junction fields that come from course_classes
+export type CourseClassInfo = Pick<
+  CourseClass,
+  "code" | "class_year" | "mandatory" | "catalogue_url" | "curriculum" | "position"
+>
 
 // Browse listing types (with relation counts)
 
@@ -13,11 +20,14 @@ export type BrowseDepartment = Department & {
 }
 
 export type BrowseCourse = Course & {
-  classes: { count: number }[]
+  course_classes: { count: number }[]
 }
 
-export type BrowseClass = Class & {
-  sections: { count: number }[]
+// Class as seen under a specific course (junction fields merged)
+export type BrowseClassInCourse = CourseClassInfo & {
+  class: Class & {
+    sections: { count: number }[]
+  }
 }
 
 export type BrowseSection = Section & {
@@ -34,10 +44,11 @@ export type DepartmentWithCourses = Department & {
 
 export type CourseWithClasses = Course & {
   department: Department
-  classes: BrowseClass[]
+  classes: BrowseClassInCourse[]
 }
 
 export type ClassWithSections = Class & {
+  courseClass: CourseClassInfo
   course: Course & {
     department: Department
   }
@@ -51,6 +62,7 @@ export type ClassWithSections = Class & {
 
 export type SectionDetail = Section & {
   class: Class & {
+    courseClass: CourseClassInfo
     course: Course & {
       department: Department
     }

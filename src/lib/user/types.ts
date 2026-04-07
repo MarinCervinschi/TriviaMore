@@ -23,8 +23,11 @@ export type UserClass = {
   created_at: string
   class_id: string
   class_name: string
-  class_code: string
-  class_year: number
+  class_code: string | null
+  class_year: number | null
+  mandatory: boolean | null
+  catalogue_url: string | null
+  curriculum: string | null
   course_id: string
   course_name: string
   course_code: string
@@ -60,8 +63,11 @@ export type RecentClass = {
   visit_count: number
   class_id: string
   class_name: string
-  class_code: string
-  class_year: number
+  class_code: string | null
+  class_year: number | null
+  mandatory: boolean | null
+  catalogue_url: string | null
+  curriculum: string | null
   course_id: string
   course_name: string
   course_code: string

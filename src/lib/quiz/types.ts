@@ -16,13 +16,9 @@ export type QuizSection = {
   name: string
   class: {
     name: string
-    course: {
-      name: string
-      department: {
-        name: string
-      }
-    }
   }
+  course_name: string | null
+  department_name: string | null
 }
 
 export type EvaluationMode = {
