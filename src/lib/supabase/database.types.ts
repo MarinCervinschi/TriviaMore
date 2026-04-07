@@ -11,13 +11,8 @@ export type Database = {
     Tables: {
       classes: {
         Row: {
-          catalogue_url: string | null
           cfu: number | null
-          class_year: number
-          code: string
-          course_id: string
           created_at: string
-          curriculum: string | null
           description: string | null
           id: string
           name: string
@@ -25,13 +20,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          catalogue_url?: string | null
           cfu?: number | null
-          class_year: number
-          code: string
-          course_id: string
           created_at?: string
-          curriculum?: string | null
           description?: string | null
           id?: string
           name: string
@@ -39,22 +29,63 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          catalogue_url?: string | null
           cfu?: number | null
-          class_year?: number
-          code?: string
-          course_id?: string
           created_at?: string
-          curriculum?: string | null
           description?: string | null
           id?: string
           name?: string
           position?: number
           updated_at?: string
         }
+        Relationships: []
+      }
+      course_classes: {
+        Row: {
+          catalogue_url: string | null
+          class_id: string
+          class_year: number
+          code: string
+          course_id: string
+          created_at: string
+          curriculum: string | null
+          mandatory: boolean
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          catalogue_url?: string | null
+          class_id: string
+          class_year: number
+          code: string
+          course_id: string
+          created_at?: string
+          curriculum?: string | null
+          mandatory?: boolean
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          catalogue_url?: string | null
+          class_id?: string
+          class_year?: number
+          code?: string
+          course_id?: string
+          created_at?: string
+          curriculum?: string | null
+          mandatory?: boolean
+          position?: number
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "classes_course_id_fkey"
+            foreignKeyName: "course_classes_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_classes_course_id_fkey"
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
@@ -717,18 +748,21 @@ export type Database = {
       user_classes: {
         Row: {
           class_id: string
+          course_id: string
           created_at: string
           updated_at: string
           user_id: string
         }
         Insert: {
           class_id: string
+          course_id: string
           created_at?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           class_id?: string
+          course_id?: string
           created_at?: string
           updated_at?: string
           user_id?: string
@@ -761,6 +795,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_recent_classes_detail"
             referencedColumns: ["class_id"]
+          },
+          {
+            foreignKeyName: "user_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "bookmarks_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "progress_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "user_classes_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "user_recent_classes_detail"
+            referencedColumns: ["course_id"]
           },
           {
             foreignKeyName: "user_classes_user_id_fkey"
@@ -774,18 +836,21 @@ export type Database = {
       user_recent_classes: {
         Row: {
           class_id: string
+          course_id: string
           last_visited: string
           user_id: string
           visit_count: number
         }
         Insert: {
           class_id: string
+          course_id: string
           last_visited?: string
           user_id: string
           visit_count?: number
         }
         Update: {
           class_id?: string
+          course_id?: string
           last_visited?: string
           user_id?: string
           visit_count?: number
@@ -818,6 +883,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_recent_classes_detail"
             referencedColumns: ["class_id"]
+          },
+          {
+            foreignKeyName: "user_recent_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "bookmarks_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_recent_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "progress_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_recent_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "user_classes_detail"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_recent_classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "user_recent_classes_detail"
+            referencedColumns: ["course_id"]
           },
           {
             foreignKeyName: "user_recent_classes_user_id_fkey"
@@ -902,6 +995,7 @@ export type Database = {
       }
       user_classes_detail: {
         Row: {
+          catalogue_url: string | null
           class_code: string | null
           class_id: string | null
           class_name: string | null
@@ -911,9 +1005,11 @@ export type Database = {
           course_name: string | null
           course_type: Database["public"]["Enums"]["course_type"] | null
           created_at: string | null
+          curriculum: string | null
           department_code: string | null
           department_id: string | null
           department_name: string | null
+          mandatory: boolean | null
           user_id: string | null
         }
         Relationships: [
@@ -928,6 +1024,7 @@ export type Database = {
       }
       user_recent_classes_detail: {
         Row: {
+          catalogue_url: string | null
           class_code: string | null
           class_id: string | null
           class_name: string | null
@@ -936,10 +1033,12 @@ export type Database = {
           course_id: string | null
           course_name: string | null
           course_type: Database["public"]["Enums"]["course_type"] | null
+          curriculum: string | null
           department_code: string | null
           department_id: string | null
           department_name: string | null
           last_visited: string | null
+          mandatory: boolean | null
           user_id: string | null
           visit_count: number | null
         }
@@ -1395,6 +1494,10 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
+// Helper: shorthand for catalog schema table rows
+export type CatalogTables<T extends keyof Database["catalog"]["Tables"]> =
+  Database["catalog"]["Tables"][T]["Row"]
+
 export const Constants = {
   catalog: {
     Enums: {},
@@ -1442,12 +1545,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// ─── Schema-qualified helper types ───
-
-export type CatalogTables<T extends keyof Database["catalog"]["Tables"]> =
-  Database["catalog"]["Tables"][T]["Row"]
-
-export type QuizTables<T extends keyof Database["quiz"]["Tables"]> =
-  Database["quiz"]["Tables"][T]["Row"]
 
