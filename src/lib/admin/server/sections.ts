@@ -15,7 +15,7 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
 
     const { data: section, error: secError } = await catalogQuery(supabase)
       .from("sections")
-      .select("*, class:classes(*, course:courses(*, department:departments(*)))")
+      .select("*, class:classes(*, course_classes(course:courses(*, department:departments(*))))")
       .eq("id", id)
       .single()
 

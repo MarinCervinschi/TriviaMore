@@ -102,8 +102,11 @@ export const getUserProfileFn = createServerFn({ method: "GET" }).handler(
       visit_count: r.visit_count!,
       class_id: r.class_id!,
       class_name: r.class_name!,
-      class_code: r.class_code!,
-      class_year: r.class_year!,
+      class_code: r.class_code,
+      class_year: r.class_year,
+      mandatory: r.mandatory,
+      catalogue_url: r.catalogue_url,
+      curriculum: r.curriculum,
       course_id: r.course_id!,
       course_name: r.course_name!,
       course_code: r.course_code!,
@@ -152,8 +155,11 @@ export const getUserClassesFn = createServerFn({ method: "GET" }).handler(
       created_at: r.created_at!,
       class_id: r.class_id!,
       class_name: r.class_name!,
-      class_code: r.class_code!,
-      class_year: r.class_year!,
+      class_code: r.class_code,
+      class_year: r.class_year,
+      mandatory: r.mandatory,
+      catalogue_url: r.catalogue_url,
+      curriculum: r.curriculum,
       course_id: r.course_id!,
       course_name: r.course_name!,
       course_code: r.course_code!,
@@ -166,14 +172,14 @@ export const getUserClassesFn = createServerFn({ method: "GET" }).handler(
 )
 
 export const addUserClassFn = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ classId: z.string() }))
+  .inputValidator(z.object({ classId: z.string(), courseId: z.string() }))
   .handler(async ({ data }) => {
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) throw new Error("Non autenticato")
 
     const { error } = await supabase
       .from("user_classes")
-      .insert({ user_id: user.id, class_id: data.classId })
+      .insert({ user_id: user.id, class_id: data.classId, course_id: data.courseId })
 
     if (error) {
       if (error.code === "23505")
@@ -363,7 +369,7 @@ export const updateProfileFn = createServerFn({ method: "POST" })
 // TODO: implement deleteAccountFn with proper RLS DELETE policies
 
 export const updateRecentClassFn = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ classId: z.string() }))
+  .inputValidator(z.object({ classId: z.string(), courseId: z.string() }))
   .handler(async ({ data }) => {
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) return
@@ -382,6 +388,7 @@ export const updateRecentClassFn = createServerFn({ method: "POST" })
         .update({
           last_visited: new Date().toISOString(),
           visit_count: existing.visit_count + 1,
+          course_id: data.courseId,
         })
         .eq("user_id", user.id)
         .eq("class_id", data.classId)
@@ -389,6 +396,7 @@ export const updateRecentClassFn = createServerFn({ method: "POST" })
       await supabase.from("user_recent_classes").insert({
         user_id: user.id,
         class_id: data.classId,
+        course_id: data.courseId,
         last_visited: new Date().toISOString(),
         visit_count: 1,
       })

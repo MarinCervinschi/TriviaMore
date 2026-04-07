@@ -80,10 +80,24 @@ export const getContentTreeFn = createServerFn({
   const { data, error } = await catalogQuery(supabase)
     .from("departments")
     .select(
-      "id, name, code, courses(id, name, code, classes(id, name, code, sections(id, name)))",
+      "id, name, code, courses(id, name, code, course_classes(class:classes(id, name, code, sections(id, name))))",
     )
     .order("position")
 
   if (error) throw new Error(error.message)
-  return data as ContentTreeDepartment[]
+
+  // Flatten: extract classes from course_classes junction
+  return (data ?? []).map((dept) => ({
+    id: dept.id,
+    name: dept.name,
+    code: dept.code,
+    courses: (dept.courses ?? []).map((course) => ({
+      id: course.id,
+      name: course.name,
+      code: course.code,
+      classes: ((course as any).course_classes ?? [])
+        .map((cc: any) => cc.class)
+        .filter(Boolean),
+    })),
+  })) as ContentTreeDepartment[]
 })

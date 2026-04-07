@@ -74,25 +74,27 @@ export async function notifyAdminsInScope(
       .eq("id", request.target_section_id)
       .single()
     if (section) {
-      const { data: cls } = await catalogAdmin
-        .from("classes")
+      const { data: cc } = await catalogAdmin
+        .from("course_classes")
         .select("course_id")
-        .eq("id", section.class_id)
+        .eq("class_id", section.class_id)
+        .limit(1)
         .single()
-      if (cls) {
-        courseId = cls.course_id
+      if (cc) {
+        courseId = cc.course_id
       }
     }
   }
 
   if (request.target_class_id && !courseId) {
-    const { data: cls } = await catalogAdmin
-      .from("classes")
+    const { data: cc } = await catalogAdmin
+      .from("course_classes")
       .select("course_id")
-      .eq("id", request.target_class_id)
+      .eq("class_id", request.target_class_id)
+      .limit(1)
       .single()
-    if (cls) {
-      courseId = cls.course_id
+    if (cc) {
+      courseId = cc.course_id
     }
   }
 

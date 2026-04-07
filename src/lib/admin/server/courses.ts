@@ -21,15 +21,15 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
 
     if (courseError) throw new Error(courseError.message)
 
-    const { data: classes, error: classesError } = await catalogQuery(supabase)
-      .from("classes")
-      .select("*, sections(count)")
+    const { data: courseClasses, error: classesError } = await catalogQuery(supabase)
+      .from("course_classes")
+      .select("*, class:classes(*, sections(count))")
       .eq("course_id", id)
       .order("position")
 
     if (classesError) throw new Error(classesError.message)
 
-    return { ...course, classes }
+    return { ...course, course_classes: courseClasses }
   })
 
 export const createCourseFn = createServerFn({ method: "POST" })
@@ -110,13 +110,13 @@ export const deleteCourseFn = createServerFn({ method: "POST" })
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
-      .from("classes")
+      .from("course_classes")
       .select("*", { count: "exact", head: true })
       .eq("course_id", id)
 
     if (count && count > 0) {
       throw new Error(
-        "Impossibile eliminare: il corso contiene delle classi. Elimina prima le classi.",
+        "Impossibile eliminare: il corso ha delle classi collegate. Scollega prima le classi.",
       )
     }
 
