@@ -117,6 +117,12 @@ Idempotent — safe to run multiple times. Cleans previous seed data (IDs prefix
 
 Requires `SUPABASE_SERVICE_ROLE_KEY` (injected via Infisical).
 
+```bash
+supabase db dump --data-only --linked -f supabase/dump_staging_data.sql
+
+docker exec -i supabase_db_TriviaMore psql -U postgres -d postgres < data/dump.sql
+```
+
 ## Authentication
 
 Supabase Auth with email/password and OAuth (GitHub, Google).
