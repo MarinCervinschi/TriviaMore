@@ -99,7 +99,7 @@ export function AdminSidebar() {
         </p>
         <div className="flex flex-col gap-0.5">
           <SidebarStat icon={GraduationCap} label="Corsi" count={stats?.courseCount} />
-          <SidebarStat icon={FolderOpen} label="Classi" count={stats?.classCount} />
+          <SidebarStat icon={FolderOpen} label="Insegnamenti" count={stats?.classCount} />
           <SidebarStat icon={BookOpen} label="Sezioni" count={stats?.sectionCount} />
           <SidebarStat icon={FileQuestion} label="Domande" count={stats?.questionCount} />
         </div>

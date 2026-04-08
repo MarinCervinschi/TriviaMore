@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_app/admin/classes/$classId")({
       adminQueries.class(params.classId),
     ),
   component: AdminClassDetailPage,
-  head: () => seoHead({ title: "Dettaglio Classe | Gestione", noindex: true }),
+  head: () => seoHead({ title: "Dettaglio Insegnamento | Gestione", noindex: true }),
 })
 
 function AdminClassDetailPage() {
@@ -92,7 +92,7 @@ function AdminClassDetailPage() {
       <div className="grid gap-6">
         <Card className="rounded-2xl">
           <CardHeader className="pb-4">
-            <CardTitle>Modifica classe</CardTitle>
+            <CardTitle>Modifica insegnamento</CardTitle>
           </CardHeader>
           <CardContent>
             <ClassForm
@@ -136,7 +136,7 @@ function AdminClassDetailPage() {
               <p className="py-4 text-center text-muted-foreground">
                 {search
                   ? "Nessuna sezione trovata."
-                  : "Nessuna sezione in questa classe."}
+                  : "Nessuna sezione in questo insegnamento."}
               </p>
             ) : (
               <>

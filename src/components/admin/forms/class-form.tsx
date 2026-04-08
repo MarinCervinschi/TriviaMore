@@ -82,7 +82,7 @@ export function ClassForm({
               <FormLabel>Descrizione</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Descrizione della classe (opzionale)"
+                  placeholder="Descrizione dell'insegnamento (opzionale)"
                   rows={3}
                   {...field}
                 />
@@ -95,8 +95,8 @@ export function ClassForm({
           {isPending
             ? "Salvataggio..."
             : cls
-              ? "Aggiorna classe"
-              : "Crea classe"}
+              ? "Aggiorna insegnamento"
+              : "Crea insegnamento"}
         </Button>
       </form>
     </Form>

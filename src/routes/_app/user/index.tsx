@@ -347,7 +347,7 @@ function RecentActivitySection({
                   {attempt.course_name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Classe: {attempt.class_name}
+                  Insegnamento: {attempt.class_name}
                 </p>
               </div>
             </div>

@@ -115,7 +115,7 @@ function AdminCourseDetailPage() {
         <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle>Classi ({course_classes.length})</CardTitle>
+              <CardTitle>Insegnamenti ({course_classes.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="w-56">
                   <AdminSearch
@@ -124,7 +124,7 @@ function AdminCourseDetailPage() {
                       setSearch(v)
                       setPage(1)
                     }}
-                    placeholder="Cerca classi..."
+                    placeholder="Cerca insegnamenti..."
                   />
                 </div>
                 <Button size="sm" className="rounded-xl" onClick={() => setCreateClassOpen(true)}>
@@ -138,8 +138,8 @@ function AdminCourseDetailPage() {
             {paged.length === 0 ? (
               <p className="py-4 text-center text-muted-foreground">
                 {search
-                  ? "Nessuna classe trovata."
-                  : "Nessuna classe in questo corso."}
+                  ? "Nessun insegnamento trovato."
+                  : "Nessun insegnamento in questo corso."}
               </p>
             ) : (
               <>
@@ -220,7 +220,7 @@ function AdminCourseDetailPage() {
       <Dialog open={createClassOpen} onOpenChange={setCreateClassOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nuova classe</DialogTitle>
+            <DialogTitle>Nuovo insegnamento</DialogTitle>
           </DialogHeader>
           <ClassForm
             onSubmit={(formData) => createClass.mutate(formData)}
@@ -232,8 +232,8 @@ function AdminCourseDetailPage() {
       <ConfirmationDialog
         open={!!deleteClassId}
         onOpenChange={(open) => !open && setDeleteClassId(null)}
-        title="Elimina classe"
-        description="Sei sicuro di voler eliminare questa classe? L'operazione è irreversibile."
+        title="Elimina insegnamento"
+        description="Sei sicuro di voler eliminare questo insegnamento? L'operazione è irreversibile."
         confirmText="Elimina"
         variant="destructive"
         onConfirm={() => {

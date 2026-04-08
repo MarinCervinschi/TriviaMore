@@ -56,10 +56,10 @@ export const Route = createFileRoute(
   },
   head: ({ loaderData, match }) => ({
     ...seoHead({
-      title: `${loaderData?.name ?? "Classe"} | Esplora`,
+      title: `${loaderData?.name ?? "Insegnamento"} | Esplora`,
       description:
         loaderData?.description ??
-        `Sezioni della classe ${loaderData?.name ?? ""}`,
+        `Sezioni dell'insegnamento ${loaderData?.name ?? ""}`,
       path: match.pathname,
     }),
     scripts: [
@@ -73,13 +73,13 @@ export const Route = createFileRoute(
           name: loaderData?.course?.name ?? "Corso",
           path: `/browse/${match.params.department}/${match.params.course}`,
         },
-        { name: loaderData?.name ?? "Classe", path: match.pathname },
+        { name: loaderData?.name ?? "Insegnamento", path: match.pathname },
       ]),
     ],
   }),
   component: ClassPage,
   notFoundComponent: () => (
-    <NotFoundPage message="La classe che stai cercando non esiste." />
+    <NotFoundPage message="L'insegnamento che stai cercando non esiste." />
   ),
 })
 
@@ -266,7 +266,7 @@ function ClassPage() {
         placeholder="Cerca sezioni..."
       />
       {classData.sections.length === 0 ? (
-        <BrowseContributeState message="Nessuna sezione disponibile per questa classe.">
+        <BrowseContributeState message="Nessuna sezione disponibile per questo insegnamento.">
           <RequestFormDialog defaultTargetClassId={classData.id} />
         </BrowseContributeState>
       ) : paged.length === 0 ? (

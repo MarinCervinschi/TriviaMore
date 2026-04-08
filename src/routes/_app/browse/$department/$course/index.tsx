@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
       title: `${loaderData?.name ?? "Corso"} | Esplora`,
       description:
         loaderData?.description ??
-        `Classi del corso ${loaderData?.name ?? ""}`,
+        `Insegnamenti del corso ${loaderData?.name ?? ""}`,
       path: match.pathname,
     }),
     scripts: [
@@ -238,7 +238,7 @@ function CoursePage() {
       </div>
 
       <BrowseStats
-        stats={[{ label: "classi", value: isGroupedView ? preFiltered.length : totalItems }]}
+        stats={[{ label: "insegnamenti", value: isGroupedView ? preFiltered.length : totalItems }]}
       />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
@@ -295,12 +295,12 @@ function CoursePage() {
       <SearchFilter
         value={search}
         onChange={(v) => { setSearch(v); setPage(1) }}
-        placeholder="Cerca classi..."
+        placeholder="Cerca insegnamenti..."
       />
 
       {isGroupedView ? (
         preFiltered.length === 0 ? (
-          <BrowseEmptyState message="Nessuna classe trovata." />
+          <BrowseEmptyState message="Nessun insegnamento trovato." />
         ) : (
           groupedClasses.map((group) => {
             const hasBoth = group.mandatory.length > 0 && group.elective.length > 0
@@ -350,7 +350,7 @@ function CoursePage() {
           })
         )
       ) : paged.length === 0 ? (
-        <BrowseEmptyState message="Nessuna classe trovata." />
+        <BrowseEmptyState message="Nessun insegnamento trovato." />
       ) : (
         <>
           <BrowseTable headers={tableHeaders}>

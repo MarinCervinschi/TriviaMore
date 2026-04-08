@@ -140,7 +140,7 @@ function DepartmentPage() {
         <BrowseEmptyState message="Nessun corso trovato." />
       ) : (
         <>
-          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Sede", "Classi"]}>
+          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Sede", "Insegnamenti"]}>
             {paged.map((course) => {
               const classCount = course.course_classes[0]?.count ?? 0
               const typeConf = COURSE_TYPE_CONFIG[course.course_type]
@@ -199,11 +199,10 @@ function DepartmentPage() {
                       <span className="text-xs text-muted-foreground/50">—</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center text-muted-foreground">
-                    <span className="font-semibold text-foreground">
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    <span className="text-sm font-semibold text-foreground">
                       {classCount}
-                    </span>{" "}
-                    {classCount === 1 ? "classe" : "classi"}
+                    </span>
                   </td>
                   <td className="pr-6 py-4">
                     <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />

@@ -149,7 +149,7 @@ function AdminDepartmentDetailPage() {
                       <TableHead>
                         <SortableHeader label="Tipo" sortKey="course_type" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Classi</TableHead>
+                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Insegnamenti</TableHead>
                       <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
                     </TableRow>
                   </TableHeader>

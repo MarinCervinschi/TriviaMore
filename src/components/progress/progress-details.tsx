@@ -102,7 +102,7 @@ export function ProgressDetails({
         <BrowseTable
           headers={[
             "Sezione",
-            "Classe",
+            "Insegnamento",
             "Modalita",
             "Quiz",
             "Media",
