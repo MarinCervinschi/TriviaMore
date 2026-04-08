@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { toast } from "sonner"
 import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 
@@ -32,10 +33,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  useCreateClass,
   useDeleteClass,
   useUpdateCourse,
 } from "@/lib/admin/mutations"
+import { addClassToCourseFn, createClassFn } from "@/lib/admin/server/classes"
 import { adminQueries } from "@/lib/admin/queries"
 
 export const Route = createFileRoute("/_app/admin/courses/$courseId")({
@@ -64,15 +65,19 @@ function AdminCourseDetailPage() {
   }
 
   const { sort, toggleSort } = useSort<ClassRow>()
+  const queryClient = useQueryClient()
   const updateCourse = useUpdateCourse()
-  const createClass = useCreateClass(() => setCreateClassOpen(false))
+  const [createPending, setCreatePending] = useState(false)
   const deleteClass = useDeleteClass(() => setDeleteClassId(null))
 
   const { course_classes, department, ...course } = data
 
   const classes = course_classes.map((cc: any) => ({
     ...cc.class,
+    code: cc.code,
     class_year: cc.class_year,
+    mandatory: cc.mandatory,
+    curriculum: cc.curriculum,
   })) as ClassRow[]
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
@@ -223,8 +228,33 @@ function AdminCourseDetailPage() {
             <DialogTitle>Nuovo insegnamento</DialogTitle>
           </DialogHeader>
           <ClassForm
-            onSubmit={(formData) => createClass.mutate(formData)}
-            isPending={createClass.isPending}
+            junction={{ code: "", class_year: 1, mandatory: false, curriculum: "" }}
+            onSubmit={async (formData) => {
+              setCreatePending(true)
+              try {
+                const cls = await createClassFn({ data: formData })
+                await addClassToCourseFn({
+                  data: {
+                    course_id: course.id,
+                    class_id: cls.id,
+                    code: formData.code || cls.name.substring(0, 10).toUpperCase(),
+                    class_year: formData.class_year ?? 1,
+                    mandatory: formData.mandatory ?? false,
+                    curriculum: formData.curriculum || "",
+                  },
+                })
+                toast.success("Insegnamento creato e collegato al corso")
+                queryClient.invalidateQueries({ queryKey: ["admin", "course"] })
+                queryClient.invalidateQueries({ queryKey: ["admin", "stats"] })
+                queryClient.invalidateQueries({ queryKey: ["browse"] })
+                setCreateClassOpen(false)
+              } catch (e: any) {
+                toast.error(e.message ?? "Errore nella creazione")
+              } finally {
+                setCreatePending(false)
+              }
+            }}
+            isPending={createPending}
           />
         </DialogContent>
       </Dialog>

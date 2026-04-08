@@ -2,6 +2,7 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -15,25 +16,40 @@ import { Textarea } from "@/components/ui/textarea"
 import { classSchema, type ClassInput } from "@/lib/admin/schemas"
 import type { Class } from "@/lib/admin/types"
 
+type JunctionDefaults = {
+  code?: string
+  class_year?: number
+  mandatory?: boolean
+  curriculum?: string
+}
+
 type ClassFormProps = {
   cls?: Class
-  onSubmit: (data: ClassInput) => void
+  onSubmit: (data: ClassInput & JunctionDefaults) => void
   isPending: boolean
+  junction?: JunctionDefaults
 }
 
 export function ClassForm({
   cls,
   onSubmit,
   isPending,
+  junction,
 }: ClassFormProps) {
-  const form = useForm<ClassInput>({
+  const form = useForm<ClassInput & JunctionDefaults>({
     resolver: standardSchemaResolver(classSchema),
     defaultValues: {
       name: cls?.name ?? "",
       description: cls?.description ?? "",
       cfu: cls?.cfu ?? undefined,
+      code: junction?.code ?? "",
+      class_year: junction?.class_year ?? 1,
+      mandatory: junction?.mandatory ?? false,
+      curriculum: junction?.curriculum ?? "",
     },
   })
+
+  const showJunction = !!junction
 
   return (
     <Form {...form}>
@@ -51,6 +67,25 @@ export function ClassForm({
             </FormItem>
           )}
         />
+        {showJunction && (
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Codice</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="es. ANA-MAT"
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="cfu"
@@ -74,6 +109,64 @@ export function ClassForm({
             </FormItem>
           )}
         />
+        {showJunction && (
+          <>
+            <FormField
+              control={form.control}
+              name="class_year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Anno</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="es. 1"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? Number(e.target.value) : undefined,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mandatory"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="font-normal">Obbligatorio</FormLabel>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="curriculum"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Curriculum</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="es. Applicazioni (opzionale)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
         <FormField
           control={form.control}
           name="description"

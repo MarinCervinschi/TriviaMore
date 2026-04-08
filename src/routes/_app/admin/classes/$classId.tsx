@@ -35,6 +35,7 @@ import {
   useCreateSection,
   useDeleteSection,
   useUpdateClass,
+  useUpdateCourseClass,
 } from "@/lib/admin/mutations"
 import { adminQueries } from "@/lib/admin/queries"
 
@@ -64,11 +65,13 @@ function AdminClassDetailPage() {
 
   const { sort, toggleSort } = useSort<SectionRow>()
   const updateClass = useUpdateClass()
+  const updateCourseClass = useUpdateCourseClass()
   const createSection = useCreateSection(() => setCreateSectionOpen(false))
   const deleteSection = useDeleteSection(() => setDeleteSectionId(null))
 
   const { sections, course_classes, ...cls } = data
-  const course = course_classes?.[0]?.course
+  const courseClass = course_classes?.[0]
+  const course = courseClass?.course
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     sections as SectionRow[],
@@ -97,10 +100,27 @@ function AdminClassDetailPage() {
           <CardContent>
             <ClassForm
               cls={cls}
-              onSubmit={(formData) =>
-                updateClass.mutate({ id: cls.id, ...formData })
-              }
-              isPending={updateClass.isPending}
+              junction={courseClass ? {
+                code: courseClass.code,
+                class_year: courseClass.class_year,
+                mandatory: courseClass.mandatory,
+                curriculum: courseClass.curriculum ?? "",
+              } : undefined}
+              onSubmit={(formData) => {
+                const { code, class_year, mandatory, curriculum, ...classFields } = formData
+                updateClass.mutate({ id: cls.id, ...classFields })
+                if (courseClass && course) {
+                  updateCourseClass.mutate({
+                    course_id: course.id,
+                    class_id: cls.id,
+                    code,
+                    class_year,
+                    mandatory,
+                    curriculum,
+                  })
+                }
+              }}
+              isPending={updateClass.isPending || updateCourseClass.isPending}
             />
           </CardContent>
         </Card>
