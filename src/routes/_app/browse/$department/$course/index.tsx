@@ -14,7 +14,16 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import type { BrowseClassInCourse } from "@/lib/browse/types"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/browse/$department/$course/")({
@@ -56,6 +65,65 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
   ),
 })
 
+function ClassRow({
+  classData,
+  deptCode,
+  courseCode,
+}: {
+  classData: BrowseClassInCourse
+  deptCode: string
+  courseCode: string
+}) {
+  const sectionCount = classData.class.sections[0]?.count ?? 0
+  return (
+    <tr key={classData.class.id} className="group">
+      <td className="pl-6 py-4">
+        <Link
+          to="/browse/$department/$course/$class"
+          params={{
+            department: deptCode.toLowerCase(),
+            course: courseCode.toLowerCase(),
+            class: classData.code.toLowerCase(),
+          }}
+          className="block"
+        >
+          <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+            {classData.class.name}
+          </span>
+          {classData.class.description && (
+            <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
+              {classData.class.description}
+            </p>
+          )}
+        </Link>
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-center">
+        <Badge variant="outline" className="text-xs">
+          {classData.code}
+        </Badge>
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-center">
+        {classData.class.cfu ? (
+          <span className="text-sm text-muted-foreground">
+            {classData.class.cfu}
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground/50">—</span>
+        )}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-center text-muted-foreground">
+        <span className="font-semibold text-foreground">
+          {sectionCount}
+        </span>{" "}
+        {sectionCount === 1 ? "sezione" : "sezioni"}
+      </td>
+      <td className="pr-6 py-4">
+        <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+      </td>
+    </tr>
+  )
+}
+
 function CoursePage() {
   const { department: deptCode, course: courseCode } = Route.useParams()
   const { data: course } = useSuspenseQuery(
@@ -93,6 +161,24 @@ function CoursePage() {
       (curriculumFilter === "all" || c.curriculum === curriculumFilter),
   )
 
+  const groupedClasses = useMemo(() => {
+    const byYear = new Map<number, BrowseClassInCourse[]>()
+    for (const c of preFiltered) {
+      const list = byYear.get(c.class_year) ?? []
+      list.push(c)
+      byYear.set(c.class_year, list)
+    }
+    return [...byYear.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([year, classes]) => ({
+        year,
+        mandatory: classes.filter((c) => c.mandatory),
+        elective: classes.filter((c) => !c.mandatory),
+      }))
+  }, [preFiltered])
+
+  const isGroupedView = search === ""
+
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     preFiltered,
     (c, q) =>
@@ -102,6 +188,8 @@ function CoursePage() {
     page,
     10,
   )
+
+  const tableHeaders = ["Nome", "Codice", "CFU", "Sezioni"]
 
   return (
     <div className="container py-8">
@@ -125,6 +213,23 @@ function CoursePage() {
               {course.description}
             </p>
           )}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {COURSE_TYPE_CONFIG[course.course_type] && (
+              <Badge className={cn("text-xs", COURSE_TYPE_CONFIG[course.course_type].className)}>
+                {COURSE_TYPE_CONFIG[course.course_type].label}
+              </Badge>
+            )}
+            {course.location && (
+              <Badge variant="outline" className="text-xs">
+                {course.location}
+              </Badge>
+            )}
+            {course.cfu && (
+              <Badge variant="secondary" className="text-xs">
+                {course.cfu} CFU
+              </Badge>
+            )}
+          </div>
         </div>
         <BrowseAdminButton
           to="/admin/courses/$courseId"
@@ -133,68 +238,59 @@ function CoursePage() {
       </div>
 
       <BrowseStats
-        stats={[{ label: "classi", value: course.classes.length }]}
+        stats={[{ label: "classi", value: isGroupedView ? preFiltered.length : totalItems }]}
       />
 
-      {availableYears.length > 1 && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          <button
-            onClick={() => { setYearFilter("all"); setPage(1) }}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-              yearFilter === "all"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted",
-            )}
-          >
-            Tutti
-          </button>
-          {availableYears.map((year) => (
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+        {availableYears.length > 1 && (
+          <div className="flex flex-wrap gap-2">
             <button
-              key={year}
-              onClick={() => { setYearFilter(year); setPage(1) }}
+              onClick={() => { setYearFilter("all"); setPage(1) }}
               className={cn(
                 "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-                yearFilter === year
+                yearFilter === "all"
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
-              Anno {year}
+              Tutti
             </button>
-          ))}
-        </div>
-      )}
+            {availableYears.map((year) => (
+              <button
+                key={year}
+                onClick={() => { setYearFilter(year); setPage(1) }}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                  yearFilter === year
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                )}
+              >
+                Anno {year}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {availableCurricula.length > 1 && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          <button
-            onClick={() => { setCurriculumFilter("all"); setPage(1) }}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-              curriculumFilter === "all"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted",
-            )}
+        {availableCurricula.length > 0 && (
+          <Select
+            value={curriculumFilter}
+            onValueChange={(v) => { setCurriculumFilter(v); setPage(1) }}
           >
-            Tutti i curriculum
-          </button>
-          {availableCurricula.map((cur) => (
-            <button
-              key={cur}
-              onClick={() => { setCurriculumFilter(cur); setPage(1) }}
-              className={cn(
-                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-                curriculumFilter === cur
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
-              )}
-            >
-              {cur}
-            </button>
-          ))}
-        </div>
-      )}
+            <SelectTrigger className="w-auto min-w-[200px] max-w-[300px]">
+              <SelectValue placeholder="Tutti i curriculum" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tutti i curriculum</SelectItem>
+              {availableCurricula.map((cur) => (
+                <SelectItem key={cur} value={cur}>
+                  {cur}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
 
       <SearchFilter
         value={search}
@@ -202,74 +298,78 @@ function CoursePage() {
         placeholder="Cerca classi..."
       />
 
-      {paged.length === 0 ? (
+      {isGroupedView ? (
+        preFiltered.length === 0 ? (
+          <BrowseEmptyState message="Nessuna classe trovata." />
+        ) : (
+          groupedClasses.map((group) => {
+            const hasBoth = group.mandatory.length > 0 && group.elective.length > 0
+            return (
+              <section key={group.year} className="mt-8 first:mt-4">
+                <h2 className="mb-4 text-lg font-semibold">Anno {group.year}</h2>
+                {group.mandatory.length > 0 && (
+                  <>
+                    {hasBoth && (
+                      <h3 className="mb-2 text-sm font-medium text-muted-foreground">
+                        Obbligatori
+                      </h3>
+                    )}
+                    <BrowseTable headers={tableHeaders}>
+                      {group.mandatory.map((c) => (
+                        <ClassRow
+                          key={c.class.id}
+                          classData={c}
+                          deptCode={deptCode}
+                          courseCode={courseCode}
+                        />
+                      ))}
+                    </BrowseTable>
+                  </>
+                )}
+                {group.elective.length > 0 && (
+                  <>
+                    {hasBoth && (
+                      <h3 className="mb-2 mt-4 text-sm font-medium text-muted-foreground">
+                        A scelta
+                      </h3>
+                    )}
+                    <BrowseTable headers={tableHeaders}>
+                      {group.elective.map((c) => (
+                        <ClassRow
+                          key={c.class.id}
+                          classData={c}
+                          deptCode={deptCode}
+                          courseCode={courseCode}
+                        />
+                      ))}
+                    </BrowseTable>
+                  </>
+                )}
+              </section>
+            )
+          })
+        )
+      ) : paged.length === 0 ? (
         <BrowseEmptyState message="Nessuna classe trovata." />
       ) : (
         <>
-        <BrowseTable headers={["Nome", "Codice", "Anno", "CFU", "Sezioni"]}>
-          {paged.map((classData) => {
-            const sectionCount = classData.class.sections[0]?.count ?? 0
-            return (
-              <tr key={classData.class.id} className="group">
-                <td className="pl-6 py-4">
-                  <Link
-                    to="/browse/$department/$course/$class"
-                    params={{
-                      department: deptCode.toLowerCase(),
-                      course: courseCode.toLowerCase(),
-                      class: classData.code.toLowerCase(),
-                    }}
-                    className="block"
-                  >
-                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                      {classData.class.name}
-                    </span>
-                    {classData.class.description && (
-                      <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
-                        {classData.class.description}
-                      </p>
-                    )}
-                  </Link>
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-center">
-                  <Badge variant="outline" className="text-xs">
-                    {classData.code}
-                  </Badge>
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-center">
-                  <span className="text-sm text-muted-foreground">
-                    Anno {classData.class_year}
-                  </span>
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-center">
-                  {classData.class.cfu ? (
-                    <span className="text-sm text-muted-foreground">
-                      {classData.class.cfu}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground/50">—</span>
-                  )}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-center text-muted-foreground">
-                  <span className="font-semibold text-foreground">
-                    {sectionCount}
-                  </span>{" "}
-                  {sectionCount === 1 ? "sezione" : "sezioni"}
-                </td>
-                <td className="pr-6 py-4">
-                  <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                </td>
-              </tr>
-            )
-          })}
-        </BrowseTable>
-        <Pagination
-          page={safePage}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          totalItems={totalItems}
-          pageSize={10}
-        />
+          <BrowseTable headers={tableHeaders}>
+            {paged.map((c) => (
+              <ClassRow
+                key={c.class.id}
+                classData={c}
+                deptCode={deptCode}
+                courseCode={courseCode}
+              />
+            ))}
+          </BrowseTable>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={totalItems}
+            pageSize={10}
+          />
         </>
       )}
     </div>

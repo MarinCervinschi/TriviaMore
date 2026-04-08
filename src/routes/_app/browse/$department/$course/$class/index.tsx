@@ -30,7 +30,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
 import { useAuth } from "@/hooks/useAuth"
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import { cn } from "@/lib/utils"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
 import { updateRecentClassFn } from "@/lib/user/server"
@@ -161,31 +163,57 @@ function ClassPage() {
               {classData.description}
             </p>
           )}
-          {(classData.cfu || classData.courseClass?.curriculum || classData.courseClass?.catalogue_url) && (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              {classData.cfu && (
-                <Badge variant="secondary" className="text-xs">
-                  {classData.cfu} CFU
-                </Badge>
-              )}
-              {classData.courseClass?.curriculum && (
-                <Badge variant="outline" className="text-xs">
-                  {classData.courseClass.curriculum}
-                </Badge>
-              )}
-              {classData.courseClass?.catalogue_url && (
-                <a
-                  href={classData.courseClass.catalogue_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  Catalogo
-                </a>
-              )}
-            </div>
-          )}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {COURSE_TYPE_CONFIG[classData.course.course_type] && (
+              <Badge className={cn("text-xs", COURSE_TYPE_CONFIG[classData.course.course_type].className)}>
+                {COURSE_TYPE_CONFIG[classData.course.course_type].label}
+              </Badge>
+            )}
+            {classData.courseClass?.class_year && (
+              <Badge variant="outline" className="text-xs">
+                Anno {classData.courseClass.class_year}
+              </Badge>
+            )}
+            {classData.courseClass && (
+              <Badge
+                variant="outline"
+                className={cn(
+                  "text-xs",
+                  classData.courseClass.mandatory
+                    ? "bg-green-500/10 text-green-600 border-green-500/20"
+                    : "bg-orange-500/10 text-orange-600 border-orange-500/20",
+                )}
+              >
+                {classData.courseClass.mandatory ? "Obbligatorio" : "A scelta"}
+              </Badge>
+            )}
+            {classData.course.location && (
+              <Badge variant="outline" className="text-xs">
+                {classData.course.location}
+              </Badge>
+            )}
+            {classData.cfu && (
+              <Badge variant="secondary" className="text-xs">
+                {classData.cfu} CFU
+              </Badge>
+            )}
+            {classData.courseClass?.curriculum && (
+              <Badge variant="outline" className="text-xs">
+                {classData.courseClass.curriculum}
+              </Badge>
+            )}
+            {classData.courseClass?.catalogue_url && (
+              <a
+                href={classData.courseClass.catalogue_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Catalogo
+              </a>
+            )}
+          </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <BrowseAdminButton
