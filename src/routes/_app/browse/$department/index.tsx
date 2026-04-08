@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd } from "@/lib/json-ld"
@@ -47,14 +47,6 @@ export const Route = createFileRoute("/_app/browse/$department/")({
   ),
 })
 
-const courseTypeFilters = [
-  { value: "all", label: "Tutti" },
-  ...Object.entries(COURSE_TYPE_CONFIG).map(([value, { label }]) => ({
-    value,
-    label,
-  })),
-]
-
 function DepartmentPage() {
   const { department: deptCode } = Route.useParams()
   const { data: department } = useSuspenseQuery(
@@ -66,6 +58,16 @@ function DepartmentPage() {
   const [page, setPage] = useState(1)
 
   if (!department) return null
+
+  const courseTypeFilters = useMemo(() => {
+    const types = new Set<string>(department.courses.map((c) => c.course_type))
+    return [
+      { value: "all", label: "Tutti" },
+      ...Object.entries(COURSE_TYPE_CONFIG)
+        .filter(([value]) => types.has(value))
+        .map(([value, { label }]) => ({ value, label })),
+    ]
+  }, [department.courses])
 
   const typeFiltered =
     typeFilter === "all"
@@ -106,9 +108,10 @@ function DepartmentPage() {
       </div>
 
       <BrowseStats
-        stats={[{ label: "corsi", value: department.courses.length }]}
+        stats={[{ label: "corsi", value: totalItems }]}
       />
 
+      {courseTypeFilters.length > 2 && (
       <div className="mb-4 flex flex-wrap gap-2">
         {courseTypeFilters.map((f) => (
           <button
@@ -125,6 +128,7 @@ function DepartmentPage() {
           </button>
         ))}
       </div>
+      )}
 
       <SearchFilter
         value={search}
@@ -136,7 +140,7 @@ function DepartmentPage() {
         <BrowseEmptyState message="Nessun corso trovato." />
       ) : (
         <>
-          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Classi"]}>
+          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Sede", "Classi"]}>
             {paged.map((course) => {
               const classCount = course.course_classes[0]?.count ?? 0
               const typeConf = COURSE_TYPE_CONFIG[course.course_type]
@@ -181,6 +185,15 @@ function DepartmentPage() {
                     {course.cfu ? (
                       <span className="text-sm text-muted-foreground">
                         {course.cfu}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/50">—</span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    {course.location ? (
+                      <span className="text-sm text-muted-foreground">
+                        {course.location}
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground/50">—</span>
