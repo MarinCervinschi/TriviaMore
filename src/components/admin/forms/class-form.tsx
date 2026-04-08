@@ -13,8 +13,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { classSchema, type ClassInput } from "@/lib/admin/schemas"
+import { classSchema, courseClassSchema, type ClassInput } from "@/lib/admin/schemas"
 import type { Class } from "@/lib/admin/types"
+
+const classWithJunctionSchema = classSchema.merge(
+  courseClassSchema.pick({ code: true, class_year: true, mandatory: true, curriculum: true }),
+)
 
 type JunctionDefaults = {
   code?: string
@@ -37,7 +41,7 @@ export function ClassForm({
   junction,
 }: ClassFormProps) {
   const form = useForm<ClassInput & JunctionDefaults>({
-    resolver: standardSchemaResolver(classSchema),
+    resolver: standardSchemaResolver(junction ? classWithJunctionSchema : classSchema),
     defaultValues: {
       name: cls?.name ?? "",
       description: cls?.description ?? "",
