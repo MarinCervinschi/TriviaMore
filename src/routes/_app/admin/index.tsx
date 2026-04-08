@@ -31,7 +31,7 @@ function AdminDashboard() {
   const contentCards = [
     { label: "Dipartimenti", value: stats.departmentCount, icon: Library, to: "/admin/departments", color: "blue" },
     { label: "Corsi", value: stats.courseCount, icon: GraduationCap, to: "/admin/departments", color: "green" },
-    { label: "Classi", value: stats.classCount, icon: FolderOpen, to: "/admin/departments", color: "orange" },
+    { label: "Insegnamenti", value: stats.classCount, icon: FolderOpen, to: "/admin/departments", color: "orange" },
     { label: "Sezioni", value: stats.sectionCount, icon: BookOpen, to: "/admin/departments", color: "purple" },
     { label: "Domande", value: stats.questionCount, icon: FileQuestion, to: "/admin/departments", color: "red" },
   ]

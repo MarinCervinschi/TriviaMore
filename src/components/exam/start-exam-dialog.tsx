@@ -96,7 +96,7 @@ export function StartExamDialog({
         <DialogHeader>
           <DialogTitle>Simulazione Esame</DialogTitle>
           <DialogDescription>
-            Domande da tutte le sezioni della classe
+            Domande da tutte le sezioni dell'insegnamento
           </DialogDescription>
         </DialogHeader>
 

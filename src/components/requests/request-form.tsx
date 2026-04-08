@@ -158,7 +158,7 @@ export function RequestForm({
           <TypeCard
             icon={FolderPlus}
             title="Nuova sezione"
-            description="Proponi una nuova sezione per una classe"
+            description="Proponi una nuova sezione per un insegnamento"
             selected={type === "section"}
             onClick={() => setType("section")}
           />
@@ -198,7 +198,7 @@ export function RequestForm({
           ← Indietro
         </Button>
         <p className="text-sm font-medium">
-          {needsSection ? "Seleziona la sezione" : "Seleziona la classe"}
+          {needsSection ? "Seleziona la sezione" : "Seleziona l'insegnamento"}
         </p>
 
         <div className="grid gap-3">
@@ -223,7 +223,7 @@ export function RequestForm({
               items={classes.map((c) => ({ value: c.id, label: c.name }))}
               value={selectedClassId}
               onValueChange={(v) => { setSelectedClassId(v); setSelectedSectionId("") }}
-              placeholder="Cerca classe..."
+              placeholder="Cerca insegnamento..."
             />
           )}
 

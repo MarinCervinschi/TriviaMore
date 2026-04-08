@@ -48,7 +48,7 @@ export const Route = createFileRoute(
           path: `/browse/${match.params.department}/${match.params.course}`,
         },
         {
-          name: loaderData?.class?.name ?? "Classe",
+          name: loaderData?.class?.name ?? "Insegnamento",
           path: `/browse/${match.params.department}/${match.params.course}/${match.params.class}`,
         },
         { name: loaderData?.name ?? "Sezione", path: match.pathname },
