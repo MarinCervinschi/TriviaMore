@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
 import { useAuth } from "@/hooks/useAuth"
-import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
+import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import { cn } from "@/lib/utils"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
@@ -189,7 +189,7 @@ function ClassPage() {
             )}
             {classData.course.location && (
               <Badge variant="outline" className="text-xs">
-                {classData.course.location}
+                {CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ?? classData.course.location}
               </Badge>
             )}
             {classData.cfu && (

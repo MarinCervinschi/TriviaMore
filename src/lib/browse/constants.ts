@@ -16,6 +16,16 @@ export const COURSE_TYPE_CONFIG: Record<
   },
 }
 
+export const CAMPUS_LOCATION_CONFIG: Record<
+  string,
+  { label: string; short: string }
+> = {
+  MODENA: { label: "Modena", short: "MO" },
+  REGGIO_EMILIA: { label: "Reggio Emilia", short: "RE" },
+  CARPI: { label: "Carpi", short: "CP" },
+  MANTOVA: { label: "Mantova", short: "MN" },
+}
+
 export const AREA_LABELS: Record<string, string> = {
   SCIENZE: "Scienze",
   TECNOLOGIA: "Tecnologia",
