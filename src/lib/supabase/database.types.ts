@@ -128,7 +128,7 @@ export type Database = {
           department_id: string
           description: string | null
           id: string
-          location: string | null
+          location: Database["public"]["Enums"]["campus_location"] | null
           name: string
           position: number
           updated_at: string
@@ -141,7 +141,7 @@ export type Database = {
           department_id: string
           description?: string | null
           id?: string
-          location?: string | null
+          location?: Database["public"]["Enums"]["campus_location"] | null
           name: string
           position?: number
           updated_at?: string
@@ -154,7 +154,7 @@ export type Database = {
           department_id?: string
           description?: string | null
           id?: string
-          location?: string | null
+          location?: Database["public"]["Enums"]["campus_location"] | null
           name?: string
           position?: number
           updated_at?: string
@@ -1062,6 +1062,7 @@ export type Database = {
       is_superadmin: { Args: never; Returns: boolean }
     }
     Enums: {
+      campus_location: "MODENA" | "REGGIO_EMILIA" | "CARPI" | "MANTOVA"
       content_request_status:
         | "PENDING"
         | "APPROVED"
@@ -1507,6 +1508,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      campus_location: ["MODENA", "REGGIO_EMILIA", "CARPI", "MANTOVA"],
       content_request_status: [
         "PENDING",
         "APPROVED",

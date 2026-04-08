@@ -14,7 +14,7 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
-import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
+import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import { cn } from "@/lib/utils"
 
@@ -193,7 +193,7 @@ function DepartmentPage() {
                   <td className="whitespace-nowrap px-3 py-4 text-center">
                     {course.location ? (
                       <span className="text-sm text-muted-foreground">
-                        {course.location}
+                        {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground/50">—</span>

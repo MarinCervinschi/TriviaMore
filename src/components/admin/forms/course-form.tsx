@@ -109,12 +109,23 @@ export function CourseForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Sede</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="es. Campus Luigi Einaudi (opzionale)"
-                  {...field}
-                />
-              </FormControl>
+              <Select
+                onValueChange={(v) => field.onChange(v === "_none" ? "" : v)}
+                defaultValue={field.value || "_none"}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona sede (opzionale)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="_none">Nessuna</SelectItem>
+                  <SelectItem value="MODENA">Modena</SelectItem>
+                  <SelectItem value="REGGIO_EMILIA">Reggio Emilia</SelectItem>
+                  <SelectItem value="CARPI">Carpi</SelectItem>
+                  <SelectItem value="MANTOVA">Mantova</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

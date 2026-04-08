@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
+import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import type { BrowseClassInCourse } from "@/lib/browse/types"
 import { cn } from "@/lib/utils"
@@ -221,7 +221,7 @@ function CoursePage() {
             )}
             {course.location && (
               <Badge variant="outline" className="text-xs">
-                {course.location}
+                {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}
               </Badge>
             )}
             {course.cfu && (

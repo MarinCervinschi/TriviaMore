@@ -60,8 +60,7 @@ export const courseSchema = z.object({
     message: "Il tipo di corso è obbligatorio",
   }),
   location: z
-    .string()
-    .max(200, "La sede non può superare i 200 caratteri")
+    .enum(["MODENA", "REGGIO_EMILIA", "CARPI", "MANTOVA"])
     .optional()
     .or(z.literal("")),
   cfu: z
