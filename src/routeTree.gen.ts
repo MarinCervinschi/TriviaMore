@@ -45,8 +45,11 @@ import { Route as AppAdminQuestionsQuestionIdRouteImport } from './routes/_app/a
 import { Route as AppAdminDepartmentsDepartmentIdRouteImport } from './routes/_app/admin/departments/$departmentId'
 import { Route as AppAdminCoursesCourseIdRouteImport } from './routes/_app/admin/courses/$courseId'
 import { Route as AppAdminClassesClassIdRouteImport } from './routes/_app/admin/classes/$classId'
+import { Route as AppDepartmentsDepartmentCourseIndexRouteImport } from './routes/_app/departments/$department/$course/index'
 import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
+import { Route as AppDepartmentsDepartmentCourseClassIndexRouteImport } from './routes/_app/departments/$department/$course/$class/index'
 import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './routes/_app/browse/$department/$course/$class/index'
+import { Route as AppDepartmentsDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/departments/$department/$course/$class/$section/index'
 import { Route as AppBrowseDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/browse/$department/$course/$class/$section/index'
 
 const AppRoute = AppRouteImport.update({
@@ -235,16 +238,34 @@ const AppAdminClassesClassIdRoute = AppAdminClassesClassIdRouteImport.update({
   path: '/classes/$classId',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppDepartmentsDepartmentCourseIndexRoute =
+  AppDepartmentsDepartmentCourseIndexRouteImport.update({
+    id: '/departments/$department/$course/',
+    path: '/departments/$department/$course/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppBrowseDepartmentCourseIndexRoute =
   AppBrowseDepartmentCourseIndexRouteImport.update({
     id: '/browse/$department/$course/',
     path: '/browse/$department/$course/',
     getParentRoute: () => AppRoute,
   } as any)
+const AppDepartmentsDepartmentCourseClassIndexRoute =
+  AppDepartmentsDepartmentCourseClassIndexRouteImport.update({
+    id: '/departments/$department/$course/$class/',
+    path: '/departments/$department/$course/$class/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppBrowseDepartmentCourseClassIndexRoute =
   AppBrowseDepartmentCourseClassIndexRouteImport.update({
     id: '/browse/$department/$course/$class/',
     path: '/browse/$department/$course/$class/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppDepartmentsDepartmentCourseClassSectionIndexRoute =
+  AppDepartmentsDepartmentCourseClassSectionIndexRouteImport.update({
+    id: '/departments/$department/$course/$class/$section/',
+    path: '/departments/$department/$course/$class/$section/',
     getParentRoute: () => AppRoute,
   } as any)
 const AppBrowseDepartmentCourseClassSectionIndexRoute =
@@ -291,8 +312,11 @@ export interface FileRoutesByFullPath {
   '/search/courses/': typeof AppSearchCoursesIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
+  '/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/departments/$department/$course/$class/': typeof AppDepartmentsDepartmentCourseClassIndexRoute
   '/browse/$department/$course/$class/$section/': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
+  '/departments/$department/$course/$class/$section/': typeof AppDepartmentsDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
@@ -329,8 +353,11 @@ export interface FileRoutesByTo {
   '/search/courses': typeof AppSearchCoursesIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
+  '/departments/$department/$course': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/departments/$department/$course/$class': typeof AppDepartmentsDepartmentCourseClassIndexRoute
   '/browse/$department/$course/$class/$section': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
+  '/departments/$department/$course/$class/$section': typeof AppDepartmentsDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -371,8 +398,11 @@ export interface FileRoutesById {
   '/_app/search/courses/': typeof AppSearchCoursesIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
+  '/_app/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
+  '/_app/departments/$department/$course/$class/': typeof AppDepartmentsDepartmentCourseClassIndexRoute
   '/_app/browse/$department/$course/$class/$section/': typeof AppBrowseDepartmentCourseClassSectionIndexRoute
+  '/_app/departments/$department/$course/$class/$section/': typeof AppDepartmentsDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -413,8 +443,11 @@ export interface FileRouteTypes {
     | '/search/courses/'
     | '/user/requests/'
     | '/browse/$department/$course/'
+    | '/departments/$department/$course/'
     | '/browse/$department/$course/$class/'
+    | '/departments/$department/$course/$class/'
     | '/browse/$department/$course/$class/$section/'
+    | '/departments/$department/$course/$class/$section/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -451,8 +484,11 @@ export interface FileRouteTypes {
     | '/search/courses'
     | '/user/requests'
     | '/browse/$department/$course'
+    | '/departments/$department/$course'
     | '/browse/$department/$course/$class'
+    | '/departments/$department/$course/$class'
     | '/browse/$department/$course/$class/$section'
+    | '/departments/$department/$course/$class/$section'
   id:
     | '__root__'
     | '/_app'
@@ -492,8 +528,11 @@ export interface FileRouteTypes {
     | '/_app/search/courses/'
     | '/_app/user/requests/'
     | '/_app/browse/$department/$course/'
+    | '/_app/departments/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
+    | '/_app/departments/$department/$course/$class/'
     | '/_app/browse/$department/$course/$class/$section/'
+    | '/_app/departments/$department/$course/$class/$section/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -759,6 +798,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminClassesClassIdRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/_app/departments/$department/$course/': {
+      id: '/_app/departments/$department/$course/'
+      path: '/departments/$department/$course'
+      fullPath: '/departments/$department/$course/'
+      preLoaderRoute: typeof AppDepartmentsDepartmentCourseIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/browse/$department/$course/': {
       id: '/_app/browse/$department/$course/'
       path: '/browse/$department/$course'
@@ -766,11 +812,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrowseDepartmentCourseIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/departments/$department/$course/$class/': {
+      id: '/_app/departments/$department/$course/$class/'
+      path: '/departments/$department/$course/$class'
+      fullPath: '/departments/$department/$course/$class/'
+      preLoaderRoute: typeof AppDepartmentsDepartmentCourseClassIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/browse/$department/$course/$class/': {
       id: '/_app/browse/$department/$course/$class/'
       path: '/browse/$department/$course/$class'
       fullPath: '/browse/$department/$course/$class/'
       preLoaderRoute: typeof AppBrowseDepartmentCourseClassIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/departments/$department/$course/$class/$section/': {
+      id: '/_app/departments/$department/$course/$class/$section/'
+      path: '/departments/$department/$course/$class/$section'
+      fullPath: '/departments/$department/$course/$class/$section/'
+      preLoaderRoute: typeof AppDepartmentsDepartmentCourseClassSectionIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/browse/$department/$course/$class/$section/': {
@@ -853,8 +913,11 @@ interface AppRouteChildren {
   AppSearchClassesIndexRoute: typeof AppSearchClassesIndexRoute
   AppSearchCoursesIndexRoute: typeof AppSearchCoursesIndexRoute
   AppBrowseDepartmentCourseIndexRoute: typeof AppBrowseDepartmentCourseIndexRoute
+  AppDepartmentsDepartmentCourseIndexRoute: typeof AppDepartmentsDepartmentCourseIndexRoute
   AppBrowseDepartmentCourseClassIndexRoute: typeof AppBrowseDepartmentCourseClassIndexRoute
+  AppDepartmentsDepartmentCourseClassIndexRoute: typeof AppDepartmentsDepartmentCourseClassIndexRoute
   AppBrowseDepartmentCourseClassSectionIndexRoute: typeof AppBrowseDepartmentCourseClassSectionIndexRoute
+  AppDepartmentsDepartmentCourseClassSectionIndexRoute: typeof AppDepartmentsDepartmentCourseClassSectionIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -871,10 +934,16 @@ const AppRouteChildren: AppRouteChildren = {
   AppSearchClassesIndexRoute: AppSearchClassesIndexRoute,
   AppSearchCoursesIndexRoute: AppSearchCoursesIndexRoute,
   AppBrowseDepartmentCourseIndexRoute: AppBrowseDepartmentCourseIndexRoute,
+  AppDepartmentsDepartmentCourseIndexRoute:
+    AppDepartmentsDepartmentCourseIndexRoute,
   AppBrowseDepartmentCourseClassIndexRoute:
     AppBrowseDepartmentCourseClassIndexRoute,
+  AppDepartmentsDepartmentCourseClassIndexRoute:
+    AppDepartmentsDepartmentCourseClassIndexRoute,
   AppBrowseDepartmentCourseClassSectionIndexRoute:
     AppBrowseDepartmentCourseClassSectionIndexRoute,
+  AppDepartmentsDepartmentCourseClassSectionIndexRoute:
+    AppDepartmentsDepartmentCourseClassSectionIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
