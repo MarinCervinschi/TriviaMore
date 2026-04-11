@@ -15,14 +15,14 @@ import type { LucideIcon } from "lucide-react"
 export type NavLink = { to: string; label: string; icon?: LucideIcon }
 
 export const GUEST_NAV_LINKS: NavLink[] = [
-  { to: "/browse", label: "Contenuti", icon: BookOpen },
+  { to: "/departments", label: "Dipartimenti", icon: BookOpen },
   { to: "/about", label: "Chi Siamo", icon: Info },
   { to: "/contact", label: "Contatti", icon: Mail },
 ]
 
 export const AUTH_NAV_LINKS: NavLink[] = [
   { to: "/user", label: "Il Mio Profilo", icon: Home },
-  { to: "/browse", label: "Contenuti", icon: BookOpen },
+  { to: "/departments", label: "Dipartimenti", icon: BookOpen },
   { to: "/user/classes", label: "I Miei Corsi", icon: GraduationCap },
 ]
 
