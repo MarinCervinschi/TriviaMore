@@ -4,7 +4,7 @@ import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, GraduationCap, MapPin } from "lucide-react"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
@@ -14,7 +14,7 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
-import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
+import { AREA_CONFIG, CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import { cn } from "@/lib/utils"
 
@@ -106,6 +106,26 @@ function DepartmentPage() {
               {department.description}
             </p>
           )}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="text-xs font-mono">{department.code}</Badge>
+            {department.area && AREA_CONFIG[department.area] && (
+              <Badge variant="secondary" className="text-xs">
+                {AREA_CONFIG[department.area].label}
+              </Badge>
+            )}
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <GraduationCap className="h-3.5 w-3.5" />
+              {department.courses.length} {department.courses.length === 1 ? "corso" : "corsi"}
+            </span>
+            {department.department_locations.length > 0 && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5" />
+                {[...new Set(department.department_locations.map((l) => l.campus_location).filter(Boolean))]
+                  .map((c) => CAMPUS_LOCATION_CONFIG[c!]?.label ?? c)
+                  .join(", ")}
+              </span>
+            )}
+          </div>
         </div>
         <BrowseAdminButton
           to="/admin/departments/$departmentId"
