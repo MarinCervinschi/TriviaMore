@@ -17,7 +17,7 @@ export const getDepartmentsFn = createServerFn({ method: "GET" }).handler(
 
     const { data, error } = await catalogQuery(supabase)
       .from("departments")
-      .select("*, courses(count)")
+      .select("*, courses(count), department_locations(campus_location)")
       .order("position")
 
     if (error) throw new Error(error.message)
@@ -38,15 +38,27 @@ export const getDepartmentWithCoursesFn = createServerFn({ method: "GET" })
 
     if (deptError || !department) return null
 
-    const { data: courses, error: coursesError } = await catalogQuery(supabase)
-      .from("courses")
-      .select("*, course_classes(count)")
-      .eq("department_id", department.id)
-      .order("position")
+    const [coursesResult, locationsResult] = await Promise.all([
+      catalogQuery(supabase)
+        .from("courses")
+        .select("*, course_classes(count)")
+        .eq("department_id", department.id)
+        .order("position"),
+      catalogQuery(supabase)
+        .from("department_locations")
+        .select("id, name, address, latitude, longitude, campus_location, is_primary, position")
+        .eq("department_id", department.id)
+        .order("position"),
+    ])
 
-    if (coursesError) throw new Error(coursesError.message)
+    if (coursesResult.error) throw new Error(coursesResult.error.message)
+    if (locationsResult.error) throw new Error(locationsResult.error.message)
 
-    return { ...department, courses: courses as DepartmentWithCourses["courses"] }
+    return {
+      ...department,
+      courses: coursesResult.data as DepartmentWithCourses["courses"],
+      department_locations: locationsResult.data as DepartmentWithCourses["department_locations"],
+    }
   })
 
 export const getCourseWithClassesFn = createServerFn({ method: "GET" })

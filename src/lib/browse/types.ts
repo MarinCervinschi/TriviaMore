@@ -6,6 +6,12 @@ type Course = CatalogTables<"courses">
 type Class = CatalogTables<"classes">
 type Section = CatalogTables<"sections">
 type CourseClass = CatalogTables<"course_classes">
+type DepartmentLocationRow = CatalogTables<"department_locations">
+
+export type DepartmentLocation = Pick<
+  DepartmentLocationRow,
+  "id" | "name" | "address" | "latitude" | "longitude" | "campus_location" | "is_primary" | "position"
+>
 
 // Junction fields that come from course_classes
 export type CourseClassInfo = Pick<
@@ -17,6 +23,7 @@ export type CourseClassInfo = Pick<
 
 export type BrowseDepartment = Department & {
   courses: { count: number }[]
+  department_locations: Pick<DepartmentLocation, "campus_location">[]
 }
 
 export type BrowseCourse = Course & {
@@ -40,6 +47,7 @@ export type BrowseSection = Section & {
 
 export type DepartmentWithCourses = Department & {
   courses: BrowseCourse[]
+  department_locations: DepartmentLocation[]
 }
 
 export type CourseWithClasses = Course & {
