@@ -180,7 +180,7 @@ function DepartmentPage() {
                 <tr key={course.id} className="group">
                   <td className="pl-6 py-4">
                     <Link
-                      to="/browse/$department/$course"
+                      to="/departments/$department/$course"
                       params={{
                         department: deptCode.toLowerCase(),
                         course: course.code.toLowerCase(),
