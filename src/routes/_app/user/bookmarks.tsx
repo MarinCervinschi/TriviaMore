@@ -61,7 +61,7 @@ function BookmarksPage() {
             title="Nessun segnalibro salvato"
             description="Durante i quiz, clicca sull'icona del segnalibro per salvare le domande interessanti!"
             actionLabel="Esplora i Quiz"
-            actionHref="/browse"
+            actionHref="/departments"
           />
         ) : (
           <motion.div

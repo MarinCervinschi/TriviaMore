@@ -55,7 +55,7 @@ function ProgressPage() {
             title="Nessun progresso disponibile"
             description="Inizia a completare alcuni quiz per vedere i tuoi progressi qui!"
             actionLabel="Esplora i Corsi"
-            actionHref="/browse"
+            actionHref="/departments"
           />
         </div>
       </div>

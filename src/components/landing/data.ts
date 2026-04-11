@@ -66,7 +66,7 @@ export const heroContent: HeroContent = {
   },
   secondaryCTA: {
     text: "Esplora i contenuti",
-    href: "/browse",
+    href: "/departments",
   },
 }
 
@@ -192,7 +192,7 @@ export const footerSections: FooterSection[] = [
   {
     title: "Piattaforma",
     links: [
-      { href: "/browse", label: "Esplora contenuti" },
+      { href: "/departments", label: "Esplora contenuti" },
       { href: "/about", label: "Che cosa è Trivia More" },
       { href: "/contact", label: "Contattaci" },
     ],
@@ -211,9 +211,9 @@ export const footerSections: FooterSection[] = [
   {
     title: "UNIMORE",
     links: [
-      { href: "/browse/dief", label: "Ingegneria" },
-      { href: "/browse", label: "Scienze" },
-      { href: "/browse", label: "Economia" },
+      { href: "/departments/dief", label: "Ingegneria" },
+      { href: "/departments", label: "Scienze" },
+      { href: "/departments", label: "Economia" },
     ],
   },
 ]

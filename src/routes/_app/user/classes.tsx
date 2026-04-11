@@ -216,7 +216,7 @@ function ClassesPage() {
               title="Nessun corso salvato"
               description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
               actionLabel="Esplora Corsi"
-              actionHref="/browse"
+              actionHref="/departments"
             />
           ) : (
             <div className="relative overflow-hidden rounded-3xl border bg-card p-12">
