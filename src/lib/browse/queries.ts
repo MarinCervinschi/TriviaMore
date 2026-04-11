@@ -10,7 +10,10 @@ import {
   getDepartmentsFn,
   getPlatformStatsFn,
   getSectionDetailFn,
+  searchClassesFn,
+  searchCoursesFn,
 } from "./server"
+import type { SearchClassesParams, SearchCoursesParams } from "./types"
 
 export const browseQueries = {
   platformStats: () =>
@@ -55,6 +58,22 @@ export const browseQueries = {
       queryFn: () =>
         getClassWithSectionsFn({ data: { deptCode, courseCode, classCode } }),
       staleTime: STALE_TIME.SLOW,
+    }),
+
+  searchCourses: (params: SearchCoursesParams) =>
+    queryOptions({
+      queryKey: ["search", "courses", params],
+      queryFn: () => searchCoursesFn({ data: params }),
+      staleTime: STALE_TIME.FAST,
+      enabled: !!(params.query || params.departmentId || params.courseType || params.campus),
+    }),
+
+  searchClasses: (params: SearchClassesParams) =>
+    queryOptions({
+      queryKey: ["search", "classes", params],
+      queryFn: () => searchClassesFn({ data: params }),
+      staleTime: STALE_TIME.FAST,
+      enabled: !!(params.query || params.departmentId || params.courseId || params.classYear !== undefined),
     }),
 
   section: (
