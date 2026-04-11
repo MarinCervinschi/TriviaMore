@@ -88,6 +88,46 @@ export interface BrowseOverview {
   locations: OverviewLocation[]
 }
 
+// Search result types (for /search/* pages)
+
+export type SearchCourseResult = {
+  id: string
+  name: string
+  code: string
+  course_type: string
+  location: string | null
+  cfu: number | null
+  department: { code: string; name: string }
+  course_classes: { count: number }[]
+}
+
+export type SearchClassResult = {
+  id: string
+  name: string
+  description: string | null
+  cfu: number | null
+  code: string
+  class_year: number
+  mandatory: boolean
+  course: { id: string; name: string; code: string; department: { code: string; name: string } }
+  sections: { count: number }[]
+}
+
+export interface SearchCoursesParams {
+  query?: string
+  departmentId?: string
+  courseType?: string
+  campus?: string
+}
+
+export interface SearchClassesParams {
+  query?: string
+  departmentId?: string
+  courseId?: string
+  classYear?: number
+  mandatory?: boolean
+}
+
 export type SectionDetail = Section & {
   class: Class & {
     courseClass: CourseClassInfo

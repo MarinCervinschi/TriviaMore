@@ -11,6 +11,10 @@ import type {
   CourseWithClasses,
   DepartmentWithCourses,
   OverviewLocation,
+  SearchClassResult,
+  SearchClassesParams,
+  SearchCourseResult,
+  SearchCoursesParams,
   SectionDetail,
 } from "./types"
 
@@ -441,6 +445,109 @@ export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
     }
   },
 )
+
+// ─── Full-Text Search ───
+
+/** Convert user input to tsquery with prefix matching on each term */
+function toFtsQuery(input: string): string {
+  return input
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((term) => `${term.replace(/[^a-zA-Z0-9\u00C0-\u024F]/g, "")}:*`)
+    .filter((t) => t !== ":*")
+    .join(" & ")
+}
+
+export const searchCoursesFn = createServerFn({ method: "GET" })
+  .inputValidator((input: SearchCoursesParams) => input)
+  .handler(async ({ data }): Promise<SearchCourseResult[]> => {
+    const supabase = createServerSupabaseClient()
+
+    let qb = catalogQuery(supabase)
+      .from("courses")
+      .select("id, name, code, course_type, location, cfu, department:departments!inner(code, name), course_classes(count)")
+
+    if (data.query?.trim()) {
+      const ftsQuery = toFtsQuery(data.query)
+      if (ftsQuery) qb = qb.textSearch("fts", ftsQuery, { config: "italian" })
+    }
+    if (data.departmentId) qb = qb.eq("department_id", data.departmentId)
+    if (data.courseType) qb = qb.eq("course_type", data.courseType as any)
+    if (data.campus) qb = qb.eq("location", data.campus as any)
+
+    const { data: courses, error } = await qb.order("name").limit(50)
+
+    if (error) throw new Error(error.message)
+    return (courses ?? []) as SearchCourseResult[]
+  })
+
+export const searchClassesFn = createServerFn({ method: "GET" })
+  .inputValidator((input: SearchClassesParams) => input)
+  .handler(async ({ data }): Promise<SearchClassResult[]> => {
+    const supabase = createServerSupabaseClient()
+
+    let qb = catalogQuery(supabase)
+      .from("course_classes")
+      .select("code, class_year, mandatory, class:classes!inner(id, name, description, cfu, sections(count)), course:courses!inner(id, name, code, department:departments!inner(code, name))")
+
+    if (data.query?.trim()) {
+      const ftsQuery = toFtsQuery(data.query)
+      if (ftsQuery) qb = qb.textSearch("class.fts", ftsQuery, { config: "italian" })
+    }
+    if (data.courseId) qb = qb.eq("course_id", data.courseId)
+    if (data.departmentId) qb = qb.eq("course.department_id", data.departmentId)
+    if (data.classYear !== undefined) qb = qb.eq("class_year", data.classYear)
+    if (data.mandatory !== undefined) qb = qb.eq("mandatory", data.mandatory)
+
+    const { data: results, error } = await qb.order("class_year").order("code").limit(50)
+
+    if (error) throw new Error(error.message)
+
+    return (results ?? []).map((r: any) => ({
+      id: r.class.id,
+      name: r.class.name,
+      description: r.class.description,
+      cfu: r.class.cfu,
+      code: r.code,
+      class_year: r.class_year,
+      mandatory: r.mandatory,
+      course: r.course,
+      sections: r.class.sections,
+    }))
+  })
+
+export const getDepartmentCourseListFn = createServerFn({ method: "GET" })
+  .inputValidator((input: { departmentId: string }) => input)
+  .handler(async ({ data }) => {
+    const supabase = createServerSupabaseClient()
+    const { data: courses, error } = await catalogQuery(supabase)
+      .from("courses")
+      .select("id, name, code")
+      .eq("department_id", data.departmentId)
+      .order("name")
+    if (error) throw new Error(error.message)
+    return courses ?? []
+  })
+
+export const getAvailableClassYearsFn = createServerFn({ method: "GET" })
+  .inputValidator((input: { departmentId?: string; courseId?: string }) => input)
+  .handler(async ({ data }): Promise<number[]> => {
+    const supabase = createServerSupabaseClient()
+
+    let qb = catalogQuery(supabase)
+      .from("course_classes")
+      .select("class_year, course:courses!inner(department_id)")
+
+    if (data.courseId) qb = qb.eq("course_id", data.courseId)
+    if (data.departmentId) qb = qb.eq("course.department_id", data.departmentId)
+
+    const { data: rows, error } = await qb
+    if (error) throw new Error(error.message)
+
+    const years = [...new Set((rows ?? []).map((r: any) => r.class_year as number))].sort()
+    return years
+  })
 
 export const submitContactFn = createServerFn({ method: "POST" })
   .inputValidator(contactSchema)
