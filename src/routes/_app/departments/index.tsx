@@ -150,7 +150,7 @@ function DepartmentsPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                          <div className="mb-2.5 flex flex-wrap items-center gap-2">
                             <Badge variant="outline" className="text-[11px] font-mono tracking-wide">
                               {dept.code}
                             </Badge>
