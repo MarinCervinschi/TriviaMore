@@ -14,6 +14,7 @@ export type Database = {
           cfu: number | null
           created_at: string
           description: string | null
+          fts: string | null
           id: string
           name: string
           position: number
@@ -23,6 +24,7 @@ export type Database = {
           cfu?: number | null
           created_at?: string
           description?: string | null
+          fts?: string | null
           id?: string
           name: string
           position?: number
@@ -32,6 +34,7 @@ export type Database = {
           cfu?: number | null
           created_at?: string
           description?: string | null
+          fts?: string | null
           id?: string
           name?: string
           position?: number
@@ -127,6 +130,7 @@ export type Database = {
           created_at: string
           department_id: string
           description: string | null
+          fts: string | null
           id: string
           location: Database["public"]["Enums"]["campus_location"] | null
           name: string
@@ -140,6 +144,7 @@ export type Database = {
           created_at?: string
           department_id: string
           description?: string | null
+          fts?: string | null
           id?: string
           location?: Database["public"]["Enums"]["campus_location"] | null
           name: string
@@ -153,6 +158,7 @@ export type Database = {
           created_at?: string
           department_id?: string
           description?: string | null
+          fts?: string | null
           id?: string
           location?: Database["public"]["Enums"]["campus_location"] | null
           name?: string
@@ -188,6 +194,60 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "department_admins_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      department_locations: {
+        Row: {
+          address: string
+          campus_location: Database["public"]["Enums"]["campus_location"] | null
+          created_at: string | null
+          department_id: string
+          id: string
+          is_primary: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          position: number | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          campus_location?:
+            | Database["public"]["Enums"]["campus_location"]
+            | null
+          created_at?: string | null
+          department_id: string
+          id?: string
+          is_primary?: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          position?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          campus_location?:
+            | Database["public"]["Enums"]["campus_location"]
+            | null
+          created_at?: string | null
+          department_id?: string
+          id?: string
+          is_primary?: boolean | null
+          latitude?: number
+          longitude?: number
+          name?: string
+          position?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "department_locations_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
@@ -1495,7 +1555,6 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
-// Helper: shorthand for catalog schema table rows
 export type CatalogTables<T extends keyof Database["catalog"]["Tables"]> =
   Database["catalog"]["Tables"][T]["Row"]
 
