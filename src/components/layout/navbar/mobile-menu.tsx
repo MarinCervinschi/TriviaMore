@@ -16,12 +16,56 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "../theme-toggle"
-import { useNavLinks, USER_MENU_LINKS } from "./nav-links"
+import { useNavItems, USER_MENU_LINKS } from "./nav-links"
+import type { NavItem } from "./nav-links"
+
+function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }) {
+  if (item.type === "link") {
+    return (
+      <Link
+        to={item.to}
+        onClick={onClose}
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+        activeProps={{
+          className: "bg-primary/10 text-primary font-semibold",
+        }}
+      >
+        {item.icon && <item.icon className="h-4 w-4" strokeWidth={1.5} />}
+        {item.label}
+      </Link>
+    )
+  }
+
+  // Dropdown items rendered inline on mobile
+  return (
+    <>
+      <p className="mt-2 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {item.label}
+      </p>
+      {item.children.map((child) => (
+        <Link
+          key={child.to}
+          to={child.to}
+          onClick={onClose}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 pl-6 text-sm font-medium transition-colors hover:bg-accent"
+          activeProps={{
+            className: "bg-primary/10 text-primary font-semibold",
+          }}
+        >
+          {child.icon && <child.icon className="h-4 w-4" strokeWidth={1.5} />}
+          {child.label}
+        </Link>
+      ))}
+    </>
+  )
+}
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false)
   const { isLoading, isAuthenticated, user, logout } = useAuth()
-  const navLinks = useNavLinks()
+  const navItems = useNavItems()
+
+  const close = () => setOpen(false)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -42,7 +86,6 @@ export function MobileMenu() {
           </SheetTitle>
         </SheetHeader>
 
-        {/* User info */}
         {isAuthenticated && user && (
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-muted/50 p-3">
             <Avatar className="h-10 w-10">
@@ -71,21 +114,12 @@ export function MobileMenu() {
         )}
 
         <nav className="mt-6 flex flex-col gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-              activeProps={{
-                className: "bg-primary/10 text-primary font-semibold",
-              }}
-            >
-              {link.icon && (
-                <link.icon className="h-4 w-4" strokeWidth={1.5} />
-              )}
-              {link.label}
-            </Link>
+          {navItems.map((item, i) => (
+            <MobileNavItem
+              key={item.type === "link" ? item.to : `dropdown-${i}`}
+              item={item}
+              onClose={close}
+            />
           ))}
         </nav>
 
@@ -106,7 +140,7 @@ export function MobileMenu() {
               <Link
                 key={link.to}
                 to={link.to}
-                onClick={() => setOpen(false)}
+                onClick={close}
                 className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
               >
                 {link.icon && (
@@ -119,7 +153,7 @@ export function MobileMenu() {
             <button
               onClick={() => {
                 logout.mutate({})
-                setOpen(false)
+                close()
               }}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
             >
@@ -129,10 +163,10 @@ export function MobileMenu() {
           </div>
         ) : (
           <div className="flex flex-col gap-2 px-1">
-            <Button asChild onClick={() => setOpen(false)}>
+            <Button asChild onClick={close}>
               <Link to="/auth/login">Accedi</Link>
             </Button>
-            <Button variant="outline" asChild onClick={() => setOpen(false)}>
+            <Button variant="outline" asChild onClick={close}>
               <Link to="/auth/register">Registrati</Link>
             </Button>
           </div>
