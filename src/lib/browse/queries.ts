@@ -3,6 +3,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { STALE_TIME } from "@/lib/shared/cache"
 
 import {
+  getBrowseOverviewFn,
   getClassWithSectionsFn,
   getCourseWithClassesFn,
   getDepartmentWithCoursesFn,
@@ -16,6 +17,13 @@ export const browseQueries = {
     queryOptions({
       queryKey: ["browse", "platform-stats"],
       queryFn: () => getPlatformStatsFn(),
+      staleTime: STALE_TIME.SLOW,
+    }),
+
+  browseOverview: () =>
+    queryOptions({
+      queryKey: ["browse", "overview"],
+      queryFn: () => getBrowseOverviewFn(),
       staleTime: STALE_TIME.SLOW,
     }),
 

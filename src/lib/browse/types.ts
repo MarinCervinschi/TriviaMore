@@ -68,6 +68,26 @@ export type ClassWithSections = Class & {
   }
 }
 
+// Overview types (for /browse showcase page)
+
+export type OverviewLocation = DepartmentLocation & {
+  department: Pick<Department, "code" | "name">
+}
+
+export interface BrowseOverview {
+  stats: {
+    departments: number
+    courses: number
+    classes: number
+    sections: number
+    questions: number
+  }
+  coursesByDepartment: { name: string; code: string; count: number }[]
+  coursesByType: { type: string; label: string; count: number }[]
+  coursesByCampus: { campus: string; label: string; count: number }[]
+  locations: OverviewLocation[]
+}
+
 export type SectionDetail = Section & {
   class: Class & {
     courseClass: CourseClassInfo

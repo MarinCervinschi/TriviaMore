@@ -2,12 +2,15 @@ import { createServerFn } from "@tanstack/react-start"
 
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 import { contactSchema } from "./contact-schema"
+import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "./constants"
 import type {
   BrowseDepartment,
+  BrowseOverview,
   BrowseSection,
   ClassWithSections,
   CourseWithClasses,
   DepartmentWithCourses,
+  OverviewLocation,
   SectionDetail,
 } from "./types"
 
@@ -333,17 +336,19 @@ export interface PlatformStats {
   courses: number
   classes: number
   sections: number
+  questions: number
 }
 
 export const getPlatformStatsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<PlatformStats> => {
     const supabase = createServerSupabaseClient()
 
-    const [depts, courses, classes, sections] = await Promise.all([
+    const [depts, courses, classes, sections, questions] = await Promise.all([
       catalogQuery(supabase).from("departments").select("*", { count: "exact", head: true }),
       catalogQuery(supabase).from("courses").select("*", { count: "exact", head: true }),
       catalogQuery(supabase).from("classes").select("*", { count: "exact", head: true }),
       catalogQuery(supabase).from("sections").select("*", { count: "exact", head: true }),
+      catalogQuery(supabase).from("questions").select("*", { count: "exact", head: true }),
     ])
 
     return {
@@ -351,6 +356,88 @@ export const getPlatformStatsFn = createServerFn({ method: "GET" }).handler(
       courses: courses.count ?? 0,
       classes: classes.count ?? 0,
       sections: sections.count ?? 0,
+      questions: questions.count ?? 0,
+    }
+  },
+)
+
+export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<BrowseOverview> => {
+    const supabase = createServerSupabaseClient()
+
+    const [statsResult, deptsResult, coursesResult, locationsResult] = await Promise.all([
+      // Stats counts
+      Promise.all([
+        catalogQuery(supabase).from("departments").select("*", { count: "exact", head: true }),
+        catalogQuery(supabase).from("courses").select("*", { count: "exact", head: true }),
+        catalogQuery(supabase).from("classes").select("*", { count: "exact", head: true }),
+        catalogQuery(supabase).from("sections").select("*", { count: "exact", head: true }),
+        catalogQuery(supabase).from("questions").select("*", { count: "exact", head: true }),
+      ]),
+      // Departments with course count
+      catalogQuery(supabase)
+        .from("departments")
+        .select("name, code, courses(count)")
+        .order("position"),
+      // All courses (for type/campus aggregation)
+      catalogQuery(supabase)
+        .from("courses")
+        .select("course_type, location"),
+      // All locations with department info
+      catalogQuery(supabase)
+        .from("department_locations")
+        .select("id, name, address, latitude, longitude, campus_location, is_primary, position, department:departments(code, name)")
+        .order("position"),
+    ])
+
+    const [depts, courses, classes, sections, questions] = statsResult
+
+    // Courses by department
+    const coursesByDepartment = (deptsResult.data ?? [])
+      .map((d: any) => ({
+        name: d.name,
+        code: d.code,
+        count: d.courses[0]?.count ?? 0,
+      }))
+      .filter((d: any) => d.count > 0)
+      .sort((a: any, b: any) => b.count - a.count)
+
+    // Courses by type
+    const typeCounts = new Map<string, number>()
+    for (const c of coursesResult.data ?? []) {
+      typeCounts.set(c.course_type, (typeCounts.get(c.course_type) ?? 0) + 1)
+    }
+    const coursesByType = [...typeCounts.entries()].map(([type, count]) => ({
+      type,
+      label: COURSE_TYPE_CONFIG[type]?.label ?? type,
+      count,
+    }))
+
+    // Courses by campus
+    const campusCounts = new Map<string, number>()
+    for (const c of coursesResult.data ?? []) {
+      if (c.location) {
+        campusCounts.set(c.location, (campusCounts.get(c.location) ?? 0) + 1)
+      }
+    }
+    const coursesByCampus = [...campusCounts.entries()].map(([campus, count]) => ({
+      campus,
+      label: CAMPUS_LOCATION_CONFIG[campus]?.label ?? campus,
+      count,
+    }))
+
+    return {
+      stats: {
+        departments: depts.count ?? 0,
+        courses: courses.count ?? 0,
+        classes: classes.count ?? 0,
+        sections: sections.count ?? 0,
+        questions: questions.count ?? 0,
+      },
+      coursesByDepartment,
+      coursesByType,
+      coursesByCampus,
+      locations: (locationsResult.data ?? []) as OverviewLocation[],
     }
   },
 )
