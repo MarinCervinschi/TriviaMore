@@ -267,7 +267,7 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
           <tr key={item.class_id} className="group">
             <td className="py-4 pl-6">
               <Link
-                to="/browse/$department/$course/$class"
+                to="/departments/$department/$course/$class"
                 params={{
                   department: item.department_code.toLowerCase(),
                   course: item.course_code.toLowerCase(),

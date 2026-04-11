@@ -246,7 +246,7 @@ function ClassesPage() {
               <tr key={userClass.class_id} className="group">
                 <td className="py-4 pl-6">
                   <Link
-                    to="/browse/$department/$course/$class"
+                    to="/departments/$department/$course/$class"
                     params={{
                       department:
                         userClass.department_code.toLowerCase(),
