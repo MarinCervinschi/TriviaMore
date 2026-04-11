@@ -30,6 +30,8 @@ import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/not
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
+import { Route as AppSearchCoursesIndexRouteImport } from './routes/_app/search/courses/index'
+import { Route as AppSearchClassesIndexRouteImport } from './routes/_app/search/classes/index'
 import { Route as AppDepartmentsDepartmentIndexRouteImport } from './routes/_app/departments/$department/index'
 import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/browse/$department/index'
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
@@ -150,6 +152,16 @@ const AppUserRequestsIndexRoute = AppUserRequestsIndexRouteImport.update({
   id: '/requests/',
   path: '/requests/',
   getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppSearchCoursesIndexRoute = AppSearchCoursesIndexRouteImport.update({
+  id: '/search/courses/',
+  path: '/search/courses/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSearchClassesIndexRoute = AppSearchClassesIndexRouteImport.update({
+  id: '/search/classes/',
+  path: '/search/classes/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDepartmentsDepartmentIndexRoute =
   AppDepartmentsDepartmentIndexRouteImport.update({
@@ -275,6 +287,8 @@ export interface FileRoutesByFullPath {
   '/admin/users/': typeof AppAdminUsersIndexRoute
   '/browse/$department/': typeof AppBrowseDepartmentIndexRoute
   '/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
+  '/search/classes/': typeof AppSearchClassesIndexRoute
+  '/search/courses/': typeof AppSearchCoursesIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -311,6 +325,8 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AppAdminUsersIndexRoute
   '/browse/$department': typeof AppBrowseDepartmentIndexRoute
   '/departments/$department': typeof AppDepartmentsDepartmentIndexRoute
+  '/search/classes': typeof AppSearchClassesIndexRoute
+  '/search/courses': typeof AppSearchCoursesIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -351,6 +367,8 @@ export interface FileRoutesById {
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
   '/_app/browse/$department/': typeof AppBrowseDepartmentIndexRoute
   '/_app/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
+  '/_app/search/classes/': typeof AppSearchClassesIndexRoute
+  '/_app/search/courses/': typeof AppSearchCoursesIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -391,6 +409,8 @@ export interface FileRouteTypes {
     | '/admin/users/'
     | '/browse/$department/'
     | '/departments/$department/'
+    | '/search/classes/'
+    | '/search/courses/'
     | '/user/requests/'
     | '/browse/$department/$course/'
     | '/browse/$department/$course/$class/'
@@ -427,6 +447,8 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/browse/$department'
     | '/departments/$department'
+    | '/search/classes'
+    | '/search/courses'
     | '/user/requests'
     | '/browse/$department/$course'
     | '/browse/$department/$course/$class'
@@ -466,6 +488,8 @@ export interface FileRouteTypes {
     | '/_app/admin/users/'
     | '/_app/browse/$department/'
     | '/_app/departments/$department/'
+    | '/_app/search/classes/'
+    | '/_app/search/courses/'
     | '/_app/user/requests/'
     | '/_app/browse/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
@@ -629,6 +653,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/requests/'
       preLoaderRoute: typeof AppUserRequestsIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/search/courses/': {
+      id: '/_app/search/courses/'
+      path: '/search/courses'
+      fullPath: '/search/courses/'
+      preLoaderRoute: typeof AppSearchCoursesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/search/classes/': {
+      id: '/_app/search/classes/'
+      path: '/search/classes'
+      fullPath: '/search/classes/'
+      preLoaderRoute: typeof AppSearchClassesIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/departments/$department/': {
       id: '/_app/departments/$department/'
@@ -812,6 +850,8 @@ interface AppRouteChildren {
   AppQuizResultsAttemptIdRoute: typeof AppQuizResultsAttemptIdRoute
   AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
   AppDepartmentsDepartmentIndexRoute: typeof AppDepartmentsDepartmentIndexRoute
+  AppSearchClassesIndexRoute: typeof AppSearchClassesIndexRoute
+  AppSearchCoursesIndexRoute: typeof AppSearchCoursesIndexRoute
   AppBrowseDepartmentCourseIndexRoute: typeof AppBrowseDepartmentCourseIndexRoute
   AppBrowseDepartmentCourseClassIndexRoute: typeof AppBrowseDepartmentCourseClassIndexRoute
   AppBrowseDepartmentCourseClassSectionIndexRoute: typeof AppBrowseDepartmentCourseClassSectionIndexRoute
@@ -828,6 +868,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppQuizResultsAttemptIdRoute: AppQuizResultsAttemptIdRoute,
   AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
   AppDepartmentsDepartmentIndexRoute: AppDepartmentsDepartmentIndexRoute,
+  AppSearchClassesIndexRoute: AppSearchClassesIndexRoute,
+  AppSearchCoursesIndexRoute: AppSearchCoursesIndexRoute,
   AppBrowseDepartmentCourseIndexRoute: AppBrowseDepartmentCourseIndexRoute,
   AppBrowseDepartmentCourseClassIndexRoute:
     AppBrowseDepartmentCourseClassIndexRoute,
