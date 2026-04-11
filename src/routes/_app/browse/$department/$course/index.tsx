@@ -44,10 +44,10 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
     }),
     scripts: [
       breadcrumbJsonLd([
-        { name: "Esplora", path: "/browse" },
+        { name: "Dipartimenti", path: "/departments" },
         {
           name: loaderData?.department?.name ?? "Dipartimento",
-          path: `/browse/${match.params.department}`,
+          path: `/departments/${match.params.department}`,
         },
         { name: loaderData?.name ?? "Corso", path: match.pathname },
       ]),
@@ -195,10 +195,10 @@ function CoursePage() {
     <div className="container py-8">
       <BrowseBreadcrumb
         segments={[
-          { label: "Esplora", href: "/browse" },
+          { label: "Dipartimenti", href: "/departments" },
           {
             label: course.department.name,
-            href: `/browse/${deptCode}`,
+            href: `/departments/${deptCode}`,
           },
         ]}
         current={course.name}
