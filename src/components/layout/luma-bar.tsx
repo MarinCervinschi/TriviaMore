@@ -7,14 +7,15 @@ import {
   useTransform,
 } from "framer-motion"
 import {
-  Bookmark,
   BookOpen,
+  Compass,
   GraduationCap,
   Home,
   Inbox,
   LogOut,
   Mail,
   Moon,
+  Search,
   Settings,
   Shield,
   Sun,
@@ -51,10 +52,9 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: "/user", icon: Home, label: "Dashboard", fuzzy: false },
-  { to: "/departments", icon: BookOpen, label: "Dipartimenti", fuzzy: true },
+  { to: "/browse", icon: Compass, label: "Esplora", fuzzy: false },
   { to: "/user/classes", icon: GraduationCap, label: "I Miei Corsi", fuzzy: false },
   { to: "/user/requests", icon: Inbox, label: "Contributi", fuzzy: true },
-  { to: "/user/bookmarks", icon: Bookmark, label: "Segnalibri", fuzzy: false },
 ]
 
 const ADMIN_ITEM: NavItem = {
@@ -70,15 +70,13 @@ const MAGNIFIED_SIZE = 56
 const DISTANCE = 120
 const SPRING_CONFIG = { mass: 0.1, stiffness: 200, damping: 18 }
 
-function useNavItems() {
+function useIsAdmin() {
   const { user } = useAuth()
-  const isAdmin =
+  return (
     user?.role === "SUPERADMIN" ||
     user?.role === "ADMIN" ||
     user?.role === "MAINTAINER"
-
-  if (isAdmin) return [...NAV_ITEMS, ADMIN_ITEM]
-  return NAV_ITEMS
+  )
 }
 
 function getInitials(name: string | null | undefined, email: string | undefined) {
@@ -336,6 +334,70 @@ function DockProfileIcon({
   )
 }
 
+function DockSearchPopover({
+  mouseX,
+  prefersReduced,
+}: {
+  mouseX: MotionValue<number>
+  prefersReduced: boolean
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { width, scale } = useDockMagnification(ref, mouseX, prefersReduced)
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <motion.div
+              ref={ref}
+              style={{ width }}
+              className="aspect-square"
+            >
+              <button
+                className="relative z-10 flex h-full w-full items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Cerca"
+              >
+                <motion.div
+                  className="flex items-center justify-center"
+                  style={{ scale }}
+                >
+                  <Search className="size-5" strokeWidth={1.5} />
+                </motion.div>
+              </button>
+            </motion.div>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={12}>
+          Cerca
+        </TooltipContent>
+      </Tooltip>
+
+      <PopoverContent side="top" sideOffset={16} align="center" className="w-56 p-0">
+        <div className="flex flex-col py-1">
+          <Link
+            to="/search/courses"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            <GraduationCap className="h-4 w-4" strokeWidth={1.5} />
+            Cerca Corso
+          </Link>
+          <Link
+            to="/search/classes"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            <BookOpen className="h-4 w-4" strokeWidth={1.5} />
+            Cerca Insegnamento
+          </Link>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 function useHideAtBottom(offset = 80) {
   const [hidden, setHidden] = useState(false)
   const lastScrollY = useRef(0)
@@ -361,7 +423,7 @@ function useHideAtBottom(offset = 80) {
 }
 
 export function LumaBar() {
-  const items = useNavItems()
+  const isAdmin = useIsAdmin()
   const matchRoute = useMatchRoute()
   const prefersReduced = useReducedMotion()
   const { user, logout } = useAuth()
@@ -369,9 +431,10 @@ export function LumaBar() {
 
   const mouseX = useMotionValue(Infinity)
 
-  const activeIndex = items.findIndex((item) =>
+  const activeIndex = NAV_ITEMS.findIndex((item) =>
     matchRoute({ to: item.to, fuzzy: item.fuzzy }),
   )
+  const adminActive = isAdmin && matchRoute({ to: ADMIN_ITEM.to, fuzzy: ADMIN_ITEM.fuzzy })
 
   return (
     <motion.div
@@ -388,7 +451,7 @@ export function LumaBar() {
           onMouseLeave={() => mouseX.set(Infinity)}
         >
           {/* Nav items */}
-          {items.map((item, index) => (
+          {NAV_ITEMS.map((item, index) => (
             <DockIcon
               key={item.to}
               item={item}
@@ -397,6 +460,19 @@ export function LumaBar() {
               prefersReduced={prefersReduced}
             />
           ))}
+
+          {/* Search popover */}
+          <DockSearchPopover mouseX={mouseX} prefersReduced={prefersReduced} />
+
+          {/* Admin (always last before separator) */}
+          {isAdmin && (
+            <DockIcon
+              item={ADMIN_ITEM}
+              isActive={!!adminActive}
+              mouseX={mouseX}
+              prefersReduced={prefersReduced}
+            />
+          )}
 
           {/* Separator dot */}
           <div className="mx-0.5 mb-1 h-1 w-1 self-center rounded-full bg-border" />
