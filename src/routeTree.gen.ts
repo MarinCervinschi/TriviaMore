@@ -21,6 +21,7 @@ import { Route as AppAboutRouteImport } from './routes/_app/about'
 import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
+import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
@@ -29,6 +30,7 @@ import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/not
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
+import { Route as AppDepartmentsDepartmentIndexRouteImport } from './routes/_app/departments/$department/index'
 import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/browse/$department/index'
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
@@ -104,6 +106,11 @@ const AppUserIndexRoute = AppUserIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
+const AppDepartmentsIndexRoute = AppDepartmentsIndexRouteImport.update({
+  id: '/departments/',
+  path: '/departments/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBrowseIndexRoute = AppBrowseIndexRouteImport.update({
   id: '/browse/',
   path: '/browse/',
@@ -144,6 +151,12 @@ const AppUserRequestsIndexRoute = AppUserRequestsIndexRouteImport.update({
   path: '/requests/',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
+const AppDepartmentsDepartmentIndexRoute =
+  AppDepartmentsDepartmentIndexRouteImport.update({
+    id: '/departments/$department/',
+    path: '/departments/$department/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppBrowseDepartmentIndexRoute =
   AppBrowseDepartmentIndexRouteImport.update({
     id: '/browse/$department/',
@@ -247,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/user/settings': typeof AppUserSettingsRoute
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
+  '/departments/': typeof AppDepartmentsIndexRoute
   '/user/': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -260,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
   '/browse/$department/': typeof AppBrowseDepartmentIndexRoute
+  '/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -281,6 +296,7 @@ export interface FileRoutesByTo {
   '/user/settings': typeof AppUserSettingsRoute
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
+  '/departments': typeof AppDepartmentsIndexRoute
   '/user': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -294,6 +310,7 @@ export interface FileRoutesByTo {
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
   '/browse/$department': typeof AppBrowseDepartmentIndexRoute
+  '/departments/$department': typeof AppDepartmentsDepartmentIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -319,6 +336,7 @@ export interface FileRoutesById {
   '/_app/user/settings': typeof AppUserSettingsRoute
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
+  '/_app/departments/': typeof AppDepartmentsIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
   '/_app/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/_app/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -332,6 +350,7 @@ export interface FileRoutesById {
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
   '/_app/browse/$department/': typeof AppBrowseDepartmentIndexRoute
+  '/_app/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -357,6 +376,7 @@ export interface FileRouteTypes {
     | '/user/settings'
     | '/admin/'
     | '/browse/'
+    | '/departments/'
     | '/user/'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -370,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/requests/'
     | '/admin/users/'
     | '/browse/$department/'
+    | '/departments/$department/'
     | '/user/requests/'
     | '/browse/$department/$course/'
     | '/browse/$department/$course/$class/'
@@ -391,6 +412,7 @@ export interface FileRouteTypes {
     | '/user/settings'
     | '/admin'
     | '/browse'
+    | '/departments'
     | '/user'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -404,6 +426,7 @@ export interface FileRouteTypes {
     | '/admin/requests'
     | '/admin/users'
     | '/browse/$department'
+    | '/departments/$department'
     | '/user/requests'
     | '/browse/$department/$course'
     | '/browse/$department/$course/$class'
@@ -428,6 +451,7 @@ export interface FileRouteTypes {
     | '/_app/user/settings'
     | '/_app/admin/'
     | '/_app/browse/'
+    | '/_app/departments/'
     | '/_app/user/'
     | '/_app/admin/classes/$classId'
     | '/_app/admin/courses/$courseId'
@@ -441,6 +465,7 @@ export interface FileRouteTypes {
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
     | '/_app/browse/$department/'
+    | '/_app/departments/$department/'
     | '/_app/user/requests/'
     | '/_app/browse/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
@@ -542,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
+    '/_app/departments/': {
+      id: '/_app/departments/'
+      path: '/departments'
+      fullPath: '/departments/'
+      preLoaderRoute: typeof AppDepartmentsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/browse/': {
       id: '/_app/browse/'
       path: '/browse'
@@ -597,6 +629,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/requests/'
       preLoaderRoute: typeof AppUserRequestsIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/departments/$department/': {
+      id: '/_app/departments/$department/'
+      path: '/departments/$department'
+      fullPath: '/departments/$department/'
+      preLoaderRoute: typeof AppDepartmentsDepartmentIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/browse/$department/': {
       id: '/_app/browse/$department/'
@@ -769,8 +808,10 @@ interface AppRouteChildren {
   AppContactRoute: typeof AppContactRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBrowseIndexRoute: typeof AppBrowseIndexRoute
+  AppDepartmentsIndexRoute: typeof AppDepartmentsIndexRoute
   AppQuizResultsAttemptIdRoute: typeof AppQuizResultsAttemptIdRoute
   AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
+  AppDepartmentsDepartmentIndexRoute: typeof AppDepartmentsDepartmentIndexRoute
   AppBrowseDepartmentCourseIndexRoute: typeof AppBrowseDepartmentCourseIndexRoute
   AppBrowseDepartmentCourseClassIndexRoute: typeof AppBrowseDepartmentCourseClassIndexRoute
   AppBrowseDepartmentCourseClassSectionIndexRoute: typeof AppBrowseDepartmentCourseClassSectionIndexRoute
@@ -783,8 +824,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppContactRoute: AppContactRoute,
   AppIndexRoute: AppIndexRoute,
   AppBrowseIndexRoute: AppBrowseIndexRoute,
+  AppDepartmentsIndexRoute: AppDepartmentsIndexRoute,
   AppQuizResultsAttemptIdRoute: AppQuizResultsAttemptIdRoute,
   AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
+  AppDepartmentsDepartmentIndexRoute: AppDepartmentsDepartmentIndexRoute,
   AppBrowseDepartmentCourseIndexRoute: AppBrowseDepartmentCourseIndexRoute,
   AppBrowseDepartmentCourseClassIndexRoute:
     AppBrowseDepartmentCourseClassIndexRoute,
