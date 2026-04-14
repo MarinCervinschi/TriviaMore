@@ -92,7 +92,7 @@ export function FlashcardResults({
               const wasStudied = studiedCards.has(index)
               return (
                 <div
-                  key={question.id}
+                  key={`${question.id}-${index}`}
                   className="overflow-hidden rounded-2xl border bg-card p-4"
                 >
                   <div className="flex items-center justify-between">
