@@ -1,7 +1,7 @@
 -- ============================================================
--- catalog schema: content hierarchy
--- departments > courses > classes > sections > questions
--- + admin/maintainer junction tables
+-- catalog schema: content hierarchy (final state)
+-- departments > courses > classes (via course_classes N:M) > sections > questions
+-- + admin/maintainer junction tables + department_locations + FTS
 -- ============================================================
 
 CREATE TABLE catalog.departments (
@@ -21,11 +21,6 @@ CREATE TRIGGER set_departments_updated_at
   BEFORE UPDATE ON catalog.departments
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- Add FK from profiles.department_id now that catalog.departments exists
-ALTER TABLE public.profiles
-  ADD CONSTRAINT profiles_department_id_fkey
-  FOREIGN KEY (department_id) REFERENCES catalog.departments(id) ON DELETE SET NULL;
-
 CREATE TABLE catalog.department_admins (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   department_id UUID NOT NULL REFERENCES catalog.departments(id) ON DELETE CASCADE,
@@ -33,22 +28,46 @@ CREATE TABLE catalog.department_admins (
   PRIMARY KEY (user_id, department_id)
 );
 
+CREATE TABLE catalog.department_locations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  department_id UUID NOT NULL REFERENCES catalog.departments(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  address TEXT NOT NULL,
+  latitude NUMERIC NOT NULL,
+  longitude NUMERIC NOT NULL,
+  campus_location public.campus_location,
+  is_primary BOOLEAN DEFAULT false,
+  position SMALLINT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_department_locations_dept ON catalog.department_locations(department_id);
+
+CREATE TRIGGER set_department_locations_updated_at
+  BEFORE UPDATE ON catalog.department_locations
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
 CREATE TABLE catalog.courses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   code TEXT NOT NULL,
   description TEXT,
   department_id UUID NOT NULL REFERENCES catalog.departments(id) ON DELETE CASCADE,
-  location TEXT,
+  location public.campus_location,
   cfu INT,
   position INT NOT NULL DEFAULT 0,
   course_type public.course_type NOT NULL DEFAULT 'BACHELOR',
+  fts TSVECTOR GENERATED ALWAYS AS (
+    to_tsvector('italian', coalesce(name, '') || ' ' || coalesce(description, '') || ' ' || coalesce(code, ''))
+  ) STORED,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(code, department_id)
 );
 
 CREATE INDEX idx_courses_position ON catalog.courses(position);
+CREATE INDEX courses_fts_idx ON catalog.courses USING gin(fts);
 
 CREATE TRIGGER set_courses_updated_at
   BEFORE UPDATE ON catalog.courses
@@ -64,24 +83,42 @@ CREATE TABLE catalog.course_maintainers (
 CREATE TABLE catalog.classes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
-  code TEXT NOT NULL,
   description TEXT,
-  course_id UUID NOT NULL REFERENCES catalog.courses(id) ON DELETE CASCADE,
-  class_year INT NOT NULL,
   cfu INT,
-  catalogue_url TEXT,
-  curriculum TEXT,
   position INT NOT NULL DEFAULT 0,
+  fts TSVECTOR GENERATED ALWAYS AS (
+    to_tsvector('italian', coalesce(name, '') || ' ' || coalesce(description, ''))
+  ) STORED,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(code, course_id)
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_classes_position ON catalog.classes(position);
-CREATE INDEX idx_classes_class_year ON catalog.classes(class_year);
+CREATE INDEX classes_fts_idx ON catalog.classes USING gin(fts);
 
 CREATE TRIGGER set_classes_updated_at
   BEFORE UPDATE ON catalog.classes
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TABLE catalog.course_classes (
+  course_id     UUID NOT NULL REFERENCES catalog.courses(id) ON DELETE CASCADE,
+  class_id      UUID NOT NULL REFERENCES catalog.classes(id) ON DELETE CASCADE,
+  code          TEXT NOT NULL,
+  class_year    INT NOT NULL,
+  mandatory     BOOLEAN NOT NULL DEFAULT false,
+  catalogue_url TEXT,
+  curriculum    TEXT,
+  position      INT NOT NULL DEFAULT 0,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (course_id, class_id),
+  UNIQUE(code, course_id)
+);
+
+CREATE INDEX idx_course_classes_class ON catalog.course_classes(class_id);
+
+CREATE TRIGGER set_course_classes_updated_at
+  BEFORE UPDATE ON catalog.course_classes
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TABLE catalog.sections (
