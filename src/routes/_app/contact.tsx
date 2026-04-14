@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
 import {
   ArrowUpRight,
@@ -13,6 +14,14 @@ import { useState } from "react"
 
 import { ContactForm } from "@/components/contact/contact-form"
 import { Button } from "@/components/ui/button"
+import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { useScrollReveal } from "@/hooks/useScrollReveal"
+import {
+  fadeInUp,
+  staggerContainer,
+  staggerItem,
+  withReducedMotion,
+} from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/contact")({
@@ -99,6 +108,17 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 function ContactPage() {
+  const prefersReduced = useReducedMotion()
+
+  const { ref: heroRef, isVisible: heroVisible } = useScrollReveal()
+  const { ref: linksRef, isVisible: linksVisible } = useScrollReveal()
+  const { ref: formRef, isVisible: formVisible } = useScrollReveal()
+  const { ref: faqRef, isVisible: faqVisible } = useScrollReveal()
+
+  const fadeUp = withReducedMotion(fadeInUp, prefersReduced)
+  const container = withReducedMotion(staggerContainer, prefersReduced)
+  const item = withReducedMotion(staggerItem, prefersReduced)
+
   return (
     <div className="relative">
       {/* Hero */}
@@ -110,36 +130,58 @@ function ContactPage() {
           <div className="absolute inset-0 dot-pattern" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          ref={heroRef}
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          variants={container}
+          initial="hidden"
+          animate={heroVisible ? "visible" : "hidden"}
+        >
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary">
+            <motion.p
+              className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary"
+              variants={item}
+            >
               Contatti
-            </p>
-            <h1 className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+            </motion.p>
+            <motion.h1
+              className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+              variants={item}
+            >
               Parliamo del{" "}
               <span className="gradient-text">tuo progetto</span>
-            </h1>
-            <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            </motion.h1>
+            <motion.p
+              className="text-lg leading-relaxed text-muted-foreground sm:text-xl"
+              variants={item}
+            >
               Hai domande, suggerimenti o vuoi contribuire? Siamo qui per
               ascoltarti.
-            </p>
+            </motion.p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Quick action links */}
       <section className="border-y bg-muted/20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          ref={linksRef}
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          variants={container}
+          initial="hidden"
+          animate={linksVisible ? "visible" : "hidden"}
+        >
           <div className="grid grid-cols-1 divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {quickLinks.map((link) => {
               const Icon = link.icon
               return (
-                <a
+                <motion.a
                   key={link.title}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-4 px-6 py-6 transition-colors hover:bg-muted/50"
+                  variants={item}
                 >
                   <div className={`shrink-0 rounded-xl p-3 ${link.bg}`}>
                     <Icon
@@ -154,19 +196,25 @@ function ContactPage() {
                     </p>
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                </a>
+                </motion.a>
               )
             })}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Main content: Form + GitHub */}
       <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          ref={formRef}
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          variants={container}
+          initial="hidden"
+          animate={formVisible ? "visible" : "hidden"}
+        >
           <div className="grid gap-12 lg:grid-cols-5">
             {/* Form — takes 3 cols */}
-            <div className="lg:col-span-3">
+            <motion.div className="lg:col-span-3" variants={item}>
               <div className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-8">
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-transparent" />
 
@@ -187,10 +235,10 @@ function ContactPage() {
                   <ContactForm />
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Sidebar — takes 2 cols */}
-            <div className="space-y-6 lg:col-span-2">
+            <motion.div className="space-y-6 lg:col-span-2" variants={item}>
               {/* GitHub card */}
               <div className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-8">
                 <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-muted/50 blur-[40px]" />
@@ -235,15 +283,21 @@ function ContactPage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* FAQ — accordion style */}
       <section className="border-t bg-muted/20 py-20 sm:py-28">
         <div className="pointer-events-none absolute inset-0 dot-pattern opacity-30" />
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          ref={faqRef}
+          className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8"
+          variants={fadeUp}
+          initial="hidden"
+          animate={faqVisible ? "visible" : "hidden"}
+        >
           <div className="mb-12 text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">
               FAQ
@@ -258,7 +312,7 @@ function ContactPage() {
               <FAQItem key={faq.q} q={faq.q} a={faq.a} />
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   )
