@@ -5,6 +5,7 @@
 CREATE TABLE public.user_recent_classes (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   class_id UUID NOT NULL REFERENCES catalog.classes(id) ON DELETE CASCADE,
+  course_id UUID NOT NULL REFERENCES catalog.courses(id) ON DELETE CASCADE,
   last_visited TIMESTAMPTZ NOT NULL DEFAULT now(),
   visit_count INT NOT NULL DEFAULT 1,
   PRIMARY KEY (user_id, class_id)
@@ -13,6 +14,7 @@ CREATE TABLE public.user_recent_classes (
 CREATE TABLE public.user_classes (
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   class_id UUID NOT NULL REFERENCES catalog.classes(id) ON DELETE CASCADE,
+  course_id UUID NOT NULL REFERENCES catalog.courses(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, class_id)

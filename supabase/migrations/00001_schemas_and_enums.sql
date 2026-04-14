@@ -31,3 +31,4 @@ CREATE TYPE public.notification_type AS ENUM (
   'CONTENT_UPDATED',
   'NEW_SECTION_ADDED'
 );
+CREATE TYPE public.campus_location AS ENUM ('MODENA', 'REGGIO_EMILIA', 'CARPI', 'MANTOVA');

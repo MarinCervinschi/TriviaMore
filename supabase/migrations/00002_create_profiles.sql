@@ -18,7 +18,6 @@ CREATE TABLE public.profiles (
   email TEXT UNIQUE,
   image TEXT,
   role public.role NOT NULL DEFAULT 'STUDENT',
-  department_id UUID, -- FK added in 00003 after catalog.departments exists
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

@@ -1,10 +1,8 @@
 -- ============================================================
--- Cross-schema views
--- Solve PostgREST limitation: no embedded joins across schemas
--- security_invoker = true: RLS of underlying tables is enforced
+-- Cross-schema views (final state, using course_classes N:M)
+-- All views use security_invoker so RLS is enforced
 -- ============================================================
 
--- User's recently visited classes with full hierarchy
 CREATE VIEW public.user_recent_classes_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -13,8 +11,11 @@ SELECT
   urc.visit_count,
   c.id AS class_id,
   c.name AS class_name,
-  c.code AS class_code,
-  c.class_year,
+  cc.class_year,
+  cc.code AS class_code,
+  cc.mandatory,
+  cc.catalogue_url,
+  cc.curriculum,
   co.id AS course_id,
   co.name AS course_name,
   co.code AS course_code,
@@ -24,10 +25,10 @@ SELECT
   d.code AS department_code
 FROM public.user_recent_classes urc
 JOIN catalog.classes c ON c.id = urc.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+JOIN catalog.courses co ON co.id = urc.course_id
+JOIN catalog.departments d ON d.id = co.department_id
+LEFT JOIN catalog.course_classes cc ON cc.class_id = c.id AND cc.course_id = co.id;
 
--- User's enrolled classes with full hierarchy
 CREATE VIEW public.user_classes_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -35,8 +36,11 @@ SELECT
   uc.created_at,
   c.id AS class_id,
   c.name AS class_name,
-  c.code AS class_code,
-  c.class_year,
+  cc.class_year,
+  cc.code AS class_code,
+  cc.mandatory,
+  cc.catalogue_url,
+  cc.curriculum,
   co.id AS course_id,
   co.name AS course_name,
   co.code AS course_code,
@@ -46,10 +50,10 @@ SELECT
   d.code AS department_code
 FROM public.user_classes uc
 JOIN catalog.classes c ON c.id = uc.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+JOIN catalog.courses co ON co.id = uc.course_id
+JOIN catalog.departments d ON d.id = co.department_id
+LEFT JOIN catalog.course_classes cc ON cc.class_id = c.id AND cc.course_id = co.id;
 
--- User's bookmarked questions with full hierarchy
 CREATE VIEW public.bookmarks_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -66,18 +70,25 @@ SELECT
   s.name AS section_name,
   c.id AS class_id,
   c.name AS class_name,
-  co.id AS course_id,
-  co.name AS course_name,
-  d.id AS department_id,
-  d.name AS department_name
+  course_info.course_id,
+  course_info.course_name,
+  course_info.department_id,
+  course_info.department_name
 FROM public.bookmarks b
 JOIN catalog.questions q ON q.id = b.question_id
 JOIN catalog.sections s ON s.id = q.section_id
 JOIN catalog.classes c ON c.id = s.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+LEFT JOIN LATERAL (
+  SELECT co.id AS course_id, co.name AS course_name,
+         d.id AS department_id, d.name AS department_name
+  FROM catalog.course_classes cc
+  JOIN catalog.courses co ON co.id = cc.course_id
+  JOIN catalog.departments d ON d.id = co.department_id
+  WHERE cc.class_id = c.id
+  ORDER BY cc.position
+  LIMIT 1
+) course_info ON true;
 
--- User's learning progress with full hierarchy
 CREATE VIEW public.progress_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -97,17 +108,24 @@ SELECT
   s.name AS section_name,
   c.id AS class_id,
   c.name AS class_name,
-  co.id AS course_id,
-  co.name AS course_name,
-  d.id AS department_id,
-  d.name AS department_name
+  course_info.course_id,
+  course_info.course_name,
+  course_info.department_id,
+  course_info.department_name
 FROM public.progress p
 JOIN catalog.sections s ON s.id = p.section_id
 JOIN catalog.classes c ON c.id = s.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+LEFT JOIN LATERAL (
+  SELECT co.id AS course_id, co.name AS course_name,
+         d.id AS department_id, d.name AS department_name
+  FROM catalog.course_classes cc
+  JOIN catalog.courses co ON co.id = cc.course_id
+  JOIN catalog.departments d ON d.id = co.department_id
+  WHERE cc.class_id = c.id
+  ORDER BY cc.position
+  LIMIT 1
+) course_info ON true;
 
--- Quiz attempts with quiz + section hierarchy
 CREATE VIEW quiz.quiz_attempts_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -124,18 +142,25 @@ SELECT
   s.name AS section_name,
   c.id AS class_id,
   c.name AS class_name,
-  co.id AS course_id,
-  co.name AS course_name,
-  d.id AS department_id,
-  d.name AS department_name
+  course_info.course_id,
+  course_info.course_name,
+  course_info.department_id,
+  course_info.department_name
 FROM quiz.quiz_attempts qa
 JOIN quiz.quizzes qz ON qz.id = qa.quiz_id
 JOIN catalog.sections s ON s.id = qz.section_id
 JOIN catalog.classes c ON c.id = s.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+LEFT JOIN LATERAL (
+  SELECT co.id AS course_id, co.name AS course_name,
+         d.id AS department_id, d.name AS department_name
+  FROM catalog.course_classes cc
+  JOIN catalog.courses co ON co.id = cc.course_id
+  JOIN catalog.departments d ON d.id = co.department_id
+  WHERE cc.class_id = c.id
+  ORDER BY cc.position
+  LIMIT 1
+) course_info ON true;
 
--- Quizzes with section hierarchy
 CREATE VIEW quiz.quizzes_detail
 WITH (security_invoker = true) AS
 SELECT
@@ -148,12 +173,20 @@ SELECT
   s.name AS section_name,
   s.class_id,
   c.name AS class_name,
-  co.id AS course_id,
-  co.name AS course_name,
-  d.id AS department_id,
-  d.name AS department_name
+  course_info.course_id,
+  course_info.course_name,
+  course_info.department_id,
+  course_info.department_name
 FROM quiz.quizzes qz
 JOIN catalog.sections s ON s.id = qz.section_id
 JOIN catalog.classes c ON c.id = s.class_id
-JOIN catalog.courses co ON co.id = c.course_id
-JOIN catalog.departments d ON d.id = co.department_id;
+LEFT JOIN LATERAL (
+  SELECT co.id AS course_id, co.name AS course_name,
+         d.id AS department_id, d.name AS department_name
+  FROM catalog.course_classes cc
+  JOIN catalog.courses co ON co.id = cc.course_id
+  JOIN catalog.departments d ON d.id = co.department_id
+  WHERE cc.class_id = c.id
+  ORDER BY cc.position
+  LIMIT 1
+) course_info ON true;

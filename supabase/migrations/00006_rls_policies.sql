@@ -1,5 +1,5 @@
 -- ============================================================
--- Row-Level Security policies for all tables
+-- Row-Level Security policies for all tables (final state)
 -- ============================================================
 
 -- ────────────────────────────────────────────────
@@ -33,10 +33,13 @@ RETURNS BOOLEAN AS $$
   );
 $$ LANGUAGE sql SECURITY DEFINER STABLE SET search_path = public, catalog, quiz;
 
+-- Uses course_classes junction (N:M relationship)
 CREATE OR REPLACE FUNCTION public.is_class_admin(cls_id UUID)
 RETURNS BOOLEAN AS $$
-  SELECT public.is_course_maintainer(
-    (SELECT course_id FROM catalog.classes WHERE id = cls_id)
+  SELECT EXISTS (
+    SELECT 1 FROM catalog.course_classes cc
+    WHERE cc.class_id = cls_id
+      AND public.is_course_maintainer(cc.course_id)
   );
 $$ LANGUAGE sql SECURITY DEFINER STABLE SET search_path = public, catalog, quiz;
 
@@ -100,6 +103,15 @@ CREATE POLICY department_admins_insert ON catalog.department_admins FOR INSERT W
 CREATE POLICY department_admins_delete ON catalog.department_admins FOR DELETE USING (public.is_superadmin());
 
 -- ────────────────────────────────────────────────
+-- department_locations
+-- ────────────────────────────────────────────────
+ALTER TABLE catalog.department_locations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY department_locations_select ON catalog.department_locations FOR SELECT USING (true);
+CREATE POLICY department_locations_insert ON catalog.department_locations FOR INSERT WITH CHECK (public.is_department_admin(department_id));
+CREATE POLICY department_locations_update ON catalog.department_locations FOR UPDATE USING (public.is_department_admin(department_id));
+CREATE POLICY department_locations_delete ON catalog.department_locations FOR DELETE USING (public.is_department_admin(department_id));
+
+-- ────────────────────────────────────────────────
 -- courses
 -- ────────────────────────────────────────────────
 ALTER TABLE catalog.courses ENABLE ROW LEVEL SECURITY;
@@ -127,9 +139,25 @@ CREATE POLICY course_maintainers_delete ON catalog.course_maintainers FOR DELETE
 -- ────────────────────────────────────────────────
 ALTER TABLE catalog.classes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY classes_select ON catalog.classes FOR SELECT USING (true);
-CREATE POLICY classes_insert ON catalog.classes FOR INSERT WITH CHECK (public.is_course_maintainer(course_id));
-CREATE POLICY classes_update ON catalog.classes FOR UPDATE USING (public.is_course_maintainer(course_id));
-CREATE POLICY classes_delete ON catalog.classes FOR DELETE USING (public.is_course_maintainer(course_id));
+CREATE POLICY classes_insert ON catalog.classes FOR INSERT
+  WITH CHECK (
+    public.is_superadmin()
+    OR EXISTS (SELECT 1 FROM catalog.course_maintainers WHERE user_id = auth.uid())
+  );
+CREATE POLICY classes_update ON catalog.classes FOR UPDATE USING (public.is_class_admin(id));
+CREATE POLICY classes_delete ON catalog.classes FOR DELETE USING (public.is_class_admin(id));
+
+-- ────────────────────────────────────────────────
+-- course_classes
+-- ────────────────────────────────────────────────
+ALTER TABLE catalog.course_classes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY course_classes_select ON catalog.course_classes FOR SELECT USING (true);
+CREATE POLICY course_classes_insert ON catalog.course_classes FOR INSERT
+  WITH CHECK (public.is_course_maintainer(course_id));
+CREATE POLICY course_classes_update ON catalog.course_classes FOR UPDATE
+  USING (public.is_course_maintainer(course_id));
+CREATE POLICY course_classes_delete ON catalog.course_classes FOR DELETE
+  USING (public.is_course_maintainer(course_id));
 
 -- ────────────────────────────────────────────────
 -- user_recent_classes
