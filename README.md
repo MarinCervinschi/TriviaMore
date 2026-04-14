@@ -43,7 +43,7 @@ pnpm dev:no-secrets
 | `pnpm start` | Start production server (`node .output/server/index.mjs`) |
 | `pnpm preview` | Preview the production build |
 | `pnpm test` | Run tests with Vitest |
-| `pnpm db:seed` | Seed local DB with sample data |
+| `pnpm db:types` | Regenerate Supabase TypeScript types (with post-processing) |
 | `pnpm generate:sitemap` | Generate sitemap.xml (runs automatically after build) |
 | `pnpm generate:sitemap:dev` | Generate sitemap.xml with Infisical CLI |
 
@@ -103,25 +103,50 @@ supabase db reset       # Re-apply all migrations from scratch
 | Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 | Mailpit (email testing) | http://127.0.0.1:54324 |
 
-## Database Seed
+## Database Setup
 
-Populates the local Supabase database with sample public data for development:
+`supabase db reset` applies all migrations and seeds the database automatically:
 
 ```bash
-pnpm db:seed
+supabase db reset       # Migrations + seed in one step
 ```
 
-Creates 3 departments (DIEF, DSV, DEM), 5 courses, 8 classes, 12 sections, 16 questions (MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER), and 2 evaluation modes.
+### Seed
 
-Idempotent — safe to run multiple times. Cleans previous seed data (IDs prefixed with `clseed_`) before reinserting.
+The seed (`supabase/seed.sql`) populates the local database with:
 
-Requires `SUPABASE_SERVICE_ROLE_KEY` (injected via Infisical).
+- **Superadmin user** — `admin@triviamore.local` / `password123`
+- **Catalog data** — departments, courses, classes, sections, questions (dump from staging)
+
+### Dump from staging
+
+To refresh the seed with the latest staging data:
 
 ```bash
-supabase db dump --data-only --linked -f supabase/dump_staging_data.sql
+# Full backup (all schemas)
+infisical run -- supabase db dump --data-only --linked -f data/dump.sql
 
+# Catalog-only (for updating seed.sql)
+infisical run -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
+```
+
+To restore a full dump locally:
+
+```bash
 docker exec -i supabase_db_TriviaMore psql -U postgres -d postgres < data/dump.sql
 ```
+
+### Regenerate TypeScript types
+
+After any schema change, regenerate the types:
+
+```bash
+pnpm db:types
+```
+
+This generates types from the local database and applies post-processing fixes (e.g. `tsvector` columns typed as `string | null` instead of `unknown`). The fix script lives in `supabase/scripts/fix-types.ts`.
+
+Custom helper types like `CatalogTables` live in `src/lib/supabase/database.helpers.ts` and are not affected by regeneration.
 
 ## Authentication
 
