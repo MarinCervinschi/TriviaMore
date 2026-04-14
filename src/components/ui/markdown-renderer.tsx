@@ -6,9 +6,24 @@ import remarkMath from "remark-math";
 interface MarkdownRendererProps {
 	content: string;
 	className?: string;
+	inline?: boolean;
 }
 
-export function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
+export function MarkdownRenderer({ content, className = "", inline = false }: MarkdownRendererProps) {
+	if (inline) {
+		return (
+			<span className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>
+				<ReactMarkdown
+					remarkPlugins={[remarkGfm, remarkMath]}
+					rehypePlugins={[rehypeKatex]}
+					components={{ p: ({ children }) => <span>{children}</span> }}
+				>
+					{content}
+				</ReactMarkdown>
+			</span>
+		);
+	}
+
 	return (
 		<div className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>
 			<ReactMarkdown
