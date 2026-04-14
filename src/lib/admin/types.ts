@@ -1,4 +1,5 @@
-import type { CatalogTables, Database } from "@/lib/supabase/database.types"
+import type { CatalogTables } from "@/lib/supabase/database.helpers"
+import type { Database } from "@/lib/supabase/database.types"
 
 // Row types (catalog schema)
 export type Department = CatalogTables<"departments">
