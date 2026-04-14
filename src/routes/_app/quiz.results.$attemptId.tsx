@@ -188,9 +188,12 @@ function ReviewItem({
 
   return (
     <div className="overflow-hidden rounded-2xl border bg-card">
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/30"
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(!open) } }}
+        className="flex w-full cursor-pointer items-center justify-between p-4 text-left transition-colors hover:bg-muted/30"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold">
@@ -212,7 +215,7 @@ function ReviewItem({
             ({score} pt)
           </Badge>
         </div>
-      </button>
+      </div>
 
       {open && (
         <div className="border-t px-4 pb-4 pt-3 space-y-3">
