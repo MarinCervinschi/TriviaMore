@@ -131,7 +131,7 @@ export function QuestionCard({
                 </span>
                 <MarkdownRenderer
                   content={option.text}
-                  className="inline [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                  inline
                 />
               </span>
             </label>

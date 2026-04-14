@@ -189,7 +189,7 @@ function BookmarkCard({
                   </span>
                   <MarkdownRenderer
                     content={option.text}
-                    className="inline [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                    inline
                   />
                   {isCorrectOption(option.id, bookmark.correct_answer) && (
                     <span className="ml-2 text-xs font-medium">
