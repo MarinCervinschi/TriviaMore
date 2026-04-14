@@ -683,7 +683,6 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
-          department_id: string | null
           email: string | null
           id: string
           image: string | null
@@ -693,7 +692,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          department_id?: string | null
           email?: string | null
           id: string
           image?: string | null
@@ -703,7 +701,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          department_id?: string | null
           email?: string | null
           id?: string
           image?: string | null
@@ -711,36 +708,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["role"]
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "bookmarks_detail"
-            referencedColumns: ["department_id"]
-          },
-          {
-            foreignKeyName: "profiles_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "progress_detail"
-            referencedColumns: ["department_id"]
-          },
-          {
-            foreignKeyName: "profiles_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "user_classes_detail"
-            referencedColumns: ["department_id"]
-          },
-          {
-            foreignKeyName: "profiles_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "user_recent_classes_detail"
-            referencedColumns: ["department_id"]
-          },
-        ]
+        Relationships: []
       }
       progress: {
         Row: {
@@ -1554,9 +1522,6 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
-
-export type CatalogTables<T extends keyof Database["catalog"]["Tables"]> =
-  Database["catalog"]["Tables"][T]["Row"]
 
 export const Constants = {
   catalog: {
