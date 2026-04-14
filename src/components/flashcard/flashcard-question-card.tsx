@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
+import { BookmarkButton } from "@/components/quiz/bookmark-button"
+import { ReportButton } from "@/components/requests/report-button"
 import type { FlashcardQuestion } from "@/lib/flashcard/types"
 
 function getDifficultyColor(difficulty: string) {
@@ -60,9 +62,16 @@ export function FlashcardQuestionCard({
                 {getDifficultyLabel(question.difficulty)}
               </Badge>
             </div>
-            <span className="text-xs text-muted-foreground">
-              Clicca per girare
-            </span>
+            <div className="flex items-center gap-1">
+              <BookmarkButton questionId={question.id} />
+              <ReportButton
+                questionId={question.id}
+                questionContent={question.content}
+              />
+              <span className="text-xs text-muted-foreground">
+                Clicca per girare
+              </span>
+            </div>
           </div>
           <div className="flex min-h-[280px] items-center justify-center">
             <div className="text-lg leading-relaxed">
@@ -80,9 +89,16 @@ export function FlashcardQuestionCard({
             <span className="text-sm font-medium text-primary">
               Risposta
             </span>
-            <span className="text-xs text-muted-foreground">
-              Clicca per girare
-            </span>
+            <div className="flex items-center gap-1">
+              <BookmarkButton questionId={question.id} />
+              <ReportButton
+                questionId={question.id}
+                questionContent={question.content}
+              />
+              <span className="text-xs text-muted-foreground">
+                Clicca per girare
+              </span>
+            </div>
           </div>
           <div className="flex min-h-[280px] flex-col items-center justify-center gap-6">
             <div className="text-lg font-medium">
