@@ -17,7 +17,7 @@
     "start": "node .output/server/index.mjs",
     "preview": "infisical run -- vite preview",
     "test": "vitest run",
-    "db:seed": "infisical run -- pnpm tsx supabase/scripts/seed.ts",
+    "db:types": "infisical run -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
     "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap",
     "postbuild": "pnpm generate:sitemap"
