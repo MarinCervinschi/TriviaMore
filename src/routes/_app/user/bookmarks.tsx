@@ -187,7 +187,10 @@ function BookmarkCard({
                   <span className="mr-2 font-semibold">
                     {String.fromCharCode(65 + index)})
                   </span>
-                  {option.text}
+                  <MarkdownRenderer
+                    content={option.text}
+                    className="inline [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                  />
                   {isCorrectOption(option.id, bookmark.correct_answer) && (
                     <span className="ml-2 text-xs font-medium">
                       &#10003; Corretta

@@ -129,7 +129,10 @@ export function QuestionCard({
                 <span className="mr-2 font-semibold text-muted-foreground">
                   {String.fromCharCode(65 + index)})
                 </span>
-                {option.text}
+                <MarkdownRenderer
+                  content={option.text}
+                  className="inline [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                />
               </span>
             </label>
           ))}
