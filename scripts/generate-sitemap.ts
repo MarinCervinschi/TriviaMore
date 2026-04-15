@@ -6,17 +6,39 @@ import { loadSecrets } from "../src/lib/secrets/server"
 // Load secrets from Infisical SDK if available (prod), otherwise assume env is already set (CLI)
 await loadSecrets()
 
-const SITE_URL = process.env.VITE_SITE_URL ?? "https://triviamore.it"
+const SITE_URL = process.env.VITE_SITE_URL
+
+if (!SITE_URL) {
+  console.error("VITE_SITE_URL is not defined in environment variables.")
+  process.exit(1)
+}
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+).schema("catalog")
 
 type SitemapEntry = {
   loc: string
   changefreq: string
   priority: string
+}
+
+const PAGE_SIZE = 1000
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function fetchAll(fn: (from: number, to: number) => PromiseLike<{ data: any; error: any }>) {
+  const rows: unknown[] = []
+  let offset = 0
+  while (true) {
+    const { data, error } = await fn(offset, offset + PAGE_SIZE - 1)
+    if (error) throw new Error(error.message)
+    if (!data || data.length === 0) break
+    rows.push(...data)
+    if (data.length < PAGE_SIZE) break
+    offset += PAGE_SIZE
+  }
+  return rows
 }
 
 async function generateSitemap() {
@@ -28,10 +50,10 @@ async function generateSitemap() {
   ]
 
   // Departments
-  const { data: departments } = await supabase
-    .from("departments")
-    .select("code")
-  for (const dept of departments ?? []) {
+  const departments = await fetchAll((from, to) =>
+    supabase.from("departments").select("code").range(from, to),
+  ) as Array<{ code: string }>
+  for (const dept of departments) {
     entries.push({
       loc: `/browse/${dept.code}`,
       changefreq: "weekly",
@@ -40,51 +62,49 @@ async function generateSitemap() {
   }
 
   // Courses (with department code)
-  const { data: courses } = await supabase
-    .from("courses")
-    .select("code, departments!inner(code)")
-  for (const course of courses ?? []) {
-    const deptCode = (course.departments as unknown as { code: string }).code
+  const courses = await fetchAll((from, to) =>
+    supabase.from("courses").select("code, departments!inner(code)").range(from, to),
+  ) as Array<{ code: string; departments: { code: string } }>
+  for (const course of courses) {
     entries.push({
-      loc: `/browse/${deptCode}/${course.code}`,
+      loc: `/browse/${course.departments.code}/${course.code}`,
       changefreq: "weekly",
       priority: "0.7",
     })
   }
 
-  // Classes (with course and department codes)
-  const { data: classes } = await supabase
-    .from("classes")
-    .select("code, courses!inner(code, departments!inner(code))")
-  for (const cls of classes ?? []) {
-    const course = cls.courses as unknown as {
-      code: string
-      departments: { code: string }
-    }
+  // Classes (via course_classes junction)
+  const courseClasses = await fetchAll((from, to) =>
+    supabase.from("course_classes").select("code, course:courses!inner(code, department:departments!inner(code))").range(from, to),
+  ) as Array<{ code: string; course: { code: string; department: { code: string } } }>
+  for (const cc of courseClasses) {
     entries.push({
-      loc: `/browse/${course.departments.code}/${course.code}/${cls.code}`,
+      loc: `/browse/${cc.course.department.code}/${cc.course.code}/${cc.code}`,
       changefreq: "weekly",
       priority: "0.6",
     })
   }
 
-  // Sections (public only, with full hierarchy)
-  const { data: sections } = await supabase
-    .from("sections")
-    .select(
-      "slug, is_private, classes!inner(code, courses!inner(code, departments!inner(code)))",
-    )
-    .eq("is_private", false)
-  for (const section of sections ?? []) {
-    const cls = section.classes as unknown as {
-      code: string
-      courses: { code: string; departments: { code: string } }
+  // Sections (public only, with full hierarchy via course_classes junction)
+  const sections = await fetchAll((from, to) =>
+    supabase.from("sections")
+      .select("name, class:classes!inner(course_classes(code, course:courses!inner(code, department:departments!inner(code))))")
+      .eq("is_public", true)
+      .range(from, to),
+  ) as Array<{
+    name: string
+    class: { course_classes: Array<{ code: string; course: { code: string; department: { code: string } } }> }
+  }>
+  for (const section of sections) {
+    if (/exam/i.test(section.name)) continue
+    const slug = section.name.replace(/\s+/g, "-")
+    for (const cc of section.class.course_classes) {
+      entries.push({
+        loc: `/browse/${cc.course.department.code}/${cc.course.code}/${cc.code}/${slug}`,
+        changefreq: "weekly",
+        priority: "0.6",
+      })
     }
-    entries.push({
-      loc: `/browse/${cls.courses.departments.code}/${cls.courses.code}/${cls.code}/${section.slug}`,
-      changefreq: "weekly",
-      priority: "0.6",
-    })
   }
 
   const today = new Date().toISOString().split("T")[0]
