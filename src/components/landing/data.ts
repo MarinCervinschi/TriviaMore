@@ -193,6 +193,7 @@ export const footerSections: FooterSection[] = [
     title: "Piattaforma",
     links: [
       { href: "/departments", label: "Esplora contenuti" },
+      { href: "/news", label: "Novità" },
       { href: "/about", label: "Che cosa è Trivia More" },
       { href: "/contact", label: "Contattaci" },
     ],

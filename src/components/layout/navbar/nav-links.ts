@@ -5,6 +5,7 @@ import {
   Home,
   Info,
   Mail,
+  Megaphone,
   Search,
   Settings,
   Shield,
@@ -36,6 +37,7 @@ const SEARCH_DROPDOWN: NavDropdownItem = {
 export const GUEST_NAV_ITEMS: NavItem[] = [
   { type: "link", to: "/browse", label: "Esplora", icon: Compass },
   SEARCH_DROPDOWN,
+  { type: "link", to: "/news", label: "Novità", icon: Megaphone },
   { type: "link", to: "/about", label: "Chi Siamo", icon: Info },
   { type: "link", to: "/contact", label: "Contatti", icon: Mail },
 ]
@@ -56,6 +58,7 @@ export const ADMIN_NAV_ITEM: NavLinkItem = {
 
 export const USER_MENU_LINKS: NavLinkItem[] = [
   { type: "link", to: "/user", label: "Il Mio Profilo", icon: User },
+  { type: "link", to: "/news", label: "Novità", icon: Megaphone },
   { type: "link", to: "/contact", label: "Contatti", icon: Mail },
   { type: "link", to: "/user/settings", label: "Impostazioni", icon: Settings },
 ]
