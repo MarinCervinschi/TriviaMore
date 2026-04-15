@@ -14,6 +14,7 @@ import {
   Inbox,
   LogOut,
   Mail,
+  Megaphone,
   Moon,
   Search,
   Settings,
@@ -296,6 +297,14 @@ function DockProfileIcon({
 
         {/* Links */}
         <div className="flex flex-col py-1">
+          <Link
+            to="/news"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            <Megaphone className="h-4 w-4" strokeWidth={1.5} />
+            Novità
+          </Link>
           <Link
             to="/user/settings"
             onClick={() => setOpen(false)}
