@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as QuizQuizIdRouteImport } from './routes/quiz/$quizId'
@@ -56,6 +57,11 @@ import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './route
 import { Route as AppDepartmentsDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/departments/$department/$course/$class/$section/index'
 import { Route as AppBrowseDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/browse/$department/$course/$class/$section/index'
 
+const MaintenanceRoute = MaintenanceRouteImport.update({
+  id: '/maintenance',
+  path: '/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
@@ -302,6 +308,7 @@ const AppBrowseDepartmentCourseClassSectionIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/maintenance': typeof MaintenanceRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
   '/user': typeof AppUserRouteRouteWithChildren
   '/about': typeof AppAboutRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/departments/$department/$course/$class/$section/': typeof AppDepartmentsDepartmentCourseClassSectionIndexRoute
 }
 export interface FileRoutesByTo {
+  '/maintenance': typeof MaintenanceRoute
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
@@ -394,6 +402,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/maintenance': typeof MaintenanceRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/user': typeof AppUserRouteRouteWithChildren
   '/_app/about': typeof AppAboutRoute
@@ -444,6 +453,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/maintenance'
     | '/admin'
     | '/user'
     | '/about'
@@ -490,6 +500,7 @@ export interface FileRouteTypes {
     | '/departments/$department/$course/$class/$section/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/maintenance'
     | '/about'
     | '/contact'
     | '/news'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
+    | '/maintenance'
     | '/_app/admin'
     | '/_app/user'
     | '/_app/about'
@@ -584,6 +596,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  MaintenanceRoute: typeof MaintenanceRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
@@ -593,6 +606,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/maintenance': {
+      id: '/maintenance'
+      path: '/maintenance'
+      fullPath: '/maintenance'
+      preLoaderRoute: typeof MaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -1045,6 +1065,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  MaintenanceRoute: MaintenanceRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,

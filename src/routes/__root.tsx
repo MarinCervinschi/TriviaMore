@@ -1,4 +1,4 @@
-import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext, redirect } from '@tanstack/react-router'
 import { ErrorPage } from '@/components/error/error-page'
 import { NotFoundPage } from '@/components/error/not-found-page'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
@@ -6,6 +6,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { getMaintenanceModeFn } from '@/lib/maintenance/server'
 
 import '@fontsource/poppins/400.css'
 import '@fontsource/poppins/500.css'
@@ -17,6 +18,13 @@ import globalsCss from '@/styles/globals.css?url'
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=window.matchMedia('(prefers-color-scheme:dark)').matches;var r=t==='system'?(d?'dark':'light'):t;document.documentElement.classList.toggle('dark',r==='dark');document.documentElement.style.colorScheme=r;}catch(e){}})();`
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === '/maintenance') return
+    const maintenance = await getMaintenanceModeFn()
+    if (maintenance) {
+      throw redirect({ to: '/maintenance' })
+    }
+  },
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
