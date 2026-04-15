@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 import type { Database } from "@/lib/supabase/database.types"
-import { catalogAdmin } from "@/lib/supabase/admin"
+import { getCatalogAdmin } from "@/lib/supabase/admin"
 
 type NotificationType = Database["public"]["Enums"]["notification_type"]
 
@@ -70,13 +70,13 @@ export async function notifyAdminsInScope(
   let courseId = request.target_course_id
 
   if (request.target_section_id) {
-    const { data: section } = await catalogAdmin
+    const { data: section } = await getCatalogAdmin()
       .from("sections")
       .select("class_id")
       .eq("id", request.target_section_id)
       .single()
     if (section) {
-      const { data: cc } = await catalogAdmin
+      const { data: cc } = await getCatalogAdmin()
         .from("course_classes")
         .select("course_id")
         .eq("class_id", section.class_id)
@@ -89,7 +89,7 @@ export async function notifyAdminsInScope(
   }
 
   if (request.target_class_id && !courseId) {
-    const { data: cc } = await catalogAdmin
+    const { data: cc } = await getCatalogAdmin()
       .from("course_classes")
       .select("course_id")
       .eq("class_id", request.target_class_id)
@@ -102,7 +102,7 @@ export async function notifyAdminsInScope(
 
   if (courseId) {
     // Add course maintainers
-    const { data: maintainers } = await catalogAdmin
+    const { data: maintainers } = await getCatalogAdmin()
       .from("course_maintainers")
       .select("user_id")
       .eq("course_id", courseId)
@@ -113,7 +113,7 @@ export async function notifyAdminsInScope(
 
     // Resolve department from course
     if (!departmentId) {
-      const { data: course } = await catalogAdmin
+      const { data: course } = await getCatalogAdmin()
         .from("courses")
         .select("department_id")
         .eq("id", courseId)
@@ -126,7 +126,7 @@ export async function notifyAdminsInScope(
 
   if (departmentId) {
     // Add department admins
-    const { data: deptAdmins } = await catalogAdmin
+    const { data: deptAdmins } = await getCatalogAdmin()
       .from("department_admins")
       .select("user_id")
       .eq("department_id", departmentId)
