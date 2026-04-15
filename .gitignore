@@ -14,8 +14,8 @@ dist-ssr
 __unconfig*
 todos.json
 package-lock.json
+public/sitemap.xml
 
 
 data/
-scripts/
 supabase/snippets/
