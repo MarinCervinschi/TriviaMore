@@ -6,7 +6,6 @@ import {
   Info,
   Mail,
   Megaphone,
-  Search,
   Settings,
   Shield,
   User,
@@ -19,33 +18,33 @@ export type NavLinkItem = { type: "link"; to: string; label: string; icon?: Luci
 export type NavDropdownItem = {
   type: "dropdown"
   label: string
+  to?: string
   icon?: LucideIcon
-  children: { to: string; label: string; icon?: LucideIcon }[]
+  children: { to: string; label: string; icon?: LucideIcon; description?: string }[]
 }
 export type NavItem = NavLinkItem | NavDropdownItem
 
-const SEARCH_DROPDOWN: NavDropdownItem = {
+const EXPLORE_DROPDOWN: NavDropdownItem = {
   type: "dropdown",
-  label: "Cerca",
-  icon: Search,
+  label: "Esplora",
+  to: "/browse",
+  icon: Compass,
   children: [
-    { to: "/search/courses", label: "Cerca Corso", icon: GraduationCap },
-    { to: "/search/classes", label: "Cerca Insegnamento", icon: BookOpen },
+    { to: "/search/courses", label: "Cerca Corso", icon: GraduationCap, description: "Trova un corso per nome" },
+    { to: "/search/classes", label: "Cerca Insegnamento", icon: BookOpen, description: "Trova un insegnamento per nome" },
   ],
 }
 
 export const GUEST_NAV_ITEMS: NavItem[] = [
-  { type: "link", to: "/browse", label: "Esplora", icon: Compass },
-  SEARCH_DROPDOWN,
-  { type: "link", to: "/news", label: "Novità", icon: Megaphone },
+  EXPLORE_DROPDOWN,
   { type: "link", to: "/about", label: "Chi Siamo", icon: Info },
   { type: "link", to: "/contact", label: "Contatti", icon: Mail },
+  { type: "link", to: "/news", label: "Novità", icon: Megaphone },
 ]
 
 export const AUTH_NAV_ITEMS: NavItem[] = [
   { type: "link", to: "/user", label: "Il Mio Profilo", icon: Home },
-  { type: "link", to: "/browse", label: "Esplora", icon: Compass },
-  SEARCH_DROPDOWN,
+  EXPLORE_DROPDOWN,
   { type: "link", to: "/user/classes", label: "I Miei Corsi", icon: GraduationCap },
 ]
 

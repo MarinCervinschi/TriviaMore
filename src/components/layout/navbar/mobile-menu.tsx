@@ -36,12 +36,26 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
     )
   }
 
-  // Dropdown items rendered inline on mobile
+  // Dropdown: main link + children indented
   return (
     <>
-      <p className="mt-2 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {item.label}
-      </p>
+      {item.to ? (
+        <Link
+          to={item.to}
+          onClick={onClose}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          activeProps={{
+            className: "bg-primary/10 text-primary font-semibold",
+          }}
+        >
+          {item.icon && <item.icon className="h-4 w-4" strokeWidth={1.5} />}
+          {item.label}
+        </Link>
+      ) : (
+        <p className="mt-2 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {item.label}
+        </p>
+      )}
       {item.children.map((child) => (
         <Link
           key={child.to}

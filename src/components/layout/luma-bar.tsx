@@ -343,7 +343,8 @@ function DockProfileIcon({
   )
 }
 
-function DockSearchPopover({
+// Search icon with hover dropdown — dock-extension style
+function DockSearchHover({
   mouseX,
   prefersReduced,
 }: {
@@ -353,57 +354,79 @@ function DockSearchPopover({
   const ref = useRef<HTMLDivElement>(null)
   const { width, scale } = useDockMagnification(ref, mouseX, prefersReduced)
   const [open, setOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function handleEnter() {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+    setOpen(true)
+  }
+
+  function handleLeave() {
+    closeTimer.current = setTimeout(() => setOpen(false), 200)
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <Tooltip>
+    <div
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      className="relative"
+    >
+      <Tooltip open={open ? false : undefined}>
         <TooltipTrigger asChild>
-          <PopoverTrigger asChild>
-            <motion.div
-              ref={ref}
-              style={{ width }}
-              className="aspect-square"
+          <motion.div
+            ref={ref}
+            style={{ width }}
+            className="aspect-square"
+          >
+            <button
+              className="relative z-10 flex h-full w-full items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Cerca"
             >
-              <button
-                className="relative z-10 flex h-full w-full items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
-                aria-label="Cerca"
+              <motion.div
+                className="flex items-center justify-center"
+                style={{ scale }}
               >
-                <motion.div
-                  className="flex items-center justify-center"
-                  style={{ scale }}
-                >
-                  <Search className="size-5" strokeWidth={1.5} />
-                </motion.div>
-              </button>
-            </motion.div>
-          </PopoverTrigger>
+                <Search className="size-5" strokeWidth={1.5} />
+              </motion.div>
+            </button>
+          </motion.div>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={12}>
           Cerca
         </TooltipContent>
       </Tooltip>
 
-      <PopoverContent side="top" sideOffset={16} align="center" className="w-56 p-0">
-        <div className="flex flex-col py-1">
-          <Link
-            to="/search/courses"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            <GraduationCap className="h-4 w-4" strokeWidth={1.5} />
-            Cerca Corso
-          </Link>
-          <Link
-            to="/search/classes"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            <BookOpen className="h-4 w-4" strokeWidth={1.5} />
-            Cerca Insegnamento
-          </Link>
+      {/* Hover extension — visually connected to the dock */}
+      {open && (
+        <div
+          className="absolute bottom-full left-1/2 z-50 mb-1 -translate-x-1/2"
+          onMouseEnter={handleEnter}
+          onMouseLeave={handleLeave}
+        >
+          <div className="flex flex-col gap-1 rounded-2xl border border-border/50 bg-background/20 p-1.5 shadow-xl backdrop-blur-2xl dark:bg-background/30 animate-in fade-in-0 slide-in-from-bottom-2 duration-150">
+            <Link
+              to="/search/courses"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+            >
+              <GraduationCap className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
+              Cerca Corso
+            </Link>
+            <Link
+              to="/search/classes"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+            >
+              <BookOpen className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
+              Cerca Insegnamento
+            </Link>
+          </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   )
 }
 
@@ -470,8 +493,8 @@ export function LumaBar() {
             />
           ))}
 
-          {/* Search popover */}
-          <DockSearchPopover mouseX={mouseX} prefersReduced={prefersReduced} />
+          {/* Search with hover dropdown */}
+          <DockSearchHover mouseX={mouseX} prefersReduced={prefersReduced} />
 
           {/* Admin (always last before separator) */}
           {isAdmin && (
