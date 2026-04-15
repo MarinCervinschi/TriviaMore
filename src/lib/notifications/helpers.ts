@@ -5,6 +5,8 @@ import { catalogAdmin } from "@/lib/supabase/admin"
 
 type NotificationType = Database["public"]["Enums"]["notification_type"]
 
+const BROADCAST_BATCH_SIZE = 500
+
 // Creates a single notification using the admin client (bypasses RLS)
 export async function createNotification(
   supabaseAdmin: SupabaseClient<Database>,
@@ -153,6 +155,47 @@ export async function notifyAdminsInScope(
 
     if (error) {
       console.error("Failed to notify admins:", error)
+    }
+  }
+}
+
+// Creates a notification for every user in the platform (batch insert)
+export async function broadcastToAllUsers(
+  supabaseAdmin: SupabaseClient<Database>,
+  params: {
+    type: NotificationType
+    title: string
+    body?: string
+    referenceId?: string
+    referenceType?: string
+    link?: string
+  },
+) {
+  const { data: profiles, error: profilesError } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+
+  if (profilesError || !profiles) {
+    console.error("Failed to fetch profiles for broadcast:", profilesError)
+    return
+  }
+
+  const notifications = profiles.map((p) => ({
+    id: crypto.randomUUID(),
+    user_id: p.id,
+    type: params.type,
+    title: params.title,
+    body: params.body ?? null,
+    reference_id: params.referenceId ?? null,
+    reference_type: params.referenceType ?? null,
+    link: params.link ?? null,
+  }))
+
+  for (let i = 0; i < notifications.length; i += BROADCAST_BATCH_SIZE) {
+    const batch = notifications.slice(i, i + BROADCAST_BATCH_SIZE)
+    const { error } = await supabaseAdmin.from("notifications").insert(batch)
+    if (error) {
+      console.error(`Failed to insert broadcast batch ${i}:`, error)
     }
   }
 }
