@@ -374,7 +374,7 @@ function DockSearchHover({
       onMouseLeave={handleLeave}
       className="relative"
     >
-      <Tooltip open={open ? false : undefined}>
+      <Tooltip>
         <TooltipTrigger asChild>
           <motion.div
             ref={ref}
@@ -394,9 +394,11 @@ function DockSearchHover({
             </button>
           </motion.div>
         </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={12}>
-          Cerca
-        </TooltipContent>
+        {!open && (
+          <TooltipContent side="top" sideOffset={12}>
+            Cerca
+          </TooltipContent>
+        )}
       </Tooltip>
 
       {/* Hover extension — visually connected to the dock */}
