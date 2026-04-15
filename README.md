@@ -83,9 +83,23 @@ Set these environment variables on your hosting platform:
 | `INFISICAL_CLIENT_SECRET` | Yes | Machine Identity client secret |
 | `INFISICAL_PROJECT_ID` | Yes | Infisical project ID |
 | `INFISICAL_ENV` | No | Infisical environment slug (default: `prod`) |
-| `INFISICAL_SITE_URL` | No | Infisical instance URL (default: `https://app.infisical.com`) |
+| `INFISICAL_SITE_URL` | Yes | Infisical instance URL (self-hosted) |
+| `MAINTENANCE_MODE` | No | Set to `true` to show Coming Soon page (default: `false`) |
 
 All other secrets (Supabase, OAuth, etc.) are loaded automatically from Infisical at runtime and injected into `process.env`.
+
+> `VITE_*` variables must also be set directly on the hosting platform (e.g. Vercel env vars) because they are embedded at build time by Vite. Infisical SDK only loads secrets at runtime.
+
+### Maintenance Mode
+
+Set `MAINTENANCE_MODE=true` in the production Infisical environment to redirect all routes to a Coming Soon page. Authenticated users are also blocked.
+
+| Environment | `MAINTENANCE_MODE` | Result |
+|---|---|---|
+| Production | `true` | Coming Soon page |
+| Preview | `false` (or unset) | Full app |
+
+When ready to go live, set `MAINTENANCE_MODE=false` in the production environment.
 
 ## Supabase Local Development
 
@@ -176,6 +190,7 @@ src/
 ├── routes/
 │   ├── __root.tsx              Root layout (providers, toaster, devtools)
 │   ├── _app.tsx                App layout (navbar + footer)
+│   ├── maintenance.tsx         Coming Soon page (maintenance mode)
 │   ├── _app/
 │   │   ├── index.tsx           Home page
 │   │   ├── about.tsx           About page
@@ -224,9 +239,8 @@ src/
 ## Branches
 
 ```
-master          → Production (Next.js, untouched)
-trivia-more-3.0 → Reference: Next.js code + migration roadmap
-tanstack-start  → This branch (new project)
+master          → Production (TanStack Start v3.0)
+trivia-more-3.0 → Reference: old Next.js code + migration roadmap
 ```
 
-For migration details: [`docs/MIGRATION_STATUS.md`](docs/MIGRATION_STATUS.md)
+The previous Next.js version is archived as tag [`v2.0.0`](https://github.com/MarinCervinschi/TriviaMore/releases/tag/v2.0.0).
