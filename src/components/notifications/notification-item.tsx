@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   FileEdit,
   Inbox,
+  Megaphone,
   MessageSquare,
   RefreshCw,
   Sparkles,
@@ -26,6 +27,7 @@ const typeConfig: Record<
   REQUEST_REVISED: { icon: RefreshCw, color: "text-purple-500" },
   CONTENT_UPDATED: { icon: Sparkles, color: "text-primary" },
   NEW_SECTION_ADDED: { icon: MessageSquare, color: "text-primary" },
+  ANNOUNCEMENT: { icon: Megaphone, color: "text-primary" },
 }
 
 function timeAgo(dateStr: string): string {
