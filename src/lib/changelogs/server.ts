@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireSuperadmin } from "@/lib/auth/guards"
-import { supabaseAdmin } from "@/lib/supabase/admin"
+import { getSupabaseAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { broadcastToAllUsers } from "@/lib/notifications/helpers"
 import { changelogSchema, updateChangelogSchema } from "./schemas"
@@ -30,7 +30,7 @@ export const getAdminChangelogsFn = createServerFn({ method: "GET" }).handler(
   async () => {
     await requireSuperadmin()
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("changelogs")
       .select("*")
       .order("created_at", { ascending: false })
@@ -46,7 +46,7 @@ export const getChangelogDetailFn = createServerFn({ method: "GET" })
   .handler(async ({ data: { id } }) => {
     await requireSuperadmin()
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("changelogs")
       .select("*")
       .eq("id", id)
@@ -62,7 +62,7 @@ export const createChangelogFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireSuperadmin()
 
-    const { error } = await supabaseAdmin.from("changelogs").insert({
+    const { error } = await getSupabaseAdmin().from("changelogs").insert({
       version: data.version,
       title: data.title,
       body: data.body,
@@ -84,7 +84,7 @@ export const updateChangelogFn = createServerFn({ method: "POST" })
     // Validate the update fields through the schema
     const parsed = updateChangelogSchema.parse(fields)
 
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from("changelogs")
       .update(parsed)
       .eq("id", id)
@@ -97,7 +97,7 @@ export const deleteChangelogFn = createServerFn({ method: "POST" })
   .handler(async ({ data: { id } }) => {
     await requireSuperadmin()
 
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from("changelogs")
       .delete()
       .eq("id", id)
@@ -111,7 +111,7 @@ export const publishChangelogFn = createServerFn({ method: "POST" })
     await requireSuperadmin()
 
     // Fetch current state to check if already published
-    const { data: existing, error: fetchError } = await supabaseAdmin
+    const { data: existing, error: fetchError } = await getSupabaseAdmin()
       .from("changelogs")
       .select("*")
       .eq("id", id)
@@ -122,7 +122,7 @@ export const publishChangelogFn = createServerFn({ method: "POST" })
     const alreadyPublished = existing.published_at !== null
 
     // Set as published
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from("changelogs")
       .update({ is_draft: false, published_at: new Date().toISOString() })
       .eq("id", id)
@@ -131,7 +131,7 @@ export const publishChangelogFn = createServerFn({ method: "POST" })
 
     // Broadcast notification only on first publish
     if (!alreadyPublished) {
-      await broadcastToAllUsers(supabaseAdmin, {
+      await broadcastToAllUsers(getSupabaseAdmin(), {
         type: "ANNOUNCEMENT",
         title: `Novità v${existing.version}!`,
         body: existing.title,
