@@ -21,6 +21,7 @@ import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
 import { Route as AppAboutRouteImport } from './routes/_app/about'
 import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
+import { Route as AppLegalRouteRouteImport } from './routes/_app/legal/route'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
 import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
@@ -31,6 +32,11 @@ import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
+import { Route as AppLegalTermsRouteImport } from './routes/_app/legal/terms'
+import { Route as AppLegalPrivacyRouteImport } from './routes/_app/legal/privacy'
+import { Route as AppLegalDeclinedRouteImport } from './routes/_app/legal/declined'
+import { Route as AppLegalCookiesRouteImport } from './routes/_app/legal/cookies'
+import { Route as AppLegalAcceptRouteImport } from './routes/_app/legal/accept'
 import { Route as AppAdminChangelogsRouteRouteImport } from './routes/_app/admin/changelogs/route'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
 import { Route as AppSearchCoursesIndexRouteImport } from './routes/_app/search/courses/index'
@@ -116,6 +122,11 @@ const AppUserRouteRoute = AppUserRouteRouteImport.update({
   path: '/user',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLegalRouteRoute = AppLegalRouteRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -165,6 +176,31 @@ const AppUserBookmarksRoute = AppUserBookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
   getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppLegalTermsRoute = AppLegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => AppLegalRouteRoute,
+} as any)
+const AppLegalPrivacyRoute = AppLegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AppLegalRouteRoute,
+} as any)
+const AppLegalDeclinedRoute = AppLegalDeclinedRouteImport.update({
+  id: '/declined',
+  path: '/declined',
+  getParentRoute: () => AppLegalRouteRoute,
+} as any)
+const AppLegalCookiesRoute = AppLegalCookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => AppLegalRouteRoute,
+} as any)
+const AppLegalAcceptRoute = AppLegalAcceptRouteImport.update({
+  id: '/accept',
+  path: '/accept',
+  getParentRoute: () => AppLegalRouteRoute,
 } as any)
 const AppAdminChangelogsRouteRoute = AppAdminChangelogsRouteRouteImport.update({
   id: '/changelogs',
@@ -310,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/maintenance': typeof MaintenanceRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
+  '/legal': typeof AppLegalRouteRouteWithChildren
   '/user': typeof AppUserRouteRouteWithChildren
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
@@ -320,6 +357,11 @@ export interface FileRoutesByFullPath {
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/admin/changelogs': typeof AppAdminChangelogsRouteRouteWithChildren
+  '/legal/accept': typeof AppLegalAcceptRoute
+  '/legal/cookies': typeof AppLegalCookiesRoute
+  '/legal/declined': typeof AppLegalDeclinedRoute
+  '/legal/privacy': typeof AppLegalPrivacyRoute
+  '/legal/terms': typeof AppLegalTermsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
@@ -356,6 +398,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/maintenance': typeof MaintenanceRoute
+  '/legal': typeof AppLegalRouteRouteWithChildren
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
@@ -365,6 +408,11 @@ export interface FileRoutesByTo {
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/': typeof AppIndexRoute
+  '/legal/accept': typeof AppLegalAcceptRoute
+  '/legal/cookies': typeof AppLegalCookiesRoute
+  '/legal/declined': typeof AppLegalDeclinedRoute
+  '/legal/privacy': typeof AppLegalPrivacyRoute
+  '/legal/terms': typeof AppLegalTermsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
@@ -404,6 +452,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/maintenance': typeof MaintenanceRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
+  '/_app/legal': typeof AppLegalRouteRouteWithChildren
   '/_app/user': typeof AppUserRouteRouteWithChildren
   '/_app/about': typeof AppAboutRoute
   '/_app/contact': typeof AppContactRoute
@@ -415,6 +464,11 @@ export interface FileRoutesById {
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/_app/': typeof AppIndexRoute
   '/_app/admin/changelogs': typeof AppAdminChangelogsRouteRouteWithChildren
+  '/_app/legal/accept': typeof AppLegalAcceptRoute
+  '/_app/legal/cookies': typeof AppLegalCookiesRoute
+  '/_app/legal/declined': typeof AppLegalDeclinedRoute
+  '/_app/legal/privacy': typeof AppLegalPrivacyRoute
+  '/_app/legal/terms': typeof AppLegalTermsRoute
   '/_app/user/bookmarks': typeof AppUserBookmarksRoute
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/notifications': typeof AppUserNotificationsRoute
@@ -455,6 +509,7 @@ export interface FileRouteTypes {
     | '/'
     | '/maintenance'
     | '/admin'
+    | '/legal'
     | '/user'
     | '/about'
     | '/contact'
@@ -465,6 +520,11 @@ export interface FileRouteTypes {
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/admin/changelogs'
+    | '/legal/accept'
+    | '/legal/cookies'
+    | '/legal/declined'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
@@ -501,6 +561,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/maintenance'
+    | '/legal'
     | '/about'
     | '/contact'
     | '/news'
@@ -510,6 +571,11 @@ export interface FileRouteTypes {
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/'
+    | '/legal/accept'
+    | '/legal/cookies'
+    | '/legal/declined'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
@@ -548,6 +614,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/maintenance'
     | '/_app/admin'
+    | '/_app/legal'
     | '/_app/user'
     | '/_app/about'
     | '/_app/contact'
@@ -559,6 +626,11 @@ export interface FileRouteTypes {
     | '/quiz/$quizId'
     | '/_app/'
     | '/_app/admin/changelogs'
+    | '/_app/legal/accept'
+    | '/_app/legal/cookies'
+    | '/_app/legal/declined'
+    | '/_app/legal/privacy'
+    | '/_app/legal/terms'
     | '/_app/user/bookmarks'
     | '/_app/user/classes'
     | '/_app/user/notifications'
@@ -690,6 +762,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserRouteRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/legal': {
+      id: '/_app/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof AppLegalRouteRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin': {
       id: '/_app/admin'
       path: '/admin'
@@ -759,6 +838,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/bookmarks'
       preLoaderRoute: typeof AppUserBookmarksRouteImport
       parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/legal/terms': {
+      id: '/_app/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof AppLegalTermsRouteImport
+      parentRoute: typeof AppLegalRouteRoute
+    }
+    '/_app/legal/privacy': {
+      id: '/_app/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof AppLegalPrivacyRouteImport
+      parentRoute: typeof AppLegalRouteRoute
+    }
+    '/_app/legal/declined': {
+      id: '/_app/legal/declined'
+      path: '/declined'
+      fullPath: '/legal/declined'
+      preLoaderRoute: typeof AppLegalDeclinedRouteImport
+      parentRoute: typeof AppLegalRouteRoute
+    }
+    '/_app/legal/cookies': {
+      id: '/_app/legal/cookies'
+      path: '/cookies'
+      fullPath: '/legal/cookies'
+      preLoaderRoute: typeof AppLegalCookiesRouteImport
+      parentRoute: typeof AppLegalRouteRoute
+    }
+    '/_app/legal/accept': {
+      id: '/_app/legal/accept'
+      path: '/accept'
+      fullPath: '/legal/accept'
+      preLoaderRoute: typeof AppLegalAcceptRouteImport
+      parentRoute: typeof AppLegalRouteRoute
     }
     '/_app/admin/changelogs': {
       id: '/_app/admin/changelogs'
@@ -988,6 +1102,26 @@ const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
   AppAdminRouteRouteChildren,
 )
 
+interface AppLegalRouteRouteChildren {
+  AppLegalAcceptRoute: typeof AppLegalAcceptRoute
+  AppLegalCookiesRoute: typeof AppLegalCookiesRoute
+  AppLegalDeclinedRoute: typeof AppLegalDeclinedRoute
+  AppLegalPrivacyRoute: typeof AppLegalPrivacyRoute
+  AppLegalTermsRoute: typeof AppLegalTermsRoute
+}
+
+const AppLegalRouteRouteChildren: AppLegalRouteRouteChildren = {
+  AppLegalAcceptRoute: AppLegalAcceptRoute,
+  AppLegalCookiesRoute: AppLegalCookiesRoute,
+  AppLegalDeclinedRoute: AppLegalDeclinedRoute,
+  AppLegalPrivacyRoute: AppLegalPrivacyRoute,
+  AppLegalTermsRoute: AppLegalTermsRoute,
+}
+
+const AppLegalRouteRouteWithChildren = AppLegalRouteRoute._addFileChildren(
+  AppLegalRouteRouteChildren,
+)
+
 interface AppUserRouteRouteChildren {
   AppUserBookmarksRoute: typeof AppUserBookmarksRoute
   AppUserClassesRoute: typeof AppUserClassesRoute
@@ -1014,6 +1148,7 @@ const AppUserRouteRouteWithChildren = AppUserRouteRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
+  AppLegalRouteRoute: typeof AppLegalRouteRouteWithChildren
   AppUserRouteRoute: typeof AppUserRouteRouteWithChildren
   AppAboutRoute: typeof AppAboutRoute
   AppContactRoute: typeof AppContactRoute
@@ -1036,6 +1171,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
+  AppLegalRouteRoute: AppLegalRouteRouteWithChildren,
   AppUserRouteRoute: AppUserRouteRouteWithChildren,
   AppAboutRoute: AppAboutRoute,
   AppContactRoute: AppContactRoute,
