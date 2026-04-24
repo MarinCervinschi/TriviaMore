@@ -4,16 +4,16 @@ import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ArrowRight, GraduationCap, MapPin } from "lucide-react"
+import { ArrowRight, Building2, MapPin } from "lucide-react"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
-import { BrowseStats } from "@/components/browse/browse-stats"
+import { BrowsePageHeader } from "@/components/browse/browse-page-header"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
+import { Pagination } from "@/components/ui/pagination"
 import { AREA_CONFIG, CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import { cn } from "@/lib/utils"
@@ -61,9 +61,11 @@ function DepartmentPage() {
 
   const [search, setSearch] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
-  const [page, setPage] = useState(1)
+  const [pagesByType, setPagesByType] = useState<Record<string, number>>({})
 
   if (!department) return null
+
+  const PAGE_SIZE = 10
 
   const courseTypeFilters = useMemo(() => {
     const types = new Set<string>(department.courses.map((c) => c.course_type))
@@ -75,80 +77,100 @@ function DepartmentPage() {
     ]
   }, [department.courses])
 
-  const typeFiltered =
-    typeFilter === "all"
-      ? department.courses
-      : department.courses.filter((c) => c.course_type === typeFilter)
+  const searched = useMemo(() => {
+    const base =
+      typeFilter === "all"
+        ? department.courses
+        : department.courses.filter((c) => c.course_type === typeFilter)
+    const q = search.trim().toLowerCase()
+    if (!q) return base
+    return base.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.code.toLowerCase().includes(q),
+    )
+  }, [department.courses, typeFilter, search])
 
-  const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    typeFiltered,
-    (c, q) =>
-      c.name.toLowerCase().includes(q) ||
-      c.code.toLowerCase().includes(q),
-    search,
-    page,
-    10,
-  )
+  const groups = useMemo(() => {
+    const order = ["BACHELOR", "MASTER", "SINGLE_CYCLE"]
+    const map = new Map<string, typeof searched>()
+    for (const course of searched) {
+      const list = map.get(course.course_type) ?? []
+      list.push(course)
+      map.set(course.course_type, list)
+    }
+    return [...map.entries()].sort(([a], [b]) => {
+      const ai = order.indexOf(a)
+      const bi = order.indexOf(b)
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+    })
+  }, [searched])
 
   return (
-    <div className="container py-8">
-      <BrowseBreadcrumb
-        segments={[{ label: "Dipartimenti", href: "/departments" }]}
-        current={department.name}
-      />
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            {department.name}
-          </h1>
-          {department.description && (
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              {department.description}
-            </p>
-          )}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="text-xs font-mono">{department.code}</Badge>
+    <div className="pb-8">
+      <BrowsePageHeader
+        breadcrumb={
+          <BrowseBreadcrumb
+            segments={[{ label: "Dipartimenti", href: "/departments" }]}
+            current={department.name}
+          />
+        }
+        icon={Building2}
+        title={department.name}
+        description={department.description}
+        badges={
+          <>
+            <Badge variant="outline" className="font-mono text-xs">
+              {department.code}
+            </Badge>
             {department.area && AREA_CONFIG[department.area] && (
               <Badge variant="secondary" className="text-xs">
                 {AREA_CONFIG[department.area].label}
               </Badge>
             )}
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <GraduationCap className="h-3.5 w-3.5" />
-              {department.courses.length} {department.courses.length === 1 ? "corso" : "corsi"}
-            </span>
             {department.department_locations.length > 0 && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="h-3.5 w-3.5" />
-                {[...new Set(department.department_locations.map((l) => l.campus_location).filter(Boolean))]
+                {[
+                  ...new Set(
+                    department.department_locations
+                      .map((l) => l.campus_location)
+                      .filter(Boolean),
+                  ),
+                ]
                   .map((c) => CAMPUS_LOCATION_CONFIG[c!]?.label ?? c)
                   .join(", ")}
               </span>
             )}
-          </div>
-        </div>
-        <BrowseAdminButton
-          to="/admin/departments/$departmentId"
-          params={{ departmentId: department.id }}
-        />
-      </div>
+          </>
+        }
+        stats={[
+          {
+            label: department.courses.length === 1 ? "corso" : "corsi",
+            value: department.courses.length,
+          },
+        ]}
+        actions={
+          <BrowseAdminButton
+            to="/admin/departments/$departmentId"
+            params={{ departmentId: department.id }}
+          />
+        }
+      />
 
+      <div className="container">
       {department.department_locations.length > 0 && (
         <Suspense fallback={<div className="mb-6 h-[300px] animate-pulse rounded-2xl bg-muted" />}>
           <DepartmentMap locations={department.department_locations} />
         </Suspense>
       )}
 
-      <BrowseStats
-        stats={[{ label: "corsi", value: totalItems }]}
-      />
-
       {courseTypeFilters.length > 2 && (
       <div className="mb-4 flex flex-wrap gap-2">
         {courseTypeFilters.map((f) => (
           <button
             key={f.value}
-            onClick={() => { setTypeFilter(f.value); setPage(1) }}
+            onClick={() => { setTypeFilter(f.value); setPagesByType({}) }}
             className={cn(
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               typeFilter === f.value
@@ -164,94 +186,110 @@ function DepartmentPage() {
 
       <SearchFilter
         value={search}
-        onChange={(v) => { setSearch(v); setPage(1) }}
+        onChange={(v) => { setSearch(v); setPagesByType({}) }}
         placeholder="Cerca corsi..."
       />
 
-      {paged.length === 0 ? (
+      {searched.length === 0 ? (
         <BrowseEmptyState message="Nessun corso trovato." />
       ) : (
-        <>
-          <BrowseTable headers={["Nome", "Codice", "Tipo", "CFU", "Sede", "Insegnamenti"]}>
-            {paged.map((course) => {
-              const classCount = course.course_classes[0]?.count ?? 0
-              const typeConf = COURSE_TYPE_CONFIG[course.course_type]
-              return (
-                <tr key={course.id} className="group">
-                  <td className="pl-6 py-4">
-                    <Link
-                      to="/departments/$department/$course"
-                      params={{
-                        department: deptCode.toLowerCase(),
-                        course: course.code.toLowerCase(),
-                      }}
-                      className="block"
-                    >
-                      <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                        {course.name}
-                      </span>
-                      {course.description && (
-                        <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
-                          {course.description}
-                        </p>
-                      )}
-                    </Link>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    <Badge variant="outline" className="text-xs">
-                      {course.code}
-                    </Badge>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    {typeConf ? (
-                      <Badge className={cn("text-xs", typeConf.className)}>
-                        {typeConf.label}
-                      </Badge>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        {course.course_type}
-                      </span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    {course.cfu ? (
-                      <span className="text-sm text-muted-foreground">
-                        {course.cfu}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    {course.location ? (
-                      <span className="text-sm text-muted-foreground">
-                        {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    <span className="text-sm font-semibold text-foreground">
-                      {classCount}
-                    </span>
-                  </td>
-                  <td className="pr-6 py-4">
-                    <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                  </td>
-                </tr>
+        <div className="space-y-10">
+          {groups.map(([type, courses]) => {
+            const groupConf = COURSE_TYPE_CONFIG[type]
+            const page = pagesByType[type] ?? 1
+            const totalPages = Math.max(1, Math.ceil(courses.length / PAGE_SIZE))
+            const safePage = Math.min(page, totalPages)
+            const pagedCourses = courses.slice(
+              (safePage - 1) * PAGE_SIZE,
+              safePage * PAGE_SIZE,
+            )
+            return (
+              <section key={type}>
+                <div className="mb-3 flex items-center gap-2">
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    {groupConf?.label ?? type}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    {courses.length} {courses.length === 1 ? "corso" : "corsi"}
+                  </span>
+                </div>
+                <BrowseTable headers={["Nome", "Codice", "CFU", "Sede", "Insegnamenti"]}>
+                  {pagedCourses.map((course) => {
+                      const classCount = course.course_classes[0]?.count ?? 0
+                      return (
+                        <tr key={course.id} className="group">
+                          <td className="pl-6 py-4">
+                            <Link
+                              to="/departments/$department/$course"
+                              params={{
+                                department: deptCode.toLowerCase(),
+                                course: course.code.toLowerCase(),
+                              }}
+                              className="block"
+                            >
+                              <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                {course.name}
+                              </span>
+                              {course.description && (
+                                <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
+                                  {course.description}
+                                </p>
+                              )}
+                            </Link>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                            <Badge variant="outline" className="text-xs">
+                              {course.code}
+                            </Badge>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                            {course.cfu ? (
+                              <span className="text-sm text-muted-foreground">
+                                {course.cfu}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground/50">—</span>
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                            {course.location ? (
+                              <span className="text-sm text-muted-foreground">
+                                {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground/50">—</span>
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                            <span className="text-sm font-semibold text-foreground">
+                              {classCount}
+                            </span>
+                          </td>
+                          <td className="pr-6 py-4">
+                            <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </BrowseTable>
+                  {courses.length > PAGE_SIZE && (
+                    <Pagination
+                      page={safePage}
+                      totalPages={totalPages}
+                      onPageChange={(p) =>
+                        setPagesByType((prev) => ({ ...prev, [type]: p }))
+                      }
+                      totalItems={courses.length}
+                      pageSize={PAGE_SIZE}
+                    />
+                  )}
+                </section>
               )
             })}
-          </BrowseTable>
-          <Pagination
-            page={safePage}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            totalItems={totalItems}
-            pageSize={10}
-          />
-        </>
+        </div>
       )}
+
+      </div>
     </div>
   )
 }
