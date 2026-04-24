@@ -669,6 +669,44 @@ export type Database = {
           },
         ]
       }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          document_type: Database["public"]["Enums"]["legal_document_type"]
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          document_type: Database["public"]["Enums"]["legal_document_type"]
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          document_type?: Database["public"]["Enums"]["legal_document_type"]
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_acceptances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1145,6 +1183,7 @@ export type Database = {
         | "VITA"
         | "SOCIETA_CULTURA"
       difficulty: "EASY" | "MEDIUM" | "HARD"
+      legal_document_type: "TERMS" | "PRIVACY"
       notification_type:
         | "REQUEST_STATUS_CHANGED"
         | "NEW_REQUEST_RECEIVED"
@@ -1591,6 +1630,7 @@ export const Constants = {
         "SOCIETA_CULTURA",
       ],
       difficulty: ["EASY", "MEDIUM", "HARD"],
+      legal_document_type: ["TERMS", "PRIVACY"],
       notification_type: [
         "REQUEST_STATUS_CHANGED",
         "NEW_REQUEST_RECEIVED",
