@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
 
+import { CookiePreferencesButton } from "@/components/legal/cookie-preferences-button"
 import { Logo } from "@/components/ui/logo"
 
 const footerLinks = [
@@ -10,6 +11,9 @@ const footerLinks = [
   },
   { href: "/about", label: "Chi siamo", external: false },
   { href: "/contact", label: "Contattaci", external: false },
+  { href: "/legal/terms", label: "Termini", external: false },
+  { href: "/legal/privacy", label: "Privacy", external: false },
+  { href: "/legal/cookies", label: "Cookie", external: false },
 ]
 
 function DotSeparator() {
@@ -63,6 +67,12 @@ export function MinimalFooter() {
                 )}
               </span>
             ))}
+            {import.meta.env.PROD && (
+              <span className="flex items-center gap-2 sm:gap-2">
+                <DotSeparator />
+                <CookiePreferencesButton />
+              </span>
+            )}
           </div>
 
           <p className="text-xs text-muted-foreground/60">
