@@ -2,6 +2,10 @@ import { createServerFn } from "@tanstack/react-start"
 
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import {
+  CURRENT_PRIVACY_VERSION,
+  CURRENT_TERMS_VERSION,
+} from "@/lib/legal/versions"
+import {
   loginSchema,
   oauthProviderSchema,
   registerSchema,
@@ -89,7 +93,11 @@ export const signupFn = createServerFn({ method: "POST" })
       email: data.email,
       password: data.password,
       options: {
-        data: { name: data.name },
+        data: {
+          name: data.name,
+          terms_version: CURRENT_TERMS_VERSION,
+          privacy_version: CURRENT_PRIVACY_VERSION,
+        },
       },
     })
 
