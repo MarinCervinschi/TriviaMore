@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { Github } from "lucide-react"
 
+import { CookiePreferencesButton } from "@/components/legal/cookie-preferences-button"
 import { Logo } from "@/components/ui/logo"
 
 import type { FooterSection } from "./data"
@@ -70,9 +71,10 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
             &copy; {new Date().getFullYear()} TriviaMore. Progetto open source
             per la community studentesca.
           </p>
-          <p>
-            Fatto con cura a Modena
-          </p>
+          <div className="flex items-center gap-4">
+            {import.meta.env.PROD && <CookiePreferencesButton />}
+            <p>Fatto con cura a Modena</p>
+          </div>
         </div>
       </div>
     </footer>
