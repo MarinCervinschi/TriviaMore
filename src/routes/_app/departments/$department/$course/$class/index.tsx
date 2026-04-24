@@ -22,7 +22,7 @@ import {
   BrowseContributeState,
   BrowseEmptyState,
 } from "@/components/browse/browse-empty-state"
-import { BrowseStats } from "@/components/browse/browse-stats"
+import { BrowsePageHeader } from "@/components/browse/browse-page-header"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { SearchFilter } from "@/components/browse/search-filter"
@@ -138,34 +138,36 @@ function ClassPage() {
   }
 
   return (
-    <div className="container py-8">
-      <BrowseBreadcrumb
-        segments={[
-          { label: "Dipartimenti", href: "/departments" },
-          {
-            label: classData.course.department.name,
-            href: `/departments/${deptCode}`,
-          },
-          {
-            label: classData.course.name,
-            href: `/departments/${deptCode}/${courseCode}`,
-          },
-        ]}
-        current={classData.name}
-      />
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            {classData.name}
-          </h1>
-          {classData.description && (
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              {classData.description}
-            </p>
-          )}
-          <div className="mt-2 flex flex-wrap items-center gap-2">
+    <div className="pb-8">
+      <BrowsePageHeader
+        breadcrumb={
+          <BrowseBreadcrumb
+            segments={[
+              { label: "Dipartimenti", href: "/departments" },
+              {
+                label: classData.course.department.name,
+                href: `/departments/${deptCode}`,
+              },
+              {
+                label: classData.course.name,
+                href: `/departments/${deptCode}/${courseCode}`,
+              },
+            ]}
+            current={classData.name}
+          />
+        }
+        icon={BookOpen}
+        title={classData.name}
+        description={classData.description}
+        badges={
+          <>
             {COURSE_TYPE_CONFIG[classData.course.course_type] && (
-              <Badge className={cn("text-xs", COURSE_TYPE_CONFIG[classData.course.course_type].className)}>
+              <Badge
+                className={cn(
+                  "text-xs",
+                  COURSE_TYPE_CONFIG[classData.course.course_type].className,
+                )}
+              >
                 {COURSE_TYPE_CONFIG[classData.course.course_type].label}
               </Badge>
             )}
@@ -189,7 +191,8 @@ function ClassPage() {
             )}
             {classData.course.location && (
               <Badge variant="outline" className="text-xs">
-                {CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ?? classData.course.location}
+                {CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ??
+                  classData.course.location}
               </Badge>
             )}
             {classData.cfu && (
@@ -207,51 +210,58 @@ function ClassPage() {
                 href={classData.courseClass.catalogue_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
               >
                 <ExternalLink className="h-3 w-3" />
                 Catalogo
               </a>
             )}
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <BrowseAdminButton
-            to="/admin/classes/$classId"
-            params={{ classId: classData.id }}
-          />
-          {isAuthenticated && (
-            <>
-              <RequestFormDialog
-                defaultTargetClassId={classData.id}
-                trigger={
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <MessageSquarePlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Proponi contenuto</span>
-                  </Button>
-                }
-              />
-              <Button
-                variant={isSaved ? "default" : "outline"}
-                size="sm"
-                onClick={handleToggleSave}
-                disabled={addClass.isPending || removeClass.isPending}
-              >
-                <Heart
-                  className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
-                />
-                {isSaved ? "Salvato" : "Salva"}
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-      <BrowseStats
+          </>
+        }
         stats={[
-          { label: "sezioni", value: classData.sections.length },
-          { label: "domande", value: totalQuestions },
+          {
+            label: classData.sections.length === 1 ? "sezione" : "sezioni",
+            value: classData.sections.length,
+          },
+          {
+            label: totalQuestions === 1 ? "domanda" : "domande",
+            value: totalQuestions,
+          },
         ]}
+        actions={
+          <>
+            <BrowseAdminButton
+              to="/admin/classes/$classId"
+              params={{ classId: classData.id }}
+            />
+            {isAuthenticated && (
+              <>
+                <RequestFormDialog
+                  defaultTargetClassId={classData.id}
+                  trigger={
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                      <MessageSquarePlus className="h-4 w-4" />
+                      <span className="hidden sm:inline">Proponi contenuto</span>
+                    </Button>
+                  }
+                />
+                <Button
+                  variant={isSaved ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleToggleSave}
+                  disabled={addClass.isPending || removeClass.isPending}
+                >
+                  <Heart
+                    className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+                  />
+                  {isSaved ? "Salvato" : "Salva"}
+                </Button>
+              </>
+            )}
+          </>
+        }
       />
+      <div className="container pt-8">
       {classData.examSimulation &&
         (classData.examSimulation.totalQuizQuestions > 0 ||
           classData.examSimulation.totalFlashcardQuestions > 0) && (
@@ -338,6 +348,7 @@ function ClassPage() {
         />
         </>
       )}
+      </div>
     </div>
   )
 }
