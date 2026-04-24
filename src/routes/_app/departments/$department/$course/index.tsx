@@ -4,12 +4,12 @@ import { NotFoundPage } from "@/components/error/not-found-page"
 import { breadcrumbJsonLd, courseJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, GraduationCap } from "lucide-react"
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button"
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb"
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state"
-import { BrowseStats } from "@/components/browse/browse-stats"
+import { BrowsePageHeader } from "@/components/browse/browse-page-header"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
@@ -192,30 +192,32 @@ function CoursePage() {
   const tableHeaders = ["Nome", "Codice", "CFU", "Sezioni"]
 
   return (
-    <div className="container py-8">
-      <BrowseBreadcrumb
-        segments={[
-          { label: "Dipartimenti", href: "/departments" },
-          {
-            label: course.department.name,
-            href: `/departments/${deptCode}`,
-          },
-        ]}
-        current={course.name}
-      />
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            {course.name}
-          </h1>
-          {course.description && (
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              {course.description}
-            </p>
-          )}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+    <div className="pb-8">
+      <BrowsePageHeader
+        breadcrumb={
+          <BrowseBreadcrumb
+            segments={[
+              { label: "Dipartimenti", href: "/departments" },
+              {
+                label: course.department.name,
+                href: `/departments/${deptCode}`,
+              },
+            ]}
+            current={course.name}
+          />
+        }
+        icon={GraduationCap}
+        title={course.name}
+        description={course.description}
+        badges={
+          <>
             {COURSE_TYPE_CONFIG[course.course_type] && (
-              <Badge className={cn("text-xs", COURSE_TYPE_CONFIG[course.course_type].className)}>
+              <Badge
+                className={cn(
+                  "text-xs",
+                  COURSE_TYPE_CONFIG[course.course_type].className,
+                )}
+              >
                 {COURSE_TYPE_CONFIG[course.course_type].label}
               </Badge>
             )}
@@ -229,18 +231,24 @@ function CoursePage() {
                 {course.cfu} CFU
               </Badge>
             )}
-          </div>
-        </div>
-        <BrowseAdminButton
-          to="/admin/courses/$courseId"
-          params={{ courseId: course.id }}
-        />
-      </div>
-
-      <BrowseStats
-        stats={[{ label: "insegnamenti", value: isGroupedView ? preFiltered.length : totalItems }]}
+          </>
+        }
+        stats={[
+          {
+            label:
+              course.classes.length === 1 ? "insegnamento" : "insegnamenti",
+            value: course.classes.length,
+          },
+        ]}
+        actions={
+          <BrowseAdminButton
+            to="/admin/courses/$courseId"
+            params={{ courseId: course.id }}
+          />
+        }
       />
 
+      <div className="container pt-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         {availableYears.length > 1 && (
           <div className="flex flex-wrap gap-2">
@@ -372,6 +380,7 @@ function CoursePage() {
           />
         </>
       )}
+      </div>
     </div>
   )
 }
