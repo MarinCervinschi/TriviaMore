@@ -5,6 +5,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
+import { AcceptanceCheckboxes } from "@/components/legal/acceptance-checkboxes"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -29,6 +30,8 @@ export function RegisterForm() {
       name: "",
       email: "",
       password: "",
+      terms_accepted: false,
+      privacy_accepted: false,
     },
   })
 
@@ -115,6 +118,23 @@ export function RegisterForm() {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <AcceptanceCheckboxes
+          termsAccepted={form.watch("terms_accepted")}
+          privacyAccepted={form.watch("privacy_accepted")}
+          onTermsChange={(value) =>
+            form.setValue("terms_accepted", value, {
+              shouldValidate: form.formState.isSubmitted,
+            })
+          }
+          onPrivacyChange={(value) =>
+            form.setValue("privacy_accepted", value, {
+              shouldValidate: form.formState.isSubmitted,
+            })
+          }
+          termsError={form.formState.errors.terms_accepted?.message}
+          privacyError={form.formState.errors.privacy_accepted?.message}
+          disabled={signup.isPending}
         />
         <Button
           type="submit"
