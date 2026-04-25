@@ -1,143 +1,52 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { requireSuperadmin } from "@/lib/auth/guards"
-import { getSupabaseAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { broadcastToAllUsers } from "@/lib/notifications/helpers"
-import { changelogSchema, updateChangelogSchema } from "./schemas"
 
-// ─── Public ───
+import { markChangelogsReadSchema } from "./schemas"
+import { CHANGELOG_VERSIONS } from "./static"
 
-export const getPublishedChangelogsFn = createServerFn({
-  method: "GET",
-}).handler(async () => {
+async function getAuthUser() {
   const supabase = createServerSupabaseClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+  if (error || !user) throw new Error("Non autenticato")
+  return { supabase, user }
+}
+
+export const getUnreadChangelogVersionsFn = createServerFn({
+  method: "GET",
+}).handler(async (): Promise<string[]> => {
+  if (CHANGELOG_VERSIONS.length === 0) return []
+
+  const { supabase, user } = await getAuthUser()
 
   const { data, error } = await supabase
-    .from("changelogs")
-    .select("*")
-    .eq("is_draft", false)
-    .order("published_at", { ascending: false })
+    .from("user_changelog_reads")
+    .select("version")
+    .eq("user_id", user.id)
+    .in("version", CHANGELOG_VERSIONS)
 
   if (error) throw new Error("Errore nel caricamento delle novità")
 
-  return data
+  const readVersions = new Set((data ?? []).map((r) => r.version))
+  return CHANGELOG_VERSIONS.filter((v) => !readVersions.has(v))
 })
 
-// ─── Admin (SUPERADMIN only) ───
-
-export const getAdminChangelogsFn = createServerFn({ method: "GET" }).handler(
-  async () => {
-    await requireSuperadmin()
-
-    const { data, error } = await getSupabaseAdmin()
-      .from("changelogs")
-      .select("*")
-      .order("created_at", { ascending: false })
-
-    if (error) throw new Error("Errore nel caricamento dei changelog")
-
-    return data
-  },
-)
-
-export const getChangelogDetailFn = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }) => {
-    await requireSuperadmin()
-
-    const { data, error } = await getSupabaseAdmin()
-      .from("changelogs")
-      .select("*")
-      .eq("id", id)
-      .single()
-
-    if (error) throw new Error("Changelog non trovato")
-
-    return data
-  })
-
-export const createChangelogFn = createServerFn({ method: "POST" })
-  .inputValidator(changelogSchema)
+export const markChangelogsReadFn = createServerFn({ method: "POST" })
+  .inputValidator(markChangelogsReadSchema)
   .handler(async ({ data }) => {
-    await requireSuperadmin()
+    const { supabase, user } = await getAuthUser()
 
-    const { error } = await getSupabaseAdmin().from("changelogs").insert({
-      version: data.version,
-      title: data.title,
-      body: data.body,
-      category: data.category,
-      is_draft: true,
-      published_at: null,
-    })
+    const rows = data.versions.map((version) => ({
+      user_id: user.id,
+      version,
+    }))
 
-    if (error) throw new Error("Errore nella creazione del changelog")
-  })
+    const { error } = await supabase
+      .from("user_changelog_reads")
+      .upsert(rows, { onConflict: "user_id,version", ignoreDuplicates: true })
 
-export const updateChangelogFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { id: string } & Record<string, unknown>) => input,
-  )
-  .handler(async ({ data: { id, ...fields } }) => {
-    await requireSuperadmin()
-
-    // Validate the update fields through the schema
-    const parsed = updateChangelogSchema.parse(fields)
-
-    const { error } = await getSupabaseAdmin()
-      .from("changelogs")
-      .update(parsed)
-      .eq("id", id)
-
-    if (error) throw new Error("Errore nell'aggiornamento del changelog")
-  })
-
-export const deleteChangelogFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }) => {
-    await requireSuperadmin()
-
-    const { error } = await getSupabaseAdmin()
-      .from("changelogs")
-      .delete()
-      .eq("id", id)
-
-    if (error) throw new Error("Errore nell'eliminazione del changelog")
-  })
-
-export const publishChangelogFn = createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }) => {
-    await requireSuperadmin()
-
-    // Fetch current state to check if already published
-    const { data: existing, error: fetchError } = await getSupabaseAdmin()
-      .from("changelogs")
-      .select("*")
-      .eq("id", id)
-      .single()
-
-    if (fetchError || !existing) throw new Error("Changelog non trovato")
-
-    const alreadyPublished = existing.published_at !== null
-
-    // Set as published
-    const { error } = await getSupabaseAdmin()
-      .from("changelogs")
-      .update({ is_draft: false, published_at: new Date().toISOString() })
-      .eq("id", id)
-
-    if (error) throw new Error("Errore nella pubblicazione del changelog")
-
-    // Broadcast notification only on first publish
-    if (!alreadyPublished) {
-      await broadcastToAllUsers(getSupabaseAdmin(), {
-        type: "ANNOUNCEMENT",
-        title: `Novità v${existing.version}!`,
-        body: existing.title,
-        referenceId: existing.id,
-        referenceType: "changelog",
-        link: `/news#v${existing.version}`,
-      })
-    }
+    if (error) throw new Error("Errore nel salvataggio")
   })

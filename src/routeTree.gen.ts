@@ -37,7 +37,6 @@ import { Route as AppLegalPrivacyRouteImport } from './routes/_app/legal/privacy
 import { Route as AppLegalDeclinedRouteImport } from './routes/_app/legal/declined'
 import { Route as AppLegalCookiesRouteImport } from './routes/_app/legal/cookies'
 import { Route as AppLegalAcceptRouteImport } from './routes/_app/legal/accept'
-import { Route as AppAdminChangelogsRouteRouteImport } from './routes/_app/admin/changelogs/route'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
 import { Route as AppSearchCoursesIndexRouteImport } from './routes/_app/search/courses/index'
 import { Route as AppSearchClassesIndexRouteImport } from './routes/_app/search/classes/index'
@@ -46,7 +45,6 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
-import { Route as AppAdminChangelogsIndexRouteImport } from './routes/_app/admin/changelogs/index'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppAdminUsersUserIdRouteImport } from './routes/_app/admin/users/$userId'
 import { Route as AppAdminSectionsSectionIdRouteImport } from './routes/_app/admin/sections/$sectionId'
@@ -55,7 +53,6 @@ import { Route as AppAdminQuestionsQuestionIdRouteImport } from './routes/_app/a
 import { Route as AppAdminDepartmentsDepartmentIdRouteImport } from './routes/_app/admin/departments/$departmentId'
 import { Route as AppAdminCoursesCourseIdRouteImport } from './routes/_app/admin/courses/$courseId'
 import { Route as AppAdminClassesClassIdRouteImport } from './routes/_app/admin/classes/$classId'
-import { Route as AppAdminChangelogsChangelogIdRouteImport } from './routes/_app/admin/changelogs/$changelogId'
 import { Route as AppDepartmentsDepartmentCourseIndexRouteImport } from './routes/_app/departments/$department/$course/index'
 import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
 import { Route as AppDepartmentsDepartmentCourseClassIndexRouteImport } from './routes/_app/departments/$department/$course/$class/index'
@@ -202,11 +199,6 @@ const AppLegalAcceptRoute = AppLegalAcceptRouteImport.update({
   path: '/accept',
   getParentRoute: () => AppLegalRouteRoute,
 } as any)
-const AppAdminChangelogsRouteRoute = AppAdminChangelogsRouteRouteImport.update({
-  id: '/changelogs',
-  path: '/changelogs',
-  getParentRoute: () => AppAdminRouteRoute,
-} as any)
 const AppUserRequestsIndexRoute = AppUserRequestsIndexRouteImport.update({
   id: '/requests/',
   path: '/requests/',
@@ -250,11 +242,6 @@ const AppAdminDepartmentsIndexRoute =
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
   } as any)
-const AppAdminChangelogsIndexRoute = AppAdminChangelogsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppAdminChangelogsRouteRoute,
-} as any)
 const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
   id: '/quiz/results/$attemptId',
   path: '/quiz/results/$attemptId',
@@ -299,12 +286,6 @@ const AppAdminClassesClassIdRoute = AppAdminClassesClassIdRouteImport.update({
   path: '/classes/$classId',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
-const AppAdminChangelogsChangelogIdRoute =
-  AppAdminChangelogsChangelogIdRouteImport.update({
-    id: '/$changelogId',
-    path: '/$changelogId',
-    getParentRoute: () => AppAdminChangelogsRouteRoute,
-  } as any)
 const AppDepartmentsDepartmentCourseIndexRoute =
   AppDepartmentsDepartmentCourseIndexRouteImport.update({
     id: '/departments/$department/$course/',
@@ -356,7 +337,6 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
-  '/admin/changelogs': typeof AppAdminChangelogsRouteRouteWithChildren
   '/legal/accept': typeof AppLegalAcceptRoute
   '/legal/cookies': typeof AppLegalCookiesRoute
   '/legal/declined': typeof AppLegalDeclinedRoute
@@ -371,7 +351,6 @@ export interface FileRoutesByFullPath {
   '/browse/': typeof AppBrowseIndexRoute
   '/departments/': typeof AppDepartmentsIndexRoute
   '/user/': typeof AppUserIndexRoute
-  '/admin/changelogs/$changelogId': typeof AppAdminChangelogsChangelogIdRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
   '/admin/departments/$departmentId': typeof AppAdminDepartmentsDepartmentIdRoute
@@ -380,7 +359,6 @@ export interface FileRoutesByFullPath {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/admin/changelogs/': typeof AppAdminChangelogsIndexRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -422,7 +400,6 @@ export interface FileRoutesByTo {
   '/browse': typeof AppBrowseIndexRoute
   '/departments': typeof AppDepartmentsIndexRoute
   '/user': typeof AppUserIndexRoute
-  '/admin/changelogs/$changelogId': typeof AppAdminChangelogsChangelogIdRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
   '/admin/departments/$departmentId': typeof AppAdminDepartmentsDepartmentIdRoute
@@ -431,7 +408,6 @@ export interface FileRoutesByTo {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/admin/changelogs': typeof AppAdminChangelogsIndexRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -463,7 +439,6 @@ export interface FileRoutesById {
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/admin/changelogs': typeof AppAdminChangelogsRouteRouteWithChildren
   '/_app/legal/accept': typeof AppLegalAcceptRoute
   '/_app/legal/cookies': typeof AppLegalCookiesRoute
   '/_app/legal/declined': typeof AppLegalDeclinedRoute
@@ -478,7 +453,6 @@ export interface FileRoutesById {
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/departments/': typeof AppDepartmentsIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
-  '/_app/admin/changelogs/$changelogId': typeof AppAdminChangelogsChangelogIdRoute
   '/_app/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/_app/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
   '/_app/admin/departments/$departmentId': typeof AppAdminDepartmentsDepartmentIdRoute
@@ -487,7 +461,6 @@ export interface FileRoutesById {
   '/_app/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/_app/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/_app/admin/changelogs/': typeof AppAdminChangelogsIndexRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -519,7 +492,6 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
-    | '/admin/changelogs'
     | '/legal/accept'
     | '/legal/cookies'
     | '/legal/declined'
@@ -534,7 +506,6 @@ export interface FileRouteTypes {
     | '/browse/'
     | '/departments/'
     | '/user/'
-    | '/admin/changelogs/$changelogId'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
     | '/admin/departments/$departmentId'
@@ -543,7 +514,6 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/admin/changelogs/'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -585,7 +555,6 @@ export interface FileRouteTypes {
     | '/browse'
     | '/departments'
     | '/user'
-    | '/admin/changelogs/$changelogId'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
     | '/admin/departments/$departmentId'
@@ -594,7 +563,6 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/admin/changelogs'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -625,7 +593,6 @@ export interface FileRouteTypes {
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/_app/'
-    | '/_app/admin/changelogs'
     | '/_app/legal/accept'
     | '/_app/legal/cookies'
     | '/_app/legal/declined'
@@ -640,7 +607,6 @@ export interface FileRouteTypes {
     | '/_app/browse/'
     | '/_app/departments/'
     | '/_app/user/'
-    | '/_app/admin/changelogs/$changelogId'
     | '/_app/admin/classes/$classId'
     | '/_app/admin/courses/$courseId'
     | '/_app/admin/departments/$departmentId'
@@ -649,7 +615,6 @@ export interface FileRouteTypes {
     | '/_app/admin/sections/$sectionId'
     | '/_app/admin/users/$userId'
     | '/_app/quiz/results/$attemptId'
-    | '/_app/admin/changelogs/'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -874,13 +839,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLegalAcceptRouteImport
       parentRoute: typeof AppLegalRouteRoute
     }
-    '/_app/admin/changelogs': {
-      id: '/_app/admin/changelogs'
-      path: '/changelogs'
-      fullPath: '/admin/changelogs'
-      preLoaderRoute: typeof AppAdminChangelogsRouteRouteImport
-      parentRoute: typeof AppAdminRouteRoute
-    }
     '/_app/user/requests/': {
       id: '/_app/user/requests/'
       path: '/requests'
@@ -936,13 +894,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/departments/'
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
-    }
-    '/_app/admin/changelogs/': {
-      id: '/_app/admin/changelogs/'
-      path: '/'
-      fullPath: '/admin/changelogs/'
-      preLoaderRoute: typeof AppAdminChangelogsIndexRouteImport
-      parentRoute: typeof AppAdminChangelogsRouteRoute
     }
     '/_app/quiz/results/$attemptId': {
       id: '/_app/quiz/results/$attemptId'
@@ -1000,13 +951,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminClassesClassIdRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/admin/changelogs/$changelogId': {
-      id: '/_app/admin/changelogs/$changelogId'
-      path: '/$changelogId'
-      fullPath: '/admin/changelogs/$changelogId'
-      preLoaderRoute: typeof AppAdminChangelogsChangelogIdRouteImport
-      parentRoute: typeof AppAdminChangelogsRouteRoute
-    }
     '/_app/departments/$department/$course/': {
       id: '/_app/departments/$department/$course/'
       path: '/departments/$department/$course'
@@ -1052,24 +996,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AppAdminChangelogsRouteRouteChildren {
-  AppAdminChangelogsChangelogIdRoute: typeof AppAdminChangelogsChangelogIdRoute
-  AppAdminChangelogsIndexRoute: typeof AppAdminChangelogsIndexRoute
-}
-
-const AppAdminChangelogsRouteRouteChildren: AppAdminChangelogsRouteRouteChildren =
-  {
-    AppAdminChangelogsChangelogIdRoute: AppAdminChangelogsChangelogIdRoute,
-    AppAdminChangelogsIndexRoute: AppAdminChangelogsIndexRoute,
-  }
-
-const AppAdminChangelogsRouteRouteWithChildren =
-  AppAdminChangelogsRouteRoute._addFileChildren(
-    AppAdminChangelogsRouteRouteChildren,
-  )
-
 interface AppAdminRouteRouteChildren {
-  AppAdminChangelogsRouteRoute: typeof AppAdminChangelogsRouteRouteWithChildren
   AppAdminIndexRoute: typeof AppAdminIndexRoute
   AppAdminClassesClassIdRoute: typeof AppAdminClassesClassIdRoute
   AppAdminCoursesCourseIdRoute: typeof AppAdminCoursesCourseIdRoute
@@ -1084,7 +1011,6 @@ interface AppAdminRouteRouteChildren {
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
-  AppAdminChangelogsRouteRoute: AppAdminChangelogsRouteRouteWithChildren,
   AppAdminIndexRoute: AppAdminIndexRoute,
   AppAdminClassesClassIdRoute: AppAdminClassesClassIdRoute,
   AppAdminCoursesCourseIdRoute: AppAdminCoursesCourseIdRoute,

@@ -10,14 +10,12 @@ import {
   Inbox,
   LayoutDashboard,
   Library,
-  Megaphone,
   Shield,
   Trophy,
   Users,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { useAuth } from "@/hooks/useAuth"
 import { adminQueries } from "@/lib/admin/queries"
 import { requestQueries } from "@/lib/requests/queries"
 import type {
@@ -27,7 +25,6 @@ import type {
 } from "@/lib/admin/types"
 
 export function AdminSidebar() {
-  const { user } = useAuth()
   const { data: stats } = useQuery(adminQueries.stats())
   const { data: userStats } = useQuery(adminQueries.userStats())
   const { data: tree } = useQuery(adminQueries.contentTree())
@@ -39,7 +36,6 @@ export function AdminSidebar() {
   const isDeptActive = matchRoute({ to: "/admin/departments", fuzzy: true })
   const isUsersActive = matchRoute({ to: "/admin/users", fuzzy: true })
   const isRequestsActive = matchRoute({ to: "/admin/requests", fuzzy: true })
-  const isChangelogsActive = matchRoute({ to: "/admin/changelogs", fuzzy: true })
 
   return (
     <nav className="rounded-2xl border bg-card/50 p-4">
@@ -95,19 +91,6 @@ export function AdminSidebar() {
           )}
         </Link>
 
-        {/* Changelog — SUPERADMIN only */}
-        {user?.role === "SUPERADMIN" && (
-          <Link
-            to="/admin/changelogs"
-            className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50",
-              isChangelogsActive && "bg-primary/10 text-primary font-semibold",
-            )}
-          >
-            <Megaphone className="h-4 w-4" />
-            Changelog
-          </Link>
-        )}
       </div>
 
       {/* Stats: Contenuti */}
