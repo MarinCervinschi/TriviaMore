@@ -86,6 +86,17 @@ export interface BrowseOverview {
   coursesByType: { type: string; label: string; count: number }[]
   coursesByCampus: { campus: string; label: string; count: number }[]
   locations: OverviewLocation[]
+  topContributedClasses: {
+    id: string
+    name: string
+    deptCode: string
+    courseCode: string
+    classCode: string
+    sectionCount: number
+    questionCount: number
+    deptArea: string | null
+  }[]
+  questionsByType: { type: string; label: string; count: number }[]
 }
 
 // Search result types (for /search/* pages)

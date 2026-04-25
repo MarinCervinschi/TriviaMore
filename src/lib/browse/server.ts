@@ -369,7 +369,15 @@ export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<BrowseOverview> => {
     const supabase = createServerSupabaseClient()
 
-    const [statsResult, deptsResult, coursesResult, locationsResult] = await Promise.all([
+    const [
+      statsResult,
+      deptsResult,
+      coursesResult,
+      locationsResult,
+      classesResult,
+      quizCountResult,
+      flashcardCountResult,
+    ] = await Promise.all([
       // Stats counts
       Promise.all([
         catalogQuery(supabase).from("departments").select("*", { count: "exact", head: true }),
@@ -392,6 +400,31 @@ export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
         .from("department_locations")
         .select("id, name, address, latitude, longitude, campus_location, is_primary, position, department:departments(code, name)")
         .order("position"),
+      // Classes with sections + nested questions for top-contributors leaderboard
+      catalogQuery(supabase)
+        .from("classes")
+        .select(`
+          id,
+          name,
+          sections(id, questions(count)),
+          course_classes(
+            code,
+            position,
+            course:courses(
+              code,
+              department:departments(code, area)
+            )
+          )
+        `),
+      // Quiz vs flashcard split
+      catalogQuery(supabase)
+        .from("questions")
+        .select("*", { count: "exact", head: true })
+        .in("question_type", ["MULTIPLE_CHOICE", "TRUE_FALSE"]),
+      catalogQuery(supabase)
+        .from("questions")
+        .select("*", { count: "exact", head: true })
+        .eq("question_type", "SHORT_ANSWER"),
     ])
 
     const [depts, courses, classes, sections, questions] = statsResult
@@ -430,6 +463,50 @@ export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
       count,
     }))
 
+    // Top contributed classes — most sections, with full route info
+    const topContributedClasses = (classesResult.data ?? [])
+      .map((c: any) => {
+        const sectionList = c.sections ?? []
+        const sectionCount = sectionList.length
+        const questionCount = sectionList.reduce(
+          (sum: number, s: any) => sum + (s.questions?.[0]?.count ?? 0),
+          0,
+        )
+        const cc = (c.course_classes ?? [])
+          .slice()
+          .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))[0]
+        return {
+          id: c.id as string,
+          name: c.name as string,
+          sectionCount,
+          questionCount,
+          classCode: (cc?.code ?? "") as string,
+          courseCode: (cc?.course?.code ?? "") as string,
+          deptCode: (cc?.course?.department?.code ?? "") as string,
+          deptArea: (cc?.course?.department?.area ?? null) as string | null,
+        }
+      })
+      .filter((c) => c.sectionCount > 0 && c.classCode && c.courseCode && c.deptCode)
+      .sort((a, b) =>
+        b.sectionCount - a.sectionCount ||
+        b.questionCount - a.questionCount,
+      )
+      .slice(0, 5)
+
+    // Questions by type (quiz vs flashcard)
+    const questionsByType = [
+      {
+        type: "QUIZ",
+        label: "Quiz",
+        count: quizCountResult.count ?? 0,
+      },
+      {
+        type: "FLASHCARD",
+        label: "Flashcard",
+        count: flashcardCountResult.count ?? 0,
+      },
+    ].filter((t) => t.count > 0)
+
     return {
       stats: {
         departments: depts.count ?? 0,
@@ -442,6 +519,8 @@ export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(
       coursesByType,
       coursesByCampus,
       locations: (locationsResult.data ?? []) as OverviewLocation[],
+      topContributedClasses,
+      questionsByType,
     }
   },
 )
