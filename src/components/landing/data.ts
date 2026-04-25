@@ -210,11 +210,11 @@ export const footerSections: FooterSection[] = [
     ],
   },
   {
-    title: "UNIMORE",
+    title: "Legale",
     links: [
-      { href: "/departments/dief", label: "Ingegneria" },
-      { href: "/departments", label: "Scienze" },
-      { href: "/departments", label: "Economia" },
+      { href: "/legal/terms", label: "Termini e Condizioni" },
+      { href: "/legal/privacy", label: "Privacy Policy" },
+      { href: "/legal/cookies", label: "Cookie Policy" },
     ],
   },
 ]

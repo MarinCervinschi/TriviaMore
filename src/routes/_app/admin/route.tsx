@@ -2,9 +2,13 @@ import { Outlet, createFileRoute } from "@tanstack/react-router"
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { requireAdmin } from "@/lib/auth/guards"
+import { requireLegalAcceptance } from "@/lib/legal/guards"
 
 export const Route = createFileRoute("/_app/admin")({
-  beforeLoad: () => requireAdmin(),
+  beforeLoad: async () => {
+    await requireAdmin()
+    await requireLegalAcceptance()
+  },
   component: AdminLayout,
 })
 

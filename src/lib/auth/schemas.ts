@@ -33,6 +33,16 @@ export const registerSchema = userBaseSchema.extend({
       (password) => !/\s/.test(password),
       "La password non può contenere spazi",
     ),
+  terms_accepted: z
+    .boolean()
+    .refine((v) => v === true, {
+      message: "Devi accettare i Termini e Condizioni per registrarti",
+    }),
+  privacy_accepted: z
+    .boolean()
+    .refine((v) => v === true, {
+      message: "Devi accettare l'Informativa sulla Privacy per registrarti",
+    }),
 })
 
 export const loginSchema = z.object({

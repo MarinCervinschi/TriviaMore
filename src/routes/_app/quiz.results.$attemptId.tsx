@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { CheckCircle, Clock, XCircle } from "lucide-react"
 
+import { QuizResultsSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
     return data
   },
   head: () => seoHead({ title: "Risultati Quiz", noindex: true }),
+  pendingComponent: QuizResultsSkeleton,
   component: ResultsPage,
   notFoundComponent: () => (
     <NotFoundPage message="Il risultato del quiz non è stato trovato." />

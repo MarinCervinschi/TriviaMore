@@ -2,31 +2,14 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { STALE_TIME } from "@/lib/shared/cache"
 
-import {
-  getPublishedChangelogsFn,
-  getAdminChangelogsFn,
-  getChangelogDetailFn,
-} from "./server"
+import { getUnreadChangelogVersionsFn } from "./server"
 
 export const changelogQueries = {
-  published: () =>
+  unreadVersions: () =>
     queryOptions({
-      queryKey: ["changelogs", "published"],
-      queryFn: () => getPublishedChangelogsFn(),
-      staleTime: STALE_TIME.SLOW,
-    }),
-
-  adminList: () =>
-    queryOptions({
-      queryKey: ["admin", "changelogs"],
-      queryFn: () => getAdminChangelogsFn(),
-      staleTime: STALE_TIME.STANDARD,
-    }),
-
-  adminDetail: (id: string) =>
-    queryOptions({
-      queryKey: ["admin", "changelog", id],
-      queryFn: () => getChangelogDetailFn({ data: { id } }),
-      staleTime: STALE_TIME.STANDARD,
+      queryKey: ["changelogs", "unreadVersions"],
+      queryFn: () => getUnreadChangelogVersionsFn(),
+      staleTime: STALE_TIME.FAST,
+      refetchInterval: 1000 * 60,
     }),
 }

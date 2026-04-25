@@ -1,50 +1,21 @@
-import { useMutationWithToast } from "@/hooks/useMutationWithToast"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import {
-  createChangelogFn,
-  updateChangelogFn,
-  deleteChangelogFn,
-  publishChangelogFn,
-} from "./server"
+import { markChangelogsReadFn } from "./server"
 
-export function useCreateChangelog(onSuccess?: () => void) {
-  return useMutationWithToast(createChangelogFn, {
-    successMessage: "Changelog creato con successo",
-    invalidateKeys: [["admin", "changelogs"]],
-    onSuccess,
-  })
-}
+import type { MarkChangelogsReadInput } from "./schemas"
 
-export function useUpdateChangelog(onSuccess?: () => void) {
-  return useMutationWithToast(updateChangelogFn, {
-    successMessage: "Changelog aggiornato con successo",
-    invalidateKeys: [
-      ["admin", "changelogs"],
-      ["admin", "changelog"],
-      ["changelogs"],
-    ],
-    onSuccess,
-  })
-}
+// Silent fire-and-forget mutation: invoked when /news mounts so the
+// megaphone badge clears. No toast — the badge update is the feedback.
+export function useMarkChangelogsRead() {
+  const queryClient = useQueryClient()
 
-export function useDeleteChangelog(onSuccess?: () => void) {
-  return useMutationWithToast(deleteChangelogFn, {
-    successMessage: "Changelog eliminato con successo",
-    invalidateKeys: [["admin", "changelogs"], ["changelogs"]],
-    onSuccess,
-  })
-}
-
-export function usePublishChangelog(onSuccess?: () => void) {
-  return useMutationWithToast(publishChangelogFn, {
-    successMessage: "Changelog pubblicato e notifiche inviate",
-    invalidateKeys: [
-      ["admin", "changelogs"],
-      ["admin", "changelog"],
-      ["changelogs"],
-      ["notifications"],
-      ["notifications", "unreadCount"],
-    ],
-    onSuccess,
+  return useMutation({
+    mutationFn: (data: MarkChangelogsReadInput) =>
+      markChangelogsReadFn({ data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["changelogs", "unreadVersions"],
+      })
+    },
   })
 }
