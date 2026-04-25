@@ -63,7 +63,7 @@ These secrets are stored in Infisical and injected via `infisical run --` in dev
 | `GOOGLE_CLIENT_ID` | Server only | Google OAuth app Client ID |
 | `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app Client Secret |
 | `VITE_APP_URL` | Server only | App URL for OAuth redirects (defaults to `http://localhost:3000`) |
-| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://triviamore.it`) |
+| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://trivia-more.it`) |
 
 Run `supabase status` to see all local credentials after `supabase start`.
 

@@ -1,5 +1,5 @@
 const SITE_NAME = "TriviaMore"
-const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://triviamore.it"
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://trivia-more.it"
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`
 
 type SeoHeadOptions = {

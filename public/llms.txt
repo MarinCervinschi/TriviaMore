@@ -2,7 +2,7 @@
 
 > La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti dell'Universita di Modena e Reggio Emilia.
 
-TriviaMore e una web app open source per lo studio universitario tramite quiz a risposta multipla, vero/falso e flashcard. I contenuti sono organizzati in una gerarchia: Dipartimenti > Corsi > Classi > Sezioni > Domande.
+TriviaMore e una web app open source per lo studio universitario tramite quiz a risposta multipla, vero/falso e flashcard. I contenuti sono organizzati in una gerarchia: Dipartimenti > Corsi > Insegnamenti > Sezioni > Domande.
 
 ## Funzionalita principali
 
@@ -32,4 +32,4 @@ TriviaMore e una web app open source per lo studio universitario tramite quiz a 
 
 ## Contatti
 
-- Sito: https://triviamore.it
+- Sito: https://trivia-more.it
