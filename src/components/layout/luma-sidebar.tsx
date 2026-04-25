@@ -3,13 +3,13 @@ import { Link, useMatchRoute } from "@tanstack/react-router"
 import {
   BookOpen,
   Compass,
+  Cookie,
   GraduationCap,
   Home,
   Inbox,
   Info,
   LogOut,
   Mail,
-  Megaphone,
   Moon,
   Search,
   Settings,
@@ -19,11 +19,12 @@ import {
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
+import { useCookieConsent } from "@/hooks/useCookieConsent"
 import { useTheme } from "@/hooks/useTheme"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { LogoIcon } from "@/components/ui/logo"
-import { CookiePreferencesButton } from "@/components/legal/cookie-preferences-button"
+import { SidebarChangelogMegaphone } from "@/components/notifications/changelog-megaphone"
 import { SidebarNotificationBell } from "@/components/notifications/notification-bell"
 import {
   Tooltip,
@@ -230,6 +231,7 @@ function SidebarProfile({
 }) {
   const [open, setOpen] = useState(false)
   const initials = getInitials(user?.name, user?.email)
+  const { reset: resetCookieConsent } = useCookieConsent()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -283,14 +285,6 @@ function SidebarProfile({
 
         <div className="flex flex-col py-1">
           <Link
-            to="/news"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            <Megaphone className="h-4 w-4" strokeWidth={1.5} />
-            Novità
-          </Link>
-          <Link
             to="/user/settings"
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
@@ -306,6 +300,19 @@ function SidebarProfile({
             <Mail className="h-4 w-4" strokeWidth={1.5} />
             Contatti
           </Link>
+          {import.meta.env.PROD && (
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                resetCookieConsent()
+              }}
+              className="flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-accent"
+            >
+              <Cookie className="h-4 w-4" strokeWidth={1.5} />
+              Preferenze cookie
+            </button>
+          )}
         </div>
 
         <Separator />
@@ -334,12 +341,6 @@ function SidebarProfile({
           >
             Cookie
           </Link>
-          {import.meta.env.PROD && (
-            <>
-              <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-              <CookiePreferencesButton />
-            </>
-          )}
         </div>
 
         <Separator />
@@ -420,6 +421,7 @@ export function LumaSidebar() {
         <GroupDivider />
 
         {/* Utility */}
+        <SidebarChangelogMegaphone />
         <SidebarNotificationBell />
         <SidebarThemeToggle />
         <SidebarProfile user={user} onLogout={() => logout.mutate({})} />
