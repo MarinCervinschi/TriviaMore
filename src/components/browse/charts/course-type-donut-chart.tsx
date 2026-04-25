@@ -1,82 +1,134 @@
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts"
+import { Label, Pie, PieChart } from "recharts"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const tooltipStyle = {
-  borderRadius: "12px",
-  border: "1px solid hsl(var(--border))",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-  backgroundColor: "hsl(var(--card))",
-  color: "hsl(var(--foreground))",
-}
-
-const TYPE_COLORS: Record<string, string> = {
-  BACHELOR: "#3b82f6",
-  MASTER: "#8b5cf6",
-  SINGLE_CYCLE: "#10b981",
-}
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
 
 type CourseTypeChartData = { type: string; label: string; count: number }
 
-export function CourseTypeDonutChart({ data }: { data: CourseTypeChartData[] }) {
+// Match the existing COURSE_TYPE_CONFIG badge palette across the app:
+// triennale = blue, magistrale = violet, ciclo unico = emerald.
+const TYPE_COLORS: Record<string, string> = {
+  BACHELOR: "var(--color-chart-2)",
+  MASTER: "var(--color-chart-3)",
+  SINGLE_CYCLE: "var(--color-chart-4)",
+}
+
+export function CourseTypeDonutChart({
+  data,
+}: {
+  data: CourseTypeChartData[]
+}) {
   if (data.length === 0) return null
+
+  const config: ChartConfig = data.reduce<ChartConfig>((acc, entry) => {
+    acc[entry.type] = {
+      label: entry.label,
+      color: TYPE_COLORS[entry.type] ?? "var(--color-chart-5)",
+    }
+    return acc
+  }, {})
+
+  const chartData = data.map((entry) => ({
+    ...entry,
+    fill: `var(--color-${entry.type})`,
+  }))
 
   const total = data.reduce((sum, d) => sum + d.count, 0)
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Tipologia corsi</CardTitle>
+    <Card className="flex h-full flex-col">
+      <CardHeader className="pb-1">
+        <CardTitle className="text-base">Corsi per tipo</CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
-        <ResponsiveContainer width="100%" height={240}>
+      <CardContent className="flex flex-1 flex-col justify-center gap-4 pb-6">
+        <ChartContainer
+          config={config}
+          className="mx-auto aspect-square w-full max-w-[220px]"
+        >
           <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value, _name, item) => {
+                    const type = item.payload?.type
+                    const label = (type && config[type]?.label) ?? ""
+                    return (
+                      <div className="flex w-full items-center justify-between gap-3">
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="font-mono font-semibold tabular-nums">
+                          {(value as number).toLocaleString("it-IT")} corsi
+                        </span>
+                      </div>
+                    )
+                  }}
+                />
+              }
+            />
             <Pie
-              data={data}
-              cx="50%"
-              cy="45%"
-              innerRadius={55}
-              outerRadius={85}
-              paddingAngle={3}
+              data={chartData}
               dataKey="count"
-              nameKey="label"
-              stroke="none"
+              nameKey="type"
+              innerRadius={62}
+              strokeWidth={3}
+              paddingAngle={2}
             >
-              {data.map((entry) => (
-                <Cell key={entry.type} fill={TYPE_COLORS[entry.type] ?? "hsl(var(--muted))"} />
-              ))}
+              <Label
+                content={({ viewBox }) => {
+                  if (!viewBox || !("cx" in viewBox)) return null
+                  return (
+                    <text
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      <tspan
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        className="fill-foreground text-2xl font-bold"
+                      >
+                        {total.toLocaleString("it-IT")}
+                      </tspan>
+                      <tspan
+                        x={viewBox.cx}
+                        y={(viewBox.cy ?? 0) + 22}
+                        className="fill-muted-foreground text-xs"
+                      >
+                        corsi
+                      </tspan>
+                    </text>
+                  )
+                }}
+              />
             </Pie>
-            <RechartsTooltip
-              contentStyle={tooltipStyle}
-              formatter={(value, name) => [`${value} corsi`, name]}
-            />
-            <Legend
-              verticalAlign="bottom"
-              iconType="circle"
-              iconSize={8}
-              wrapperStyle={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }}
-            />
-            {/* Center label */}
-            <text
-              x="50%"
-              y="42%"
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="fill-foreground text-2xl font-bold"
-            >
-              {total}
-            </text>
-            <text
-              x="50%"
-              y="52%"
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="fill-muted-foreground text-xs"
-            >
-              corsi
-            </text>
           </PieChart>
-        </ResponsiveContainer>
+        </ChartContainer>
+        <ul className="grid grid-cols-1 gap-1.5 text-xs">
+          {chartData.map((entry) => (
+            <li
+              key={entry.type}
+              className="flex items-center justify-between gap-2"
+            >
+              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: `var(--color-${entry.type})` }}
+                />
+                <span className="truncate">{entry.label}</span>
+              </span>
+              <span className="font-mono font-semibold tabular-nums text-foreground">
+                {entry.count.toLocaleString("it-IT")}
+              </span>
+            </li>
+          ))}
+        </ul>
       </CardContent>
     </Card>
   )

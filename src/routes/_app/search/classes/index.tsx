@@ -264,7 +264,7 @@ function SearchClassesPage() {
                     >
                       <td className="pl-6 py-4">
                         <Link
-                          to="/departments/$department/$course/$class"
+                          to="/browse/$department/$course/$class"
                           params={{
                             department: cls.course.department.code.toLowerCase(),
                             course: cls.course.code.toLowerCase(),
