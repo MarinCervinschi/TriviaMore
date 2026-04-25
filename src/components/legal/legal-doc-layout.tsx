@@ -83,31 +83,25 @@ export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
   )
 
   return (
-    <div className="relative isolate">
-      {/* Decorative backdrop */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -left-20 top-0 h-[300px] w-[300px] rounded-full bg-primary/5 blur-[100px]" />
-        <div className="absolute right-0 top-40 h-[240px] w-[240px] rounded-full bg-orange-300/5 blur-[80px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
-      </div>
-
+    <div className="relative">
       <div className="container max-w-6xl py-10 sm:py-14">
         <LegalHero {...meta} />
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_260px]">
-          <article className="relative min-w-0 overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm">
-            <div className="p-6 sm:p-10">
-              <div
-                className="prose prose-sm max-w-none
-                  prose-headings:scroll-mt-24
-                  prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:text-xl prose-h2:font-bold prose-h2:border-b prose-h2:border-border/60
-                  prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-base prose-h3:font-semibold
-                  prose-p:leading-relaxed prose-p:text-[15px]
-                  prose-a:text-primary prose-a:underline-offset-2 hover:prose-a:text-primary/80
-                  prose-strong:text-foreground
-                  prose-li:marker:text-primary/70
-                  first:prose-p:text-base first:prose-p:text-muted-foreground first:prose-p:leading-relaxed"
-              >
+        <hr className="my-10 border-border/60" />
+
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <article className="min-w-0">
+            <div
+              className="prose prose-sm max-w-none
+                prose-headings:scroll-mt-24
+                prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:text-xl prose-h2:font-bold prose-h2:border-b prose-h2:border-border/60
+                prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-base prose-h3:font-semibold
+                prose-p:leading-relaxed prose-p:text-[15px]
+                prose-a:text-primary prose-a:underline-offset-2 hover:prose-a:text-primary/80
+                prose-strong:text-foreground
+                prose-li:marker:text-primary/70
+                first:prose-p:text-base first:prose-p:text-muted-foreground first:prose-p:leading-relaxed"
+            >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
@@ -165,10 +159,9 @@ export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
                       </code>
                     ),
                   }}
-                >
-                  {cleanedMarkdown}
-                </ReactMarkdown>
-              </div>
+              >
+                {cleanedMarkdown}
+              </ReactMarkdown>
             </div>
           </article>
 
