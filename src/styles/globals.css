@@ -277,9 +277,9 @@ body {
 }
 
 .shimmer {
-  background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted-foreground) / 0.08) 50%, hsl(var(--muted)) 75%);
+  background: linear-gradient(90deg, hsl(var(--muted)) 35%, hsl(var(--muted-foreground) / 0.04) 50%, hsl(var(--muted)) 65%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 2.4s ease-in-out infinite;
 }
 
 /* Reduced motion: suppress all animations/transitions */
