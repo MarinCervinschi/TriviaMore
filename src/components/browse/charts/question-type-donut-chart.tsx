@@ -8,20 +8,18 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 
-type CourseTypeChartData = { type: string; label: string; count: number }
+type QuestionTypeChartData = { type: string; label: string; count: number }
 
-// Match the existing COURSE_TYPE_CONFIG badge palette across the app:
-// triennale = blue, magistrale = violet, ciclo unico = emerald.
+// Match the Quiz/Flashcard badges used elsewhere: blue for quiz, violet for flashcard.
 const TYPE_COLORS: Record<string, string> = {
-  BACHELOR: "var(--color-chart-2)",
-  MASTER: "var(--color-chart-3)",
-  SINGLE_CYCLE: "var(--color-chart-4)",
+  QUIZ: "var(--color-chart-2)",
+  FLASHCARD: "var(--color-chart-3)",
 }
 
-export function CourseTypeDonutChart({
+export function QuestionTypeDonutChart({
   data,
 }: {
-  data: CourseTypeChartData[]
+  data: QuestionTypeChartData[]
 }) {
   if (data.length === 0) return null
 
@@ -43,7 +41,7 @@ export function CourseTypeDonutChart({
   return (
     <Card className="flex h-full flex-col">
       <CardHeader className="pb-1">
-        <CardTitle className="text-base">Corsi per tipo</CardTitle>
+        <CardTitle className="text-base">Domande per tipo</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-center gap-4 pb-6">
         <ChartContainer
@@ -63,7 +61,7 @@ export function CourseTypeDonutChart({
                       <div className="flex w-full items-center justify-between gap-3">
                         <span className="text-muted-foreground">{label}</span>
                         <span className="font-mono font-semibold tabular-nums">
-                          {(value as number).toLocaleString("it-IT")} corsi
+                          {(value as number).toLocaleString("it-IT")}
                         </span>
                       </div>
                     )
@@ -101,7 +99,7 @@ export function CourseTypeDonutChart({
                         y={(viewBox.cy ?? 0) + 22}
                         className="fill-muted-foreground text-xs"
                       >
-                        corsi
+                        domande
                       </tspan>
                     </text>
                   )
