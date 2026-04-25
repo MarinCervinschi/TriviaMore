@@ -77,7 +77,7 @@ export function OverviewMap({ locations }: { locations: OverviewLocation[] }) {
                         </Badge>
                       )}
                       <Link
-                        to="/departments/$department"
+                        to="/browse/$department"
                         params={{ department: location.department.code.toLowerCase() }}
                         className="text-xs font-medium text-primary hover:underline"
                       >
