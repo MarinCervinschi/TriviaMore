@@ -1,8 +1,8 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useEffect, useRef, type Ref } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
-import { Megaphone, Newspaper } from "lucide-react"
+import { Megaphone, Newspaper, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -15,12 +15,13 @@ import {
   staggerItem,
   withReducedMotion,
 } from "@/lib/motion"
-import { changelogQueries } from "@/lib/changelogs/queries"
+import { useMarkChangelogsRead } from "@/lib/changelogs/mutations"
+import { CHANGELOGS } from "@/lib/changelogs/static"
 import { CATEGORY_CONFIG } from "@/lib/changelogs/types"
 
+import type { ChangelogEntry } from "@/lib/changelogs/types"
+
 export const Route = createFileRoute("/_app/news")({
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(changelogQueries.published()),
   head: () =>
     seoHead({
       title: "Novità",
@@ -31,9 +32,30 @@ export const Route = createFileRoute("/_app/news")({
   component: NewsPage,
 })
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("it-IT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+
+const DOT_COLOR: Record<ChangelogEntry["category"], string> = {
+  new: "bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.15)]",
+  improved: "bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.15)]",
+  fixed: "bg-amber-500 shadow-[0_0_0_4px_rgba(245,158,11,0.15)]",
+}
+
 function NewsPage() {
-  const { data: changelogs } = useSuspenseQuery(changelogQueries.published())
   const prefersReduced = useReducedMotion()
+  const markRead = useMarkChangelogsRead()
+  const didMarkRef = useRef(false)
+
+  useEffect(() => {
+    if (didMarkRef.current) return
+    if (CHANGELOGS.length === 0) return
+    didMarkRef.current = true
+    markRead.mutate({ versions: CHANGELOGS.map((c) => c.version) })
+  }, [markRead])
 
   const { ref: heroRef, isVisible: heroVisible } = useScrollReveal()
   const { ref: listRef, isVisible: listVisible } = useScrollReveal()
@@ -41,126 +63,159 @@ function NewsPage() {
   const container = withReducedMotion(staggerContainer, prefersReduced)
   const item = withReducedMotion(staggerItem, prefersReduced)
 
+  const latest = CHANGELOGS[0]
+
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative py-20 sm:py-28">
+      <section className="relative pt-16 pb-10 sm:pt-24 sm:pb-14">
         <motion.div
           ref={heroRef}
-          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          className="mx-auto max-w-3xl px-4 sm:px-6"
           variants={container}
           initial="hidden"
           animate={heroVisible ? "visible" : "hidden"}
         >
-          <div className="mx-auto max-w-3xl text-center">
-            <motion.div
-              className="mb-4 inline-flex rounded-2xl bg-primary/10 p-4"
-              variants={item}
-            >
-              <Megaphone
-                className="h-8 w-8 text-primary"
-                strokeWidth={1.5}
-              />
-            </motion.div>
+          <motion.div
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary"
+            variants={item}
+          >
+            <Megaphone className="h-3.5 w-3.5" strokeWidth={2} />
+            Novità e aggiornamenti
+          </motion.div>
+          <motion.h1
+            className="text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl"
+            variants={item}
+          >
+            Cosa c&apos;è di{" "}
+            <span className="gradient-text">nuovo</span>
+          </motion.h1>
+          {latest && (
             <motion.p
-              className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary"
+              className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground"
               variants={item}
             >
-              Novità
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-mono text-xs font-semibold text-primary">
+                <Sparkles className="h-3 w-3" strokeWidth={2.5} />
+                v{latest.version}
+              </span>
+              <span>l&apos;ultima release è stata pubblicata il {formatDate(latest.publishedAt)}</span>
             </motion.p>
-            <motion.h1
-              className="mb-6 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
-              variants={item}
-            >
-              Cosa c&apos;è di{" "}
-              <span className="gradient-text">nuovo</span>
-            </motion.h1>
-            <motion.p
-              className="text-lg leading-relaxed text-muted-foreground sm:text-xl"
-              variants={item}
-            >
-              Tutte le ultime novità, miglioramenti e correzioni di TriviaMore.
-            </motion.p>
-          </div>
+          )}
         </motion.div>
       </section>
 
-      {/* Changelog entries */}
-      <section className="pb-20 sm:pb-28">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          {changelogs.length === 0 ? (
+      {/* Timeline */}
+      <section className="pb-24 sm:pb-32">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          {CHANGELOGS.length === 0 ? (
             <EmptyState
               icon={Newspaper}
               title="Nessuna novità ancora"
               description="Le novità e gli aggiornamenti verranno pubblicati qui."
             />
           ) : (
-            <motion.div
-              ref={listRef}
-              className="space-y-8"
+            <motion.ol
+              ref={listRef as unknown as Ref<HTMLOListElement>}
+              className="relative"
               variants={container}
               initial="hidden"
               animate={listVisible ? "visible" : "hidden"}
             >
-              {changelogs.map((entry) => {
-                const catConfig =
-                  CATEGORY_CONFIG[
-                    entry.category as keyof typeof CATEGORY_CONFIG
-                  ]
+              {/* Vertical rail — gradient fades at top/bottom */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-border to-transparent sm:left-[15px]"
+              />
+
+              {CHANGELOGS.map((entry, index) => {
+                const catConfig = CATEGORY_CONFIG[entry.category]
+                const isLatest = index === 0
 
                 return (
-                  <motion.article
-                    key={entry.id}
+                  <motion.li
+                    key={entry.version}
                     id={`v${entry.version}`}
-                    className="group relative overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    className="relative pl-10 sm:pl-14 pb-12 last:pb-0"
                     variants={item}
                   >
-                    {/* Accent gradient on hover */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                    <div className="relative p-6 sm:p-8">
-                      {/* Header: version, category, date */}
-                      <div className="mb-4 flex flex-wrap items-center gap-3">
-                        <span className="rounded-xl bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
-                          v{entry.version}
-                        </span>
-                        {catConfig && (
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "rounded-full",
-                              catConfig.bg,
-                              catConfig.color,
-                              catConfig.border,
-                            )}
-                          >
-                            {catConfig.label}
-                          </Badge>
+                    {/* Dot */}
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "absolute left-1 top-1.5 size-[14px] rounded-full ring-4 ring-background sm:left-[9px]",
+                        DOT_COLOR[entry.category],
+                      )}
+                    />
+                    {isLatest && !prefersReduced && (
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "absolute left-1 top-1.5 size-[14px] animate-ping rounded-full opacity-60 sm:left-[9px]",
+                          DOT_COLOR[entry.category].split(" ")[0],
                         )}
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(entry.published_at!).toLocaleDateString(
-                            "it-IT",
-                            {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )}
+                      />
+                    )}
+
+                    {/* Meta row */}
+                    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <span className="font-mono text-base font-bold tracking-tight text-foreground">
+                        v{entry.version}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "rounded-full border text-[11px] font-semibold uppercase tracking-wider",
+                          catConfig.bg,
+                          catConfig.color,
+                          catConfig.border,
+                        )}
+                      >
+                        {catConfig.label}
+                      </Badge>
+                      <time
+                        dateTime={entry.publishedAt}
+                        className="text-xs text-muted-foreground"
+                      >
+                        {formatDate(entry.publishedAt)}
+                      </time>
+                      {isLatest && (
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                          Ultima
                         </span>
-                      </div>
-
-                      {/* Title */}
-                      <h2 className="mb-4 text-xl font-bold tracking-tight sm:text-2xl">
-                        {entry.title}
-                      </h2>
-
-                      {/* Body (markdown) */}
-                      <MarkdownRenderer content={entry.body} />
+                      )}
                     </div>
-                  </motion.article>
+
+                    {/* Card */}
+                    <article
+                      className={cn(
+                        "group relative overflow-hidden rounded-2xl border bg-card/50 backdrop-blur-sm transition-all duration-300",
+                        "hover:border-primary/30 hover:bg-card hover:shadow-lg",
+                      )}
+                    >
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      />
+                      <div className="p-5 sm:p-7">
+                        <h2 className="mb-3 text-xl font-bold leading-tight tracking-tight sm:text-2xl">
+                          {entry.title}
+                        </h2>
+                        <MarkdownRenderer content={entry.body} />
+                      </div>
+                    </article>
+                  </motion.li>
                 )
               })}
-            </motion.div>
+
+              {/* Tail dot (timeline anchor) */}
+              <li
+                aria-hidden="true"
+                className="relative pl-10 sm:pl-14"
+              >
+                <span className="absolute left-[5px] top-0 size-[6px] rounded-full bg-border sm:left-[13px]" />
+              </li>
+            </motion.ol>
           )}
         </div>
       </section>
