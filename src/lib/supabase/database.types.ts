@@ -476,42 +476,6 @@ export type Database = {
           },
         ]
       }
-      changelogs: {
-        Row: {
-          body: string
-          category: string
-          created_at: string
-          id: string
-          is_draft: boolean
-          published_at: string | null
-          title: string
-          updated_at: string
-          version: string
-        }
-        Insert: {
-          body: string
-          category?: string
-          created_at?: string
-          id?: string
-          is_draft?: boolean
-          published_at?: string | null
-          title: string
-          updated_at?: string
-          version: string
-        }
-        Update: {
-          body?: string
-          category?: string
-          created_at?: string
-          id?: string
-          is_draft?: boolean
-          published_at?: string | null
-          title?: string
-          updated_at?: string
-          version?: string
-        }
-        Relationships: []
-      }
       content_requests: {
         Row: {
           admin_note: string | null
@@ -840,6 +804,32 @@ export type Database = {
           },
           {
             foreignKeyName: "progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_changelog_reads: {
+        Row: {
+          read_at: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          read_at?: string
+          user_id: string
+          version: string
+        }
+        Update: {
+          read_at?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_changelog_reads_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1191,7 +1181,6 @@ export type Database = {
         | "REQUEST_REVISED"
         | "CONTENT_UPDATED"
         | "NEW_SECTION_ADDED"
-        | "ANNOUNCEMENT"
       question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
       quiz_mode: "STUDY" | "EXAM_SIMULATION"
       role: "SUPERADMIN" | "ADMIN" | "MAINTAINER" | "STUDENT"
@@ -1638,7 +1627,6 @@ export const Constants = {
         "REQUEST_REVISED",
         "CONTENT_UPDATED",
         "NEW_SECTION_ADDED",
-        "ANNOUNCEMENT",
       ],
       question_type: ["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"],
       quiz_mode: ["STUDY", "EXAM_SIMULATION"],
