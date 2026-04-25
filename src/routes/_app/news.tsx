@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/useAuth"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useScrollReveal } from "@/hooks/useScrollReveal"
 import {
@@ -47,15 +48,19 @@ const DOT_COLOR: Record<ChangelogEntry["category"], string> = {
 
 function NewsPage() {
   const prefersReduced = useReducedMotion()
+  const { isAuthenticated } = useAuth()
   const markRead = useMarkChangelogsRead()
   const didMarkRef = useRef(false)
 
+  // Guests can read /news but have no per-user state — skip the mutation
+  // to avoid an authenticated-only server call that would always fail.
   useEffect(() => {
     if (didMarkRef.current) return
+    if (!isAuthenticated) return
     if (CHANGELOGS.length === 0) return
     didMarkRef.current = true
     markRead.mutate({ versions: CHANGELOGS.map((c) => c.version) })
-  }, [markRead])
+  }, [isAuthenticated, markRead])
 
   const { ref: heroRef, isVisible: heroVisible } = useScrollReveal()
   const { ref: listRef, isVisible: listVisible } = useScrollReveal()
