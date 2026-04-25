@@ -1,26 +1,19 @@
 import { z } from "zod"
 
-export const changelogSchema = z.object({
+// Validates frontmatter parsed from src/content/changelogs/*.md
+export const changelogFrontmatterSchema = z.object({
   version: z
     .string()
-    .regex(/^\d+\.\d+$/, "Formato versione non valido (es. 3.0)")
-    .trim(),
-  title: z
+    .regex(/^\d+\.\d+\.\d+$/, "version must be semver (e.g. 1.4.0)"),
+  title: z.string().min(1),
+  category: z.enum(["new", "improved", "fixed"]),
+  publishedAt: z
     .string()
-    .min(3, "Il titolo deve essere di almeno 3 caratteri")
-    .max(200, "Il titolo non può superare i 200 caratteri")
-    .trim(),
-  body: z
-    .string()
-    .min(10, "Il contenuto deve essere di almeno 10 caratteri")
-    .max(50000, "Il contenuto non può superare i 50000 caratteri"),
-  category: z.enum(["new", "improved", "fixed"], {
-    message: "La categoria è obbligatoria",
-  }),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "publishedAt must be YYYY-MM-DD"),
 })
 
-export type ChangelogInput = z.infer<typeof changelogSchema>
+export const markChangelogsReadSchema = z.object({
+  versions: z.array(z.string()).min(1),
+})
 
-export const updateChangelogSchema = changelogSchema.partial()
-
-export type UpdateChangelogInput = z.infer<typeof updateChangelogSchema>
+export type MarkChangelogsReadInput = z.infer<typeof markChangelogsReadSchema>
