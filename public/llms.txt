@@ -1,16 +1,40 @@
 # TriviaMore
 
-> La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti dell'Universita di Modena e Reggio Emilia.
+> La piattaforma open source di quiz e flashcard pensata per gli studenti dell'Universita di Modena e Reggio Emilia. Catalogo completo dell'ateneo, materiale curato dagli studenti, dashboard personale per studiare in modo organizzato. Costruita da studenti, per studenti.
 
-TriviaMore e una web app open source per lo studio universitario tramite quiz a risposta multipla, vero/falso e flashcard. I contenuti sono organizzati in una gerarchia: Dipartimenti > Corsi > Insegnamenti > Sezioni > Domande.
+## Per chi e
+
+Se sei uno studente UniMore alla ricerca di un modo serio per prepararti agli esami, TriviaMore raccoglie in un unico posto domande, simulazioni e flashcard organizzate per insegnamento. Non e un generatore automatico di quiz: il catalogo e curato manualmente da studenti che hanno gia sostenuto gli esami, quindi le domande riflettono cio che viene davvero chiesto in aula. Ideale per ripasso prima dell'esame, autovalutazione, memorizzazione attiva e simulazioni cronometrate.
+
+## Catalogo
+
+I contenuti coprono il catalogo completo dell'Universita di Modena e Reggio Emilia, organizzati in una gerarchia a cinque livelli:
+
+- **Dipartimenti** dell'ateneo
+- **Corsi di laurea** all'interno di ogni dipartimento
+- **Insegnamenti** (classi) di ogni corso
+- **Sezioni tematiche** che dividono ogni insegnamento in unita didattiche
+- **Domande e flashcard** all'interno di ogni sezione
+
+I dati sono curati e validati, non scrapati. Studenti maintainer si occupano del catalogo del proprio dipartimento e gli utenti possono segnalare errori o proporre integrazioni.
 
 ## Funzionalita principali
 
-- **Quiz**: modalita Studio (senza timer) e Simulazione Esame (con timer, domande randomizzate). Supporta scelta multipla, vero/falso e risposta breve.
-- **Flashcard**: sessioni di studio con carte girabili e tracking dei progressi.
-- **Navigazione contenuti**: esplorazione gerarchica di dipartimenti, corsi, classi e sezioni.
-- **Area utente**: dashboard, classi seguite, segnalibri, progressi con grafici.
-- **Pannello admin**: gestione completa di contenuti e utenti con import massivo.
+- **Quiz**: due modalita - Studio (senza timer, feedback immediato) e Simulazione Esame (timer, domande randomizzate, valutazione finale). Supporta scelta multipla, vero/falso e risposta breve.
+- **Flashcard**: sessioni di studio con carte girabili, navigazione guidata e tracking dei progressi.
+- **Esplorazione del catalogo**: navigazione gerarchica di dipartimenti, corsi, classi e sezioni, con ricerca e filtri.
+- **Dashboard personale**: panoramica delle attivita, classi seguite, segnalibri sulle domande, grafici di progresso per insegnamento e nel tempo, notifiche.
+- **Modalita ospite**: quiz e flashcard utilizzabili senza registrazione - ideale per provare la piattaforma o ripassare al volo.
+- **Pannello admin e maintainer**: gestione completa di contenuti e utenti, import massivo, ruoli scoped per dipartimento.
+
+## Open source e community
+
+TriviaMore e un progetto open source, sviluppato da studenti per la community universitaria. Il codice e pubblico su GitHub (https://github.com/MarinCervinschi/TriviaMore) e sono benvenuti:
+
+- Segnalazioni di errori nei contenuti
+- Proposte di nuove domande, sezioni o insegnamenti
+- Contributi al codice (frontend, backend, accessibilita)
+- Studenti che vogliono diventare maintainer del catalogo del proprio dipartimento
 
 ## Struttura del sito
 
@@ -22,14 +46,20 @@ TriviaMore e una web app open source per lo studio universitario tramite quiz a 
 - `/browse/{dipartimento}/{corso}` - Classi di un corso
 - `/browse/{dipartimento}/{corso}/{classe}` - Sezioni di una classe
 - `/browse/{dipartimento}/{corso}/{classe}/{sezione}` - Dettaglio sezione con quiz e flashcard
+- `/user/dashboard` - Dashboard personale (login richiesto)
+- `/user/progress` - Grafici di progresso
+- `/user/classes` - Classi seguite
+- `/user/bookmarks` - Domande salvate
 
 ## Informazioni tecniche
 
 - Lingua: Italiano
-- Stack: TanStack Start, React 19, Supabase, Tailwind CSS
-- Accesso: contenuti pubblici esplorabilili senza autenticazione, quiz e flashcard disponibili anche come ospite
+- Stack: TanStack Start, React 19, Tailwind CSS v4, Supabase
+- PWA installabile su mobile e desktop, dark mode integrata
+- Accesso: contenuti pubblici esplorabili senza autenticazione, quiz e flashcard disponibili anche come ospite
 - Autenticazione: email/password e OAuth (Google, GitHub)
 
 ## Contatti
 
 - Sito: https://trivia-more.it
+- Repository: https://github.com/MarinCervinschi/TriviaMore
