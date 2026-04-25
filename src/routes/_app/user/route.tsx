@@ -7,11 +7,11 @@ export const Route = createFileRoute("/_app/user")({
     await requireAuth()
     await requireLegalAcceptance()
   },
-  // This layout has no UI of its own — only an auth/legal guard. Suppress the
-  // global defaultPendingComponent (the LoadingPage spinner) so it doesn't
-  // flash before the child route's skeleton on slow auth checks. The child
-  // route's pendingComponent owns the loading UI for /user/*.
-  pendingComponent: () => null,
-  pendingMinMs: 0,
+  // This layout has no UI of its own — only an auth/legal guard. Push the
+  // pending threshold high enough that the global LoadingPage spinner never
+  // shows for the guard itself, letting each child route's pendingComponent
+  // own the loading UI for /user/*. The default 200ms threshold would
+  // otherwise flash the spinner before the child skeleton on slow auth.
+  pendingMs: 60_000,
   component: () => <Outlet />,
 })
