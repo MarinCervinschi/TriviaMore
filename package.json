@@ -13,14 +13,14 @@
     "dev:prod": "infisical run --env=prod -- vite dev --port 3000",
     "dev:no-secrets": "vite dev --port 3000",
     "build": "vite build",
-    "build:dev": "infisical run -- vite build",
+    "build:dev": "infisical run -- pnpm build",
     "start": "node .output/server/index.mjs",
     "preview": "infisical run -- vite preview",
     "test": "vitest run",
     "db:types": "infisical run -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
     "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap",
-    "postbuild": "pnpm generate:sitemap"
+    "prebuild": "pnpm generate:sitemap"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.2.7",
