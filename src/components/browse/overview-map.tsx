@@ -39,15 +39,15 @@ export function OverviewMap({ locations }: { locations: OverviewLocation[] }) {
   const mapTheme = resolvedTheme === "dark" ? "dark" : "light"
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="flex h-full flex-col overflow-hidden">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
           <MapPin className="h-4 w-4 text-primary" />
           Le nostre sedi
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="h-[300px] sm:h-[360px] lg:h-[420px] w-full">
+      <CardContent className="flex-1 p-0">
+        <div className="h-full min-h-[300px] w-full">
           <Map
             center={[10.88, 44.68]}
             zoom={9}

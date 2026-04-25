@@ -3,36 +3,10 @@ import {
   SkeletonBadge,
   SkeletonChart,
   SkeletonFilterBar,
-  SkeletonGridCard,
-  SkeletonHero,
   SkeletonRoot,
   SkeletonSearchInput,
   SkeletonTable,
 } from "./primitives"
-
-export function DepartmentsListSkeleton() {
-  return (
-    <SkeletonRoot label="Caricamento dipartimenti…">
-      <SkeletonHero withStats={2} />
-
-      <div className="container py-8">
-        <div className="mb-4 flex items-center justify-between">
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-9 w-24 rounded-xl" />
-        </div>
-
-        <SkeletonFilterBar chips={5} />
-        <SkeletonSearchInput className="mb-6" />
-
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonGridCard key={i} />
-          ))}
-        </div>
-      </div>
-    </SkeletonRoot>
-  )
-}
 
 function BrowsePageHeaderSkeleton({
   badges = 2,
