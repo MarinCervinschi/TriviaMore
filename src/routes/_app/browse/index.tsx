@@ -244,39 +244,62 @@ function BrowsePage() {
 
         {/* Bento grid: 3 rows × 3 cols. Each row sizes to its tallest cell;
             companion cells use h-full to fill, so no empty zones. */}
-        <div className="grid gap-4 lg:grid-cols-3">
+        <motion.div
+          variants={withReducedMotion(staggerContainer, prefersReduced)}
+          initial="hidden"
+          animate={dataVisible ? "visible" : "hidden"}
+          className="grid gap-4 lg:grid-cols-3"
+        >
           {/* Row 1: Map (cs2) + Course-type donut */}
-          <div className="lg:col-span-2 [&>*]:h-full">
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="lg:col-span-2 [&>*]:h-full"
+          >
             <Suspense fallback={<Skeleton className="h-full min-h-[380px] w-full rounded-2xl" />}>
               <OverviewMap locations={overview.locations} />
             </Suspense>
-          </div>
-          <div className="[&>*]:h-full">
+          </motion.div>
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="[&>*]:h-full"
+          >
             <Suspense fallback={<Skeleton className="h-full min-h-[380px] w-full rounded-2xl" />}>
               <CourseTypeDonutChart data={overview.coursesByType} />
             </Suspense>
-          </div>
+          </motion.div>
           {/* Row 2: Department bar (cs2) + Question-type donut */}
-          <div className="lg:col-span-2 [&>*]:h-full">
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="lg:col-span-2 [&>*]:h-full"
+          >
             <Suspense fallback={<Skeleton className="h-full min-h-[420px] w-full rounded-2xl" />}>
               <DepartmentBarChart data={overview.coursesByDepartment} />
             </Suspense>
-          </div>
-          <div className="[&>*]:h-full">
+          </motion.div>
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="[&>*]:h-full"
+          >
             <Suspense fallback={<Skeleton className="h-full min-h-[420px] w-full rounded-2xl" />}>
               <QuestionTypeDonutChart data={overview.questionsByType} />
             </Suspense>
-          </div>
+          </motion.div>
           {/* Row 3: Campus radial + Top classes (cs2) */}
-          <div className="[&>*]:h-full">
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="[&>*]:h-full"
+          >
             <Suspense fallback={<Skeleton className="h-full min-h-[300px] w-full rounded-2xl" />}>
               <CampusBarChart data={overview.coursesByCampus} />
             </Suspense>
-          </div>
-          <div className="lg:col-span-2 [&>*]:h-full">
+          </motion.div>
+          <motion.div
+            variants={withReducedMotion(staggerItem, prefersReduced)}
+            className="lg:col-span-2 [&>*]:h-full"
+          >
             <TopClassesStrip data={overview.topContributedClasses} />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
     </div>
   )
