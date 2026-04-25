@@ -97,15 +97,8 @@ function AboutPage() {
 
   return (
     <div className="relative">
-      {/* Hero with mesh background */}
-      <section className="relative overflow-hidden py-20 sm:py-28">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent dark:from-primary/10" />
-          <div className="absolute -right-40 top-0 h-[400px] w-[400px] rounded-full bg-primary/8 blur-[100px]" />
-          <div className="absolute -left-40 bottom-0 h-[300px] w-[300px] rounded-full bg-orange-300/10 blur-[80px] dark:bg-orange-500/8" />
-          <div className="absolute inset-0 dot-pattern" />
-        </div>
-
+      {/* Hero */}
+      <section className="relative py-20 sm:py-28">
         <motion.div
           ref={heroRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -140,7 +133,7 @@ function AboutPage() {
       </section>
 
       {/* Mission — full-width accent band */}
-      <section className="relative border-y bg-muted/30">
+      <section className="full-bleed-band relative border-y bg-muted/30">
         <div className="absolute inset-0 dot-pattern opacity-40" />
         <motion.div
           ref={missionRef}
@@ -246,7 +239,7 @@ function AboutPage() {
       </section>
 
       {/* Tech Stack — Orbiting animation */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="full-bleed-band border-y bg-muted/20 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">

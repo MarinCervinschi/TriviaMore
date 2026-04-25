@@ -44,14 +44,7 @@ function NewsPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative overflow-hidden py-20 sm:py-28">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent dark:from-primary/10" />
-          <div className="absolute -right-40 top-0 h-[400px] w-[400px] rounded-full bg-primary/8 blur-[100px]" />
-          <div className="absolute -left-40 bottom-0 h-[300px] w-[300px] rounded-full bg-orange-300/10 blur-[80px] dark:bg-orange-500/8" />
-          <div className="absolute inset-0 dot-pattern" />
-        </div>
-
+      <section className="relative py-20 sm:py-28">
         <motion.div
           ref={heroRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"

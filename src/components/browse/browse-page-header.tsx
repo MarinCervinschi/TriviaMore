@@ -19,14 +19,7 @@ export function BrowsePageHeader({
   actions?: ReactNode
 }) {
   return (
-    <section className="relative w-full overflow-hidden pb-10 pt-6 sm:pb-14 sm:pt-8">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent dark:from-primary/10" />
-        <div className="absolute -left-32 top-0 h-[300px] w-[300px] rounded-full bg-primary/8 blur-[80px]" />
-        <div className="absolute -right-20 bottom-0 h-[200px] w-[200px] rounded-full bg-orange-300/10 blur-[60px] dark:bg-orange-500/8" />
-        <div className="absolute inset-0 dot-pattern opacity-50" />
-      </div>
-
+    <section className="relative w-full pb-10 pt-6 sm:pb-14 sm:pt-8">
       <div className="container">
         {breadcrumb}
         <div className="flex items-start justify-between gap-4">

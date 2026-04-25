@@ -153,6 +153,18 @@ body {
   background-size: 24px 24px;
 }
 
+/* Full-bleed band: extends bg + horizontal borders across the floating
+   sidebar gutter so dividers feel continuous. Inner content is pushed back
+   into the padded column via padding-left, keeping alignment with the hero.
+   Only active on md+, where the sidebar is rendered. */
+@media (min-width: 768px) {
+  .full-bleed-band {
+    margin-left: -90px;
+    width: calc(100% + 90px);
+    padding-left: 90px;
+  }
+}
+
 .gradient-bg {
   background: linear-gradient(135deg, #d14124 0%, #f56565 100%);
 }
