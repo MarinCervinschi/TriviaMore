@@ -55,7 +55,7 @@ async function generateSitemap() {
   ) as Array<{ code: string }>
   for (const dept of departments) {
     entries.push({
-      loc: `/browse/${dept.code}`,
+      loc: `/browse/${dept.code.toLowerCase()}`,
       changefreq: "weekly",
       priority: "0.8",
     })
@@ -67,7 +67,7 @@ async function generateSitemap() {
   ) as Array<{ code: string; departments: { code: string } }>
   for (const course of courses) {
     entries.push({
-      loc: `/browse/${course.departments.code}/${course.code}`,
+      loc: `/browse/${course.departments.code.toLowerCase()}/${course.code.toLowerCase()}`,
       changefreq: "weekly",
       priority: "0.7",
     })
@@ -79,7 +79,7 @@ async function generateSitemap() {
   ) as Array<{ code: string; course: { code: string; department: { code: string } } }>
   for (const cc of courseClasses) {
     entries.push({
-      loc: `/browse/${cc.course.department.code}/${cc.course.code}/${cc.code}`,
+      loc: `/browse/${cc.course.department.code.toLowerCase()}/${cc.course.code.toLowerCase()}/${cc.code.toLowerCase()}`,
       changefreq: "weekly",
       priority: "0.6",
     })
@@ -101,7 +101,7 @@ async function generateSitemap() {
     const slug = section.name.replace(/ /g, "-").toLowerCase()
     for (const cc of section.class.course_classes) {
       entries.push({
-        loc: `/browse/${cc.course.department.code}/${cc.course.code}/${cc.code}/${slug}`,
+        loc: `/browse/${cc.course.department.code.toLowerCase()}/${cc.course.code.toLowerCase()}/${cc.code.toLowerCase()}/${slug}`,
         changefreq: "weekly",
         priority: "0.6",
       })
