@@ -7,4 +7,4 @@ Disallow: /quiz/
 Disallow: /flashcard/
 Disallow: /auth/
 
-Sitemap: https://trivia-more.it/sitemap.xml
+Sitemap: https://www.trivia-more.it/sitemap.xml
