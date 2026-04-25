@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { SkeletonHero, SkeletonRoot } from "./primitives"
+import { SkeletonRoot } from "./primitives"
 
 function DepartmentCardSkeleton() {
   return (
@@ -30,8 +30,6 @@ function DepartmentCardSkeleton() {
 export function BrowseOverviewSkeleton() {
   return (
     <SkeletonRoot label="Caricamento panoramica…">
-      <SkeletonHero />
-
       {/* Hero + toolbar + grid (single tight block) */}
       <section className="container pt-10 pb-12 sm:pt-14">
         <div className="space-y-3">
