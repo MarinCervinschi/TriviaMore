@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { EmptyState } from "@/components/ui/empty-state"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
+import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserHero } from "@/components/user/user-hero"
 import { requestQueries } from "@/lib/requests/queries"
 import { useReviseRequest } from "@/lib/requests/mutations"
@@ -104,7 +105,9 @@ function UserContributionsPage() {
         description="Proponi nuovi contenuti per la piattaforma."
       />
 
-      <div className="container max-w-3xl space-y-4">
+      <div className="container max-w-3xl space-y-6">
+        <UserBreadcrumb current="Contributi" />
+
         {/* Info banner */}
         <div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
           <Info className="size-4 shrink-0 text-blue-500" strokeWidth={1.5} />
