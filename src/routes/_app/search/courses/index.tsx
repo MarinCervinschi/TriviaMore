@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { SearchResultsSkeleton } from "@/components/skeletons"
 import { UserHero } from "@/components/user/user-hero"
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
@@ -192,11 +193,7 @@ function SearchCoursesPage() {
             </p>
           </div>
         ) : !results && isFetching ? (
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 animate-pulse rounded-2xl bg-muted" />
-            ))}
-          </div>
+          <SearchResultsSkeleton rows={5} />
         ) : !results || results.length === 0 ? (
           <div className="rounded-2xl border bg-card p-12 text-center">
             <h3 className="text-lg font-semibold">Nessun corso trovato</h3>

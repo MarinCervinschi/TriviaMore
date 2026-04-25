@@ -7,6 +7,7 @@ import { QuizNavigation } from "@/components/quiz/quiz-navigation"
 import { QuizProgress } from "@/components/quiz/quiz-progress"
 import { QuizSidebar } from "@/components/quiz/quiz-sidebar"
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+import { QuizPlaySkeleton } from "@/components/skeletons"
 import { quizQueries } from "@/lib/quiz/queries"
 import { calculateQuizResults } from "@/lib/quiz/scoring"
 import { completeQuizFn, cancelQuizFn } from "@/lib/quiz/server"
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/quiz/$quizId")({
       quizQueries.quiz(params.quizId),
     )
   },
+  pendingComponent: QuizPlaySkeleton,
   component: QuizPage,
 })
 

@@ -6,6 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { Bookmark, ChevronDown } from "lucide-react"
 
+import { BookmarksSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/_app/user/bookmarks")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.bookmarks()),
   head: () => seoHead({ title: "Segnalibri", noindex: true }),
+  pendingComponent: BookmarksSkeleton,
   component: BookmarksPage,
 })
 
