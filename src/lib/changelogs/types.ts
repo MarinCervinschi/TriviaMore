@@ -1,8 +1,12 @@
-import type { Tables } from "@/lib/supabase/database.types"
-
-export type Changelog = Tables<"changelogs">
-
 export type ChangelogCategory = "new" | "improved" | "fixed"
+
+export interface ChangelogEntry {
+  version: string
+  title: string
+  category: ChangelogCategory
+  publishedAt: string
+  body: string
+}
 
 export const CATEGORY_CONFIG = {
   new: {

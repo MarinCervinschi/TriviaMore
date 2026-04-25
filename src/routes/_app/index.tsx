@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { websiteJsonLd } from "@/lib/json-ld"
@@ -16,6 +17,7 @@ import {
   heroContent,
   showcaseFeatures,
 } from "@/components/landing"
+import { PlatformStatsSectionSkeleton } from "@/components/skeletons"
 
 export const Route = createFileRoute("/_app/")({
   beforeLoad: async ({ context }) => {
@@ -26,9 +28,10 @@ export const Route = createFileRoute("/_app/")({
     if (session) {
       throw redirect({ to: "/user" })
     }
+    // Fire-and-forget prefetch — does not block route render so the static
+    // landing renders immediately; the stats section uses Suspense locally.
+    void context.queryClient.prefetchQuery(browseQueries.platformStats())
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(browseQueries.platformStats()),
   head: () => ({
     ...seoHead({
       title: "TriviaMore",
@@ -42,15 +45,20 @@ export const Route = createFileRoute("/_app/")({
 })
 
 function HomePage() {
-  const { data: stats } = useSuspenseQuery(browseQueries.platformStats())
-
   return (
     <>
       <HeroSection {...heroContent} />
       <FeatureShowcase features={showcaseFeatures} />
       <ContentExplorer />
-      <PlatformStatsSection stats={stats} />
+      <Suspense fallback={<PlatformStatsSectionSkeleton />}>
+        <PlatformStatsAsync />
+      </Suspense>
       <BenefitsSection benefits={benefits} ctaCard={ctaCardContent} />
     </>
   )
+}
+
+function PlatformStatsAsync() {
+  const { data: stats } = useSuspenseQuery(browseQueries.platformStats())
+  return <PlatformStatsSection stats={stats} />
 }

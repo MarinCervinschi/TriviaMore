@@ -23,6 +23,7 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
     defaultPendingMs: 200,
+    defaultPendingMinMs: 500,
     defaultPendingComponent: LoadingPage,
   })
 

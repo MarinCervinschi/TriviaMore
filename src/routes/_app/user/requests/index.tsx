@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react"
 
+import { UserRequestsSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -50,6 +51,7 @@ export const Route = createFileRoute("/_app/user/requests/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(requestQueries.userRequests()),
   head: () => seoHead({ title: "Contributi", noindex: true }),
+  pendingComponent: UserRequestsSkeleton,
   component: UserContributionsPage,
 })
 

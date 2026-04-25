@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { TrendingUp, Trophy } from "lucide-react"
 
+import { ProgressSkeleton } from "@/components/skeletons"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserEmptyState } from "@/components/user/user-empty-state"
 import { UserHero } from "@/components/user/user-hero"
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/_app/user/progress")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.progress()),
   head: () => seoHead({ title: "Progressi", noindex: true }),
+  pendingComponent: ProgressSkeleton,
   component: ProgressPage,
 })
 

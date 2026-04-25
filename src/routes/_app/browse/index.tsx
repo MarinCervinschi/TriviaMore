@@ -15,6 +15,10 @@ import {
 
 import { BrowseHero } from "@/components/browse/browse-hero"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  BrowseChartSkeleton as ChartSkeleton,
+  BrowseOverviewSkeleton,
+} from "@/components/skeletons"
 import { browseQueries } from "@/lib/browse/queries"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useScrollReveal } from "@/hooks/useScrollReveal"
@@ -52,6 +56,7 @@ export const Route = createFileRoute("/_app/browse/")({
         "Panoramica della piattaforma TriviaMore: statistiche, grafici e mappa delle sedi universitarie.",
       path: "/browse",
     }),
+  pendingComponent: BrowseOverviewSkeleton,
   component: BrowsePage,
 })
 
@@ -145,11 +150,6 @@ function StatCard({
   )
 }
 
-// --- Chart skeleton ---
-
-function ChartSkeleton() {
-  return <div className="h-[300px] animate-pulse rounded-2xl bg-muted" />
-}
 
 // --- Main page ---
 
@@ -254,7 +254,7 @@ function BrowsePage() {
           initial="hidden"
           animate={mapVisible ? "visible" : "hidden"}
         >
-          <Suspense fallback={<div className="h-[360px] animate-pulse rounded-2xl bg-muted" />}>
+          <Suspense fallback={<ChartSkeleton height={360} />}>
             <OverviewMap locations={overview.locations} />
           </Suspense>
         </motion.div>

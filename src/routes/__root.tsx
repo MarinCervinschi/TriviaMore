@@ -6,8 +6,8 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/react'
+import { ConsentedAnalytics } from '@/components/legal/consented-analytics'
+import { CookieBanner } from '@/components/legal/cookie-banner'
 import { getMaintenanceModeFn } from '@/lib/maintenance/server'
 
 import '@fontsource/poppins/400.css'
@@ -72,8 +72,8 @@ function RootLayout() {
     <ThemeProvider defaultTheme="system">
       <Outlet />
       <Toaster />
-      <Analytics />
-      <SpeedInsights />
+      <CookieBanner />
+      <ConsentedAnalytics />
       <TanStackDevtools
         config={{ position: 'bottom-right' }}
         plugins={[

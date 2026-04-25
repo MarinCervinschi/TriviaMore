@@ -8,6 +8,7 @@ import { FlashcardProgress } from "@/components/flashcard/flashcard-progress"
 import { FlashcardResults } from "@/components/flashcard/flashcard-results"
 import { FlashcardSidebar } from "@/components/flashcard/flashcard-sidebar"
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+import { FlashcardSkeleton } from "@/components/skeletons"
 import { getFlashcardSessionFn } from "@/lib/flashcard/server"
 import type { FlashcardSession } from "@/lib/flashcard/types"
 
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/flashcard/$sessionId")({
   loader: async ({ params }) => {
     return getFlashcardSessionFn({ data: { sessionId: params.sessionId } })
   },
+  pendingComponent: FlashcardSkeleton,
   component: FlashcardPage,
 })
 

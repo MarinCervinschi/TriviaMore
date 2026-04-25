@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/helpers"
-import { supabaseAdmin, catalogAdmin } from "@/lib/supabase/admin"
+import { getSupabaseAdmin, getCatalogAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
 
 import { storedContentSchema } from "./schemas"
@@ -254,7 +254,7 @@ export const createRequestFn = createServerFn({ method: "POST" })
     if (error) throw new Error("Errore nell'invio della proposta")
 
     // Notify admins in scope
-    await notifyAdminsInScope(supabaseAdmin, {
+    await notifyAdminsInScope(getSupabaseAdmin(), {
       id,
       title: generateTitle(submitted),
       target_department_id: targetDeptId,
@@ -296,7 +296,7 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
     if (error) throw new Error("Errore nell'aggiornamento della proposta")
 
     if (existing.handled_by) {
-      await createNotification(supabaseAdmin, {
+      await createNotification(getSupabaseAdmin(), {
         userId: existing.handled_by,
         type: "REQUEST_REVISED",
         title: "Proposta aggiornata",
@@ -323,7 +323,7 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
     if (error) throw new Error("Errore nel caricamento delle proposte")
 
     const userIds = [...new Set((data ?? []).map((r) => r.user_id))]
-    const { data: profiles } = await supabaseAdmin
+    const { data: profiles } = await getSupabaseAdmin()
       .from("profiles")
       .select("id, name, email, image")
       .in("id", userIds.length > 0 ? userIds : ["__none__"])
@@ -434,7 +434,7 @@ export const handleRequestFn = createServerFn({ method: "POST" })
         ? ("REQUEST_NEEDS_REVISION" as const)
         : ("REQUEST_STATUS_CHANGED" as const)
 
-    await createNotification(supabaseAdmin, {
+    await createNotification(getSupabaseAdmin(), {
       userId: request.user_id,
       type: notificationType,
       title: `Proposta ${statusLabels[data.status]}`,
@@ -471,12 +471,12 @@ export const approveRequestFn = createServerFn({ method: "POST" })
       const targetClassId = request.target_class_id
       if (!targetClassId) throw new Error("Classe target mancante")
 
-      const { count } = await catalogAdmin
+      const { count } = await getCatalogAdmin()
         .from("sections")
         .select("*", { count: "exact", head: true })
         .eq("class_id", targetClassId)
 
-      const { error } = await catalogAdmin
+      const { error } = await getCatalogAdmin()
         .from("sections")
         .insert({
           id: crypto.randomUUID(),
@@ -503,7 +503,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
         section_id: targetSectionId,
       }))
 
-      const { error } = await catalogAdmin.from("questions").insert(rows)
+      const { error } = await getCatalogAdmin().from("questions").insert(rows)
       if (error) throw new Error("Errore nella creazione delle domande: " + error.message)
     }
 
@@ -520,7 +520,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
     if (updateError) throw new Error("Errore nell'aggiornamento della proposta")
 
     // Notify the user
-    await createNotification(supabaseAdmin, {
+    await createNotification(getSupabaseAdmin(), {
       userId: request.user_id,
       type: "REQUEST_STATUS_CHANGED",
       title: "Proposta approvata!",
@@ -562,7 +562,7 @@ export const acknowledgeRequestFn = createServerFn({ method: "POST" })
       FILE_UPLOAD: "Contributo preso in carico",
     }
 
-    await createNotification(supabaseAdmin, {
+    await createNotification(getSupabaseAdmin(), {
       userId: request.user_id,
       type: "REQUEST_STATUS_CHANGED",
       title: titleMap[request.request_type] ?? "Proposta presa in carico",
@@ -582,7 +582,7 @@ export const getFileDownloadUrlFn = createServerFn({ method: "GET" })
       throw new Error("Percorso file non valido")
     }
 
-    const { data: urlData, error } = await supabaseAdmin.storage
+    const { data: urlData, error } = await getSupabaseAdmin().storage
       .from("contributions")
       .createSignedUrl(data.filePath, 3600)
 

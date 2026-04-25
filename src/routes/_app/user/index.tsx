@@ -14,6 +14,7 @@ import {
   Trophy,
 } from "lucide-react"
 
+import { UserDashboardSkeleton } from "@/components/skeletons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/_app/user/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.profile()),
   head: () => seoHead({ title: "Dashboard", noindex: true }),
+  pendingComponent: UserDashboardSkeleton,
   component: DashboardPage,
 })
 

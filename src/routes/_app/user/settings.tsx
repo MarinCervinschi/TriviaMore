@@ -14,6 +14,7 @@ import {
   Trophy,
   X,
 } from "lucide-react"
+import { SettingsSkeleton } from "@/components/skeletons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/_app/user/settings")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.profile()),
   head: () => seoHead({ title: "Impostazioni", noindex: true }),
+  pendingComponent: SettingsSkeleton,
   component: SettingsPage,
 })
 

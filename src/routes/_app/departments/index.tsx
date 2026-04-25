@@ -11,6 +11,7 @@ import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { AREA_CONFIG, AREA_LABELS, CAMPUS_LOCATION_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import { DepartmentsListSkeleton } from "@/components/skeletons"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/departments/")({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/_app/departments/")({
         "Scopri tutti i dipartimenti e i corsi disponibili su TriviaMore.",
       path: "/departments",
     }),
+  pendingComponent: DepartmentsListSkeleton,
   component: DepartmentsPage,
 })
 
