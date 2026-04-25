@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react"
 
+import { UserClassesSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/_app/user/classes")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueries.classes()),
   head: () => seoHead({ title: "I Miei Corsi", noindex: true }),
+  pendingComponent: UserClassesSkeleton,
   component: ClassesPage,
 })
 

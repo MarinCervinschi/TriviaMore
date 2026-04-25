@@ -14,6 +14,7 @@ import { QuizCard } from "@/components/browse/quiz-card"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { Badge } from "@/components/ui/badge"
 import { browseQueries } from "@/lib/browse/queries"
+import { SectionDetailSkeleton } from "@/components/skeletons"
 
 export const Route = createFileRoute(
   "/_app/departments/$department/$course/$class/$section/",
@@ -57,6 +58,7 @@ export const Route = createFileRoute(
       ]),
     ],
   }),
+  pendingComponent: SectionDetailSkeleton,
   component: SectionPage,
   notFoundComponent: () => (
     <NotFoundPage message="La sezione che stai cercando non esiste." />

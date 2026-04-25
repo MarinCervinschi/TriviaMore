@@ -24,6 +24,7 @@ import {
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
 import type { BrowseClassInCourse } from "@/lib/browse/types"
+import { CourseDetailSkeleton } from "@/components/skeletons"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/departments/$department/$course/")({
@@ -59,6 +60,7 @@ export const Route = createFileRoute("/_app/departments/$department/$course/")({
       }),
     ],
   }),
+  pendingComponent: CourseDetailSkeleton,
   component: CoursePage,
   notFoundComponent: () => (
     <NotFoundPage message="Il corso che stai cercando non esiste." />

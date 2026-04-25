@@ -14,8 +14,10 @@ import { BrowseTable } from "@/components/browse/browse-table"
 import { SearchFilter } from "@/components/browse/search-filter"
 import { Badge } from "@/components/ui/badge"
 import { Pagination } from "@/components/ui/pagination"
+import { Skeleton } from "@/components/ui/skeleton"
 import { AREA_CONFIG, CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import { DepartmentDetailSkeleton } from "@/components/skeletons"
 import { cn } from "@/lib/utils"
 
 const DepartmentMap = lazy(() =>
@@ -47,6 +49,7 @@ export const Route = createFileRoute("/_app/departments/$department/")({
       ]),
     ],
   }),
+  pendingComponent: DepartmentDetailSkeleton,
   component: DepartmentPage,
   notFoundComponent: () => (
     <NotFoundPage message="Il dipartimento che stai cercando non esiste." />
@@ -160,7 +163,7 @@ function DepartmentPage() {
 
       <div className="container">
       {department.department_locations.length > 0 && (
-        <Suspense fallback={<div className="mb-6 h-[300px] animate-pulse rounded-2xl bg-muted" />}>
+        <Suspense fallback={<Skeleton className="mb-6 h-[300px] w-full" />}>
           <DepartmentMap locations={department.department_locations} />
         </Suspense>
       )}
