@@ -97,7 +97,8 @@ async function generateSitemap() {
   }>
   for (const section of sections) {
     if (/exam/i.test(section.name)) continue
-    const slug = section.name.replace(/\s+/g, "-")
+    // Mirror the slug logic used by the section Link in the class route.
+    const slug = section.name.replace(/ /g, "-").toLowerCase()
     for (const cc of section.class.course_classes) {
       entries.push({
         loc: `/browse/${cc.course.department.code}/${cc.course.code}/${cc.code}/${slug}`,
@@ -108,12 +109,20 @@ async function generateSitemap() {
   }
 
   const today = new Date().toISOString().split("T")[0]
+  // Sitemap spec requires URL entity encoding inside <loc>.
+  const xmlEscape = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;")
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries
   .map(
     (e) => `  <url>
-    <loc>${SITE_URL}${e.loc}</loc>
+    <loc>${xmlEscape(`${SITE_URL}${e.loc}`)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${e.changefreq}</changefreq>
     <priority>${e.priority}</priority>
