@@ -79,9 +79,9 @@ export function NotFoundPage({
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link to="/departments">
+            <Link to="/browse">
               <Search className="mr-2 h-4 w-4" />
-              Dipartimenti
+              Esplora
             </Link>
           </Button>
         </motion.div>

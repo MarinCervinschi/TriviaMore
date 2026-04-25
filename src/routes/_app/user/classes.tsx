@@ -218,7 +218,7 @@ function ClassesPage() {
               title="Nessun corso salvato"
               description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
               actionLabel="Esplora Corsi"
-              actionHref="/departments"
+              actionHref="/browse"
             />
           ) : (
             <div className="relative overflow-hidden rounded-3xl border bg-card p-12">
@@ -248,7 +248,7 @@ function ClassesPage() {
               <tr key={userClass.class_id} className="group">
                 <td className="py-4 pl-6">
                   <Link
-                    to="/departments/$department/$course/$class"
+                    to="/browse/$department/$course/$class"
                     params={{
                       department:
                         userClass.department_code.toLowerCase(),
