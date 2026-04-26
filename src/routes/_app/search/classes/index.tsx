@@ -253,7 +253,17 @@ function SearchClassesPage() {
               initial="hidden"
               animate="visible"
             >
-              <BrowseTable headers={["Nome", "Codice", "Corso", "Anno", "CFU", "Tipo", "Sezioni"]}>
+              <BrowseTable
+                headers={[
+                  "Nome",
+                  { label: "Codice", className: "hidden lg:table-cell" },
+                  { label: "Corso", className: "hidden lg:table-cell" },
+                  { label: "Anno", className: "hidden md:table-cell" },
+                  { label: "CFU", className: "hidden md:table-cell" },
+                  { label: "Tipo", className: "hidden sm:table-cell" },
+                  "Sezioni",
+                ]}
+              >
                 {paged.map((cls) => {
                   const sectionCount = cls.sections[0]?.count ?? 0
                   return (
@@ -262,7 +272,7 @@ function SearchClassesPage() {
                       variants={withReducedMotion(staggerItem, prefersReduced)}
                       className="group"
                     >
-                      <td className="min-w-[16rem] pl-6 pr-3 py-4 align-top">
+                      <td className="pl-6 pr-3 py-4 align-top">
                         <Link
                           to="/browse/$department/$course/$class"
                           params={{
@@ -276,29 +286,29 @@ function SearchClassesPage() {
                             {cls.name}
                           </span>
                           {cls.description && (
-                            <p className="mt-0.5 text-xs text-muted-foreground">
+                            <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
                               {cls.description}
                             </p>
                           )}
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <Badge variant="outline" className="text-xs">{cls.code}</Badge>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <Badge variant="outline" className="text-xs">{cls.course.code}</Badge>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <span className="text-sm text-muted-foreground">{cls.class_year}°</span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                         {cls.cfu ? (
                           <span className="text-sm text-muted-foreground">{cls.cfu}</span>
                         ) : (
                           <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <Badge variant={cls.mandatory ? "default" : "secondary"} className="text-xs">
                           {cls.mandatory ? "Obbligatorio" : "A scelta"}
                         </Badge>
