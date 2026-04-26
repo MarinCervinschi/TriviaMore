@@ -98,7 +98,7 @@ function AboutPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative py-20 sm:py-28">
+      <section className="relative py-16 sm:py-24">
         <motion.div
           ref={heroRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -142,7 +142,7 @@ function AboutPage() {
           initial="hidden"
           animate={missionVisible ? "visible" : "hidden"}
         >
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
             <div>
               <div className="mb-4 inline-flex rounded-2xl bg-blue-500/10 p-4">
                 <Target className="h-8 w-8 text-blue-600" strokeWidth={1.5} />
@@ -167,9 +167,11 @@ function AboutPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl border bg-card p-6 text-center"
+                  className="rounded-2xl border bg-card p-4 text-center sm:p-6"
                 >
-                  <p className="text-3xl font-bold text-primary">{stat.value}</p>
+                  <p className="text-2xl font-bold text-primary sm:text-3xl">
+                    {stat.value}
+                  </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {stat.label}
                   </p>
@@ -181,9 +183,9 @@ function AboutPage() {
       </section>
 
       {/* Values — Bento grid */}
-      <section className="py-20 sm:py-28">
+      <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
+          <div className="mb-12 text-center sm:mb-16">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">
               I Nostri Valori
             </p>
@@ -210,11 +212,11 @@ function AboutPage() {
                   {/* Accent gradient on hover */}
                   <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${value.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
 
-                  <div className={`relative flex flex-col gap-4 p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}>
+                  <div className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}>
                     {/* Icon badge */}
-                    <div className={`inline-flex shrink-0 rounded-2xl p-4 ${value.bg}`}>
+                    <div className={`inline-flex shrink-0 rounded-2xl p-3 sm:p-4 ${value.bg}`}>
                       <Icon
-                        className={`h-7 w-7 ${value.color}`}
+                        className={`h-6 w-6 sm:h-7 sm:w-7 ${value.color}`}
                         strokeWidth={1.5}
                       />
                     </div>
@@ -254,7 +256,7 @@ function AboutPage() {
       </section>
 
       {/* CTA — gradient card full-width */}
-      <section className="relative py-20 sm:py-28">
+      <section className="relative py-16 sm:py-24">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute bottom-0 left-1/4 h-[300px] w-[300px] rounded-full bg-primary/8 blur-[100px]" />
           <div className="absolute right-1/4 top-0 h-[250px] w-[250px] rounded-full bg-orange-300/10 blur-[80px] dark:bg-orange-500/8" />

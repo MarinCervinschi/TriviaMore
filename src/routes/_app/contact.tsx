@@ -122,7 +122,7 @@ function ContactPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative py-20 sm:py-28">
+      <section className="relative py-16 sm:py-24">
         <motion.div
           ref={heroRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -197,7 +197,7 @@ function ContactPage() {
       </section>
 
       {/* Main content: Form + GitHub */}
-      <section className="py-20 sm:py-28">
+      <section className="py-16 sm:py-24">
         <motion.div
           ref={formRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -282,7 +282,7 @@ function ContactPage() {
       </section>
 
       {/* FAQ — accordion style */}
-      <section className="full-bleed-band border-t bg-muted/20 py-20 sm:py-28">
+      <section className="full-bleed-band border-t bg-muted/20 py-16 sm:py-24">
         <div className="pointer-events-none absolute inset-0 dot-pattern opacity-30" />
         <motion.div
           ref={faqRef}
