@@ -111,6 +111,12 @@ export const signupFn = createServerFn({ method: "POST" })
     }
 
     if (!authData.session) {
+      // Supabase returns 200 with an empty identities array when the email is
+      // already registered (anti-enumeration). No confirmation email is sent.
+      if (authData.user.identities?.length === 0) {
+        return { success: false, error: "Email gia' registrata" }
+      }
+
       return {
         success: true,
         status: "pending_email_confirmation",
