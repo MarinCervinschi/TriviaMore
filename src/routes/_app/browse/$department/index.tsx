@@ -216,12 +216,20 @@ function DepartmentPage() {
                     {courses.length} {courses.length === 1 ? "corso" : "corsi"}
                   </span>
                 </div>
-                <BrowseTable headers={["Nome", "Codice", "CFU", "Sede", "Insegnamenti"]}>
+                <BrowseTable
+                  headers={[
+                    "Nome",
+                    { label: "Codice", className: "hidden md:table-cell" },
+                    { label: "CFU", className: "hidden sm:table-cell" },
+                    { label: "Sede", className: "hidden lg:table-cell" },
+                    "Insegnamenti",
+                  ]}
+                >
                   {pagedCourses.map((course) => {
                       const classCount = course.course_classes[0]?.count ?? 0
                       return (
                         <tr key={course.id} className="group">
-                          <td className="min-w-[16rem] pl-6 pr-3 py-4 align-top">
+                          <td className="pl-6 pr-3 py-4 align-top">
                             <Link
                               to="/browse/$department/$course"
                               params={{
@@ -234,18 +242,18 @@ function DepartmentPage() {
                                 {course.name}
                               </span>
                               {course.description && (
-                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
                                   {course.description}
                                 </p>
                               )}
                             </Link>
                           </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                          <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                             <Badge variant="outline" className="text-xs">
                               {course.code}
                             </Badge>
                           </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                          <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-center">
                             {course.cfu ? (
                               <span className="text-sm text-muted-foreground">
                                 {course.cfu}
@@ -254,7 +262,7 @@ function DepartmentPage() {
                               <span className="text-xs text-muted-foreground/50">—</span>
                             )}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-center">
+                          <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
                             {course.location ? (
                               <span className="text-sm text-muted-foreground">
                                 {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}

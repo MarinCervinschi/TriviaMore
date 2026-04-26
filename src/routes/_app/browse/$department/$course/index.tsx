@@ -79,7 +79,7 @@ function ClassRow({
   const sectionCount = classData.class.sections[0]?.count ?? 0
   return (
     <tr key={classData.class.id} className="group">
-      <td className="min-w-[16rem] pl-6 pr-3 py-4 align-top">
+      <td className="pl-6 pr-3 py-4 align-top">
         <Link
           to="/browse/$department/$course/$class"
           params={{
@@ -93,18 +93,18 @@ function ClassRow({
             {classData.class.name}
           </span>
           {classData.class.description && (
-            <p className="mt-0.5 text-xs text-muted-foreground">
+            <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
               {classData.class.description}
             </p>
           )}
         </Link>
       </td>
-      <td className="whitespace-nowrap px-3 py-4 text-center">
+      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
         <Badge variant="outline" className="text-xs">
           {classData.code}
         </Badge>
       </td>
-      <td className="whitespace-nowrap px-3 py-4 text-center">
+      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-center">
         {classData.class.cfu ? (
           <span className="text-sm text-muted-foreground">
             {classData.class.cfu}
@@ -191,7 +191,12 @@ function CoursePage() {
     10,
   )
 
-  const tableHeaders = ["Nome", "Codice", "CFU", "Sezioni"]
+  const tableHeaders = [
+    "Nome",
+    { label: "Codice", className: "hidden md:table-cell" },
+    { label: "CFU", className: "hidden sm:table-cell" },
+    "Sezioni",
+  ]
 
   return (
     <div className="pb-8">
