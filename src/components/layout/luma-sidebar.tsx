@@ -2,18 +2,13 @@ import { useRef, useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
 import {
   BookOpen,
-  Compass,
   Cookie,
   GraduationCap,
-  Home,
-  Inbox,
-  Info,
   LogOut,
   Mail,
   Moon,
   Search,
   Settings,
-  Shield,
   Sun,
 } from "lucide-react"
 
@@ -37,57 +32,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
-import type { LucideIcon } from "lucide-react"
-
-interface NavItem {
-  to: string
-  icon: LucideIcon
-  label: string
-  fuzzy: boolean
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { to: "/user", icon: Home, label: "Dashboard", fuzzy: false },
-  { to: "/browse", icon: Compass, label: "Esplora", fuzzy: false },
-  { to: "/user/classes", icon: GraduationCap, label: "I Miei Corsi", fuzzy: false },
-  { to: "/user/requests", icon: Inbox, label: "Contributi", fuzzy: true },
-]
-
-const ABOUT_ITEM: NavItem = {
-  to: "/about",
-  icon: Info,
-  label: "Chi siamo",
-  fuzzy: false,
-}
-
-const ADMIN_ITEM: NavItem = {
-  to: "/admin",
-  icon: Shield,
-  label: "Gestione",
-  fuzzy: true,
-}
-
-function useIsAdmin() {
-  const { user } = useAuth()
-  return (
-    user?.role === "SUPERADMIN" ||
-    user?.role === "ADMIN" ||
-    user?.role === "MAINTAINER"
-  )
-}
-
-function getInitials(name: string | null | undefined, email: string | undefined) {
-  if (name) {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
-  }
-  return email?.[0]?.toUpperCase() ?? "?"
-}
+import {
+  ABOUT_ITEM,
+  ADMIN_ITEM,
+  NAV_ITEMS,
+  getInitials,
+  useIsAdmin,
+  type NavItem,
+} from "./nav-items"
 
 const ITEM_BASE =
   "relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
