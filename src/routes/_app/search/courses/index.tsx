@@ -217,7 +217,17 @@ function SearchCoursesPage() {
               initial="hidden"
               animate="visible"
             >
-              <BrowseTable headers={["Nome", "Codice", "Dipartimento", "Tipo", "Campus", "CFU", "Insegnamenti"]}>
+              <BrowseTable
+                headers={[
+                  "Nome",
+                  { label: "Codice", className: "hidden md:table-cell" },
+                  { label: "Dipartimento", className: "hidden lg:table-cell" },
+                  { label: "Tipo", className: "hidden sm:table-cell" },
+                  { label: "Campus", className: "hidden lg:table-cell" },
+                  { label: "CFU", className: "hidden md:table-cell" },
+                  "Insegnamenti",
+                ]}
+              >
                 {paged.map((course) => {
                   const typeConf = COURSE_TYPE_CONFIG[course.course_type]
                   const classCount = course.course_classes[0]?.count ?? 0
@@ -227,7 +237,7 @@ function SearchCoursesPage() {
                       variants={withReducedMotion(staggerItem, prefersReduced)}
                       className="group"
                     >
-                      <td className="min-w-[16rem] pl-6 pr-3 py-4 align-top">
+                      <td className="pl-6 pr-3 py-4 align-top">
                         <Link
                           to="/browse/$department/$course"
                           params={{
@@ -241,20 +251,20 @@ function SearchCoursesPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <Badge variant="outline" className="text-xs">{course.code}</Badge>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
                         <Badge variant="outline" className="text-xs">{course.department.code}</Badge>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-center">
                         {typeConf ? (
                           <Badge className={cn("text-xs", typeConf.className)}>{typeConf.label}</Badge>
                         ) : (
                           <span className="text-xs text-muted-foreground">{course.course_type}</span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
                         {course.location ? (
                           <span className="text-sm text-muted-foreground">
                             {CAMPUS_LOCATION_CONFIG[course.location]?.short ?? course.location}
@@ -263,7 +273,7 @@ function SearchCoursesPage() {
                           <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                         {course.cfu ? (
                           <span className="text-sm text-muted-foreground">{course.cfu}</span>
                         ) : (
