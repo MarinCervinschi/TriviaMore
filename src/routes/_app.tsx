@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { getSessionFn } from "@/lib/auth/server"
 import { Navbar } from "@/components/layout/navbar"
 import { LumaSidebar } from "@/components/layout/luma-sidebar"
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav"
 
 export const Route = createFileRoute("/_app")({
   loader: ({ context }) =>
@@ -36,7 +37,12 @@ function AppLayout() {
       </div>
 
       {!isAuthenticated && <Navbar />}
-      {isAuthenticated && <LumaSidebar />}
+      {isAuthenticated && (
+        <>
+          <LumaSidebar />
+          <MobileBottomNav />
+        </>
+      )}
 
       <div
         className={cn(
@@ -45,7 +51,15 @@ function AppLayout() {
           isAuthenticated && "md:pl-[90px]",
         )}
       >
-        <main id="main-content" className="flex-1">
+        <main
+          id="main-content"
+          className={cn(
+            "flex-1",
+            // Bottom nav clearance on mobile for authenticated users (h-16 + iOS safe area).
+            isAuthenticated &&
+              "pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0",
+          )}
+        >
           <Outlet />
         </main>
         {!isAuthenticated && <LandingFooter sections={footerSections} />}
