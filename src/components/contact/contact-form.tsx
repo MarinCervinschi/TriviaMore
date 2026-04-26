@@ -38,27 +38,40 @@ export function ContactForm() {
       type: "other",
       subject: "",
       message: "",
+      website: "",
     },
   })
 
   const mutation = useMutation({
     mutationFn: (values: ContactInput) =>
       submitContactFn({ data: values }),
-    onSuccess: () => {
+  })
+
+  async function onSubmit(values: ContactInput) {
+    const result = await mutation.mutateAsync(values)
+    if (result.success) {
       toast.success("Messaggio inviato con successo!")
       form.reset()
-    },
-    onError: () => {
-      toast.error("Errore durante l'invio del messaggio")
-    },
-  })
+    } else {
+      toast.error(result.error ?? "Errore durante l'invio del messaggio")
+    }
+  }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="grid gap-5"
       >
+        {/* Honeypot: hidden from users, bots tend to fill it */}
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+          {...form.register("website")}
+        />
         <div className="grid gap-5 sm:grid-cols-2">
           <FormField
             control={form.control}
