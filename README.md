@@ -156,7 +156,7 @@ supabase db reset       # re-apply migrations + seed
 
 `supabase db reset` applies all migrations and runs `supabase/seed.sql`, which provisions:
 
-- A superadmin user (`admin@triviamore.local` / `password123`)
+- A superadmin user (`admin@trivia-more.local` / `password123`)
 - Catalog data (departments, courses, classes, sections, questions) dumped from staging
 
 ### Refresh seed from staging

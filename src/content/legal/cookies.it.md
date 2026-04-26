@@ -72,4 +72,4 @@ La presente policy può essere aggiornata per riflettere variazioni nei servizi 
 
 Per domande o richieste relative alla gestione dei cookie:
 
-- **Email:** privacy@triviamore.it
+- **Email:** privacy@trivia-more.it

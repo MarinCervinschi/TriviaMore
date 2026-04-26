@@ -14,7 +14,7 @@ Accedendo al Servizio o creando un account, l'utente accetta integralmente i pre
 
 ## 1. Titolare del Servizio
 
-Il Servizio è gestito da **Marin Cervinschi** (di seguito, "il Titolare"), contattabile all'indirizzo email **privacy@triviamore.it**.
+Il Servizio è gestito da **Marin Cervinschi** (di seguito, "il Titolare"), contattabile all'indirizzo email **privacy@trivia-more.it**.
 
 TriviaMore è un progetto personale e gratuito. Non sono previste transazioni economiche tra l'utente e il Titolare: l'accesso, la registrazione e l'utilizzo delle funzionalità sono offerti senza alcun costo.
 
@@ -97,5 +97,5 @@ I presenti Termini sono disciplinati dalla legge italiana. Per qualsiasi controv
 
 Per qualsiasi comunicazione relativa al Servizio o ai presenti Termini:
 
-- **Email:** privacy@triviamore.it
+- **Email:** privacy@trivia-more.it
 - **Riferimento progetto:** [github.com/MarinCervinschi/TriviaMore](https://github.com/MarinCervinschi/TriviaMore)
