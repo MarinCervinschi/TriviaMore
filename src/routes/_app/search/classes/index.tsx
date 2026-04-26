@@ -262,7 +262,7 @@ function SearchClassesPage() {
                       variants={withReducedMotion(staggerItem, prefersReduced)}
                       className="group"
                     >
-                      <td className="pl-6 py-4">
+                      <td className="min-w-[16rem] pl-6 pr-3 py-4 align-top">
                         <Link
                           to="/browse/$department/$course/$class"
                           params={{
@@ -272,11 +272,11 @@ function SearchClassesPage() {
                           }}
                           className="block"
                         >
-                          <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                          <span className="block font-medium text-foreground group-hover:text-primary transition-colors">
                             {cls.name}
                           </span>
                           {cls.description && (
-                            <p className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                               {cls.description}
                             </p>
                           )}
