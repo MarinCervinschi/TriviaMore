@@ -20,30 +20,38 @@ const userBaseSchema = z.object({
     .toLowerCase(),
 })
 
-export const registerSchema = userBaseSchema.extend({
-  password: z
-    .string()
-    .min(6, "La password deve essere di almeno 6 caratteri")
-    .max(100, "La password non può superare i 100 caratteri")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "La password deve contenere almeno una lettera minuscola, una maiuscola e un numero",
-    )
-    .refine(
-      (password) => !/\s/.test(password),
-      "La password non può contenere spazi",
-    ),
-  terms_accepted: z
-    .boolean()
-    .refine((v) => v === true, {
-      message: "Devi accettare i Termini e Condizioni per registrarti",
-    }),
-  privacy_accepted: z
-    .boolean()
-    .refine((v) => v === true, {
-      message: "Devi accettare l'Informativa sulla Privacy per registrarti",
-    }),
-})
+export const registerSchema = userBaseSchema
+  .extend({
+    password: z
+      .string()
+      .min(6, "La password deve essere di almeno 6 caratteri")
+      .max(100, "La password non può superare i 100 caratteri")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "La password deve contenere almeno una lettera minuscola, una maiuscola e un numero",
+      )
+      .refine(
+        (password) => !/\s/.test(password),
+        "La password non può contenere spazi",
+      ),
+    password_confirm: z
+      .string()
+      .min(1, "Conferma la password"),
+    terms_accepted: z
+      .boolean()
+      .refine((v) => v === true, {
+        message: "Devi accettare i Termini e Condizioni per registrarti",
+      }),
+    privacy_accepted: z
+      .boolean()
+      .refine((v) => v === true, {
+        message: "Devi accettare l'Informativa sulla Privacy per registrarti",
+      }),
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    message: "Le password non coincidono",
+    path: ["password_confirm"],
+  })
 
 export const loginSchema = z.object({
   email: z
