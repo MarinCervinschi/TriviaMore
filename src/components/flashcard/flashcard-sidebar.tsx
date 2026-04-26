@@ -1,18 +1,20 @@
 import { cn } from "@/lib/utils"
 
-export function FlashcardSidebar({
-  totalQuestions,
-  currentIndex,
-  studiedCards,
-  onJump,
-}: {
+interface FlashcardSidebarContentProps {
   totalQuestions: number
   currentIndex: number
   studiedCards: Set<number>
   onJump: (index: number) => void
-}) {
+}
+
+export function FlashcardSidebarContent({
+  totalQuestions,
+  currentIndex,
+  studiedCards,
+  onJump,
+}: FlashcardSidebarContentProps) {
   return (
-    <div className="w-64 shrink-0 border-r border-border/50 bg-muted/20 p-4 backdrop-blur-sm">
+    <div>
       <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Carte
       </h3>
@@ -45,5 +47,13 @@ export function FlashcardSidebar({
         </div>
       </div>
     </div>
+  )
+}
+
+export function FlashcardSidebar(props: FlashcardSidebarContentProps) {
+  return (
+    <aside className="hidden w-64 shrink-0 border-r border-border/50 bg-muted/20 p-4 backdrop-blur-sm lg:block">
+      <FlashcardSidebarContent {...props} />
+    </aside>
   )
 }

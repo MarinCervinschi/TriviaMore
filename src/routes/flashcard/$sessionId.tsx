@@ -6,8 +6,12 @@ import { FlashcardHeader } from "@/components/flashcard/flashcard-header"
 import { FlashcardNavigation } from "@/components/flashcard/flashcard-navigation"
 import { FlashcardProgress } from "@/components/flashcard/flashcard-progress"
 import { FlashcardResults } from "@/components/flashcard/flashcard-results"
-import { FlashcardSidebar } from "@/components/flashcard/flashcard-sidebar"
+import {
+  FlashcardSidebar,
+  FlashcardSidebarContent,
+} from "@/components/flashcard/flashcard-sidebar"
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { FlashcardSkeleton } from "@/components/skeletons"
 import { getFlashcardSessionFn } from "@/lib/flashcard/server"
 import type { FlashcardSession } from "@/lib/flashcard/types"
@@ -30,6 +34,7 @@ function FlashcardPage() {
   const [showResults, setShowResults] = useState(false)
   const [startTime] = useState(Date.now())
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [showExitDialog, setShowExitDialog] = useState(false)
 
   const handleFlip = useCallback(() => {
@@ -51,11 +56,19 @@ function FlashcardPage() {
       setCurrentIndex(index)
       setIsFlipped(false)
       if (typeof window !== "undefined" && window.innerWidth < 1024) {
-        setSidebarOpen(false)
+        setMobileSidebarOpen(false)
       }
     },
     [],
   )
+
+  const toggleSidebar = useCallback(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setSidebarOpen((prev) => !prev)
+    } else {
+      setMobileSidebarOpen((prev) => !prev)
+    }
+  }, [])
 
   const handlePrevious = useCallback(() => {
     if (currentIndex > 0) goToCard(currentIndex - 1)
@@ -127,13 +140,13 @@ function FlashcardPage() {
   const currentQuestion = session.questions[currentIndex]
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <FlashcardHeader
         questionIndex={currentIndex}
         totalQuestions={session.questions.length}
         studiedCount={studiedCards.size}
         sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+        onToggleSidebar={toggleSidebar}
         onExit={() => setShowExitDialog(true)}
       />
       <FlashcardProgress
@@ -149,7 +162,17 @@ function FlashcardPage() {
             onJump={goToCard}
           />
         )}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+        <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+          <SheetContent side="left" className="w-72 overflow-y-auto p-4 lg:hidden">
+            <FlashcardSidebarContent
+              totalQuestions={session.questions.length}
+              currentIndex={currentIndex}
+              studiedCards={studiedCards}
+              onJump={goToCard}
+            />
+          </SheetContent>
+        </Sheet>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
           {currentQuestion && (
             <FlashcardQuestionCard
               question={currentQuestion}

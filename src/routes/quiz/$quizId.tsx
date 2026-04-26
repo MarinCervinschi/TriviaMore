@@ -5,8 +5,9 @@ import { QuestionCard } from "@/components/quiz/question-card"
 import { QuizHeader } from "@/components/quiz/quiz-header"
 import { QuizNavigation } from "@/components/quiz/quiz-navigation"
 import { QuizProgress } from "@/components/quiz/quiz-progress"
-import { QuizSidebar } from "@/components/quiz/quiz-sidebar"
+import { QuizSidebar, QuizSidebarContent } from "@/components/quiz/quiz-sidebar"
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { QuizPlaySkeleton } from "@/components/skeletons"
 import { quizQueries } from "@/lib/quiz/queries"
 import { calculateQuizResults } from "@/lib/quiz/scoring"
@@ -32,6 +33,7 @@ function QuizPage() {
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([])
   const [startTime] = useState(Date.now())
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [showExitDialog, setShowExitDialog] = useState(false)
 
   // Initialize answers when quiz loads
@@ -107,7 +109,15 @@ function QuizPage() {
   const handleJump = useCallback((index: number) => {
     setCurrentIndex(index)
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
-      setSidebarOpen(false)
+      setMobileSidebarOpen(false)
+    }
+  }, [])
+
+  const toggleSidebar = useCallback(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setSidebarOpen((prev) => !prev)
+    } else {
+      setMobileSidebarOpen((prev) => !prev)
     }
   }, [])
 
@@ -142,13 +152,13 @@ function QuizPage() {
   })
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <QuizHeader
         questionIndex={currentIndex}
         totalQuestions={quiz.questions.length}
         timeLimit={quiz.time_limit}
         sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+        onToggleSidebar={toggleSidebar}
         onTimeUp={handleComplete}
         onExit={() => setShowExitDialog(true)}
       />
@@ -162,7 +172,17 @@ function QuizPage() {
             onJump={handleJump}
           />
         )}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+        <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+          <SheetContent side="left" className="w-72 overflow-y-auto p-4 lg:hidden">
+            <QuizSidebarContent
+              totalQuestions={quiz.questions.length}
+              currentIndex={currentIndex}
+              answeredQuestions={answeredQuestions}
+              onJump={handleJump}
+            />
+          </SheetContent>
+        </Sheet>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
           {currentQuestion && (
             <QuestionCard
               question={currentQuestion}

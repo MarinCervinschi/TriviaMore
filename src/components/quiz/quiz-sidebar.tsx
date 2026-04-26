@@ -1,18 +1,20 @@
 import { cn } from "@/lib/utils"
 
-export function QuizSidebar({
-  totalQuestions,
-  currentIndex,
-  answeredQuestions,
-  onJump,
-}: {
+interface QuizSidebarContentProps {
   totalQuestions: number
   currentIndex: number
   answeredQuestions: boolean[]
   onJump: (index: number) => void
-}) {
+}
+
+export function QuizSidebarContent({
+  totalQuestions,
+  currentIndex,
+  answeredQuestions,
+  onJump,
+}: QuizSidebarContentProps) {
   return (
-    <div className="w-64 shrink-0 border-r border-border/50 bg-muted/20 p-4 backdrop-blur-sm">
+    <div>
       <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Domande
       </h3>
@@ -45,5 +47,13 @@ export function QuizSidebar({
         </div>
       </div>
     </div>
+  )
+}
+
+export function QuizSidebar(props: QuizSidebarContentProps) {
+  return (
+    <aside className="hidden w-64 shrink-0 border-r border-border/50 bg-muted/20 p-4 backdrop-blur-sm lg:block">
+      <QuizSidebarContent {...props} />
+    </aside>
   )
 }
