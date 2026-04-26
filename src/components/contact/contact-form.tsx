@@ -1,6 +1,7 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useMutation } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -22,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { useAuth } from "@/hooks/useAuth"
 import {
   contactSchema,
   contactTypeOptions,
@@ -30,17 +32,25 @@ import {
 import { submitContactFn } from "@/lib/browse/server"
 
 export function ContactForm() {
+  const { user, isAuthenticated } = useAuth()
+
   const form = useForm<ContactInput>({
     resolver: standardSchemaResolver(contactSchema),
     defaultValues: {
       name: "",
-      email: "",
+      email: user?.email ?? "",
       type: "other",
       subject: "",
       message: "",
       website: "",
     },
   })
+
+  useEffect(() => {
+    if (user?.email) {
+      form.setValue("email", user.email, { shouldValidate: true })
+    }
+  }, [user?.email, form])
 
   const mutation = useMutation({
     mutationFn: (values: ContactInput) =>
@@ -77,7 +87,7 @@ export function ContactForm() {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col gap-3 space-y-0">
                 <FormLabel>Nome</FormLabel>
                 <FormControl>
                   <Input placeholder="Il tuo nome" {...field} />
@@ -90,12 +100,13 @@ export function ContactForm() {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col gap-3 space-y-0">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="nome@esempio.com"
+                    disabled={isAuthenticated}
                     {...field}
                   />
                 </FormControl>
@@ -110,7 +121,7 @@ export function ContactForm() {
             control={form.control}
             name="type"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col gap-3 space-y-0">
                 <FormLabel>Tipo</FormLabel>
                 <Select
                   value={field.value}
@@ -137,7 +148,7 @@ export function ContactForm() {
             control={form.control}
             name="subject"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col gap-3 space-y-0">
                 <FormLabel>Oggetto</FormLabel>
                 <FormControl>
                   <Input placeholder="Oggetto del messaggio" {...field} />
@@ -152,7 +163,7 @@ export function ContactForm() {
           control={form.control}
           name="message"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col gap-3 space-y-0">
               <FormLabel>Messaggio</FormLabel>
               <FormControl>
                 <Textarea
