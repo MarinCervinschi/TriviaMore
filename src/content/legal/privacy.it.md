@@ -12,7 +12,7 @@ La presente informativa descrive le modalità di trattamento dei dati personali 
 
 ## 1. Titolare del trattamento
 
-Titolare del trattamento è **Marin Cervinschi**, contattabile all'indirizzo email **privacy@triviamore.it**.
+Titolare del trattamento è **Marin Cervinschi**, contattabile all'indirizzo email **privacy@trivia-more.it**.
 
 Dato il carattere personale e non commerciale del progetto, non è stato nominato un Responsabile della Protezione dei Dati (DPO).
 
@@ -107,7 +107,7 @@ In qualunque momento l'utente può esercitare i diritti riconosciuti dagli artt.
 - **opposizione** al trattamento fondato sul legittimo interesse (art. 21);
 - **revoca del consenso** prestato per finalità analitiche o di visibilità pubblica, in ogni momento e senza conseguenze (art. 7, par. 3).
 
-Le richieste possono essere inoltrate all'indirizzo **privacy@triviamore.it** e ricevono risposta entro un mese.
+Le richieste possono essere inoltrate all'indirizzo **privacy@trivia-more.it** e ricevono risposta entro un mese.
 
 ## 9. Diritto di reclamo
 

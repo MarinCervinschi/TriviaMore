@@ -5,7 +5,7 @@
 
 -- ────────────────────────────────────────────────
 -- 1. Superadmin user for local development
---    Email: admin@triviamore.local
+--    Email: admin@trivia-more.local
 --    Password: password123
 -- ────────────────────────────────────────────────
 INSERT INTO auth.users (
@@ -19,7 +19,7 @@ INSERT INTO auth.users (
   '00000000-0000-0000-0000-000000000000',
   '00000000-0000-0000-0000-000000000001',
   'authenticated', 'authenticated',
-  'admin@triviamore.local',
+  'admin@trivia-more.local',
   crypt('password123', gen_salt('bf')),
   now(),
   '{"provider":"email","providers":["email"]}',
