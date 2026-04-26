@@ -23,6 +23,7 @@ export function RegisterForm() {
   const navigate = useNavigate()
   const { signup } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
   const form = useForm<RegisterInput>({
     resolver: standardSchemaResolver(registerSchema),
@@ -30,6 +31,7 @@ export function RegisterForm() {
       name: "",
       email: "",
       password: "",
+      password_confirm: "",
       terms_accepted: false,
       privacy_accepted: false,
     },
@@ -37,12 +39,19 @@ export function RegisterForm() {
 
   async function onSubmit(values: RegisterInput) {
     const result = await signup.mutateAsync({ data: values })
-    if (result.success) {
-      toast.success("Registrazione completata")
-      navigate({ to: "/" })
-    } else {
+    if (!result.success) {
       toast.error(result.error)
+      return
     }
+    if (result.status === "pending_email_confirmation") {
+      navigate({
+        to: "/auth/verify-email",
+        search: { email: result.email },
+      })
+      return
+    }
+    toast.success("Registrazione completata")
+    navigate({ to: "/" })
   }
 
   return (
@@ -111,6 +120,44 @@ export function RegisterForm() {
                     )}
                     <span className="sr-only">
                       {showPassword ? "Nascondi password" : "Mostra password"}
+                    </span>
+                  </button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password_confirm"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Conferma password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    type={showPasswordConfirm ? "text" : "password"}
+                    placeholder="Ripeti la password"
+                    autoComplete="new-password"
+                    className="pr-10"
+                    {...field}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showPasswordConfirm ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">
+                      {showPasswordConfirm
+                        ? "Nascondi conferma password"
+                        : "Mostra conferma password"}
                     </span>
                   </button>
                 </div>
