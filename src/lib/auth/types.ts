@@ -20,3 +20,8 @@ export type AuthSession = {
 export type AuthResult =
   | { success: true; user: AuthUser }
   | { success: false; error: string }
+
+export type SignupResult =
+  | { success: true; status: "logged_in"; user: AuthUser }
+  | { success: true; status: "pending_email_confirmation"; email: string }
+  | { success: false; error: string }
