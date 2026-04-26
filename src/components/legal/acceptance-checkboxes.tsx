@@ -37,10 +37,10 @@ export function AcceptanceCheckboxes({
           disabled={disabled}
           className="mt-0.5"
         />
-        <div className="space-y-1">
+        <div className="min-w-0 flex-1 space-y-1">
           <Label
             htmlFor="accept-terms"
-            className="text-sm font-normal leading-relaxed"
+            className="block text-sm font-normal leading-relaxed"
           >
             Accetto i{" "}
             <Link
@@ -66,10 +66,10 @@ export function AcceptanceCheckboxes({
           disabled={disabled}
           className="mt-0.5"
         />
-        <div className="space-y-1">
+        <div className="min-w-0 flex-1 space-y-1">
           <Label
             htmlFor="accept-privacy"
-            className="text-sm font-normal leading-relaxed"
+            className="block text-sm font-normal leading-relaxed"
           >
             Accetto l'
             <Link
