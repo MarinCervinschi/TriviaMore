@@ -28,6 +28,7 @@ export async function loadSecrets() {
       attachToProcessEnv: true,
       expandSecretReferences: true,
       includeImports: true,
+      recursive: true,
     });
 
     loaded = true;
