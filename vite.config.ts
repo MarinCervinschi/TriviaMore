@@ -15,7 +15,7 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart({
       server: {
-        entry: "./src/entry-server.tsx",
+        entry: "./entry-server.tsx",
       },
     }),
     nitro(),
