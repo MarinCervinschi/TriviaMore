@@ -37,12 +37,19 @@ export function RegisterForm() {
 
   async function onSubmit(values: RegisterInput) {
     const result = await signup.mutateAsync({ data: values })
-    if (result.success) {
-      toast.success("Registrazione completata")
-      navigate({ to: "/" })
-    } else {
+    if (!result.success) {
       toast.error(result.error)
+      return
     }
+    if (result.status === "pending_email_confirmation") {
+      navigate({
+        to: "/auth/verify-email",
+        search: { email: result.email },
+      })
+      return
+    }
+    toast.success("Registrazione completata")
+    navigate({ to: "/" })
   }
 
   return (
