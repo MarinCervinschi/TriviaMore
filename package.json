@@ -19,7 +19,8 @@
     "test": "vitest run",
     "db:types": "infisical run -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
-    "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap"
+    "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap",
+    "mcp:catalog": "infisical run --recursive -- tsx scripts/mcp/catalog-server.ts"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.2.7",
@@ -81,6 +82,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",
