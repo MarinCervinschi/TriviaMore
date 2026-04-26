@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_app/legal/declined")({
   component: DeclinedPage,
 })
 
-const DELETION_REQUEST_MAILTO = `mailto:privacy@triviamore.it?subject=${encodeURIComponent(
+const DELETION_REQUEST_MAILTO = `mailto:privacy@trivia-more.it?subject=${encodeURIComponent(
   "Richiesta di eliminazione account TriviaMore",
 )}&body=${encodeURIComponent(
   "Richiedo l'eliminazione del mio account TriviaMore associato all'email:\n\n[indica qui la tua email]\n\nHo letto la sezione 10 dei Termini e Condizioni e comprendo che l'eliminazione avverrà tramite anonimizzazione.",

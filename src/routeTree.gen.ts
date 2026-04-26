@@ -14,9 +14,12 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as QuizQuizIdRouteImport } from './routes/quiz/$quizId'
 import { Route as FlashcardSessionIdRouteImport } from './routes/flashcard/$sessionId'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
 import { Route as AppAboutRouteImport } from './routes/_app/about'
@@ -84,6 +87,11 @@ const FlashcardSessionIdRoute = FlashcardSessionIdRouteImport.update({
   path: '/flashcard/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -94,9 +102,19 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthConfirmRoute = AuthConfirmRouteImport.update({
+  id: '/auth/confirm',
+  path: '/auth/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
+  id: '/auth/auth-code-error',
+  path: '/auth/auth-code-error',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppNewsRoute = AppNewsRouteImport.update({
@@ -332,9 +350,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/legal/accept': typeof AppLegalAcceptRoute
@@ -380,9 +401,12 @@ export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/': typeof AppIndexRoute
@@ -433,9 +457,12 @@ export interface FileRoutesById {
   '/_app/about': typeof AppAboutRoute
   '/_app/contact': typeof AppContactRoute
   '/_app/news': typeof AppNewsRoute
+  '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/_app/': typeof AppIndexRoute
@@ -487,9 +514,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/auth/auth-code-error'
     | '/auth/callback'
+    | '/auth/confirm'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/legal/accept'
@@ -535,9 +565,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/auth/auth-code-error'
     | '/auth/callback'
+    | '/auth/confirm'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/'
@@ -587,9 +620,12 @@ export interface FileRouteTypes {
     | '/_app/about'
     | '/_app/contact'
     | '/_app/news'
+    | '/auth/auth-code-error'
     | '/auth/callback'
+    | '/auth/confirm'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/_app/'
@@ -634,9 +670,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
+  AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthConfirmRoute: typeof AuthConfirmRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
 }
@@ -678,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlashcardSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -692,11 +738,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/confirm': {
+      id: '/auth/confirm'
+      path: '/auth/confirm'
+      fullPath: '/auth/confirm'
+      preLoaderRoute: typeof AuthConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/auth-code-error': {
+      id: '/auth/auth-code-error'
+      path: '/auth/auth-code-error'
+      fullPath: '/auth/auth-code-error'
+      preLoaderRoute: typeof AuthAuthCodeErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/news': {
@@ -1128,9 +1188,12 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
+  AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  AuthConfirmRoute: AuthConfirmRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
 }

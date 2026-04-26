@@ -630,7 +630,40 @@ export const getAvailableClassYearsFn = createServerFn({ method: "GET" })
 
 export const submitContactFn = createServerFn({ method: "POST" })
   .inputValidator(contactSchema)
-  .handler(async () => {
-    // TODO: integrate Resend email or store in Supabase table
-    return { success: true }
-  })
+  .handler(
+    async ({ data }): Promise<{ success: boolean; error?: string }> => {
+      // Honeypot: bots tend to fill the hidden `website` field. Drop silently
+      // so they don't learn anything about why their submission was rejected.
+      if (data.website && data.website.trim().length > 0) {
+        return { success: true }
+      }
+
+      const recipient = process.env.CONTACT_RECIPIENT
+      if (!recipient) {
+        console.error("CONTACT_RECIPIENT env var not configured")
+        return { success: false, error: "Servizio non configurato" }
+      }
+
+      const { renderContactEmailHtml, renderContactEmailText } = await import(
+        "@/lib/email/templates/contact"
+      )
+      const { sendMail } = await import("@/lib/email/server")
+
+      try {
+        await sendMail({
+          to: recipient,
+          subject: `[Contatti] ${data.subject}`,
+          html: renderContactEmailHtml(data),
+          text: renderContactEmailText(data),
+          replyTo: `${data.name} <${data.email}>`,
+        })
+        return { success: true }
+      } catch (err) {
+        console.error("Failed to send contact email:", err)
+        return {
+          success: false,
+          error: "Errore durante l'invio. Riprova piu' tardi.",
+        }
+      }
+    },
+  )

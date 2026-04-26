@@ -31,6 +31,10 @@ export const contactSchema = z.object({
     .min(10, "Il messaggio deve avere almeno 10 caratteri")
     .max(5000, "Il messaggio non può superare i 5000 caratteri")
     .trim(),
+  // Honeypot: invisible to real users, bots tend to fill any field they see.
+  // Validated as optional/empty here; the server treats any non-empty value
+  // as a bot submission and silently drops it.
+  website: z.string().optional(),
 })
 
 export type ContactInput = z.infer<typeof contactSchema>
