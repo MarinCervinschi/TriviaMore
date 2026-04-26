@@ -8,18 +8,18 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "infisical run -- vite dev --port 3000",
-    "dev:staging": "infisical run --env=staging -- vite dev --port 3000",
-    "dev:prod": "infisical run --env=prod -- vite dev --port 3000",
+    "dev": "infisical run --recursive -- vite dev --port 3000",
+    "dev:staging": "infisical run --recursive --env=staging -- vite dev --port 3000",
+    "dev:prod": "infisical run --recursive --env=prod -- vite dev --port 3000",
     "dev:no-secrets": "vite dev --port 3000",
     "build": "tsx scripts/build.ts",
-    "build:dev": "infisical run -- pnpm build",
+    "build:dev": "infisical run --recursive -- pnpm build",
     "start": "node .output/server/index.mjs",
-    "preview": "infisical run -- vite preview",
+    "preview": "infisical run --recursive -- vite preview",
     "test": "vitest run",
-    "db:types": "infisical run -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
+    "db:types": "infisical run --recursive -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
-    "generate:sitemap:dev": "infisical run -- pnpm generate:sitemap",
+    "generate:sitemap:dev": "infisical run --recursive -- pnpm generate:sitemap",
     "mcp:catalog": "infisical run --recursive -- tsx scripts/mcp/catalog-server.ts"
   },
   "dependencies": {
