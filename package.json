@@ -12,7 +12,7 @@
     "dev:staging": "infisical run --env=staging -- vite dev --port 3000",
     "dev:prod": "infisical run --env=prod -- vite dev --port 3000",
     "dev:no-secrets": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "tsx scripts/build.ts",
     "build:dev": "infisical run -- pnpm build",
     "start": "node .output/server/index.mjs",
     "preview": "infisical run -- vite preview",
