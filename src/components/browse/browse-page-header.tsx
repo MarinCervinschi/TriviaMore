@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
+import { ExpandableDescription } from "./expandable-description"
+
 export function BrowsePageHeader({
   breadcrumb,
   icon: Icon,
@@ -22,50 +24,66 @@ export function BrowsePageHeader({
     <section className="relative w-full pb-10 pt-6 sm:pb-14 sm:pt-8">
       <div className="container">
         {breadcrumb}
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            {Icon && (
-              <div className="mb-3 inline-flex rounded-2xl bg-primary/10 p-3">
+
+        {/* Top row: icon left, actions right. On mobile, actions wrap below
+            so the title block underneath always has full width and never gets
+            squeezed by buttons. */}
+        {(Icon || actions) && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            {Icon ? (
+              <div className="inline-flex shrink-0 rounded-2xl bg-primary/10 p-3">
                 <Icon
-                  className="h-7 w-7 text-primary"
+                  className="h-6 w-6 text-primary sm:h-7 sm:w-7"
                   strokeWidth={1.5}
                   aria-hidden
                 />
               </div>
+            ) : (
+              <span aria-hidden />
             )}
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-              {title}
-            </h1>
-            {description && (
-              <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
-                {description}
-              </p>
-            )}
-            {badges && (
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                {badges}
-              </div>
-            )}
-            {stats && stats.length > 0 && (
-              <div className="mt-6 flex flex-wrap items-center gap-6">
-                {stats.map((stat, i) => (
-                  <div key={stat.label} className="flex items-center gap-2">
-                    {i > 0 && (
-                      <span className="mr-4 hidden h-1 w-1 rounded-full bg-muted-foreground/30 sm:block" />
-                    )}
-                    <span className="text-2xl font-bold text-foreground">
-                      {stat.value}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {stat.label}
-                    </span>
-                  </div>
-                ))}
+            {actions && (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {actions}
               </div>
             )}
           </div>
-          {actions && (
-            <div className="flex shrink-0 items-center gap-2">{actions}</div>
+        )}
+
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+            {title}
+          </h1>
+          {description && (
+            <ExpandableDescription
+              text={description}
+              className="mt-3 max-w-2xl"
+              textClassName="text-base sm:text-lg"
+            />
+          )}
+          {badges && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {badges}
+            </div>
+          )}
+          {stats && stats.length > 0 && (
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+              {stats.map((stat, i) => (
+                <div key={stat.label} className="flex items-center gap-2">
+                  {i > 0 && (
+                    <span
+                      aria-hidden
+                      className="mr-4 hidden h-1 w-1 rounded-full bg-muted-foreground/30 sm:block"
+                    />
+                  )}
+                  <span className="text-2xl font-bold text-foreground">
+                    {stat.value}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
