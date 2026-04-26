@@ -10,7 +10,7 @@ export function BrowseTable({
   return (
     <div className="overflow-hidden rounded-2xl border">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm md:text-base">
           <thead>
             <tr className="border-b bg-muted/50">
               {headers.map((header, i) => (

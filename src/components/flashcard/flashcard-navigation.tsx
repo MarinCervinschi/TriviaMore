@@ -19,21 +19,21 @@ export function FlashcardNavigation({
   const isLast = currentIndex === totalQuestions - 1
 
   return (
-    <div className="flex items-center justify-between border-t border-border/50 bg-background/70 px-4 py-3 backdrop-blur-xl">
+    <div className="flex items-center justify-between gap-2 border-t border-border/50 bg-background/70 px-3 py-3 backdrop-blur-xl sm:px-4">
       <Button
         variant="outline"
         onClick={onPrevious}
         disabled={isFirst}
-        className="rounded-xl"
+        className="rounded-xl text-sm sm:text-base"
       >
-        <ChevronLeft className="mr-1.5 h-4 w-4" />
-        Precedente
+        <ChevronLeft className="h-4 w-4 sm:mr-1.5" />
+        <span className="hidden sm:inline">Precedente</span>
       </Button>
 
       <Button
         onClick={onComplete}
         variant="default"
-        className="rounded-xl shadow-sm"
+        className="rounded-xl text-sm shadow-sm sm:text-base"
       >
         <CheckCircle className="mr-1.5 h-4 w-4" />
         Termina
@@ -43,10 +43,10 @@ export function FlashcardNavigation({
         variant="outline"
         onClick={onNext}
         disabled={isLast}
-        className="rounded-xl"
+        className="rounded-xl text-sm sm:text-base"
       >
-        Successiva
-        <ChevronRight className="ml-1.5 h-4 w-4" />
+        <span className="hidden sm:inline">Successiva</span>
+        <ChevronRight className="h-4 w-4 sm:ml-1.5" />
       </Button>
     </div>
   )
