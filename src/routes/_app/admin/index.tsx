@@ -48,7 +48,7 @@ function AdminDashboard() {
       <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-primary">
         Contenuti
       </p>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {contentCards.map((card) => (
           <AdminStatCard
             key={card.label}

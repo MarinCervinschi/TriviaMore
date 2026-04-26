@@ -79,7 +79,7 @@ export function HeroSection({
           className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           variants={item}
         >
-          <Button size="lg" className="h-13 px-8 text-base shadow-lg shadow-primary/25" asChild>
+          <Button size="lg" className="h-13 px-6 text-base shadow-lg shadow-primary/25 sm:px-8" asChild>
             <Link to={primaryCTA.href}>
               {primaryCTA.text}
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -88,7 +88,7 @@ export function HeroSection({
           <Button
             size="lg"
             variant="outline"
-            className="h-13 px-8 text-base backdrop-blur-sm"
+            className="h-13 px-6 text-base backdrop-blur-sm sm:px-8"
             asChild
           >
             <Link to={secondaryCTA.href}>{secondaryCTA.text}</Link>

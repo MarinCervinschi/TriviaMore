@@ -61,7 +61,7 @@ export function FlashcardResults({
           </p>
 
           {/* Stats row */}
-          <div className="relative mt-8 grid grid-cols-3 gap-4">
+          <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             <div className="rounded-2xl bg-muted/50 p-4">
               <Eye className="mx-auto mb-2 h-5 w-5 text-green-500" />
               <p className="text-2xl font-bold">

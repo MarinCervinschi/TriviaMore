@@ -13,7 +13,7 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-muted/40 to-muted/60" />
 
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 sm:gap-8 md:grid-cols-4">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="mb-4 inline-block">
