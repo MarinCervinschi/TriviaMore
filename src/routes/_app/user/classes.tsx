@@ -246,7 +246,7 @@ function ClassesPage() {
           >
             {paged.map((userClass) => (
               <tr key={userClass.class_id} className="group">
-                <td className="py-4 pl-6">
+                <td className="min-w-[16rem] py-4 pl-6 pr-3 align-top">
                   <Link
                     to="/browse/$department/$course/$class"
                     params={{
@@ -257,10 +257,10 @@ function ClassesPage() {
                     }}
                     className="block"
                   >
-                    <span className="font-medium text-foreground transition-colors group-hover:text-primary">
+                    <span className="block font-medium text-foreground transition-colors group-hover:text-primary">
                       {userClass.class_name}
                     </span>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {userClass.course_name} &bull;{" "}
                       {userClass.class_code}
                     </p>

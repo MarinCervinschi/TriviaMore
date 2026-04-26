@@ -30,16 +30,16 @@ export function ProgressDetails({
               </div>
               <h3 className="font-bold">Studio</h3>
             </div>
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-xl font-bold sm:text-2xl">
                   {overallStats.totalStudyQuizzes}
                 </p>
                 <p className="text-xs text-muted-foreground">Quiz</p>
               </div>
               <div>
                 <p
-                  className={`text-2xl font-bold ${getGradeColor(overallStats.avgStudy)}`}
+                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgStudy)}`}
                 >
                   {formatThirtyScaleGrade(overallStats.avgStudy)}
                 </p>
@@ -47,7 +47,7 @@ export function ProgressDetails({
               </div>
               <div>
                 <p
-                  className={`text-2xl font-bold ${getGradeColor(overallStats.bestStudy)}`}
+                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestStudy)}`}
                 >
                   {formatThirtyScaleGrade(overallStats.bestStudy)}
                 </p>
@@ -66,16 +66,16 @@ export function ProgressDetails({
               </div>
               <h3 className="font-bold">Esame</h3>
             </div>
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-xl font-bold sm:text-2xl">
                   {overallStats.totalExamQuizzes}
                 </p>
                 <p className="text-xs text-muted-foreground">Quiz</p>
               </div>
               <div>
                 <p
-                  className={`text-2xl font-bold ${getGradeColor(overallStats.avgExam)}`}
+                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgExam)}`}
                 >
                   {formatThirtyScaleGrade(overallStats.avgExam)}
                 </p>
@@ -83,7 +83,7 @@ export function ProgressDetails({
               </div>
               <div>
                 <p
-                  className={`text-2xl font-bold ${getGradeColor(overallStats.bestExam)}`}
+                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestExam)}`}
                 >
                   {formatThirtyScaleGrade(overallStats.bestExam)}
                 </p>
@@ -115,10 +115,10 @@ export function ProgressDetails({
               key={record.id}
               className="group transition-colors hover:bg-muted/30"
             >
-              <td className="py-3 pl-6 font-medium">
+              <td className="min-w-[14rem] py-3 pl-6 pr-3 align-top font-medium">
                 {record.section_name}
               </td>
-              <td className="px-4 py-3 text-center text-sm text-muted-foreground">
+              <td className="min-w-[12rem] px-4 py-3 align-top text-center text-sm text-muted-foreground">
                 {record.class_name}
               </td>
               <td className="px-4 py-3 text-center">

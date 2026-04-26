@@ -54,30 +54,31 @@ function DashboardPage() {
         description=""
       >
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-          <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/20">
+          <Avatar className="h-16 w-16 shrink-0 border-4 border-background shadow-xl ring-2 ring-primary/20 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
             <AvatarImage src={profile.image ?? undefined} alt={displayName} />
-            <AvatarFallback className="bg-primary/10 text-2xl font-bold text-primary">
+            <AvatarFallback className="bg-primary/10 text-xl font-bold text-primary sm:text-2xl">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Ciao, <span className="gradient-text">{displayName}</span>
+          <div className="min-w-0 flex-1">
+            <h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+              Ciao,{" "}
+              <span className="gradient-text break-words">{displayName}</span>
             </h1>
             <div className="mb-3 flex items-center gap-2">
-              <Badge className="rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
+              <Badge className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
                 {getRoleLabel(profile.role)}
               </Badge>
             </div>
             <div className="flex flex-col gap-2 text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
               {profile.email && (
-                <div className="flex items-center gap-1.5">
-                  <Mail className="h-4 w-4" />
-                  <span className="text-sm">{profile.email}</span>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <Mail className="h-4 w-4 shrink-0" />
+                  <span className="truncate text-sm">{profile.email}</span>
                 </div>
               )}
               <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
+                <Calendar className="h-4 w-4 shrink-0" />
                 <span className="text-sm">
                   Membro dal{" "}
                   {new Date(profile.created_at).toLocaleDateString("it-IT")}
@@ -267,7 +268,7 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
       <BrowseTable headers={["Corso", "Dipartimento", "Tipo", "Anno"]}>
         {classes.map((item) => (
           <tr key={item.class_id} className="group">
-            <td className="py-4 pl-6">
+            <td className="min-w-[16rem] py-4 pl-6 pr-3 align-top">
               <Link
                 to="/browse/$department/$course/$class"
                 params={{
@@ -277,10 +278,10 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
                 }}
                 className="block"
               >
-                <span className="font-medium text-foreground transition-colors group-hover:text-primary">
+                <span className="block font-medium text-foreground transition-colors group-hover:text-primary">
                   {item.class_name}
                 </span>
-                <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   {item.course_name}
                 </p>
               </Link>
@@ -342,13 +343,6 @@ function RecentActivitySection({
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{attempt.section_name}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  <span className="font-medium">
-                    {attempt.department_name}
-                  </span>
-                  {" \u2022 "}
-                  {attempt.course_name}
-                </p>
-                <p className="text-sm text-muted-foreground">
                   Insegnamento: {attempt.class_name}
                 </p>
               </div>
