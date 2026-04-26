@@ -10,12 +10,14 @@ export function register(server: McpServer) {
     {
       title: "Get section context",
       description:
-        "Get section info + total question count + the 5 most recent questions. Use this to match style and avoid duplicates before generating new ones.",
+        "Get section info + total question count + the most recent questions. Use this to match style and avoid duplicates before generating new ones. Supports recentLimit (default 5, max 50) and difficulty filter on the recent batch.",
       inputSchema: {
         sectionId: z.string().uuid(),
+        recentLimit: z.number().int().min(1).max(50).optional(),
+        difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).optional(),
       },
     },
-    async ({ sectionId }) => {
+    async ({ sectionId, recentLimit, difficulty }) => {
       const { data: section, error: sErr } = await catalog
         .from("sections")
         .select("id, name, description, is_public, class:classes(name)")
@@ -29,14 +31,18 @@ export function register(server: McpServer) {
         .eq("section_id", sectionId)
       if (countErr) throw new Error(countErr.message)
 
-      const { data: recent, error: qErr } = await catalog
+      let recentQuery = catalog
         .from("questions")
         .select(
           "content, question_type, difficulty, options, correct_answer, explanation, created_at",
         )
         .eq("section_id", sectionId)
         .order("created_at", { ascending: false })
-        .limit(5)
+        .limit(recentLimit ?? 5)
+
+      if (difficulty) recentQuery = recentQuery.eq("difficulty", difficulty)
+
+      const { data: recent, error: qErr } = await recentQuery
       if (qErr) throw new Error(qErr.message)
 
       return json({

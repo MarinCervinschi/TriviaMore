@@ -37,6 +37,9 @@ export function register(server: McpServer) {
       await fs.mkdir(dir, { recursive: true })
       const fullPath = path.join(dir, finalName)
       await fs.writeFile(fullPath, JSON.stringify(result.data, null, 2) + "\n")
+      console.error(
+        `[catalog-mcp] saved ${result.data.length} questions -> ${path.relative(process.cwd(), fullPath)}`,
+      )
 
       return json({
         saved: true,
