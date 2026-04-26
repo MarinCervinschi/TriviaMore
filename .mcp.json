@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "triviamore-catalog": {
+      "command": "pnpm",
+      "args": ["mcp:catalog"]
+    }
+  }
+}
