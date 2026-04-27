@@ -197,13 +197,12 @@ function ReviewItem({
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(!open) } }}
         className="flex w-full cursor-pointer items-center justify-between p-4 text-left transition-colors hover:bg-muted/30"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold">
             {index + 1}
           </span>
-          <span className="line-clamp-1 text-sm font-medium">
-            {question.content.slice(0, 80)}
-            {question.content.length > 80 && "..."}
+          <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">
+            <MarkdownRenderer content={question.content} inline />
           </span>
         </div>
         <div className="flex items-center gap-1">
