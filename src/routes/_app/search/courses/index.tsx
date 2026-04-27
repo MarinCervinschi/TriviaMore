@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_app/search/courses/")({
   head: () =>
     seoHead({
       title: "Cerca Corso",
-      description: "Cerca corsi di laurea per nome, codice o descrizione.",
+      description: "Cerca corsi di laurea per nome o codice.",
       path: "/search/courses",
     }),
   component: SearchCoursesPage,
@@ -56,7 +56,23 @@ function SearchCoursesPage() {
   const [page, setPage] = useState(1)
   const prefersReduced = useReducedMotion()
 
-  const debouncedQuery = useDebounce(q ?? "", 400)
+  // Local state for the search input keeps typing snappy: the URL (and the DB query)
+  // are only updated after the debounce settles, instead of on every keystroke.
+  const [localQ, setLocalQ] = useState(q ?? "")
+  const debouncedQuery = useDebounce(localQ, 400)
+
+  // Push debounced value into the URL.
+  useEffect(() => {
+    if (debouncedQuery !== (q ?? "")) {
+      updateSearch({ q: debouncedQuery || undefined })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery])
+
+  // Pull external URL changes (back/forward, clearFilters) back into local state.
+  useEffect(() => {
+    setLocalQ(q ?? "")
+  }, [q])
 
   const searchParams = useMemo(
     () => ({
@@ -105,7 +121,7 @@ function SearchCoursesPage() {
       <UserHero
         icon={GraduationCap}
         title="Cerca Corso"
-        description="Cerca corsi di laurea per nome, codice o descrizione"
+        description="Cerca corsi di laurea per nome o codice"
         stats={hasFilters && results ? [{ label: "risultati", value: totalItems }] : undefined}
       />
 
@@ -118,8 +134,8 @@ function SearchCoursesPage() {
               <Input
                 type="search"
                 placeholder="es. Informatica, Economia, LM-32..."
-                value={q ?? ""}
-                onChange={(e) => updateSearch({ q: e.target.value || undefined })}
+                value={localQ}
+                onChange={(e) => setLocalQ(e.target.value)}
                 className="h-10 rounded-xl pl-10"
               />
             </div>
@@ -189,7 +205,7 @@ function SearchCoursesPage() {
             </div>
             <h3 className="text-lg font-semibold">Inizia a cercare</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Cerca un corso per nome, codice o descrizione, oppure seleziona un filtro
+              Cerca un corso per nome o codice, oppure seleziona un filtro
             </p>
           </div>
         ) : !results && isFetching ? (
