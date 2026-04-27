@@ -40,31 +40,27 @@ export const Route = createFileRoute(
     const fallbackDesc = className
       ? `${questionCount} domande di ${sectionName} per l'esame di ${className}${courseName ? ` (${courseName})` : ""} a UniMore. Modalità studio o simulazione esame su TriviaMore.`
       : `${questionCount} domande della sezione ${sectionName} su TriviaMore.`
-    return {
-      ...seoHead({
-        title: `${sectionName}${titleSuffix}`,
-        description: loaderData?.description ?? fallbackDesc,
-        path: match.pathname,
-      }),
-      scripts: [
-        breadcrumbJsonLd([
-          { name: "Esplora", path: "/browse" },
-          {
-            name: loaderData?.class?.course?.department?.name ?? "Dipartimento",
-            path: `/browse/${match.params.department}`,
-          },
-          {
-            name: loaderData?.class?.course?.name ?? "Corso",
-            path: `/browse/${match.params.department}/${match.params.course}`,
-          },
-          {
-            name: loaderData?.class?.name ?? "Insegnamento",
-            path: `/browse/${match.params.department}/${match.params.course}/${match.params.class}`,
-          },
-          { name: loaderData?.name ?? "Sezione", path: match.pathname },
-        ]),
-      ],
-    }
+    return seoHead({
+      title: `${sectionName}${titleSuffix}`,
+      description: loaderData?.description ?? fallbackDesc,
+      path: match.pathname,
+      jsonLd: breadcrumbJsonLd([
+        { name: "Esplora", path: "/browse" },
+        {
+          name: loaderData?.class?.course?.department?.name ?? "Dipartimento",
+          path: `/browse/${match.params.department}`,
+        },
+        {
+          name: loaderData?.class?.course?.name ?? "Corso",
+          path: `/browse/${match.params.department}/${match.params.course}`,
+        },
+        {
+          name: loaderData?.class?.name ?? "Insegnamento",
+          path: `/browse/${match.params.department}/${match.params.course}/${match.params.class}`,
+        },
+        { name: loaderData?.name ?? "Sezione", path: match.pathname },
+      ]),
+    })
   },
   pendingComponent: SectionDetailSkeleton,
   component: SectionPage,

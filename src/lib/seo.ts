@@ -1,3 +1,5 @@
+import type { JsonLd } from "./json-ld"
+
 const SITE_NAME = "TriviaMore"
 const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://www.trivia-more.it"
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`
@@ -9,7 +11,10 @@ type SeoHeadOptions = {
   type?: "website" | "article"
   image?: string
   noindex?: boolean
+  jsonLd?: JsonLd | JsonLd[]
 }
+
+type MetaEntry = Record<string, unknown>
 
 export function seoHead({
   title,
@@ -18,12 +23,13 @@ export function seoHead({
   type = "website",
   image,
   noindex,
+  jsonLd,
 }: SeoHeadOptions) {
   const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`
   const canonicalUrl = path ? `${SITE_URL}${path}` : undefined
   const ogImage = image ?? DEFAULT_OG_IMAGE
 
-  const meta: Record<string, string>[] = [{ title: fullTitle }]
+  const meta: MetaEntry[] = [{ title: fullTitle }]
 
   if (description) {
     meta.push({ name: "description", content: description })
@@ -52,6 +58,17 @@ export function seoHead({
     }
     if (canonicalUrl) {
       meta.push({ property: "og:url", content: canonicalUrl })
+    }
+
+    // TanStack Start reconnaissance pattern for SSR-rendered JSON-LD blocks.
+    // See @tanstack/react-router headContentUtils — the "script:ld+json" key
+    // is the only meta shape that emits <script type="application/ld+json">
+    // inline in the SSR <head>.
+    if (jsonLd) {
+      const list = Array.isArray(jsonLd) ? jsonLd : [jsonLd]
+      for (const data of list) {
+        meta.push({ "script:ld+json": data })
+      }
     }
   }
 

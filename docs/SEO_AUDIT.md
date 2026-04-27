@@ -14,7 +14,7 @@
 | 1 | Devtools production-only | `src/routes/__root.tsx:75-86` | Avvolto in `import.meta.env.DEV` — bundle più snello in prod |
 | 2 | Title homepage SEO-friendly | `src/routes/_app/index.tsx:36-42` | Da `TriviaMore` → `Studia gli esami UniMore in modo organizzato \| TriviaMore` |
 | 3 | Description homepage | `src/routes/_app/index.tsx:36-42` | Cita catalogo, dipartimento, corso, insegnamento, simulazioni, flashcard, dashboard, open source |
-| 4 | H1 homepage | `src/components/landing/hero-section.tsx:62-69` | Da `Studia meglio, supera gli esami` → `Tutto il catalogo UniMore per superare gli esami` |
+| 4 | H1 homepage | `src/components/landing/hero-section.tsx:62-69` | Mantenuto `Studia meglio, supera gli esami` (preferenza UX). Keyword UniMore già presente nel title meta, nella description, nel badge sopra l'H1 e nello stats row. |
 | 5 | Subtitle hero (sotto H1) | `src/components/landing/data.ts:58-64` | Allineato al posizionamento "ecosistema" del README — cita gerarchia, modalità, dashboard |
 | 6 | Title/desc dipartimento | `src/routes/_app/browse/$department/index.tsx:39-44` | Rimosso `\| Esplora` (titolo più corto, sotto i 60 char). Description fallback parla di catalogo+esami+UniMore |
 | 7 | Title/desc corso | `src/routes/_app/browse/$department/$course/index.tsx:39-44` | Stessa pulizia + description con keyword UniMore |
@@ -22,14 +22,13 @@
 | 9 | Title/desc sezione (2.6k pagine) | `src/routes/_app/browse/$department/$course/$class/$section/index.tsx:34-47` | Title `${section} – ${class}`, description con `${question_count} domande di X per l'esame di Y (Z) a UniMore` — ora veicola valore reale |
 | 10 | Manifest description allineato | `public/manifest.json:3-4` | Coerente con SEO description |
 | 11 | Audit dei link non-www | tutto il repo | Grep eseguito: nessun `https://trivia-more.it` (no-www) hardcoded; tutti i riferimenti usano già `www.` |
+| 12 | **JSON-LD ora rendered in SSR** (era CRITICO) | `src/lib/json-ld.ts`, `src/lib/seo.ts`, 5 route browse | Refactor: `json-ld.ts` ritorna oggetti puri (`JsonLd`); `seoHead` accetta `jsonLd?: JsonLd \| JsonLd[]` e lo emette via la chiave `"script:ld+json"` dentro `meta` (path TanStack `headContentUtils.js:22-29` che produce `<script type="application/ld+json">` inline in SSR). Le 5 route hanno smesso di usare `head.scripts` (che TanStack droppa per `type` custom in SSR — `Asset.js:94`). |
 
 ### ⏳ Non applicati — richiedono debug o intervento esterno
 
 | # | Fix | Motivo / blocker | Cosa fare |
 |---|---|---|---|
-| 12 | **JSON-LD non rendered nell'HTML SSR** (CRITICO) | TanStack Start `head.scripts: [...]` codato ma 0 blocchi `application/ld+json` nel sorgente live. Probabile API issue (script deferiti via `<Scripts />` body, non `<head>`). | Verificare la firma corrente di `head.scripts` nella versione installata. Se non emette inline in `<head>`, render manuale via `<script dangerouslySetInnerHTML…>` nel JSX di pagina, oppure rifattorizzare `json-ld.ts` per essere montato nel componente. Test: `curl -sL https://www.trivia-more.it/ \| grep "ld+json"` deve restituire ≥1. |
 | 13 | Redirect apex 307 → 308 | Configurazione Vercel, non nel codice | Vercel Dashboard → Project → Domains → trivia-more.it (apex) → impostare redirect tipo permanent (308). Oppure tramite `vercel.json`/`vercel.ts`. |
-| 14 | Disambiguare `pendingComponent` di section | Già allineato (skeleton aggiornato), nessuna azione | (no-op) |
 
 ### 📋 Strategici — non avviati
 
@@ -40,7 +39,14 @@ Vedi sezione "Investimenti strategici" più sotto. Punti A→I (Quiz/LearningRes
 - `<title>`, `<meta name="description">`, H1 della home reflect il nuovo copy.
 - `<title>` di `/browse/{dept}` non contiene più `| Esplora`.
 - `<title>` di una sezione = `${sectionName} – ${className} | TriviaMore`.
-- Bundle JS della home: TanStackDevtools assente.
+- Bundle JS della home: TanStackDevtools assente in production build.
+- **JSON-LD presente in SSR** su home (`WebSite`), dipartimento/classe/sezione (`BreadcrumbList`), corso (`BreadcrumbList` + `Course`):
+  ```bash
+  curl -s https://www.trivia-more.it/ | grep -c "ld+json"
+  curl -s https://www.trivia-more.it/browse/dscg | grep -c "ld+json"
+  ```
+  Atteso ≥1 su entrambe.
+- [Google Rich Results Test](https://search.google.com/test/rich-results) sulla home + una pagina sezione → tipi rilevati senza errori.
 - Lighthouse / PSI: LCP migliorato, CLS invariato.
 - Search Console (se configurata): re-crawl manuale per le pagine principali.
 

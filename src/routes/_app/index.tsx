@@ -38,8 +38,8 @@ export const Route = createFileRoute("/_app/")({
       description:
         "Catalogo completo dell'ateneo UniMore organizzato per dipartimento, corso e insegnamento. Quiz interattivi, simulazioni d'esame, flashcard e dashboard personale. Open source, curato dalla community.",
       path: "/",
+      jsonLd: websiteJsonLd(),
     }),
-    scripts: [websiteJsonLd()],
   }),
   component: HomePage,
 })

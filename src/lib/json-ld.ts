@@ -1,29 +1,24 @@
 const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://www.trivia-more.it"
 const SITE_NAME = "TriviaMore"
 
-function jsonLdScript(data: Record<string, unknown>) {
-  return {
-    type: "application/ld+json",
-    dangerouslySetInnerHTML: { __html: JSON.stringify(data) },
-  } as React.JSX.IntrinsicElements["script"]
-}
+export type JsonLd = Record<string, unknown>
 
-export function websiteJsonLd() {
-  return jsonLdScript({
+export function websiteJsonLd(): JsonLd {
+  return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      "La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti.",
+      "Catalogo completo dell'ateneo UniMore con quiz, simulazioni d'esame, flashcard e dashboard personale. Open source, curato dalla community.",
     inLanguage: "it",
-  })
+  }
 }
 
 export function breadcrumbJsonLd(
   items: Array<{ name: string; path: string }>,
-) {
-  return jsonLdScript({
+): JsonLd {
+  return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
@@ -32,7 +27,7 @@ export function breadcrumbJsonLd(
       name: item.name,
       item: `${SITE_URL}${item.path}`,
     })),
-  })
+  }
 }
 
 export function courseJsonLd({
@@ -45,8 +40,8 @@ export function courseJsonLd({
   description?: string
   path: string
   provider?: string
-}) {
-  return jsonLdScript({
+}): JsonLd {
+  return {
     "@context": "https://schema.org",
     "@type": "Course",
     name,
@@ -56,5 +51,5 @@ export function courseJsonLd({
       "@type": "Organization",
       name: provider ?? SITE_NAME,
     },
-  })
+  }
 }

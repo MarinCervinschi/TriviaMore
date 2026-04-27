@@ -62,9 +62,7 @@ export const Route = createFileRoute(
         loaderData?.description ??
         `Sezioni, quiz e flashcard per l'esame di ${loaderData?.name ?? "questo insegnamento"} a UniMore. Catalogo curato dalla community con modalità studio e simulazione esame.`,
       path: match.pathname,
-    }),
-    scripts: [
-      breadcrumbJsonLd([
+      jsonLd: breadcrumbJsonLd([
         { name: "Esplora", path: "/browse" },
         {
           name: loaderData?.course?.department?.name ?? "Dipartimento",
@@ -76,7 +74,7 @@ export const Route = createFileRoute(
         },
         { name: loaderData?.name ?? "Insegnamento", path: match.pathname },
       ]),
-    ],
+    }),
   }),
   pendingComponent: ClassDetailSkeleton,
   component: ClassPage,
