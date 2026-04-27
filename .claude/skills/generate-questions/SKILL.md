@@ -48,17 +48,42 @@ Call `get_section_context({ sectionId })`. From the response:
 Call `get_question_format()` once per session to lock in the schema. Key rules (re-read each time):
 - `content`: 10-2000 chars, trimmed, ends with appropriate punctuation
 - `question_type`: `MULTIPLE_CHOICE` | `TRUE_FALSE` | `SHORT_ANSWER`
-- `options`:
+- `options`: **always a flat array of plain strings** — never objects like `{id, text}`
   - MULTIPLE_CHOICE: 2-6 strings, plausible distractors, prefer 4
-  - TRUE_FALSE: always `["Vero", "Falso"]`
+  - TRUE_FALSE: always `["Vero", "Falso"]` (in this order)
   - SHORT_ANSWER: omit or `null`
 - `correct_answer`: 1-6 non-empty strings
-  - For MULTIPLE_CHOICE, every entry must be present in `options` (exact string match)
+  - For MULTIPLE_CHOICE, every entry must be a **byte-for-byte exact match** of one of the strings in `options` (same whitespace, same LaTeX, same punctuation). Scoring compares strings literally — any drift makes the answer un-scoreable.
   - For TRUE_FALSE: `["Vero"]` or `["Falso"]`
   - For SHORT_ANSWER: the expected concise answer(s)
 - `explanation`: optional, ≤1000 chars; include for ~80% of questions, especially when the correct answer needs justification
 - `difficulty`: `EASY` | `MEDIUM` | `HARD`
 - **Never include `section_id`** — the UI injects it from the URL
+
+### 4b. LaTeX / math notation
+
+The renderer is KaTeX via `remark-math` + `rehype-katex`. Use it inside `content`, `options`, `correct_answer`, and `explanation`.
+
+**Delimiters**:
+- Inline math: `$...$` — e.g. `Il valore di $\sigma(x)$ è...`
+- Block math: `$$...$$` on its own paragraph — for standalone equations
+- **Do not** use `\(...\)` or `\[...\]` — not enabled.
+
+**JSON escaping**: backslashes must be doubled inside JSON strings.
+- LaTeX source `\sigma(x) = \dfrac{1}{1+e^{-x}}` → JSON `"$\\sigma(x) = \\dfrac{1}{1+e^{-x}}$"`
+- Every `\command` becomes `\\command` in the JSON file.
+- Double-check after writing: a single backslash in the file means broken KaTeX.
+
+**Match exactness for MULTIPLE_CHOICE**: when the correct option contains LaTeX, copy the exact same string into `correct_answer` — do not paraphrase, simplify spacing, or swap `\frac` for `\dfrac`.
+
+**Common pitfalls**:
+- Subscripts/superscripts longer than one character need braces: `e^{-x}`, `f_{y_i}`. `e^-x` renders as `e⁻x` truncated.
+- Greek letters: `\sigma`, `\alpha`, `\theta`, `\lambda`. Don't paste Unicode `σ` mid-formula — keep the math zone consistent.
+- Operators: `\geq`, `\leq`, `\neq`, `\approx`, `\cdot`, `\times`. Plain `>=` works in text but not as a math symbol.
+- Functions/keywords: `\max`, `\min`, `\log`, `\exp`, `\sin` — these get the upright font. Bare `max(0,x)` will render in italic and look wrong.
+- Sets/spaces: `\mathbb{R}`, `\mathbb{N}`. Pure letters like `R`, `N` are ambiguous.
+- Don't wrap an entire sentence in `$...$` — only the math fragments. Mix prose and math: `La derivata $\frac{d}{dx} f(x)$ è positiva quando...`.
+- Inside `options` and `correct_answer`, the LaTeX strings must be **identical** between the two arrays — copy-paste, don't retype.
 
 ### 5. Generate the batch
 
