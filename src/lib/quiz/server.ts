@@ -177,14 +177,17 @@ export const getQuizFn = createServerFn({ method: "GET" })
 
     if (!questions) return null
 
-    // Order questions and shuffle options
+    // Order questions and shuffle options (skip shuffle for TRUE_FALSE so "Vero" stays first)
     const orderedQuestions: QuizQuestion[] = quizQuestions.map((qq) => {
       const q = questions.find((q) => q.id === qq.question_id)!
       return {
         id: q.id,
         content: q.content,
         question_type: q.question_type,
-        options: shuffleJsonOptions(q.options),
+        options:
+          q.question_type === "TRUE_FALSE"
+            ? q.options
+            : shuffleJsonOptions(q.options),
         correct_answer: q.correct_answer,
         explanation: q.explanation,
         difficulty: q.difficulty,
