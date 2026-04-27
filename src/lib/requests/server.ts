@@ -8,8 +8,6 @@ import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
 import { storedContentSchema } from "./schemas"
 import type { AdminContentRequest, ContentRequestWithMeta, SubmittedContent } from "./types"
 
-const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
-
 /** Validate JSONB content from DB against Zod schema at runtime */
 function parseSubmittedContent(raw: unknown): SubmittedContent {
   const result = storedContentSchema.safeParse(raw)
@@ -17,11 +15,6 @@ function parseSubmittedContent(raw: unknown): SubmittedContent {
     throw new Error("Contenuto della proposta non valido")
   }
   return result.data as SubmittedContent
-}
-
-function toDbOptions(options: string[] | null | undefined) {
-  if (!options) return null
-  return options.map((text, i) => ({ id: ID_LETTERS[i], text }))
 }
 
 // Helper: get authenticated user or throw
@@ -496,7 +489,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
         id: crypto.randomUUID(),
         content: q.content,
         question_type: q.question_type,
-        options: toDbOptions(q.options),
+        options: q.options ?? null,
         correct_answer: q.correct_answer,
         explanation: q.explanation || null,
         difficulty: q.difficulty,

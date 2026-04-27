@@ -6,16 +6,6 @@ import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import { idSchema, questionSchema, updateQuestionSchema } from "../schemas"
 
-const ID_LETTERS = "abcdefghijklmnopqrstuvwxyz"
-
-/** Convert plain string options to {id, text} format for DB storage */
-function toDbOptions(
-  options: string[] | null | undefined,
-): Array<{ id: string; text: string }> | null {
-  if (!options) return null
-  return options.map((text, i) => ({ id: ID_LETTERS[i], text }))
-}
-
 // ─── Questions ───
 
 export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
@@ -48,7 +38,7 @@ export const createQuestionFn = createServerFn({ method: "POST" })
         id: crypto.randomUUID(),
         content: data.content,
         question_type: data.question_type,
-        options: toDbOptions(data.options),
+        options: data.options ?? null,
         correct_answer: data.correct_answer,
         explanation: data.explanation || null,
         difficulty: data.difficulty,
@@ -71,7 +61,7 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
       id: crypto.randomUUID(),
       content: q.content,
       question_type: q.question_type,
-      options: toDbOptions(q.options),
+      options: q.options ?? null,
       correct_answer: q.correct_answer,
       explanation: q.explanation || null,
       difficulty: q.difficulty,
@@ -98,7 +88,7 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
     if (updates.question_type !== undefined)
       updateData.question_type = updates.question_type
     if (updates.options !== undefined)
-      updateData.options = toDbOptions(updates.options)
+      updateData.options = updates.options ?? null
     if (updates.correct_answer !== undefined)
       updateData.correct_answer = updates.correct_answer
     if (updates.explanation !== undefined)
