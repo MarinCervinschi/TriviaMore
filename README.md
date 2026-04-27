@@ -6,7 +6,7 @@
   <p><strong>An open source study ecosystem for UniMore — full university catalog, hierarchical content, role-based collaboration. Built by students, for students.</strong></p>
 
   <p>
-    <a href="https://trivia-more.it"><img src="https://img.shields.io/badge/live-trivia--more.it-bc351a?style=for-the-badge" alt="Live site" /></a>
+    <a href="https://www.trivia-more.it"><img src="https://img.shields.io/badge/live-trivia--more.it-bc351a?style=for-the-badge" alt="Live site" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/stargazers"><img src="https://img.shields.io/github/stars/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Stars" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/network/members"><img src="https://img.shields.io/github/forks/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Forks" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/issues"><img src="https://img.shields.io/github/issues/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Open issues" /></a>
@@ -101,7 +101,7 @@ Secrets are stored in Infisical and injected via `infisical run --` in dev scrip
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app |
 | `VITE_APP_URL` | Server only | App URL for OAuth redirects (defaults to `http://localhost:3000`) |
-| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://trivia-more.it`) |
+| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://www.trivia-more.it`) |
 
 > OAuth providers are optional locally — email/password works without them. Variables prefixed with `VITE_` are exposed to the browser; never prefix secret keys with `VITE_`.
 
