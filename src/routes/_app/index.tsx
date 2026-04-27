@@ -34,9 +34,9 @@ export const Route = createFileRoute("/_app/")({
   },
   head: () => ({
     ...seoHead({
-      title: "TriviaMore",
+      title: "Studia gli esami UniMore in modo organizzato",
       description:
-        "La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti.",
+        "Catalogo completo dell'ateneo UniMore organizzato per dipartimento, corso e insegnamento. Quiz interattivi, simulazioni d'esame, flashcard e dashboard personale. Open source, curato dalla community.",
       path: "/",
     }),
     scripts: [websiteJsonLd()],

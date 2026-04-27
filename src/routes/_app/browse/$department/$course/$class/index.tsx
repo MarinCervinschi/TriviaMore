@@ -57,10 +57,10 @@ export const Route = createFileRoute(
   },
   head: ({ loaderData, match }) => ({
     ...seoHead({
-      title: `${loaderData?.name ?? "Insegnamento"} | Esplora`,
+      title: loaderData?.name ?? "Insegnamento",
       description:
         loaderData?.description ??
-        `Sezioni dell'insegnamento ${loaderData?.name ?? ""}`,
+        `Sezioni, quiz e flashcard per l'esame di ${loaderData?.name ?? "questo insegnamento"} a UniMore. Catalogo curato dalla community con modalità studio e simulazione esame.`,
       path: match.pathname,
     }),
     scripts: [
