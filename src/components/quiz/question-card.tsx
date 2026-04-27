@@ -92,10 +92,7 @@ export function QuestionCard({
       {/* Options */}
       {question.question_type === "TRUE_FALSE" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {[
-            { id: "true", text: "Vero" },
-            { id: "false", text: "Falso" },
-          ].map((option) => (
+          {options.map((option) => (
             <button
               key={option.id}
               onClick={() => handleOptionToggle(option.id)}
