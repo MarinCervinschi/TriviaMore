@@ -1,7 +1,7 @@
 {
   "short_name": "TriviaMore",
-  "name": "TriviaMore - Quiz e Flashcard per Studiare",
-  "description": "La piattaforma di quiz e flashcard per studiare meglio. Creata da studenti per studenti.",
+  "name": "TriviaMore - Catalogo UniMore, quiz e flashcard",
+  "description": "Catalogo completo dell'ateneo UniMore con quiz, simulazioni d'esame, flashcard e dashboard personale. Open source, curato dalla community.",
   "icons": [
     {
       "src": "favicon.ico",

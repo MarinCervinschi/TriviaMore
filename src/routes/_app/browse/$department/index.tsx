@@ -36,10 +36,10 @@ export const Route = createFileRoute("/_app/browse/$department/")({
   },
   head: ({ loaderData, match }) => ({
     ...seoHead({
-      title: `${loaderData?.name ?? "Dipartimento"} | Esplora`,
+      title: loaderData?.name ?? "Dipartimento",
       description:
         loaderData?.description ??
-        `Corsi del dipartimento ${loaderData?.name ?? ""}`,
+        `Corsi e insegnamenti del ${loaderData?.name ?? "dipartimento"} (UniMore). Catalogo curato con quiz, simulazioni d'esame, flashcard e dashboard personale.`,
       path: match.pathname,
     }),
     scripts: [
