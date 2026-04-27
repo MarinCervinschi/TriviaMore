@@ -41,13 +41,11 @@ export const Route = createFileRoute("/_app/browse/$department/")({
         loaderData?.description ??
         `Corsi e insegnamenti del ${loaderData?.name ?? "dipartimento"} (UniMore). Catalogo curato con quiz, simulazioni d'esame, flashcard e dashboard personale.`,
       path: match.pathname,
-    }),
-    scripts: [
-      breadcrumbJsonLd([
+      jsonLd: breadcrumbJsonLd([
         { name: "Esplora", path: "/browse" },
         { name: loaderData?.name ?? "Dipartimento", path: match.pathname },
       ]),
-    ],
+    }),
   }),
   pendingComponent: DepartmentDetailSkeleton,
   component: DepartmentPage,
