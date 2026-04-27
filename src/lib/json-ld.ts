@@ -1,4 +1,4 @@
-const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://trivia-more.it"
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://www.trivia-more.it"
 const SITE_NAME = "TriviaMore"
 
 function jsonLdScript(data: Record<string, unknown>) {

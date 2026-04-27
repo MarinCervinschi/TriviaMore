@@ -61,5 +61,5 @@ TriviaMore e un progetto open source, sviluppato da studenti per la community un
 
 ## Contatti
 
-- Sito: https://trivia-more.it
+- Sito: https://www.trivia-more.it
 - Repository: https://github.com/MarinCervinschi/TriviaMore
