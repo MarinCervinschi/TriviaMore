@@ -163,10 +163,10 @@ supabase db reset       # re-apply migrations + seed
 
 ```bash
 # Catalog-only (used to update seed.sql)
-infisical run -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
+infisical run --recursive -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
 
 # Full backup
-infisical run -- supabase db dump --data-only --linked -f data/dump.sql
+infisical run --recursive -- supabase db dump --data-only --linked -f data/dump.sql
 ```
 
 To restore a full dump locally:
