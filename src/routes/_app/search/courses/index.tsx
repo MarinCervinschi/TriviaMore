@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
-import { keepPreviousData, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowRight, GraduationCap, Search, X } from "lucide-react"
 import { z } from "zod"
 
@@ -34,6 +34,7 @@ const searchSchema = z.object({
   dept: z.string().optional().catch(undefined),
   type: z.string().optional().catch(undefined),
   campus: z.string().optional().catch(undefined),
+  page: z.coerce.number().int().min(1).optional().catch(undefined),
 })
 
 export const Route = createFileRoute("/_app/search/courses/")({
@@ -51,10 +52,11 @@ export const Route = createFileRoute("/_app/search/courses/")({
 
 function SearchCoursesPage() {
   const navigate = useNavigate({ from: Route.fullPath })
-  const { q, dept, type, campus } = Route.useSearch()
+  const { q, dept, type, campus, page } = Route.useSearch()
   const { data: departments } = useSuspenseQuery(browseQueries.departments())
-  const [page, setPage] = useState(1)
   const prefersReduced = useReducedMotion()
+
+  const currentPage = page ?? 1
 
   // Local state for the search input keeps typing snappy: the URL (and the DB query)
   // are only updated after the debounce settles, instead of on every keystroke.
@@ -80,30 +82,34 @@ function SearchCoursesPage() {
       departmentId: dept || undefined,
       courseType: type || undefined,
       campus: campus || undefined,
+      page: currentPage,
+      pageSize: PAGE_SIZE,
     }),
-    [debouncedQuery, dept, type, campus],
+    [debouncedQuery, dept, type, campus, currentPage],
   )
 
   const hasFilters = !!(searchParams.query || searchParams.departmentId || searchParams.courseType || searchParams.campus)
 
-  const { data: results, isFetching } = useQuery({
-    ...browseQueries.searchCourses(searchParams),
-    enabled: hasFilters,
-    placeholderData: keepPreviousData,
-  })
+  const { data: response, isFetching } = useQuery(
+    browseQueries.searchCourses(searchParams),
+  )
 
-  const totalItems = results?.length ?? 0
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE)
-  const safePage = Math.min(page, Math.max(totalPages, 1))
-  const paged = results?.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE) ?? []
+  const results = response?.data
+  const totalItems = response?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
 
-  const updateSearch = (updates: Record<string, string | undefined>) => {
-    setPage(1)
+  // Filter changes reset to page 1; pagination clicks preserve all other filters.
+  const updateSearch = (updates: Record<string, string | number | undefined>) => {
     navigate({
       search: (prev) => {
-        const next = { ...prev, ...updates }
+        const next = { ...prev, ...updates, page: undefined } as Record<
+          string,
+          string | number | undefined
+        >
         for (const key of Object.keys(next)) {
-          if (!next[key as keyof typeof next]) delete next[key as keyof typeof next]
+          const val = next[key]
+          if (val === undefined || val === "") delete next[key]
         }
         return next
       },
@@ -111,8 +117,14 @@ function SearchCoursesPage() {
     })
   }
 
+  const goToPage = (p: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: p === 1 ? undefined : p }),
+      replace: false,
+    })
+  }
+
   const clearFilters = () => {
-    setPage(1)
     navigate({ search: {}, replace: true })
   }
 
@@ -208,7 +220,7 @@ function SearchCoursesPage() {
               Cerca un corso per nome o codice, oppure seleziona un filtro
             </p>
           </div>
-        ) : !results && isFetching ? (
+        ) : !response && isFetching ? (
           <SearchResultsSkeleton rows={5} />
         ) : !results || results.length === 0 ? (
           <div className="rounded-2xl border bg-card p-12 text-center">
@@ -225,7 +237,8 @@ function SearchCoursesPage() {
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{totalItems}</span>
-                {totalItems >= 50 ? "+" : ""} {totalItems === 1 ? "risultato" : "risultati"}
+                {" "}
+                {totalItems === 1 ? "risultato" : "risultati"}
               </p>
             </div>
             <motion.div
@@ -244,7 +257,7 @@ function SearchCoursesPage() {
                   "Insegnamenti",
                 ]}
               >
-                {paged.map((course) => {
+                {results.map((course) => {
                   const typeConf = COURSE_TYPE_CONFIG[course.course_type]
                   const classCount = course.course_classes[0]?.count ?? 0
                   return (
@@ -311,7 +324,7 @@ function SearchCoursesPage() {
               <Pagination
                 page={safePage}
                 totalPages={totalPages}
-                onPageChange={setPage}
+                onPageChange={goToPage}
                 totalItems={totalItems}
                 pageSize={PAGE_SIZE}
               />

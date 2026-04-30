@@ -129,6 +129,8 @@ export interface SearchCoursesParams {
   departmentId?: string
   courseType?: string
   campus?: string
+  page?: number
+  pageSize?: number
 }
 
 export interface SearchClassesParams {
@@ -137,7 +139,17 @@ export interface SearchClassesParams {
   courseId?: string
   classYear?: number
   mandatory?: boolean
+  page?: number
+  pageSize?: number
 }
+
+export interface PaginatedResult<T> {
+  data: T[]
+  total: number
+}
+
+export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>
+export type SearchClassesResponse = PaginatedResult<SearchClassResult>
 
 export type SectionDetail = Section & {
   class: Class & {

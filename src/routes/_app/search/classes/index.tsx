@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { motion } from "framer-motion"
 import { seoHead } from "@/lib/seo"
-import { keepPreviousData, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowRight, BookOpen, Search, X } from "lucide-react"
 import { z } from "zod"
 
@@ -21,7 +21,6 @@ import {
 import { SearchResultsSkeleton } from "@/components/skeletons"
 import { UserHero } from "@/components/user/user-hero"
 import { browseQueries } from "@/lib/browse/queries"
-import { getAvailableClassYearsFn, getDepartmentCourseListFn } from "@/lib/browse/server"
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { useDebounce } from "@/hooks/useDebounce"
@@ -34,6 +33,7 @@ const searchSchema = z.object({
   course: z.string().optional().catch(undefined),
   year: z.coerce.number().optional().catch(undefined),
   mandatory: z.enum(["true", "false"]).optional().catch(undefined),
+  page: z.coerce.number().int().min(1).optional().catch(undefined),
 })
 
 export const Route = createFileRoute("/_app/search/classes/")({
@@ -51,15 +51,16 @@ export const Route = createFileRoute("/_app/search/classes/")({
 
 function SearchClassesPage() {
   const navigate = useNavigate({ from: Route.fullPath })
-  const { q, dept, course, year, mandatory } = Route.useSearch()
+  const { q, dept, course, year, mandatory, page } = Route.useSearch()
   const { data: departments } = useSuspenseQuery(browseQueries.departments())
-  const [page, setPage] = useState(1)
   const prefersReduced = useReducedMotion()
+
+  const currentPage = page ?? 1
 
   // Local state for the search input keeps typing snappy: the URL (and the DB query)
   // are only updated after the debounce settles, instead of on every keystroke.
   const [localQ, setLocalQ] = useState(q ?? "")
-  const debouncedQuery = useDebounce(localQ, 600)
+  const debouncedQuery = useDebounce(localQ, 400)
 
   // Push debounced value into the URL.
   useEffect(() => {
@@ -74,17 +75,13 @@ function SearchClassesPage() {
     setLocalQ(q ?? "")
   }, [q])
 
-  const { data: departmentCourses } = useQuery({
-    queryKey: ["department-course-list", dept],
-    queryFn: () => getDepartmentCourseListFn({ data: { departmentId: dept! } }),
-    enabled: !!dept,
-  })
+  const { data: departmentCourses } = useQuery(
+    browseQueries.departmentCourseList(dept),
+  )
 
-  const { data: availableYears } = useQuery({
-    queryKey: ["available-class-years", dept, course],
-    queryFn: () => getAvailableClassYearsFn({ data: { departmentId: dept, courseId: course } }),
-    staleTime: 5 * 60 * 1000,
-  })
+  const { data: availableYears } = useQuery(
+    browseQueries.availableClassYears(dept, course),
+  )
 
   const searchParams = useMemo(
     () => ({
@@ -93,31 +90,34 @@ function SearchClassesPage() {
       courseId: course || undefined,
       classYear: year,
       mandatory: mandatory === "true" ? true : mandatory === "false" ? false : undefined,
+      page: currentPage,
+      pageSize: PAGE_SIZE,
     }),
-    [debouncedQuery, dept, course, year, mandatory],
+    [debouncedQuery, dept, course, year, mandatory, currentPage],
   )
 
   const hasFilters = !!(searchParams.query || searchParams.departmentId || searchParams.courseId || searchParams.classYear !== undefined || searchParams.mandatory !== undefined)
 
-  const { data: results, isFetching } = useQuery({
-    ...browseQueries.searchClasses(searchParams),
-    enabled: hasFilters,
-    placeholderData: keepPreviousData,
-  })
+  const { data: response, isFetching } = useQuery(
+    browseQueries.searchClasses(searchParams),
+  )
 
-  const totalItems = results?.length ?? 0
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE)
-  const safePage = Math.min(page, Math.max(totalPages, 1))
-  const paged = results?.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE) ?? []
+  const results = response?.data
+  const totalItems = response?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
 
+  // Filter changes reset to page 1; pagination clicks preserve all other filters.
   const updateSearch = (updates: Record<string, string | number | undefined>) => {
-    setPage(1)
     navigate({
       search: (prev) => {
-        const next = { ...prev, ...updates }
+        const next = { ...prev, ...updates, page: undefined } as Record<
+          string,
+          string | number | undefined
+        >
         for (const key of Object.keys(next)) {
-          const val = next[key as keyof typeof next]
-          if (val === undefined || val === "") delete next[key as keyof typeof next]
+          const val = next[key]
+          if (val === undefined || val === "") delete next[key]
         }
         return next
       },
@@ -125,8 +125,14 @@ function SearchClassesPage() {
     })
   }
 
+  const goToPage = (p: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: p === 1 ? undefined : p }),
+      replace: false,
+    })
+  }
+
   const clearFilters = () => {
-    setPage(1)
     navigate({ search: {}, replace: true })
   }
 
@@ -244,7 +250,7 @@ function SearchClassesPage() {
               Cerca un insegnamento per nome, oppure seleziona un filtro
             </p>
           </div>
-        ) : !results && isFetching ? (
+        ) : !response && isFetching ? (
           <SearchResultsSkeleton rows={5} />
         ) : !results || results.length === 0 ? (
           <div className="rounded-2xl border bg-card p-12 text-center">
@@ -261,7 +267,8 @@ function SearchClassesPage() {
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{totalItems}</span>
-                {totalItems >= 50 ? "+" : ""} {totalItems === 1 ? "risultato" : "risultati"}
+                {" "}
+                {totalItems === 1 ? "risultato" : "risultati"}
               </p>
             </div>
             <motion.div
@@ -280,7 +287,7 @@ function SearchClassesPage() {
                   "Sezioni",
                 ]}
               >
-                {paged.map((cls) => {
+                {results.map((cls) => {
                   const sectionCount = cls.sections[0]?.count ?? 0
                   return (
                     <motion.tr
@@ -344,7 +351,7 @@ function SearchClassesPage() {
               <Pagination
                 page={safePage}
                 totalPages={totalPages}
-                onPageChange={setPage}
+                onPageChange={goToPage}
                 totalItems={totalItems}
                 pageSize={PAGE_SIZE}
               />
