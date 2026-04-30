@@ -17,6 +17,12 @@ CREATE TRIGGER set_evaluation_modes_updated_at
   BEFORE UPDATE ON quiz.evaluation_modes
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+INSERT INTO quiz.evaluation_modes (name, description, correct_answer_points, incorrect_answer_points, partial_credit_enabled)
+VALUES (
+  'Standard', '1 punto per ogni risposta corretta, 0 punti per ogni risposta errata.', 1.0, 0.0, true
+)
+ON CONFLICT (name) DO NOTHING;
+
 CREATE TABLE quiz.quizzes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   time_limit INT,
