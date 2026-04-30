@@ -35,6 +35,7 @@ function QuizPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [showExitDialog, setShowExitDialog] = useState(false)
+  const [isCompleting, setIsCompleting] = useState(false)
   const isCompletingRef = useRef(false)
 
   // Initialize answers when quiz loads
@@ -64,6 +65,7 @@ function QuizPage() {
     if (!quiz || !quiz.attempt_id) return
     if (isCompletingRef.current) return
     isCompletingRef.current = true
+    setIsCompleting(true)
 
     const quizResults = calculateQuizResults({
       userAnswers,
@@ -96,6 +98,7 @@ function QuizPage() {
     } catch (error) {
       console.error("Failed to complete quiz:", error)
       isCompletingRef.current = false
+      setIsCompleting(false)
     }
   }, [quiz, userAnswers, startTime, navigate, queryClient])
 
@@ -209,6 +212,7 @@ function QuizPage() {
           )
         }
         onComplete={handleComplete}
+        isCompleting={isCompleting}
       />
       <ConfirmationDialog
         open={showExitDialog}
