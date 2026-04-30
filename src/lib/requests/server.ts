@@ -443,19 +443,42 @@ export const approveRequestFn = createServerFn({ method: "POST" })
     const admin = await requireAdmin()
     const supabase = createServerSupabaseClient()
 
-    const { data: request, error: fetchError } = await supabase
+    // Atomic claim: transition PENDING → APPROVED in a single statement so
+    // concurrent clicks cannot both proceed to insert catalog content.
+    // The `status = 'PENDING'` precondition is the idempotency key.
+    const { data: claimedRows, error: claimError } = await supabase
       .from("content_requests")
-      .select("*")
+      .update({
+        status: "APPROVED" as const,
+        handled_by: admin.id,
+        handled_at: new Date().toISOString(),
+      })
       .eq("id", data.id)
-      .single()
+      .eq("status", "PENDING")
+      .select("*")
+    if (claimError) throw new Error("Errore nell'aggiornamento della proposta")
 
-    if (fetchError || !request) throw new Error("Proposta non trovata")
-    if (request.status !== "PENDING") throw new Error("La proposta non è in attesa")
+    if (!claimedRows || claimedRows.length === 0) {
+      // Already handled by another concurrent request, or never existed.
+      const { data: existing } = await supabase
+        .from("content_requests")
+        .select("id")
+        .eq("id", data.id)
+        .single()
+      if (!existing) throw new Error("Proposta non trovata")
+      throw new Error("La proposta non è in attesa")
+    }
 
+    const request = claimedRows[0]
     const submitted = parseSubmittedContent(request.submitted_content)
 
-    // Reports and file uploads are acknowledged, not approved
+    // Reports and file uploads are acknowledged, not approved. The claim
+    // already happened so we must roll back to leave the request handleable.
     if (submitted.type === "report" || submitted.type === "file_upload") {
+      await supabase
+        .from("content_requests")
+        .update({ status: "PENDING" as const, handled_by: null, handled_at: null })
+        .eq("id", data.id)
       throw new Error("Questo tipo di richiesta non può essere approvato")
     }
 
@@ -499,18 +522,6 @@ export const approveRequestFn = createServerFn({ method: "POST" })
       const { error } = await getCatalogAdmin().from("questions").insert(rows)
       if (error) throw new Error("Errore nella creazione delle domande: " + error.message)
     }
-
-    // Mark request as approved
-    const { error: updateError } = await supabase
-      .from("content_requests")
-      .update({
-        status: "APPROVED" as const,
-        handled_by: admin.id,
-        handled_at: new Date().toISOString(),
-      })
-      .eq("id", data.id)
-
-    if (updateError) throw new Error("Errore nell'aggiornamento della proposta")
 
     // Notify the user
     await createNotification(getSupabaseAdmin(), {
