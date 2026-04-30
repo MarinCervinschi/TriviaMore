@@ -1,11 +1,13 @@
-import { queryOptions } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 
 import { STALE_TIME } from "@/lib/shared/cache"
 
 import {
+  getAvailableClassYearsFn,
   getBrowseOverviewFn,
   getClassWithSectionsFn,
   getCourseWithClassesFn,
+  getDepartmentCourseListFn,
   getDepartmentWithCoursesFn,
   getDepartmentsFn,
   getPlatformStatsFn,
@@ -14,6 +16,20 @@ import {
   searchCoursesFn,
 } from "./server"
 import type { SearchClassesParams, SearchCoursesParams } from "./types"
+
+function hasCoursesFilter(p: SearchCoursesParams): boolean {
+  return !!(p.query || p.departmentId || p.courseType || p.campus)
+}
+
+function hasClassesFilter(p: SearchClassesParams): boolean {
+  return !!(
+    p.query ||
+    p.departmentId ||
+    p.courseId ||
+    p.classYear !== undefined ||
+    p.mandatory !== undefined
+  )
+}
 
 export const browseQueries = {
   platformStats: () =>
@@ -65,7 +81,8 @@ export const browseQueries = {
       queryKey: ["search", "courses", params],
       queryFn: () => searchCoursesFn({ data: params }),
       staleTime: STALE_TIME.FAST,
-      enabled: !!(params.query || params.departmentId || params.courseType || params.campus),
+      enabled: hasCoursesFilter(params),
+      placeholderData: keepPreviousData,
     }),
 
   searchClasses: (params: SearchClassesParams) =>
@@ -73,7 +90,27 @@ export const browseQueries = {
       queryKey: ["search", "classes", params],
       queryFn: () => searchClassesFn({ data: params }),
       staleTime: STALE_TIME.FAST,
-      enabled: !!(params.query || params.departmentId || params.courseId || params.classYear !== undefined),
+      enabled: hasClassesFilter(params),
+      placeholderData: keepPreviousData,
+    }),
+
+  departmentCourseList: (departmentId: string | undefined) =>
+    queryOptions({
+      queryKey: ["browse", "department-course-list", departmentId],
+      queryFn: () =>
+        getDepartmentCourseListFn({ data: { departmentId: departmentId! } }),
+      staleTime: STALE_TIME.SLOW,
+      enabled: !!departmentId,
+      placeholderData: keepPreviousData,
+    }),
+
+  availableClassYears: (departmentId?: string, courseId?: string) =>
+    queryOptions({
+      queryKey: ["browse", "available-class-years", departmentId, courseId],
+      queryFn: () =>
+        getAvailableClassYearsFn({ data: { departmentId, courseId } }),
+      staleTime: STALE_TIME.SLOW,
+      placeholderData: keepPreviousData,
     }),
 
   section: (
