@@ -197,6 +197,10 @@ supabase db push --db-url "$SUPABASE_DB_URL"
 
 **Why `PGSSLMODE=disable` and not `?sslmode=disable` in the URL?** The Supabase CLI (≥2.40.4) ignores the `sslmode` query parameter in `--db-url`, so the env var is the only working way to disable TLS. See [supabase/cli#4142](https://github.com/supabase/cli/issues/4142).
 
+### Auth email templates
+
+Custom email templates are served as static assets from `public/email-templates/` so both local dev and the self-hosted GoTrue can fetch them. To customise the confirmation email, edit `public/email-templates/confirmation.html` and redeploy. The local CLI reads it via `supabase/config.toml`; self-hosted GoTrue fetches it via the public URL set in `MAILER_TEMPLATES_CONFIRMATION` (e.g. `https://www.trivia-more.it/email-templates/confirmation.html`).
+
 ## Authentication
 
 Supabase Auth with email/password and OAuth (GitHub, Google). Routes are protected via `requireAuth` / `requireGuest` guards in `beforeLoad`:
