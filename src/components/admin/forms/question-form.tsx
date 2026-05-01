@@ -127,11 +127,20 @@ export function QuestionForm({
         ? values.options.map((o) => o.text)
         : null
 
+    // Map correct_answer from option ids to option texts so it matches DB options
+    let serverCorrectAnswer = values.correct_answer
+    if (values.options && values.question_type !== "SHORT_ANSWER") {
+      const idToText = new Map(values.options.map((o) => [o.id, o.text]))
+      serverCorrectAnswer = values.correct_answer.map(
+        (a) => idToText.get(a) ?? a,
+      )
+    }
+
     onSubmit({
       content: values.content,
       question_type: values.question_type,
       options: serverOptions,
-      correct_answer: values.correct_answer,
+      correct_answer: serverCorrectAnswer,
       explanation: values.explanation,
       difficulty: values.difficulty,
       section_id: values.section_id,
@@ -161,8 +170,8 @@ export function QuestionForm({
                     field.onChange(v)
                     if (v === "TRUE_FALSE") {
                       form.setValue("options", [
-                        { id: "true", text: "Vero" },
-                        { id: "false", text: "Falso" },
+                        { id: "Vero", text: "Vero" },
+                        { id: "Falso", text: "Falso" },
                       ])
                       form.setValue("correct_answer", [])
                     } else if (v === "SHORT_ANSWER") {
@@ -258,8 +267,8 @@ export function QuestionForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="true">Vero</SelectItem>
-                    <SelectItem value="false">Falso</SelectItem>
+                    <SelectItem value="Vero">Vero</SelectItem>
+                    <SelectItem value="Falso">Falso</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

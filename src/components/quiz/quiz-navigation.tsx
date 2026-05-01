@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react"
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
@@ -8,12 +8,14 @@ export function QuizNavigation({
   onPrevious,
   onNext,
   onComplete,
+  isCompleting = false,
 }: {
   currentIndex: number
   totalQuestions: number
   onPrevious: () => void
   onNext: () => void
   onComplete: () => void
+  isCompleting?: boolean
 }) {
   const isFirst = currentIndex === 0
   const isLast = currentIndex === totalQuestions - 1
@@ -23,7 +25,7 @@ export function QuizNavigation({
       <Button
         variant="outline"
         onClick={onPrevious}
-        disabled={isFirst}
+        disabled={isFirst || isCompleting}
         className="rounded-xl text-sm sm:text-base"
       >
         <ChevronLeft className="h-4 w-4 sm:mr-1.5" />
@@ -33,17 +35,29 @@ export function QuizNavigation({
       <Button
         onClick={onComplete}
         variant="default"
-        className="rounded-xl text-sm shadow-sm sm:text-base"
+        disabled={isCompleting}
+        aria-busy={isCompleting}
+        className="rounded-xl text-sm shadow-sm transition-all sm:text-base"
       >
-        <CheckCircle className="mr-1.5 h-4 w-4" />
-        <span className="hidden sm:inline">Completa Quiz</span>
-        <span className="sm:hidden">Completa</span>
+        {isCompleting ? (
+          <>
+            <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            <span className="hidden sm:inline">Completamento...</span>
+            <span className="sm:hidden">Attendi</span>
+          </>
+        ) : (
+          <>
+            <CheckCircle className="mr-1.5 h-4 w-4" />
+            <span className="hidden sm:inline">Completa Quiz</span>
+            <span className="sm:hidden">Completa</span>
+          </>
+        )}
       </Button>
 
       <Button
         variant="outline"
         onClick={onNext}
-        disabled={isLast}
+        disabled={isLast || isCompleting}
         className="rounded-xl text-sm sm:text-base"
       >
         <span className="hidden sm:inline">Successiva</span>

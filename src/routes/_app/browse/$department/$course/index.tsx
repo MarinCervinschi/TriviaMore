@@ -37,28 +37,28 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
   },
   head: ({ loaderData, match }) => ({
     ...seoHead({
-      title: `${loaderData?.name ?? "Corso"} | Esplora`,
+      title: loaderData?.name ?? "Corso",
       description:
         loaderData?.description ??
-        `Insegnamenti del corso ${loaderData?.name ?? ""}`,
+        `Insegnamenti del corso ${loaderData?.name ?? ""} a UniMore. Quiz, simulazioni d'esame, flashcard e dashboard personale per ogni esame.`,
       path: match.pathname,
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Esplora", path: "/browse" },
+          {
+            name: loaderData?.department?.name ?? "Dipartimento",
+            path: `/browse/${match.params.department}`,
+          },
+          { name: loaderData?.name ?? "Corso", path: match.pathname },
+        ]),
+        courseJsonLd({
+          name: loaderData?.name ?? "Corso",
+          description: loaderData?.description ?? undefined,
+          path: match.pathname,
+          provider: loaderData?.department?.name,
+        }),
+      ],
     }),
-    scripts: [
-      breadcrumbJsonLd([
-        { name: "Esplora", path: "/browse" },
-        {
-          name: loaderData?.department?.name ?? "Dipartimento",
-          path: `/browse/${match.params.department}`,
-        },
-        { name: loaderData?.name ?? "Corso", path: match.pathname },
-      ]),
-      courseJsonLd({
-        name: loaderData?.name ?? "Corso",
-        description: loaderData?.description ?? undefined,
-        path: match.pathname,
-        provider: loaderData?.department?.name,
-      }),
-    ],
   }),
   pendingComponent: CourseDetailSkeleton,
   component: CoursePage,

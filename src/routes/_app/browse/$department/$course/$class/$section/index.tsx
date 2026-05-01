@@ -31,16 +31,20 @@ export const Route = createFileRoute(
     if (!data) throw notFound()
     return data
   },
-  head: ({ loaderData, match }) => ({
-    ...seoHead({
-      title: `${loaderData?.name ?? "Sezione"} | Esplora`,
-      description:
-        loaderData?.description ??
-        `Sezione ${loaderData?.name ?? ""}`,
+  head: ({ loaderData, match }) => {
+    const sectionName = loaderData?.name ?? "Sezione"
+    const className = loaderData?.class?.name
+    const courseName = loaderData?.class?.course?.name
+    const questionCount = loaderData?.question_count ?? 0
+    const titleSuffix = className ? ` – ${className}` : ""
+    const fallbackDesc = className
+      ? `${questionCount} domande di ${sectionName} per l'esame di ${className}${courseName ? ` (${courseName})` : ""} a UniMore. Modalità studio o simulazione esame su TriviaMore.`
+      : `${questionCount} domande della sezione ${sectionName} su TriviaMore.`
+    return seoHead({
+      title: `${sectionName}${titleSuffix}`,
+      description: loaderData?.description ?? fallbackDesc,
       path: match.pathname,
-    }),
-    scripts: [
-      breadcrumbJsonLd([
+      jsonLd: breadcrumbJsonLd([
         { name: "Esplora", path: "/browse" },
         {
           name: loaderData?.class?.course?.department?.name ?? "Dipartimento",
@@ -56,8 +60,8 @@ export const Route = createFileRoute(
         },
         { name: loaderData?.name ?? "Sezione", path: match.pathname },
       ]),
-    ],
-  }),
+    })
+  },
   pendingComponent: SectionDetailSkeleton,
   component: SectionPage,
   notFoundComponent: () => (
