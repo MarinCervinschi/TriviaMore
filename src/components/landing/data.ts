@@ -59,7 +59,7 @@ export const heroContent: HeroContent = {
   title:
     "Il successo agli esami UNIMORE è una questione di pratica. Inizia con Trivia More.",
   subtitle:
-    "Creata da studenti, per studenti. Un unico spazio collaborativo per mettere alla prova le tue conoscenze e migliorare la tua preparazione agli esami universitari.",
+    "Il catalogo completo dei tuoi insegnamenti UniMore — dipartimenti, corsi, classi e sezioni — con quiz, simulazioni d'esame, flashcard e dashboard personale. Curato dalla community, gratis e open source.",
   primaryCTA: {
     text: "Inizia subito a studiare",
     href: "/auth/register",

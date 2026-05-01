@@ -6,7 +6,7 @@
   <p><strong>An open source study ecosystem for UniMore — full university catalog, hierarchical content, role-based collaboration. Built by students, for students.</strong></p>
 
   <p>
-    <a href="https://trivia-more.it"><img src="https://img.shields.io/badge/live-trivia--more.it-bc351a?style=for-the-badge" alt="Live site" /></a>
+    <a href="https://www.trivia-more.it"><img src="https://img.shields.io/badge/live-trivia--more.it-bc351a?style=for-the-badge" alt="Live site" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/stargazers"><img src="https://img.shields.io/github/stars/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Stars" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/network/members"><img src="https://img.shields.io/github/forks/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Forks" /></a>
     <a href="https://github.com/MarinCervinschi/TriviaMore/issues"><img src="https://img.shields.io/github/issues/MarinCervinschi/TriviaMore?style=for-the-badge&color=bc351a" alt="Open issues" /></a>
@@ -101,7 +101,7 @@ Secrets are stored in Infisical and injected via `infisical run --` in dev scrip
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app |
 | `VITE_APP_URL` | Server only | App URL for OAuth redirects (defaults to `http://localhost:3000`) |
-| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://trivia-more.it`) |
+| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://www.trivia-more.it`) |
 
 > OAuth providers are optional locally — email/password works without them. Variables prefixed with `VITE_` are exposed to the browser; never prefix secret keys with `VITE_`.
 
@@ -163,10 +163,10 @@ supabase db reset       # re-apply migrations + seed
 
 ```bash
 # Catalog-only (used to update seed.sql)
-infisical run -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
+infisical run --recursive -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
 
 # Full backup
-infisical run -- supabase db dump --data-only --linked -f data/dump.sql
+infisical run --recursive -- supabase db dump --data-only --linked -f data/dump.sql
 ```
 
 To restore a full dump locally:
@@ -182,6 +182,20 @@ pnpm db:types
 ```
 
 This generates types from the local database and applies post-processing fixes (e.g. `tsvector` columns typed as `string | null`). The fix script is `supabase/scripts/fix-types.ts`.
+
+### Self-hosted production database
+
+The production database runs on a self-hosted Supabase instance (Postgres without TLS exposed on the host). To connect via the Supabase CLI for `db push`, `migration list`, `db dump`, etc., set both `PGSSLMODE` and the connection string:
+
+```bash
+export PGSSLMODE=disable
+export SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres'
+
+supabase migration list --db-url "$SUPABASE_DB_URL"
+supabase db push --db-url "$SUPABASE_DB_URL"
+```
+
+**Why `PGSSLMODE=disable` and not `?sslmode=disable` in the URL?** The Supabase CLI (≥2.40.4) ignores the `sslmode` query parameter in `--db-url`, so the env var is the only working way to disable TLS. See [supabase/cli#4142](https://github.com/supabase/cli/issues/4142).
 
 ## Authentication
 

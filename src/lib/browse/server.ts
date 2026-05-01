@@ -11,12 +11,15 @@ import type {
   CourseWithClasses,
   DepartmentWithCourses,
   OverviewLocation,
-  SearchClassResult,
   SearchClassesParams,
+  SearchClassesResponse,
   SearchCourseResult,
   SearchCoursesParams,
+  SearchCoursesResponse,
   SectionDetail,
 } from "./types"
+
+const DEFAULT_PAGE_SIZE = 10
 
 export const getDepartmentsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<BrowseDepartment[]> => {
@@ -540,12 +543,20 @@ function toFtsQuery(input: string): string {
 
 export const searchCoursesFn = createServerFn({ method: "GET" })
   .inputValidator((input: SearchCoursesParams) => input)
-  .handler(async ({ data }): Promise<SearchCourseResult[]> => {
+  .handler(async ({ data }): Promise<SearchCoursesResponse> => {
     const supabase = createServerSupabaseClient()
+
+    const page = Math.max(1, data.page ?? 1)
+    const pageSize = Math.max(1, Math.min(100, data.pageSize ?? DEFAULT_PAGE_SIZE))
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
 
     let qb = catalogQuery(supabase)
       .from("courses")
-      .select("id, name, code, course_type, location, cfu, department:departments!inner(code, name), course_classes(count)")
+      .select(
+        "id, name, code, course_type, location, cfu, department:departments!inner(code, name), course_classes(count)",
+        { count: "exact" },
+      )
 
     if (data.query?.trim()) {
       const ftsQuery = toFtsQuery(data.query)
@@ -555,20 +566,31 @@ export const searchCoursesFn = createServerFn({ method: "GET" })
     if (data.courseType) qb = qb.eq("course_type", data.courseType as any)
     if (data.campus) qb = qb.eq("location", data.campus as any)
 
-    const { data: courses, error } = await qb.order("name").limit(50)
+    const { data: courses, error, count } = await qb.order("name").range(from, to)
 
     if (error) throw new Error(error.message)
-    return (courses ?? []) as SearchCourseResult[]
+    return {
+      data: (courses ?? []) as SearchCourseResult[],
+      total: count ?? 0,
+    }
   })
 
 export const searchClassesFn = createServerFn({ method: "GET" })
   .inputValidator((input: SearchClassesParams) => input)
-  .handler(async ({ data }): Promise<SearchClassResult[]> => {
+  .handler(async ({ data }): Promise<SearchClassesResponse> => {
     const supabase = createServerSupabaseClient()
+
+    const page = Math.max(1, data.page ?? 1)
+    const pageSize = Math.max(1, Math.min(100, data.pageSize ?? DEFAULT_PAGE_SIZE))
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
 
     let qb = catalogQuery(supabase)
       .from("course_classes")
-      .select("code, class_year, mandatory, class:classes!inner(id, name, description, cfu, sections(count)), course:courses!inner(id, name, code, department:departments!inner(code, name))")
+      .select(
+        "code, class_year, mandatory, class:classes!inner(id, name, description, cfu, sections(count)), course:courses!inner(id, name, code, department:departments!inner(code, name))",
+        { count: "exact" },
+      )
 
     if (data.query?.trim()) {
       const ftsQuery = toFtsQuery(data.query)
@@ -579,21 +601,27 @@ export const searchClassesFn = createServerFn({ method: "GET" })
     if (data.classYear !== undefined) qb = qb.eq("class_year", data.classYear)
     if (data.mandatory !== undefined) qb = qb.eq("mandatory", data.mandatory)
 
-    const { data: results, error } = await qb.order("class_year").order("code").limit(50)
+    const { data: results, error, count } = await qb
+      .order("class_year")
+      .order("code")
+      .range(from, to)
 
     if (error) throw new Error(error.message)
 
-    return (results ?? []).map((r: any) => ({
-      id: r.class.id,
-      name: r.class.name,
-      description: r.class.description,
-      cfu: r.class.cfu,
-      code: r.code,
-      class_year: r.class_year,
-      mandatory: r.mandatory,
-      course: r.course,
-      sections: r.class.sections,
-    }))
+    return {
+      data: (results ?? []).map((r: any) => ({
+        id: r.class.id,
+        name: r.class.name,
+        description: r.class.description,
+        cfu: r.class.cfu,
+        code: r.code,
+        class_year: r.class_year,
+        mandatory: r.mandatory,
+        course: r.course,
+        sections: r.class.sections,
+      })),
+      total: count ?? 0,
+    }
   })
 
 export const getDepartmentCourseListFn = createServerFn({ method: "GET" })

@@ -177,14 +177,17 @@ export const getQuizFn = createServerFn({ method: "GET" })
 
     if (!questions) return null
 
-    // Order questions and shuffle options
+    // Order questions and shuffle options (skip shuffle for TRUE_FALSE so "Vero" stays first)
     const orderedQuestions: QuizQuestion[] = quizQuestions.map((qq) => {
       const q = questions.find((q) => q.id === qq.question_id)!
       return {
         id: q.id,
         content: q.content,
         question_type: q.question_type,
-        options: shuffleJsonOptions(q.options),
+        options:
+          q.question_type === "TRUE_FALSE"
+            ? q.options
+            : shuffleJsonOptions(q.options),
         correct_answer: q.correct_answer,
         explanation: q.explanation,
         difficulty: q.difficulty,
@@ -246,18 +249,41 @@ export const completeQuizFn = createServerFn({ method: "POST" })
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) throw new Error("Non autenticato")
 
-    // Verify attempt belongs to user and not completed
-    const { data: attempt } = await quizQuery(supabase)
+    // Atomic claim: only the first concurrent request wins. The
+    // `completed_at IS NULL` precondition acts as an idempotency key.
+    const { data: claimed, error: claimError } = await quizQuery(supabase)
       .from("quiz_attempts")
-      .select("id, quiz_id, user_id, completed_at")
+      .update({
+        score: data.totalScore,
+        time_spent: data.timeSpent,
+        completed_at: new Date().toISOString(),
+      })
       .eq("id", data.quizAttemptId)
-      .single()
+      .eq("user_id", user.id)
+      .is("completed_at", null)
+      .select("id, quiz_id")
+    if (claimError) throw new Error(claimError.message)
 
-    if (!attempt) throw new Error("Tentativo non trovato")
-    if (attempt.user_id !== user.id) throw new Error("Non autorizzato")
-    if (attempt.completed_at) throw new Error("Quiz già completato")
+    if (!claimed || claimed.length === 0) {
+      // Either the attempt does not belong to this user, does not exist,
+      // or has already been completed by a concurrent request. Treat as
+      // idempotent success so retries land on the results page.
+      const { data: existing } = await quizQuery(supabase)
+        .from("quiz_attempts")
+        .select("id, user_id, completed_at")
+        .eq("id", data.quizAttemptId)
+        .single()
+      if (!existing || existing.user_id !== user.id)
+        throw new Error("Tentativo non trovato")
+      if (!existing.completed_at) throw new Error("Tentativo non trovato")
+      return { attemptId: data.quizAttemptId }
+    }
 
-    // Insert answer attempts
+    const claimedAttempt = claimed[0]
+
+    // Insert answer attempts — UNIQUE(quiz_attempt_id, question_id) is a
+    // belt-and-suspenders guard, but the atomic claim above already
+    // guarantees we are the sole writer.
     const answerAttempts = data.answers.map((a) => ({
       id: crypto.randomUUID(),
       quiz_attempt_id: data.quizAttemptId,
@@ -271,22 +297,11 @@ export const completeQuizFn = createServerFn({ method: "POST" })
       .insert(answerAttempts)
     if (answersError) throw new Error(answersError.message)
 
-    // Update quiz attempt
-    const { error: updateError } = await quizQuery(supabase)
-      .from("quiz_attempts")
-      .update({
-        score: data.totalScore,
-        time_spent: data.timeSpent,
-        completed_at: new Date().toISOString(),
-      })
-      .eq("id", data.quizAttemptId)
-    if (updateError) throw new Error(updateError.message)
-
     // Update progress
     const { data: quiz } = await quizQuery(supabase)
       .from("quizzes")
       .select("section_id, quiz_mode")
-      .eq("id", attempt.quiz_id)
+      .eq("id", claimedAttempt.quiz_id)
       .single()
 
     if (quiz) {
