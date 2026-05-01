@@ -1,10 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
+import { insertLegalAcceptanceRows } from "@/lib/legal/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import {
-  CURRENT_PRIVACY_VERSION,
-  CURRENT_TERMS_VERSION,
-} from "@/lib/legal/versions"
 import {
   loginSchema,
   oauthProviderSchema,
@@ -96,8 +93,6 @@ export const signupFn = createServerFn({ method: "POST" })
       options: {
         data: {
           name: data.name,
-          terms_version: CURRENT_TERMS_VERSION,
-          privacy_version: CURRENT_PRIVACY_VERSION,
         },
       },
     })
@@ -110,13 +105,15 @@ export const signupFn = createServerFn({ method: "POST" })
       return { success: false, error: "Registrazione fallita" }
     }
 
-    if (!authData.session) {
-      // Supabase returns 200 with an empty identities array when the email is
-      // already registered (anti-enumeration). No confirmation email is sent.
-      if (authData.user.identities?.length === 0) {
-        return { success: false, error: "Email gia' registrata" }
-      }
+    // Supabase returns 200 with an empty identities array when the email is
+    // already registered (anti-enumeration). No confirmation email is sent.
+    if (authData.user.identities?.length === 0) {
+      return { success: false, error: "Email gia' registrata" }
+    }
 
+    await insertLegalAcceptanceRows(authData.user.id)
+
+    if (!authData.session) {
       return {
         success: true,
         status: "pending_email_confirmation",
