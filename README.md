@@ -183,6 +183,20 @@ pnpm db:types
 
 This generates types from the local database and applies post-processing fixes (e.g. `tsvector` columns typed as `string | null`). The fix script is `supabase/scripts/fix-types.ts`.
 
+### Self-hosted production database
+
+The production database runs on a self-hosted Supabase instance (Postgres without TLS exposed on the host). To connect via the Supabase CLI for `db push`, `migration list`, `db dump`, etc., set both `PGSSLMODE` and the connection string:
+
+```bash
+export PGSSLMODE=disable
+export SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres'
+
+supabase migration list --db-url "$SUPABASE_DB_URL"
+supabase db push --db-url "$SUPABASE_DB_URL"
+```
+
+**Why `PGSSLMODE=disable` and not `?sslmode=disable` in the URL?** The Supabase CLI (≥2.40.4) ignores the `sslmode` query parameter in `--db-url`, so the env var is the only working way to disable TLS. See [supabase/cli#4142](https://github.com/supabase/cli/issues/4142).
+
 ## Authentication
 
 Supabase Auth with email/password and OAuth (GitHub, Google). Routes are protected via `requireAuth` / `requireGuest` guards in `beforeLoad`:
