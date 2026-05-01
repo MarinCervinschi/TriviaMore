@@ -89,52 +89,9 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 
 ## Environment variables
 
-### Development (Infisical CLI)
+Secrets are managed via [Infisical](https://infisical.com) (self-hosted). Contributors without access can fall back to a plain `.env` and the `:no-secrets` script variants.
 
-Secrets are stored in Infisical and injected via `infisical run --` in dev scripts.
-
-| Variable | Scope | Value from `supabase status` |
-|---|---|---|
-| `VITE_SUPABASE_URL` | Client + Server | **Project URL** (local: `http://127.0.0.1:54321`) |
-| `VITE_SUPABASE_ANON_KEY` | Client + Server | **Publishable** key (`sb_publishable_...`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server only | **Secret** key (`sb_secret_...`) |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app |
-| `VITE_APP_URL` | Server only | App URL for OAuth redirects (defaults to `http://localhost:3000`) |
-| `VITE_SITE_URL` | Client + Server | Canonical site URL (defaults to `https://www.trivia-more.it`) |
-
-> OAuth providers are optional locally — email/password works without them. Variables prefixed with `VITE_` are exposed to the browser; never prefix secret keys with `VITE_`.
-
-### Local dev without Infisical
-
-If you don't have access to the Infisical project, copy the example file and fill in the values from `supabase status`:
-
-```bash
-cp .env.example .env
-supabase status                  # read the local Supabase credentials
-pnpm dev:no-secrets              # Vite picks up `.env` automatically
-```
-
-OAuth client IDs/secrets in `.env.example` can be left blank — email/password auth works without them. `.env` is gitignored; `.env.example` is committed as the template.
-
-### Production (Infisical SDK)
-
-In production the app uses `@infisical/sdk` to load secrets at server startup via Universal Auth.
-
-| Variable | Required | Description |
-|---|---|---|
-| `INFISICAL_CLIENT_ID` | Yes | Machine Identity client ID |
-| `INFISICAL_CLIENT_SECRET` | Yes | Machine Identity client secret |
-| `INFISICAL_PROJECT_ID` | Yes | Infisical project ID |
-| `INFISICAL_ENV` | No | Infisical environment slug (default: `prod`) |
-| `INFISICAL_SITE_URL` | Yes | Infisical instance URL (self-hosted) |
-| `MAINTENANCE_MODE` | No | Set to `true` to show the Coming Soon page |
-
-All other secrets are loaded from Infisical at runtime. `VITE_*` variables must also be set on the hosting platform because Vite embeds them at build time.
-
-### Maintenance mode
-
-Set `MAINTENANCE_MODE=true` in production to redirect every route to the Coming Soon page (authenticated users included). Set it back to `false` to go live.
+See [`docs/SECRETS.md`](./docs/SECRETS.md) for the full variable list, the with/without-Infisical workflows, and production setup.
 
 ## Supabase local development
 

@@ -24,7 +24,7 @@
 | 11 | Audit dei link non-www | tutto il repo | Grep eseguito: nessun `https://trivia-more.it` (no-www) hardcoded; tutti i riferimenti usano già `www.` |
 | 12 | **JSON-LD ora rendered in SSR** (era CRITICO) | `src/lib/json-ld.ts`, `src/lib/seo.ts`, 5 route browse | Refactor: `json-ld.ts` ritorna oggetti puri (`JsonLd`); `seoHead` accetta `jsonLd?: JsonLd \| JsonLd[]` e lo emette via la chiave `"script:ld+json"` dentro `meta` (path TanStack `headContentUtils.js:22-29` che produce `<script type="application/ld+json">` inline in SSR). Le 5 route hanno smesso di usare `head.scripts` (che TanStack droppa per `type` custom in SSR — `Asset.js:94`). |
 
-### ⏳ Non applicati — richiedono debug o intervento esterno
+### ✅ — richiedono debug o intervento esterno
 
 | # | Fix | Motivo / blocker | Cosa fare |
 |---|---|---|---|
@@ -251,11 +251,11 @@ Solo se introduci OG image dinamiche per sezione/classe.
 
 ## Checklist sintetica per ripartire dopo il fix
 
-- [ ] Devtools fuori dalla build production
-- [ ] Title/description home + UniMore in H1
-- [ ] Title/description section + department riscritti
-- [ ] JSON-LD fix rendering (verifica `curl | grep ld+json`)
-- [ ] Redirect 307 → 308 su Vercel
+- [x] Devtools fuori dalla build production
+- [x] Title/description home + UniMore in H1
+- [x] Title/description section + department riscritti
+- [x] JSON-LD fix rendering (verifica `curl | grep ld+json`)
+- [x] Redirect 307 → 308 su Vercel
 - [ ] Quiz/LearningResource schema su section page
 - [ ] FAQPage schema su home
 - [ ] Copy descrittivo su pagine dept/course/class
