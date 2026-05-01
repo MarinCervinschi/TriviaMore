@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start"
 import {
   getRequestHeader,
   getRequestIP,
@@ -54,10 +54,50 @@ export const getAcceptanceStatusFn = createServerFn({ method: "GET" }).handler(
 )
 
 /**
+ * Inserts TERMS + PRIVACY acceptance rows for the given user, capturing
+ * IP and user-agent from the current request when available. Uses the
+ * service-role client so it works during signup (user not yet authed)
+ * and bypasses RLS for the insert.
+ */
+export const insertLegalAcceptanceRows = createServerOnlyFn(
+  async (
+    userId: string,
+    termsVersion: string = CURRENT_TERMS_VERSION,
+    privacyVersion: string = CURRENT_PRIVACY_VERSION,
+  ) => {
+    let ipAddress: string | null = null
+    let userAgent: string | null = null
+    try {
+      userAgent = getRequestHeader("user-agent") ?? null
+      ipAddress = getRequestIP({ xForwardedFor: true }) ?? null
+    } catch {
+      // Request helpers are unavailable outside a request context; leave null
+    }
+
+    return getSupabaseAdmin()
+      .from("legal_acceptances")
+      .insert([
+        {
+          user_id: userId,
+          document_type: "TERMS",
+          version: termsVersion,
+          ip_address: ipAddress,
+          user_agent: userAgent,
+        },
+        {
+          user_id: userId,
+          document_type: "PRIVACY",
+          version: privacyVersion,
+          ip_address: ipAddress,
+          user_agent: userAgent,
+        },
+      ])
+  },
+)
+
+/**
  * Records acceptance of Terms and Privacy for the currently-authenticated
- * user, capturing IP and user-agent from the incoming request headers.
- * Writes via the service-role client so RLS policies do not block the
- * insert.
+ * user. Used by the /legal/accept page (OAuth signups, version bumps).
  */
 export const recordLegalAcceptanceFn = createServerFn({ method: "POST" })
   .inputValidator(acceptLegalSchema)
@@ -72,33 +112,7 @@ export const recordLegalAcceptanceFn = createServerFn({ method: "POST" })
       return { success: false, error: "Utente non autenticato" }
     }
 
-    const admin = getSupabaseAdmin()
-
-    let ipAddress: string | null = null
-    let userAgent: string | null = null
-    try {
-      userAgent = getRequestHeader("user-agent") ?? null
-      ipAddress = getRequestIP({ xForwardedFor: true }) ?? null
-    } catch {
-      // Request helpers are unavailable outside a request context; leave null
-    }
-
-    const { error } = await admin.from("legal_acceptances").insert([
-      {
-        user_id: user.id,
-        document_type: "TERMS",
-        version: CURRENT_TERMS_VERSION,
-        ip_address: ipAddress,
-        user_agent: userAgent,
-      },
-      {
-        user_id: user.id,
-        document_type: "PRIVACY",
-        version: CURRENT_PRIVACY_VERSION,
-        ip_address: ipAddress,
-        user_agent: userAgent,
-      },
-    ])
+    const { error } = await insertLegalAcceptanceRows(user.id)
 
     if (error) {
       return { success: false, error: error.message }
