@@ -296,7 +296,7 @@ export type Database = {
           difficulty: Database["public"]["Enums"]["difficulty"]
           explanation: string | null
           id: string
-          options: Json | null
+          options: string[] | null
           question_type: Database["public"]["Enums"]["question_type"]
           section_id: string
           updated_at: string
@@ -308,7 +308,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty"]
           explanation?: string | null
           id?: string
-          options?: Json | null
+          options?: string[] | null
           question_type: Database["public"]["Enums"]["question_type"]
           section_id: string
           updated_at?: string
@@ -320,7 +320,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty"]
           explanation?: string | null
           id?: string
-          options?: Json | null
+          options?: string[] | null
           question_type?: Database["public"]["Enums"]["question_type"]
           section_id?: string
           updated_at?: string
@@ -1028,7 +1028,7 @@ export type Database = {
           department_name: string | null
           difficulty: Database["public"]["Enums"]["difficulty"] | null
           explanation: string | null
-          options: Json | null
+          options: string[] | null
           question_id: string | null
           question_type: Database["public"]["Enums"]["question_type"] | null
           section_id: string | null

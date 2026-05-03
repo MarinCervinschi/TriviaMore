@@ -9,7 +9,6 @@ import { QuizResultsSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
-import type { Json } from "@/lib/supabase/database.types"
 import { ReportButton } from "@/components/requests/report-button"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
@@ -176,7 +175,7 @@ function ReviewItem({
   question: {
     id: string
     content: string
-    options: Json | null
+    options: string[] | null
     correct_answer: string[]
     explanation: string | null
   }
