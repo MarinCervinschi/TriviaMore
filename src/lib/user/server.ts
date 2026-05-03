@@ -254,6 +254,21 @@ export const getUserBookmarksFn = createServerFn({ method: "GET" }).handler(
   },
 )
 
+export const getBookmarkedQuestionIdsFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<string[]> => {
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return []
+
+    const { data, error } = await supabase
+      .from("bookmarks")
+      .select("question_id")
+      .eq("user_id", user.id)
+
+    if (error) throw new Error(error.message)
+    return (data ?? []).map((r) => r.question_id)
+  },
+)
+
 export const toggleBookmarkFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ questionId: z.string() }))
   .handler(

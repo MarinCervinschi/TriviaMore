@@ -3,12 +3,13 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { CheckCircle, Clock, XCircle } from "lucide-react"
+import { CheckCircle, CircleDot, Clock, XCircle } from "lucide-react"
 
 import { QuizResultsSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
+import { BookmarkButton } from "@/components/quiz/bookmark-button"
 import { ReportButton } from "@/components/requests/report-button"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
@@ -44,16 +45,25 @@ function ResultsPage() {
 
   const evalMode = result.quiz.evaluation_mode
 
-  const correctCount = result.answers.filter((a) => {
-    const q = result.quiz.questions.find((q) => q.id === a.question_id)
-    if (!q) return false
-    const userSet = new Set(a.user_answer)
-    const correctSet = new Set(q.correct_answer)
-    return (
-      userSet.size === correctSet.size &&
-      [...userSet].every((v) => correctSet.has(v))
-    )
-  }).length
+  const counts = result.answers.reduce(
+    (acc, a) => {
+      const q = result.quiz.questions.find((q) => q.id === a.question_id)
+      if (!q) return acc
+      const userSet = new Set(a.user_answer)
+      const correctSet = new Set(q.correct_answer)
+      const isExact =
+        userSet.size === correctSet.size &&
+        [...userSet].every((v) => correctSet.has(v))
+      if (isExact) acc.correct++
+      else if ((a.score ?? 0) > 0) acc.partial++
+      return acc
+    },
+    { correct: 0, partial: 0 },
+  )
+  const correctCount = counts.correct
+  const partialCount = counts.partial
+  const wrongCount =
+    result.quiz.questions.length - correctCount - partialCount
 
   return (
     <div className="container py-8">
@@ -79,17 +89,20 @@ function ResultsPage() {
             {getGradeDescription(result.score)}
           </p>
 
-          <div className="relative mt-8 grid grid-cols-3 gap-4">
+          <div className="relative mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="rounded-2xl bg-muted/50 p-4">
               <CheckCircle className="mx-auto mb-2 h-5 w-5 text-green-500" />
               <p className="text-2xl font-bold">{correctCount}</p>
               <p className="text-xs text-muted-foreground">Corrette</p>
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
+              <CircleDot className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
+              <p className="text-2xl font-bold">{partialCount}</p>
+              <p className="text-xs text-muted-foreground">Parziali</p>
+            </div>
+            <div className="rounded-2xl bg-muted/50 p-4">
               <XCircle className="mx-auto mb-2 h-5 w-5 text-red-500" />
-              <p className="text-2xl font-bold">
-                {result.quiz.questions.length - correctCount}
-              </p>
+              <p className="text-2xl font-bold">{wrongCount}</p>
               <p className="text-xs text-muted-foreground">Errate</p>
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
@@ -155,10 +168,15 @@ function ResultsPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-center pb-8">
+        <div className="flex flex-wrap justify-center gap-3 pb-8">
           <Button variant="outline" size="lg" asChild>
             <Link to="/">Torna alla Home</Link>
           </Button>
+          {result.quiz.section.path && (
+            <Button size="lg" asChild>
+              <Link to={result.quiz.section.path}>Torna alla sezione</Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>
@@ -205,13 +223,20 @@ function ReviewItem({
           </span>
         </div>
         <div className="flex items-center gap-1">
+          <BookmarkButton questionId={question.id} />
           <ReportButton questionId={question.id} questionContent={question.content} />
-          <Badge variant={getScoreBadgeVariant(isCorrect ? 30 : 0)}>
+          <Badge
+            variant={getScoreBadgeVariant(
+              isCorrect ? 30 : score > 0 ? 22 : 0,
+            )}
+          >
             {isCorrect
               ? "Corretta"
-              : userAnswerSet.size > 0
-                ? "Errata"
-                : "Non risposta"}{" "}
+              : score > 0
+                ? "Parziale"
+                : userAnswerSet.size > 0
+                  ? "Errata"
+                  : "Non risposta"}{" "}
             ({score} pt)
           </Badge>
         </div>

@@ -63,6 +63,7 @@ export function useToggleBookmark() {
       toggleBookmarkFn({ data: { questionId } }),
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["user", "bookmarks"] })
+      queryClient.invalidateQueries({ queryKey: ["user", "bookmarked-ids"] })
       queryClient.invalidateQueries({ queryKey: ["user", "profile"] })
       toast.success(
         result.action === "added"
