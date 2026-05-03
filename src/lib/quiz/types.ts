@@ -17,6 +17,7 @@ export type QuizSection = {
   }
   course_name: string | null
   department_name: string | null
+  path: string | null
 }
 
 export type EvaluationMode = {
