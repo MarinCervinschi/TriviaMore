@@ -10,7 +10,7 @@ export function register(server: McpServer) {
     {
       title: "Validate questions",
       description:
-        "Validate an array of question objects against the schema. Does NOT write to the DB. Use before save_questions_batch.",
+        "Validate an array of question objects against the schema. Does NOT write anywhere. Use before saving the batch to a JSON file.",
       inputSchema: {
         questions: z.array(z.unknown()),
       },

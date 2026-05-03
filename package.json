@@ -20,7 +20,7 @@
     "db:types": "infisical run --recursive -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
     "generate:sitemap:dev": "infisical run --recursive -- pnpm generate:sitemap",
-    "mcp:catalog": "infisical run --recursive -- tsx scripts/mcp/catalog-server.ts"
+    "mcp:questions": "tsx scripts/mcp/questions-server.ts"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.2.7",
