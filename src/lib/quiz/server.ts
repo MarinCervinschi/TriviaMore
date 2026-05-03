@@ -2,13 +2,12 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
 import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
-import type { Json } from "@/lib/supabase/database.types"
 import { selectRandomItems, shuffleArray } from "./randomization"
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types"
 
-function shuffleJsonOptions(options: Json | null): Json | null {
-  if (!Array.isArray(options)) return options
-  return shuffleArray(options) as Json[]
+function shuffleOptions(options: string[] | null): string[] | null {
+  if (!options) return options
+  return shuffleArray(options)
 }
 
 async function getAuthenticatedUser() {
@@ -63,7 +62,7 @@ export const startQuizFn = createServerFn({ method: "POST" })
       }
 
       // Fetch quiz-eligible questions
-      let questions: { id: string; options: Json | null }[]
+      let questions: { id: string; options: string[] | null }[]
 
       if (data.quizMode === "EXAM_SIMULATION") {
         // Get all sections in the same class
@@ -187,7 +186,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
         options:
           q.question_type === "TRUE_FALSE"
             ? q.options
-            : shuffleJsonOptions(q.options),
+            : shuffleOptions(q.options),
         correct_answer: q.correct_answer,
         explanation: q.explanation,
         difficulty: q.difficulty,

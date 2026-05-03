@@ -16,7 +16,7 @@ export const questionFieldsSchema = z.object({
   options: z
     .array(z.string().min(1, "L'opzione non può essere vuota"))
     .min(2, "Devono esserci almeno 2 opzioni")
-    .max(6, "Non possono esserci più di 6 opzioni")
+    .max(40, "Non possono esserci più di 40 opzioni")
     .optional()
     .nullable(),
   correct_answer: z

@@ -1,4 +1,4 @@
-import type { Json, Tables } from "@/lib/supabase/database.types"
+import type { Tables } from "@/lib/supabase/database.types"
 
 // Base table types
 type Profile = Tables<"profiles">
@@ -43,7 +43,7 @@ export type UserBookmark = {
   created_at: string
   content: string
   question_type: string
-  options: Json | null
+  options: string[] | null
   correct_answer: string[]
   explanation: string | null
   difficulty: string
@@ -111,5 +111,3 @@ export type UserProgress = {
   department_name: string
 }
 
-// Helper type for JSON options
-export type QuestionOptions = Json
