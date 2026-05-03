@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2, Users } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { BrowsePublicButton } from "@/components/admin/browse-public-button"
 import {
   AdminPagination,
   usePaginatedSearch,
@@ -77,6 +78,10 @@ function AdminSectionDetailPage() {
   const removeAccess = useRemoveSectionAccess()
 
   const { questions, class: cls, ...section } = data
+  const courseClass = cls.course_classes?.[0]
+  const course = courseClass?.course
+  const department = course?.department
+  const sectionSlug = section.name.replace(/ /g, "-").toLowerCase()
 
   // Section access management (only for private sections)
   const { data: accessUsers } = useQuery({
@@ -101,10 +106,23 @@ function AdminSectionDetailPage() {
     <div className="py-2">
       <AdminPageHeader
         title={section.name}
-        description={`${cls.course_classes?.[0]?.course?.department?.name ?? ""} / ${cls.course_classes?.[0]?.course?.name ?? ""} / ${cls.name}`}
+        description={`${department?.name ?? ""} / ${course?.name ?? ""} / ${cls.name}`}
         backTo="/admin/classes/$classId"
         backParams={{ classId: cls.id }}
         backLabel={cls.name}
+        actions={
+          department && course && courseClass ? (
+            <BrowsePublicButton
+              to="/browse/$department/$course/$class/$section"
+              params={{
+                department: department.code.toLowerCase(),
+                course: course.code.toLowerCase(),
+                class: courseClass.code.toLowerCase(),
+                section: sectionSlug,
+              }}
+            />
+          ) : undefined
+        }
       />
 
       <div className="grid gap-6">
