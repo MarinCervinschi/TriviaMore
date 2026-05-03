@@ -6,7 +6,6 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { CheckCircle, CircleDot, Clock, XCircle } from "lucide-react"
 
 import { QuizResultsSkeleton } from "@/components/skeletons"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { BookmarkButton } from "@/components/quiz/bookmark-button"
@@ -18,7 +17,7 @@ import {
   getGradeColor,
   getGradeDescription,
 } from "@/lib/utils/grading"
-import { formatTimeSpent, getScoreBadgeVariant } from "@/lib/utils/quiz-results"
+import { formatTimeSpent } from "@/lib/utils/quiz-results"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
@@ -222,33 +221,32 @@ function ReviewItem({
             <MarkdownRenderer content={question.content} inline />
           </span>
         </div>
-        <div className="flex items-center gap-1">
-          <BookmarkButton questionId={question.id} />
-          <ReportButton questionId={question.id} questionContent={question.content} />
-          <Badge
-            variant={getScoreBadgeVariant(
-              isCorrect ? 30 : score > 0 ? 22 : 0,
-            )}
-          >
-            {isCorrect
-              ? "Corretta"
-              : score > 0
-                ? "Parziale"
-                : userAnswerSet.size > 0
-                  ? "Errata"
-                  : "Non risposta"}{" "}
-            ({score} pt)
-          </Badge>
-        </div>
+        <ResultBadge
+          isCorrect={isCorrect}
+          score={score}
+          hasAnswer={userAnswerSet.size > 0}
+        />
       </div>
 
       {open && (
         <div className="border-t px-4 pb-4 pt-3 space-y-3">
-          <div className="text-sm">
-            <MarkdownRenderer
-              content={question.content}
-              className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-            />
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1 text-sm">
+              <MarkdownRenderer
+                content={question.content}
+                className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+              />
+            </div>
+            <div
+              className="flex shrink-0 items-center gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BookmarkButton questionId={question.id} />
+              <ReportButton
+                questionId={question.id}
+                questionContent={question.content}
+              />
+            </div>
           </div>
           {options.length > 0 && (
             <ul className="space-y-1.5">
@@ -313,5 +311,51 @@ function ReviewItem({
         </div>
       )}
     </div>
+  )
+}
+
+function ResultBadge({
+  isCorrect,
+  score,
+  hasAnswer,
+}: {
+  isCorrect: boolean
+  score: number
+  hasAnswer: boolean
+}) {
+  const { label, classes } = (() => {
+    if (isCorrect)
+      return {
+        label: "Corretta",
+        classes:
+          "bg-green-500/15 text-green-700 border-green-500/30 dark:text-green-400",
+      }
+    if (score > 0)
+      return {
+        label: "Parziale",
+        classes:
+          "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 dark:text-yellow-400",
+      }
+    if (hasAnswer)
+      return {
+        label: "Errata",
+        classes:
+          "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-400",
+      }
+    return {
+      label: "Non risposta",
+      classes: "bg-muted text-muted-foreground border-border",
+    }
+  })()
+
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums",
+        classes,
+      )}
+    >
+      {label} ({score} pt)
+    </span>
   )
 }
