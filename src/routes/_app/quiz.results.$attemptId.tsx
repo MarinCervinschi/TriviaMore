@@ -3,7 +3,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { CheckCircle, CircleDot, Clock, XCircle } from "lucide-react"
+import { CheckCircle, CircleDot, Clock, Lightbulb, XCircle } from "lucide-react"
 
 import { QuizResultsSkeleton } from "@/components/skeletons"
 import { Button } from "@/components/ui/button"
@@ -296,11 +296,12 @@ function ReviewItem({
             </ul>
           )}
           {question.explanation && (
-            <div className="rounded-xl bg-blue-500/10 p-4">
-              <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+            <div className="rounded-xl border-l-4 border-primary bg-muted/40 p-4">
+              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+                <Lightbulb className="h-3.5 w-3.5" />
                 Spiegazione
-              </p>
-              <div className="text-sm text-blue-700 dark:text-blue-300">
+              </div>
+              <div className="text-sm text-foreground/90">
                 <MarkdownRenderer
                   content={question.explanation}
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
