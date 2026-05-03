@@ -6,6 +6,7 @@ import { seoHead } from "@/lib/seo"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { BrowsePublicButton } from "@/components/admin/browse-public-button"
 import {
   AdminPagination,
   usePaginatedSearch,
@@ -98,6 +99,15 @@ function AdminCourseDetailPage() {
         backTo="/admin/departments/$departmentId"
         backParams={{ departmentId: department.id }}
         backLabel={department.name}
+        actions={
+          <BrowsePublicButton
+            to="/browse/$department/$course"
+            params={{
+              department: department.code.toLowerCase(),
+              course: course.code.toLowerCase(),
+            }}
+          />
+        }
       />
 
       <div className="grid gap-6">
