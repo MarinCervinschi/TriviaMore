@@ -30,10 +30,12 @@ Follow these steps in order. Use TodoWrite to track progress.
 ### 1. Collect inputs from the user
 
 Ask, in one message, only what you don't already have:
-- **Source material**: file path or pasted text
-- **Count**: how many questions (default: 10)
-- **Type mix**: default 70% MULTIPLE_CHOICE, 20% TRUE_FALSE, 10% SHORT_ANSWER (only ask if user hasn't specified)
-- **Difficulty**: default 30% EASY, 50% MEDIUM, 20% HARD (only ask if user hasn't specified)
+- **Source material**: file path or pasted text.
+- **Type mix**: default 70% `MULTIPLE_CHOICE`, 20% `TRUE_FALSE`, 10% `SHORT_ANSWER`. Override only if the user explicitly asks for a different mix in *this* request (e.g. "solo MC", "no SHORT_ANSWER"). A previous-session override does **not** carry over — re-confirm or fall back to the default.
+- **Count and batching**: don't impose a rigid default. The goal is to cover the main topics of the material; let content density drive the count. **Before** generating, estimate roughly how large the batch would be:
+  - If small/medium (~roughly ≤ 35 questions), produce a single file.
+  - If the source material is large enough that one batch would either saturate the context window or produce an unwieldy file, **propose splitting into multiple batches** (e.g. one per chapter / section) and discuss the split with the user before generating anything. Each batch becomes its own JSON file.
+- **Difficulty**: calibrate to the conceptual importance and depth of each topic. Foundational definitions tend toward `EASY`, applied reasoning toward `MEDIUM`, derivations / formulas / non-obvious distinctions toward `HARD`. The 30/50/20 split is a soft target, not a constraint — let the content shape it.
 
 Do **not** ask for the section / department / course — the user picks the destination later by opening the admin URL.
 
@@ -85,5 +87,5 @@ Do not open the UI, do not deploy, do not run migrations. The user reviews the f
 
 - **Read-only on the DB.** No DB access at all from this skill.
 - **No `section_id`** in question objects — UI handles it.
-- **One file per batch.** If the user asks for questions on multiple unrelated topics, propose splitting into separate runs (and separate files).
+- **One file per batch.** If the user asks for questions on multiple unrelated topics, propose splitting into separate runs (and separate files). Same applies when a single source is large enough to warrant a multi-batch split — agree the split with the user *before* generating.
 - **No fabrication.** If the source material is too thin for the requested count, say so and propose a smaller count rather than inventing content.
