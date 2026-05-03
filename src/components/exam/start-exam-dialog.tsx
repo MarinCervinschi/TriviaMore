@@ -79,7 +79,7 @@ export function StartExamDialog({
       questionCount: Math.min(questionCount, maxQuizQuestions),
       timeLimit: time === undefined ? null : time,
       quizMode: "EXAM_SIMULATION",
-      evaluationModeId: evalModeId,
+      evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
     })
   }
 

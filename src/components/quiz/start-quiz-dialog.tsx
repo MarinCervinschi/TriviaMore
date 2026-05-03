@@ -63,7 +63,7 @@ export function StartQuizDialog({
       questionCount: Math.min(questionCount, maxQuestions),
       timeLimit: time === undefined ? null : time,
       quizMode: "STUDY",
-      evaluationModeId: evalModeId,
+      evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
     })
   }
 
