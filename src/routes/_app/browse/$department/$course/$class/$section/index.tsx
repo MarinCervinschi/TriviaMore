@@ -14,12 +14,15 @@ import { QuizCard } from "@/components/browse/quiz-card"
 import { RequestFormDialog } from "@/components/requests/request-form-dialog"
 import { Badge } from "@/components/ui/badge"
 import { browseQueries } from "@/lib/browse/queries"
+import { quizQueries } from "@/lib/quiz/queries"
 import { SectionDetailSkeleton } from "@/components/skeletons"
 
 export const Route = createFileRoute(
   "/_app/browse/$department/$course/$class/$section/",
 )({
   loader: async ({ context, params }) => {
+    void context.queryClient.prefetchQuery(quizQueries.evaluationModes())
+
     const data = await context.queryClient.ensureQueryData(
       browseQueries.section(
         params.department,
