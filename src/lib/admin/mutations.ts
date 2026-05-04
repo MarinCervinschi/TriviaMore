@@ -11,6 +11,7 @@ import {
   createClassFn,
   createCourseFn,
   createDepartmentFn,
+  createExamSimulationSentinelFn,
   createQuestionFn,
   createQuestionsBulkFn,
   createSectionFn,
@@ -141,6 +142,14 @@ export function useUpdateCourseClass(onSuccess?: () => void) {
   return useMutationWithToast(updateCourseClassFn, {
     successMessage: "Collegamento aggiornato",
     invalidateKeys: [["admin", "course"], ["admin", "class"], ["browse"]],
+    onSuccess,
+  })
+}
+
+export function useCreateExamSimulationSentinel(onSuccess?: () => void) {
+  return useMutationWithToast(createExamSimulationSentinelFn, {
+    successMessage: 'Sezione "Exam Simulation" creata con successo',
+    invalidateKeys: [["admin", "class"], ["admin", "stats"], ["browse"]],
     onSuccess,
   })
 }
