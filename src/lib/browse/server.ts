@@ -200,27 +200,12 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     let examSimulation: ClassWithSections["examSimulation"] = undefined
 
     if (totalQuizQuestions > 0 || totalFlashcardQuestions > 0) {
-      let { data: examSection } = await catalogQuery(supabase)
+      const { data: examSection } = await catalogQuery(supabase)
         .from("sections")
         .select("id")
         .eq("class_id", classData.id)
         .eq("name", "Exam Simulation")
         .maybeSingle()
-
-      if (!examSection) {
-        const { data: newSection } = await catalogQuery(supabase)
-          .from("sections")
-          .insert({
-            id: crypto.randomUUID(),
-            class_id: classData.id,
-            name: "Exam Simulation",
-            is_public: true,
-            position: 9999,
-          })
-          .select("id")
-          .single()
-        examSection = newSection
-      }
 
       if (examSection) {
         examSimulation = {
