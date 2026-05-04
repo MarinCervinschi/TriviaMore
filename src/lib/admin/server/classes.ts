@@ -79,6 +79,7 @@ export const createClassFn = createServerFn({ method: "POST" })
       .insert({
         class_id: cls.id,
         name: "Exam Simulation",
+        description: `Sezione per la simulazione d'esame della classe ${cls.name}`,
         is_public: true,
         position: 9999,
       })
@@ -98,6 +99,14 @@ export const createExamSimulationSentinelFn = createServerFn({ method: "POST" })
     await requireAdmin()
     const supabase = createServerSupabaseClient()
 
+    const { data: cls, error: clsError } = await catalogQuery(supabase)
+      .from("classes")
+      .select("name")
+      .eq("id", id)
+      .single()
+
+    if (clsError) throw new Error(clsError.message)
+
     const { data: existing } = await catalogQuery(supabase)
       .from("sections")
       .select("id")
@@ -114,6 +123,7 @@ export const createExamSimulationSentinelFn = createServerFn({ method: "POST" })
       .insert({
         class_id: id,
         name: "Exam Simulation",
+        description: `Sezione per la simulazione d'esame della classe ${cls.name}`,
         is_public: true,
         position: 9999,
       })
