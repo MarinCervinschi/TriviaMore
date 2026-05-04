@@ -1,9 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { DecorativeBackground } from "@/components/layout/decorative-background"
 import { SkeletonRoot } from "./primitives"
 
 export function QuizPlaySkeleton() {
   return (
     <SkeletonRoot label="Caricamento quiz…" className="flex h-screen flex-col">
+      <DecorativeBackground />
       {/* Header */}
       <div className="flex items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
@@ -14,11 +16,6 @@ export function QuizPlaySkeleton() {
           <Skeleton className="h-8 w-20 rounded-xl" />
           <Skeleton className="h-9 w-9 rounded-xl" />
         </div>
-      </div>
-
-      {/* Progress */}
-      <div className="border-b bg-card px-4 py-2 sm:px-6">
-        <Skeleton className="h-2 w-full rounded-full" />
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -32,22 +29,29 @@ export function QuizPlaySkeleton() {
           </div>
         </aside>
 
-        {/* Question card */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-          <div className="mx-auto max-w-3xl space-y-6">
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-6 w-20 rounded-full" />
-              <Skeleton className="h-6 w-24 rounded-full" />
-            </div>
-            <div className="space-y-3">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-5/6" />
-              <Skeleton className="h-6 w-3/4" />
-            </div>
-            <div className="space-y-3 pt-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-14 w-full rounded-2xl" />
-              ))}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Progress */}
+          <div className="border-b bg-card px-4 py-2 sm:px-6">
+            <Skeleton className="h-2 w-full rounded-full" />
+          </div>
+
+          {/* Question card */}
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+            <div className="mx-auto max-w-3xl space-y-6">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-6 w-24 rounded-full" />
+              </div>
+              <div className="space-y-3">
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-5/6" />
+                <Skeleton className="h-6 w-3/4" />
+              </div>
+              <div className="space-y-3 pt-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-14 w-full rounded-2xl" />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -65,6 +69,7 @@ export function QuizPlaySkeleton() {
 export function FlashcardSkeleton() {
   return (
     <SkeletonRoot label="Caricamento flashcard…" className="flex h-screen flex-col">
+      <DecorativeBackground />
       {/* Header */}
       <div className="flex items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
@@ -72,11 +77,6 @@ export function FlashcardSkeleton() {
           <Skeleton className="h-5 w-32" />
         </div>
         <Skeleton className="h-9 w-9 rounded-xl" />
-      </div>
-
-      {/* Progress */}
-      <div className="border-b bg-card px-4 py-2 sm:px-6">
-        <Skeleton className="h-2 w-full rounded-full" />
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -90,9 +90,16 @@ export function FlashcardSkeleton() {
           </div>
         </aside>
 
-        {/* Card */}
-        <div className="flex flex-1 items-center justify-center p-6 sm:p-12">
-          <Skeleton className="h-[420px] w-full max-w-2xl rounded-3xl" />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Progress */}
+          <div className="border-b bg-card px-4 py-2 sm:px-6">
+            <Skeleton className="h-2 w-full rounded-full" />
+          </div>
+
+          {/* Card */}
+          <div className="flex flex-1 items-center justify-center p-6 sm:p-12">
+            <Skeleton className="h-[420px] w-full max-w-2xl rounded-3xl" />
+          </div>
         </div>
       </div>
 
