@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useQueryClient } from "@tanstack/react-query"
+import { DecorativeBackground } from "@/components/layout/decorative-background"
 import { QuestionCard } from "@/components/quiz/question-card"
 import { QuizHeader } from "@/components/quiz/quiz-header"
 import { QuizNavigation } from "@/components/quiz/quiz-navigation"
@@ -143,9 +144,12 @@ function QuizPage() {
 
   if (!quiz) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Quiz non trovato.</p>
-      </div>
+      <>
+        <DecorativeBackground />
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-muted-foreground">Quiz non trovato.</p>
+        </div>
+      </>
     )
   }
 
@@ -160,6 +164,7 @@ function QuizPage() {
 
   return (
     <div className="flex h-dvh flex-col">
+      <DecorativeBackground />
       <QuizHeader
         questionIndex={currentIndex}
         totalQuestions={quiz.questions.length}
@@ -169,7 +174,6 @@ function QuizPage() {
         onTimeUp={handleComplete}
         onExit={() => setShowExitDialog(true)}
       />
-      <QuizProgress current={currentIndex} total={quiz.questions.length} />
       <div className="flex flex-1 overflow-hidden">
         {sidebarOpen && (
           <QuizSidebar
@@ -189,17 +193,23 @@ function QuizPage() {
             />
           </SheetContent>
         </Sheet>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          {currentQuestion && (
-            <QuestionCard
-              question={currentQuestion}
-              questionNumber={currentIndex + 1}
-              selectedAnswers={currentAnswers}
-              onAnswerChange={(answers) =>
-                handleAnswerChange(currentQuestion.id, answers)
-              }
-            />
-          )}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <QuizProgress
+            current={currentIndex}
+            total={quiz.questions.length}
+          />
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+            {currentQuestion && (
+              <QuestionCard
+                question={currentQuestion}
+                questionNumber={currentIndex + 1}
+                selectedAnswers={currentAnswers}
+                onAnswerChange={(answers) =>
+                  handleAnswerChange(currentQuestion.id, answers)
+                }
+              />
+            )}
+          </div>
         </div>
       </div>
       <QuizNavigation
