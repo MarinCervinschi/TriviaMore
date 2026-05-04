@@ -32,6 +32,7 @@ import { Pagination, usePaginatedSearch } from "@/components/ui/pagination"
 import { useAuth } from "@/hooks/useAuth"
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { browseQueries } from "@/lib/browse/queries"
+import { quizQueries } from "@/lib/quiz/queries"
 import { ClassDetailSkeleton } from "@/components/skeletons"
 import { cn } from "@/lib/utils"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
@@ -49,6 +50,8 @@ export const Route = createFileRoute(
   "/_app/browse/$department/$course/$class/",
 )({
   loader: async ({ context, params }) => {
+    void context.queryClient.prefetchQuery(quizQueries.evaluationModes())
+
     const data = await context.queryClient.ensureQueryData(
       browseQueries.class(params.department, params.course, params.class),
     )
