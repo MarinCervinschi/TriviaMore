@@ -1,6 +1,11 @@
 import type { ReactNode } from "react"
 
 import { cn } from "@/lib/utils"
+import {
+  formatScaledScore,
+  formatScaledSigned,
+  getNormalizedEvaluationScale,
+} from "@/lib/quiz/scoring"
 import type { EvaluationMode } from "@/lib/quiz/types"
 
 import { ClockFace } from "./clock-face"
@@ -148,33 +153,9 @@ type EvalBlockProps = {
   questionCount: number
 }
 
-/**
- * Final scores in the results page are normalized to a 0–33 scale via:
- *   normalized = round((rawTotal / maxRaw) * 33)
- * where maxRaw = N * correct_points. So the max scaled is always 33,
- * and the theoretical min (when penalties apply) collapses to:
- *   minScaled = round((incorrect_points / correct_points) * 33)
- * — independent of N. Per-question values divide by N for display.
- */
 export function EvalBlock({ mode, questionCount }: EvalBlockProps) {
-  const fmtPerQ = (n: number) => {
-    if (n === 0) return "0"
-    if (Number.isInteger(n)) return n.toString()
-    return n.toFixed(2)
-  }
-  const sign = (n: number) => (n > 0 ? "+" : n < 0 ? "−" : "")
-  const fmtSigned = (n: number) => `${sign(n)}${fmtPerQ(Math.abs(n))}`
-
-  const safeN = Math.max(1, questionCount)
-  const maxScaled = 33
-  const minRatio =
-    mode.correct_answer_points > 0
-      ? mode.incorrect_answer_points / mode.correct_answer_points
-      : 0
-  const minScaled = Math.round(minRatio * 33)
-  const perQuestionMax = maxScaled / safeN
-  const perQuestionMin = (minRatio * 33) / safeN
-  const hasPenalty = mode.incorrect_answer_points < 0
+  const { maxScaled, minScaled, perQuestionMax, perQuestionMin, hasPenalty } =
+    getNormalizedEvaluationScale(mode, questionCount)
 
   return (
     <div className="flex flex-col gap-3">
@@ -191,16 +172,16 @@ export function EvalBlock({ mode, questionCount }: EvalBlockProps) {
           label="Punteggio max"
           totalValue={`+${maxScaled}`}
           perQuestionLabel="Per domanda corretta"
-          perQuestionValue={`+${fmtPerQ(perQuestionMax)}`}
+          perQuestionValue={`+${formatScaledScore(perQuestionMax)}`}
           tone="positive"
         />
 
         {hasPenalty && (
           <ScorePair
             label="Punteggio min"
-            totalValue={fmtSigned(minScaled)}
+            totalValue={formatScaledSigned(minScaled)}
             perQuestionLabel="Per domanda errata"
-            perQuestionValue={fmtSigned(perQuestionMin)}
+            perQuestionValue={formatScaledSigned(perQuestionMin)}
             tone="negative"
           />
         )}
