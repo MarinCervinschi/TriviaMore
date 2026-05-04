@@ -13,6 +13,12 @@ import { ReportButton } from "@/components/requests/report-button"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
 import {
+  formatScaledScore,
+  formatScaledSigned,
+  getNormalizedEvaluationScale,
+  scaleAnswerScore,
+} from "@/lib/quiz/scoring"
+import {
   formatThirtyScaleGrade,
   getGradeColor,
   getGradeDescription,
@@ -43,6 +49,9 @@ function ResultsPage() {
   if (!result) return null
 
   const evalMode = result.quiz.evaluation_mode
+  const totalQuestions = result.quiz.questions.length
+  const { perQuestionMax, perQuestionMin, hasPenalty } =
+    getNormalizedEvaluationScale(evalMode, totalQuestions)
 
   const counts = result.answers.reduce(
     (acc, a) => {
@@ -122,16 +131,20 @@ function ResultsPage() {
             <span>
               Corretta:{" "}
               <span className="font-medium text-green-600">
-                +{evalMode.correct_answer_points} pt
+                +{formatScaledScore(perQuestionMax)} pt
               </span>
             </span>
-            <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-            <span>
-              Errata:{" "}
-              <span className="font-medium text-red-600">
-                {evalMode.incorrect_answer_points} pt
-              </span>
-            </span>
+            {hasPenalty && (
+              <>
+                <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+                <span>
+                  Errata:{" "}
+                  <span className="font-medium text-red-600">
+                    {formatScaledSigned(perQuestionMin)} pt
+                  </span>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -159,6 +172,11 @@ function ResultsPage() {
                   userAnswerSet={userAnswerSet}
                   isCorrect={isCorrect}
                   score={answer?.score ?? 0}
+                  scaledScore={scaleAnswerScore(
+                    answer?.score ?? 0,
+                    evalMode,
+                    totalQuestions,
+                  )}
                   index={index}
                 />
               )
@@ -187,6 +205,7 @@ function ReviewItem({
   userAnswerSet,
   isCorrect,
   score,
+  scaledScore,
   index,
 }: {
   question: {
@@ -199,6 +218,7 @@ function ReviewItem({
   userAnswerSet: Set<string>
   isCorrect: boolean
   score: number
+  scaledScore: number
   index: number
 }) {
   const [open, setOpen] = useState(false)
@@ -224,6 +244,7 @@ function ReviewItem({
         <ResultBadge
           isCorrect={isCorrect}
           score={score}
+          scaledScore={scaledScore}
           hasAnswer={userAnswerSet.size > 0}
         />
       </div>
@@ -318,10 +339,12 @@ function ReviewItem({
 function ResultBadge({
   isCorrect,
   score,
+  scaledScore,
   hasAnswer,
 }: {
   isCorrect: boolean
   score: number
+  scaledScore: number
   hasAnswer: boolean
 }) {
   const { label, classes } = (() => {
@@ -356,7 +379,7 @@ function ResultBadge({
         classes,
       )}
     >
-      {label} ({score} pt)
+      {label} ({formatScaledSigned(scaledScore)} pt)
     </span>
   )
 }

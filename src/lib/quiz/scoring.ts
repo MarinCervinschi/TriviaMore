@@ -1,5 +1,63 @@
 import type { EvaluationMode, QuizQuestion, QuizResults, UserAnswer } from "./types"
 
+export const THIRTY_SCALE_MAX = 33
+
+/**
+ * Maps raw evaluation-mode points onto the 0–33 normalized scale used in the
+ * results page and in the start-quiz dialog summary.
+ *
+ * The total max is always {@link THIRTY_SCALE_MAX}, so each question is worth
+ * `THIRTY_SCALE_MAX / N`. The min collapses to
+ * `(incorrect_points / correct_points) * THIRTY_SCALE_MAX`, independent of N.
+ */
+export function getNormalizedEvaluationScale(
+  evaluationMode: EvaluationMode,
+  totalQuestions: number,
+) {
+  const safeN = Math.max(1, totalQuestions)
+  const minRatio =
+    evaluationMode.correct_answer_points > 0
+      ? evaluationMode.incorrect_answer_points /
+        evaluationMode.correct_answer_points
+      : 0
+  const maxScaled = THIRTY_SCALE_MAX
+  const minScaled = Math.round(minRatio * THIRTY_SCALE_MAX)
+  const perQuestionMax = maxScaled / safeN
+  const perQuestionMin = (minRatio * THIRTY_SCALE_MAX) / safeN
+  return {
+    maxScaled,
+    minScaled,
+    perQuestionMax,
+    perQuestionMin,
+    hasPenalty: evaluationMode.incorrect_answer_points < 0,
+  }
+}
+
+/**
+ * Converts a single answer's raw score into its contribution on the 0–33 scale.
+ */
+export function scaleAnswerScore(
+  rawScore: number,
+  evaluationMode: EvaluationMode,
+  totalQuestions: number,
+): number {
+  if (evaluationMode.correct_answer_points <= 0) return 0
+  const safeN = Math.max(1, totalQuestions)
+  const perQuestionMax = THIRTY_SCALE_MAX / safeN
+  return (rawScore / evaluationMode.correct_answer_points) * perQuestionMax
+}
+
+export function formatScaledScore(n: number): string {
+  if (n === 0) return "0"
+  if (Number.isInteger(n)) return n.toString()
+  return n.toFixed(2)
+}
+
+export function formatScaledSigned(n: number): string {
+  const sign = n > 0 ? "+" : n < 0 ? "−" : ""
+  return `${sign}${formatScaledScore(Math.abs(n))}`
+}
+
 export function calculateAnswerScore(
   userAnswer: string[],
   correctAnswer: string[],
