@@ -112,7 +112,7 @@ export function calculateQuizResults(params: {
     maxScore > 0 ? Math.round((totalScore / maxScore) * 33) : 0
 
   return {
-    totalScore: Math.max(0, normalizedScore),
+    totalScore: normalizedScore,
     correctAnswers,
     totalQuestions: questions.length,
     timeSpent: Date.now() - startTime,
