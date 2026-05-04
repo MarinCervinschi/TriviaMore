@@ -46,9 +46,7 @@ export function QuizHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        {timeLimit && (
-          <QuizTimer timeLimitMinutes={timeLimit} onTimeUp={onTimeUp} />
-        )}
+        <QuizTimer timeLimitMinutes={timeLimit} onTimeUp={onTimeUp} />
         {mounted && (
           <Button
             variant="ghost"
