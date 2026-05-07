@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Hook the `dark:` variant to the .dark class (toggled by ThemeProvider),
+   instead of Tailwind v4's default prefers-color-scheme media query. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ===== Theme: map CSS variables to Tailwind utilities ===== */
 @theme {
   --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
@@ -398,6 +402,13 @@ body {
   .maplibregl-popup-tip {
     @apply hidden!;
   }
+
+  /* Restore pointer cursor on interactive elements (Tailwind v4 preflight
+     removes it on buttons by default). */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 /* ===== Theme transition (View Transitions API) ===== */
@@ -407,7 +418,7 @@ body {
 }
 
 ::view-transition-new(root) {
-  animation: theme-reveal 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: theme-reveal 700ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
   mix-blend-mode: normal;
 }
 
