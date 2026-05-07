@@ -10,6 +10,7 @@ import {
   getDepartmentCourseListFn,
   getDepartmentWithCoursesFn,
   getDepartmentsFn,
+  getGraphDataFn,
   getPlatformStatsFn,
   getSectionDetailFn,
   searchClassesFn,
@@ -50,6 +51,13 @@ export const browseQueries = {
     queryOptions({
       queryKey: ["browse", "departments"],
       queryFn: () => getDepartmentsFn(),
+      staleTime: STALE_TIME.SLOW,
+    }),
+
+  graph: () =>
+    queryOptions({
+      queryKey: ["browse", "graph"],
+      queryFn: () => getGraphDataFn(),
       staleTime: STALE_TIME.SLOW,
     }),
 
