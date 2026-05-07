@@ -6,16 +6,15 @@ import {
   GraduationCap,
   LogOut,
   Mail,
-  Moon,
   Search,
   Settings,
-  Sun,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
 import { useCookieConsent } from "@/hooks/useCookieConsent"
 import { useTheme } from "@/hooks/useTheme"
+import { ThemeIcons } from "@/components/layout/theme-toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { LogoIcon } from "@/components/ui/logo"
@@ -82,22 +81,18 @@ function SidebarNavIcon({
 }
 
 function SidebarThemeToggle() {
-  const { mounted, isDark, toggleTheme } = useTheme()
+  const { mounted, toggleTheme } = useTheme()
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
-          onClick={toggleTheme}
+          onClick={(event) => toggleTheme(event.nativeEvent)}
           disabled={!mounted}
           aria-label="Cambia tema"
           className={cn(ITEM_BASE, ITEM_IDLE)}
         >
-          {mounted && isDark ? (
-            <Sun className="size-[18px]" strokeWidth={1.5} />
-          ) : (
-            <Moon className="size-[18px]" strokeWidth={1.5} />
-          )}
+          <ThemeIcons className="size-[18px] [&_svg]:size-[18px]" strokeWidth={1.5} />
         </button>
       </TooltipTrigger>
       <TooltipContent side="right" sideOffset={14}>

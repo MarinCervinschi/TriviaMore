@@ -1,10 +1,9 @@
 import type { ReactNode } from "react"
 import { Link } from "@tanstack/react-router"
-import { ArrowLeft, Moon, Sun } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
-import { useTheme } from "@/hooks/useTheme"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 
 export function AuthCard({
   title,
@@ -15,8 +14,6 @@ export function AuthCard({
   description: string
   children: ReactNode
 }) {
-  const { mounted, isDark, toggleTheme } = useTheme()
-
   return (
     <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
       {/* Mesh gradient background */}
@@ -28,24 +25,9 @@ export function AuthCard({
         <div className="absolute inset-0 dot-pattern" />
       </div>
 
-      {/* Theme toggle */}
-      {mounted && (
-        <div className="fixed right-4 top-4 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="rounded-xl backdrop-blur-sm bg-card/50"
-          >
-            {isDark ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-            <span className="sr-only">Cambia tema</span>
-          </Button>
-        </div>
-      )}
+      <div className="fixed right-4 top-4 z-10">
+        <ThemeToggle className="backdrop-blur-sm bg-card/50" />
+      </div>
 
       <div className="w-full max-w-md">
         {/* Back link */}
