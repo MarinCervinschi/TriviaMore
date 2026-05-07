@@ -35,6 +35,7 @@ import {
 import {
   ABOUT_ITEM,
   ADMIN_ITEM,
+  GRAPH_ITEM,
   NAV_ITEMS,
   getInitials,
   useIsAdmin,
@@ -363,6 +364,10 @@ export function LumaSidebar() {
 
         {/* Tools */}
         <SidebarSearchHover />
+        <SidebarNavIcon
+          item={GRAPH_ITEM}
+          isActive={!!matchRoute({ to: GRAPH_ITEM.to, fuzzy: GRAPH_ITEM.fuzzy })}
+        />
         <SidebarNavIcon
           item={ABOUT_ITEM}
           isActive={!!matchRoute({ to: ABOUT_ITEM.to, fuzzy: ABOUT_ITEM.fuzzy })}
