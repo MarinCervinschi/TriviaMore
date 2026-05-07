@@ -151,6 +151,20 @@ export interface PaginatedResult<T> {
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>
 
+// Graph showcase types
+
+export type GraphDepartmentNode = Pick<Department, "id" | "code" | "name">
+
+export type GraphCourseNode = Pick<
+  Course,
+  "id" | "code" | "name" | "department_id" | "course_type"
+>
+
+export interface GraphData {
+  departments: GraphDepartmentNode[]
+  courses: GraphCourseNode[]
+}
+
 export type SectionDetail = Section & {
   class: Class & {
     courseClass: CourseClassInfo

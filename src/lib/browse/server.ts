@@ -10,6 +10,7 @@ import type {
   ClassWithSections,
   CourseWithClasses,
   DepartmentWithCourses,
+  GraphData,
   OverviewLocation,
   SearchClassesParams,
   SearchClassesResponse,
@@ -32,6 +33,31 @@ export const getDepartmentsFn = createServerFn({ method: "GET" }).handler(
 
     if (error) throw new Error(error.message)
     return data as BrowseDepartment[]
+  },
+)
+
+export const getGraphDataFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GraphData> => {
+    const supabase = createServerSupabaseClient()
+
+    const [deptsResult, coursesResult] = await Promise.all([
+      catalogQuery(supabase)
+        .from("departments")
+        .select("id, code, name")
+        .order("position"),
+      catalogQuery(supabase)
+        .from("courses")
+        .select("id, code, name, department_id, course_type")
+        .order("position"),
+    ])
+
+    if (deptsResult.error) throw new Error(deptsResult.error.message)
+    if (coursesResult.error) throw new Error(coursesResult.error.message)
+
+    return {
+      departments: deptsResult.data ?? [],
+      courses: coursesResult.data ?? [],
+    }
   },
 )
 
