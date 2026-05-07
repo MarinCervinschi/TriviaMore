@@ -14,11 +14,11 @@ export function ThemeIcons({ className, strokeWidth = 2 }: ThemeIconsProps) {
     <span className={cn("relative inline-flex shrink-0", className)}>
       <Sun
         strokeWidth={strokeWidth}
-        className="rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0 motion-reduce:transition-none"
+        className="rotate-0 scale-100 transition-transform duration-600 ease-in-out dark:-rotate-90 dark:scale-0 motion-reduce:transition-none"
       />
       <Moon
         strokeWidth={strokeWidth}
-        className="absolute inset-0 rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100 motion-reduce:transition-none"
+        className="absolute inset-0 rotate-90 scale-0 transition-transform duration-600 ease-in-out dark:rotate-0 dark:scale-100 motion-reduce:transition-none"
       />
     </span>
   )
