@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 
+import { runThemeTransition } from "@/lib/theme-transition"
 import { useThemeContext } from "@/providers/theme-provider"
+
+type ToggleEvent = Pick<MouseEvent, "clientX" | "clientY"> | undefined
 
 export function useTheme() {
   const { theme, setTheme, resolvedTheme } = useThemeContext()
@@ -19,7 +22,7 @@ export function useTheme() {
       isDark: false,
       isLight: false,
       isSystem: false,
-      toggleTheme: () => {},
+      toggleTheme: (_event?: ToggleEvent) => {},
       setLightTheme: () => {},
       setDarkTheme: () => {},
       setSystemTheme: () => {},
@@ -38,7 +41,14 @@ export function useTheme() {
     isDark,
     isLight,
     isSystem,
-    toggleTheme: () => setTheme(isDark ? "light" : "dark"),
+    toggleTheme: (event?: ToggleEvent) => {
+      const next = isDark ? "light" : "dark"
+      const origin =
+        event && typeof event.clientX === "number"
+          ? { x: event.clientX, y: event.clientY }
+          : null
+      runThemeTransition(() => setTheme(next), origin)
+    },
     setLightTheme: () => setTheme("light"),
     setDarkTheme: () => setTheme("dark"),
     setSystemTheme: () => setTheme("system"),
