@@ -14,10 +14,16 @@ import {
 import { Button } from "@/components/ui/button"
 import { useThemeContext } from "@/providers/theme-provider"
 
+import {
+  computeFilterActives,
+  createEmptyFiltersState,
+  type GraphFiltersState,
+} from "@/lib/browse/graph-filters"
 import type { GraphData } from "@/lib/browse/types"
 
 interface NetworkGraphProps {
   data: GraphData
+  filters?: GraphFiltersState
 }
 
 type NodeMeta =
@@ -92,7 +98,9 @@ function buildTheme(base: Theme, courseFill: string): Theme {
   }
 }
 
-export function NetworkGraph({ data }: NetworkGraphProps) {
+const EMPTY_FILTERS = createEmptyFiltersState()
+
+export function NetworkGraph({ data, filters = EMPTY_FILTERS }: NetworkGraphProps) {
   const { resolvedTheme } = useThemeContext()
   const ref = useRef<GraphCanvasRef | null>(null)
   const [hovered, setHovered] = useState<NodeMeta | null>(null)
@@ -195,6 +203,18 @@ export function NetworkGraph({ data }: NetworkGraphProps) {
     focusOnSelect: false,
   })
 
+  const filterActives = useMemo(
+    () => computeFilterActives(data, filters).activeIds,
+    [data, filters],
+  )
+
+  const mergedActives = useMemo(() => {
+    if (filterActives.length === 0) return actives
+    const set = new Set<string>(actives ?? [])
+    for (const id of filterActives) set.add(id)
+    return Array.from(set)
+  }, [actives, filterActives])
+
   const handleNodeClick = (node: GraphNode) => {
     onNodeClick?.(node)
     const meta = node.data as NodeMeta | undefined
@@ -233,7 +253,7 @@ export function NetworkGraph({ data }: NetworkGraphProps) {
         }}
         theme={theme}
         selections={selections}
-        actives={actives}
+        actives={mergedActives}
         draggable={false}
         labelType="auto"
         glOptions={{ alpha: true, antialias: true }}

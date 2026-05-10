@@ -21,6 +21,24 @@ export function GraphPageSkeleton() {
         </p>
       </header>
 
+      {/* Filter panel placeholder (desktop only) */}
+      <div className="pointer-events-none absolute right-4 top-4 z-10 hidden w-72 rounded-2xl border bg-card/80 p-4 shadow-lg backdrop-blur-sm md:block sm:right-6 sm:top-6 sm:p-5">
+        <Skeleton className="mb-4 h-4 w-20" />
+        <div className="space-y-5">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i}>
+              <Skeleton className="mb-2 h-3 w-16" />
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <Skeleton key={j} className="h-7 w-20 rounded-full" />
+                ))}
+              </div>
+            </div>
+          ))}
+          <Skeleton className="h-8 w-full rounded-xl" />
+        </div>
+      </div>
+
       {/* Decorative graph silhouette */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div className="relative h-[60vh] w-[60vh] max-h-[600px] max-w-[600px]">
