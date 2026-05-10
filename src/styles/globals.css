@@ -300,7 +300,8 @@ body {
 
 /* Touch target enforcement for mobile */
 @media (pointer: coarse) {
-  button, [role="button"] {
+  button:not([role="checkbox"]):not([role="radio"]):not([role="switch"]),
+  [role="button"] {
     min-height: 44px;
   }
 }
