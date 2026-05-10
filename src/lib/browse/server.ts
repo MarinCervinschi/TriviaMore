@@ -43,11 +43,11 @@ export const getGraphDataFn = createServerFn({ method: "GET" }).handler(
     const [deptsResult, coursesResult] = await Promise.all([
       catalogQuery(supabase)
         .from("departments")
-        .select("id, code, name")
+        .select("id, code, name, area")
         .order("position"),
       catalogQuery(supabase)
         .from("courses")
-        .select("id, code, name, department_id, course_type")
+        .select("id, code, name, department_id, course_type, location")
         .order("position"),
     ])
 

@@ -1,8 +1,14 @@
-import { Suspense, lazy } from "react"
+import { Suspense, lazy, useMemo, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
+import { GraphFilters } from "@/components/graph/graph-filters"
 import { GraphPageSkeleton } from "@/components/skeletons"
+import {
+  computeFilterActives,
+  createEmptyFiltersState,
+  type GraphFiltersState,
+} from "@/lib/browse/graph-filters"
 import { browseQueries } from "@/lib/browse/queries"
 import { seoHead } from "@/lib/seo"
 
@@ -28,6 +34,22 @@ export const Route = createFileRoute("/_app/graph/")({
 
 function GraphPage() {
   const { data } = useSuspenseQuery(browseQueries.graph())
+  const [filters, setFilters] = useState<GraphFiltersState>(() =>
+    createEmptyFiltersState(),
+  )
+
+  const counts = useMemo(
+    () => computeFilterActives(data, filters),
+    [data, filters],
+  )
+
+  const totalCounts = useMemo(
+    () => ({
+      departments: data.departments.length,
+      courses: data.courses.length,
+    }),
+    [data],
+  )
 
   return (
     <div className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
@@ -44,8 +66,18 @@ function GraphPage() {
         </p>
       </header>
 
+      <GraphFilters
+        filters={filters}
+        onChange={setFilters}
+        visibleCounts={{
+          departments: counts.deptCount,
+          courses: counts.courseCount,
+        }}
+        totalCounts={totalCounts}
+      />
+
       <Suspense fallback={<GraphPageSkeleton />}>
-        <NetworkGraph data={data} />
+        <NetworkGraph data={data} filters={filters} />
       </Suspense>
     </div>
   )
