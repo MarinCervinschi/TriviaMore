@@ -57,7 +57,7 @@ export function StartExamDialog({
 
   // Quiz state
   const [questionCount, setQuestionCount] = useState(
-    Math.min(30, Math.max(1, maxQuizQuestions)),
+    Math.min(33, Math.max(1, maxQuizQuestions)),
   )
   const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(60))
   const [evalModeId, setEvalModeId] = useState<string | undefined>()

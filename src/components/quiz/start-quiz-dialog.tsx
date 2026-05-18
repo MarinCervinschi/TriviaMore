@@ -43,7 +43,7 @@ export function StartQuizDialog({
   maxQuestions: number
 }) {
   const [questionCount, setQuestionCount] = useState(
-    Math.min(30, maxQuestions),
+    Math.min(11, maxQuestions),
   )
   const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(30))
   const [evalModeId, setEvalModeId] = useState<string | undefined>()
