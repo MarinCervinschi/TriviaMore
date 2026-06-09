@@ -5,11 +5,23 @@ description: Generate quiz questions from notes/study material for a TriviaMore 
 
 # Generate Questions
 
-You generate quiz questions from material the user provides. The output is **always** a JSON file in `pending-questions/`, never a direct DB write. The user uploads via the existing admin UI to gate everything that reaches the database.
+You generate quiz questions from material the user provides. The output is **always** a JSON file in `pending-questions/`, never a direct DB write. The user reviews the file, opens the admin UI at `/admin/questions/new?sectionId=...`, and pastes the JSON into the "Import JSON" tab. The section is chosen by the user via the URL — you do not need to know it.
 
 ## Prerequisites
 
-The `triviamore-catalog` MCP server must be connected. If its tools aren't available (`mcp__triviamore-catalog__*`), tell the user to run `/mcp` to verify and stop. Do not fall back to raw SQL or Bash queries.
+The `trivia-more-questions` MCP server must be connected. The only tool you'll use is `mcp__trivia-more-questions__validate_questions`. If it's not available, tell the user to run `/mcp` to verify and stop.
+
+## References
+
+The format and per-type rules live in sibling files. **Read the relevant ones before generating** — don't rely on memory across sessions:
+
+- `references/question-format.md` — shared schema, enums, common rules. Read every session.
+- `references/multiple-choice.md` — MC: options (2-40, prefer 4), multi-correct (~10–20%), anti-bias rules, exact match.
+- `references/true-false.md` — TF: fixed `["Vero","Falso"]`.
+- `references/short-answer.md` — SA: open-ended answers (flashcard / future free-response mode).
+- `references/latex.md` — KaTeX, JSON escaping, pitfalls. Read whenever the source material involves math or symbols.
+
+A batch always touches at least `question-format.md` plus the per-type files for the types you'll generate.
 
 ## Workflow
 
@@ -18,101 +30,62 @@ Follow these steps in order. Use TodoWrite to track progress.
 ### 1. Collect inputs from the user
 
 Ask, in one message, only what you don't already have:
-- **Source material**: file path or pasted text
-- **Destination**: department / course / section (or "help me pick")
-- **Count**: how many questions (default: 10)
-- **Type mix**: default 70% MULTIPLE_CHOICE, 20% TRUE_FALSE, 10% SHORT_ANSWER (only ask if user hasn't specified)
-- **Difficulty**: default 30% EASY, 50% MEDIUM, 20% HARD (only ask if user hasn't specified)
+- **Source material**: file path or pasted text.
+- **Type mix**: default 70% `MULTIPLE_CHOICE`, 20% `TRUE_FALSE`, 10% `SHORT_ANSWER`. Override only if the user explicitly asks for a different mix in *this* request (e.g. "solo MC", "no SHORT_ANSWER"). A previous-session override does **not** carry over — re-confirm or fall back to the default.
+- **Count and batching**: don't impose a rigid default. The goal is to cover the main topics of the material; let content density drive the count. **Before** generating, estimate roughly how large the batch would be:
+  - If small/medium (~roughly ≤ 35 questions), produce a single file.
+  - If the source material is large enough that one batch would either saturate the context window or produce an unwieldy file, **propose splitting into multiple batches** (e.g. one per chapter / section) and discuss the split with the user before generating anything. Each batch becomes its own JSON file.
+- **Difficulty**: calibrate to the conceptual importance and depth of each topic. Foundational definitions tend toward `EASY`, applied reasoning toward `MEDIUM`, derivations / formulas / non-obvious distinctions toward `HARD`. The 30/50/20 split is a soft target, not a constraint — let the content shape it.
 
-### 2. Resolve the section
+Do **not** ask for the section / department / course — the user picks the destination later by opening the admin URL.
 
-If the user gave a clear destination string, you may still need its UUID. Use:
-1. `list_departments` → user picks one
-2. `list_courses({ departmentId })` → user picks one
-3. (optional) `list_classes({ courseId })` → use this to narrow down when the course has many classes; user picks one
-4. `list_sections({ courseId })` for all sections of a course, OR `list_sections({ classId })` for one class only → user picks one (use the `path` field to disambiguate)
+### 2. Read the format references
 
-Skip the steps the user has already nailed down. End with a confirmed `sectionId` (UUID).
+Mandatory reads:
+- `references/question-format.md`
+- One per-type file for each `question_type` you'll produce.
+- `references/latex.md` if the material involves math, formulas, code with backslashes, or symbols.
 
-### 3. Get section context
+The reference files are the source of truth — keep them open as you draft.
 
-Call `get_section_context({ sectionId })`. From the response:
-- Use `section.name` and `section.description` to stay on-topic
-- Read `recent_questions` to:
-  - **Avoid duplicates** — never generate a question whose stem closely matches an existing one
-  - **Match the style**: length, formality, language register (Italian)
-  - **Match the structure**: typical option count, use of explanations, length of correct_answer
+### 3. Generate the batch
 
-### 4. Confirm the format
+Construct the array following the count and mix the user agreed to. Apply the per-type rules (anti-bias, multi-correct quotas, exact-match, fixed TF options, open-ended SA, etc.) from the references — they are not optional.
 
-Call `get_question_format()` once per session to lock in the schema. Key rules (re-read each time):
-- `content`: 10-2000 chars, trimmed, ends with appropriate punctuation
-- `question_type`: `MULTIPLE_CHOICE` | `TRUE_FALSE` | `SHORT_ANSWER`
-- `options`: **always a flat array of plain strings** — never objects like `{id, text}`
-  - MULTIPLE_CHOICE: 2-6 strings, plausible distractors, prefer 4
-  - TRUE_FALSE: always `["Vero", "Falso"]` (in this order)
-  - SHORT_ANSWER: omit or `null`
-- `correct_answer`: 1-6 non-empty strings
-  - For MULTIPLE_CHOICE, every entry must be a **byte-for-byte exact match** of one of the strings in `options` (same whitespace, same LaTeX, same punctuation). Scoring compares strings literally — any drift makes the answer un-scoreable.
-  - For TRUE_FALSE: `["Vero"]` or `["Falso"]`
-  - For SHORT_ANSWER: the expected concise answer(s)
-- `explanation`: optional, ≤1000 chars; include for ~80% of questions, especially when the correct answer needs justification
-- `difficulty`: `EASY` | `MEDIUM` | `HARD`
-- **Never include `section_id`** — the UI injects it from the URL
+Quality bar:
+- Each question stands alone (no "as we saw above").
+- Cover the source material's key concepts; do not invent facts not present.
+- Use Italian unless the source material dictates otherwise.
+- **Never include `section_id`** — the admin UI injects it from the URL.
 
-### 4b. LaTeX / math notation
+### 4. Validate
 
-The renderer is KaTeX via `remark-math` + `rehype-katex`. Use it inside `content`, `options`, `correct_answer`, and `explanation`.
+Call `validate_questions({ questions })`. If `valid: false`, read the errors, fix the offending entries, retry. Do not proceed with errors. After 2 fix attempts, stop and surface the errors to the user.
 
-**Delimiters**:
-- Inline math: `$...$` — e.g. `Il valore di $\sigma(x)$ è...`
-- Block math: `$$...$$` on its own paragraph — for standalone equations
-- **Do not** use `\(...\)` or `\[...\]` — not enabled.
+### 5. Save to disk
 
-**JSON escaping**: backslashes must be doubled inside JSON strings.
-- LaTeX source `\sigma(x) = \dfrac{1}{1+e^{-x}}` → JSON `"$\\sigma(x) = \\dfrac{1}{1+e^{-x}}$"`
-- Every `\command` becomes `\\command` in the JSON file.
-- Double-check after writing: a single backslash in the file means broken KaTeX.
+Write the validated JSON to `pending-questions/<timestamp>-<short-slug>.json`, where:
+- `<timestamp>` is `YYYY-MM-DDTHH-mm-ss` (UTC, colons replaced with hyphens)
+- `<short-slug>` is a 2-3 word lowercase kebab summary of the topic, e.g. `tcp-handshake`, `derivata-sigmoide`
 
-**Match exactness for MULTIPLE_CHOICE**: when the correct option contains LaTeX, copy the exact same string into `correct_answer` — do not paraphrase, simplify spacing, or swap `\frac` for `\dfrac`.
+Use the standard `Write` tool. Create the directory if it doesn't exist (the `Write` tool handles this).
 
-**Common pitfalls**:
-- Subscripts/superscripts longer than one character need braces: `e^{-x}`, `f_{y_i}`. `e^-x` renders as `e⁻x` truncated.
-- Greek letters: `\sigma`, `\alpha`, `\theta`, `\lambda`. Don't paste Unicode `σ` mid-formula — keep the math zone consistent.
-- Operators: `\geq`, `\leq`, `\neq`, `\approx`, `\cdot`, `\times`. Plain `>=` works in text but not as a math symbol.
-- Functions/keywords: `\max`, `\min`, `\log`, `\exp`, `\sin` — these get the upright font. Bare `max(0,x)` will render in italic and look wrong.
-- Sets/spaces: `\mathbb{R}`, `\mathbb{N}`. Pure letters like `R`, `N` are ambiguous.
-- Don't wrap an entire sentence in `$...$` — only the math fragments. Mix prose and math: `La derivata $\frac{d}{dx} f(x)$ è positiva quando...`.
-- Inside `options` and `correct_answer`, the LaTeX strings must be **identical** between the two arrays — copy-paste, don't retype.
+The file content is the JSON array — pretty-printed (2-space indent), trailing newline.
 
-### 5. Generate the batch
+### 6. Stop
 
-Construct the array following the count and mix the user agreed to. Quality bar:
-- Each question stands alone (no "as we saw above")
-- Distractors are plausible, not absurd; ideally one common misconception
-- Explanations cite *why*, not just restate the answer
-- Use Italian unless the source material dictates otherwise
-- Cover the source material's key concepts; do not invent facts not present
+End with a one-line summary:
 
-### 6. Validate
+```
+Saved <count> questions to pending-questions/<filename>.
+Open /admin/questions/new?sectionId=<your-section-id> → Tab "Import JSON" → paste the file content → Importa domande.
+```
 
-Call `validate_questions({ questions })`. If `valid: false`, read the errors, fix the offending entries, retry. Do not proceed with errors.
-
-### 7. Save
-
-Call `save_questions_batch({ sectionId, questions })`. Read the response and tell the user (concisely):
-- File path (use `relative_path`)
-- Count
-- The full upload URL: `<dev-host>/admin/questions/new?sectionId=<sectionId>` (Tab "Import JSON" → paste file content → Importa domande)
-
-### 8. Stop
-
-Do not open the UI, do not deploy, do not run migrations. The user reviews and uploads. End with a one-line summary: where the file is and what they do next.
+Do not open the UI, do not deploy, do not run migrations. The user reviews the file and uploads.
 
 ## Constraints
 
-- **Read-only on the DB.** All writes go through the JSON file.
+- **Read-only on the DB.** No DB access at all from this skill.
 - **No `section_id`** in question objects — UI handles it.
-- **One section per batch.** If the user asks for questions across multiple sections, run the workflow once per section, producing separate JSON files.
+- **One file per batch.** If the user asks for questions on multiple unrelated topics, propose splitting into separate runs (and separate files). Same applies when a single source is large enough to warrant a multi-batch split — agree the split with the user *before* generating.
 - **No fabrication.** If the source material is too thin for the requested count, say so and propose a smaller count rather than inventing content.
-- If `validate_questions` fails after 2 fix attempts, stop and surface the errors to the user.

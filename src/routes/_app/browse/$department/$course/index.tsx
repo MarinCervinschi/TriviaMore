@@ -120,7 +120,18 @@ function ClassRow({
         {sectionCount === 1 ? "sezione" : "sezioni"}
       </td>
       <td className="pr-6 py-4">
-        <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+        <Link
+          to="/browse/$department/$course/$class"
+          params={{
+            department: deptCode.toLowerCase(),
+            course: courseCode.toLowerCase(),
+            class: classData.code.toLowerCase(),
+          }}
+          className="inline-flex"
+          aria-label={`Apri ${classData.class.name}`}
+        >
+          <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+        </Link>
       </td>
     </tr>
   )

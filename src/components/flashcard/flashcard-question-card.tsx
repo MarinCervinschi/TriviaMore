@@ -52,7 +52,7 @@ export function FlashcardQuestionCard({
         }`}
       >
         {/* Front */}
-        <div className="min-h-[400px] overflow-hidden rounded-2xl border bg-card p-6 shadow-sm [backface-visibility:hidden] sm:p-8">
+        <div className="max-h-[80vh] min-h-[400px] overflow-y-auto wrap-anywhere rounded-2xl border bg-card p-6 shadow-sm [backface-visibility:hidden] sm:p-8">
           <div className="flex items-center justify-between pb-6">
             <div className="flex items-center gap-3">
               <span className="text-2xl font-bold gradient-text">
@@ -84,7 +84,7 @@ export function FlashcardQuestionCard({
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 min-h-[400px] overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-6 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+        <div className="absolute inset-0 max-h-[80vh] min-h-[400px] overflow-y-auto wrap-anywhere rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-6 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
           <div className="flex items-center justify-between pb-6">
             <span className="text-sm font-medium text-primary">
               Risposta
@@ -100,13 +100,20 @@ export function FlashcardQuestionCard({
               </span>
             </div>
           </div>
-          <div className="flex min-h-[280px] flex-col items-center justify-center gap-6">
-            <div className="text-lg font-medium">
+          <div className="flex min-h-[280px] flex-col gap-6 [justify-content:safe_center]">
+            {question.correct_answer.length === 1 ? (
               <MarkdownRenderer
-                content={question.correct_answer.join(" / ")}
-                className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                content={question.correct_answer[0]}
+                className="text-center [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
               />
-            </div>
+            ) : (
+              <MarkdownRenderer
+                content={question.correct_answer
+                  .map((a, i) => `**Variante ${i + 1}.** ${a}`)
+                  .join("\n\n")}
+                className="text-center [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+              />
+            )}
             {question.explanation && (
               <div className="w-full rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
                 <MarkdownRenderer

@@ -26,7 +26,6 @@ import { parseOptions, type QuestionOption } from "@/lib/quiz/options"
 import { QuestionContentField } from "./question-content-field"
 import { MultipleChoiceOptions } from "./multiple-choice-options"
 import type { Question } from "@/lib/admin/types"
-import type { Json } from "@/lib/supabase/database.types"
 
 // Form-level schema (options as {id, text} objects)
 const questionFormSchema = z.object({
@@ -74,7 +73,7 @@ export function QuestionForm({
   const [showPreview, setShowPreview] = useState(false)
 
   const existingOptions: QuestionOption[] = question?.options
-    ? parseOptions(question.options as Json)
+    ? parseOptions(question.options)
     : []
 
   const defaultOptions: QuestionOption[] =

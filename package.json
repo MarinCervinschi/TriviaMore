@@ -20,7 +20,7 @@
     "db:types": "infisical run --recursive -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
     "generate:sitemap:dev": "infisical run --recursive -- pnpm generate:sitemap",
-    "mcp:catalog": "infisical run --recursive -- tsx scripts/mcp/catalog-server.ts"
+    "mcp:questions": "tsx scripts/mcp/questions-server.ts"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.2.7",
@@ -71,6 +71,7 @@
     "react-hook-form": "^7.72.0",
     "react-icons": "^5.6.0",
     "react-markdown": "^10.1.0",
+    "reagraph": "^4.30.8",
     "recharts": "3.8.0",
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { Bookmark, BookmarkCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useToggleBookmark } from "@/lib/user/mutations"
+import { userQueries } from "@/lib/user/queries"
 import { cn } from "@/lib/utils"
 
 export function BookmarkButton({
@@ -19,14 +20,12 @@ export function BookmarkButton({
   className?: string
 }) {
   const toggleBookmark = useToggleBookmark()
-  const [isBookmarked, setIsBookmarked] = useState(false)
+  const { data: bookmarkedIds } = useQuery(userQueries.bookmarkedIds())
+  const isBookmarked = bookmarkedIds?.includes(questionId) ?? false
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setIsBookmarked((prev) => !prev)
-    toggleBookmark.mutate(questionId, {
-      onError: () => setIsBookmarked((prev) => !prev),
-    })
+    toggleBookmark.mutate(questionId)
   }
 
   return (

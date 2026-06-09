@@ -3,6 +3,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { STALE_TIME } from "@/lib/shared/cache"
 
 import {
+  getBookmarkedQuestionIdsFn,
   getRecentClassesFn,
   getUserBookmarksFn,
   getUserClassesFn,
@@ -30,6 +31,13 @@ export const userQueries = {
     queryOptions({
       queryKey: ["user", "bookmarks"],
       queryFn: () => getUserBookmarksFn(),
+      staleTime: STALE_TIME.STANDARD,
+    }),
+
+  bookmarkedIds: () =>
+    queryOptions({
+      queryKey: ["user", "bookmarked-ids"],
+      queryFn: () => getBookmarkedQuestionIdsFn(),
       staleTime: STALE_TIME.STANDARD,
     }),
 

@@ -4,6 +4,7 @@ import {
   Home,
   Inbox,
   Info,
+  Network,
   Shield,
 } from "lucide-react"
 
@@ -24,6 +25,13 @@ export const NAV_ITEMS: NavItem[] = [
   { to: "/user/classes", icon: GraduationCap, label: "I Miei Corsi", fuzzy: false },
   { to: "/user/requests", icon: Inbox, label: "Contributi", fuzzy: true },
 ]
+
+export const GRAPH_ITEM: NavItem = {
+  to: "/graph",
+  icon: Network,
+  label: "Grafo",
+  fuzzy: false,
+}
 
 export const ABOUT_ITEM: NavItem = {
   to: "/about",

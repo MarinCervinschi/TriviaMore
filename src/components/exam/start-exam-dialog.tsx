@@ -11,22 +11,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  AnimatedBlock,
+  AnimatedStack,
+} from "@/components/session-config/animated-block"
+import {
+  EvalInfoCard,
+  EvalSelect,
+  SliderWithInput,
+  TimeTickRow,
+} from "@/components/session-config/session-form-blocks"
+import { SummaryPanel } from "@/components/session-config/summary-panel"
+import {
+  CardStackBlock,
+  EvalBlock,
+  Eyebrow,
+  MetricBlock,
+  TimeBlock,
+} from "@/components/session-config/summary-blocks"
 import { useStartExamFlashcard } from "@/lib/flashcard/mutations"
+import { TIME_STEPS } from "@/lib/quiz/constants"
 import { useStartQuiz } from "@/lib/quiz/mutations"
 import { quizQueries } from "@/lib/quiz/queries"
 import type { EvaluationMode } from "@/lib/quiz/types"
 
-const TIME_STEPS = [5, 10, 15, 20, 30, 45, 60, 90, 120]
+type ExamTab = "quiz" | "flashcard"
 
 export function StartExamDialog({
   open,
@@ -43,25 +53,23 @@ export function StartExamDialog({
 }) {
   const hasQuiz = maxQuizQuestions > 0
   const hasFlashcard = maxFlashcardQuestions > 0
-  const [tab, setTab] = useState<string>(hasQuiz ? "quiz" : "flashcard")
+  const [tab, setTab] = useState<ExamTab>(hasQuiz ? "quiz" : "flashcard")
 
   // Quiz state
   const [questionCount, setQuestionCount] = useState(
-    Math.min(30, maxQuizQuestions),
+    Math.min(33, Math.max(1, maxQuizQuestions)),
   )
-  const [timeStepIndex, setTimeStepIndex] = useState(
-    TIME_STEPS.indexOf(60),
-  )
+  const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(60))
   const [evalModeId, setEvalModeId] = useState<string | undefined>()
 
   // Flashcard state
   const [cardCount, setCardCount] = useState(
-    Math.min(20, maxFlashcardQuestions),
+    Math.min(20, Math.max(1, maxFlashcardQuestions)),
   )
 
   const { data: evalModes } = useQuery({
     ...quizQueries.evaluationModes(),
-    enabled: open && tab === "quiz",
+    enabled: open && hasQuiz,
   })
 
   const selectedEvalMode = evalModes?.find(
@@ -72,14 +80,16 @@ export function StartExamDialog({
   const flashcardMutation = useStartExamFlashcard(() => onOpenChange(false))
   const loading = quizMutation.isPending || flashcardMutation.isPending
 
+  const isUnlimited = timeStepIndex >= TIME_STEPS.length
+  const timeLimit = isUnlimited ? null : TIME_STEPS[timeStepIndex]
+
   const handleStartQuiz = () => {
-    const time = TIME_STEPS[timeStepIndex]
     quizMutation.mutate({
       sectionId,
       questionCount: Math.min(questionCount, maxQuizQuestions),
-      timeLimit: time === undefined ? null : time,
+      timeLimit,
       quizMode: "EXAM_SIMULATION",
-      evaluationModeId: evalModeId,
+      evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
     })
   }
 
@@ -90,91 +100,171 @@ export function StartExamDialog({
     })
   }
 
+  const showTabs = hasQuiz && hasFlashcard
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Simulazione Esame</DialogTitle>
-          <DialogDescription>
-            Domande da tutte le sezioni dell'insegnamento
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className="max-h-[90dvh] gap-0 overflow-y-auto overflow-x-hidden p-0 sm:max-w-[680px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_270px]">
+          <div className="flex flex-col">
+            <DialogHeader className="border-b px-6 pb-4 pt-5 text-left">
+              <DialogTitle>Simulazione Esame</DialogTitle>
+              <DialogDescription>
+                Domande da tutte le sezioni dell&apos;insegnamento
+              </DialogDescription>
+            </DialogHeader>
 
-        {hasQuiz && hasFlashcard ? (
-          <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="quiz" className="gap-1.5">
-                <BookOpen className="h-3.5 w-3.5" />
-                Quiz
-              </TabsTrigger>
-              <TabsTrigger value="flashcard" className="gap-1.5">
-                <Sparkles className="h-3.5 w-3.5" />
-                Flashcard
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="quiz">
-              <QuizConfig
-                questionCount={questionCount}
-                setQuestionCount={setQuestionCount}
-                timeStepIndex={timeStepIndex}
-                setTimeStepIndex={setTimeStepIndex}
-                evalModeId={evalModeId}
-                setEvalModeId={setEvalModeId}
-                evalModes={evalModes}
-                selectedEvalMode={selectedEvalMode}
-                maxQuestions={maxQuizQuestions}
-              />
-            </TabsContent>
-            <TabsContent value="flashcard">
-              <FlashcardConfig
-                cardCount={cardCount}
-                setCardCount={setCardCount}
-                maxCards={maxFlashcardQuestions}
-              />
-            </TabsContent>
-          </Tabs>
-        ) : hasQuiz ? (
-          <QuizConfig
-            questionCount={questionCount}
-            setQuestionCount={setQuestionCount}
-            timeStepIndex={timeStepIndex}
-            setTimeStepIndex={setTimeStepIndex}
-            evalModeId={evalModeId}
-            setEvalModeId={setEvalModeId}
-            evalModes={evalModes}
-            selectedEvalMode={selectedEvalMode}
-            maxQuestions={maxQuizQuestions}
-          />
-        ) : (
-          <FlashcardConfig
-            cardCount={cardCount}
-            setCardCount={setCardCount}
-            maxCards={maxFlashcardQuestions}
-          />
-        )}
+            {showTabs ? (
+              <Tabs
+                value={tab}
+                onValueChange={(v) => setTab(v as ExamTab)}
+                className="flex flex-1 flex-col"
+              >
+                <div className="px-6 pt-4">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger
+                      value="quiz"
+                      className="gap-1.5 focus-visible:shadow-none focus-visible:ring-offset-0"
+                    >
+                      <BookOpen className="h-3.5 w-3.5" />
+                      Quiz
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="flashcard"
+                      className="gap-1.5 focus-visible:shadow-none focus-visible:ring-offset-0"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Flashcard
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="quiz" className="m-0 px-6 py-5">
+                  <AnimatedStack className="flex flex-col gap-5">
+                    <QuizConfigBody
+                      questionCount={questionCount}
+                      setQuestionCount={setQuestionCount}
+                      timeStepIndex={timeStepIndex}
+                      setTimeStepIndex={setTimeStepIndex}
+                      evalModeId={evalModeId}
+                      setEvalModeId={setEvalModeId}
+                      evalModes={evalModes}
+                      selectedEvalMode={selectedEvalMode}
+                      maxQuestions={maxQuizQuestions}
+                    />
+                  </AnimatedStack>
+                </TabsContent>
+                <TabsContent value="flashcard" className="m-0 px-6 py-5">
+                  <AnimatedStack className="flex flex-col gap-5">
+                    <FlashcardConfigBody
+                      cardCount={cardCount}
+                      setCardCount={setCardCount}
+                      maxCards={maxFlashcardQuestions}
+                    />
+                  </AnimatedStack>
+                </TabsContent>
+              </Tabs>
+            ) : hasQuiz ? (
+              <AnimatedStack className="flex flex-col gap-5 px-6 py-5">
+                <QuizConfigBody
+                  questionCount={questionCount}
+                  setQuestionCount={setQuestionCount}
+                  timeStepIndex={timeStepIndex}
+                  setTimeStepIndex={setTimeStepIndex}
+                  evalModeId={evalModeId}
+                  setEvalModeId={setEvalModeId}
+                  evalModes={evalModes}
+                  selectedEvalMode={selectedEvalMode}
+                  maxQuestions={maxQuizQuestions}
+                />
+              </AnimatedStack>
+            ) : (
+              <AnimatedStack className="flex flex-col gap-5 px-6 py-5">
+                <FlashcardConfigBody
+                  cardCount={cardCount}
+                  setCardCount={setCardCount}
+                  maxCards={maxFlashcardQuestions}
+                />
+              </AnimatedStack>
+            )}
 
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Annulla
-          </Button>
-          <Button
-            onClick={tab === "quiz" ? handleStartQuiz : handleStartFlashcard}
-            disabled={loading}
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {tab === "quiz" ? "Inizia Quiz" : "Inizia Flashcard"}
-          </Button>
-        </DialogFooter>
+            <DialogFooter className="mt-auto flex justify-end gap-2 border-t px-6 py-4">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={loading}
+              >
+                Annulla
+              </Button>
+              <Button
+                onClick={
+                  tab === "quiz" ? handleStartQuiz : handleStartFlashcard
+                }
+                disabled={loading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {tab === "quiz" ? "Inizia Quiz" : "Inizia Flashcard"}
+              </Button>
+            </DialogFooter>
+          </div>
+
+          <SummaryPanel footerTip="Simulazione esame · raccoglie da tutte le sezioni del corso.">
+            {tab === "quiz" ? (
+              <>
+                <AnimatedBlock>
+                  <TimeBlock
+                    minutes={timeLimit}
+                    questionCount={questionCount}
+                  />
+                </AnimatedBlock>
+                <AnimatedBlock>
+                  <MetricBlock
+                    eyebrow="Domande"
+                    value={questionCount}
+                    total={maxQuizQuestions}
+                    showBar
+                  />
+                </AnimatedBlock>
+                {selectedEvalMode && (
+                  <AnimatedBlock>
+                    <EvalBlock
+                      mode={selectedEvalMode}
+                      questionCount={questionCount}
+                    />
+                  </AnimatedBlock>
+                )}
+              </>
+            ) : (
+              <>
+                <AnimatedBlock>
+                  <CardStackBlock
+                    count={cardCount}
+                    max={maxFlashcardQuestions}
+                  />
+                </AnimatedBlock>
+                <AnimatedBlock>
+                  <div className="flex flex-col gap-1">
+                    <Eyebrow>Modalità</Eyebrow>
+                    <div className="text-[13px] font-semibold text-foreground">
+                      Studio libero
+                    </div>
+                    <p className="text-[10.5px] leading-relaxed text-muted-foreground">
+                      Nessun punteggio, nessun timer.
+                    </p>
+                  </div>
+                </AnimatedBlock>
+              </>
+            )}
+          </SummaryPanel>
+        </div>
       </DialogContent>
     </Dialog>
   )
 }
 
-function QuizConfig({
+function QuizConfigBody({
   questionCount,
   setQuestionCount,
   timeStepIndex,
@@ -196,76 +286,47 @@ function QuizConfig({
   maxQuestions: number
 }) {
   return (
-    <div className="grid gap-5 py-4">
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label>Numero di domande</Label>
-          <span className="text-sm font-medium tabular-nums">
-            {questionCount === maxQuestions
-              ? `Tutte (${questionCount})`
-              : questionCount}
-          </span>
-        </div>
-        <Slider
-          value={[questionCount]}
-          onValueChange={([v]) => setQuestionCount(v)}
+    <>
+      <AnimatedBlock>
+        <SliderWithInput
+          label="Numero di domande"
+          value={questionCount}
+          onChange={setQuestionCount}
           min={1}
           max={maxQuestions}
-          step={1}
+          hint={
+            questionCount === maxQuestions
+              ? `Tutte (${maxQuestions})`
+              : `${questionCount} di ${maxQuestions}`
+          }
         />
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label>Tempo limite</Label>
-          <span className="text-sm font-medium tabular-nums">
-            {timeStepIndex >= TIME_STEPS.length
-              ? "Illimitato"
-              : `${TIME_STEPS[timeStepIndex]} min`}
-          </span>
-        </div>
-        <Slider
-          value={[timeStepIndex]}
-          onValueChange={([v]) => setTimeStepIndex(v)}
-          min={0}
-          max={TIME_STEPS.length}
-          step={1}
+      </AnimatedBlock>
+      <AnimatedBlock>
+        <TimeTickRow
+          steps={TIME_STEPS}
+          index={timeStepIndex}
+          onChange={setTimeStepIndex}
         />
-      </div>
-
-      {evalModes && evalModes.length > 1 && (
-        <div className="space-y-2">
-          <Label>Valutazione</Label>
-          <Select
-            value={evalModeId ?? evalModes[0]?.id}
-            onValueChange={setEvalModeId}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {evalModes.map((mode) => (
-                <SelectItem key={mode.id} value={mode.id}>
-                  {mode.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      </AnimatedBlock>
+      {evalModes && evalModes.length >= 2 && (
+        <AnimatedBlock>
+          <EvalSelect
+            modes={evalModes}
+            value={evalModeId}
+            onChange={setEvalModeId}
+          />
+        </AnimatedBlock>
       )}
-
-      {selectedEvalMode && evalModes && evalModes.length > 1 && (
-        <EvalModeInfo mode={selectedEvalMode} />
+      {selectedEvalMode && (
+        <AnimatedBlock>
+          <EvalInfoCard mode={selectedEvalMode} />
+        </AnimatedBlock>
       )}
-
-      {evalModes && evalModes.length === 1 && evalModes[0] && (
-        <EvalModeInfo mode={evalModes[0]} />
-      )}
-    </div>
+    </>
   )
 }
 
-function FlashcardConfig({
+function FlashcardConfigBody({
   cardCount,
   setCardCount,
   maxCards,
@@ -275,38 +336,35 @@ function FlashcardConfig({
   maxCards: number
 }) {
   return (
-    <div className="grid gap-5 py-4">
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label>Numero di carte</Label>
-          <span className="text-sm font-medium tabular-nums">
-            {cardCount === maxCards ? `Tutte (${cardCount})` : cardCount}
-          </span>
-        </div>
-        <Slider
-          value={[cardCount]}
-          onValueChange={([v]) => setCardCount(v)}
+    <>
+      <AnimatedBlock>
+        <SliderWithInput
+          label="Numero di carte"
+          value={cardCount}
+          onChange={setCardCount}
           min={1}
           max={maxCards}
-          step={1}
+          hint={
+            cardCount === maxCards
+              ? `Tutte (${maxCards})`
+              : `${cardCount} di ${maxCards}`
+          }
         />
-      </div>
-    </div>
-  )
-}
-
-function EvalModeInfo({ mode }: { mode: EvaluationMode }) {
-  return (
-    <div className="flex gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-      <div className="space-y-0.5">
-        {mode.description && <p>{mode.description}</p>}
-        <p>
-          Corretta: <span className="font-medium text-foreground">+{mode.correct_answer_points}</span>
-          {" · "}Errata: <span className="font-medium text-foreground">{mode.incorrect_answer_points}</span>
-          {mode.partial_credit_enabled && " · Credito parziale attivo"}
-        </p>
-      </div>
-    </div>
+      </AnimatedBlock>
+      <AnimatedBlock>
+        <div className="flex gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+          <Info
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary"
+            strokeWidth={1.75}
+          />
+          <p className="leading-relaxed">
+            Modalità studio libero. Gira la carta, valuta la tua confidenza con{" "}
+            <span className="font-semibold text-foreground">Sapevo</span> /{" "}
+            <span className="font-semibold text-foreground">Non sapevo</span>.
+            Nessun timer, nessun punteggio.
+          </p>
+        </div>
+      </AnimatedBlock>
+    </>
   )
 }

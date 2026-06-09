@@ -27,6 +27,7 @@ import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
 import { Route as AppLegalRouteRouteImport } from './routes/_app/legal/route'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
+import { Route as AppGraphIndexRouteImport } from './routes/_app/graph/index'
 import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
@@ -151,6 +152,11 @@ const AppUserIndexRoute = AppUserIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppGraphIndexRoute = AppGraphIndexRouteImport.update({
+  id: '/graph/',
+  path: '/graph/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDepartmentsIndexRoute = AppDepartmentsIndexRouteImport.update({
   id: '/departments/',
@@ -371,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/departments/': typeof AppDepartmentsIndexRoute
+  '/graph/': typeof AppGraphIndexRoute
   '/user/': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -423,6 +430,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
   '/departments': typeof AppDepartmentsIndexRoute
+  '/graph': typeof AppGraphIndexRoute
   '/user': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -479,6 +487,7 @@ export interface FileRoutesById {
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/departments/': typeof AppDepartmentsIndexRoute
+  '/_app/graph/': typeof AppGraphIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
   '/_app/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/_app/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -535,6 +544,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/browse/'
     | '/departments/'
+    | '/graph/'
     | '/user/'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/browse'
     | '/departments'
+    | '/graph'
     | '/user'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -642,6 +653,7 @@ export interface FileRouteTypes {
     | '/_app/admin/'
     | '/_app/browse/'
     | '/_app/departments/'
+    | '/_app/graph/'
     | '/_app/user/'
     | '/_app/admin/classes/$classId'
     | '/_app/admin/courses/$courseId'
@@ -807,6 +819,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/'
       preLoaderRoute: typeof AppUserIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/graph/': {
+      id: '/_app/graph/'
+      path: '/graph'
+      fullPath: '/graph/'
+      preLoaderRoute: typeof AppGraphIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/departments/': {
       id: '/_app/departments/'
@@ -1142,6 +1161,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppBrowseIndexRoute: typeof AppBrowseIndexRoute
   AppDepartmentsIndexRoute: typeof AppDepartmentsIndexRoute
+  AppGraphIndexRoute: typeof AppGraphIndexRoute
   AppQuizResultsAttemptIdRoute: typeof AppQuizResultsAttemptIdRoute
   AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
   AppDepartmentsDepartmentIndexRoute: typeof AppDepartmentsDepartmentIndexRoute
@@ -1165,6 +1185,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppBrowseIndexRoute: AppBrowseIndexRoute,
   AppDepartmentsIndexRoute: AppDepartmentsIndexRoute,
+  AppGraphIndexRoute: AppGraphIndexRoute,
   AppQuizResultsAttemptIdRoute: AppQuizResultsAttemptIdRoute,
   AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
   AppDepartmentsDepartmentIndexRoute: AppDepartmentsDepartmentIndexRoute,

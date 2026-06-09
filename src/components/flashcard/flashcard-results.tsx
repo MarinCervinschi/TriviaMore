@@ -1,9 +1,9 @@
-import { CheckCircle, Clock, Eye, Moon, Sun } from "lucide-react"
+import { CheckCircle, Clock, Eye } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
-import { useTheme } from "@/hooks/useTheme"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import type { FlashcardQuestion } from "@/lib/flashcard/types"
 
 function formatTime(ms: number): string {
@@ -139,21 +139,10 @@ export function FlashcardResults({
 }
 
 function ResultsHeader() {
-  const { mounted, isDark, toggleTheme } = useTheme()
   return (
     <header className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-3 backdrop-blur-xl">
       <Logo size="sm" />
-      {mounted && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="h-9 w-9 rounded-xl"
-        >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          <span className="sr-only">Cambia tema</span>
-        </Button>
-      )}
+      <ThemeToggle className="h-9 w-9" />
     </header>
   )
 }

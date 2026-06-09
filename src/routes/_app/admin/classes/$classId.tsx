@@ -2,9 +2,10 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react"
+import { Eye, EyeOff, GraduationCap, Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { BrowsePublicButton } from "@/components/admin/browse-public-button"
 import {
   AdminPagination,
   usePaginatedSearch,
@@ -32,6 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
+  useCreateExamSimulationSentinel,
   useCreateSection,
   useDeleteSection,
   useUpdateClass,
@@ -53,6 +55,7 @@ function AdminClassDetailPage() {
   const { data } = useSuspenseQuery(adminQueries.class(classId))
   const [createSectionOpen, setCreateSectionOpen] = useState(false)
   const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null)
+  const [createExamSimulationOpen, setCreateExamSimulationOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
 
@@ -68,10 +71,14 @@ function AdminClassDetailPage() {
   const updateCourseClass = useUpdateCourseClass()
   const createSection = useCreateSection(() => setCreateSectionOpen(false))
   const deleteSection = useDeleteSection(() => setDeleteSectionId(null))
+  const createExamSimulation = useCreateExamSimulationSentinel(() =>
+    setCreateExamSimulationOpen(false),
+  )
 
   const { sections, course_classes, ...cls } = data
   const courseClass = course_classes?.[0]
   const course = courseClass?.course
+  const hasExamSimulation = sections.some((s) => s.name === "Exam Simulation")
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     sections as SectionRow[],
@@ -90,6 +97,18 @@ function AdminClassDetailPage() {
         backTo={course ? "/admin/courses/$courseId" : "/admin"}
         backParams={course ? { courseId: course.id } : undefined}
         backLabel={course?.name ?? "Admin"}
+        actions={
+          course && courseClass ? (
+            <BrowsePublicButton
+              to="/browse/$department/$course/$class"
+              params={{
+                department: course.department.code.toLowerCase(),
+                course: course.code.toLowerCase(),
+                class: courseClass.code.toLowerCase(),
+              }}
+            />
+          ) : undefined
+        }
       />
 
       <div className="grid gap-6">
@@ -140,6 +159,17 @@ function AdminClassDetailPage() {
                     placeholder="Cerca sezioni..."
                   />
                 </div>
+                {!hasExamSimulation && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl"
+                    onClick={() => setCreateExamSimulationOpen(true)}
+                  >
+                    <GraduationCap className="mr-1 h-4 w-4" />
+                    Crea Exam Simulation
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   className="rounded-xl"
@@ -252,6 +282,15 @@ function AdminClassDetailPage() {
           />
         </DialogContent>
       </Dialog>
+
+      <ConfirmationDialog
+        open={createExamSimulationOpen}
+        onOpenChange={setCreateExamSimulationOpen}
+        title='Crea sezione "Exam Simulation"'
+        description='Verrà creata la sezione sentinella "Exam Simulation" per questo insegnamento. Confermi?'
+        confirmText="Crea"
+        onConfirm={() => createExamSimulation.mutate({ id: cls.id })}
+      />
 
       <ConfirmationDialog
         open={!!deleteSectionId}

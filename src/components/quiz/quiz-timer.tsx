@@ -5,14 +5,19 @@ export function QuizTimer({
   timeLimitMinutes,
   onTimeUp,
 }: {
-  timeLimitMinutes: number
+  /** Countdown limit in minutes; null = open-ended chronometer counting up. */
+  timeLimitMinutes: number | null
   onTimeUp: () => void
 }) {
-  const [secondsLeft, setSecondsLeft] = useState(timeLimitMinutes * 60)
+  const isUnlimited = timeLimitMinutes === null
+  const [seconds, setSeconds] = useState(
+    isUnlimited ? 0 : timeLimitMinutes * 60,
+  )
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
+      setSeconds((prev) => {
+        if (isUnlimited) return prev + 1
         if (prev <= 1) {
           clearInterval(interval)
           onTimeUp()
@@ -22,11 +27,17 @@ export function QuizTimer({
       })
     }, 1000)
     return () => clearInterval(interval)
-  }, [onTimeUp])
+  }, [onTimeUp, isUnlimited])
 
-  const minutes = Math.floor(secondsLeft / 60)
-  const seconds = secondsLeft % 60
-  const isWarning = secondsLeft < 300
+  const totalSeconds = Math.max(0, seconds)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const secs = totalSeconds % 60
+  const isWarning = !isUnlimited && totalSeconds < 300
+
+  const display = hours > 0
+    ? `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+    : `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
 
   return (
     <div
@@ -35,9 +46,10 @@ export function QuizTimer({
           ? "bg-gradient-to-r from-red-500/10 to-orange-500/10 text-red-600 dark:text-red-400"
           : "bg-muted text-muted-foreground"
       }`}
+      aria-label={isUnlimited ? "Tempo trascorso" : "Tempo rimanente"}
     >
       <Clock className="h-3.5 w-3.5" />
-      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+      {display}
     </div>
   )
 }
