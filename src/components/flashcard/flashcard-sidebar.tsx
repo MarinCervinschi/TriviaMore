@@ -52,7 +52,7 @@ export function FlashcardSidebarContent({
 
 export function FlashcardSidebar(props: FlashcardSidebarContentProps) {
   return (
-    <aside className="hidden w-64 shrink-0 border-r border-border/50 bg-muted/20 p-4 backdrop-blur-sm lg:block">
+    <aside className="hidden w-64 shrink-0 border-r border-border/50 bg-background/70 p-4 backdrop-blur-xl lg:block">
       <FlashcardSidebarContent {...props} />
     </aside>
   )

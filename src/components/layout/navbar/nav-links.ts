@@ -6,6 +6,7 @@ import {
   Info,
   Mail,
   Megaphone,
+  Network,
   Settings,
   Shield,
   User,
@@ -39,12 +40,14 @@ export const GUEST_NAV_ITEMS: NavItem[] = [
   EXPLORE_DROPDOWN,
   { type: "link", to: "/about", label: "Chi Siamo", icon: Info },
   { type: "link", to: "/contact", label: "Contatti", icon: Mail },
+  { type: "link", to: "/graph", label: "Grafo", icon: Network },
   { type: "link", to: "/news", label: "Novità", icon: Megaphone },
 ]
 
 export const AUTH_NAV_ITEMS: NavItem[] = [
   { type: "link", to: "/user", label: "Il Mio Profilo", icon: Home },
   EXPLORE_DROPDOWN,
+  { type: "link", to: "/graph", label: "Grafo", icon: Network },
   { type: "link", to: "/user/classes", label: "I Miei Corsi", icon: GraduationCap },
 ]
 

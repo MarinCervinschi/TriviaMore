@@ -3,22 +3,27 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { NotFoundPage } from "@/components/error/not-found-page"
 import { seoHead } from "@/lib/seo"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { CheckCircle, Clock, XCircle } from "lucide-react"
+import { CheckCircle, CircleDot, Clock, Lightbulb, XCircle } from "lucide-react"
 
 import { QuizResultsSkeleton } from "@/components/skeletons"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
-import type { Json } from "@/lib/supabase/database.types"
+import { BookmarkButton } from "@/components/quiz/bookmark-button"
 import { ReportButton } from "@/components/requests/report-button"
 import { parseOptions, isCorrectOption } from "@/lib/quiz/options"
 import { quizQueries } from "@/lib/quiz/queries"
+import {
+  formatScaledScore,
+  formatScaledSigned,
+  getNormalizedEvaluationScale,
+  scaleAnswerScore,
+} from "@/lib/quiz/scoring"
 import {
   formatThirtyScaleGrade,
   getGradeColor,
   getGradeDescription,
 } from "@/lib/utils/grading"
-import { formatTimeSpent, getScoreBadgeVariant } from "@/lib/utils/quiz-results"
+import { formatTimeSpent } from "@/lib/utils/quiz-results"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
@@ -44,17 +49,29 @@ function ResultsPage() {
   if (!result) return null
 
   const evalMode = result.quiz.evaluation_mode
+  const totalQuestions = result.quiz.questions.length
+  const { perQuestionMax, perQuestionMin, hasPenalty } =
+    getNormalizedEvaluationScale(evalMode, totalQuestions)
 
-  const correctCount = result.answers.filter((a) => {
-    const q = result.quiz.questions.find((q) => q.id === a.question_id)
-    if (!q) return false
-    const userSet = new Set(a.user_answer)
-    const correctSet = new Set(q.correct_answer)
-    return (
-      userSet.size === correctSet.size &&
-      [...userSet].every((v) => correctSet.has(v))
-    )
-  }).length
+  const counts = result.answers.reduce(
+    (acc, a) => {
+      const q = result.quiz.questions.find((q) => q.id === a.question_id)
+      if (!q) return acc
+      const userSet = new Set(a.user_answer)
+      const correctSet = new Set(q.correct_answer)
+      const isExact =
+        userSet.size === correctSet.size &&
+        [...userSet].every((v) => correctSet.has(v))
+      if (isExact) acc.correct++
+      else if ((a.score ?? 0) > 0) acc.partial++
+      return acc
+    },
+    { correct: 0, partial: 0 },
+  )
+  const correctCount = counts.correct
+  const partialCount = counts.partial
+  const wrongCount =
+    result.quiz.questions.length - correctCount - partialCount
 
   return (
     <div className="container py-8">
@@ -80,17 +97,20 @@ function ResultsPage() {
             {getGradeDescription(result.score)}
           </p>
 
-          <div className="relative mt-8 grid grid-cols-3 gap-4">
+          <div className="relative mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="rounded-2xl bg-muted/50 p-4">
               <CheckCircle className="mx-auto mb-2 h-5 w-5 text-green-500" />
               <p className="text-2xl font-bold">{correctCount}</p>
               <p className="text-xs text-muted-foreground">Corrette</p>
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
+              <CircleDot className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
+              <p className="text-2xl font-bold">{partialCount}</p>
+              <p className="text-xs text-muted-foreground">Parziali</p>
+            </div>
+            <div className="rounded-2xl bg-muted/50 p-4">
               <XCircle className="mx-auto mb-2 h-5 w-5 text-red-500" />
-              <p className="text-2xl font-bold">
-                {result.quiz.questions.length - correctCount}
-              </p>
+              <p className="text-2xl font-bold">{wrongCount}</p>
               <p className="text-xs text-muted-foreground">Errate</p>
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
@@ -111,16 +131,20 @@ function ResultsPage() {
             <span>
               Corretta:{" "}
               <span className="font-medium text-green-600">
-                +{evalMode.correct_answer_points} pt
+                +{formatScaledScore(perQuestionMax)} pt
               </span>
             </span>
-            <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-            <span>
-              Errata:{" "}
-              <span className="font-medium text-red-600">
-                {evalMode.incorrect_answer_points} pt
-              </span>
-            </span>
+            {hasPenalty && (
+              <>
+                <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+                <span>
+                  Errata:{" "}
+                  <span className="font-medium text-red-600">
+                    {formatScaledSigned(perQuestionMin)} pt
+                  </span>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -148,6 +172,11 @@ function ResultsPage() {
                   userAnswerSet={userAnswerSet}
                   isCorrect={isCorrect}
                   score={answer?.score ?? 0}
+                  scaledScore={scaleAnswerScore(
+                    answer?.score ?? 0,
+                    evalMode,
+                    totalQuestions,
+                  )}
                   index={index}
                 />
               )
@@ -156,10 +185,15 @@ function ResultsPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-center pb-8">
+        <div className="flex flex-wrap justify-center gap-3 pb-8">
           <Button variant="outline" size="lg" asChild>
             <Link to="/">Torna alla Home</Link>
           </Button>
+          {result.quiz.section.path && (
+            <Button size="lg" asChild>
+              <Link to={result.quiz.section.path}>Torna alla sezione</Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>
@@ -171,18 +205,20 @@ function ReviewItem({
   userAnswerSet,
   isCorrect,
   score,
+  scaledScore,
   index,
 }: {
   question: {
     id: string
     content: string
-    options: Json | null
+    options: string[] | null
     correct_answer: string[]
     explanation: string | null
   }
   userAnswerSet: Set<string>
   isCorrect: boolean
   score: number
+  scaledScore: number
   index: number
 }) {
   const [open, setOpen] = useState(false)
@@ -205,26 +241,33 @@ function ReviewItem({
             <MarkdownRenderer content={question.content} inline />
           </span>
         </div>
-        <div className="flex items-center gap-1">
-          <ReportButton questionId={question.id} questionContent={question.content} />
-          <Badge variant={getScoreBadgeVariant(isCorrect ? 30 : 0)}>
-            {isCorrect
-              ? "Corretta"
-              : userAnswerSet.size > 0
-                ? "Errata"
-                : "Non risposta"}{" "}
-            ({score} pt)
-          </Badge>
-        </div>
+        <ResultBadge
+          isCorrect={isCorrect}
+          score={score}
+          scaledScore={scaledScore}
+          hasAnswer={userAnswerSet.size > 0}
+        />
       </div>
 
       {open && (
         <div className="border-t px-4 pb-4 pt-3 space-y-3">
-          <div className="text-sm">
-            <MarkdownRenderer
-              content={question.content}
-              className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-            />
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1 text-sm">
+              <MarkdownRenderer
+                content={question.content}
+                className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+              />
+            </div>
+            <div
+              className="flex shrink-0 items-center gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BookmarkButton questionId={question.id} />
+              <ReportButton
+                questionId={question.id}
+                questionContent={question.content}
+              />
+            </div>
           </div>
           {options.length > 0 && (
             <ul className="space-y-1.5">
@@ -274,11 +317,12 @@ function ReviewItem({
             </ul>
           )}
           {question.explanation && (
-            <div className="rounded-xl bg-blue-500/10 p-4">
-              <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+            <div className="rounded-xl border-l-4 border-primary bg-muted/40 p-4">
+              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+                <Lightbulb className="h-3.5 w-3.5" />
                 Spiegazione
-              </p>
-              <div className="text-sm text-blue-700 dark:text-blue-300">
+              </div>
+              <div className="text-sm text-foreground/90">
                 <MarkdownRenderer
                   content={question.explanation}
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
@@ -289,5 +333,53 @@ function ReviewItem({
         </div>
       )}
     </div>
+  )
+}
+
+function ResultBadge({
+  isCorrect,
+  score,
+  scaledScore,
+  hasAnswer,
+}: {
+  isCorrect: boolean
+  score: number
+  scaledScore: number
+  hasAnswer: boolean
+}) {
+  const { label, classes } = (() => {
+    if (isCorrect)
+      return {
+        label: "Corretta",
+        classes:
+          "bg-green-500/15 text-green-700 border-green-500/30 dark:text-green-400",
+      }
+    if (score > 0)
+      return {
+        label: "Parziale",
+        classes:
+          "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 dark:text-yellow-400",
+      }
+    if (hasAnswer)
+      return {
+        label: "Errata",
+        classes:
+          "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-400",
+      }
+    return {
+      label: "Non risposta",
+      classes: "bg-muted text-muted-foreground border-border",
+    }
+  })()
+
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums",
+        classes,
+      )}
+    >
+      {label} ({formatScaledSigned(scaledScore)} pt)
+    </span>
   )
 }

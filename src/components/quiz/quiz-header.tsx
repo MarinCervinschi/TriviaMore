@@ -1,7 +1,7 @@
-import { LogOut, Moon, PanelLeftClose, PanelLeft, Sun } from "lucide-react"
+import { LogOut, PanelLeftClose, PanelLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/hooks/useTheme"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 
 import { QuizTimer } from "./quiz-timer"
 
@@ -22,8 +22,6 @@ export function QuizHeader({
   onTimeUp: () => void
   onExit: () => void
 }) {
-  const { mounted, isDark, toggleTheme } = useTheme()
-
   return (
     <header className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-4 backdrop-blur-xl">
       <div className="flex items-center gap-3">
@@ -46,20 +44,8 @@ export function QuizHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        {timeLimit && (
-          <QuizTimer timeLimitMinutes={timeLimit} onTimeUp={onTimeUp} />
-        )}
-        {mounted && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="h-9 w-9 rounded-xl"
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            <span className="sr-only">Cambia tema</span>
-          </Button>
-        )}
+        <QuizTimer timeLimitMinutes={timeLimit} onTimeUp={onTimeUp} />
+        <ThemeToggle className="h-9 w-9" />
         <Button
           variant="ghost"
           size="sm"

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 
+import { DecorativeBackground } from "@/components/layout/decorative-background"
 import { FlashcardQuestionCard } from "@/components/flashcard/flashcard-question-card"
 import { FlashcardHeader } from "@/components/flashcard/flashcard-header"
 import { FlashcardNavigation } from "@/components/flashcard/flashcard-navigation"
@@ -118,22 +119,28 @@ function FlashcardPage() {
 
   if (!session) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Sessione non trovata.</p>
-      </div>
+      <>
+        <DecorativeBackground />
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-muted-foreground">Sessione non trovata.</p>
+        </div>
+      </>
     )
   }
 
   if (showResults) {
     return (
-      <FlashcardResults
-        questions={session.questions}
-        studiedCards={studiedCards}
-        timeSpent={Date.now() - startTime}
-        sectionName={session.section.name}
-        onExit={() => navigate({ to: "/" })}
-        onRetry={handleRetry}
-      />
+      <>
+        <DecorativeBackground />
+        <FlashcardResults
+          questions={session.questions}
+          studiedCards={studiedCards}
+          timeSpent={Date.now() - startTime}
+          sectionName={session.section.name}
+          onExit={() => navigate({ to: "/" })}
+          onRetry={handleRetry}
+        />
+      </>
     )
   }
 
@@ -141,6 +148,7 @@ function FlashcardPage() {
 
   return (
     <div className="flex h-dvh flex-col">
+      <DecorativeBackground />
       <FlashcardHeader
         questionIndex={currentIndex}
         totalQuestions={session.questions.length}
@@ -148,10 +156,6 @@ function FlashcardPage() {
         sidebarOpen={sidebarOpen}
         onToggleSidebar={toggleSidebar}
         onExit={() => setShowExitDialog(true)}
-      />
-      <FlashcardProgress
-        studied={studiedCards.size}
-        total={session.questions.length}
       />
       <div className="flex flex-1 overflow-hidden">
         {sidebarOpen && (
@@ -172,15 +176,21 @@ function FlashcardPage() {
             />
           </SheetContent>
         </Sheet>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          {currentQuestion && (
-            <FlashcardQuestionCard
-              question={currentQuestion}
-              questionNumber={currentIndex + 1}
-              isFlipped={isFlipped}
-              onFlip={handleFlip}
-            />
-          )}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <FlashcardProgress
+            studied={studiedCards.size}
+            total={session.questions.length}
+          />
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+            {currentQuestion && (
+              <FlashcardQuestionCard
+                question={currentQuestion}
+                questionNumber={currentIndex + 1}
+                isFlipped={isFlipped}
+                onFlip={handleFlip}
+              />
+            )}
+          </div>
         </div>
       </div>
       <FlashcardNavigation

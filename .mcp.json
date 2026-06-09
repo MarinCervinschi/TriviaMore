@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "triviamore-catalog": {
+    "trivia-more-questions": {
       "command": "pnpm",
-      "args": ["mcp:catalog"]
+      "args": ["mcp:questions"]
     }
   }
 }

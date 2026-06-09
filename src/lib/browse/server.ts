@@ -10,6 +10,7 @@ import type {
   ClassWithSections,
   CourseWithClasses,
   DepartmentWithCourses,
+  GraphData,
   OverviewLocation,
   SearchClassesParams,
   SearchClassesResponse,
@@ -32,6 +33,31 @@ export const getDepartmentsFn = createServerFn({ method: "GET" }).handler(
 
     if (error) throw new Error(error.message)
     return data as BrowseDepartment[]
+  },
+)
+
+export const getGraphDataFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GraphData> => {
+    const supabase = createServerSupabaseClient()
+
+    const [deptsResult, coursesResult] = await Promise.all([
+      catalogQuery(supabase)
+        .from("departments")
+        .select("id, code, name, area")
+        .order("position"),
+      catalogQuery(supabase)
+        .from("courses")
+        .select("id, code, name, department_id, course_type, location")
+        .order("position"),
+    ])
+
+    if (deptsResult.error) throw new Error(deptsResult.error.message)
+    if (coursesResult.error) throw new Error(coursesResult.error.message)
+
+    return {
+      departments: deptsResult.data ?? [],
+      courses: coursesResult.data ?? [],
+    }
   },
 )
 
@@ -200,27 +226,12 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     let examSimulation: ClassWithSections["examSimulation"] = undefined
 
     if (totalQuizQuestions > 0 || totalFlashcardQuestions > 0) {
-      let { data: examSection } = await catalogQuery(supabase)
+      const { data: examSection } = await catalogQuery(supabase)
         .from("sections")
         .select("id")
         .eq("class_id", classData.id)
         .eq("name", "Exam Simulation")
         .maybeSingle()
-
-      if (!examSection) {
-        const { data: newSection } = await catalogQuery(supabase)
-          .from("sections")
-          .insert({
-            id: crypto.randomUUID(),
-            class_id: classData.id,
-            name: "Exam Simulation",
-            is_public: true,
-            position: 9999,
-          })
-          .select("id")
-          .single()
-        examSection = newSection
-      }
 
       if (examSection) {
         examSimulation = {

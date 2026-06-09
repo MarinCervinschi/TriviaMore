@@ -2,13 +2,12 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
 import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
-import type { Json } from "@/lib/supabase/database.types"
 import { selectRandomItems, shuffleArray } from "./randomization"
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types"
 
-function shuffleJsonOptions(options: Json | null): Json | null {
-  if (!Array.isArray(options)) return options
-  return shuffleArray(options) as Json[]
+function shuffleOptions(options: string[] | null): string[] | null {
+  if (!options) return options
+  return shuffleArray(options)
 }
 
 async function getAuthenticatedUser() {
@@ -63,7 +62,7 @@ export const startQuizFn = createServerFn({ method: "POST" })
       }
 
       // Fetch quiz-eligible questions
-      let questions: { id: string; options: Json | null }[]
+      let questions: { id: string; options: string[] | null }[]
 
       if (data.quizMode === "EXAM_SIMULATION") {
         // Get all sections in the same class
@@ -187,7 +186,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
         options:
           q.question_type === "TRUE_FALSE"
             ? q.options
-            : shuffleJsonOptions(q.options),
+            : shuffleOptions(q.options),
         correct_answer: q.correct_answer,
         explanation: q.explanation,
         difficulty: q.difficulty,
@@ -224,6 +223,7 @@ export const getQuizFn = createServerFn({ method: "GET" })
         },
         course_name: quiz.course_name,
         department_name: quiz.department_name,
+        path: null,
       },
       questions: orderedQuestions,
       attempt_id: attempt?.id,
@@ -429,12 +429,48 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
       .select("question_id, user_answer, score")
       .eq("quiz_attempt_id", data.attemptId)
 
-    // Get evaluation mode
-    const { data: evalMode } = await quizQuery(supabase)
-      .from("evaluation_modes")
-      .select("*")
-      .eq("id", attempt.evaluation_mode_id!)
-      .single()
+    // Get evaluation mode and slug components in parallel
+    const [evalModeRes, deptRes, courseRes, classRes] = await Promise.all([
+      quizQuery(supabase)
+        .from("evaluation_modes")
+        .select("*")
+        .eq("id", attempt.evaluation_mode_id!)
+        .single(),
+      attempt.department_id
+        ? catalogQuery(supabase)
+            .from("departments")
+            .select("code")
+            .eq("id", attempt.department_id)
+            .single()
+        : Promise.resolve({ data: null }),
+      attempt.course_id
+        ? catalogQuery(supabase)
+            .from("courses")
+            .select("code")
+            .eq("id", attempt.course_id)
+            .single()
+        : Promise.resolve({ data: null }),
+      attempt.class_id && attempt.course_id
+        ? catalogQuery(supabase)
+            .from("course_classes")
+            .select("code")
+            .eq("class_id", attempt.class_id)
+            .eq("course_id", attempt.course_id)
+            .single()
+        : Promise.resolve({ data: null }),
+    ])
+    const evalMode = evalModeRes.data
+    const deptCode = deptRes.data?.code
+    const courseCode = courseRes.data?.code
+    const classCode = classRes.data?.code
+
+    const sectionSlug = attempt.section_name
+      ? attempt.section_name.replace(/ /g, "-").toLowerCase()
+      : null
+    const sectionPath =
+      deptCode && courseCode && classCode && sectionSlug
+        ? `/browse/${deptCode.toLowerCase()}/${courseCode.toLowerCase()}/${classCode.toLowerCase()}/${sectionSlug}`
+        : null
 
     // Order questions by quiz order
     const orderedQuestions = quizQuestions
@@ -458,6 +494,7 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
           },
           course_name: attempt.course_name,
           department_name: attempt.department_name,
+          path: sectionPath,
         },
         evaluation_mode: evalMode as EvaluationMode,
         questions: orderedQuestions as QuizAttemptResult["quiz"]["questions"],

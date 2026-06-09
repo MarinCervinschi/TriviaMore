@@ -1,10 +1,8 @@
-import type { Json } from "@/lib/supabase/database.types"
-
 export type QuizQuestion = {
   id: string
   content: string
   question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-  options: Json | null
+  options: string[] | null
   correct_answer: string[]
   explanation: string | null
   difficulty: "EASY" | "MEDIUM" | "HARD"
@@ -19,6 +17,7 @@ export type QuizSection = {
   }
   course_name: string | null
   department_name: string | null
+  path: string | null
 }
 
 export type EvaluationMode = {
@@ -58,7 +57,7 @@ export type QuizResults = {
   questions: {
     id: string
     content: string
-    options: Json | null
+    options: string[] | null
     correctAnswer: string[]
   }[]
   answers: {
@@ -84,7 +83,7 @@ export type QuizAttemptResult = {
       id: string
       content: string
       question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-      options: Json | null
+      options: string[] | null
       correct_answer: string[]
       explanation: string | null
       difficulty: "EASY" | "MEDIUM" | "HARD"

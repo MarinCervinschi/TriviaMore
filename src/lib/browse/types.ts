@@ -1,4 +1,5 @@
 import type { CatalogTables } from "@/lib/supabase/database.helpers"
+import type { Database } from "@/lib/supabase/database.types"
 
 // Base table types from Supabase (catalog schema)
 type Department = CatalogTables<"departments">
@@ -7,6 +8,11 @@ type Class = CatalogTables<"classes">
 type Section = CatalogTables<"sections">
 type CourseClass = CatalogTables<"course_classes">
 type DepartmentLocationRow = CatalogTables<"department_locations">
+
+// Catalog enums (re-exported for component-level type-safety)
+export type DepartmentArea = Database["public"]["Enums"]["department_area"]
+export type CampusLocation = Database["public"]["Enums"]["campus_location"]
+export type CourseType = Database["public"]["Enums"]["course_type"]
 
 export type DepartmentLocation = Pick<
   DepartmentLocationRow,
@@ -150,6 +156,20 @@ export interface PaginatedResult<T> {
 
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>
+
+// Graph showcase types
+
+export type GraphDepartmentNode = Pick<Department, "id" | "code" | "name" | "area">
+
+export type GraphCourseNode = Pick<
+  Course,
+  "id" | "code" | "name" | "department_id" | "course_type" | "location"
+>
+
+export interface GraphData {
+  departments: GraphDepartmentNode[]
+  courses: GraphCourseNode[]
+}
 
 export type SectionDetail = Section & {
   class: Class & {

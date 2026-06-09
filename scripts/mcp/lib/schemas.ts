@@ -5,7 +5,7 @@ export const QuestionInputSchema = z
   .object({
     content: z.string().min(10).max(2000).trim(),
     question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"]),
-    options: z.array(z.string().min(1)).min(2).max(6).nullable().optional(),
+    options: z.array(z.string().min(1)).min(2).max(40).nullable().optional(),
     correct_answer: z.array(z.string().min(1)).min(1).max(6),
     explanation: z.string().max(1000).optional(),
     difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),

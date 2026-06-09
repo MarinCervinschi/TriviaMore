@@ -1,5 +1,4 @@
 export function formatThirtyScaleGrade(score: number): string {
-  if (score < 0) return "0"
   if (score <= 30) return Math.round(score).toString()
   return "30L"
 }
