@@ -81,7 +81,7 @@ function AdminSectionDetailPage() {
   const courseClass = cls.course_classes?.[0]
   const course = courseClass?.course
   const department = course?.department
-  const sectionSlug = section.name.replace(/ /g, "-").toLowerCase()
+  const sectionSlug = section.slug
 
   // Section access management (only for private sections)
   const { data: accessUsers } = useQuery({
