@@ -430,7 +430,8 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
       .eq("quiz_attempt_id", data.attemptId)
 
     // Get evaluation mode and slug components in parallel
-    const [evalModeRes, deptRes, courseRes, classRes] = await Promise.all([
+    const [evalModeRes, deptRes, courseRes, classRes, sectionRes] =
+      await Promise.all([
       quizQuery(supabase)
         .from("evaluation_modes")
         .select("*")
@@ -458,15 +459,20 @@ export const getQuizResultsFn = createServerFn({ method: "GET" })
             .eq("course_id", attempt.course_id)
             .single()
         : Promise.resolve({ data: null }),
+      attempt.section_id
+        ? catalogQuery(supabase)
+            .from("sections")
+            .select("slug")
+            .eq("id", attempt.section_id)
+            .single()
+        : Promise.resolve({ data: null }),
     ])
     const evalMode = evalModeRes.data
     const deptCode = deptRes.data?.code
     const courseCode = courseRes.data?.code
     const classCode = classRes.data?.code
 
-    const sectionSlug = attempt.section_name
-      ? attempt.section_name.replace(/ /g, "-").toLowerCase()
-      : null
+    const sectionSlug = sectionRes.data?.slug ?? null
     const sectionPath =
       deptCode && courseCode && classCode && sectionSlug
         ? `/browse/${deptCode.toLowerCase()}/${courseCode.toLowerCase()}/${classCode.toLowerCase()}/${sectionSlug}`

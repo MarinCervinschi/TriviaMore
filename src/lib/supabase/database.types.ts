@@ -370,6 +370,7 @@ export type Database = {
           is_public: boolean
           name: string
           position: number
+          slug: string
           updated_at: string
         }
         Insert: {
@@ -380,6 +381,7 @@ export type Database = {
           is_public?: boolean
           name: string
           position?: number
+          slug?: never
           updated_at?: string
         }
         Update: {
@@ -390,6 +392,7 @@ export type Database = {
           is_public?: boolean
           name?: string
           position?: number
+          slug?: never
           updated_at?: string
         }
         Relationships: [

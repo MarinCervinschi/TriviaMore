@@ -300,13 +300,12 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
 
     const classData = courseClassRow.class as any
 
-    // Find section by slug (hyphens → spaces)
-    const sectionName = data.sectionSlug.replace(/-/g, " ")
+    // Resolve section by its stored slug (exact match, scoped to the class).
     const { data: section } = await catalogQuery(supabase)
       .from("sections")
       .select("*")
       .eq("class_id", classData.id)
-      .ilike("name", sectionName)
+      .eq("slug", data.sectionSlug.toLowerCase())
       .single()
 
     if (!section) return null
