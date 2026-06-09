@@ -288,9 +288,7 @@ function ClassPage() {
         <>
         <BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
           {paged.map((section) => {
-            const sectionSlug = section.name
-              .replace(/ /g, "-")
-              .toLowerCase()
+            const sectionSlug = section.slug
             return (
               <tr key={section.id} className="group">
                 <td className="pl-6 py-4">
