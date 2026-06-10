@@ -33,6 +33,16 @@ export type SubmittedReport = {
   comment: string | null
 }
 
+export type ReportedQuestion = {
+  id: string
+  content: string
+  question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
+  options: string[] | null
+  correct_answer: string[]
+  explanation: string | null
+  difficulty: "EASY" | "MEDIUM" | "HARD"
+}
+
 export type SubmittedFileUpload = {
   type: "file_upload"
   file_name: string
@@ -47,6 +57,7 @@ export type SubmittedContent = SubmittedSection | SubmittedQuestions | Submitted
 export type ContentRequestWithMeta = ContentRequest & {
   target_label: string
   submitted: SubmittedContent
+  reported_question?: ReportedQuestion | null
 }
 
 // Admin view includes user info
