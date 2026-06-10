@@ -237,11 +237,9 @@ function ReviewItem({
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold">
             {index + 1}
           </span>
-          {!open && (
-            <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">
-              <MarkdownRenderer content={question.content} inline />
-            </span>
-          )}
+          <span className={`min-w-0 flex-1 text-sm font-medium ${open ? "" : "line-clamp-1"}`}>
+            <MarkdownRenderer content={question.content} inline />
+          </span>
         </div>
         <ResultBadge
           isCorrect={isCorrect}
@@ -253,23 +251,15 @@ function ReviewItem({
 
       {open && (
         <div className="border-t px-4 pb-4 pt-3 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1 text-sm">
-              <MarkdownRenderer
-                content={question.content}
-                className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-              />
-            </div>
-            <div
-              className="flex shrink-0 items-center gap-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <BookmarkButton questionId={question.id} />
-              <ReportButton
-                questionId={question.id}
-                questionContent={question.content}
-              />
-            </div>
+          <div
+            className="flex items-center justify-end gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <BookmarkButton questionId={question.id} />
+            <ReportButton
+              questionId={question.id}
+              questionContent={question.content}
+            />
           </div>
           {options.length > 0 && (
             <ul className="space-y-1.5">
