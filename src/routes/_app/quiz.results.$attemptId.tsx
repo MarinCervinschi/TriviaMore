@@ -237,9 +237,11 @@ function ReviewItem({
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-semibold">
             {index + 1}
           </span>
-          <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">
-            <MarkdownRenderer content={question.content} inline />
-          </span>
+          {!open && (
+            <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">
+              <MarkdownRenderer content={question.content} inline />
+            </span>
+          )}
         </div>
         <ResultBadge
           isCorrect={isCorrect}

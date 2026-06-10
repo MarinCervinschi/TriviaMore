@@ -106,10 +106,11 @@ function BookmarkCard({
         className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-muted/30"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <span className="line-clamp-1 text-sm font-medium">
-            {bookmark.content.slice(0, 100)}
-            {bookmark.content.length > 100 && "..."}
-          </span>
+          {!open && (
+            <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">
+              <MarkdownRenderer content={bookmark.content} inline />
+            </span>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Badge
