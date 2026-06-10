@@ -6,7 +6,7 @@ import { getSupabaseAdmin, getCatalogAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
 
 import { storedContentSchema } from "./schemas"
-import type { AdminContentRequest, ContentRequestWithMeta, SubmittedContent } from "./types"
+import type { AdminContentRequest, ContentRequestWithMeta, ReportedQuestion, SubmittedContent } from "./types"
 
 /** Validate JSONB content from DB against Zod schema at runtime */
 function parseSubmittedContent(raw: unknown): SubmittedContent {
@@ -380,7 +380,17 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
     const target_label = await buildTargetLabel(supabase, request)
     const submitted = parseSubmittedContent(request.submitted_content)
 
-    return { ...request, target_label, submitted }
+    let reported_question: ReportedQuestion | null = null
+    if (submitted.type === "report") {
+      const { data: question } = await catalogQuery(supabase)
+        .from("questions")
+        .select("id, content, question_type, options, correct_answer, explanation, difficulty")
+        .eq("id", submitted.question_id)
+        .single()
+      if (question) reported_question = question as ReportedQuestion
+    }
+
+    return { ...request, target_label, submitted, reported_question }
   })
 
 // ─── Admin Mutations ───

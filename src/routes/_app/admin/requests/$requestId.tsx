@@ -2,22 +2,25 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { ArrowLeft, CheckCircle2, Download, Eye, FileUp, MapPin, Settings2 } from "lucide-react"
+import { ArrowLeft, CheckCircle2, ChevronDown, Download, Eye, FileUp, MapPin, Pencil, Settings2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { HandleRequestDialog } from "@/components/requests/handle-request-dialog"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { Textarea } from "@/components/ui/textarea"
 import { requestQueries } from "@/lib/requests/queries"
 import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations"
 import { getFileDownloadUrlFn } from "@/lib/requests/server"
+import { isCorrectOption, parseOptions } from "@/lib/quiz/options"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
-import type { SubmittedContent, SubmittedFileUpload, SubmittedQuestion } from "@/lib/requests/types"
+import type { ReportedQuestion, SubmittedContent, SubmittedFileUpload, SubmittedQuestion } from "@/lib/requests/types"
 
 export const Route = createFileRoute("/_app/admin/requests/$requestId")({
   loader: ({ context, params }) =>
@@ -118,7 +121,10 @@ function AdminRequestDetailPage() {
         <h3 className="text-sm font-semibold uppercase tracking-widest text-primary">
           {isReport ? "Dettagli segnalazione" : isFileUpload ? "File caricato" : "Contenuto proposto"}
         </h3>
-        <ContentPreview submitted={request.submitted} />
+        <ContentPreview
+          submitted={request.submitted}
+          reportedQuestion={request.reported_question ?? null}
+        />
       </div>
 
       {/* Acknowledge section (reports + file uploads) */}
@@ -169,7 +175,13 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-function ContentPreview({ submitted }: { submitted: SubmittedContent }) {
+function ContentPreview({
+  submitted,
+  reportedQuestion,
+}: {
+  submitted: SubmittedContent
+  reportedQuestion?: ReportedQuestion | null
+}) {
   if (submitted.type === "file_upload") {
     return <FileUploadPreview file={submitted} />
   }
@@ -190,9 +202,31 @@ function ContentPreview({ submitted }: { submitted: SubmittedContent }) {
             <p className="text-sm">{submitted.comment}</p>
           </div>
         )}
-        <div className="rounded-xl border p-4">
-          <p className="text-xs font-medium text-muted-foreground mb-1">Domanda segnalata</p>
-          <p className="text-sm">{submitted.question_content}</p>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-medium text-muted-foreground">Domanda segnalata</p>
+            <Button asChild variant="outline" size="sm" className="gap-1.5 rounded-xl">
+              <Link
+                to="/admin/questions/$questionId"
+                params={{ questionId: submitted.question_id }}
+              >
+                <Pencil className="size-3.5" />
+                Modifica domanda
+              </Link>
+            </Button>
+          </div>
+
+          {reportedQuestion ? (
+            <ReportedQuestionCard question={reportedQuestion} />
+          ) : (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
+              <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                La domanda non è più disponibile (potrebbe essere stata eliminata o modificata). Contenuto al momento della segnalazione:
+              </p>
+              <MarkdownRenderer content={submitted.question_content} className="text-sm" />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -237,7 +271,7 @@ function QuestionCard({ question, index }: { question: SubmittedQuestion; index:
         </div>
       </div>
 
-      <p className="text-sm font-medium">{question.content}</p>
+      <MarkdownRenderer content={question.content} className="text-sm font-medium" />
 
       {/* Options */}
       {question.options && question.options.length > 0 && (
@@ -258,9 +292,9 @@ function QuestionCard({ question, index }: { question: SubmittedQuestion; index:
                 <span className="font-mono text-xs text-muted-foreground">
                   {optId.toUpperCase()}
                 </span>
-                {opt}
+                <MarkdownRenderer content={opt} inline />
                 {isCorrect && (
-                  <CheckCircle2 className="ml-auto size-4 text-green-500" />
+                  <CheckCircle2 className="ml-auto size-4 shrink-0 text-green-500" />
                 )}
               </div>
             )
@@ -286,9 +320,79 @@ function QuestionCard({ question, index }: { question: SubmittedQuestion; index:
       {question.explanation && (
         <div className="rounded-lg bg-muted/50 px-3 py-2">
           <p className="text-xs font-medium text-muted-foreground">Spiegazione</p>
-          <p className="mt-0.5 text-sm">{question.explanation}</p>
+          <MarkdownRenderer content={question.explanation} className="mt-0.5 text-sm" />
         </div>
       )}
+    </div>
+  )
+}
+
+function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
+  const [open, setOpen] = useState(false)
+  const options = parseOptions(question.options)
+  const typeLabels = { MULTIPLE_CHOICE: "Scelta multipla", TRUE_FALSE: "Vero/Falso", SHORT_ANSWER: "Risposta breve" }
+  const diffColors = { EASY: "text-green-500", MEDIUM: "text-amber-500", HARD: "text-red-500" }
+  const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" }
+
+  return (
+    <div className="rounded-xl border p-4 space-y-3">
+      <div className="flex items-center justify-end gap-1.5">
+        <Badge variant="outline" className="rounded-full text-[10px]">
+          {typeLabels[question.question_type]}
+        </Badge>
+        <Badge variant="outline" className={cn("rounded-full text-[10px]", diffColors[question.difficulty])}>
+          {diffLabels[question.difficulty]}
+        </Badge>
+      </div>
+
+      <MarkdownRenderer content={question.content} className="text-sm font-medium" />
+
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full justify-between gap-1.5 rounded-xl">
+            {open ? "Nascondi opzioni e risposta" : "Mostra opzioni e risposta"}
+            <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-1.5 pt-2">
+          {options.length > 0 ? (
+            options.map((option, oi) => {
+              const isCorrect = isCorrectOption(option.id, question.correct_answer)
+              return (
+                <div
+                  key={oi}
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+                    isCorrect
+                      ? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
+                      : "bg-muted/50",
+                  )}
+                >
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {String.fromCharCode(65 + oi)}
+                  </span>
+                  <MarkdownRenderer content={option.text} inline />
+                  {isCorrect && (
+                    <CheckCircle2 className="ml-auto size-4 shrink-0 text-green-500" />
+                  )}
+                </div>
+              )
+            })
+          ) : (
+            <div className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+              <span className="font-medium">Risposta corretta: </span>
+              {question.correct_answer.join(", ")}
+            </div>
+          )}
+
+          {question.explanation && (
+            <div className="rounded-lg bg-muted/50 px-3 py-2">
+              <p className="text-xs font-medium text-muted-foreground">Spiegazione</p>
+              <MarkdownRenderer content={question.explanation} className="mt-0.5 text-sm" />
+            </div>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   )
 }
