@@ -224,3 +224,18 @@ export const sectionAccessSchema = z.object({
   user_id: z.string().min(1),
   section_id: z.string().min(1),
 })
+
+export const maintainerInviteSchema = z.object({
+  user_id: z.string().min(1),
+  course_id: z.string().min(1, "Il corso è obbligatorio"),
+  subject: z
+    .string()
+    .trim()
+    .min(3, "L'oggetto è obbligatorio")
+    .max(200, "L'oggetto non può superare i 200 caratteri"),
+  body: z
+    .string()
+    .trim()
+    .min(10, "Il messaggio è troppo corto")
+    .max(5000, "Il messaggio non può superare i 5000 caratteri"),
+})

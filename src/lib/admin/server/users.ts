@@ -8,6 +8,7 @@ import {
   courseMaintainerSchema,
   departmentAdminSchema,
   idSchema,
+  maintainerInviteSchema,
   sectionAccessSchema,
   userRoleSchema,
 } from "../schemas"
@@ -206,6 +207,52 @@ export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
       .eq("course_id", data.course_id)
 
     if (error) throw new Error(error.message)
+  })
+
+export const sendMaintainerInviteFn = createServerFn({ method: "POST" })
+  .inputValidator(maintainerInviteSchema)
+  .handler(async ({ data }) => {
+    await requireSuperadmin()
+
+    const { data: profile, error: profileError } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("email")
+      .eq("id", data.user_id)
+      .single()
+
+    if (profileError || !profile?.email) {
+      throw new Error("Email dell'utente non trovata")
+    }
+
+    const { data: course } = await getCatalogAdmin()
+      .from("courses")
+      .select("name")
+      .eq("id", data.course_id)
+      .single()
+
+    const { renderMaintainerInviteHtml } = await import(
+      "@/lib/email/templates/maintainer-invite"
+    )
+    const { sendMail } = await import("@/lib/email/server")
+
+    const siteUrl = process.env.VITE_SITE_URL ?? "https://www.trivia-more.it"
+
+    try {
+      await sendMail({
+        to: profile.email,
+        subject: data.subject,
+        html: renderMaintainerInviteHtml({
+          body: data.body,
+          courseName: course?.name ?? "",
+          logoUrl: `${siteUrl}/logo192.png`,
+        }),
+        text: data.body,
+        replyTo: process.env.CONTACT_RECIPIENT,
+      })
+    } catch (err) {
+      console.error("Failed to send maintainer invite email:", err)
+      throw new Error("Errore durante l'invio dell'email. Riprova più tardi.")
+    }
   })
 
 export const addSectionAccessFn = createServerFn({ method: "POST" })
