@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { BookOpen, GraduationCap, Library, Plus, Trash2, Trophy } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { MaintainerInviteDialog } from "@/components/admin/maintainer-invite-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -146,6 +147,21 @@ function AdminUserDetailPage() {
                     {ROLE_LABELS[user.role]}
                   </Badge>
                 )}
+                {user.role === "STUDENT" && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Assegna un ruolo (Maintainer o Admin) per gestire corsi e
+                    dipartimenti.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <MaintainerInviteDialog
+                  userId={userId}
+                  userName={user.name}
+                  userEmail={user.email}
+                  courses={availableCourses}
+                />
               </div>
             </CardContent>
           </Card>
