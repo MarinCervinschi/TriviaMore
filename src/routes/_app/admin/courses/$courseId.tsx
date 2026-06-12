@@ -82,9 +82,12 @@ function AdminCourseDetailPage() {
     class_year: cc.class_year,
     mandatory: cc.mandatory,
     curriculum: cc.curriculum,
-    // Real sections only — exclude the technical "Exam Simulation" sentinel.
-    sectionCount: ((cc.class.sections ?? []) as { name: string }[]).filter(
-      (s) => s.name !== "Exam Simulation",
+    // Real sections only: exclude the "Exam Simulation" sentinel, and (for
+    // maintainers) private sections, which they cannot manage.
+    sectionCount: (
+      (cc.class.sections ?? []) as { name: string; is_public: boolean }[]
+    ).filter(
+      (s) => s.name !== "Exam Simulation" && (!isMaintainer || s.is_public),
     ).length,
   })) as ClassRow[]
 

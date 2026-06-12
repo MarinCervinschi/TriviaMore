@@ -88,9 +88,10 @@ function AdminClassDetailPage() {
   const hasExamSimulation = sections.some(
     (s) => s.name === EXAM_SIMULATION_NAME,
   )
-  // Hide the technical exam-simulation sentinel from the displayed list.
+  // Hide the exam-simulation sentinel, and (for maintainers) private sections,
+  // which they cannot manage.
   const visibleSections = sections.filter(
-    (s) => s.name !== EXAM_SIMULATION_NAME,
+    (s) => s.name !== EXAM_SIMULATION_NAME && (!isMaintainer || s.is_public),
   )
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
@@ -294,6 +295,7 @@ function AdminClassDetailPage() {
             classId={cls.id}
             onSubmit={(formData) => createSection.mutate(formData)}
             isPending={createSection.isPending}
+            canEditVisibility={!isMaintainer}
           />
         </DialogContent>
       </Dialog>

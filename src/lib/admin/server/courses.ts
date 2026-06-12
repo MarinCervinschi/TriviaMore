@@ -24,7 +24,7 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
 
     const { data: courseClasses, error: classesError } = await catalogQuery(supabase)
       .from("course_classes")
-      .select("*, class:classes(*, sections(name))")
+      .select("*, class:classes(*, sections(name, is_public))")
       .eq("course_id", id)
       .order("position")
 

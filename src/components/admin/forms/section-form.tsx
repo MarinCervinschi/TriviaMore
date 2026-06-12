@@ -22,6 +22,9 @@ type SectionFormProps = {
   classId: string
   onSubmit: (data: SectionInput) => void
   isPending: boolean
+  // Visibility (public/private) is an access-control decision; hidden from
+  // maintainers, who only manage public sections.
+  canEditVisibility?: boolean
 }
 
 export function SectionForm({
@@ -29,6 +32,7 @@ export function SectionForm({
   classId,
   onSubmit,
   isPending,
+  canEditVisibility = true,
 }: SectionFormProps) {
   const form = useForm<SectionInput>({
     resolver: standardSchemaResolver(sectionSchema),
@@ -73,27 +77,29 @@ export function SectionForm({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="is_public"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Pubblica</FormLabel>
-                <FormDescription>
-                  Le sezioni pubbliche sono accessibili a tutti gli utenti.
-                  Quelle private richiedono un accesso esplicito.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+        {canEditVisibility && (
+          <FormField
+            control={form.control}
+            name="is_public"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Pubblica</FormLabel>
+                  <FormDescription>
+                    Le sezioni pubbliche sono accessibili a tutti gli utenti.
+                    Quelle private richiedono un accesso esplicito.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+        )}
         <Button type="submit" disabled={isPending}>
           {isPending
             ? "Salvataggio..."

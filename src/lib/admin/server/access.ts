@@ -60,10 +60,15 @@ export async function assertSectionScope(
   if (user.role !== "MAINTAINER") return
   const { data, error } = await getCatalogAdmin()
     .from("sections")
-    .select("class_id")
+    .select("class_id, is_public")
     .eq("id", sectionId)
     .single()
   if (error || !data) throw new Error("Sezione non trovata")
+  // Private sections are access-controlled (superadmin domain); off-limits to
+  // maintainers.
+  if (!data.is_public) {
+    throw new Error("Non puoi gestire sezioni private.")
+  }
   await assertClassScope(user, data.class_id)
 }
 
