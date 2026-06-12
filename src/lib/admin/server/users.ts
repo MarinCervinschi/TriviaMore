@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
+import { createNotification } from "@/lib/notifications/helpers"
 import { getCatalogAdmin, getQuizAdmin, getSupabaseAdmin } from "@/lib/supabase/admin"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -194,6 +195,23 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
       }
       throw new Error(error.message)
     }
+
+    // Notify the user they have been promoted to maintainer of this course
+    const { data: course } = await getCatalogAdmin()
+      .from("courses")
+      .select("name")
+      .eq("id", data.course_id)
+      .single()
+
+    await createNotification(getSupabaseAdmin(), {
+      userId: data.user_id,
+      type: "MAINTAINER_ASSIGNED",
+      title: "Sei stato nominato maintainer",
+      body: course?.name ? `Corso: ${course.name}` : undefined,
+      referenceId: data.course_id,
+      referenceType: "course",
+      link: `/admin/courses/${data.course_id}`,
+    })
   })
 
 export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
