@@ -68,6 +68,7 @@ function AdminSectionDetailPage() {
   const { data } = useSuspenseQuery(adminQueries.section(sectionId))
   const { user } = useAuth()
   const isSuperadmin = user?.role === "SUPERADMIN"
+  const isMaintainer = user?.role === "MAINTAINER"
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
@@ -142,6 +143,7 @@ function AdminSectionDetailPage() {
                   updateSection.mutate({ id: section.id, ...formData })
                 }
                 isPending={updateSection.isPending}
+                canEditVisibility={!isMaintainer}
               />
             </CardContent>
           </Card>

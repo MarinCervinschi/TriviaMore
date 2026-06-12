@@ -39,7 +39,10 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
 export const createSectionFn = createServerFn({ method: "POST" })
   .inputValidator(sectionSchema)
   .handler(async ({ data }) => {
-    await requireContentManagerForClass(data.class_id)
+    const user = await requireContentManagerForClass(data.class_id)
+    if (user.role === "MAINTAINER" && data.is_public === false) {
+      throw new Error("I maintainer possono creare solo sezioni pubbliche.")
+    }
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
