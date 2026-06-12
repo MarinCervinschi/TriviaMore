@@ -51,6 +51,16 @@ function AdminUserDetailPage() {
   const { user: currentUser } = useAuth()
   const isSuperadmin = currentUser?.role === "SUPERADMIN"
 
+  // Action visibility follows the role hierarchy: a department admin is an
+  // ADMIN-level concept, a course maintainer is MAINTAINER-level. Students see
+  // neither — the role must be raised first.
+  const canManageDepartments =
+    user.role === "ADMIN" || user.role === "SUPERADMIN"
+  const canMaintainCourses =
+    user.role === "MAINTAINER" ||
+    user.role === "ADMIN" ||
+    user.role === "SUPERADMIN"
+
   const [roleConfirm, setRoleConfirm] = useState<UserRole | null>(null)
   const [addDeptId, setAddDeptId] = useState("")
   const [addCourseId, setAddCourseId] = useState("")
@@ -206,7 +216,8 @@ function AdminUserDetailPage() {
           </Card>
         </div>
 
-        {/* Department Admin assignments */}
+        {/* Department Admin assignments — ADMIN+ only */}
+        {canManageDepartments && (
         <Card className="rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -281,8 +292,10 @@ function AdminUserDetailPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
-        {/* Course Maintainer assignments */}
+        {/* Course Maintainer assignments — MAINTAINER+ only */}
+        {canMaintainCourses && (
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -355,6 +368,7 @@ function AdminUserDetailPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Section Access */}
         <Card className="rounded-2xl">

@@ -150,12 +150,43 @@ export const updateUserRoleFn = createServerFn({ method: "POST" })
       .eq("id", id)
 
     if (error) throw new Error(error.message)
+
+    // Demotion cleanup: drop scope assignments the new role no longer permits.
+    // Otherwise a demoted user keeps orphaned grants that still leak access via
+    // RLS and stay hidden behind the role-based UI gate.
+    const catalog = getCatalogAdmin()
+    if (role === "STUDENT" || role === "MAINTAINER") {
+      const { error: deptError } = await catalog
+        .from("department_admins")
+        .delete()
+        .eq("user_id", id)
+      if (deptError) throw new Error(deptError.message)
+    }
+    if (role === "STUDENT") {
+      const { error: courseError } = await catalog
+        .from("course_maintainers")
+        .delete()
+        .eq("user_id", id)
+      if (courseError) throw new Error(courseError.message)
+    }
   })
 
 export const addDepartmentAdminFn = createServerFn({ method: "POST" })
   .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
+
+    const { data: target } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user_id)
+      .single()
+    if (!target || (target.role !== "ADMIN" && target.role !== "SUPERADMIN")) {
+      throw new Error(
+        "Imposta prima il ruolo Admin per questo utente prima di assegnare un dipartimento.",
+      )
+    }
+
     const { error } = await getCatalogAdmin()
       .from("department_admins")
       .insert(data)
@@ -185,6 +216,18 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
   .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
+
+    const { data: target } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user_id)
+      .single()
+    if (!target || target.role === "STUDENT") {
+      throw new Error(
+        "Imposta prima un ruolo adeguato (almeno Maintainer) per questo utente prima di assegnare un corso.",
+      )
+    }
+
     const { error } = await getCatalogAdmin()
       .from("course_maintainers")
       .insert(data)
