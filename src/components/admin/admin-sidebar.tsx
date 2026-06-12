@@ -13,9 +13,11 @@ import {
   Shield,
   Trophy,
   Users,
+  type LucideIcon,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/useAuth"
 import { adminQueries } from "@/lib/admin/queries"
 import { requestQueries } from "@/lib/requests/queries"
 import type {
@@ -25,9 +27,22 @@ import type {
 } from "@/lib/admin/types"
 
 export function AdminSidebar() {
+  const { user } = useAuth()
+  const isSuperadmin = user?.role === "SUPERADMIN"
+  const isMaintainer = user?.role === "MAINTAINER"
   const { data: stats } = useQuery(adminQueries.stats())
-  const { data: userStats } = useQuery(adminQueries.userStats())
-  const { data: tree } = useQuery(adminQueries.contentTree())
+  // SUPERADMIN-only (getAdminUserStatsFn); gating prevents requireSuperadmin
+  // from redirecting MAINTAINER/ADMIN users to /user.
+  const { data: userStats } = useQuery({
+    ...adminQueries.userStats(),
+    enabled: isSuperadmin,
+  })
+  // Maintainers manage their own courses (shown in the dashboard), not
+  // departments — skip the tree for them entirely.
+  const { data: tree } = useQuery({
+    ...adminQueries.contentTree(),
+    enabled: !isMaintainer,
+  })
   const matchRoute = useMatchRoute()
 
   const { data: requestCount } = useQuery(requestQueries.adminRequestCount())
@@ -55,24 +70,28 @@ export function AdminSidebar() {
           Dashboard
         </Link>
 
-        {/* Dipartimenti — with file tree */}
-        <DepartmentsTreeLink
-          isActive={!!isDeptActive}
-          tree={tree}
-          departmentCount={stats?.departmentCount}
-        />
+        {/* Dipartimenti — with file tree (hidden for maintainers) */}
+        {!isMaintainer && (
+          <DepartmentsTreeLink
+            isActive={!!isDeptActive}
+            tree={tree}
+            departmentCount={stats?.departmentCount}
+          />
+        )}
 
-        {/* Utenti */}
-        <Link
-          to="/admin/users"
-          className={cn(
-            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50",
-            isUsersActive && "bg-primary/10 text-primary font-semibold",
-          )}
-        >
-          <Users className="h-4 w-4" />
-          Utenti
-        </Link>
+        {/* Utenti — SUPERADMIN only (/admin/users requires superadmin) */}
+        {isSuperadmin && (
+          <Link
+            to="/admin/users"
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50",
+              isUsersActive && "bg-primary/10 text-primary font-semibold",
+            )}
+          >
+            <Users className="h-4 w-4" />
+            Utenti
+          </Link>
+        )}
 
         {/* Richieste */}
         <Link
@@ -106,17 +125,19 @@ export function AdminSidebar() {
         </div>
       </div>
 
-      {/* Stats: Utenti */}
-      <div className="border-t border-border/50 pt-4">
-        <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-primary">
-          Utenti
-        </p>
-        <div className="flex flex-col gap-0.5">
-          <SidebarStat icon={Users} label="Registrati" count={userStats?.totalUsers} />
-          <SidebarStat icon={Shield} label="Admin" count={(userStats?.byRole?.SUPERADMIN ?? 0) + (userStats?.byRole?.ADMIN ?? 0) + (userStats?.byRole?.MAINTAINER ?? 0)} />
-          <SidebarStat icon={Trophy} label="Quiz completati" count={userStats?.totalQuizAttempts} />
+      {/* Stats: Utenti — SUPERADMIN only */}
+      {isSuperadmin && (
+        <div className="border-t border-border/50 pt-4">
+          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-primary">
+            Utenti
+          </p>
+          <div className="flex flex-col gap-0.5">
+            <SidebarStat icon={Users} label="Registrati" count={userStats?.totalUsers} />
+            <SidebarStat icon={Shield} label="Admin" count={(userStats?.byRole?.SUPERADMIN ?? 0) + (userStats?.byRole?.ADMIN ?? 0) + (userStats?.byRole?.MAINTAINER ?? 0)} />
+            <SidebarStat icon={Trophy} label="Quiz completati" count={userStats?.totalQuizAttempts} />
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   )
 }
@@ -333,7 +354,7 @@ function SidebarStat({
   label,
   count,
 }: {
-  icon: React.ElementType
+  icon: LucideIcon
   label: string
   count?: number
 }) {
