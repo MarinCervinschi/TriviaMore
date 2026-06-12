@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
+import { requireStructureManager } from "./access"
 import { courseSchema, idSchema, updateCourseSchema } from "../schemas"
 
 // ─── Courses ───
@@ -23,7 +24,7 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
 
     const { data: courseClasses, error: classesError } = await catalogQuery(supabase)
       .from("course_classes")
-      .select("*, class:classes(*, sections(count))")
+      .select("*, class:classes(*, sections(name))")
       .eq("course_id", id)
       .order("position")
 
@@ -35,7 +36,7 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
 export const createCourseFn = createServerFn({ method: "POST" })
   .inputValidator(courseSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
@@ -71,7 +72,7 @@ export const createCourseFn = createServerFn({ method: "POST" })
 export const updateCourseFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateCourseSchema))
   .handler(async ({ data: { id, ...updates } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -106,7 +107,7 @@ export const updateCourseFn = createServerFn({ method: "POST" })
 export const deleteCourseFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)

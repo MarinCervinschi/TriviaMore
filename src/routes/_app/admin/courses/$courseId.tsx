@@ -39,6 +39,7 @@ import {
 } from "@/lib/admin/mutations"
 import { addClassToCourseFn, createClassFn } from "@/lib/admin/server/classes"
 import { adminQueries } from "@/lib/admin/queries"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/_app/admin/courses/$courseId")({
   loader: ({ context, params }) =>
@@ -52,6 +53,8 @@ export const Route = createFileRoute("/_app/admin/courses/$courseId")({
 function AdminCourseDetailPage() {
   const { courseId } = Route.useParams()
   const { data } = useSuspenseQuery(adminQueries.course(courseId))
+  const { user } = useAuth()
+  const isMaintainer = user?.role === "MAINTAINER"
   const [createClassOpen, setCreateClassOpen] = useState(false)
   const [deleteClassId, setDeleteClassId] = useState<string | null>(null)
   const [search, setSearch] = useState("")
@@ -62,7 +65,7 @@ function AdminCourseDetailPage() {
     name: string
     code: string
     class_year: number
-    sections: { count: number }[]
+    sectionCount: number
   }
 
   const { sort, toggleSort } = useSort<ClassRow>()
@@ -79,6 +82,10 @@ function AdminCourseDetailPage() {
     class_year: cc.class_year,
     mandatory: cc.mandatory,
     curriculum: cc.curriculum,
+    // Real sections only — exclude the technical "Exam Simulation" sentinel.
+    sectionCount: ((cc.class.sections ?? []) as { name: string }[]).filter(
+      (s) => s.name !== "Exam Simulation",
+    ).length,
   })) as ClassRow[]
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
@@ -96,9 +103,9 @@ function AdminCourseDetailPage() {
       <AdminPageHeader
         title={course.name}
         description={`${department.name} / ${course.code}`}
-        backTo="/admin/departments/$departmentId"
-        backParams={{ departmentId: department.id }}
-        backLabel={department.name}
+        backTo={isMaintainer ? "/admin" : "/admin/departments/$departmentId"}
+        backParams={isMaintainer ? undefined : { departmentId: department.id }}
+        backLabel={isMaintainer ? "Dashboard" : department.name}
         actions={
           <BrowsePublicButton
             to="/browse/$department/$course"
@@ -111,6 +118,7 @@ function AdminCourseDetailPage() {
       />
 
       <div className="grid gap-6">
+        {!isMaintainer && (
         <Card className="rounded-2xl">
           <CardHeader className="pb-4">
             <CardTitle>Modifica corso</CardTitle>
@@ -126,6 +134,7 @@ function AdminCourseDetailPage() {
             />
           </CardContent>
         </Card>
+        )}
 
         <Card className="rounded-2xl">
           <CardHeader>
@@ -142,10 +151,12 @@ function AdminCourseDetailPage() {
                     placeholder="Cerca insegnamenti..."
                   />
                 </div>
-                <Button size="sm" className="rounded-xl" onClick={() => setCreateClassOpen(true)}>
-                  <Plus className="mr-1 h-4 w-4" />
-                  Nuova
-                </Button>
+                {!isMaintainer && (
+                  <Button size="sm" className="rounded-xl" onClick={() => setCreateClassOpen(true)}>
+                    <Plus className="mr-1 h-4 w-4" />
+                    Nuova
+                  </Button>
+                )}
               </div>
             </div>
           </CardHeader>
@@ -170,8 +181,12 @@ function AdminCourseDetailPage() {
                       <TableHead className="text-center">
                         <SortableHeader label="Anno" sortKey="class_year" sort={sort} onSort={toggleSort} />
                       </TableHead>
-                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Sezioni</TableHead>
-                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
+                      <TableHead className="text-center">
+                        <SortableHeader label="Sezioni" sortKey="sectionCount" sort={sort} onSort={toggleSort} />
+                      </TableHead>
+                      {!isMaintainer && (
+                        <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -193,28 +208,30 @@ function AdminCourseDetailPage() {
                           {cls.class_year}
                         </TableCell>
                         <TableCell className="text-center">
-                          {cls.sections?.[0]?.count ?? 0}
+                          {cls.sectionCount}
                         </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
-                              <Link
-                                to="/admin/classes/$classId"
-                                params={{ classId: cls.id }}
+                        {!isMaintainer && (
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button variant="ghost" size="icon" className="rounded-lg" asChild>
+                                <Link
+                                  to="/admin/classes/$classId"
+                                  params={{ classId: cls.id }}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-lg"
+                                onClick={() => setDeleteClassId(cls.id)}
                               >
-                                <Pencil className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-lg"
-                              onClick={() => setDeleteClassId(cls.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
