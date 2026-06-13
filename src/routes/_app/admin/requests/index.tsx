@@ -23,7 +23,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
-import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { requestQueries } from "@/lib/requests/queries"
 
 import type {
@@ -60,7 +59,7 @@ function AdminRequestsPage() {
   const { data: requests } = useSuspenseQuery(requestQueries.adminRequests())
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
-  const [tab, setTab] = useState<TypeTab>("proposals")
+  const [tab, setTab] = useState<TypeTab>("reports")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("open")
   const { sort, toggleSort } = useSort<AdminContentRequest>()
 
@@ -75,6 +74,8 @@ function AdminRequestsPage() {
     if (statusFilter === "handled") return !isOpen(r)
     return true
   })
+  // "Gestita da" only carries meaning once requests are handled.
+  const showHandledBy = statusFilter === "handled"
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     filtered,
@@ -89,7 +90,7 @@ function AdminRequestsPage() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-2">
       <AdminPageHeader
         title="Richieste Contenuto"
         description="Gestisci le richieste degli utenti per nuovi contenuti e segnalazioni."
@@ -104,18 +105,18 @@ function AdminRequestsPage() {
       >
         <TabsList className="rounded-2xl bg-muted/50 p-1">
           <TabsTrigger
-            value="proposals"
-            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
-          >
-            Contenuti proposti
-            {openProposals > 0 && <TabCount value={openProposals} />}
-          </TabsTrigger>
-          <TabsTrigger
             value="reports"
             className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             Segnalazioni
             {openReports > 0 && <TabCount value={openReports} />}
+          </TabsTrigger>
+          <TabsTrigger
+            value="proposals"
+            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            Contenuti proposti
+            {openProposals > 0 && <TabCount value={openProposals} />}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -171,11 +172,11 @@ function AdminRequestsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="pl-6">Utente</TableHead>
-                  <TableHead>Tipo</TableHead>
                   <TableHead>Stato</TableHead>
                   <TableHead>
                     <SortableHeader label="Data" sortKey="created_at" sort={sort} onSort={toggleSort} />
                   </TableHead>
+                  {showHandledBy && <TableHead>Gestita da</TableHead>}
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -200,14 +201,26 @@ function AdminRequestsPage() {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <RequestTypeBadge type={request.request_type} />
-                    </TableCell>
-                    <TableCell>
                       <RequestStatusBadge status={request.status} />
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(request.created_at).toLocaleDateString("it-IT")}
                     </TableCell>
+                    {showHandledBy && (
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={request.handledBy?.image ?? undefined} />
+                            <AvatarFallback className="text-[9px]">
+                              {(request.handledBy?.name?.[0] ?? "T").toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm text-muted-foreground">
+                            {request.handledBy?.name ?? "Team"}
+                          </span>
+                        </div>
+                      </TableCell>
+                    )}
                     <TableCell className="pr-6">
                       <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                     </TableCell>

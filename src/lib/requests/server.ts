@@ -348,11 +348,17 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
       isInScope(scopeCourseIds, r.target_course_id),
     )
 
-    const userIds = [...new Set(rows.map((r) => r.user_id))]
+    const profileIds = [
+      ...new Set(
+        rows
+          .flatMap((r) => [r.user_id, r.handled_by])
+          .filter((v): v is string => !!v),
+      ),
+    ]
     const { data: profiles } = await getSupabaseAdmin()
       .from("profiles")
       .select("id, name, email, image")
-      .in("id", userIds.length > 0 ? userIds : ["__none__"])
+      .in("id", profileIds.length > 0 ? profileIds : ["__none__"])
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]))
 
@@ -370,6 +376,9 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
           email: null,
           image: null,
         },
+        handledBy: req.handled_by
+          ? profileMap.get(req.handled_by) ?? null
+          : null,
       })
     }
 
@@ -413,24 +422,32 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
     if (error || !request) throw new Error("Proposta non trovata")
 
     // Owner views their own request; everyone else needs admin access (and a
-    // maintainer must be in scope). Admin viewers also get the author profile.
+    // maintainer must be in scope). Admin viewers also get the author profile
+    // and, when handled, the profile of the admin who handled it.
     let author: RequestUser | null = null
+    let handledBy: RequestUser | null = null
     if (request.user_id !== user.id) {
       const { scopeCourseIds } = await requireRequestAdmin()
       if (!isInScope(scopeCourseIds, request.target_course_id)) {
         throw redirect({ to: "/admin/requests" })
       }
-      const { data: profile } = await getSupabaseAdmin()
+      const ids = [request.user_id, request.handled_by].filter(
+        (v): v is string => !!v,
+      )
+      const { data: profiles } = await getSupabaseAdmin()
         .from("profiles")
         .select("id, name, email, image")
-        .eq("id", request.user_id)
-        .single()
-      author = profile ?? {
+        .in("id", ids)
+      const byId = new Map((profiles ?? []).map((p) => [p.id, p]))
+      author = byId.get(request.user_id) ?? {
         id: request.user_id,
         name: null,
         email: null,
         image: null,
       }
+      handledBy = request.handled_by
+        ? byId.get(request.handled_by) ?? null
+        : null
     }
 
     const target_label = await buildTargetLabel(supabase, request)
@@ -446,7 +463,14 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
       if (question) reported_question = question as ReportedQuestion
     }
 
-    return { ...request, target_label, submitted, reported_question, user: author }
+    return {
+      ...request,
+      target_label,
+      submitted,
+      reported_question,
+      user: author,
+      handledBy,
+    }
   })
 
 // ─── Admin Mutations ───
