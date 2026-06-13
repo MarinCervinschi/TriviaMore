@@ -9,19 +9,20 @@ You generate quiz questions from material the user provides. The output is **alw
 
 ## Prerequisites
 
-The `trivia-more-questions` MCP server must be connected. The only tool you'll use is `mcp__trivia-more-questions__validate_questions`. If it's not available, tell the user to run `/mcp` to verify and stop.
+The `trivia-more-questions` MCP server must be connected. You'll use one tool: `mcp__trivia-more-questions__compile_questions` — it parses the two tmp markdown files, assembles + escapes + validates the question array, and writes the final JSON (step 5). If it's not available, tell the user to run `/mcp` to verify and stop.
 
 ## References
 
 The format and per-type rules live in sibling files. **Read the relevant ones before generating** — don't rely on memory across sessions:
 
 - `references/question-format.md` — shared schema, enums, common rules. Read every session.
+- `references/content-quality.md` — depth & distractor-relevance rules: don't make questions trivial, keep distractors in-context. Read every session.
 - `references/multiple-choice.md` — MC: options (2-40, prefer 4), multi-correct (~10–20%), anti-bias rules, exact match.
 - `references/true-false.md` — TF: fixed `["Vero","Falso"]`.
 - `references/short-answer.md` — SA: open-ended answers (flashcard / future free-response mode).
 - `references/latex.md` — KaTeX, JSON escaping, pitfalls. Read whenever the source material involves math or symbols.
 
-A batch always touches at least `question-format.md` plus the per-type files for the types you'll generate.
+A batch always touches at least `question-format.md` and `content-quality.md`, plus the per-type files for the types you'll generate.
 
 ## Workflow
 
@@ -43,41 +44,111 @@ Do **not** ask for the section / department / course — the user picks the dest
 
 Mandatory reads:
 - `references/question-format.md`
+- `references/content-quality.md`
 - One per-type file for each `question_type` you'll produce.
 - `references/latex.md` if the material involves math, formulas, code with backslashes, or symbols.
 
 The reference files are the source of truth — keep them open as you draft.
 
-### 3. Generate the batch
+### 3. Draft to two tmp markdown files (questions and answers kept apart)
 
-Construct the array following the count and mix the user agreed to. Apply the per-type rules (anti-bias, multi-correct quotas, exact-match, fixed TF options, open-ended SA, etc.) from the references — they are not optional.
+Do **not** write JSON yet. Draft the batch in markdown, with the **correct answers in a separate file from the questions**. This is what makes the review in step 4 a genuine blind solve — the reviewer reads only the questions, never the key.
 
-Quality bar:
+Pick a working dir `pending-questions/.tmp/<timestamp>-<short-slug>/` (timestamp = `YYYY-MM-DDTHH-mm-ss` UTC, slug = 2–3 word kebab summary) and write two files:
+
+**`questions.md`** — stems and options only. No correct answers, no explanations (an explanation leaks the answer — it goes in the other file). Number questions from 1, label MC/TF options with letters:
+
+```
+# Questions — <one-line topic note>
+
+## Q1  [MULTIPLE_CHOICE · MEDIUM]
+<stem>
+- A) <option>
+- B) <option>
+- C) <option>
+- D) <option>
+
+## Q2  [TRUE_FALSE · EASY]
+<declarative claim>
+- A) Vero
+- B) Falso
+
+## Q3  [SHORT_ANSWER · HARD]
+<open prompt>
+```
+
+**`answers.md`** — the key for each question, by number:
+
+```
+# Answers — <same topic note>
+
+## Q1
+correct: C
+explanation: <optional — only if it adds something>
+
+## Q2
+correct: B
+
+## Q3
+correct: <canonical answer>
+also-accepted: <variant> | <variant>
+```
+
+For multi-correct MC use `correct: A, C`. For SHORT_ANSWER, `correct:` holds the answer text (no letters) and `also-accepted:` the variants.
+
+Apply all the content rules as you draft — the per-type rules (anti-bias, multi-correct quotas, fixed TF options, open-ended SA) and `content-quality.md`. They are not optional, and applying them now means fewer revision rounds:
 - Each question stands alone (no "as we saw above").
 - Cover the source material's key concepts; do not invent facts not present.
+- **Not too easy.** Every question must require having studied the material — no general-knowledge gimmes, no answer restated in the stem. Calibrate difficulty to the reasoning actually demanded.
+- **In-context distractors.** Every MC option must be the same *kind* of thing as the answer and plausible to a half-prepared student. No out-of-context, absurd, or filler options; no single on-topic answer surrounded by unrelated ones.
 - Use Italian unless the source material dictates otherwise.
-- **Never include `section_id`** — the admin UI injects it from the URL.
 
-### 4. Validate
+In markdown you may write LaTeX **naturally** (single backslash, `$...$`) — JSON double-escaping happens only at assembly (step 5), so draft for readability here.
 
-Call `validate_questions({ questions })`. If `valid: false`, read the errors, fix the offending entries, retry. Do not proceed with errors. After 2 fix attempts, stop and surface the errors to the user.
+### 4. Blind quality review & revise (mandatory)
 
-### 5. Save to disk
+A batch is **not done** until it has passed a quality review. This step catches questions that are too easy, have obvious/trivial answers, or have out-of-context distractors.
 
-Write the validated JSON to `pending-questions/<timestamp>-<short-slug>.json`, where:
-- `<timestamp>` is `YYYY-MM-DDTHH-mm-ss` (UTC, colons replaced with hyphens)
-- `<short-slug>` is a 2-3 word lowercase kebab summary of the topic, e.g. `tcp-handshake`, `derivata-sigmoide`
+Spawn the **`question-reviewer`** agent (via the Agent tool, `subagent_type: "question-reviewer"`). Pass it **only the absolute path to `questions.md`** plus a one-line note on the source topic. **Do not give it `answers.md`** — the whole point is that it solves blind.
 
-Use the standard `Write` tool. Create the directory if it doesn't exist (the `Write` tool handles this).
+The reviewer blind-solves each question and returns, per question, its picked option + confidence, plus any flags (`TOO_EASY`, `OBVIOUS_ANSWER`, `GUESSABLE`, `OUT_OF_CONTEXT_DISTRACTOR`, `IMPLAUSIBLE_DISTRACTOR`, `AMBIGUOUS`, `NO_CLEAR_ANSWER`, `DIFFICULTY_MISMATCH`, …) with a concrete suggested fix, ending in `PASS` or `REVISE: <Q-numbers>`. The reviewer flags only what genuinely needs fixing; a clean batch passes untouched, and that's the expected outcome for well-written questions.
 
-The file content is the JSON array — pretty-printed (2-space indent), trailing newline.
+Then **reconcile** the report against `answers.md` (the reviewer never saw it):
+- Reviewer picked the correct option with `knew-it`/instant confidence and little reasoning → corroborates `TOO_EASY`/`OBVIOUS_ANSWER`. Make it harder.
+- Reviewer picked a *wrong* option confidently and with sound reasoning → either the question is genuinely hard (fine) or the key/options are misleading. Check the key against the source; fix whichever is wrong.
+- Reviewer flagged `OUT_OF_CONTEXT_DISTRACTOR` / `IMPLAUSIBLE_DISTRACTOR` / `AMBIGUOUS` → fix the options as suggested.
 
-### 6. Stop
+Apply fixes by editing the tmp files (`questions.md` and/or `answers.md`). The agent's suggestions are advice, not orders — if a flag is wrong, keep the question and note why in your final summary. After editing, re-spawn the reviewer **once more** on the updated `questions.md`. Stop after at most **2 review rounds** total even if minor flags remain — note any unresolved flags in the final summary rather than looping further.
 
-End with a one-line summary:
+Keep the reviewer read-only: it never sees the answers, writes files, or touches the DB.
+
+### 5. Compile to JSON (via the MCP tool)
+
+Call `compile_questions({ questionsPath, answersPath, slug })`:
+- `questionsPath` / `answersPath`: **absolute** paths to the two tmp files.
+- `slug`: the 2–3 word kebab summary (same one used for the tmp dir).
+
+The tool does the error-prone work deterministically so you never hand-write JSON: it parses the markdown, maps each `correct:` letter to its **exact** option string (byte-for-byte match guaranteed), escapes LaTeX automatically (you wrote single-backslash; it doubles for JSON), validates against the schema, and writes `pending-questions/<timestamp>-<slug>.json`. It never includes `section_id`.
+
+Handle the result:
+- `{ ok: true, path, count }` → note the path and count; continue.
+- `{ ok: false, stage, errors }` → **nothing was written**. Fix the tmp markdown and retry:
+  - `stage: "parse"` → a markdown problem: a `correct:` letter with no matching option, a missing answer entry, an empty stem, options listed on a SHORT_ANSWER, etc.
+  - `stage: "schema"` → a content-rule violation: stem too short/long, too few options, `correct_answer` count out of range, etc.
+  - `stage: "read"` → a bad path.
+  After 2 retries still failing, stop and surface the errors to the user.
+
+### 6. Clean up
+
+The JSON is now written by the tool. Delete the tmp working dir `pending-questions/.tmp/<timestamp>-<short-slug>/`.
+
+### 7. Stop
+
+End with a short summary:
 
 ```
 Saved <count> questions to pending-questions/<filename>.
+Quality review: <PASS | revised N questions — brief note on what changed | unresolved flags: ...>.
 Open /admin/questions/new?sectionId=<your-section-id> → Tab "Import JSON" → paste the file content → Importa domande.
 ```
 
@@ -89,3 +160,5 @@ Do not open the UI, do not deploy, do not run migrations. The user reviews the f
 - **No `section_id`** in question objects — UI handles it.
 - **One file per batch.** If the user asks for questions on multiple unrelated topics, propose splitting into separate runs (and separate files). Same applies when a single source is large enough to warrant a multi-batch split — agree the split with the user *before* generating.
 - **No fabrication.** If the source material is too thin for the requested count, say so and propose a smaller count rather than inventing content.
+- **Draft in markdown, never hand-write the JSON.** Questions and answers stay in separate tmp files (`questions.md` / `answers.md`) until the review passes; the final JSON is produced by `compile_questions` at step 5, not written by hand. Don't manually escape LaTeX or copy `correct_answer` strings — the tool does both correctly.
+- **Blind review is mandatory.** Never finish a batch without the step-4 `question-reviewer` pass, and never hand the reviewer `answers.md`. A batch that was never blind-reviewed is not finished.
