@@ -27,7 +27,7 @@ function PrivacyPage() {
           "Quali dati raccogliamo, perché li trattiamo, con chi li condividiamo e quali diritti ti riconosce il Regolamento UE 2016/679 (GDPR).",
         icon: ShieldCheck,
         version: CURRENT_PRIVACY_VERSION,
-        lastUpdated: "24 aprile 2026",
+        lastUpdated: "13 giugno 2026",
       }}
     />
   )
