@@ -67,12 +67,16 @@ export type RequestUser = {
   image: string | null
 }
 
-// Admin list view includes the author's profile
+// Admin list view includes the author's profile and, when handled, the
+// profile of the admin who handled it
 export type AdminContentRequest = ContentRequestWithMeta & {
   user: RequestUser
+  handledBy: RequestUser | null
 }
 
-// Admin detail view: user is null when the owner views their own request
+// Admin detail view: user/handledBy are null when the owner views their own
+// request; handledBy is also null until the request has been handled
 export type ContentRequestDetail = ContentRequestWithMeta & {
   user: RequestUser | null
+  handledBy: RequestUser | null
 }
