@@ -18,6 +18,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
+import { getRoleTheme } from "@/lib/admin/role-theme"
 import { adminQueries } from "@/lib/admin/queries"
 import { requestQueries } from "@/lib/requests/queries"
 import type {
@@ -28,6 +29,8 @@ import type {
 
 export function AdminSidebar() {
   const { user } = useAuth()
+  const theme = getRoleTheme(user?.role)
+  const RoleIcon = theme.icon
   const isSuperadmin = user?.role === "SUPERADMIN"
   const isMaintainer = user?.role === "MAINTAINER"
   const { data: stats } = useQuery(adminQueries.stats())
@@ -54,6 +57,18 @@ export function AdminSidebar() {
 
   return (
     <nav className="rounded-2xl border bg-card/50 p-4">
+      <div
+        className={cn(
+          "mb-3 flex items-center gap-2 rounded-xl border px-3 py-2",
+          theme.pillBorder,
+          theme.pillBg,
+        )}
+      >
+        <RoleIcon className={cn("h-4 w-4 shrink-0", theme.pillText)} strokeWidth={1.5} />
+        <span className={cn("text-xs font-bold uppercase tracking-wider", theme.pillText)}>
+          {theme.label}
+        </span>
+      </div>
       <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-primary">
         Gestione
       </p>
