@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
+import { createNotification } from "@/lib/notifications/helpers"
 import { getCatalogAdmin, getQuizAdmin, getSupabaseAdmin } from "@/lib/supabase/admin"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -8,6 +9,7 @@ import {
   courseMaintainerSchema,
   departmentAdminSchema,
   idSchema,
+  maintainerInviteSchema,
   sectionAccessSchema,
   userRoleSchema,
 } from "../schemas"
@@ -148,12 +150,43 @@ export const updateUserRoleFn = createServerFn({ method: "POST" })
       .eq("id", id)
 
     if (error) throw new Error(error.message)
+
+    // Demotion cleanup: drop scope assignments the new role no longer permits.
+    // Otherwise a demoted user keeps orphaned grants that still leak access via
+    // RLS and stay hidden behind the role-based UI gate.
+    const catalog = getCatalogAdmin()
+    if (role === "STUDENT" || role === "MAINTAINER") {
+      const { error: deptError } = await catalog
+        .from("department_admins")
+        .delete()
+        .eq("user_id", id)
+      if (deptError) throw new Error(deptError.message)
+    }
+    if (role === "STUDENT") {
+      const { error: courseError } = await catalog
+        .from("course_maintainers")
+        .delete()
+        .eq("user_id", id)
+      if (courseError) throw new Error(courseError.message)
+    }
   })
 
 export const addDepartmentAdminFn = createServerFn({ method: "POST" })
   .inputValidator(departmentAdminSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
+
+    const { data: target } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user_id)
+      .single()
+    if (!target || (target.role !== "ADMIN" && target.role !== "SUPERADMIN")) {
+      throw new Error(
+        "Imposta prima il ruolo Admin per questo utente prima di assegnare un dipartimento.",
+      )
+    }
+
     const { error } = await getCatalogAdmin()
       .from("department_admins")
       .insert(data)
@@ -183,6 +216,18 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
   .inputValidator(courseMaintainerSchema)
   .handler(async ({ data }) => {
     await requireSuperadmin()
+
+    const { data: target } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user_id)
+      .single()
+    if (!target || target.role === "STUDENT") {
+      throw new Error(
+        "Imposta prima un ruolo adeguato (almeno Maintainer) per questo utente prima di assegnare un corso.",
+      )
+    }
+
     const { error } = await getCatalogAdmin()
       .from("course_maintainers")
       .insert(data)
@@ -193,6 +238,23 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
       }
       throw new Error(error.message)
     }
+
+    // Notify the user they have been promoted to maintainer of this course
+    const { data: course } = await getCatalogAdmin()
+      .from("courses")
+      .select("name")
+      .eq("id", data.course_id)
+      .single()
+
+    await createNotification(getSupabaseAdmin(), {
+      userId: data.user_id,
+      type: "MAINTAINER_ASSIGNED",
+      title: "Sei stato nominato maintainer",
+      body: course?.name ? `Corso: ${course.name}` : undefined,
+      referenceId: data.course_id,
+      referenceType: "course",
+      link: `/admin/courses/${data.course_id}`,
+    })
   })
 
 export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
@@ -206,6 +268,52 @@ export const removeCourseMaintainerFn = createServerFn({ method: "POST" })
       .eq("course_id", data.course_id)
 
     if (error) throw new Error(error.message)
+  })
+
+export const sendMaintainerInviteFn = createServerFn({ method: "POST" })
+  .inputValidator(maintainerInviteSchema)
+  .handler(async ({ data }) => {
+    await requireSuperadmin()
+
+    const { data: profile, error: profileError } = await getSupabaseAdmin()
+      .from("profiles")
+      .select("email")
+      .eq("id", data.user_id)
+      .single()
+
+    if (profileError || !profile?.email) {
+      throw new Error("Email dell'utente non trovata")
+    }
+
+    const { data: course } = await getCatalogAdmin()
+      .from("courses")
+      .select("name")
+      .eq("id", data.course_id)
+      .single()
+
+    const { renderMaintainerInviteHtml } = await import(
+      "@/lib/email/templates/maintainer-invite"
+    )
+    const { sendMail } = await import("@/lib/email/server")
+
+    const siteUrl = process.env.VITE_SITE_URL ?? "https://www.trivia-more.it"
+
+    try {
+      await sendMail({
+        to: profile.email,
+        subject: data.subject,
+        html: renderMaintainerInviteHtml({
+          body: data.body,
+          courseName: course?.name ?? "",
+          logoUrl: `${siteUrl}/logo192.png`,
+        }),
+        text: data.body,
+        replyTo: process.env.CONTACT_RECIPIENT,
+      })
+    } catch (err) {
+      console.error("Failed to send maintainer invite email:", err)
+      throw new Error("Errore durante l'invio dell'email. Riprova più tardi.")
+    }
   })
 
 export const addSectionAccessFn = createServerFn({ method: "POST" })

@@ -4,6 +4,11 @@ import { z } from "zod"
 import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
+import {
+  assertSectionScope,
+  requireContentManagerForQuestion,
+  requireContentManagerForSection,
+} from "./access"
 import { idSchema, questionSchema, updateQuestionSchema } from "../schemas"
 
 // ─── Questions ───
@@ -29,7 +34,7 @@ export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
 export const createQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(questionSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireContentManagerForSection(data.section_id)
     const supabase = createServerSupabaseClient()
 
     const { data: question, error } = await catalogQuery(supabase)
@@ -54,7 +59,12 @@ export const createQuestionFn = createServerFn({ method: "POST" })
 export const createQuestionsBulkFn = createServerFn({ method: "POST" })
   .inputValidator(z.array(questionSchema))
   .handler(async ({ data: questions }) => {
-    await requireAdmin()
+    const user = await requireAdmin()
+    // Scope-check every distinct target section for maintainers.
+    const sectionIds = [...new Set(questions.map((q) => q.section_id))]
+    for (const sectionId of sectionIds) {
+      await assertSectionScope(user, sectionId)
+    }
     const supabase = createServerSupabaseClient()
 
     const rows = questions.map((q) => ({
@@ -80,7 +90,7 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
 export const updateQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateQuestionSchema))
   .handler(async ({ data: { id, ...updates } }) => {
-    await requireAdmin()
+    await requireContentManagerForQuestion(id)
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -110,7 +120,7 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
 export const deleteQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireContentManagerForQuestion(id)
     const supabase = createServerSupabaseClient()
 
     const { error } = await catalogQuery(supabase).from("questions").delete().eq("id", id)

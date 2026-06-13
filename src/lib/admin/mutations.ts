@@ -24,6 +24,7 @@ import {
   removeCourseMaintainerFn,
   removeDepartmentAdminFn,
   removeSectionAccessFn,
+  sendMaintainerInviteFn,
   deleteUserFn,
   updateClassFn,
   updateCourseClassFn,
@@ -282,6 +283,14 @@ export function useRemoveCourseMaintainer(onSuccess?: () => void) {
   return useMutationWithToast(removeCourseMaintainerFn, {
     successMessage: "Maintainer corso rimosso",
     invalidateKeys: USER_INVALIDATE_KEYS,
+    onSuccess,
+  })
+}
+
+export function useSendMaintainerInvite(onSuccess?: () => void) {
+  return useMutationWithToast(sendMaintainerInviteFn, {
+    successMessage: "Email di invito inviata",
+    invalidateKeys: [],
     onSuccess,
   })
 }

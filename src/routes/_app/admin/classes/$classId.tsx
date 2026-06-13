@@ -40,6 +40,11 @@ import {
   useUpdateCourseClass,
 } from "@/lib/admin/mutations"
 import { adminQueries } from "@/lib/admin/queries"
+import { useAuth } from "@/hooks/useAuth"
+
+// Technical sentinel section auto-created with every class to anchor
+// exam-simulation quiz questions; hidden from the sections list.
+const EXAM_SIMULATION_NAME = "Exam Simulation"
 
 export const Route = createFileRoute("/_app/admin/classes/$classId")({
   loader: ({ context, params }) =>
@@ -53,6 +58,8 @@ export const Route = createFileRoute("/_app/admin/classes/$classId")({
 function AdminClassDetailPage() {
   const { classId } = Route.useParams()
   const { data } = useSuspenseQuery(adminQueries.class(classId))
+  const { user } = useAuth()
+  const isMaintainer = user?.role === "MAINTAINER"
   const [createSectionOpen, setCreateSectionOpen] = useState(false)
   const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null)
   const [createExamSimulationOpen, setCreateExamSimulationOpen] = useState(false)
@@ -78,10 +85,17 @@ function AdminClassDetailPage() {
   const { sections, course_classes, ...cls } = data
   const courseClass = course_classes?.[0]
   const course = courseClass?.course
-  const hasExamSimulation = sections.some((s) => s.name === "Exam Simulation")
+  const hasExamSimulation = sections.some(
+    (s) => s.name === EXAM_SIMULATION_NAME,
+  )
+  // Hide the exam-simulation sentinel, and (for maintainers) private sections,
+  // which they cannot manage.
+  const visibleSections = sections.filter(
+    (s) => s.name !== EXAM_SIMULATION_NAME && (!isMaintainer || s.is_public),
+  )
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    sections as SectionRow[],
+    visibleSections as SectionRow[],
     (s, q) => s.name.toLowerCase().includes(q),
     search,
     page,
@@ -112,6 +126,7 @@ function AdminClassDetailPage() {
       />
 
       <div className="grid gap-6">
+        {!isMaintainer && (
         <Card className="rounded-2xl">
           <CardHeader className="pb-4">
             <CardTitle>Modifica insegnamento</CardTitle>
@@ -143,11 +158,12 @@ function AdminClassDetailPage() {
             />
           </CardContent>
         </Card>
+        )}
 
         <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle>Sezioni ({sections.length})</CardTitle>
+              <CardTitle>Sezioni ({visibleSections.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="w-56">
                   <AdminSearch
@@ -159,7 +175,7 @@ function AdminClassDetailPage() {
                     placeholder="Cerca sezioni..."
                   />
                 </div>
-                {!hasExamSimulation && (
+                {!isMaintainer && !hasExamSimulation && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -279,6 +295,7 @@ function AdminClassDetailPage() {
             classId={cls.id}
             onSubmit={(formData) => createSection.mutate(formData)}
             isPending={createSection.isPending}
+            canEditVisibility={!isMaintainer}
           />
         </DialogContent>
       </Dialog>

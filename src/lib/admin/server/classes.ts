@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
+import { requireStructureManager } from "./access"
 import {
   classSchema,
   courseClassSchema,
@@ -53,7 +54,7 @@ export const getAdminClassDetailFn = createServerFn({ method: "GET" })
 export const createClassFn = createServerFn({ method: "POST" })
   .inputValidator(classSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { data: cls, error } = await catalogQuery(supabase)
@@ -96,7 +97,7 @@ export const createClassFn = createServerFn({ method: "POST" })
 export const createExamSimulationSentinelFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { data: cls, error: clsError } = await catalogQuery(supabase)
@@ -137,7 +138,7 @@ export const createExamSimulationSentinelFn = createServerFn({ method: "POST" })
 export const updateClassFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateClassSchema))
   .handler(async ({ data: { id, ...updates } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -167,7 +168,7 @@ export const updateClassFn = createServerFn({ method: "POST" })
 export const deleteClassFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
@@ -190,7 +191,7 @@ export const deleteClassFn = createServerFn({ method: "POST" })
 export const addClassToCourseFn = createServerFn({ method: "POST" })
   .inputValidator(courseClassSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { data: row, error } = await catalogQuery(supabase)
@@ -223,7 +224,7 @@ export const updateCourseClassFn = createServerFn({ method: "POST" })
     courseClassSchema.pick({ course_id: true, class_id: true }).merge(updateCourseClassSchema),
   )
   .handler(async ({ data: { course_id, class_id, ...updates } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -253,7 +254,7 @@ export const removeClassFromCourseFn = createServerFn({ method: "POST" })
     courseClassSchema.pick({ course_id: true, class_id: true }),
   )
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const { error } = await catalogQuery(supabase)

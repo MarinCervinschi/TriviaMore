@@ -5,6 +5,7 @@ import { seoHead } from "@/lib/seo"
 import { BookOpen, GraduationCap, Library, Plus, Trash2, Trophy } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { MaintainerInviteDialog } from "@/components/admin/maintainer-invite-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -49,6 +50,16 @@ function AdminUserDetailPage() {
   const { data: user } = useSuspenseQuery(adminQueries.user(userId))
   const { user: currentUser } = useAuth()
   const isSuperadmin = currentUser?.role === "SUPERADMIN"
+
+  // Action visibility follows the role hierarchy: a department admin is an
+  // ADMIN-level concept, a course maintainer is MAINTAINER-level. Students see
+  // neither — the role must be raised first.
+  const canManageDepartments =
+    user.role === "ADMIN" || user.role === "SUPERADMIN"
+  const canMaintainCourses =
+    user.role === "MAINTAINER" ||
+    user.role === "ADMIN" ||
+    user.role === "SUPERADMIN"
 
   const [roleConfirm, setRoleConfirm] = useState<UserRole | null>(null)
   const [addDeptId, setAddDeptId] = useState("")
@@ -146,6 +157,21 @@ function AdminUserDetailPage() {
                     {ROLE_LABELS[user.role]}
                   </Badge>
                 )}
+                {user.role === "STUDENT" && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Assegna un ruolo (Maintainer o Admin) per gestire corsi e
+                    dipartimenti.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <MaintainerInviteDialog
+                  userId={userId}
+                  userName={user.name}
+                  userEmail={user.email}
+                  courses={availableCourses}
+                />
               </div>
             </CardContent>
           </Card>
@@ -190,7 +216,8 @@ function AdminUserDetailPage() {
           </Card>
         </div>
 
-        {/* Department Admin assignments */}
+        {/* Department Admin assignments — ADMIN+ only */}
+        {canManageDepartments && (
         <Card className="rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -265,8 +292,10 @@ function AdminUserDetailPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
-        {/* Course Maintainer assignments */}
+        {/* Course Maintainer assignments — MAINTAINER+ only */}
+        {canMaintainCourses && (
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -339,6 +368,7 @@ function AdminUserDetailPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Section Access */}
         <Card className="rounded-2xl">

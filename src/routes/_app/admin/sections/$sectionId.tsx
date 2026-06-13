@@ -39,6 +39,7 @@ import {
   useUpdateSection,
 } from "@/lib/admin/mutations"
 import { adminQueries } from "@/lib/admin/queries"
+import { useAuth } from "@/hooks/useAuth"
 import type { Question } from "@/lib/admin/types"
 
 const DIFFICULTY_LABELS: Record<string, string> = {
@@ -65,6 +66,9 @@ export const Route = createFileRoute("/_app/admin/sections/$sectionId")({
 function AdminSectionDetailPage() {
   const { sectionId } = Route.useParams()
   const { data } = useSuspenseQuery(adminQueries.section(sectionId))
+  const { user } = useAuth()
+  const isSuperadmin = user?.role === "SUPERADMIN"
+  const isMaintainer = user?.role === "MAINTAINER"
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
@@ -86,11 +90,11 @@ function AdminSectionDetailPage() {
   // Section access management (only for private sections)
   const { data: accessUsers } = useQuery({
     ...adminQueries.sectionAccessUsers(sectionId),
-    enabled: !section.is_public,
+    enabled: !section.is_public && isSuperadmin,
   })
   const { data: allUsers } = useQuery({
     ...adminQueries.users(),
-    enabled: !section.is_public,
+    enabled: !section.is_public && isSuperadmin,
   })
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
@@ -139,6 +143,7 @@ function AdminSectionDetailPage() {
                   updateSection.mutate({ id: section.id, ...formData })
                 }
                 isPending={updateSection.isPending}
+                canEditVisibility={!isMaintainer}
               />
             </CardContent>
           </Card>
@@ -202,8 +207,8 @@ function AdminSectionDetailPage() {
           </Card>
         </div>
 
-        {/* Section access management (only for private sections) */}
-        {!section.is_public && (
+        {/* Section access management (private sections, SUPERADMIN only) */}
+        {!section.is_public && isSuperadmin && (
           <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
