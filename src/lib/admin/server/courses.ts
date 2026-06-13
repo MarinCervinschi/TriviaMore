@@ -1,9 +1,8 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
-import { requireStructureManager } from "./access"
+import { requireCourseAccess, requireStructureManager } from "./access"
 import { courseSchema, idSchema, updateCourseSchema } from "../schemas"
 
 // ─── Courses ───
@@ -11,7 +10,7 @@ import { courseSchema, idSchema, updateCourseSchema } from "../schemas"
 export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireCourseAccess(id)
     const supabase = createServerSupabaseClient()
 
     const { data: course, error: courseError } = await catalogQuery(supabase)

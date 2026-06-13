@@ -236,6 +236,7 @@ function ClassPage() {
             <BrowseAdminButton
               to="/admin/classes/$classId"
               params={{ classId: classData.id }}
+              courseId={classData.course.id}
             />
             {isAuthenticated && (
               <>
