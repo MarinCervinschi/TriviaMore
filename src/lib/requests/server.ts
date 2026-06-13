@@ -1,12 +1,41 @@
 import { createServerFn } from "@tanstack/react-start"
+import { redirect } from "@tanstack/react-router"
 
 import { requireAdmin } from "@/lib/auth/guards"
+import { maintainedCourseIds } from "@/lib/admin/server/access"
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/helpers"
 import { getSupabaseAdmin, getCatalogAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
+import type { AuthUser } from "@/lib/auth/types"
 
 import { storedContentSchema } from "./schemas"
-import type { AdminContentRequest, ContentRequestWithMeta, ReportedQuestion, SubmittedContent } from "./types"
+import type {
+  AdminContentRequest,
+  ContentRequestDetail,
+  ContentRequestWithMeta,
+  ReportedQuestion,
+  RequestUser,
+  SubmittedContent,
+} from "./types"
+
+// Admin guard for the requests area. Maintainers only see requests targeting a
+// course they maintain; ADMIN/SUPERADMIN are unscoped (scopeCourseIds = null).
+async function requireRequestAdmin(): Promise<{
+  user: AuthUser
+  scopeCourseIds: Set<string> | null
+}> {
+  const user = await requireAdmin()
+  if (user.role !== "MAINTAINER") return { user, scopeCourseIds: null }
+  return { user, scopeCourseIds: await maintainedCourseIds(user.id) }
+}
+
+function isInScope(
+  scopeCourseIds: Set<string> | null,
+  targetCourseId: string | null,
+): boolean {
+  if (!scopeCourseIds) return true
+  return !!targetCourseId && scopeCourseIds.has(targetCourseId)
+}
 
 /** Validate JSONB content from DB against Zod schema at runtime */
 function parseSubmittedContent(raw: unknown): SubmittedContent {
@@ -305,7 +334,7 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
 
 export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdminContentRequest[]> => {
-    await requireAdmin()
+    const { scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
@@ -315,7 +344,11 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
 
     if (error) throw new Error("Errore nel caricamento delle proposte")
 
-    const userIds = [...new Set((data ?? []).map((r) => r.user_id))]
+    const rows = (data ?? []).filter((r) =>
+      isInScope(scopeCourseIds, r.target_course_id),
+    )
+
+    const userIds = [...new Set(rows.map((r) => r.user_id))]
     const { data: profiles } = await getSupabaseAdmin()
       .from("profiles")
       .select("id, name, email, image")
@@ -324,7 +357,7 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
     const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]))
 
     const requests: AdminContentRequest[] = []
-    for (const req of data ?? []) {
+    for (const req of rows) {
       const target_label = await buildTargetLabel(supabase, req)
       const submitted = parseSubmittedContent(req.submitted_content)
       requests.push({
@@ -347,21 +380,28 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
 export const getAdminRequestCountFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<number> => {
-  await requireAdmin()
+  const { scopeCourseIds } = await requireRequestAdmin()
   const supabase = createServerSupabaseClient()
 
-  const { count, error } = await supabase
+  if (scopeCourseIds && scopeCourseIds.size === 0) return 0
+
+  let query = supabase
     .from("content_requests")
     .select("*", { count: "exact", head: true })
     .eq("status", "PENDING")
 
+  if (scopeCourseIds) {
+    query = query.in("target_course_id", [...scopeCourseIds])
+  }
+
+  const { count, error } = await query
   if (error) throw new Error("Errore nel conteggio delle proposte")
   return count ?? 0
 })
 
 export const getRequestDetailFn = createServerFn({ method: "GET" })
   .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }): Promise<ContentRequestWithMeta> => {
+  .handler(async ({ data: { id } }): Promise<ContentRequestDetail> => {
     const { supabase, user } = await getAuthUser()
 
     const { data: request, error } = await supabase
@@ -372,9 +412,25 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
 
     if (error || !request) throw new Error("Proposta non trovata")
 
-    // Verify ownership or admin access
+    // Owner views their own request; everyone else needs admin access (and a
+    // maintainer must be in scope). Admin viewers also get the author profile.
+    let author: RequestUser | null = null
     if (request.user_id !== user.id) {
-      await requireAdmin()
+      const { scopeCourseIds } = await requireRequestAdmin()
+      if (!isInScope(scopeCourseIds, request.target_course_id)) {
+        throw redirect({ to: "/admin/requests" })
+      }
+      const { data: profile } = await getSupabaseAdmin()
+        .from("profiles")
+        .select("id, name, email, image")
+        .eq("id", request.user_id)
+        .single()
+      author = profile ?? {
+        id: request.user_id,
+        name: null,
+        email: null,
+        image: null,
+      }
     }
 
     const target_label = await buildTargetLabel(supabase, request)
@@ -390,7 +446,7 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
       if (question) reported_question = question as ReportedQuestion
     }
 
-    return { ...request, target_label, submitted, reported_question }
+    return { ...request, target_label, submitted, reported_question, user: author }
   })
 
 // ─── Admin Mutations ───
@@ -404,16 +460,19 @@ export const handleRequestFn = createServerFn({ method: "POST" })
     }) => input,
   )
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id")
+      .select("user_id, target_course_id")
       .eq("id", data.id)
       .single()
 
     if (fetchError || !request) throw new Error("Proposta non trovata")
+    if (!isInScope(scopeCourseIds, request.target_course_id)) {
+      throw new Error("Non hai i permessi per gestire questa richiesta.")
+    }
 
     const { error } = await supabase
       .from("content_requests")
@@ -450,8 +509,19 @@ export const handleRequestFn = createServerFn({ method: "POST" })
 export const approveRequestFn = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
+
+    if (scopeCourseIds) {
+      const { data: target } = await supabase
+        .from("content_requests")
+        .select("target_course_id")
+        .eq("id", data.id)
+        .single()
+      if (!target || !isInScope(scopeCourseIds, target.target_course_id)) {
+        throw new Error("Non hai i permessi per gestire questa richiesta.")
+      }
+    }
 
     // Atomic claim: transition PENDING → APPROVED in a single statement so
     // concurrent clicks cannot both proceed to insert catalog content.
@@ -548,16 +618,19 @@ export const approveRequestFn = createServerFn({ method: "POST" })
 export const acknowledgeRequestFn = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string; admin_note?: string }) => input)
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id, request_type")
+      .select("user_id, request_type, target_course_id")
       .eq("id", data.id)
       .single()
 
     if (fetchError || !request) throw new Error("Proposta non trovata")
+    if (!isInScope(scopeCourseIds, request.target_course_id)) {
+      throw new Error("Non hai i permessi per gestire questa richiesta.")
+    }
 
     const { error } = await supabase
       .from("content_requests")

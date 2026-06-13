@@ -60,12 +60,19 @@ export type ContentRequestWithMeta = ContentRequest & {
   reported_question?: ReportedQuestion | null
 }
 
-// Admin view includes user info
+export type RequestUser = {
+  id: string
+  name: string | null
+  email: string | null
+  image: string | null
+}
+
+// Admin list view includes the author's profile
 export type AdminContentRequest = ContentRequestWithMeta & {
-  user: {
-    id: string
-    name: string | null
-    email: string | null
-    image: string | null
-  }
+  user: RequestUser
+}
+
+// Admin detail view: user is null when the owner views their own request
+export type ContentRequestDetail = ContentRequestWithMeta & {
+  user: RequestUser | null
 }

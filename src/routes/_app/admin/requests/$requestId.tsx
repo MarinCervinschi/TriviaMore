@@ -2,9 +2,10 @@ import { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
-import { ArrowLeft, CheckCircle2, ChevronDown, Download, Eye, FileUp, MapPin, Pencil, Settings2 } from "lucide-react"
+import { ArrowLeft, CheckCircle2, ChevronDown, Download, Eye, FileUp, MapPin, Pencil, Settings2, UserCog } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -13,6 +14,7 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { Textarea } from "@/components/ui/textarea"
+import { useAuth } from "@/hooks/useAuth"
 import { requestQueries } from "@/lib/requests/queries"
 import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations"
 import { getFileDownloadUrlFn } from "@/lib/requests/server"
@@ -40,6 +42,8 @@ function AdminRequestDetailPage() {
   const [reportNote, setReportNote] = useState("")
   const approve = useApproveRequest()
   const acknowledge = useAcknowledgeRequest()
+  const { user: currentUser } = useAuth()
+  const isMaintainer = currentUser?.role === "MAINTAINER"
 
   const isPending = request.status === "PENDING"
   const isReport = request.request_type === "REPORT"
@@ -115,6 +119,46 @@ function AdminRequestDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Author */}
+      {request.user && (
+        <div className="rounded-2xl border bg-card p-6">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary">
+            Inviata da
+          </h3>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={request.user.image ?? undefined} />
+                <AvatarFallback>
+                  {(request.user.name?.[0] ?? request.user.email?.[0] ?? "?").toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  {request.user.name ?? "Utente"}
+                </p>
+                {request.user.email && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {request.user.email}
+                  </p>
+                )}
+              </div>
+            </div>
+            {!isMaintainer && (
+              <Button asChild variant="outline" size="sm" className="shrink-0 gap-1.5 rounded-xl">
+                <Link
+                  to="/admin/users/$userId"
+                  params={{ userId: request.user.id }}
+                >
+                  <UserCog className="size-4" />
+                  Apri scheda utente
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Submitted content preview */}
       <div className="rounded-2xl border bg-card p-6 space-y-4">
