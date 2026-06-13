@@ -5,6 +5,16 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import { LoadingPage } from '@/components/loading/loading-page'
 import { routeTree } from './routeTree.gen'
 
+if (typeof window !== 'undefined') {
+  window.addEventListener('vite:preloadError', () => {
+    const key = 'tm:preload-reloaded-at'
+    const last = Number(sessionStorage.getItem(key) ?? 0)
+    if (Date.now() - last < 10_000) return // already reloaded just now — avoid loops
+    sessionStorage.setItem(key, String(Date.now()))
+    window.location.reload()
+  })
+}
+
 const FIVE_MINUTES = 1000 * 60 * 5
 
 export function getRouter() {
