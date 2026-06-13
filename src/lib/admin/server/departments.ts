@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
+import { requireDepartmentAccess, requireStructureManager } from "./access"
 import {
   departmentSchema,
   idSchema,
@@ -15,7 +15,7 @@ import type { AdminCourse, AdminDepartment } from "../types"
 export const getAdminDepartmentsFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<AdminDepartment[]> => {
-  await requireAdmin()
+  await requireDepartmentAccess()
   const supabase = createServerSupabaseClient()
 
   const { data, error } = await catalogQuery(supabase)
@@ -30,7 +30,7 @@ export const getAdminDepartmentsFn = createServerFn({
 export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireDepartmentAccess()
     const supabase = createServerSupabaseClient()
 
     const { data: department, error: deptError } = await catalogQuery(supabase)
@@ -60,7 +60,7 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
 export const createDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(departmentSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     // Get next position
@@ -93,7 +93,7 @@ export const createDepartmentFn = createServerFn({ method: "POST" })
 export const updateDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateDepartmentSchema))
   .handler(async ({ data: { id, ...updates } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -124,7 +124,7 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
 export const deleteDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireStructureManager()
     const supabase = createServerSupabaseClient()
 
     // Check for child courses

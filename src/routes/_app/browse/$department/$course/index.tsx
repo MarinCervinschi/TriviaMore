@@ -262,6 +262,7 @@ function CoursePage() {
           <BrowseAdminButton
             to="/admin/courses/$courseId"
             params={{ courseId: course.id }}
+            courseId={course.id}
           />
         }
       />

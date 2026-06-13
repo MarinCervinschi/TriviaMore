@@ -1,23 +1,36 @@
+import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import { Settings } from "lucide-react"
 
 import { useAuth } from "@/hooks/useAuth"
+import { adminQueries } from "@/lib/admin/queries"
 import { Button } from "@/components/ui/button"
 
 type BrowseAdminButtonProps = {
   to: string
   params?: Record<string, string>
+  // A MAINTAINER sees the button only if this course is one they maintain;
+  // omit it (e.g. department page) to hide the button from maintainers.
+  courseId?: string
 }
 
-export function BrowseAdminButton({ to, params }: BrowseAdminButtonProps) {
+export function BrowseAdminButton({ to, params, courseId }: BrowseAdminButtonProps) {
   const { user } = useAuth()
+  const role = user?.role
+  const isFullAdmin = role === "SUPERADMIN" || role === "ADMIN"
+  const isMaintainer = role === "MAINTAINER"
 
-  const isAdmin =
-    user?.role === "SUPERADMIN" ||
-    user?.role === "ADMIN" ||
-    user?.role === "MAINTAINER"
+  const { data: permissions } = useQuery({
+    ...adminQueries.permissions(),
+    enabled: isMaintainer,
+  })
 
-  if (!isAdmin) return null
+  if (isMaintainer) {
+    if (!courseId) return null
+    if (!permissions?.maintainedCourseIds.includes(courseId)) return null
+  } else if (!isFullAdmin) {
+    return null
+  }
 
   return (
     <Button variant="outline" size="sm" className="rounded-xl" asChild>

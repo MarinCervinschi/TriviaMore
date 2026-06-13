@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
 import {
   requireContentManagerForClass,
   requireContentManagerForSection,
+  requireSectionAccess,
 } from "./access"
 import { idSchema, sectionSchema, updateSectionSchema } from "../schemas"
 
@@ -14,7 +14,7 @@ import { idSchema, sectionSchema, updateSectionSchema } from "../schemas"
 export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireSectionAccess(id)
     const supabase = createServerSupabaseClient()
 
     const { data: section, error: secError } = await catalogQuery(supabase)
