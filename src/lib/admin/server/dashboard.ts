@@ -25,7 +25,10 @@ export const getAdminStatsFn = createServerFn({ method: "GET" }).handler(
           .select("*", { count: "exact", head: true }),
         catalog.from("courses").select("*", { count: "exact", head: true }),
         catalog.from("classes").select("*", { count: "exact", head: true }),
-        catalog.from("sections").select("*", { count: "exact", head: true }),
+        catalog
+          .from("sections")
+          .select("*", { count: "exact", head: true })
+          .neq("name", "Exam Simulation"),
         catalog.from("questions").select("*", { count: "exact", head: true }),
       ])
 
@@ -68,6 +71,31 @@ export const getAdminPermissionsFn = createServerFn({
     ),
   }
 })
+
+// Courses the current user maintains, with names — used to show scoped links
+// in the admin sidebar instead of the full departments tree.
+export const getMyMaintainedCoursesFn = createServerFn({
+  method: "GET",
+}).handler(
+  async (): Promise<{ id: string; name: string; code: string }[]> => {
+    const user = await requireAdmin()
+    const supabase = createServerSupabaseClient()
+
+    const { data, error } = await catalogQuery(supabase)
+      .from("course_maintainers")
+      .select("course:courses(id, name, code)")
+      .eq("user_id", user.id)
+
+    if (error) throw new Error(error.message)
+
+    return (data ?? [])
+      .map(
+        (row) =>
+          row.course as unknown as { id: string; name: string; code: string },
+      )
+      .filter(Boolean)
+  },
+)
 
 // ─── Content Tree ───
 

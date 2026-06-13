@@ -1184,6 +1184,7 @@ export type Database = {
         | "REQUEST_REVISED"
         | "CONTENT_UPDATED"
         | "NEW_SECTION_ADDED"
+        | "MAINTAINER_ASSIGNED"
       question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
       quiz_mode: "STUDY" | "EXAM_SIMULATION"
       role: "SUPERADMIN" | "ADMIN" | "MAINTAINER" | "STUDENT"
@@ -1630,6 +1631,7 @@ export const Constants = {
         "REQUEST_REVISED",
         "CONTENT_UPDATED",
         "NEW_SECTION_ADDED",
+        "MAINTAINER_ASSIGNED",
       ],
       question_type: ["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"],
       quiz_mode: ["STUDY", "EXAM_SIMULATION"],

@@ -11,6 +11,7 @@ import {
   getAdminQuestionDetailFn,
   getAdminSectionDetailFn,
   getAdminStatsFn,
+  getMyMaintainedCoursesFn,
   getAdminUserDetailFn,
   getAdminUserStatsFn,
   getAdminUsersFn,
@@ -39,6 +40,13 @@ export const adminQueries = {
     queryOptions({
       queryKey: ["admin", "permissions"],
       queryFn: () => getAdminPermissionsFn(),
+      staleTime: STALE_TIME.STANDARD,
+    }),
+
+  myMaintainedCourses: () =>
+    queryOptions({
+      queryKey: ["admin", "myMaintainedCourses"],
+      queryFn: () => getMyMaintainedCoursesFn(),
       staleTime: STALE_TIME.STANDARD,
     }),
 

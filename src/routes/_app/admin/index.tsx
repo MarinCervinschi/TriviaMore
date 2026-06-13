@@ -1,7 +1,8 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { seoHead } from "@/lib/seo"
 import {
+  ArrowRight,
   BookOpen,
   FileQuestion,
   FolderOpen,
@@ -15,6 +16,18 @@ import {
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { AdminStatCard } from "@/components/admin/admin-stat-card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useAuth } from "@/hooks/useAuth"
 import { adminQueries } from "@/lib/admin/queries"
 
 export const Route = createFileRoute("/_app/admin/")({
@@ -25,8 +38,16 @@ export const Route = createFileRoute("/_app/admin/")({
 })
 
 function AdminDashboard() {
+  const { user } = useAuth()
+  const isSuperadmin = user?.role === "SUPERADMIN"
   const { data: stats } = useSuspenseQuery(adminQueries.stats())
-  const { data: userStats } = useQuery(adminQueries.userStats())
+  // User stats are SUPERADMIN-only (getAdminUserStatsFn). Running this query as
+  // a MAINTAINER/ADMIN would trigger requireSuperadmin's redirect to /user.
+  const { data: userStats } = useQuery({
+    ...adminQueries.userStats(),
+    enabled: isSuperadmin,
+  })
+  const { data: myCourses } = useQuery(adminQueries.myMaintainedCourses())
 
   const contentCards = [
     { label: "Dipartimenti", value: stats.departmentCount, icon: Library, to: "/admin/departments", color: "blue" },
@@ -106,6 +127,72 @@ function AdminDashboard() {
             />
           </div>
         </>
+      )}
+
+      {/* My maintained courses */}
+      {(myCourses ?? []).length > 0 && (
+        <div className="mt-8">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-primary">
+            I miei corsi mantenuti
+          </p>
+          <Card className="overflow-hidden rounded-2xl">
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="text-xs font-medium uppercase tracking-wider">
+                      Corso
+                    </TableHead>
+                    <TableHead className="text-xs font-medium uppercase tracking-wider">
+                      Codice
+                    </TableHead>
+                    <TableHead className="text-right text-xs font-medium uppercase tracking-wider">
+                      Azioni
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(myCourses ?? []).map((course) => (
+                    <TableRow
+                      key={course.id}
+                      className="transition-colors hover:bg-muted/30"
+                    >
+                      <TableCell>
+                        <Link
+                          to="/admin/courses/$courseId"
+                          params={{ courseId: course.id }}
+                          className="font-medium hover:underline"
+                        >
+                          {course.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="rounded-full">
+                          {course.code}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-lg"
+                          asChild
+                        >
+                          <Link
+                            to="/admin/courses/$courseId"
+                            params={{ courseId: course.id }}
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   )

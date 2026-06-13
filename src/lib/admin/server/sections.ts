@@ -3,6 +3,10 @@ import { createServerFn } from "@tanstack/react-start"
 import { requireAdmin } from "@/lib/auth/guards"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
+import {
+  requireContentManagerForClass,
+  requireContentManagerForSection,
+} from "./access"
 import { idSchema, sectionSchema, updateSectionSchema } from "../schemas"
 
 // ─── Sections ───
@@ -35,7 +39,10 @@ export const getAdminSectionDetailFn = createServerFn({ method: "GET" })
 export const createSectionFn = createServerFn({ method: "POST" })
   .inputValidator(sectionSchema)
   .handler(async ({ data }) => {
-    await requireAdmin()
+    const user = await requireContentManagerForClass(data.class_id)
+    if (user.role === "MAINTAINER" && data.is_public === false) {
+      throw new Error("I maintainer possono creare solo sezioni pubbliche.")
+    }
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
@@ -63,7 +70,7 @@ export const createSectionFn = createServerFn({ method: "POST" })
 export const updateSectionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateSectionSchema))
   .handler(async ({ data: { id, ...updates } }) => {
-    await requireAdmin()
+    await requireContentManagerForSection(id)
     const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
@@ -88,7 +95,7 @@ export const updateSectionFn = createServerFn({ method: "POST" })
 export const deleteSectionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireContentManagerForSection(id)
     const supabase = createServerSupabaseClient()
 
     const { count } = await catalogQuery(supabase)
