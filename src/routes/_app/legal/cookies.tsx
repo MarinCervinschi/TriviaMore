@@ -27,7 +27,7 @@ function CookiesPage() {
           "I cookie tecnici e analitici utilizzati dal Servizio, in linea con le linee guida del Garante per la Protezione dei Dati Personali.",
         icon: Cookie,
         version: CURRENT_COOKIE_POLICY_VERSION,
-        lastUpdated: "24 aprile 2026",
+        lastUpdated: "13 giugno 2026",
       }}
     />
   )
