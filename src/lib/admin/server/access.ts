@@ -1,3 +1,5 @@
+import { redirect } from "@tanstack/react-router"
+
 import { requireAdmin } from "@/lib/auth/guards"
 import { getCatalogAdmin } from "@/lib/supabase/admin"
 import type { AuthUser } from "@/lib/auth/types"
@@ -5,8 +7,9 @@ import type { AuthUser } from "@/lib/auth/types"
 // ─── Content authorization ───
 //
 // Role model for the admin catalog:
-//   • Courses + classes (the structural catalog) are managed by ADMIN and
-//     SUPERADMIN. Maintainers are content-only and are rejected for these.
+//   • Departments + courses + classes (the structural catalog) are managed by
+//     ADMIN and SUPERADMIN. Maintainers are content-only and are rejected for
+//     these, and are redirected away from the corresponding admin pages.
 //   • Sections + questions are managed by ADMIN, SUPERADMIN and MAINTAINER.
 //     For a MAINTAINER, access is scoped: the owning class must belong to at
 //     least one course they maintain (a class can be shared across courses).
@@ -14,16 +17,16 @@ import type { AuthUser } from "@/lib/auth/types"
 // ADMIN/SUPERADMIN remain unscoped (unchanged behavior). All resolution uses
 // the service-role catalog client since this is server-side authorization.
 
-// Structural catalog (courses + classes) — ADMIN+ only.
+// Structural catalog (departments + courses + classes) — ADMIN+ only.
 export async function requireStructureManager(): Promise<AuthUser> {
   const user = await requireAdmin()
   if (user.role === "MAINTAINER") {
-    throw new Error("I maintainer non possono modificare corsi o insegnamenti.")
+    throw new Error("I maintainer non possono modificare la struttura del catalogo.")
   }
   return user
 }
 
-async function maintainedCourseIds(userId: string): Promise<Set<string>> {
+export async function maintainedCourseIds(userId: string): Promise<Set<string>> {
   const { data } = await getCatalogAdmin()
     .from("course_maintainers")
     .select("course_id")
@@ -31,21 +34,25 @@ async function maintainedCourseIds(userId: string): Promise<Set<string>> {
   return new Set((data ?? []).map((r) => r.course_id))
 }
 
-// No-op for ADMIN/SUPERADMIN; for a MAINTAINER, requires that the class belongs
-// to at least one course they maintain.
-async function assertClassScope(user: AuthUser, classId: string): Promise<void> {
-  if (user.role !== "MAINTAINER") return
-
+async function classInMaintainedScope(
+  userId: string,
+  classId: string,
+): Promise<boolean> {
   const [{ data: links }, maintained] = await Promise.all([
     getCatalogAdmin()
       .from("course_classes")
       .select("course_id")
       .eq("class_id", classId),
-    maintainedCourseIds(user.id),
+    maintainedCourseIds(userId),
   ])
+  return (links ?? []).some((l) => maintained.has(l.course_id))
+}
 
-  const inScope = (links ?? []).some((l) => maintained.has(l.course_id))
-  if (!inScope) {
+// No-op for ADMIN/SUPERADMIN; for a MAINTAINER, requires that the class belongs
+// to at least one course they maintain.
+async function assertClassScope(user: AuthUser, classId: string): Promise<void> {
+  if (user.role !== "MAINTAINER") return
+  if (!(await classInMaintainedScope(user.id, classId))) {
     throw new Error(
       "Non hai i permessi per gestire i contenuti di questo insegnamento.",
     )
@@ -104,5 +111,79 @@ export async function requireContentManagerForQuestion(
   if (error || !data) throw new Error("Domanda non trovata")
 
   await assertSectionScope(user, data.section_id)
+  return user
+}
+
+// ─── Read-access guards for admin detail pages ───
+//
+// A MAINTAINER who opens a page outside the courses they maintain is redirected
+// back to the dashboard; departments are off-limits to maintainers entirely.
+
+async function sectionInMaintainedScope(
+  userId: string,
+  sectionId: string,
+): Promise<boolean> {
+  const { data } = await getCatalogAdmin()
+    .from("sections")
+    .select("class_id, is_public")
+    .eq("id", sectionId)
+    .single()
+  if (!data || !data.is_public) return false
+  return classInMaintainedScope(userId, data.class_id)
+}
+
+export async function requireDepartmentAccess(): Promise<AuthUser> {
+  const user = await requireAdmin()
+  if (user.role === "MAINTAINER") throw redirect({ to: "/admin" })
+  return user
+}
+
+export async function requireCourseAccess(courseId: string): Promise<AuthUser> {
+  const user = await requireAdmin()
+  if (user.role === "MAINTAINER") {
+    const maintained = await maintainedCourseIds(user.id)
+    if (!maintained.has(courseId)) throw redirect({ to: "/admin" })
+  }
+  return user
+}
+
+export async function requireClassAccess(classId: string): Promise<AuthUser> {
+  const user = await requireAdmin()
+  if (
+    user.role === "MAINTAINER" &&
+    !(await classInMaintainedScope(user.id, classId))
+  ) {
+    throw redirect({ to: "/admin" })
+  }
+  return user
+}
+
+export async function requireSectionAccess(
+  sectionId: string,
+): Promise<AuthUser> {
+  const user = await requireAdmin()
+  if (
+    user.role === "MAINTAINER" &&
+    !(await sectionInMaintainedScope(user.id, sectionId))
+  ) {
+    throw redirect({ to: "/admin" })
+  }
+  return user
+}
+
+export async function requireQuestionAccess(
+  questionId: string,
+): Promise<AuthUser> {
+  const user = await requireAdmin()
+  if (user.role !== "MAINTAINER") return user
+
+  const { data } = await getCatalogAdmin()
+    .from("questions")
+    .select("section_id")
+    .eq("id", questionId)
+    .single()
+  if (!data || !(await sectionInMaintainedScope(user.id, data.section_id))) {
+    throw redirect({ to: "/admin" })
+  }
   return user
 }

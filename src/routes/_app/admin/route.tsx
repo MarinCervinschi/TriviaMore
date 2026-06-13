@@ -21,7 +21,7 @@ function AdminLayout() {
 
       <div className="container flex gap-6 py-6">
       <aside className="hidden w-72 shrink-0 lg:block">
-        <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
           <AdminSidebar />
         </div>
       </aside>

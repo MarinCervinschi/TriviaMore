@@ -1,12 +1,41 @@
 import { createServerFn } from "@tanstack/react-start"
+import { redirect } from "@tanstack/react-router"
 
 import { requireAdmin } from "@/lib/auth/guards"
+import { maintainedCourseIds } from "@/lib/admin/server/access"
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/helpers"
 import { getSupabaseAdmin, getCatalogAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
+import type { AuthUser } from "@/lib/auth/types"
 
 import { storedContentSchema } from "./schemas"
-import type { AdminContentRequest, ContentRequestWithMeta, ReportedQuestion, SubmittedContent } from "./types"
+import type {
+  AdminContentRequest,
+  ContentRequestDetail,
+  ContentRequestWithMeta,
+  ReportedQuestion,
+  RequestUser,
+  SubmittedContent,
+} from "./types"
+
+// Admin guard for the requests area. Maintainers only see requests targeting a
+// course they maintain; ADMIN/SUPERADMIN are unscoped (scopeCourseIds = null).
+async function requireRequestAdmin(): Promise<{
+  user: AuthUser
+  scopeCourseIds: Set<string> | null
+}> {
+  const user = await requireAdmin()
+  if (user.role !== "MAINTAINER") return { user, scopeCourseIds: null }
+  return { user, scopeCourseIds: await maintainedCourseIds(user.id) }
+}
+
+function isInScope(
+  scopeCourseIds: Set<string> | null,
+  targetCourseId: string | null,
+): boolean {
+  if (!scopeCourseIds) return true
+  return !!targetCourseId && scopeCourseIds.has(targetCourseId)
+}
 
 /** Validate JSONB content from DB against Zod schema at runtime */
 function parseSubmittedContent(raw: unknown): SubmittedContent {
@@ -264,20 +293,26 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
     (input: { id: string; submitted_content: unknown }) => input,
   )
   .handler(async ({ data }) => {
-    const { supabase, user } = await getAuthUser()
+    const { user } = await getAuthUser()
+    const admin = getSupabaseAdmin()
 
-    const { data: existing, error: fetchError } = await supabase
+    // Validate the resubmitted content before touching the row.
+    const submitted = parseSubmittedContent(data.submitted_content)
+
+    const { data: existing, error: fetchError } = await admin
       .from("content_requests")
-      .select("*")
+      .select("user_id, status, handled_by")
       .eq("id", data.id)
-      .eq("user_id", user.id)
-      .eq("status", "NEEDS_REVISION")
       .single()
 
-    if (fetchError || !existing)
-      throw new Error("Proposta non trovata o non modificabile")
+    if (fetchError || !existing) throw new Error("Proposta non trovata")
+    if (existing.user_id !== user.id) throw new Error("Non autorizzato")
+    if (existing.status !== "NEEDS_REVISION")
+      throw new Error("La proposta non è modificabile")
 
-    const { error } = await supabase
+    // RLS only grants UPDATE to admins, so use the service-role client after
+    // verifying ownership + status here.
+    const { error } = await admin
       .from("content_requests")
       .update({
         status: "PENDING" as const,
@@ -289,11 +324,11 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
     if (error) throw new Error("Errore nell'aggiornamento della proposta")
 
     if (existing.handled_by) {
-      await createNotification(getSupabaseAdmin(), {
+      await createNotification(admin, {
         userId: existing.handled_by,
         type: "REQUEST_REVISED",
         title: "Proposta aggiornata",
-        body: generateTitle(parseSubmittedContent(data.submitted_content)),
+        body: generateTitle(submitted),
         referenceId: data.id,
         referenceType: "content_request",
         link: `/admin/requests/${data.id}`,
@@ -301,11 +336,95 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
     }
   })
 
+const REPORT_REASONS = ["errata", "imprecisa", "fuori_contesto", "altro"]
+
+// Edit own report while it is still pending (not yet handled). Uses the
+// service-role client after verifying ownership + status, since RLS only
+// grants UPDATE to admins.
+export const updateReportFn = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: { id: string; reasons: string[]; comment: string | null }) => input,
+  )
+  .handler(async ({ data }) => {
+    const { user } = await getAuthUser()
+    const admin = getSupabaseAdmin()
+
+    const { data: request, error } = await admin
+      .from("content_requests")
+      .select("user_id, status, request_type, submitted_content")
+      .eq("id", data.id)
+      .single()
+
+    if (error || !request) throw new Error("Segnalazione non trovata")
+    if (request.user_id !== user.id) throw new Error("Non autorizzato")
+    if (request.request_type !== "REPORT")
+      throw new Error("Solo le segnalazioni possono essere modificate qui")
+    if (request.status !== "PENDING")
+      throw new Error("La segnalazione è già stata gestita e non può essere modificata")
+
+    if (
+      data.reasons.length === 0 ||
+      !data.reasons.every((r) => REPORT_REASONS.includes(r))
+    ) {
+      throw new Error("Seleziona almeno un motivo valido")
+    }
+    const comment = data.comment?.trim() || null
+    if (data.reasons.includes("altro") && !comment) {
+      throw new Error("Il commento è obbligatorio quando selezioni 'Altro'")
+    }
+
+    const existing = parseSubmittedContent(request.submitted_content)
+    if (existing.type !== "report") throw new Error("Tipo di richiesta non valido")
+
+    const updated = { ...existing, reasons: data.reasons, comment }
+    const { error: updateError } = await admin
+      .from("content_requests")
+      .update({ submitted_content: JSON.parse(JSON.stringify(updated)) })
+      .eq("id", data.id)
+
+    if (updateError) throw new Error("Errore nell'aggiornamento della segnalazione")
+  })
+
+// Delete own report while it is still pending. Also clears the admin
+// notifications that pointed to it.
+export const deleteReportFn = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string }) => input)
+  .handler(async ({ data }) => {
+    const { user } = await getAuthUser()
+    const admin = getSupabaseAdmin()
+
+    const { data: request, error } = await admin
+      .from("content_requests")
+      .select("user_id, status, request_type")
+      .eq("id", data.id)
+      .single()
+
+    if (error || !request) throw new Error("Segnalazione non trovata")
+    if (request.user_id !== user.id) throw new Error("Non autorizzato")
+    if (request.request_type !== "REPORT")
+      throw new Error("Solo le segnalazioni possono essere eliminate qui")
+    if (request.status !== "PENDING")
+      throw new Error("La segnalazione è già stata gestita e non può essere eliminata")
+
+    await admin
+      .from("notifications")
+      .delete()
+      .eq("reference_id", data.id)
+      .eq("reference_type", "content_request")
+
+    const { error: deleteError } = await admin
+      .from("content_requests")
+      .delete()
+      .eq("id", data.id)
+
+    if (deleteError) throw new Error("Errore nell'eliminazione della segnalazione")
+  })
+
 // ─── Admin Queries ───
 
 export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdminContentRequest[]> => {
-    await requireAdmin()
+    const { scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
@@ -315,16 +434,26 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
 
     if (error) throw new Error("Errore nel caricamento delle proposte")
 
-    const userIds = [...new Set((data ?? []).map((r) => r.user_id))]
+    const rows = (data ?? []).filter((r) =>
+      isInScope(scopeCourseIds, r.target_course_id),
+    )
+
+    const profileIds = [
+      ...new Set(
+        rows
+          .flatMap((r) => [r.user_id, r.handled_by])
+          .filter((v): v is string => !!v),
+      ),
+    ]
     const { data: profiles } = await getSupabaseAdmin()
       .from("profiles")
       .select("id, name, email, image")
-      .in("id", userIds.length > 0 ? userIds : ["__none__"])
+      .in("id", profileIds.length > 0 ? profileIds : ["__none__"])
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]))
 
     const requests: AdminContentRequest[] = []
-    for (const req of data ?? []) {
+    for (const req of rows) {
       const target_label = await buildTargetLabel(supabase, req)
       const submitted = parseSubmittedContent(req.submitted_content)
       requests.push({
@@ -337,6 +466,9 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
           email: null,
           image: null,
         },
+        handledBy: req.handled_by
+          ? profileMap.get(req.handled_by) ?? null
+          : null,
       })
     }
 
@@ -347,21 +479,28 @@ export const getAdminRequestsFn = createServerFn({ method: "GET" }).handler(
 export const getAdminRequestCountFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<number> => {
-  await requireAdmin()
+  const { scopeCourseIds } = await requireRequestAdmin()
   const supabase = createServerSupabaseClient()
 
-  const { count, error } = await supabase
+  if (scopeCourseIds && scopeCourseIds.size === 0) return 0
+
+  let query = supabase
     .from("content_requests")
     .select("*", { count: "exact", head: true })
     .eq("status", "PENDING")
 
+  if (scopeCourseIds) {
+    query = query.in("target_course_id", [...scopeCourseIds])
+  }
+
+  const { count, error } = await query
   if (error) throw new Error("Errore nel conteggio delle proposte")
   return count ?? 0
 })
 
 export const getRequestDetailFn = createServerFn({ method: "GET" })
   .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: { id } }): Promise<ContentRequestWithMeta> => {
+  .handler(async ({ data: { id } }): Promise<ContentRequestDetail> => {
     const { supabase, user } = await getAuthUser()
 
     const { data: request, error } = await supabase
@@ -372,9 +511,33 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
 
     if (error || !request) throw new Error("Proposta non trovata")
 
-    // Verify ownership or admin access
+    // Owner views their own request; everyone else needs admin access (and a
+    // maintainer must be in scope). Admin viewers also get the author profile
+    // and, when handled, the profile of the admin who handled it.
+    let author: RequestUser | null = null
+    let handledBy: RequestUser | null = null
     if (request.user_id !== user.id) {
-      await requireAdmin()
+      const { scopeCourseIds } = await requireRequestAdmin()
+      if (!isInScope(scopeCourseIds, request.target_course_id)) {
+        throw redirect({ to: "/admin/requests" })
+      }
+      const ids = [request.user_id, request.handled_by].filter(
+        (v): v is string => !!v,
+      )
+      const { data: profiles } = await getSupabaseAdmin()
+        .from("profiles")
+        .select("id, name, email, image")
+        .in("id", ids)
+      const byId = new Map((profiles ?? []).map((p) => [p.id, p]))
+      author = byId.get(request.user_id) ?? {
+        id: request.user_id,
+        name: null,
+        email: null,
+        image: null,
+      }
+      handledBy = request.handled_by
+        ? byId.get(request.handled_by) ?? null
+        : null
     }
 
     const target_label = await buildTargetLabel(supabase, request)
@@ -390,7 +553,14 @@ export const getRequestDetailFn = createServerFn({ method: "GET" })
       if (question) reported_question = question as ReportedQuestion
     }
 
-    return { ...request, target_label, submitted, reported_question }
+    return {
+      ...request,
+      target_label,
+      submitted,
+      reported_question,
+      user: author,
+      handledBy,
+    }
   })
 
 // ─── Admin Mutations ───
@@ -404,16 +574,19 @@ export const handleRequestFn = createServerFn({ method: "POST" })
     }) => input,
   )
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id")
+      .select("user_id, target_course_id")
       .eq("id", data.id)
       .single()
 
     if (fetchError || !request) throw new Error("Proposta non trovata")
+    if (!isInScope(scopeCourseIds, request.target_course_id)) {
+      throw new Error("Non hai i permessi per gestire questa richiesta.")
+    }
 
     const { error } = await supabase
       .from("content_requests")
@@ -450,8 +623,19 @@ export const handleRequestFn = createServerFn({ method: "POST" })
 export const approveRequestFn = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
+
+    if (scopeCourseIds) {
+      const { data: target } = await supabase
+        .from("content_requests")
+        .select("target_course_id")
+        .eq("id", data.id)
+        .single()
+      if (!target || !isInScope(scopeCourseIds, target.target_course_id)) {
+        throw new Error("Non hai i permessi per gestire questa richiesta.")
+      }
+    }
 
     // Atomic claim: transition PENDING → APPROVED in a single statement so
     // concurrent clicks cannot both proceed to insert catalog content.
@@ -548,16 +732,19 @@ export const approveRequestFn = createServerFn({ method: "POST" })
 export const acknowledgeRequestFn = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string; admin_note?: string }) => input)
   .handler(async ({ data }) => {
-    const admin = await requireAdmin()
+    const { user: admin, scopeCourseIds } = await requireRequestAdmin()
     const supabase = createServerSupabaseClient()
 
     const { data: request, error: fetchError } = await supabase
       .from("content_requests")
-      .select("user_id, request_type")
+      .select("user_id, request_type, target_course_id")
       .eq("id", data.id)
       .single()
 
     if (fetchError || !request) throw new Error("Proposta non trovata")
+    if (!isInScope(scopeCourseIds, request.target_course_id)) {
+      throw new Error("Non hai i permessi per gestire questa richiesta.")
+    }
 
     const { error } = await supabase
       .from("content_requests")

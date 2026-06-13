@@ -135,6 +135,7 @@ function SectionPage() {
           <BrowseAdminButton
             to="/admin/sections/$sectionId"
             params={{ sectionId: section.id }}
+            courseId={section.class.course.id}
           />
         }
       />
