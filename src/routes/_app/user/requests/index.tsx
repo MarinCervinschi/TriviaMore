@@ -21,6 +21,8 @@ import {
 import { UserRequestsSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -36,7 +38,11 @@ import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserHero } from "@/components/user/user-hero"
 import { requestQueries } from "@/lib/requests/queries"
-import { useReviseRequest } from "@/lib/requests/mutations"
+import {
+  useDeleteReport,
+  useReviseRequest,
+  useUpdateReport,
+} from "@/lib/requests/mutations"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
 import { cn } from "@/lib/utils"
@@ -62,6 +68,13 @@ const REASON_LABELS: Record<string, string> = {
   fuori_contesto: "Fuori contesto",
   altro: "Altro",
 }
+
+const REPORT_REASON_OPTIONS = [
+  { id: "errata", label: "Errata", description: "La domanda o la risposta contiene un errore" },
+  { id: "imprecisa", label: "Imprecisa", description: "La formulazione è ambigua o poco chiara" },
+  { id: "fuori_contesto", label: "Fuori contesto", description: "La domanda non appartiene a questa sezione" },
+  { id: "altro", label: "Altro", description: "Specifica nel commento" },
+] as const
 
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
@@ -242,6 +255,9 @@ function ContributionRow({
               {/* Editable form or read-only preview */}
               {request.status === "NEEDS_REVISION" ? (
                 <RevisionForm requestId={request.id} submitted={request.submitted} />
+              ) : request.status === "PENDING" &&
+                request.submitted.type === "report" ? (
+                <ReportEditor requestId={request.id} report={request.submitted} />
               ) : (
                 <SubmittedContentPreview submitted={request.submitted} />
               )}
@@ -576,6 +592,135 @@ function RevisionQuestionEditor({
 }
 
 // ─── Previews ───
+
+// ─── Report: edit + delete while pending ───
+
+function ReportEditor({ requestId, report }: { requestId: string; report: SubmittedReport }) {
+  const [editing, setEditing] = useState(false)
+  const [reasons, setReasons] = useState<string[]>(report.reasons)
+  const [comment, setComment] = useState(report.comment ?? "")
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const update = useUpdateReport(() => setEditing(false))
+  const del = useDeleteReport()
+
+  const hasAltro = reasons.includes("altro")
+  const canSave = reasons.length > 0 && (!hasAltro || comment.trim().length > 0)
+
+  function toggleReason(id: string) {
+    setReasons((prev) =>
+      prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id],
+    )
+  }
+
+  if (!editing) {
+    return (
+      <div className="space-y-3">
+        <ReportPreview report={report} />
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5 rounded-xl"
+            onClick={() => setEditing(true)}
+          >
+            <Pencil className="size-3.5" />
+            Modifica
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5 rounded-xl text-destructive hover:text-destructive"
+            onClick={() => setConfirmDelete(true)}
+          >
+            <Trash2 className="size-3.5" />
+            Elimina
+          </Button>
+        </div>
+        <ConfirmationDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Elimina segnalazione"
+          description="Sei sicuro di voler eliminare questa segnalazione? L'operazione è irreversibile."
+          confirmText="Elimina"
+          variant="destructive"
+          onConfirm={() => del.mutate({ id: requestId })}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+      <p className="text-xs font-semibold text-primary">Modifica la segnalazione</p>
+
+      <div className="space-y-2">
+        {REPORT_REASON_OPTIONS.map((reason) => {
+          const checked = reasons.includes(reason.id)
+          return (
+            <label
+              key={reason.id}
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3 transition-all",
+                checked
+                  ? "border-primary/30 bg-primary/5"
+                  : "border-transparent bg-muted/50 hover:bg-accent/50",
+              )}
+            >
+              <Checkbox
+                checked={checked}
+                onCheckedChange={() => toggleReason(reason.id)}
+                className="mt-0.5"
+              />
+              <div>
+                <p className="text-sm font-medium">{reason.label}</p>
+                <p className="text-xs text-muted-foreground">{reason.description}</p>
+              </div>
+            </label>
+          )
+        })}
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium">
+          Commento {hasAltro ? "(obbligatorio)" : "(opzionale)"}
+        </label>
+        <Textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Descrivi il problema..."
+          rows={3}
+          className={cn("rounded-xl", hasAltro && !comment.trim() && "border-red-500/50")}
+        />
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="rounded-xl"
+          onClick={() => {
+            setReasons(report.reasons)
+            setComment(report.comment ?? "")
+            setEditing(false)
+          }}
+        >
+          Annulla
+        </Button>
+        <Button
+          size="sm"
+          className="gap-1.5 rounded-xl"
+          onClick={() =>
+            update.mutate({ id: requestId, reasons, comment: comment.trim() || null })
+          }
+          disabled={!canSave || update.isPending}
+        >
+          <Send className="size-3.5" />
+          {update.isPending ? "Salvataggio..." : "Salva modifiche"}
+        </Button>
+      </div>
+    </div>
+  )
+}
 
 function ReportPreview({ report }: { report: SubmittedReport }) {
   return (

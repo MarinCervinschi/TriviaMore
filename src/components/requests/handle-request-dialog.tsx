@@ -10,7 +10,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
+import { PresetReplies } from "@/components/requests/preset-replies"
 import { useHandleRequest } from "@/lib/requests/mutations"
+
+const NOTE_PRESETS: Record<"REJECTED" | "NEEDS_REVISION", string[]> = {
+  REJECTED: [
+    "Contenuto non in linea con le linee guida.",
+    "Contenuto già presente sulla piattaforma.",
+    "Le informazioni non sono corrette.",
+  ],
+  NEEDS_REVISION: [
+    "Aggiungi maggiori dettagli e reinvia.",
+    "Correggi la risposta corretta.",
+    "Rivedi la formattazione del contenuto.",
+  ],
+}
 
 const ACTIONS = [
   {
@@ -88,6 +102,12 @@ export function HandleRequestDialog({
               <label className="text-sm font-medium">
                 Nota per l&apos;utente
               </label>
+              <PresetReplies
+                presets={NOTE_PRESETS[selectedStatus]}
+                onPick={(text) =>
+                  setAdminNote((prev) => (prev ? `${prev} ${text}` : text))
+                }
+              />
               <Textarea
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}

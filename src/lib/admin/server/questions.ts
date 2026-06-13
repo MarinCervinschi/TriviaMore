@@ -8,6 +8,7 @@ import {
   assertSectionScope,
   requireContentManagerForQuestion,
   requireContentManagerForSection,
+  requireQuestionAccess,
 } from "./access"
 import { idSchema, questionSchema, updateQuestionSchema } from "../schemas"
 
@@ -16,7 +17,7 @@ import { idSchema, questionSchema, updateQuestionSchema } from "../schemas"
 export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
-    await requireAdmin()
+    await requireQuestionAccess(id)
     const supabase = createServerSupabaseClient()
 
     const { data: question, error } = await catalogQuery(supabase)
