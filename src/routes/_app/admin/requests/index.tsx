@@ -13,6 +13,7 @@ import { AdminSearch } from "@/components/admin/admin-search"
 import { SortableHeader, useSort } from "@/components/admin/sortable-header"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -25,7 +26,20 @@ import { RequestStatusBadge } from "@/components/requests/request-status-badge"
 import { RequestTypeBadge } from "@/components/requests/request-type-badge"
 import { requestQueries } from "@/lib/requests/queries"
 
-import type { AdminContentRequest, SubmittedContent } from "@/lib/requests/types"
+import type {
+  AdminContentRequest,
+  ContentRequestStatus,
+  SubmittedContent,
+} from "@/lib/requests/types"
+
+// Open requests still await action; the rest are considered handled (approved,
+// acknowledged or rejected) and are hidden from the default view.
+const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"]
+const isOpen = (r: AdminContentRequest) => OPEN_STATUSES.includes(r.status)
+const isReport = (r: AdminContentRequest) => r.request_type === "REPORT"
+
+type TypeTab = "proposals" | "reports"
+type StatusFilter = "open" | "handled" | "all"
 
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
@@ -46,12 +60,21 @@ function AdminRequestsPage() {
   const { data: requests } = useSuspenseQuery(requestQueries.adminRequests())
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [tab, setTab] = useState<TypeTab>("proposals")
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("open")
   const { sort, toggleSort } = useSort<AdminContentRequest>()
 
-  const filtered = statusFilter === "all"
-    ? requests
-    : requests.filter((r) => r.status === statusFilter)
+  const openProposals = requests.filter((r) => !isReport(r) && isOpen(r)).length
+  const openReports = requests.filter((r) => isReport(r) && isOpen(r)).length
+
+  const byTab = requests.filter((r) =>
+    tab === "reports" ? isReport(r) : !isReport(r),
+  )
+  const filtered = byTab.filter((r) => {
+    if (statusFilter === "open") return isOpen(r)
+    if (statusFilter === "handled") return !isOpen(r)
+    return true
+  })
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     filtered,
@@ -72,19 +95,45 @@ function AdminRequestsPage() {
         description="Gestisci le richieste degli utenti per nuovi contenuti e segnalazioni."
       />
 
-      {/* Filters + Search */}
+      <Tabs
+        value={tab}
+        onValueChange={(v) => {
+          setTab(v as TypeTab)
+          setPage(1)
+        }}
+      >
+        <TabsList className="rounded-2xl bg-muted/50 p-1">
+          <TabsTrigger
+            value="proposals"
+            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            Contenuti proposti
+            {openProposals > 0 && <TabCount value={openProposals} />}
+          </TabsTrigger>
+          <TabsTrigger
+            value="reports"
+            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            Segnalazioni
+            {openReports > 0 && <TabCount value={openReports} />}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {/* Status filter + Search */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-1.5">
           {[
+            { value: "open", label: "Da gestire" },
+            { value: "handled", label: "Gestite" },
             { value: "all", label: "Tutte" },
-            { value: "PENDING", label: "In attesa" },
-            { value: "NEEDS_REVISION", label: "Da revisionare" },
-            { value: "APPROVED", label: "Approvate" },
-            { value: "REJECTED", label: "Rifiutate" },
           ].map((f) => (
             <button
               key={f.value}
-              onClick={() => { setStatusFilter(f.value); setPage(1) }}
+              onClick={() => {
+                setStatusFilter(f.value as StatusFilter)
+                setPage(1)
+              }}
               className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
                 statusFilter === f.value
                   ? "bg-primary text-primary-foreground"
@@ -99,11 +148,15 @@ function AdminRequestsPage() {
       </div>
 
       {/* Table */}
-      {requests.length === 0 ? (
+      {filtered.length === 0 ? (
         <EmptyState
           icon={Inbox}
-          title="Nessuna richiesta"
-          description="Non ci sono richieste di contenuto da gestire."
+          title={statusFilter === "open" ? "Nessuna richiesta da gestire" : "Nessuna richiesta"}
+          description={
+            tab === "reports"
+              ? "Non ci sono segnalazioni in questa vista."
+              : "Non ci sono contenuti proposti in questa vista."
+          }
         />
       ) : paged.length === 0 ? (
         <EmptyState
@@ -174,5 +227,13 @@ function AdminRequestsPage() {
         </>
       )}
     </div>
+  )
+}
+
+function TabCount({ value }: { value: number }) {
+  return (
+    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+      {value}
+    </span>
   )
 }
