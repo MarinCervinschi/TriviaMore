@@ -4,8 +4,10 @@ import {
   acknowledgeRequestFn,
   approveRequestFn,
   createRequestFn,
+  deleteReportFn,
   handleRequestFn,
   reviseRequestFn,
+  updateReportFn,
 } from "./server"
 
 // ─── User Mutations ───
@@ -32,6 +34,32 @@ export function useReviseRequest(onSuccess?: () => void) {
       ["requests", "detail"],
       ["admin", "requests"],
       ["admin", "requestCount"],
+    ],
+    onSuccess,
+  })
+}
+
+export function useUpdateReport(onSuccess?: () => void) {
+  return useMutationWithToast(updateReportFn, {
+    successMessage: "Segnalazione aggiornata",
+    invalidateKeys: [
+      ["requests", "mine"],
+      ["admin", "requests"],
+      ["admin", "requestCount"],
+    ],
+    onSuccess,
+  })
+}
+
+export function useDeleteReport(onSuccess?: () => void) {
+  return useMutationWithToast(deleteReportFn, {
+    successMessage: "Segnalazione eliminata",
+    invalidateKeys: [
+      ["requests", "mine"],
+      ["admin", "requests"],
+      ["admin", "requestCount"],
+      ["notifications"],
+      ["notifications", "unreadCount"],
     ],
     onSuccess,
   })
