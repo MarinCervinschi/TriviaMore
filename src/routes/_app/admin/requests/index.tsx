@@ -74,8 +74,6 @@ function AdminRequestsPage() {
     if (statusFilter === "handled") return !isOpen(r)
     return true
   })
-  // "Gestita da" only carries meaning once requests are handled.
-  const showHandledBy = statusFilter === "handled"
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     filtered,
@@ -176,7 +174,7 @@ function AdminRequestsPage() {
                   <TableHead>
                     <SortableHeader label="Data" sortKey="created_at" sort={sort} onSort={toggleSort} />
                   </TableHead>
-                  {showHandledBy && <TableHead>Gestita da</TableHead>}
+                  <TableHead>Gestita da</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -206,8 +204,8 @@ function AdminRequestsPage() {
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(request.created_at).toLocaleDateString("it-IT")}
                     </TableCell>
-                    {showHandledBy && (
-                      <TableCell>
+                    <TableCell>
+                      {request.handled_at ? (
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
                             <AvatarImage src={request.handledBy?.image ?? undefined} />
@@ -219,8 +217,10 @@ function AdminRequestsPage() {
                             {request.handledBy?.name ?? "Team"}
                           </span>
                         </div>
-                      </TableCell>
-                    )}
+                      ) : (
+                        <span className="text-sm text-muted-foreground/50">—</span>
+                      )}
+                    </TableCell>
                     <TableCell className="pr-6">
                       <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                     </TableCell>
