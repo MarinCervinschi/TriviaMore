@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query"
 import {
   BookOpen,
   Bell,
-  Cookie,
   GraduationCap,
   Info,
   LogOut,
@@ -18,7 +17,6 @@ import type { LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
-import { useCookieConsent } from "@/hooks/useCookieConsent"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { springGentle, springSnappy, withReducedMotion } from "@/lib/motion"
 import { changelogQueries } from "@/lib/changelogs/queries"
@@ -152,7 +150,6 @@ function ProfileSheet({
   unreadChangelogs: number
 }) {
   const initials = getInitials(user?.name, user?.email)
-  const { reset: resetCookieConsent } = useCookieConsent()
   const close = () => onOpenChange(false)
 
   return (
@@ -259,19 +256,6 @@ function ProfileSheet({
             <Mail className="size-4" strokeWidth={1.5} aria-hidden />
             Contatti
           </Link>
-          {import.meta.env.PROD && (
-            <button
-              type="button"
-              onClick={() => {
-                close()
-                resetCookieConsent()
-              }}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-accent"
-            >
-              <Cookie className="size-4" strokeWidth={1.5} aria-hidden />
-              Preferenze cookie
-            </button>
-          )}
         </div>
 
         <Separator className="my-4" />
