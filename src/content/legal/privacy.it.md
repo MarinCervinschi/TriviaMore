@@ -6,7 +6,7 @@
 # Informativa sulla Privacy
 
 **Versione:** 2026-04-24
-**Ultimo aggiornamento:** 24 aprile 2026
+**Ultimo aggiornamento:** 13 giugno 2026
 
 La presente informativa descrive le modalità di trattamento dei dati personali degli utenti che visitano o utilizzano il sito **TriviaMore** (di seguito, "il Servizio"), ai sensi del Regolamento (UE) 2016/679 ("GDPR") e del D.lgs. 196/2003 ("Codice Privacy") come modificato dal D.lgs. 101/2018.
 
@@ -54,7 +54,7 @@ Questa traccia costituisce registro di trattamento e viene conservata per il tem
 
 ### 2.4 Dati tecnici e analitici
 
-Informazioni tecniche sono raccolte in forma aggregata tramite servizi di analisi (vedi sezione "Cookie e tecnologie simili" e la [Cookie Policy](/legal/cookies)). Tali informazioni non sono utilizzate per profilazione individuale.
+Informazioni tecniche di utilizzo sono raccolte in forma aggregata e anonima tramite uno strumento di analisi self-hosted e privo di cookie (vedi sezione "Cookie e tecnologie simili" e la [Cookie Policy](/legal/cookies)). Tali informazioni non consentono di identificare personalmente l'utente e non sono utilizzate per profilazione individuale.
 
 ## 3. Finalità e basi giuridiche del trattamento
 
@@ -62,7 +62,7 @@ Informazioni tecniche sono raccolte in forma aggregata tramite servizi di analis
 |---|---|
 | Creazione e gestione dell'account, erogazione del Servizio | Art. 6, par. 1, lett. b) GDPR — esecuzione del contratto |
 | Conservazione del registro di accettazione dei documenti legali | Art. 6, par. 1, lett. c) GDPR — obbligo legale di rendicontabilità (art. 7 GDPR) |
-| Analisi statistiche aggregate tramite Vercel Analytics e Speed Insights | Art. 6, par. 1, lett. a) GDPR — consenso, prestato tramite banner cookie |
+| Analisi statistiche aggregate e anonime (strumento self-hosted e cookieless) | Art. 6, par. 1, lett. f) GDPR — legittimo interesse |
 | Sicurezza del Servizio, prevenzione di abusi | Art. 6, par. 1, lett. f) GDPR — legittimo interesse |
 | Pubblicazione nella futura pagina Contributori | Art. 6, par. 1, lett. a) GDPR — consenso, prestato tramite apposito interruttore nelle Impostazioni |
 
@@ -76,8 +76,8 @@ Per erogare il Servizio il Titolare si avvale dei seguenti responsabili esterni,
 
 | Fornitore | Ruolo | Dati trattati | Sede |
 |---|---|---|---|
-| **Supabase Inc.** | Hosting del database, autenticazione | Tutti i dati personali dell'account e dell'utilizzo | Stati Uniti (con applicazione delle Standard Contractual Clauses) |
-| **Vercel Inc.** | Hosting dell'applicazione, Analytics, Speed Insights | Dati di navigazione aggregati, log di richiesta | Stati Uniti (SCC) |
+| **Supabase (self-hosted)** | Database e autenticazione (software self-hosted) | Tutti i dati personali dell'account e dell'utilizzo | Istanza self-hosted sotto il controllo del Titolare |
+| **Vercel Inc.** | Hosting dell'applicazione | Log di richiesta, dati tecnici di navigazione | Stati Uniti (SCC) |
 | **GitHub, Inc.** | Provider OAuth opzionale | Identificativo e email dell'account collegato | Stati Uniti (SCC) |
 | **Google LLC** | Provider OAuth opzionale | Identificativo e email dell'account collegato | Stati Uniti (SCC) |
 | **Infisical** | Gestione sicura delle credenziali di servizio | Non tratta dati degli utenti finali | Istanza self-hosted sotto il controllo del Titolare |
@@ -86,7 +86,7 @@ I dati **non vengono venduti** né ceduti a terzi per finalità commerciali o di
 
 ## 6. Trasferimenti extra-UE
 
-Alcuni fornitori (Supabase, Vercel, GitHub, Google) hanno sede negli Stati Uniti. I trasferimenti sono tutelati dalle Clausole Contrattuali Standard approvate dalla Commissione Europea e, ove applicabile, dal Data Privacy Framework UE-USA.
+Alcuni fornitori (Vercel, GitHub, Google) hanno sede negli Stati Uniti. I trasferimenti sono tutelati dalle Clausole Contrattuali Standard approvate dalla Commissione Europea e, ove applicabile, dal Data Privacy Framework UE-USA.
 
 ## 7. Tempi di conservazione
 
@@ -105,7 +105,7 @@ In qualunque momento l'utente può esercitare i diritti riconosciuti dagli artt.
 - **limitazione** del trattamento (art. 18);
 - **portabilità** dei dati in formato strutturato (art. 20);
 - **opposizione** al trattamento fondato sul legittimo interesse (art. 21);
-- **revoca del consenso** prestato per finalità analitiche o di visibilità pubblica, in ogni momento e senza conseguenze (art. 7, par. 3).
+- **revoca del consenso** prestato per finalità di visibilità pubblica, in ogni momento e senza conseguenze (art. 7, par. 3).
 
 Le richieste possono essere inoltrate all'indirizzo **privacy@trivia-more.it** e ricevono risposta entro un mese.
 
@@ -115,7 +115,7 @@ L'interessato ha il diritto di proporre reclamo all'Autorità di controllo compe
 
 ## 10. Cookie e tecnologie simili
 
-I cookie e le tecnologie analoghe utilizzate sul Servizio sono descritte nella [Cookie Policy](/legal/cookies). I cookie analitici sono installati solo previo consenso prestato tramite l'apposito banner; tale consenso può essere revocato in qualunque momento dal pulsante "Preferenze cookie" presente nel piè di pagina.
+I cookie e le tecnologie analoghe utilizzate sul Servizio sono descritte nella [Cookie Policy](/legal/cookies). Il Servizio utilizza esclusivamente cookie tecnici; le statistiche di utilizzo sono raccolte tramite uno strumento di analisi self-hosted e privo di cookie, che non richiede il consenso.
 
 ## 11. Sicurezza
 

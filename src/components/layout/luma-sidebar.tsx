@@ -2,7 +2,6 @@ import { useRef, useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
 import {
   BookOpen,
-  Cookie,
   GraduationCap,
   LogOut,
   Mail,
@@ -12,7 +11,6 @@ import {
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
-import { useCookieConsent } from "@/hooks/useCookieConsent"
 import { useTheme } from "@/hooks/useTheme"
 import { ThemeIcons } from "@/components/layout/theme-toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -179,7 +177,6 @@ function SidebarProfile({
 }) {
   const [open, setOpen] = useState(false)
   const initials = getInitials(user?.name, user?.email)
-  const { reset: resetCookieConsent } = useCookieConsent()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -248,19 +245,6 @@ function SidebarProfile({
             <Mail className="h-4 w-4" strokeWidth={1.5} />
             Contatti
           </Link>
-          {import.meta.env.PROD && (
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false)
-                resetCookieConsent()
-              }}
-              className="flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-accent"
-            >
-              <Cookie className="h-4 w-4" strokeWidth={1.5} />
-              Preferenze cookie
-            </button>
-          )}
         </div>
 
         <Separator />
