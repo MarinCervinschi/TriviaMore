@@ -28,6 +28,7 @@ An array of question objects. The admin UI injects `section_id` from the URL —
 
 - Use Italian unless the source material dictates otherwise.
 - Cover the source material's key concepts. Do not invent facts not present.
+- **Test the topic, not the source.** Each question stands on its own about the subject — never reference the material itself (*"come indicato nel materiale"*, *"secondo il testo/le slide"*, *"as indicated in the material"*). The material is where you draw from, not something the reader can see. See `content-quality.md`.
 - Match the style implied by the source material (length, formality, register).
 - Avoid restating the same fact in two different questions of the same batch.
 

@@ -8,6 +8,14 @@ A good question can only be answered by someone who has **actually studied the m
 
 This holds even for `EASY`: easy means "recall of something the material taught", not "obvious to anyone". The difficulty axis is *how much reasoning* the question demands, never *how guessable* it is.
 
+## Test the topic, not the source
+
+The material is where *you* draw the questions from — it is **not** something the question may refer to. The reader is studying the **subject**, and may never have seen your specific notes/slides/transcript. Write every question as a standalone question about the topic itself, as it would appear on a real exam or flashcard.
+
+- **No meta-references to the source.** Never phrase a question (or option, or explanation) in terms of the material. Banned framings include *"come indicato nel materiale"*, *"secondo il documento/testo/le slide/gli appunti"*, *"nel materiale fornito"*, *"come visto a lezione"*, *"menzionato nella dispensa"*, and any English equivalent (*"as indicated in the material"*, *"according to the notes/source"*). These tie the answer to a document the reader doesn't have, instead of to the subject.
+- **Cover the topic in its entirety.** Ask about the concept, definition, mechanism, or relationship as it stands in the field — not about "what this particular text says about it". If the material lists three causes of X, the question is *"Quali sono le cause di X?"*, never *"Quali cause di X sono elencate nel materiale?"*.
+- **Self-contained framing.** Replace *"Secondo il testo, qual è la funzione di X?"* with *"Qual è la funzione di X?"*. The fact still comes from the material; the *wording* must stand on its own. This is the same standalone principle as "no 'as we saw above'", applied to the source rather than to earlier questions.
+
 ## Don't make them trivial
 
 - **No answer-in-the-stem.** Don't phrase the question so the correct answer is restated, defined, or strongly implied by the wording. The reader must recall and reconstruct, not pattern-match a repeated phrase.
@@ -44,5 +52,6 @@ For each question, ask:
 3. Is the correct answer findable by elimination, length, grammar, or because it's the only on-topic option? → if yes, rebalance.
 4. Is the answer restated or strongly implied in the stem? → if yes, rephrase.
 5. Does the `difficulty` tag match the reasoning actually required? → retag if not.
+6. Does the question refer to "the material/source/notes/slides" instead of standing on its own about the topic? → if yes, rephrase as a standalone question about the subject.
 
 The reviewer agent (see the skill's review step) checks exactly these. Passing the self-check first means fewer revision rounds.

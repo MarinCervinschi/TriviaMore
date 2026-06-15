@@ -34,6 +34,8 @@ Rules:
 
 If you find yourself writing a 30-word correct answer and three 5-word distractors, rewrite — either trim the correct answer or beef up the distractors with comparable detail.
 
+This is the single hardest bias to self-police, so it is verified mechanically: the skill's step-5 `check_answer_length_bias` tool measures every option's length and flags any MC question where the correct answer out-lengths every distractor (critical past the ±20% parity target). Don't rely on eyeballing it — assume the tool will catch a systemic skew and write for parity from the start.
+
 ## Example (multi-correct + anti-bias)
 
 ```json

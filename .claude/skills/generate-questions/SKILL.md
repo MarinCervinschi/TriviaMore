@@ -9,7 +9,11 @@ You generate quiz questions from material the user provides. The output is **alw
 
 ## Prerequisites
 
-The `trivia-more-questions` MCP server must be connected. You'll use one tool: `mcp__trivia-more-questions__compile_questions` — it parses the two tmp markdown files, assembles + escapes + validates the question array, and writes the final JSON (step 5). If it's not available, tell the user to run `/mcp` to verify and stop.
+The `trivia-more-questions` MCP server must be connected. You'll use two tools:
+- `mcp__trivia-more-questions__check_answer_length_bias` — audits the tmp markdown for the "longest option is the correct one" bias and flags the MC questions to fix (step 5).
+- `mcp__trivia-more-questions__compile_questions` — parses the two tmp markdown files, assembles + escapes + validates the question array, and writes the final JSON (step 6).
+
+If they're not available, tell the user to run `/mcp` to verify and stop.
 
 ## References
 
@@ -98,12 +102,13 @@ For multi-correct MC use `correct: A, C`. For SHORT_ANSWER, `correct:` holds the
 
 Apply all the content rules as you draft — the per-type rules (anti-bias, multi-correct quotas, fixed TF options, open-ended SA) and `content-quality.md`. They are not optional, and applying them now means fewer revision rounds:
 - Each question stands alone (no "as we saw above").
+- **Test the topic, not the source.** Questions are about the subject in its entirety, not about the material itself. Never write "... indicato nel materiale", "secondo il testo/le slide", "as indicated in the material" or similar — the material is where you draw from, not something the reader can see (see `content-quality.md`).
 - Cover the source material's key concepts; do not invent facts not present.
 - **Not too easy.** Every question must require having studied the material — no general-knowledge gimmes, no answer restated in the stem. Calibrate difficulty to the reasoning actually demanded.
 - **In-context distractors.** Every MC option must be the same *kind* of thing as the answer and plausible to a half-prepared student. No out-of-context, absurd, or filler options; no single on-topic answer surrounded by unrelated ones.
 - Use Italian unless the source material dictates otherwise.
 
-In markdown you may write LaTeX **naturally** (single backslash, `$...$`) — JSON double-escaping happens only at assembly (step 5), so draft for readability here.
+In markdown you may write LaTeX **naturally** (single backslash, `$...$`) — JSON double-escaping happens only at assembly (step 6), so draft for readability here.
 
 ### 4. Blind quality review & revise (mandatory)
 
@@ -122,7 +127,22 @@ Apply fixes by editing the tmp files (`questions.md` and/or `answers.md`). The a
 
 Keep the reviewer read-only: it never sees the answers, writes files, or touches the DB.
 
-### 5. Compile to JSON (via the MCP tool)
+### 5. Length-bias check (mandatory)
+
+LLM-drafted MC questions have a strong, well-documented bias: **the correct option ends up being the longest one**. Test-takers exploit exactly this — "when in doubt, pick the longest" — so a batch where the right answer is consistently the wordiest teaches the wrong habit and is trivially gameable. `multiple-choice.md` requires length parity (distractors within ±20% of the correct answer); this step verifies it mechanically instead of by eye.
+
+Call `check_answer_length_bias({ questionsPath, answersPath })` on the **same two tmp files** (absolute paths). It measures every option's character length and returns:
+- `summary` — `mcCount`, `correctIsLongestCount` / `correctIsLongestPct`, `expectedByChancePct` (the rate you'd expect if length were random), and `systemicBias` (true when the correct option is the longest far more often than chance).
+- `flagged` — one entry per MC question where the correct option is longer than **every** distractor, each tagged `severity: "critical"` (correct exceeds the longest distractor by more than 20% — a clear parity break) or `"warning"` (longest but within 20%). Sorted worst-first, with per-option lengths.
+
+**Fix the flagged questions**, prioritising `critical` ones (and treat the whole batch as needing rebalancing if `systemicBias` is true — don't just patch the listed ones, the pattern is systemic). For each, edit `questions.md` to restore parity *without weakening the question*:
+- Trim the correct option — drop qualifiers/justification that belong in `explanation` (in `answers.md`), not in the option text.
+- And/or beef up the distractors to comparable length and specificity, keeping them plausible and in-context (`content-quality.md`).
+- Never "fix" it by making a distractor artificially long or padding with filler — that just moves the tell. The goal is genuine length parity, not disguising it.
+
+Re-run the tool after editing to confirm the flags clear. Stop after at most **2 fix rounds**; if a flag persists because the correct answer genuinely cannot be shortened (e.g. a precise formula), keep it and note it in the final summary. A clean batch (`flagged: []`, `systemicBias: false`) passes untouched.
+
+### 6. Compile to JSON (via the MCP tool)
 
 Call `compile_questions({ questionsPath, answersPath, slug })`:
 - `questionsPath` / `answersPath`: **absolute** paths to the two tmp files.
@@ -138,17 +158,18 @@ Handle the result:
   - `stage: "read"` → a bad path.
   After 2 retries still failing, stop and surface the errors to the user.
 
-### 6. Clean up
+### 7. Clean up
 
 The JSON is now written by the tool. Delete the tmp working dir `pending-questions/.tmp/<timestamp>-<short-slug>/`.
 
-### 7. Stop
+### 8. Stop
 
 End with a short summary:
 
 ```
 Saved <count> questions to pending-questions/<filename>.
 Quality review: <PASS | revised N questions — brief note on what changed | unresolved flags: ...>.
+Length-bias check: <clean | rebalanced N MC questions | unresolved: ...>.
 Open /admin/questions/new?sectionId=<your-section-id> → Tab "Import JSON" → paste the file content → Importa domande.
 ```
 
@@ -160,5 +181,6 @@ Do not open the UI, do not deploy, do not run migrations. The user reviews the f
 - **No `section_id`** in question objects — UI handles it.
 - **One file per batch.** If the user asks for questions on multiple unrelated topics, propose splitting into separate runs (and separate files). Same applies when a single source is large enough to warrant a multi-batch split — agree the split with the user *before* generating.
 - **No fabrication.** If the source material is too thin for the requested count, say so and propose a smaller count rather than inventing content.
-- **Draft in markdown, never hand-write the JSON.** Questions and answers stay in separate tmp files (`questions.md` / `answers.md`) until the review passes; the final JSON is produced by `compile_questions` at step 5, not written by hand. Don't manually escape LaTeX or copy `correct_answer` strings — the tool does both correctly.
+- **Draft in markdown, never hand-write the JSON.** Questions and answers stay in separate tmp files (`questions.md` / `answers.md`) until the review passes; the final JSON is produced by `compile_questions` at step 6, not written by hand. Don't manually escape LaTeX or copy `correct_answer` strings — the tool does both correctly.
 - **Blind review is mandatory.** Never finish a batch without the step-4 `question-reviewer` pass, and never hand the reviewer `answers.md`. A batch that was never blind-reviewed is not finished.
+- **Length-bias check is mandatory.** Never finish a batch without the step-5 `check_answer_length_bias` pass on the tmp markdown, and resolve (or explicitly justify) every `critical` flag. A batch where the correct option is systematically the longest is not finished.
