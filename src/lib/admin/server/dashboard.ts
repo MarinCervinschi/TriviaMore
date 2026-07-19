@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
+import { getCatalogAdmin } from "@/lib/supabase/admin"
 
 import type {
   AdminPermissions,
@@ -14,9 +14,8 @@ import type {
 export const getAdminStatsFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdminStats> => {
     await requireAdmin()
-    const supabase = createServerSupabaseClient()
 
-    const catalog = catalogQuery(supabase)
+    const catalog = getCatalogAdmin()
 
     const [departments, courses, classes, sections, questions] =
       await Promise.all([
@@ -46,9 +45,8 @@ export const getAdminPermissionsFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<AdminPermissions> => {
   const user = await requireAdmin()
-  const supabase = createServerSupabaseClient()
 
-  const catalog = catalogQuery(supabase)
+  const catalog = getCatalogAdmin()
 
   const [deptAdmins, courseMaintainers] = await Promise.all([
     catalog
@@ -79,9 +77,8 @@ export const getMyMaintainedCoursesFn = createServerFn({
 }).handler(
   async (): Promise<{ id: string; name: string; code: string }[]> => {
     const user = await requireAdmin()
-    const supabase = createServerSupabaseClient()
 
-    const { data, error } = await catalogQuery(supabase)
+    const { data, error } = await getCatalogAdmin()
       .from("course_maintainers")
       .select("course:courses(id, name, code)")
       .eq("user_id", user.id)
@@ -103,9 +100,8 @@ export const getContentTreeFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<ContentTreeDepartment[]> => {
   await requireAdmin()
-  const supabase = createServerSupabaseClient()
 
-  const { data, error } = await catalogQuery(supabase)
+  const { data, error } = await getCatalogAdmin()
     .from("departments")
     .select(
       "id, name, code, courses(id, name, code, course_classes(class:classes(id, name, code, sections(id, name))))",

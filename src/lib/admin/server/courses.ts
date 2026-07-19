@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
+import { getCatalogAdmin } from "@/lib/supabase/admin"
 
 import { requireCourseAccess, requireStructureManager } from "./access"
 import { courseSchema, idSchema, updateCourseSchema } from "../schemas"
@@ -11,9 +11,8 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireCourseAccess(id)
-    const supabase = createServerSupabaseClient()
 
-    const { data: course, error: courseError } = await catalogQuery(supabase)
+    const { data: course, error: courseError } = await getCatalogAdmin()
       .from("courses")
       .select("*, department:departments(*)")
       .eq("id", id)
@@ -21,7 +20,7 @@ export const getAdminCourseDetailFn = createServerFn({ method: "GET" })
 
     if (courseError) throw new Error(courseError.message)
 
-    const { data: courseClasses, error: classesError } = await catalogQuery(supabase)
+    const { data: courseClasses, error: classesError } = await getCatalogAdmin()
       .from("course_classes")
       .select("*, class:classes(*, sections(name, is_public))")
       .eq("course_id", id)
@@ -36,14 +35,13 @@ export const createCourseFn = createServerFn({ method: "POST" })
   .inputValidator(courseSchema)
   .handler(async ({ data }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
-    const { count } = await catalogQuery(supabase)
+    const { count } = await getCatalogAdmin()
       .from("courses")
       .select("*", { count: "exact", head: true })
       .eq("department_id", data.department_id)
 
-    const { data: course, error } = await catalogQuery(supabase)
+    const { data: course, error } = await getCatalogAdmin()
       .from("courses")
       .insert({
         name: data.name,
@@ -72,7 +70,6 @@ export const updateCourseFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateCourseSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
     if (updates.name !== undefined) updateData.name = updates.name
@@ -86,7 +83,7 @@ export const updateCourseFn = createServerFn({ method: "POST" })
     if (updates.cfu !== undefined) updateData.cfu = updates.cfu ?? null
     if (updates.position !== undefined) updateData.position = updates.position
 
-    const { data: course, error } = await catalogQuery(supabase)
+    const { data: course, error } = await getCatalogAdmin()
       .from("courses")
       .update(updateData)
       .eq("id", id)
@@ -107,9 +104,8 @@ export const deleteCourseFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
-    const { count } = await catalogQuery(supabase)
+    const { count } = await getCatalogAdmin()
       .from("course_classes")
       .select("*", { count: "exact", head: true })
       .eq("course_id", id)
@@ -120,6 +116,6 @@ export const deleteCourseFn = createServerFn({ method: "POST" })
       )
     }
 
-    const { error } = await catalogQuery(supabase).from("courses").delete().eq("id", id)
+    const { error } = await getCatalogAdmin().from("courses").delete().eq("id", id)
     if (error) throw new Error(error.message)
   })
