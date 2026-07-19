@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
+import { getCatalogAdmin } from "@/lib/supabase/admin"
 
 import { requireDepartmentAccess, requireStructureManager } from "./access"
 import {
@@ -16,9 +16,8 @@ export const getAdminDepartmentsFn = createServerFn({
   method: "GET",
 }).handler(async (): Promise<AdminDepartment[]> => {
   await requireDepartmentAccess()
-  const supabase = createServerSupabaseClient()
 
-  const { data, error } = await catalogQuery(supabase)
+  const { data, error } = await getCatalogAdmin()
     .from("departments")
     .select("*, courses(count)")
     .order("position")
@@ -31,9 +30,8 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireDepartmentAccess()
-    const supabase = createServerSupabaseClient()
 
-    const { data: department, error: deptError } = await catalogQuery(supabase)
+    const { data: department, error: deptError } = await getCatalogAdmin()
       .from("departments")
       .select("*")
       .eq("id", id)
@@ -41,7 +39,7 @@ export const getAdminDepartmentDetailFn = createServerFn({ method: "GET" })
 
     if (deptError) throw new Error(deptError.message)
 
-    const { data: courses, error: coursesError } = await catalogQuery(supabase)
+    const { data: courses, error: coursesError } = await getCatalogAdmin()
       .from("courses")
       .select("*, classes(count)")
       .eq("department_id", id)
@@ -61,14 +59,13 @@ export const createDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(departmentSchema)
   .handler(async ({ data }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
     // Get next position
-    const { count } = await catalogQuery(supabase)
+    const { count } = await getCatalogAdmin()
       .from("departments")
       .select("*", { count: "exact", head: true })
 
-    const { data: department, error } = await catalogQuery(supabase)
+    const { data: department, error } = await getCatalogAdmin()
       .from("departments")
       .insert({
         name: data.name,
@@ -94,7 +91,6 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateDepartmentSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
     if (updates.name !== undefined) updateData.name = updates.name
@@ -104,7 +100,7 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
     if (updates.area !== undefined) updateData.area = updates.area || null
     if (updates.position !== undefined) updateData.position = updates.position
 
-    const { data: department, error } = await catalogQuery(supabase)
+    const { data: department, error } = await getCatalogAdmin()
       .from("departments")
       .update(updateData)
       .eq("id", id)
@@ -125,10 +121,9 @@ export const deleteDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireStructureManager()
-    const supabase = createServerSupabaseClient()
 
     // Check for child courses
-    const { count } = await catalogQuery(supabase)
+    const { count } = await getCatalogAdmin()
       .from("courses")
       .select("*", { count: "exact", head: true })
       .eq("department_id", id)
@@ -139,7 +134,7 @@ export const deleteDepartmentFn = createServerFn({ method: "POST" })
       )
     }
 
-    const { error } = await catalogQuery(supabase)
+    const { error } = await getCatalogAdmin()
       .from("departments")
       .delete()
       .eq("id", id)

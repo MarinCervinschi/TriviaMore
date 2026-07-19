@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
 import { requireAdmin } from "@/lib/auth/guards"
-import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
+import { getCatalogAdmin } from "@/lib/supabase/admin"
 
 import {
   assertSectionScope,
@@ -18,9 +18,8 @@ export const getAdminQuestionDetailFn = createServerFn({ method: "GET" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireQuestionAccess(id)
-    const supabase = createServerSupabaseClient()
 
-    const { data: question, error } = await catalogQuery(supabase)
+    const { data: question, error } = await getCatalogAdmin()
       .from("questions")
       .select(
         "*, section:sections(*, class:classes(*, course_classes(course:courses(*, department:departments(*)))))",
@@ -36,9 +35,8 @@ export const createQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(questionSchema)
   .handler(async ({ data }) => {
     await requireContentManagerForSection(data.section_id)
-    const supabase = createServerSupabaseClient()
 
-    const { data: question, error } = await catalogQuery(supabase)
+    const { data: question, error } = await getCatalogAdmin()
       .from("questions")
       .insert({
         id: crypto.randomUUID(),
@@ -66,7 +64,6 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
     for (const sectionId of sectionIds) {
       await assertSectionScope(user, sectionId)
     }
-    const supabase = createServerSupabaseClient()
 
     const rows = questions.map((q) => ({
       id: crypto.randomUUID(),
@@ -79,7 +76,7 @@ export const createQuestionsBulkFn = createServerFn({ method: "POST" })
       section_id: q.section_id,
     }))
 
-    const { data, error } = await catalogQuery(supabase)
+    const { data, error } = await getCatalogAdmin()
       .from("questions")
       .insert(rows)
       .select()
@@ -92,7 +89,6 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema.merge(updateQuestionSchema))
   .handler(async ({ data: { id, ...updates } }) => {
     await requireContentManagerForQuestion(id)
-    const supabase = createServerSupabaseClient()
 
     const updateData: Record<string, unknown> = {}
     if (updates.content !== undefined) updateData.content = updates.content
@@ -107,7 +103,7 @@ export const updateQuestionFn = createServerFn({ method: "POST" })
     if (updates.difficulty !== undefined)
       updateData.difficulty = updates.difficulty
 
-    const { data: question, error } = await catalogQuery(supabase)
+    const { data: question, error } = await getCatalogAdmin()
       .from("questions")
       .update(updateData)
       .eq("id", id)
@@ -122,8 +118,7 @@ export const deleteQuestionFn = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
   .handler(async ({ data: { id } }) => {
     await requireContentManagerForQuestion(id)
-    const supabase = createServerSupabaseClient()
 
-    const { error } = await catalogQuery(supabase).from("questions").delete().eq("id", id)
+    const { error } = await getCatalogAdmin().from("questions").delete().eq("id", id)
     if (error) throw new Error(error.message)
   })
