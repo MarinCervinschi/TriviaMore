@@ -41,7 +41,7 @@ A short tour of the technologies that power the platform — click any name to j
 - <img src="https://api.iconify.design/simple-icons:shadcnui.svg" height="16" /> **[shadcn/ui](https://ui.shadcn.com)** — New York style components on top of Radix UI primitives.
 - <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Query](https://tanstack.com/query)** — Server-state cache with persistent storage.
 - <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Postgres database, auth, storage and realtime.
-- <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets management (CLI in dev, SDK in production).
+- <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets management, injected by the CLI in dev and in the container entrypoint.
 - <img src="https://api.iconify.design/logos:vitest.svg" height="16" /> **[Vitest](https://vitest.dev)** — Unit testing.
 
 ## Quick start
