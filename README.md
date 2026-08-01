@@ -84,6 +84,10 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 | `pnpm start` | Start production server (`node .output/server/index.mjs`) |
 | `pnpm preview` | Preview the production build |
 | `pnpm test` | Run tests with Vitest |
+| `pnpm db:generate` | Generate a migration from the Drizzle schema |
+| `pnpm db:migrate` | Apply pending migrations |
+| `pnpm db:check` | Check the migration history for conflicts |
+| `pnpm db:studio` | Open Drizzle Studio |
 | `pnpm db:types` | Regenerate Supabase TypeScript types |
 | `pnpm generate:sitemap` | Generate `sitemap.xml` (runs automatically after build) |
 
@@ -115,6 +119,22 @@ supabase db reset       # re-apply migrations + seed
 
 - A superadmin user (`admin@trivia-more.local` / `password123`)
 - Catalog data (departments, courses, classes, sections, questions) dumped from staging
+
+### Migrations (Drizzle, Code First)
+
+The Drizzle schema in `src/db/schema/` is the source of truth. `drizzle-kit` diffs it against the database and writes SQL into `drizzle/`; both the TS change and the generated `.sql` are committed together. Same model as EF Core.
+
+```bash
+pnpm db:generate --name add_something   # diff the schema -> drizzle/*.sql   (ef migrations add)
+pnpm db:generate --custom --name grants # empty file for raw SQL             (migrationBuilder.Sql)
+pnpm db:migrate                         # apply pending migrations           (ef database update)
+```
+
+**Migrations are always applied by hand.** They never run on container start, in an entrypoint, or in an automatic pre-deploy hook, in any environment. Apply the migration first, deploy the code second; use expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
+
+There is deliberately no `db:push` — always generate + migrate, so every change leaves a reviewable SQL file.
+
+`DATABASE_URL` must be set (Infisical, or `.env` for the `:no-secrets` flow). `supabase/migrations/` is the historical archive from before the cutover and is no longer applied.
 
 ### Refresh seed from staging
 
