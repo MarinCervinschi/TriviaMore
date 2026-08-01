@@ -124,6 +124,26 @@ supabase db reset       # re-apply migrations + seed
 
 The Drizzle schema in `src/db/schema/` is the source of truth. `drizzle-kit` diffs it against the database and writes SQL into `drizzle/`; both the TS change and the generated `.sql` are committed together. Same model as EF Core.
 
+Entities live one per file under `src/db/schema/entities/<postgres-schema>/`:
+
+```
+src/db/schema/
+├── common.ts                  pgSchema handles + the tsvector custom type
+├── index.ts                   barrel consumed by drizzle-kit and the runtime client
+└── entities/
+    ├── public/                profiles.ts, notifications.ts, … + enums.ts + relations.ts
+    ├── catalog/               departments.ts, courses.ts, sections.ts, … + enums.ts + relations.ts
+    └── quiz/                  quizzes.ts, quiz-attempts.ts, … + enums.ts + relations.ts
+```
+
+Naming follows the Drizzle convention: the table object is camelCase plural mirroring the SQL name (`courses`, `quizAttempts`), relations are `<table>Relations`, and row types are derived rather than hand-written — `type Course = typeof courses.$inferSelect`, `type NewCourse = typeof courses.$inferInsert`. Values and types never collide because one is plural camelCase and the other singular PascalCase. Row types stay in `src/lib/*/types.ts` next to the view models built on them.
+
+An entity file holds only what ends up in a migration: columns, indexes, constraints and foreign keys. **Relations live in the per-schema `relations.ts`** — they produce no DDL, they only feed `db.query`. Keeping them out is what makes the module graph acyclic: relations files import entities, entities never import relations, and the foreign-key graph on its own is a DAG. Co-locating them instead creates import cycles that happen to work but break the moment a table is referenced at module scope outside a `foreignKey` or a `relations` callback.
+
+This also maps onto Drizzle's Relational Queries v2, where relations move into `defineRelations` / `defineRelationsPart` merged at client construction — the three files become three parts.
+
+Each folder has its own `enums.ts`. Enum types are declared with `pgEnum`, not `<schema>.enum()`: every enum lives in the `public` Postgres schema because it is shared across the three, so the folder layout is organisational only.
+
 ```bash
 pnpm db:generate --name add_something   # diff the schema -> drizzle/*.sql   (ef migrations add)
 pnpm db:generate --custom --name grants # empty file for raw SQL             (migrationBuilder.Sql)
