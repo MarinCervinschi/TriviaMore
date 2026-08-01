@@ -12,7 +12,7 @@
     "dev:staging": "infisical run --recursive --env=staging -- vite dev --port 3000",
     "dev:prod": "infisical run --recursive --env=prod -- vite dev --port 3000",
     "dev:no-secrets": "vite dev --port 3000",
-    "build": "tsx scripts/build.ts",
+    "build": "vite build",
     "build:dev": "infisical run --recursive -- pnpm build",
     "start": "node .output/server/index.mjs",
     "preview": "infisical run --recursive -- vite preview",
@@ -22,8 +22,6 @@
     "db:studio": "infisical run --recursive -- drizzle-kit studio",
     "db:check": "infisical run --recursive -- drizzle-kit check",
     "db:types": "infisical run --recursive -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
-    "generate:sitemap": "pnpm tsx scripts/generate-sitemap.ts",
-    "generate:sitemap:dev": "infisical run --recursive -- pnpm generate:sitemap",
     "mcp:questions": "tsx scripts/mcp/questions-server.ts"
   },
   "dependencies": {

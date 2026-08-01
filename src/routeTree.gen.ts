@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
@@ -64,6 +65,11 @@ import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './route
 import { Route as AppDepartmentsDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/departments/$department/$course/$class/$section/index'
 import { Route as AppBrowseDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/browse/$department/$course/$class/$section/index'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MaintenanceRoute = MaintenanceRouteImport.update({
   id: '/maintenance',
   path: '/maintenance',
@@ -350,6 +356,7 @@ const AppBrowseDepartmentCourseClassSectionIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/maintenance': typeof MaintenanceRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
   '/legal': typeof AppLegalRouteRouteWithChildren
   '/user': typeof AppUserRouteRouteWithChildren
@@ -404,6 +411,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/maintenance': typeof MaintenanceRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/legal': typeof AppLegalRouteRouteWithChildren
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
@@ -459,6 +467,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/maintenance': typeof MaintenanceRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/legal': typeof AppLegalRouteRouteWithChildren
   '/_app/user': typeof AppUserRouteRouteWithChildren
@@ -517,6 +526,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/maintenance'
+    | '/sitemap.xml'
     | '/admin'
     | '/legal'
     | '/user'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/maintenance'
+    | '/sitemap.xml'
     | '/legal'
     | '/about'
     | '/contact'
@@ -625,6 +636,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app'
     | '/maintenance'
+    | '/sitemap.xml'
     | '/_app/admin'
     | '/_app/legal'
     | '/_app/user'
@@ -682,6 +694,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
@@ -694,6 +707,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/maintenance': {
       id: '/maintenance'
       path: '/maintenance'
@@ -1209,6 +1229,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthConfirmRoute: AuthConfirmRoute,

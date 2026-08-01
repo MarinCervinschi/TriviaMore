@@ -79,7 +79,7 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 |---|---|
 | `pnpm dev` | Dev server with Infisical secrets |
 | `pnpm dev:no-secrets` | Dev server without Infisical |
-| `pnpm build` | Production build + sitemap |
+| `pnpm build` | Production build |
 | `pnpm build:dev` | Dev build with Infisical CLI |
 | `pnpm start` | Start production server (`node .output/server/index.mjs`) |
 | `pnpm preview` | Preview the production build |
@@ -89,7 +89,6 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 | `pnpm db:check` | Check the migration history for conflicts |
 | `pnpm db:studio` | Open Drizzle Studio |
 | `pnpm db:types` | Regenerate Supabase TypeScript types |
-| `pnpm generate:sitemap` | Generate `sitemap.xml` (runs automatically after build) |
 
 ## Environment variables
 
