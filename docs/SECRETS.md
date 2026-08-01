@@ -43,7 +43,9 @@ OAuth client IDs/secrets in `.env.example` can be left blank — email/password 
 
 ## Production
 
-The deployed app loads secrets at server startup via `@infisical/sdk` (Universal Auth machine identity).
+The container gets its secrets from the Infisical CLI, not from application code. `docker-entrypoint.sh`
+exchanges the machine-identity credentials for a short-lived token and execs the server through
+`infisical run`, so the environment is populated **before** the process starts.
 
 | Variable | Required | Description |
 |---|---|---|
@@ -53,4 +55,14 @@ The deployed app loads secrets at server startup via `@infisical/sdk` (Universal
 | `INFISICAL_SITE_URL` | ✅ | Self-hosted Infisical URL |
 | `INFISICAL_ENV` | — | Environment slug (default `prod`) |
 
-All other secrets come from Infisical at runtime. `VITE_*` variables must additionally be set on the hosting platform (Vercel) because Vite embeds them at build time.
+Everything else comes from Infisical. Those five are needed **at build time as well as at runtime**,
+because Vite inlines the `VITE_*` values into the client bundle — so each environment produces its
+own image and `INFISICAL_ENV` is what distinguishes them. The build reaches Infisical but not the
+database: the sitemap is served by a route at runtime, not written during the build.
+
+If Infisical is unreachable the entrypoint exits non-zero and the container never starts, so a failed
+deploy leaves the previous one running. It does not start and then serve errors.
+
+On Coolify, enable **Docker Build Secrets** in the application's environment settings: the five
+variables are then passed as BuildKit secret mounts instead of `--build-arg`, and never reach an
+image layer.
