@@ -8,7 +8,7 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   dialect: "postgresql",
-  schema: "./src/db/schema/index.ts",
+  schema: "./src/db/schema",
   out: "./drizzle",
   dbCredentials: { url: process.env.DATABASE_URL },
   schemaFilter: ["public", "catalog", "quiz", "internal"],
