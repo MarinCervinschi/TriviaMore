@@ -101,14 +101,14 @@ export function FlashcardQuestionCard({
             </div>
           </div>
           <div className="flex min-h-[280px] flex-col gap-6 [justify-content:safe_center]">
-            {question.correct_answer.length === 1 ? (
+            {question.correctAnswer.length === 1 ? (
               <MarkdownRenderer
-                content={question.correct_answer[0]}
+                content={question.correctAnswer[0]}
                 className="text-center [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
               />
             ) : (
               <MarkdownRenderer
-                content={question.correct_answer
+                content={question.correctAnswer
                   .map((a, i) => `**Variante ${i + 1}.** ${a}`)
                   .join("\n\n")}
                 className="text-center [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
