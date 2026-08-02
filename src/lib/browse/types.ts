@@ -1,59 +1,72 @@
-import type { CatalogTables } from "@/lib/supabase/database.helpers"
-import type { Database } from "@/lib/supabase/database.types"
+import type {
+  classes,
+  courseClasses,
+  courses,
+  departmentLocations,
+  departments,
+  sections,
+} from "@/db/schema"
 
-// Base table types from Supabase (catalog schema)
-type Department = CatalogTables<"departments">
-type Course = CatalogTables<"courses">
-type Class = CatalogTables<"classes">
-type Section = CatalogTables<"sections">
-type CourseClass = CatalogTables<"course_classes">
-type DepartmentLocationRow = CatalogTables<"department_locations">
+// `fts` is a generated tsvector: it drives search server-side and has no
+// business crossing the wire, so it is stripped from every browse view model.
+export type Department = typeof departments.$inferSelect
+export type Course = Omit<typeof courses.$inferSelect, "fts">
+export type Class = Omit<typeof classes.$inferSelect, "fts">
+export type Section = typeof sections.$inferSelect
 
-// Catalog enums (re-exported for component-level type-safety)
-export type DepartmentArea = Database["public"]["Enums"]["department_area"]
-export type CampusLocation = Database["public"]["Enums"]["campus_location"]
-export type CourseType = Database["public"]["Enums"]["course_type"]
+export type DepartmentArea = NonNullable<Department["area"]>
+export type CampusLocation = NonNullable<Course["location"]>
+export type CourseType = Course["courseType"]
 
 export type DepartmentLocation = Pick<
-  DepartmentLocationRow,
-  "id" | "name" | "address" | "latitude" | "longitude" | "campus_location" | "is_primary" | "position"
+  typeof departmentLocations.$inferSelect,
+  | "id"
+  | "name"
+  | "address"
+  | "latitude"
+  | "longitude"
+  | "campusLocation"
+  | "isPrimary"
+  | "position"
 >
 
-// Junction fields that come from course_classes
+// Fields that describe a class *as taught in a given course*, i.e. the junction
+// row rather than the class itself.
 export type CourseClassInfo = Pick<
-  CourseClass,
-  "code" | "class_year" | "mandatory" | "catalogue_url" | "curriculum" | "position"
+  typeof courseClasses.$inferSelect,
+  "code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
 >
 
-// Browse listing types (with relation counts)
+// Listing types
 
 export type BrowseDepartment = Department & {
-  courses: { count: number }[]
-  department_locations: Pick<DepartmentLocation, "campus_location">[]
+  courseCount: number
+  campusLocations: CampusLocation[]
 }
 
 export type BrowseCourse = Course & {
-  course_classes: { count: number }[]
+  classCount: number
 }
 
-// Class as seen under a specific course (junction fields merged)
-export type BrowseClassInCourse = CourseClassInfo & {
-  class: Class & {
-    sections: { count: number }[]
+// A class seen from inside a course: junction fields merged into the class.
+// `position` drops out of the class side — in a course listing it always means
+// the position inside that course.
+export type BrowseClassInCourse = Omit<Class, "position"> &
+  CourseClassInfo & {
+    sectionCount: number
   }
-}
 
 export type BrowseSection = Section & {
-  question_count: number
-  quiz_question_count: number
-  flashcard_question_count: number
+  questionCount: number
+  quizQuestionCount: number
+  flashcardQuestionCount: number
 }
 
-// Detail types (with parent chain)
+// Detail types
 
 export type DepartmentWithCourses = Department & {
   courses: BrowseCourse[]
-  department_locations: DepartmentLocation[]
+  locations: DepartmentLocation[]
 }
 
 export type CourseWithClasses = Course & {
@@ -63,9 +76,7 @@ export type CourseWithClasses = Course & {
 
 export type ClassWithSections = Class & {
   courseClass: CourseClassInfo
-  course: Course & {
-    department: Department
-  }
+  course: Course & { department: Department }
   sections: BrowseSection[]
   examSimulation?: {
     sectionId: string
@@ -74,20 +85,32 @@ export type ClassWithSections = Class & {
   }
 }
 
-// Overview types (for /browse showcase page)
+export type SectionDetail = Section & {
+  class: Class & {
+    courseClass: CourseClassInfo
+    course: Course & { department: Department }
+  }
+  questionCount: number
+  quizQuestionCount: number
+  flashcardQuestionCount: number
+}
+
+// Overview (the /browse showcase page)
+
+export type PlatformStats = {
+  departments: number
+  courses: number
+  classes: number
+  sections: number
+  questions: number
+}
 
 export type OverviewLocation = DepartmentLocation & {
   department: Pick<Department, "code" | "name">
 }
 
 export interface BrowseOverview {
-  stats: {
-    departments: number
-    courses: number
-    classes: number
-    sections: number
-    questions: number
-  }
+  stats: PlatformStats
   coursesByDepartment: { name: string; code: string; count: number }[]
   coursesByType: { type: string; label: string; count: number }[]
   coursesByCampus: { campus: string; label: string; count: number }[]
@@ -105,17 +128,17 @@ export interface BrowseOverview {
   questionsByType: { type: string; label: string; count: number }[]
 }
 
-// Search result types (for /search/* pages)
+// Search
 
 export type SearchCourseResult = {
   id: string
   name: string
   code: string
-  course_type: string
-  location: string | null
+  courseType: CourseType
+  location: CampusLocation | null
   cfu: number | null
-  department: { code: string; name: string }
-  course_classes: { count: number }[]
+  department: Pick<Department, "code" | "name">
+  classCount: number
 }
 
 export type SearchClassResult = {
@@ -124,10 +147,15 @@ export type SearchClassResult = {
   description: string | null
   cfu: number | null
   code: string
-  class_year: number
+  classYear: number
   mandatory: boolean
-  course: { id: string; name: string; code: string; department: { code: string; name: string } }
-  sections: { count: number }[]
+  course: {
+    id: string
+    name: string
+    code: string
+    department: Pick<Department, "code" | "name">
+  }
+  sectionCount: number
 }
 
 export interface SearchCoursesParams {
@@ -157,28 +185,19 @@ export interface PaginatedResult<T> {
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>
 
-// Graph showcase types
+// Graph showcase
 
-export type GraphDepartmentNode = Pick<Department, "id" | "code" | "name" | "area">
+export type GraphDepartmentNode = Pick<
+  Department,
+  "id" | "code" | "name" | "area"
+>
 
 export type GraphCourseNode = Pick<
   Course,
-  "id" | "code" | "name" | "department_id" | "course_type" | "location"
+  "id" | "code" | "name" | "departmentId" | "courseType" | "location"
 >
 
 export interface GraphData {
   departments: GraphDepartmentNode[]
   courses: GraphCourseNode[]
-}
-
-export type SectionDetail = Section & {
-  class: Class & {
-    courseClass: CourseClassInfo
-    course: Course & {
-      department: Department
-    }
-  }
-  question_count: number
-  quiz_question_count: number
-  flashcard_question_count: number
 }

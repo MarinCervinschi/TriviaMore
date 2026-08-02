@@ -69,9 +69,9 @@ export function computeFilterActives(
 
   // 2. Courses matching all active filters AND living in an area-matched dept.
   const matchingCourses = data.courses.filter((c) => {
-    if (!deptAreaMatch.get(c.department_id)) return false
+    if (!deptAreaMatch.get(c.departmentId)) return false
     if (hasCampus && (c.location == null || !campuses.has(c.location))) return false
-    if (hasType && !courseTypes.has(c.course_type)) return false
+    if (hasType && !courseTypes.has(c.courseType)) return false
     return true
   })
 
@@ -79,7 +79,7 @@ export function computeFilterActives(
   //    they have at least one matching course).
   const courseOnlyAreaFilter = hasArea && !hasCampus && !hasType
   const deptsWithMatchingCourses = new Set(
-    matchingCourses.map((c) => c.department_id),
+    matchingCourses.map((c) => c.departmentId),
   )
   const activeDeptIds = new Set<string>()
   for (const d of data.departments) {
@@ -102,7 +102,7 @@ export function computeFilterActives(
   }
 
   for (const c of matchingCourses) {
-    if (!activeDeptIds.has(c.department_id)) continue
+    if (!activeDeptIds.has(c.departmentId)) continue
     ids.push(`course-${c.id}`)
     ids.push(`dept-course-${c.id}`)
     ids.push(`root-course-${c.id}`)
@@ -112,7 +112,7 @@ export function computeFilterActives(
     activeIds: ids,
     deptCount: activeDeptIds.size,
     courseCount: matchingCourses.filter((c) =>
-      activeDeptIds.has(c.department_id),
+      activeDeptIds.has(c.departmentId),
     ).length,
     hasActiveFilter: true,
   }

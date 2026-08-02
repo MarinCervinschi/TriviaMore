@@ -15,7 +15,7 @@ import {
   getSectionDetailFn,
   searchClassesFn,
   searchCoursesFn,
-} from "./server"
+} from "./api"
 import type { SearchClassesParams, SearchCoursesParams } from "./types"
 
 function hasCoursesFilter(p: SearchCoursesParams): boolean {

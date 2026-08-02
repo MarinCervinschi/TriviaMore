@@ -71,9 +71,9 @@ export function OverviewMap({ locations }: { locations: OverviewLocation[] }) {
                     <p className="text-xs text-muted-foreground">{location.name}</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">{location.address}</p>
                     <div className="flex items-center justify-between gap-2">
-                      {location.campus_location && (
+                      {location.campusLocation && (
                         <Badge variant="secondary" className="text-xs">
-                          {CAMPUS_LOCATION_CONFIG[location.campus_location]?.label ?? location.campus_location}
+                          {CAMPUS_LOCATION_CONFIG[location.campusLocation]?.label ?? location.campusLocation}
                         </Badge>
                       )}
                       <Link

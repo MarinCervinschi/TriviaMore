@@ -69,7 +69,7 @@ function DepartmentPage() {
   const PAGE_SIZE = 10
 
   const courseTypeFilters = useMemo(() => {
-    const types = new Set<string>(department.courses.map((c) => c.course_type))
+    const types = new Set<string>(department.courses.map((c) => c.courseType))
     return [
       { value: "all", label: "Tutti" },
       ...Object.entries(COURSE_TYPE_CONFIG)
@@ -82,7 +82,7 @@ function DepartmentPage() {
     const base =
       typeFilter === "all"
         ? department.courses
-        : department.courses.filter((c) => c.course_type === typeFilter)
+        : department.courses.filter((c) => c.courseType === typeFilter)
     const q = search.trim().toLowerCase()
     if (!q) return base
     return base.filter(
@@ -96,9 +96,9 @@ function DepartmentPage() {
     const order = ["BACHELOR", "MASTER", "SINGLE_CYCLE"]
     const map = new Map<string, typeof searched>()
     for (const course of searched) {
-      const list = map.get(course.course_type) ?? []
+      const list = map.get(course.courseType) ?? []
       list.push(course)
-      map.set(course.course_type, list)
+      map.set(course.courseType, list)
     }
     return [...map.entries()].sort(([a], [b]) => {
       const ai = order.indexOf(a)
@@ -129,13 +129,13 @@ function DepartmentPage() {
                 {AREA_CONFIG[department.area].label}
               </Badge>
             )}
-            {department.department_locations.length > 0 && (
+            {department.locations.length > 0 && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="h-3.5 w-3.5" />
                 {[
                   ...new Set(
-                    department.department_locations
-                      .map((l) => l.campus_location)
+                    department.locations
+                      .map((l) => l.campusLocation)
                       .filter(Boolean),
                   ),
                 ]
@@ -160,9 +160,9 @@ function DepartmentPage() {
       />
 
       <div className="container">
-      {department.department_locations.length > 0 && (
+      {department.locations.length > 0 && (
         <Suspense fallback={<Skeleton className="mb-6 h-[300px] w-full" />}>
-          <DepartmentMap locations={department.department_locations} />
+          <DepartmentMap locations={department.locations} />
         </Suspense>
       )}
 
@@ -224,7 +224,7 @@ function DepartmentPage() {
                   ]}
                 >
                   {pagedCourses.map((course) => {
-                      const classCount = course.course_classes[0]?.count ?? 0
+                      const classCount = course.classCount
                       return (
                         <tr key={course.id} className="group">
                           <td className="pl-6 pr-3 py-4 align-top">

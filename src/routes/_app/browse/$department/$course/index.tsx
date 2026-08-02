@@ -76,9 +76,9 @@ function ClassRow({
   deptCode: string
   courseCode: string
 }) {
-  const sectionCount = classData.class.sections[0]?.count ?? 0
+  const sectionCount = classData.sectionCount
   return (
-    <tr key={classData.class.id} className="group">
+    <tr key={classData.id} className="group">
       <td className="pl-6 pr-3 py-4 align-top">
         <Link
           to="/browse/$department/$course/$class"
@@ -90,11 +90,11 @@ function ClassRow({
           className="block"
         >
           <span className="block font-medium text-foreground group-hover:text-primary transition-colors">
-            {classData.class.name}
+            {classData.name}
           </span>
-          {classData.class.description && (
+          {classData.description && (
             <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-              {classData.class.description}
+              {classData.description}
             </p>
           )}
         </Link>
@@ -105,9 +105,9 @@ function ClassRow({
         </Badge>
       </td>
       <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-center">
-        {classData.class.cfu ? (
+        {classData.cfu ? (
           <span className="text-sm text-muted-foreground">
-            {classData.class.cfu}
+            {classData.cfu}
           </span>
         ) : (
           <span className="text-xs text-muted-foreground/50">—</span>
@@ -128,7 +128,7 @@ function ClassRow({
             class: classData.code.toLowerCase(),
           }}
           className="inline-flex"
-          aria-label={`Apri ${classData.class.name}`}
+          aria-label={`Apri ${classData.name}`}
         >
           <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
         </Link>
@@ -153,7 +153,7 @@ function CoursePage() {
   if (!course) return null
 
   const availableYears = useMemo(() => {
-    const years = [...new Set(course.classes.map((c) => c.class_year))].sort()
+    const years = [...new Set(course.classes.map((c) => c.classYear))].sort()
     return years
   }, [course.classes])
 
@@ -170,16 +170,16 @@ function CoursePage() {
 
   const preFiltered = course.classes.filter(
     (c) =>
-      (yearFilter === "all" || c.class_year === yearFilter) &&
+      (yearFilter === "all" || c.classYear === yearFilter) &&
       (curriculumFilter === "all" || c.curriculum === curriculumFilter),
   )
 
   const groupedClasses = useMemo(() => {
     const byYear = new Map<number, BrowseClassInCourse[]>()
     for (const c of preFiltered) {
-      const list = byYear.get(c.class_year) ?? []
+      const list = byYear.get(c.classYear) ?? []
       list.push(c)
-      byYear.set(c.class_year, list)
+      byYear.set(c.classYear, list)
     }
     return [...byYear.entries()]
       .sort(([a], [b]) => a - b)
@@ -195,7 +195,7 @@ function CoursePage() {
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
     preFiltered,
     (c, q) =>
-      c.class.name.toLowerCase().includes(q) ||
+      c.name.toLowerCase().includes(q) ||
       c.code.toLowerCase().includes(q),
     search,
     page,
@@ -229,14 +229,14 @@ function CoursePage() {
         description={course.description}
         badges={
           <>
-            {COURSE_TYPE_CONFIG[course.course_type] && (
+            {COURSE_TYPE_CONFIG[course.courseType] && (
               <Badge
                 className={cn(
                   "text-xs",
-                  COURSE_TYPE_CONFIG[course.course_type].className,
+                  COURSE_TYPE_CONFIG[course.courseType].className,
                 )}
               >
-                {COURSE_TYPE_CONFIG[course.course_type].label}
+                {COURSE_TYPE_CONFIG[course.courseType].label}
               </Badge>
             )}
             {course.location && (
@@ -344,7 +344,7 @@ function CoursePage() {
                     <BrowseTable headers={tableHeaders}>
                       {group.mandatory.map((c) => (
                         <ClassRow
-                          key={c.class.id}
+                          key={c.id}
                           classData={c}
                           deptCode={deptCode}
                           courseCode={courseCode}
@@ -363,7 +363,7 @@ function CoursePage() {
                     <BrowseTable headers={tableHeaders}>
                       {group.elective.map((c) => (
                         <ClassRow
-                          key={c.class.id}
+                          key={c.id}
                           classData={c}
                           deptCode={deptCode}
                           courseCode={courseCode}
@@ -383,7 +383,7 @@ function CoursePage() {
           <BrowseTable headers={tableHeaders}>
             {paged.map((c) => (
               <ClassRow
-                key={c.class.id}
+                key={c.id}
                 classData={c}
                 deptCode={deptCode}
                 courseCode={courseCode}

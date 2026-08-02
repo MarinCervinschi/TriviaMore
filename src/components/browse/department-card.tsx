@@ -41,8 +41,8 @@ export type DepartmentCardData = {
   name: string
   description?: string | null
   area?: string | null
-  courses: { count: number }[]
-  department_locations: { campus_location: string | null }[]
+  courseCount: number
+  campusLocations: string[]
 }
 
 export function DepartmentCard({
@@ -50,20 +50,14 @@ export function DepartmentCard({
 }: {
   department: DepartmentCardData
 }) {
-  const courseCount = department.courses[0]?.count ?? 0
+  const courseCount = department.courseCount
   const areaConf = department.area ? AREA_CONFIG[department.area] : null
   const AreaIcon = department.area ? AREA_ICONS[department.area] : null
   const areaTextClass = department.area
     ? AREA_BANNER_TEXT[department.area]
     : "text-foreground"
 
-  const campuses = [
-    ...new Set(
-      department.department_locations
-        .map((l) => l.campus_location)
-        .filter(Boolean),
-    ),
-  ] as string[]
+  const campuses = [...new Set(department.campusLocations)]
 
   return (
     <Link
