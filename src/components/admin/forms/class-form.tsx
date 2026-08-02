@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { classSchema, courseClassSchema, type ClassInput } from "@/lib/admin/schemas"
-import type { Class } from "@/lib/admin/types"
+import type { AdminClassDetail } from "@/lib/admin/types"
 
 const classWithJunctionSchema = classSchema.merge(
   courseClassSchema.pick({ code: true, class_year: true, mandatory: true, curriculum: true }),
@@ -28,7 +28,7 @@ type JunctionDefaults = {
 }
 
 type ClassFormProps = {
-  cls?: Class
+  cls?: Pick<AdminClassDetail, "name" | "description" | "cfu">
   onSubmit: (data: ClassInput & JunctionDefaults) => void
   isPending: boolean
   junction?: JunctionDefaults

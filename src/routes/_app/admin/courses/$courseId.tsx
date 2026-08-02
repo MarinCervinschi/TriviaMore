@@ -37,7 +37,7 @@ import {
   useDeleteClass,
   useUpdateCourse,
 } from "@/lib/admin/mutations"
-import { addClassToCourseFn, createClassFn } from "@/lib/admin/server/classes"
+import { addClassToCourseFn, createClassFn } from "@/lib/admin/api"
 import { adminQueries } from "@/lib/admin/queries"
 import { useAuth } from "@/hooks/useAuth"
 

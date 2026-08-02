@@ -44,7 +44,7 @@ function AdminQuestionPage() {
   )
   const sectionId = isNew
     ? searchParams.get("sectionId") ?? ""
-    : questionData?.section_id ?? ""
+    : questionData?.sectionId ?? ""
 
   const createQuestion = useCreateQuestion(() => {
     if (sectionId) {
@@ -66,12 +66,15 @@ function AdminQuestionPage() {
 
   const updateQuestion = useUpdateQuestion()
 
-  const breadcrumb = questionData?.section
-    ? (() => {
-        const sec = questionData.section as { class: { course_classes: { course: { department: { name: string }; name: string } }[]; name: string }; name: string }
-        const course = sec.class.course_classes?.[0]?.course
-        return `${course?.department?.name ?? ""} / ${course?.name ?? ""} / ${sec.class.name} / ${sec.name}`
-      })()
+  const breadcrumb = questionData
+    ? [
+        questionData.parent?.departmentName,
+        questionData.parent?.courseName,
+        questionData.className,
+        questionData.sectionName,
+      ]
+        .filter(Boolean)
+        .join(" / ")
     : undefined
 
   return (
@@ -130,7 +133,7 @@ function AdminQuestionPage() {
             {questionData && (
               <QuestionForm
                 question={questionData}
-                sectionId={questionData.section_id}
+                sectionId={questionData.sectionId}
                 onSubmit={(data) =>
                   updateQuestion.mutate({ id: questionId, ...data })
                 }

@@ -44,7 +44,6 @@ import { useAuth } from "@/hooks/useAuth"
 
 // Technical sentinel section auto-created with every class to anchor
 // exam-simulation quiz questions; hidden from the sections list.
-const EXAM_SIMULATION_NAME = "Exam Simulation"
 
 export const Route = createFileRoute("/_app/admin/classes/$classId")({
   loader: ({ context, params }) =>
@@ -69,8 +68,8 @@ function AdminClassDetailPage() {
   type SectionRow = {
     id: string
     name: string
-    is_public: boolean
-    questions: { count: number }[]
+    isPublic: boolean
+    questionCount: number
   }
 
   const { sort, toggleSort } = useSort<SectionRow>()
@@ -82,20 +81,10 @@ function AdminClassDetailPage() {
     setCreateExamSimulationOpen(false),
   )
 
-  const { sections, course_classes, ...cls } = data
-  const courseClass = course_classes?.[0]
-  const course = courseClass?.course
-  const hasExamSimulation = sections.some(
-    (s) => s.name === EXAM_SIMULATION_NAME,
-  )
-  // Hide the exam-simulation sentinel, and (for maintainers) private sections,
-  // which they cannot manage.
-  const visibleSections = sections.filter(
-    (s) => s.name !== EXAM_SIMULATION_NAME && (!isMaintainer || s.is_public),
-  )
+  const { sections, courseClass, course, hasExamSimulation, ...cls } = data
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    visibleSections as SectionRow[],
+    sections as SectionRow[],
     (s, q) => s.name.toLowerCase().includes(q),
     search,
     page,
@@ -136,7 +125,7 @@ function AdminClassDetailPage() {
               cls={cls}
               junction={courseClass ? {
                 code: courseClass.code,
-                class_year: courseClass.class_year,
+                class_year: courseClass.classYear,
                 mandatory: courseClass.mandatory,
                 curriculum: courseClass.curriculum ?? "",
               } : undefined}
@@ -163,7 +152,7 @@ function AdminClassDetailPage() {
         <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle>Sezioni ({visibleSections.length})</CardTitle>
+              <CardTitle>Sezioni ({sections.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="w-56">
                   <AdminSearch
@@ -213,7 +202,7 @@ function AdminClassDetailPage() {
                         <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead className="text-center">
-                        <SortableHeader label="Visibilità" sortKey="is_public" sort={sort} onSort={toggleSort} />
+                        <SortableHeader label="Visibilità" sortKey="isPublic" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Domande</TableHead>
                       <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
@@ -232,7 +221,7 @@ function AdminClassDetailPage() {
                           </Link>
                         </TableCell>
                         <TableCell className="text-center">
-                          {section.is_public ? (
+                          {section.isPublic ? (
                             <Badge variant="default" className="gap-1 rounded-full">
                               <Eye className="h-3 w-3" />
                               Pubblica
@@ -245,7 +234,7 @@ function AdminClassDetailPage() {
                           )}
                         </TableCell>
                         <TableCell className="text-center">
-                          {section.questions?.[0]?.count ?? 0}
+                          {section.questionCount}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">

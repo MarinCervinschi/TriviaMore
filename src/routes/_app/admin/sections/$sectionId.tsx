@@ -40,7 +40,7 @@ import {
 } from "@/lib/admin/mutations"
 import { adminQueries } from "@/lib/admin/queries"
 import { useAuth } from "@/hooks/useAuth"
-import type { Question } from "@/lib/admin/types"
+import type { AdminQuestion } from "@/lib/admin/types"
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   EASY: "Facile",
@@ -75,30 +75,27 @@ function AdminSectionDetailPage() {
 
   const [addUserId, setAddUserId] = useState("")
 
-  const { sort, toggleSort } = useSort<Question>()
+  const { sort, toggleSort } = useSort<AdminQuestion>()
   const updateSection = useUpdateSection()
   const deleteQuestion = useDeleteQuestion(() => setDeleteQuestionId(null))
   const addAccess = useAddSectionAccess()
   const removeAccess = useRemoveSectionAccess()
 
-  const { questions, class: cls, ...section } = data
-  const courseClass = cls.course_classes?.[0]
-  const course = courseClass?.course
-  const department = course?.department
+  const { questions, parent, ...section } = data
   const sectionSlug = section.slug
 
   // Section access management (only for private sections)
   const { data: accessUsers } = useQuery({
     ...adminQueries.sectionAccessUsers(sectionId),
-    enabled: !section.is_public && isSuperadmin,
+    enabled: !section.isPublic && isSuperadmin,
   })
   const { data: allUsers } = useQuery({
     ...adminQueries.users(),
-    enabled: !section.is_public && isSuperadmin,
+    enabled: !section.isPublic && isSuperadmin,
   })
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    questions as Question[],
+    questions as AdminQuestion[],
     (q, query) => q.content.toLowerCase().includes(query),
     search,
     page,
@@ -110,18 +107,20 @@ function AdminSectionDetailPage() {
     <div className="py-2">
       <AdminPageHeader
         title={section.name}
-        description={`${department?.name ?? ""} / ${course?.name ?? ""} / ${cls.name}`}
+        description={[parent?.departmentName, parent?.courseName, section.className]
+          .filter(Boolean)
+          .join(" / ")}
         backTo="/admin/classes/$classId"
-        backParams={{ classId: cls.id }}
-        backLabel={cls.name}
+        backParams={{ classId: section.classId }}
+        backLabel={section.className}
         actions={
-          department && course && courseClass ? (
+          parent && sectionSlug ? (
             <BrowsePublicButton
               to="/browse/$department/$course/$class/$section"
               params={{
-                department: department.code.toLowerCase(),
-                course: course.code.toLowerCase(),
-                class: courseClass.code.toLowerCase(),
+                department: parent.departmentCode.toLowerCase(),
+                course: parent.courseCode.toLowerCase(),
+                class: parent.classCode.toLowerCase(),
                 section: sectionSlug,
               }}
             />
@@ -138,7 +137,7 @@ function AdminSectionDetailPage() {
             <CardContent>
               <SectionForm
                 section={section}
-                classId={cls.id}
+                classId={section.classId}
                 onSubmit={(formData) =>
                   updateSection.mutate({ id: section.id, ...formData })
                 }
@@ -163,7 +162,7 @@ function AdminSectionDetailPage() {
                 <div className="rounded-xl bg-muted/30 p-4">
                   <dt className="text-sm text-muted-foreground">Visibilità</dt>
                   <dd className="text-2xl font-bold">
-                    {section.is_public ? "Pubblica" : "Privata"}
+                    {section.isPublic ? "Pubblica" : "Privata"}
                   </dd>
                 </div>
                 <div className="rounded-xl bg-muted/30 p-4">
@@ -172,8 +171,8 @@ function AdminSectionDetailPage() {
                   </dt>
                   <dd className="text-2xl font-bold">
                     {
-                      (questions as Question[]).filter(
-                        (q) => q.question_type === "MULTIPLE_CHOICE",
+                      (questions as AdminQuestion[]).filter(
+                        (q) => q.questionType === "MULTIPLE_CHOICE",
                       ).length
                     }
                   </dd>
@@ -184,8 +183,8 @@ function AdminSectionDetailPage() {
                   </dt>
                   <dd className="text-2xl font-bold">
                     {
-                      (questions as Question[]).filter(
-                        (q) => q.question_type === "TRUE_FALSE",
+                      (questions as AdminQuestion[]).filter(
+                        (q) => q.questionType === "TRUE_FALSE",
                       ).length
                     }
                   </dd>
@@ -196,8 +195,8 @@ function AdminSectionDetailPage() {
                   </dt>
                   <dd className="text-2xl font-bold">
                     {
-                      (questions as Question[]).filter(
-                        (q) => q.question_type === "SHORT_ANSWER",
+                      (questions as AdminQuestion[]).filter(
+                        (q) => q.questionType === "SHORT_ANSWER",
                       ).length
                     }
                   </dd>
@@ -208,7 +207,7 @@ function AdminSectionDetailPage() {
         </div>
 
         {/* Section access management (private sections, SUPERADMIN only) */}
-        {!section.is_public && isSuperadmin && (
+        {!section.isPublic && isSuperadmin && (
           <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -330,7 +329,7 @@ function AdminSectionDetailPage() {
                         <SortableHeader label="Contenuto" sortKey="content" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead>
-                        <SortableHeader label="Tipo" sortKey="question_type" sort={sort} onSort={toggleSort} />
+                        <SortableHeader label="Tipo" sortKey="questionType" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead>
                         <SortableHeader label="Difficoltà" sortKey="difficulty" sort={sort} onSort={toggleSort} />
@@ -354,8 +353,8 @@ function AdminSectionDetailPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="rounded-full">
-                            {TYPE_LABELS[question.question_type] ??
-                              question.question_type}
+                            {TYPE_LABELS[question.questionType] ??
+                              question.questionType}
                           </Badge>
                         </TableCell>
                         <TableCell>

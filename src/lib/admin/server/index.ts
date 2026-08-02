@@ -1,5 +1,2 @@
 export * from "./dashboard"
-export * from "./classes"
-export * from "./sections"
-export * from "./questions"
 export * from "./users"
