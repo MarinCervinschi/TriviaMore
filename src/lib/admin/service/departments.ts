@@ -8,7 +8,7 @@ import { Conflict, NotFound, rethrowUniqueViolation } from "@/lib/server/errors"
 import {
   requireDepartmentAccess,
   requireStructureManager,
-} from "../server/access"
+} from "../access"
 import type { DepartmentInput, UpdateDepartmentInput } from "../schemas"
 import type { AdminDepartment, AdminDepartmentDetail } from "../types"
 

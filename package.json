@@ -25,6 +25,7 @@
     "mcp:questions": "tsx scripts/mcp/questions-server.ts",
     "diff:user-views": "infisical run --recursive -- tsx scripts/diff/user-detail-views.ts",
     "diff:notifications": "infisical run --recursive -- tsx scripts/diff/notification-recipients.ts",
+    "diff:maintainer-scope": "infisical run --recursive -- tsx scripts/diff/maintainer-scope.ts",
     "smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
     "smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts"
   },

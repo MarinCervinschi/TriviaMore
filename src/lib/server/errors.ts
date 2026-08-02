@@ -8,6 +8,7 @@ export type AppErrorCode =
   | "NOT_FOUND"
   | "CONFLICT"
   | "INVALID"
+  | "UNAVAILABLE"
 
 export class AppError extends Error {
   readonly code: AppErrorCode
@@ -48,6 +49,14 @@ export class Conflict extends AppError {
 export class Invalid extends AppError {
   constructor(message: string) {
     super("INVALID", message)
+  }
+}
+
+// A dependency outside the database refused the operation — a mail server, the
+// auth API. The user can retry, so the message says so rather than being masked.
+export class Unavailable extends AppError {
+  constructor(message: string) {
+    super("UNAVAILABLE", message)
   }
 }
 
