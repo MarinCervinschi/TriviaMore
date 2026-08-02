@@ -17,7 +17,7 @@ import {
   requireContentManagerForQuestion,
   requireContentManagerForSection,
   requireQuestionAccess,
-} from "../server/access"
+} from "../access"
 import type { QuestionInput, UpdateQuestionInput } from "../schemas"
 import type { AdminQuestionDetail } from "../types"
 

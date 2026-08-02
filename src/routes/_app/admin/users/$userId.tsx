@@ -80,11 +80,11 @@ function AdminUserDetailPage() {
   const { data: privateSections } = useQuery(adminQueries.privateSections())
 
   const availableDepts = (departments ?? []).filter(
-    (d) => !user.managed_departments.some((md) => md.id === d.id),
+    (d) => !user.managedDepartments.some((md) => md.id === d.id),
   )
 
   const availableCourses = (allCourses ?? []).filter(
-    (c) => !user.maintained_courses.some((mc) => mc.id === c.id),
+    (c) => !user.maintainedCourses.some((mc) => mc.id === c.id),
   )
 
   const initials = user.name
@@ -123,7 +123,7 @@ function AdminUserDetailPage() {
                   <p className="text-sm text-muted-foreground">{user.email}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Registrato il{" "}
-                    {new Date(user.created_at).toLocaleDateString("it-IT", {
+                    {new Date(user.createdAt).toLocaleDateString("it-IT", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
@@ -186,22 +186,22 @@ function AdminUserDetailPage() {
                   <dt className="text-sm text-muted-foreground">Quiz completati</dt>
                   <dd className="flex items-center gap-2 text-2xl font-bold">
                     <Trophy className="h-5 w-5 text-yellow-500" />
-                    {user.stats.total_quizzes}
+                    {user.stats.totalQuizzes}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-sm text-muted-foreground">Punteggio medio</dt>
                   <dd className="text-2xl font-bold">
-                    {user.stats.average_score != null
-                      ? `${Math.round((user.stats.average_score / 33) * 100)}%`
+                    {user.stats.averageScore != null
+                      ? `${Math.round((user.stats.averageScore / 33) * 100)}%`
                       : "—"}
                   </dd>
                 </div>
                 <div className="col-span-2">
                   <dt className="text-sm text-muted-foreground">Ultimo quiz</dt>
                   <dd className="text-sm">
-                    {user.stats.last_quiz_at
-                      ? new Date(user.stats.last_quiz_at).toLocaleDateString("it-IT", {
+                    {user.stats.lastQuizAt
+                      ? new Date(user.stats.lastQuizAt).toLocaleDateString("it-IT", {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
@@ -231,9 +231,9 @@ function AdminUserDetailPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {user.managed_departments.length > 0 && (
+            {user.managedDepartments.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
-                {user.managed_departments.map((dept) => (
+                {user.managedDepartments.map((dept) => (
                   <Badge key={dept.id} variant="secondary" className="gap-1 rounded-xl pr-1">
                     {dept.name} ({dept.code})
                     <Button
@@ -285,7 +285,7 @@ function AdminUserDetailPage() {
                 </Button>
               </div>
             )}
-            {user.managed_departments.length === 0 && availableDepts.length === 0 && (
+            {user.managedDepartments.length === 0 && availableDepts.length === 0 && (
               <p className="text-sm text-muted-foreground">
                 Nessun dipartimento disponibile.
               </p>
@@ -307,11 +307,11 @@ function AdminUserDetailPage() {
             </p>
           </CardHeader>
           <CardContent>
-            {user.maintained_courses.length > 0 && (
+            {user.maintainedCourses.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
-                {user.maintained_courses.map((course) => (
+                {user.maintainedCourses.map((course) => (
                   <Badge key={course.id} variant="secondary" className="gap-1 rounded-xl pr-1">
-                    {course.name} ({course.department_name})
+                    {course.name} ({course.departmentName})
                     <Button
                       variant="ghost"
                       size="icon"
@@ -361,7 +361,7 @@ function AdminUserDetailPage() {
                 </Button>
               </div>
             )}
-            {user.maintained_courses.length === 0 && availableCourses.length === 0 && (
+            {user.maintainedCourses.length === 0 && availableCourses.length === 0 && (
               <p className="text-sm text-muted-foreground">
                 Nessun corso disponibile.
               </p>
@@ -382,11 +382,11 @@ function AdminUserDetailPage() {
             </p>
           </CardHeader>
           <CardContent>
-            {user.section_accesses.length > 0 && (
+            {user.sectionAccesses.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
-                {user.section_accesses.map((section) => (
+                {user.sectionAccesses.map((section) => (
                   <Badge key={section.id} variant="secondary" className="gap-1 rounded-xl pr-1">
-                    {section.name} ({section.class_name})
+                    {section.name} ({section.className})
                     <Button
                       variant="ghost"
                       size="icon"
@@ -406,7 +406,7 @@ function AdminUserDetailPage() {
             )}
             {(() => {
               const availableSections = (privateSections ?? []).filter(
-                (s) => !user.section_accesses.some((sa) => sa.id === s.id),
+                (s) => !user.sectionAccesses.some((sa) => sa.id === s.id),
               )
               return availableSections.length > 0 ? (
                 <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ function AdminUserDetailPage() {
                     <SelectContent>
                       {availableSections.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
-                          {s.name} ({s.class_name})
+                          {s.name} ({s.className})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -439,7 +439,7 @@ function AdminUserDetailPage() {
                     Aggiungi
                   </Button>
                 </div>
-              ) : user.section_accesses.length === 0 ? (
+              ) : user.sectionAccesses.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Nessuna sezione privata disponibile.
                 </p>

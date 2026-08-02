@@ -1,6 +1,7 @@
 import { eq, inArray } from "drizzle-orm"
 
 import type { DbOrTx } from "@/db"
+import { getDb } from "@/db"
 import {
   classes,
   contentRequests,
@@ -9,7 +10,7 @@ import {
   profiles,
   sections,
 } from "@/db/schema"
-import { maintainedCourseIds } from "@/lib/admin/server/access"
+import { maintainedCourseIds } from "@/lib/admin/access"
 import { requireAdmin } from "@/lib/auth/guards"
 import type { AuthUser } from "@/lib/auth/types"
 import { Forbidden, Invalid, NotFound } from "@/lib/server/errors"
@@ -25,7 +26,7 @@ export async function requireRequestAdmin(): Promise<{
 }> {
   const user = await requireAdmin()
   if (user.role !== "MAINTAINER") return { user, scopeCourseIds: null }
-  return { user, scopeCourseIds: await maintainedCourseIds(user.id) }
+  return { user, scopeCourseIds: await maintainedCourseIds(getDb(), user.id) }
 }
 
 export function isInScope(

@@ -156,7 +156,7 @@ function AdminUsersPage() {
                     <TableHead className="text-center">
                       <SortableHeader
                         label="Quiz"
-                        sortKey="quiz_attempts_count"
+                        sortKey="quizAttemptsCount"
                         sort={sort}
                         onSort={toggleSort}
                       />
@@ -164,7 +164,7 @@ function AdminUsersPage() {
                     <TableHead>
                       <SortableHeader
                         label="Registrato"
-                        sortKey="created_at"
+                        sortKey="createdAt"
                         sort={sort}
                         onSort={toggleSort}
                       />
@@ -213,10 +213,10 @@ function AdminUsersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        {user.quiz_attempts_count}
+                        {user.quizAttemptsCount}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {new Date(user.created_at).toLocaleDateString("it-IT")}
+                        {new Date(user.createdAt).toLocaleDateString("it-IT")}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">

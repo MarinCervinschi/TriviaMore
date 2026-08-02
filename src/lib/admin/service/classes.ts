@@ -12,7 +12,7 @@ import {
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants"
 import { Conflict, NotFound, rethrowUniqueViolation } from "@/lib/server/errors"
 
-import { requireClassAccess, requireStructureManager } from "../server/access"
+import { requireClassAccess, requireStructureManager } from "../access"
 import type {
   ClassInput,
   CourseClassInput,

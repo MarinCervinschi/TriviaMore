@@ -7,11 +7,9 @@ import {
   getAdminCourseDetailFn,
   getAdminDepartmentDetailFn,
   getAdminDepartmentsFn,
+  getAdminPermissionsFn,
   getAdminQuestionDetailFn,
   getAdminSectionDetailFn,
-} from "./api"
-import {
-  getAdminPermissionsFn,
   getAdminStatsFn,
   getAdminUserDetailFn,
   getAdminUserStatsFn,
@@ -21,7 +19,7 @@ import {
   getMyMaintainedCoursesFn,
   getPrivateSectionsFn,
   getSectionAccessUsersFn,
-} from "./server"
+} from "./api"
 
 export const adminQueries = {
   contentTree: () =>

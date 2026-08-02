@@ -15,7 +15,7 @@ import {
   requireContentManagerForClass,
   requireContentManagerForSection,
   requireSectionAccess,
-} from "../server/access"
+} from "../access"
 import type { SectionInput, UpdateSectionInput } from "../schemas"
 import type { AdminSectionDetail } from "../types"
 

@@ -239,3 +239,11 @@ export const maintainerInviteSchema = z.object({
     .min(10, "Il messaggio è troppo corto")
     .max(5000, "Il messaggio non può superare i 5000 caratteri"),
 })
+
+export const sectionIdSchema = sectionAccessSchema.pick({ section_id: true })
+
+export type UserRoleInput = z.infer<typeof userRoleSchema>
+export type DepartmentAdminInput = z.infer<typeof departmentAdminSchema>
+export type CourseMaintainerInput = z.infer<typeof courseMaintainerSchema>
+export type SectionAccessInput = z.infer<typeof sectionAccessSchema>
+export type MaintainerInviteInput = z.infer<typeof maintainerInviteSchema>

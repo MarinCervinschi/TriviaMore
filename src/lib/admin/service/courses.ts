@@ -13,7 +13,7 @@ import { Conflict, NotFound, rethrowUniqueViolation } from "@/lib/server/errors"
 
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants"
 
-import { requireCourseAccess, requireStructureManager } from "../server/access"
+import { requireCourseAccess, requireStructureManager } from "../access"
 import type { CourseInput, UpdateCourseInput } from "../schemas"
 import type { AdminCourseDetail } from "../types"
 

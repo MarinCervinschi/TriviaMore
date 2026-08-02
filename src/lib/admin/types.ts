@@ -2,24 +2,18 @@ import type {
   courseClasses,
   courses,
   departments,
+  profiles,
   questions as questionsTable,
 } from "@/db/schema"
-import type { CatalogTables } from "@/lib/supabase/database.helpers"
-import type { Database } from "@/lib/supabase/database.types"
+import type { UserRole } from "@/lib/auth/types"
 
-// Migrated to Drizzle (#91 F1). `fts` is generated and never leaves the server.
+// `fts` is generated and never leaves the server.
 export type Department = typeof departments.$inferSelect
 export type Course = Omit<typeof courses.$inferSelect, "fts">
 export type CourseClassInfo = Pick<
   typeof courseClasses.$inferSelect,
   "code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
 >
-
-// Still fed by PostgREST until their own batch, hence snake_case.
-export type Class = CatalogTables<"classes">
-export type Section = CatalogTables<"sections">
-export type Question = CatalogTables<"questions">
-export type CourseClassRow = CatalogTables<"course_classes">
 
 export type AdminDepartment = Department & { courseCount: number }
 
@@ -93,34 +87,23 @@ export type AdminQuestionDetail = Omit<AdminQuestion, "sectionId"> & {
   parent: AdminParentChain | null
 }
 
-export type AdminClass = Class & {
-  sections: { count: number }[]
-  course_classes: (CourseClassRow & { course: Course & { department: Department } })[]
-}
-export type AdminSection = Section & {
-  questions: { count: number }[]
-  class: Class
-}
-
-// Content tree for sidebar navigation
+// Content tree for sidebar navigation. Names only: the tree renders labels and
+// child counts, nothing else.
 export type ContentTreeDepartment = {
   id: string
   name: string
-  code: string
   courses: ContentTreeCourse[]
 }
 
 export type ContentTreeCourse = {
   id: string
   name: string
-  code: string
   classes: ContentTreeClass[]
 }
 
 export type ContentTreeClass = {
   id: string
   name: string
-  code: string
   sections: ContentTreeSection[]
 }
 
@@ -140,48 +123,39 @@ export type AdminStats = {
 
 // Admin permissions
 export type AdminPermissions = {
-  role: Database["public"]["Enums"]["role"]
+  role: UserRole
   managedDepartmentIds: string[]
   maintainedCourseIds: string[]
 }
 
 // ─── User Management ───
 
-export type UserRole = Database["public"]["Enums"]["role"]
+export type { UserRole }
 
-export type AdminUser = {
-  id: string
-  name: string | null
-  email: string | null
-  image: string | null
-  role: UserRole
-  created_at: string
-  quiz_attempts_count: number
-}
+type AdminUserBase = Pick<
+  typeof profiles.$inferSelect,
+  "id" | "name" | "email" | "image" | "role" | "createdAt"
+>
 
-export type AdminUserDetail = {
-  id: string
-  name: string | null
-  email: string | null
-  image: string | null
-  role: UserRole
-  created_at: string
-  managed_departments: { id: string; name: string; code: string }[]
-  maintained_courses: {
+export type AdminUser = AdminUserBase & { quizAttemptsCount: number }
+
+export type AdminUserDetail = AdminUserBase & {
+  managedDepartments: { id: string; name: string; code: string }[]
+  maintainedCourses: {
     id: string
     name: string
     code: string
-    department_name: string
+    departmentName: string
   }[]
-  section_accesses: {
+  sectionAccesses: {
     id: string
     name: string
-    class_name: string
+    className: string
   }[]
   stats: {
-    total_quizzes: number
-    average_score: number | null
-    last_quiz_at: string | null
+    totalQuizzes: number
+    averageScore: number | null
+    lastQuizAt: string | null
   }
 }
 

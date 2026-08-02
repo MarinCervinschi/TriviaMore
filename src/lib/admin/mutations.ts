@@ -3,6 +3,9 @@ import { toast } from "sonner"
 
 import {
   addClassToCourseFn,
+  addCourseMaintainerFn,
+  addDepartmentAdminFn,
+  addSectionAccessFn,
   createClassFn,
   createCourseFn,
   createDepartmentFn,
@@ -15,25 +18,20 @@ import {
   deleteDepartmentFn,
   deleteQuestionFn,
   deleteSectionFn,
+  deleteUserFn,
   removeClassFromCourseFn,
+  removeCourseMaintainerFn,
+  removeDepartmentAdminFn,
+  removeSectionAccessFn,
+  sendMaintainerInviteFn,
   updateClassFn,
   updateCourseClassFn,
   updateCourseFn,
   updateDepartmentFn,
   updateQuestionFn,
   updateSectionFn,
-} from "./api"
-import {
-  addCourseMaintainerFn,
-  addDepartmentAdminFn,
-  addSectionAccessFn,
-  deleteUserFn,
-  removeCourseMaintainerFn,
-  removeDepartmentAdminFn,
-  removeSectionAccessFn,
-  sendMaintainerInviteFn,
   updateUserRoleFn,
-} from "./server"
+} from "./api"
 import { useMutationWithToast } from "@/hooks/useMutationWithToast"
 
 
