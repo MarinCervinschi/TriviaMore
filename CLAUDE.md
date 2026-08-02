@@ -27,14 +27,20 @@ directly; the one exception is a Storage upload in `src/components/requests/requ
 src/lib/<domain>/server.ts    server functions (the API surface)
 src/lib/<domain>/types.ts     row types + view models
 src/lib/auth/guards.ts        requireAuth / requireAdmin / requireSuperadmin
+src/lib/auth/checks.ts        section access gate (replaces the can_access_section RLS helper)
 src/lib/admin/server/access.ts  content-scoped authorization (MAINTAINER scoping)
 src/db/                       Drizzle client + schema
 src/routes/                   file-based routes
 ```
 
-An **architectural refactor is in progress** (#87): data access is moving from supabase-js to
-Drizzle, and PostgREST is being closed. Until it lands both paths coexist — check which one a file
-uses before editing. Auth and Storage stay on supabase-js permanently.
+## Refactor in progress — read #87 first
+
+Data access is moving from supabase-js to Drizzle and PostgREST is being closed. Both paths coexist
+until it lands: **check which one a file uses before editing.** Auth and Storage stay on supabase-js
+permanently. Issue #87 holds the plan, the ordering, the decisions behind it and a checkpoint of how
+far it has got; the phase issues hold the detail.
+
+Automated testing is deliberately deferred until the refactor settles — see #109.
 
 ### Roles
 
