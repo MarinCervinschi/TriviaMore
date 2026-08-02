@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { toast } from "sonner"
 
-import { startExamFlashcardFn, startFlashcardFn } from "./server"
+import { startExamFlashcardFn, startFlashcardFn } from "./api"
 
 export function useStartFlashcard(onSuccess?: () => void) {
   const navigate = useNavigate()

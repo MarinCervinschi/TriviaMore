@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { STALE_TIME } from "@/lib/shared/cache"
 
-import { getFlashcardSessionFn } from "./server"
+import { getFlashcardSessionFn } from "./api"
 
 export const flashcardQueries = {
   session: (sessionId: string) =>

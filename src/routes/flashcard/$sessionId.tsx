@@ -14,7 +14,7 @@ import {
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { FlashcardSkeleton } from "@/components/skeletons"
-import { getFlashcardSessionFn } from "@/lib/flashcard/server"
+import { getFlashcardSessionFn } from "@/lib/flashcard/api"
 import type { FlashcardSession } from "@/lib/flashcard/types"
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
