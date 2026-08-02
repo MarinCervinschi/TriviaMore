@@ -13,10 +13,10 @@ export type RequestContext = {
   path: string
   fn?: string
   userId?: string
-  // Accumulated by the pool wrapper in src/db/index.ts and read once by the
-  // canonical line, which is why these are mutable rather than returned.
   dbQueries: number
   dbMs: number
+  authChecks: number
+  authMs: number
   outcome?: string
   errorCode?: string
 }
@@ -29,8 +29,17 @@ export function newTraceId(): string {
   return crypto.randomUUID().replaceAll("-", "")
 }
 
-export function createContext(init: Pick<RequestContext, "source" | "path"> & Partial<RequestContext>): RequestContext {
-  return { traceId: newTraceId(), dbQueries: 0, dbMs: 0, ...init }
+export function createContext(
+  init: Pick<RequestContext, "source" | "path"> & Partial<RequestContext>,
+): RequestContext {
+  return {
+    traceId: newTraceId(),
+    dbQueries: 0,
+    dbMs: 0,
+    authChecks: 0,
+    authMs: 0,
+    ...init,
+  }
 }
 
 export function runWithContext<T>(context: RequestContext, fn: () => T): T {
@@ -44,4 +53,11 @@ export function currentContext(): RequestContext | undefined {
 export function attachUser(userId: string): void {
   const context = storage.getStore()
   if (context) context.userId = userId
+}
+
+export function recordAuthCheck(elapsedMs: number): void {
+  const context = storage.getStore()
+  if (!context) return
+  context.authChecks += 1
+  context.authMs += elapsedMs
 }

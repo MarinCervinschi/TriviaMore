@@ -23,7 +23,10 @@ invokes them directly rather than over HTTP.
 
 Because of that, **a page load produces one `ssr` event, not one per server function it calls.**
 `Source: fn` appears only for calls that cross the network: client-side navigation that misses the
-TanStack Query cache, and mutations.
+TanStack Query cache, and mutations. Clicking around a hydrated app therefore produces `fn` events
+almost exclusively — a hard refresh is what shows an `ssr` line. The server functions a render calls
+are logged individually at Debug (`… ran in …ms during the render`), so the render is not a black
+box when `LOG_LEVEL=debug`.
 
 `RequestServerOptions` declares a `serverFnMeta`, but `createStartHandler` does not pass one on the
 server function branch — a request middleware only ever receives `request`, `pathname` and
@@ -72,7 +75,20 @@ distinct event types.
 | `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) |
 | `ErrorCode` | the AppError code, or the Postgres SQLSTATE |
 | `DbQueries` / `DbMs` | accumulated by the pool wrapper |
+| `AuthChecks` / `AuthMs` | accumulated by the auth guards — see below |
+| `AppMs` | `Elapsed - DbMs - AuthMs`: the part that is our own code |
 | `PoolIdle` / `PoolTotal` | pool state when a query started — see below |
+
+### Where the time actually goes
+
+`supabase.auth.getUser()` validates the JWT against the auth API **over HTTP**, so every
+authenticated call pays a network round trip. Measured on preview: `toggleBookmarkFn` takes ~61 ms
+of which ~2.5 ms is SQL, while `getMaintenanceModeFn` — no middleware, no database — returns in
+0.44 ms. Auth is the dominant cost of an authenticated request by an order of magnitude, and it
+would be invisible without `AuthMs`.
+
+That makes `AppMs` the number to watch: a request that is slow with a low `AppMs` is waiting on
+something else, and optimising our code would achieve nothing.
 
 `Elapsed` on a query event is **checkout plus execution**, the latency the caller actually pays.
 Opening a connection costs a TCP round trip, TLS and a SCRAM exchange, and that lands inside
@@ -192,6 +208,7 @@ grep -rl "async_hooks\|ingest/clef\|SEQ_API_KEY" .output/public   # must print n
 
 ```
 Source = 'fn' and Elapsed > 500              slow endpoints
+AppMs > 100                                  slow because of us, not the database or the auth API
 DbQueries > 20                               an N+1, without having to suspect one first
 @Level = 'Error' and Environment = 'preview' what broke while testing
 @tr = '4bf92f35…'                            everything one request did

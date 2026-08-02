@@ -2,6 +2,7 @@ import { redirect } from "@tanstack/react-router"
 
 import { getDb } from "@/db"
 import { attachUser } from "@/lib/logging/context"
+import { timeAuthCheck } from "@/lib/logging/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 import { findProfile } from "./db/profiles"
@@ -33,7 +34,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser()
+  } = await timeAuthCheck(() => supabase.auth.getUser())
 
   if (error || !user) return null
 
@@ -67,7 +68,7 @@ export async function requireGuest(): Promise<void> {
   const supabase = createServerSupabaseClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await timeAuthCheck(() => supabase.auth.getUser())
 
   if (user) throw redirect({ to: "/user" })
 }
