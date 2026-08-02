@@ -39,7 +39,8 @@ src/lib/catalog/                     cross-domain catalog queries (section chain
 src/lib/auth/guards.ts               requireAuth / requireAdmin / requireSuperadmin
 src/lib/auth/checks.ts               section access gate (replaces the can_access_section RLS helper)
 src/lib/admin/access.ts              content-scoped authorization (MAINTAINER scoping)
-src/start.ts                         global function middleware
+src/lib/logging/                     structured logging to Seq — server only
+src/start.ts                         global request and function middleware
 src/db/                              Drizzle client + schema
 src/routes/                          file-based routes
 ```
@@ -68,6 +69,18 @@ it when adding or moving a server function.**
 `errorMiddleware` is registered globally in `src/start.ts`, so an endpoint only declares what it
 adds: `.middleware([authMiddleware])`. An `AppError` reaches the toast with its own message;
 anything else is logged and replaced, so **a message meant for the user must be an `AppError`**.
+
+## Logging
+
+Structured events go to Seq via `log` from `@/lib/logging/server` — **server only**, it reaches
+`node:async_hooks`. One canonical line per request is emitted automatically; add a call only for
+something that line cannot show. The rules, with the reasoning, are in `docs/OBSERVABILITY.md`:
+
+- **A message template, never interpolation**: `log.info("Imported {Count}", { Count: n })`. Seq
+  indexes properties, so `Count > 100` is a query; an interpolated string is just text.
+- **Never pass a whole object** — `{ user }` is how emails leak. Pass `userId`.
+- **`Forbidden` and `NotFound` are not `Error` level.** They are expected outcomes.
+- **Do not log and rethrow**: `errorMiddleware` already logs once, at the boundary.
 
 ## Data access
 

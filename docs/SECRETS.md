@@ -14,6 +14,9 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app — optional locally |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app — optional locally |
 | `MAINTENANCE_MODE` | Server only | `true` to redirect every route to the Coming Soon page |
+| `SEQ_URL` | Server only | Seq ingestion base URL — **unset means logs go to the console** |
+| `SEQ_API_KEY` | Server only | Seq API key, one per environment — see `docs/OBSERVABILITY.md` |
+| `LOG_LEVEL` | Server only | `debug` \| `info` \| `warn` \| `error` (default `info`) |
 
 `VITE_*` variables are exposed to the browser. Never prefix secret keys with `VITE_`.
 
