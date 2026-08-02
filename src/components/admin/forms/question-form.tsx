@@ -25,7 +25,7 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { parseOptions, type QuestionOption } from "@/lib/quiz/options"
 import { QuestionContentField } from "./question-content-field"
 import { MultipleChoiceOptions } from "./multiple-choice-options"
-import type { Question } from "@/lib/admin/types"
+import type { AdminQuestion } from "@/lib/admin/types"
 
 // Form-level schema (options as {id, text} objects)
 const questionFormSchema = z.object({
@@ -50,7 +50,7 @@ const questionFormSchema = z.object({
 type QuestionFormValues = z.infer<typeof questionFormSchema>
 
 type QuestionFormProps = {
-  question?: Question
+  question?: AdminQuestion
   sectionId: string
   onSubmit: (data: {
     content: string
@@ -88,12 +88,12 @@ export function QuestionForm({
     resolver: standardSchemaResolver(questionFormSchema),
     defaultValues: {
       content: question?.content ?? "",
-      question_type: question?.question_type ?? "MULTIPLE_CHOICE",
+      question_type: question?.questionType ?? "MULTIPLE_CHOICE",
       options: defaultOptions,
-      correct_answer: question?.correct_answer ?? [],
+      correct_answer: question?.correctAnswer ?? [],
       explanation: question?.explanation ?? "",
       difficulty: question?.difficulty ?? "MEDIUM",
-      section_id: question?.section_id ?? sectionId,
+      section_id: question?.sectionId ?? sectionId,
     },
   })
 

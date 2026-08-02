@@ -15,10 +15,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { sectionSchema, type SectionInput } from "@/lib/admin/schemas"
-import type { Section } from "@/lib/admin/types"
+import type { AdminSectionDetail } from "@/lib/admin/types"
 
 type SectionFormProps = {
-  section?: Section
+  section?: Pick<
+    AdminSectionDetail,
+    "name" | "description" | "isPublic" | "classId"
+  >
   classId: string
   onSubmit: (data: SectionInput) => void
   isPending: boolean
@@ -39,8 +42,8 @@ export function SectionForm({
     defaultValues: {
       name: section?.name ?? "",
       description: section?.description ?? "",
-      class_id: section?.class_id ?? classId,
-      is_public: section?.is_public ?? true,
+      class_id: section?.classId ?? classId,
+      is_public: section?.isPublic ?? true,
     },
   })
 

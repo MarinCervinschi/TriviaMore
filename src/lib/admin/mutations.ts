@@ -1,41 +1,41 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { useMutationWithToast } from "@/hooks/useMutationWithToast"
-
-import {
-  createCourseFn,
-  createDepartmentFn,
-  deleteCourseFn,
-  deleteDepartmentFn,
-  updateCourseFn,
-  updateDepartmentFn,
-} from "./api"
 import {
   addClassToCourseFn,
-  addCourseMaintainerFn,
-  addDepartmentAdminFn,
-  addSectionAccessFn,
   createClassFn,
+  createCourseFn,
+  createDepartmentFn,
   createExamSimulationSentinelFn,
   createQuestionFn,
   createQuestionsBulkFn,
   createSectionFn,
   deleteClassFn,
+  deleteCourseFn,
+  deleteDepartmentFn,
   deleteQuestionFn,
   deleteSectionFn,
   removeClassFromCourseFn,
+  updateClassFn,
+  updateCourseClassFn,
+  updateCourseFn,
+  updateDepartmentFn,
+  updateQuestionFn,
+  updateSectionFn,
+} from "./api"
+import {
+  addCourseMaintainerFn,
+  addDepartmentAdminFn,
+  addSectionAccessFn,
+  deleteUserFn,
   removeCourseMaintainerFn,
   removeDepartmentAdminFn,
   removeSectionAccessFn,
   sendMaintainerInviteFn,
-  deleteUserFn,
-  updateClassFn,
-  updateCourseClassFn,
-  updateQuestionFn,
-  updateSectionFn,
   updateUserRoleFn,
 } from "./server"
+import { useMutationWithToast } from "@/hooks/useMutationWithToast"
+
 
 // ─── Departments ───
 

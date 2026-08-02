@@ -2,6 +2,7 @@ import type {
   courseClasses,
   courses,
   departments,
+  questions as questionsTable,
 } from "@/db/schema"
 import type { CatalogTables } from "@/lib/supabase/database.helpers"
 import type { Database } from "@/lib/supabase/database.types"
@@ -35,6 +36,61 @@ export type AdminCourseDetail = Course & {
     cfu: number | null
     sectionCount: number
   })[]
+}
+
+export type AdminClassDetail = {
+  id: string
+  name: string
+  description: string | null
+  cfu: number | null
+  position: number
+  createdAt: string
+  updatedAt: string
+  courseClass: CourseClassInfo | null
+  course: (Course & { department: Department }) | null
+  sections: {
+    id: string
+    name: string
+    description: string | null
+    isPublic: boolean
+    position: number
+    questionCount: number
+  }[]
+  hasExamSimulation: boolean
+}
+
+// Breadcrumb above a section or a question, through the primary course.
+export type AdminParentChain = {
+  classCode: string
+  courseName: string
+  courseCode: string
+  departmentName: string
+  departmentCode: string
+}
+
+export type AdminSectionDetail = {
+  id: string
+  name: string
+  description: string | null
+  isPublic: boolean
+  classId: string
+  position: number
+  slug: string | null
+  createdAt: string
+  updatedAt: string
+  className: string
+  parent: (AdminParentChain & { courseId: string }) | null
+  questions: AdminQuestion[]
+}
+
+export type AdminQuestion = typeof questionsTable.$inferSelect
+
+export type AdminQuestionDetail = Omit<AdminQuestion, "sectionId"> & {
+  sectionId: string
+  sectionName: string
+  classId: string
+  className: string
+  parent: AdminParentChain | null
 }
 
 export type AdminClass = Class & {
