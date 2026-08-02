@@ -1,6 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start"
 
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
+import { attachUser } from "@/lib/logging/context"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { Unauthorized } from "../errors"
 
@@ -19,6 +20,9 @@ async function readSessionUser(): Promise<SessionUser | null> {
   } = await supabase.auth.getUser()
 
   if (error || !user) return null
+  // Only the id: an email on every event would put a personal identifier in
+  // Seq for the whole retention window.
+  attachUser(user.id)
   return { id: user.id, email: user.email ?? null }
 }
 

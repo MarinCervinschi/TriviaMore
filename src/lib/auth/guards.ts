@@ -1,6 +1,7 @@
 import { redirect } from "@tanstack/react-router"
 
 import { getDb } from "@/db"
+import { attachUser } from "@/lib/logging/context"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 import { findProfile } from "./db/profiles"
@@ -35,6 +36,10 @@ export async function getAuthUser(): Promise<AuthUser | null> {
   } = await supabase.auth.getUser()
 
   if (error || !user) return null
+
+  // Only the id: an email on every event would put a personal identifier in
+  // Seq for the whole retention window.
+  attachUser(user.id)
 
   const profile = await findProfile(getDb(), user.id)
   return profile ? toAuthUser(profile) : null
