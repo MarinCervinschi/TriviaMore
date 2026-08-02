@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { websiteJsonLd } from "@/lib/json-ld"
 import { seoHead } from "@/lib/seo"
 import { browseQueries } from "@/lib/browse/queries"
-import { getSessionFn } from "@/lib/auth/server"
+import { getSessionFn } from "@/lib/auth/api"
 
 import {
   BenefitsSection,

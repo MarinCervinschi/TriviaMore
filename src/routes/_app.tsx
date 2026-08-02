@@ -5,7 +5,7 @@ import {
 } from "@/components/landing"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
-import { getSessionFn } from "@/lib/auth/server"
+import { getSessionFn } from "@/lib/auth/api"
 import { Navbar } from "@/components/layout/navbar"
 import { LumaSidebar } from "@/components/layout/luma-sidebar"
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav"

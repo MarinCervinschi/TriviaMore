@@ -72,3 +72,19 @@ export const oauthProviderSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type OAuthProviderInput = z.infer<typeof oauthProviderSchema>
+
+// The OTP types Supabase accepts on a confirmation link. Anything else is a
+// crafted URL, not a mistake.
+export const VERIFY_EMAIL_TYPES = [
+  "signup",
+  "invite",
+  "magiclink",
+  "recovery",
+  "email_change",
+  "email",
+] as const
+
+export const verifyEmailSchema = z.object({
+  token_hash: z.string().min(1),
+  type: z.enum(VERIFY_EMAIL_TYPES),
+})

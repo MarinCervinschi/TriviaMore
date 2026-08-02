@@ -4,10 +4,10 @@ import { AuthCard } from "@/components/auth/auth-card"
 import { OAuthButtons } from "@/components/auth/oauth-buttons"
 import { RegisterForm } from "@/components/auth/register-form"
 import { Separator } from "@/components/ui/separator"
-import { requireGuest } from "@/lib/auth/guards"
+import { requireGuestFn } from "@/lib/auth/api"
 
 export const Route = createFileRoute("/auth/register")({
-  beforeLoad: () => requireGuest(),
+  beforeLoad: () => requireGuestFn(),
   component: RegisterPage,
 })
 

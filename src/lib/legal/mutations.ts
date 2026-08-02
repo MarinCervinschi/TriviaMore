@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { recordLegalAcceptanceFn } from "./server"
+import { recordLegalAcceptanceFn } from "./api"
 import type { AcceptLegalInput } from "./schemas"
 
 export function useAcceptLegal() {
@@ -10,11 +10,7 @@ export function useAcceptLegal() {
   return useMutation({
     mutationFn: (data: AcceptLegalInput) =>
       recordLegalAcceptanceFn({ data }),
-    onSuccess: (result) => {
-      if (!result.success) {
-        toast.error(result.error ?? "Impossibile registrare l'accettazione")
-        return
-      }
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["legal", "acceptance-status"],
       })

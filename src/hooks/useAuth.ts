@@ -5,7 +5,7 @@ import {
   loginFn,
   logoutFn,
   signupFn,
-} from "@/lib/auth/server"
+} from "@/lib/auth/api"
 import type { AuthSession } from "@/lib/auth/types"
 
 export function useAuth() {

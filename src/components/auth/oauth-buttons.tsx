@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { oauthSignInFn } from "@/lib/auth/server"
+import { oauthSignInFn } from "@/lib/auth/api"
 
 function GitHubIcon() {
   return (
