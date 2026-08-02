@@ -65,6 +65,9 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
           ...(context.errorCode ? { ErrorCode: context.errorCode } : {}),
           DbQueries: context.dbQueries,
           DbMs: context.dbMs,
+          AuthChecks: context.authChecks,
+          AuthMs: context.authMs,
+          AppMs: Math.max(0, elapsed - context.dbMs - context.authMs),
         }
 
         // Two templates rather than one, so Seq groups server function calls
@@ -83,9 +86,20 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 export const serverFnObservabilityMiddleware = createMiddleware({ type: "function" }).server(
   async ({ next, serverFnMeta }) => {
     const context = currentContext()
-    if (context?.source === "fn" && !context.fn && serverFnMeta.name) {
-      context.fn = serverFnMeta.name
+
+    if (context?.source === "fn") {
+      if (!context.fn && serverFnMeta.name) context.fn = serverFnMeta.name
+      return next()
     }
-    return next()
+
+    const startedAt = performance.now()
+    try {
+      return await next()
+    } finally {
+      log.debug("{Fn} ran in {Elapsed:0.0}ms during the render", {
+        Fn: serverFnMeta.name || serverFnMeta.id,
+        Elapsed: performance.now() - startedAt,
+      })
+    }
   },
 )
