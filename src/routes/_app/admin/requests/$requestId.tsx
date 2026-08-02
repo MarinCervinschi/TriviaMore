@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/hooks/useAuth"
 import { requestQueries } from "@/lib/requests/queries"
 import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations"
-import { getFileDownloadUrlFn } from "@/lib/requests/server"
+import { getFileDownloadUrlFn } from "@/lib/requests/api"
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -75,8 +75,8 @@ function AdminRequestDetailPage() {
   const isMaintainer = currentUser?.role === "MAINTAINER"
 
   const isPending = request.status === "PENDING"
-  const isReport = request.request_type === "REPORT"
-  const isFileUpload = request.request_type === "FILE_UPLOAD"
+  const isReport = request.requestType === "REPORT"
+  const isFileUpload = request.requestType === "FILE_UPLOAD"
   const isAcknowledgeOnly = isReport || isFileUpload
 
   const submitted = request.submitted
@@ -101,7 +101,7 @@ function AdminRequestDetailPage() {
     <div className="space-y-6 py-2">
       <AdminPageHeader
         title="Dettaglio richiesta"
-        description={request.target_label}
+        description={request.targetLabel}
         backTo="/admin/requests"
         backLabel="Richieste"
         actions={
@@ -134,18 +134,18 @@ function AdminRequestDetailPage() {
       <div className="space-y-4 rounded-2xl border bg-card p-6">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <RequestTypeBadge type={request.request_type} />
+            <RequestTypeBadge type={request.requestType} />
             <RequestStatusBadge status={request.status} />
           </div>
-          {request.handled_at && (
+          {request.handledAt && (
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <CheckCircle2 className="size-3.5 shrink-0" strokeWidth={1.5} />
               <span>
                 Gestita da{" "}
                 <span className="font-medium text-foreground">
-                  {request.handledBy?.name ?? "Team"}
+                  {request.handledByUser?.name ?? "Team"}
                 </span>{" "}
-                · {formatDateTime(request.handled_at)}
+                · {formatDateTime(request.handledAt)}
               </span>
             </p>
           )}
@@ -174,7 +174,7 @@ function AdminRequestDetailPage() {
                 )}
                 <p className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground">
                   <Clock className="size-3 shrink-0" strokeWidth={1.5} />
-                  <span>Inviata {formatDateTime(request.created_at)}</span>
+                  <span>Inviata {formatDateTime(request.createdAt)}</span>
                 </p>
               </div>
             </div>
@@ -192,12 +192,12 @@ function AdminRequestDetailPage() {
           </div>
         )}
 
-        {request.admin_note && (
+        {request.adminNote && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
             <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
               Risposta inviata all&apos;utente
             </p>
-            <p className="mt-1 text-sm">{request.admin_note}</p>
+            <p className="mt-1 text-sm">{request.adminNote}</p>
           </div>
         )}
       </div>
@@ -245,7 +245,7 @@ function AdminRequestDetailPage() {
         </div>
         <MaterialPreview
           submitted={submitted}
-          reportedQuestion={request.reported_question ?? null}
+          reportedQuestion={request.reportedQuestion ?? null}
         />
       </section>
 
@@ -436,7 +436,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
     <div className="space-y-3 rounded-2xl border bg-card p-5">
       <div className="flex items-center justify-end gap-1.5">
         <Badge variant="outline" className="rounded-full text-[10px]">
-          {typeLabels[question.question_type]}
+          {typeLabels[question.questionType]}
         </Badge>
         <Badge variant="outline" className={cn("rounded-full text-[10px]", diffColors[question.difficulty])}>
           {diffLabels[question.difficulty]}
@@ -455,7 +455,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
         <CollapsibleContent className="space-y-1.5 pt-2">
           {options.length > 0 ? (
             options.map((option, oi) => {
-              const isCorrect = isCorrectOption(option.id, question.correct_answer)
+              const isCorrect = isCorrectOption(option.id, question.correctAnswer)
               return (
                 <div
                   key={oi}
@@ -479,7 +479,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
           ) : (
             <div className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
               <span className="font-medium">Risposta corretta: </span>
-              {question.correct_answer.join(", ")}
+              {question.correctAnswer.join(", ")}
             </div>
           )}
 

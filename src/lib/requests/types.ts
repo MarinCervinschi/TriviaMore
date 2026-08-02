@@ -1,10 +1,19 @@
-import type { Tables } from "@/lib/supabase/database.types"
+import type { contentRequests } from "@/db/schema"
 
-export type ContentRequest = Tables<"content_requests">
-export type ContentRequestType = ContentRequest["request_type"]
+// `submittedContent` is dropped from the wire shape: it is jsonb, so its type is
+// `unknown`, and every consumer reads the validated `submitted` instead.
+export type ContentRequest = Omit<
+  typeof contentRequests.$inferSelect,
+  "submittedContent"
+>
+export type ContentRequestType = ContentRequest["requestType"]
 export type ContentRequestStatus = ContentRequest["status"]
 
-// Typed submitted content structures
+// The shapes below are **stored inside the submitted_content jsonb**, so their
+// keys are a serialization contract with rows already in the database, not a row
+// type. They stay snake_case on purpose: renaming a key here would orphan every
+// request already submitted.
+
 export type SubmittedSection = {
   type: "section"
   name: string
@@ -33,16 +42,6 @@ export type SubmittedReport = {
   comment: string | null
 }
 
-export type ReportedQuestion = {
-  id: string
-  content: string
-  question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-  options: string[] | null
-  correct_answer: string[]
-  explanation: string | null
-  difficulty: "EASY" | "MEDIUM" | "HARD"
-}
-
 export type SubmittedFileUpload = {
   type: "file_upload"
   file_name: string
@@ -51,13 +50,27 @@ export type SubmittedFileUpload = {
   comment: string | null
 }
 
-export type SubmittedContent = SubmittedSection | SubmittedQuestions | SubmittedReport | SubmittedFileUpload
+export type SubmittedContent =
+  | SubmittedSection
+  | SubmittedQuestions
+  | SubmittedReport
+  | SubmittedFileUpload
 
-// Request with target breadcrumb for list views
+export type ReportedQuestion = {
+  id: string
+  content: string
+  questionType: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
+  options: string[] | null
+  correctAnswer: string[]
+  explanation: string | null
+  difficulty: "EASY" | "MEDIUM" | "HARD"
+}
+
+// Request with the target breadcrumb that list views show.
 export type ContentRequestWithMeta = ContentRequest & {
-  target_label: string
+  targetLabel: string
   submitted: SubmittedContent
-  reported_question?: ReportedQuestion | null
+  reportedQuestion?: ReportedQuestion | null
 }
 
 export type RequestUser = {
@@ -67,16 +80,14 @@ export type RequestUser = {
   image: string | null
 }
 
-// Admin list view includes the author's profile and, when handled, the
-// profile of the admin who handled it
 export type AdminContentRequest = ContentRequestWithMeta & {
   user: RequestUser
-  handledBy: RequestUser | null
+  handledByUser: RequestUser | null
 }
 
-// Admin detail view: user/handledBy are null when the owner views their own
-// request; handledBy is also null until the request has been handled
+// Detail view: `user` is null when the owner views their own request, and
+// `handledByUser` stays null until someone handles it.
 export type ContentRequestDetail = ContentRequestWithMeta & {
   user: RequestUser | null
-  handledBy: RequestUser | null
+  handledByUser: RequestUser | null
 }

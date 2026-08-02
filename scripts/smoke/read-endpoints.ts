@@ -31,6 +31,8 @@ import {
   getUnreadCount,
 } from "../../src/lib/notifications/service.ts"
 import { getQuiz, getQuizResults } from "../../src/lib/quiz/service.ts"
+import { getContentTree } from "../../src/lib/requests/service/content-tree.ts"
+import { getUserRequests } from "../../src/lib/requests/service/user-requests.ts"
 import { buildSitemap } from "../../src/lib/sitemap/service.ts"
 import {
   getBookmarkedQuestionIds,
@@ -204,6 +206,8 @@ if (userId) {
   await check("user.isClassSaved", () =>
     isClassSaved(userId, "00000000-0000-0000-0000-000000000000"),
   )
+  await check("requests.getUserRequests", () => getUserRequests(userId))
+  await check("requests.getContentTree", () => getContentTree(userId))
   await check("notifications.getNotifications", () => getNotifications(userId))
   await check("notifications.getUnreadCount", () => getUnreadCount(userId))
   await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId))

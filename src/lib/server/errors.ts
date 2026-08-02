@@ -7,6 +7,7 @@ export type AppErrorCode =
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "CONFLICT"
+  | "INVALID"
 
 export class AppError extends Error {
   readonly code: AppErrorCode
@@ -39,5 +40,13 @@ export class NotFound extends AppError {
 export class Conflict extends AppError {
   constructor(message: string) {
     super("CONFLICT", message)
+  }
+}
+
+// Input that passed validation at the edge but is not usable — a stored jsonb
+// payload that no longer matches its schema, for instance.
+export class Invalid extends AppError {
+  constructor(message: string) {
+    super("INVALID", message)
   }
 }
