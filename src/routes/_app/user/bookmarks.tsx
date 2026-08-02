@@ -73,11 +73,11 @@ function BookmarksPage() {
             animate="visible"
           >
             {bookmarks.map((bookmark) => (
-              <motion.div key={bookmark.question_id} variants={item}>
+              <motion.div key={bookmark.questionId} variants={item}>
                 <BookmarkCard
                   bookmark={bookmark}
                   onRemoveBookmark={() =>
-                    toggleBookmark.mutate(bookmark.question_id)
+                    toggleBookmark.mutate(bookmark.questionId)
                   }
                 />
               </motion.div>
@@ -117,7 +117,7 @@ function BookmarkCard({
             {getDifficultyLabel(bookmark.difficulty)}
           </Badge>
           <Badge variant="outline" className="rounded-full">
-            {getQuestionTypeLabel(bookmark.question_type)}
+            {getQuestionTypeLabel(bookmark.questionType)}
           </Badge>
           <ChevronDown
             className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -132,22 +132,22 @@ function BookmarkCard({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1">
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {bookmark.section_name}
+                {bookmark.sectionName}
               </span>
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {bookmark.class_name}
+                {bookmark.className}
               </span>
               <span className="rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                {bookmark.course_name}
+                {bookmark.courseName}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">
                 Salvato il{" "}
-                {new Date(bookmark.created_at).toLocaleDateString("it-IT")}
+                {new Date(bookmark.createdAt).toLocaleDateString("it-IT")}
               </span>
               <ReportButton
-                questionId={bookmark.question_id}
+                questionId={bookmark.questionId}
                 questionContent={bookmark.content}
               />
               <Button
@@ -172,7 +172,7 @@ function BookmarkCard({
                 <li
                   key={option.id}
                   className={`rounded-xl p-3 text-sm ${
-                    isCorrectOption(option.id, bookmark.correct_answer)
+                    isCorrectOption(option.id, bookmark.correctAnswer)
                       ? "bg-green-500/10 text-green-700 dark:text-green-400"
                       : "bg-muted/30"
                   }`}
@@ -184,7 +184,7 @@ function BookmarkCard({
                     content={option.text}
                     inline
                   />
-                  {isCorrectOption(option.id, bookmark.correct_answer) && (
+                  {isCorrectOption(option.id, bookmark.correctAnswer) && (
                     <span className="ml-2 text-xs font-medium">
                       &#10003; Corretta
                     </span>
@@ -195,7 +195,7 @@ function BookmarkCard({
           )}
 
           {/* Short answer */}
-          {bookmark.question_type === "SHORT_ANSWER" && (
+          {bookmark.questionType === "SHORT_ANSWER" && (
             <div className="rounded-xl bg-green-500/10 p-4">
               <p className="mb-1 text-xs font-semibold text-green-600 dark:text-green-400">
                 Risposta corretta
@@ -203,7 +203,7 @@ function BookmarkCard({
               <div className="text-sm text-green-700 dark:text-green-300">
                 <MarkdownRenderer
                   content={
-                    bookmark.correct_answer[0] ??
+                    bookmark.correctAnswer[0] ??
                     "Nessuna risposta disponibile"
                   }
                   className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"

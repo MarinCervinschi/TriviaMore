@@ -116,38 +116,38 @@ export function ProgressDetails({
               className="group transition-colors hover:bg-muted/30"
             >
               <td className="min-w-[14rem] py-3 pl-6 pr-3 align-top font-medium">
-                {record.section_name}
+                {record.sectionName}
               </td>
               <td className="min-w-[12rem] px-4 py-3 align-top text-center text-sm text-muted-foreground">
-                {record.class_name}
+                {record.className}
               </td>
               <td className="px-4 py-3 text-center">
                 <Badge
                   variant={
-                    record.quiz_mode === "STUDY"
+                    record.quizMode === "STUDY"
                       ? "default"
                       : "secondary"
                   }
                   className="rounded-full"
                 >
-                  {record.quiz_mode === "STUDY" ? "Studio" : "Esame"}
+                  {record.quizMode === "STUDY" ? "Studio" : "Esame"}
                 </Badge>
               </td>
               <td className="px-4 py-3 text-center font-medium">
-                {record.quizzes_taken}
+                {record.quizzesTaken}
               </td>
               <td
-                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.average_score ?? 0)}`}
+                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.averageScore ?? 0)}`}
               >
-                {formatThirtyScaleGrade(record.average_score ?? 0)}
+                {formatThirtyScaleGrade(record.averageScore ?? 0)}
               </td>
               <td
-                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.best_score ?? 0)}`}
+                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.bestScore ?? 0)}`}
               >
-                {formatThirtyScaleGrade(record.best_score ?? 0)}
+                {formatThirtyScaleGrade(record.bestScore ?? 0)}
               </td>
               <td className="px-4 py-3 pr-6 text-center text-sm text-muted-foreground">
-                {formatTimeSpent(record.total_time_spent)}
+                {formatTimeSpent(record.totalTimeSpent)}
               </td>
               {/* Empty cell for arrow column from BrowseTable */}
               <td />

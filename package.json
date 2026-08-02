@@ -23,6 +23,7 @@
     "db:check": "infisical run --recursive -- drizzle-kit check",
     "db:types": "infisical run --recursive -- supabase gen types typescript --local > src/lib/supabase/database.types.ts && pnpm tsx supabase/scripts/fix-types.ts",
     "mcp:questions": "tsx scripts/mcp/questions-server.ts",
+    "diff:user-views": "infisical run --recursive -- tsx scripts/diff/user-detail-views.ts",
     "diff:notifications": "infisical run --recursive -- tsx scripts/diff/notification-recipients.ts",
     "smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
     "smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts"

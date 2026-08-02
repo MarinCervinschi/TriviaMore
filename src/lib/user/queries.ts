@@ -10,7 +10,7 @@ import {
   getUserProfileFn,
   getUserProgressFn,
   isClassSavedFn,
-} from "./server"
+} from "./api"
 
 export const userQueries = {
   profile: () =>

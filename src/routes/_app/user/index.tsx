@@ -81,7 +81,7 @@ function DashboardPage() {
                 <Calendar className="h-4 w-4 shrink-0" />
                 <span className="text-sm">
                   Membro dal{" "}
-                  {new Date(profile.created_at).toLocaleDateString("it-IT")}
+                  {new Date(profile.createdAt).toLocaleDateString("it-IT")}
                 </span>
               </div>
             </div>
@@ -94,28 +94,28 @@ function DashboardPage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <UserStatsCard
             label="Quiz Completati"
-            value={profile.stats.total_quizzes}
+            value={profile.stats.totalQuizzes}
             icon={Trophy}
             iconColor="text-yellow-500"
             iconBg="yellow"
           />
           <UserStatsCard
             label="Punteggio Medio"
-            value={`${profile.stats.average_score}/33`}
+            value={`${profile.stats.averageScore}/33`}
             icon={TrendingUp}
             iconColor="text-green-500"
             iconBg="green"
           />
           <UserStatsCard
             label="Corsi Seguiti"
-            value={profile.stats.user_classes_count}
+            value={profile.stats.userClassesCount}
             icon={GraduationCap}
             iconColor="text-blue-500"
             iconBg="blue"
           />
           <UserStatsCard
             label="Segnalibri"
-            value={profile.stats.bookmarks_count}
+            value={profile.stats.bookmarksCount}
             icon={BookmarkIcon}
             iconColor="text-purple-500"
             iconBg="purple"
@@ -155,13 +155,13 @@ function DashboardPage() {
         </div>
 
         {/* Recent Classes */}
-        {profile.recent_classes.length > 0 && (
-          <RecentClassesSection classes={profile.recent_classes} />
+        {profile.recentClasses.length > 0 && (
+          <RecentClassesSection classes={profile.recentClasses} />
         )}
 
         {/* Recent Activity */}
-        {profile.recent_quiz_attempts.length > 0 && (
-          <RecentActivitySection attempts={profile.recent_quiz_attempts} />
+        {profile.recentQuizAttempts.length > 0 && (
+          <RecentActivitySection attempts={profile.recentQuizAttempts} />
         )}
       </div>
     </div>
@@ -267,48 +267,48 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 
       <BrowseTable headers={["Corso", "Dipartimento", "Tipo", "Anno"]}>
         {classes.map((item) => (
-          <tr key={item.class_id} className="group">
+          <tr key={item.classId} className="group">
             <td className="min-w-[16rem] py-4 pl-6 pr-3 align-top">
               <Link
                 to="/browse/$department/$course/$class"
                 params={{
-                  department: item.department_code.toLowerCase(),
-                  course: item.course_code.toLowerCase(),
-                  class: (item.class_code ?? "").toLowerCase(),
+                  department: item.departmentCode.toLowerCase(),
+                  course: item.courseCode.toLowerCase(),
+                  class: (item.classCode ?? "").toLowerCase(),
                 }}
                 className="block"
               >
                 <span className="block font-medium text-foreground transition-colors group-hover:text-primary">
-                  {item.class_name}
+                  {item.className}
                 </span>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {item.course_name}
+                  {item.courseName}
                 </p>
               </Link>
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-center">
               <Badge variant="outline" className="text-xs">
-                {item.department_code}
+                {item.departmentCode}
               </Badge>
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-center">
-              <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[item.course_type]?.className ?? ""}`}>
-                {COURSE_TYPE_CONFIG[item.course_type]?.label ?? item.course_type}
+              <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[item.courseType]?.className ?? ""}`}>
+                {COURSE_TYPE_CONFIG[item.courseType]?.label ?? item.courseType}
               </Badge>
             </td>
             <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-              {item.class_year}
+              {item.classYear}
             </td>
             <td className="pr-6 py-4">
               <Link
                 to="/browse/$department/$course/$class"
                 params={{
-                  department: item.department_code.toLowerCase(),
-                  course: item.course_code.toLowerCase(),
-                  class: (item.class_code ?? "").toLowerCase(),
+                  department: item.departmentCode.toLowerCase(),
+                  course: item.courseCode.toLowerCase(),
+                  class: (item.classCode ?? "").toLowerCase(),
                 }}
                 className="inline-flex"
-                aria-label={`Apri ${item.class_name}`}
+                aria-label={`Apri ${item.className}`}
               >
                 <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
               </Link>
@@ -352,9 +352,9 @@ function RecentActivitySection({
                 <Trophy className="h-4 w-4 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-medium">{attempt.section_name}</p>
+                <p className="font-medium">{attempt.sectionName}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Insegnamento: {attempt.class_name}
+                  Insegnamento: {attempt.className}
                 </p>
               </div>
             </div>
@@ -364,7 +364,7 @@ function RecentActivitySection({
                   {attempt.score}/33
                 </Badge>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {new Date(attempt.completed_at).toLocaleDateString("it-IT")}
+                  {new Date(attempt.completedAt).toLocaleDateString("it-IT")}
                 </p>
               </div>
               <Button asChild variant="outline" size="sm" className="rounded-xl">

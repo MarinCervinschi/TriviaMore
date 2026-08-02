@@ -1,4 +1,4 @@
-import { and, count, eq, isNull, sql } from "drizzle-orm"
+import { and, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm"
 
 import type { DbOrTx } from "@/db"
 import {
@@ -9,6 +9,7 @@ import {
   sections,
 } from "@/db/schema"
 import { primaryCourseByClass } from "@/lib/catalog/db/course-classes"
+import { sectionLocation } from "@/lib/catalog/db/section-location"
 
 export async function insertAttempt(
   db: DbOrTx,
@@ -121,6 +122,44 @@ export async function findAnswers(db: DbOrTx, attemptId: string) {
     })
     .from(answerAttempts)
     .where(eq(answerAttempts.quizAttemptId, attemptId))
+}
+
+// The user dashboard's "recent activity". Lives here because it reads quiz
+// tables, even though the user domain is what renders it.
+export async function findRecentCompletedAttempts(
+  db: DbOrTx,
+  userId: string,
+  limit: number,
+) {
+  const { primaryCourse, columns } = sectionLocation(db)
+
+  return db
+    .select({
+      ...columns,
+      id: quizAttempts.id,
+      score: quizAttempts.score,
+      completedAt: quizAttempts.completedAt,
+    })
+    .from(quizAttempts)
+    .innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+    .innerJoin(sections, eq(sections.id, quizzes.sectionId))
+    .innerJoin(classes, eq(classes.id, sections.classId))
+    .leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
+    .where(
+      and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)),
+    )
+    .orderBy(desc(quizAttempts.completedAt))
+    .limit(limit)
+}
+
+export async function countCompletedAttempts(db: DbOrTx, userId: string) {
+  const [row] = await db
+    .select({ value: count() })
+    .from(quizAttempts)
+    .where(
+      and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)),
+    )
+  return row?.value ?? 0
 }
 
 // Replaces the quiz.quiz_attempts_detail view, and carries the codes the

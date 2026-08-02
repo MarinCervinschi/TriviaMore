@@ -8,7 +8,7 @@ import {
   removeUserClassFn,
   toggleBookmarkFn,
   updateProfileFn,
-} from "./server"
+} from "./api"
 
 const CLASS_INVALIDATE_KEYS = [["user", "classes"], ["user", "class-saved"], ["user", "profile"]]
 

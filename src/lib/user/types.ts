@@ -1,113 +1,91 @@
-import type { Tables } from "@/lib/supabase/database.types"
+import type { profiles, progress, questions } from "@/db/schema"
 
-// Base table types
-type Profile = Tables<"profiles">
+type Profile = typeof profiles.$inferSelect
+type QuestionRow = typeof questions.$inferSelect
 
-// User profile with aggregated stats
 export type UserProfile = Profile & {
   stats: UserStats
-  recent_classes: RecentClass[]
-  recent_quiz_attempts: RecentQuizAttempt[]
+  recentClasses: RecentClass[]
+  recentQuizAttempts: RecentQuizAttempt[]
 }
 
 export type UserStats = {
-  quiz_attempts_count: number
-  user_classes_count: number
-  bookmarks_count: number
-  total_quizzes: number
-  average_score: number
+  quizAttemptsCount: number
+  userClassesCount: number
+  bookmarksCount: number
+  totalQuizzes: number
+  averageScore: number
 }
 
-// User saved classes (from user_classes_detail view)
-export type UserClass = {
-  created_at: string
-  class_id: string
-  class_name: string
-  class_code: string | null
-  class_year: number | null
+// A class as it appears in a user's own lists: the class itself, the junction
+// fields for the course they saved it under, and that course's department.
+type EnrolledClass = {
+  classId: string
+  className: string
+  classCode: string | null
+  classYear: number | null
   mandatory: boolean | null
-  catalogue_url: string | null
+  catalogueUrl: string | null
   curriculum: string | null
-  course_id: string
-  course_name: string
-  course_code: string
-  course_type: string
-  department_id: string
-  department_name: string
-  department_code: string
+  courseId: string
+  courseName: string
+  courseCode: string
+  courseType: string
+  departmentId: string
+  departmentName: string
+  departmentCode: string
 }
 
-// User bookmarks (from bookmarks_detail view)
-export type UserBookmark = {
-  question_id: string
-  created_at: string
-  content: string
-  question_type: string
-  options: string[] | null
-  correct_answer: string[]
-  explanation: string | null
-  difficulty: string
-  section_id: string
-  section_name: string
-  class_id: string
-  class_name: string
-  course_id: string
-  course_name: string
-  department_id: string
-  department_name: string
+export type UserClass = EnrolledClass & {
+  createdAt: string
 }
 
-// Recently visited class (from user_recent_classes_detail view)
-export type RecentClass = {
-  last_visited: string
-  visit_count: number
-  class_id: string
-  class_name: string
-  class_code: string | null
-  class_year: number | null
-  mandatory: boolean | null
-  catalogue_url: string | null
-  curriculum: string | null
-  course_id: string
-  course_name: string
-  course_code: string
-  course_type: string
-  department_id: string
-  department_name: string
-  department_code: string
+export type RecentClass = EnrolledClass & {
+  lastVisited: string
+  visitCount: number
 }
 
-// Recent quiz attempt for dashboard (from quiz_attempts_detail view)
-export type RecentQuizAttempt = {
+// Where a section sits in the catalog, resolved through the primary course of
+// its class.
+type SectionLocation = {
+  sectionId: string
+  sectionName: string
+  classId: string
+  className: string
+  courseId: string | null
+  courseName: string | null
+  departmentId: string | null
+  departmentName: string | null
+}
+
+export type UserBookmark = SectionLocation &
+  Pick<
+    QuestionRow,
+    | "content"
+    | "questionType"
+    | "options"
+    | "correctAnswer"
+    | "explanation"
+    | "difficulty"
+  > & {
+    questionId: string
+    createdAt: string
+  }
+
+export type RecentQuizAttempt = SectionLocation & {
   id: string
   score: number
-  completed_at: string
-  section_id: string
-  section_name: string
-  class_id: string
-  class_name: string
-  course_id: string
-  course_name: string
-  department_id: string
-  department_name: string
+  completedAt: string
 }
 
-// Progress record (from progress_detail view)
-export type UserProgress = {
-  id: string
-  quiz_mode: "STUDY" | "EXAM_SIMULATION"
-  quizzes_taken: number
-  average_score: number | null
-  best_score: number | null
-  total_time_spent: number
-  last_accessed_at: string
-  section_id: string
-  section_name: string
-  class_id: string
-  class_name: string
-  course_id: string
-  course_name: string
-  department_id: string
-  department_name: string
-}
-
+export type UserProgress = SectionLocation &
+  Pick<
+    typeof progress.$inferSelect,
+    | "id"
+    | "quizMode"
+    | "quizzesTaken"
+    | "averageScore"
+    | "bestScore"
+    | "totalTimeSpent"
+    | "lastAccessedAt"
+  >

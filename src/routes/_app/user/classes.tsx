@@ -50,14 +50,14 @@ function ClassesPage() {
 
   const departments = useMemo(() => {
     const depts = [
-      ...new Set(userClasses.map((uc) => uc.department_code)),
+      ...new Set(userClasses.map((uc) => uc.departmentCode)),
     ]
     return depts.sort()
   }, [userClasses])
 
   const courseTypes = useMemo(() => {
     const types = [
-      ...new Set(userClasses.map((uc) => uc.course_type)),
+      ...new Set(userClasses.map((uc) => uc.courseType)),
     ]
     return types.sort()
   }, [userClasses])
@@ -67,18 +67,18 @@ function ClassesPage() {
       const search = searchTerm.toLowerCase()
       const matchesSearch =
         !search ||
-        uc.class_name.toLowerCase().includes(search) ||
-        uc.course_name.toLowerCase().includes(search) ||
-        uc.department_code.toLowerCase().includes(search) ||
-        (uc.class_code ?? "").toLowerCase().includes(search)
+        uc.className.toLowerCase().includes(search) ||
+        uc.courseName.toLowerCase().includes(search) ||
+        uc.departmentCode.toLowerCase().includes(search) ||
+        (uc.classCode ?? "").toLowerCase().includes(search)
 
       const matchesDept =
         selectedDepartment === "all" ||
-        uc.department_code === selectedDepartment
+        uc.departmentCode === selectedDepartment
 
       const matchesType =
         selectedCourseType === "all" ||
-        uc.course_type === selectedCourseType
+        uc.courseType === selectedCourseType
 
       return matchesSearch && matchesDept && matchesType
     })
@@ -86,17 +86,17 @@ function ClassesPage() {
     result.sort((a, b) => {
       switch (sortBy) {
         case "name":
-          return a.class_name.localeCompare(b.class_name)
+          return a.className.localeCompare(b.className)
         case "department":
-          return a.department_code.localeCompare(
-            b.department_code,
+          return a.departmentCode.localeCompare(
+            b.departmentCode,
           )
         case "year":
-          return (a.class_year ?? 0) - (b.class_year ?? 0)
+          return (a.classYear ?? 0) - (b.classYear ?? 0)
         case "dateAdded":
           return (
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime()
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
           )
         default:
           return 0
@@ -245,42 +245,42 @@ function ClassesPage() {
             headers={["Corso", "Dipartimento", "Tipo", "Anno", "Aggiunto", ""]}
           >
             {paged.map((userClass) => (
-              <tr key={userClass.class_id} className="group">
+              <tr key={userClass.classId} className="group">
                 <td className="min-w-[16rem] py-4 pl-6 pr-3 align-top">
                   <Link
                     to="/browse/$department/$course/$class"
                     params={{
                       department:
-                        userClass.department_code.toLowerCase(),
-                      course: userClass.course_code,
-                      class: (userClass.class_code ?? "").toLowerCase(),
+                        userClass.departmentCode.toLowerCase(),
+                      course: userClass.courseCode,
+                      class: (userClass.classCode ?? "").toLowerCase(),
                     }}
                     className="block"
                   >
                     <span className="block font-medium text-foreground transition-colors group-hover:text-primary">
-                      {userClass.class_name}
+                      {userClass.className}
                     </span>
                     <p className="mt-0.5 text-xs text-muted-foreground">
-                      {userClass.course_name} &bull;{" "}
-                      {userClass.class_code}
+                      {userClass.courseName} &bull;{" "}
+                      {userClass.classCode}
                     </p>
                   </Link>
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center">
                   <Badge variant="outline" className="text-xs">
-                    {userClass.department_code}
+                    {userClass.departmentCode}
                   </Badge>
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center">
-                  <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[userClass.course_type]?.className ?? ""}`}>
-                    {COURSE_TYPE_CONFIG[userClass.course_type]?.label ?? userClass.course_type}
+                  <Badge className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[userClass.courseType]?.className ?? ""}`}>
+                    {COURSE_TYPE_CONFIG[userClass.courseType]?.label ?? userClass.courseType}
                   </Badge>
                 </td>
                 <td className="px-4 py-4 text-center text-sm text-muted-foreground">
-                  {userClass.class_year}
+                  {userClass.classYear}
                 </td>
                 <td className="px-4 py-4 text-center text-xs text-muted-foreground">
-                  {new Date(userClass.created_at).toLocaleDateString("it-IT")}
+                  {new Date(userClass.createdAt).toLocaleDateString("it-IT")}
                 </td>
                 <td className="px-4 py-4 text-center">
                   <Button
@@ -288,7 +288,7 @@ function ClassesPage() {
                     size="sm"
                     onClick={(e) => {
                       e.preventDefault()
-                      removeClass.mutate(userClass.class_id)
+                      removeClass.mutate(userClass.classId)
                     }}
                     disabled={removeClass.isPending}
                     className="h-8 w-8 rounded-lg p-0 text-muted-foreground hover:text-destructive"
@@ -301,12 +301,12 @@ function ClassesPage() {
                   <Link
                     to="/browse/$department/$course/$class"
                     params={{
-                      department: userClass.department_code.toLowerCase(),
-                      course: userClass.course_code,
-                      class: (userClass.class_code ?? "").toLowerCase(),
+                      department: userClass.departmentCode.toLowerCase(),
+                      course: userClass.courseCode,
+                      class: (userClass.classCode ?? "").toLowerCase(),
                     }}
                     className="inline-flex"
-                    aria-label={`Apri ${userClass.class_name}`}
+                    aria-label={`Apri ${userClass.className}`}
                   >
                     <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                   </Link>
