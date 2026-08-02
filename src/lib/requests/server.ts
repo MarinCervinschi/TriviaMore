@@ -2,8 +2,9 @@ import { createServerFn } from "@tanstack/react-start"
 import { redirect } from "@tanstack/react-router"
 
 import { requireAdmin } from "@/lib/auth/guards"
+import { getDb } from "@/db"
 import { maintainedCourseIds } from "@/lib/admin/server/access"
-import { createNotification, notifyAdminsInScope } from "@/lib/notifications/helpers"
+import { createNotification, notifyAdminsInScope } from "@/lib/notifications/service"
 import { getSupabaseAdmin, getCatalogAdmin } from "@/lib/supabase/admin"
 import { createServerSupabaseClient, catalogQuery } from "@/lib/supabase/server"
 import type { AuthUser } from "@/lib/auth/types"
@@ -276,13 +277,13 @@ export const createRequestFn = createServerFn({ method: "POST" })
     if (error) throw new Error("Errore nell'invio della proposta")
 
     // Notify admins in scope
-    await notifyAdminsInScope(getSupabaseAdmin(), {
+    await notifyAdminsInScope(getDb(), {
       id,
       title: generateTitle(submitted),
-      target_department_id: targetDeptId,
-      target_course_id: targetCourseId,
-      target_class_id: targetClassId,
-      target_section_id: targetSectionId,
+      departmentId: targetDeptId,
+      courseId: targetCourseId,
+      classId: targetClassId,
+      sectionId: targetSectionId,
     })
 
     return { id }
@@ -324,7 +325,7 @@ export const reviseRequestFn = createServerFn({ method: "POST" })
     if (error) throw new Error("Errore nell'aggiornamento della proposta")
 
     if (existing.handled_by) {
-      await createNotification(admin, {
+      await createNotification(getDb(), {
         userId: existing.handled_by,
         type: "REQUEST_REVISED",
         title: "Proposta aggiornata",
@@ -610,7 +611,7 @@ export const handleRequestFn = createServerFn({ method: "POST" })
         ? ("REQUEST_NEEDS_REVISION" as const)
         : ("REQUEST_STATUS_CHANGED" as const)
 
-    await createNotification(getSupabaseAdmin(), {
+    await createNotification(getDb(), {
       userId: request.user_id,
       type: notificationType,
       title: `Proposta ${statusLabels[data.status]}`,
@@ -718,7 +719,7 @@ export const approveRequestFn = createServerFn({ method: "POST" })
     }
 
     // Notify the user
-    await createNotification(getSupabaseAdmin(), {
+    await createNotification(getDb(), {
       userId: request.user_id,
       type: "REQUEST_STATUS_CHANGED",
       title: "Proposta approvata!",
@@ -763,7 +764,7 @@ export const acknowledgeRequestFn = createServerFn({ method: "POST" })
       FILE_UPLOAD: "Contributo preso in carico",
     }
 
-    await createNotification(getSupabaseAdmin(), {
+    await createNotification(getDb(), {
       userId: request.user_id,
       type: "REQUEST_STATUS_CHANGED",
       title: titleMap[request.request_type] ?? "Proposta presa in carico",

@@ -13,7 +13,7 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
   const markRead = useMarkRead()
   const markAllRead = useMarkAllRead()
 
-  const unread = notifications.filter((n) => !n.is_read).slice(0, 5)
+  const unread = notifications.filter((n) => !n.isRead).slice(0, 5)
 
   return (
     <div>

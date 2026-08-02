@@ -21,7 +21,7 @@ export function NotificationList() {
   const deleteNotification = useDeleteNotification()
   const prefersReduced = useReducedMotion()
 
-  const hasUnread = notifications.some((n) => !n.is_read)
+  const hasUnread = notifications.some((n) => !n.isRead)
 
   if (notifications.length === 0) {
     return (
