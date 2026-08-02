@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { STALE_TIME } from "@/lib/shared/cache"
 
-import { getUnreadChangelogVersionsFn } from "./server"
+import { getUnreadChangelogVersionsFn } from "./api"
 
 export const changelogQueries = {
   unreadVersions: () =>

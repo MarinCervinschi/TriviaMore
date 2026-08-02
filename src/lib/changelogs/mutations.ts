@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { markChangelogsReadFn } from "./server"
+import { markChangelogsReadFn } from "./api"
 
 import type { MarkChangelogsReadInput } from "./schemas"
 
