@@ -12,6 +12,7 @@ export type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0]
 // standalone or inside a transaction.
 export type DbOrTx = Db | Tx
 
+const POOL_MAX = 10
 const SLOW_QUERY_MS = 200
 const SATURATION_REPORT_MS = 10_000
 
@@ -34,8 +35,9 @@ function statementText(statement: unknown): string {
   return text.length > 500 ? `${text.slice(0, 500)}…` : text
 }
 
-async function track<T>(statement: unknown, run: () => Promise<T>): Promise<T> {
+async function track<T>(pool: Pool, statement: unknown, run: () => Promise<T>): Promise<T> {
   const context = currentContext()
+  const idleBefore = pool.idleCount
   const startedAt = performance.now()
   try {
     return await run()
@@ -45,59 +47,61 @@ async function track<T>(statement: unknown, run: () => Promise<T>): Promise<T> {
       context.dbQueries += 1
       context.dbMs += elapsed
     }
-    const properties = { Elapsed: elapsed, Statement: statementText(statement) }
+    const properties = {
+      Elapsed: elapsed,
+      Statement: statementText(statement),
+      PoolIdle: idleBefore,
+      PoolTotal: pool.totalCount,
+    }
     if (elapsed >= SLOW_QUERY_MS) {
-      log.warn("Slow query took {Elapsed:0.0}ms — {Statement}", properties)
+      log.warn("Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}", properties)
     } else {
       log.debug("Query took {Elapsed:0.0}ms — {Statement}", properties)
     }
   }
 }
 
-// Pooled clients are handed out again after release, so without this marker
-// every checkout would wrap the previous wrapper.
 const INSTRUMENTED = Symbol("triviamore.instrumented")
 
-function instrumentClient(client: PoolClient): PoolClient {
+function instrumentClient(pool: Pool, client: PoolClient): PoolClient {
   const marked = client as PoolClient & { [INSTRUMENTED]?: true }
   if (marked[INSTRUMENTED]) return client
   marked[INSTRUMENTED] = true
 
   const query = client.query.bind(client)
   client.query = ((...args: unknown[]) =>
-    track(args[0], () =>
+    track(pool, args[0], () =>
       (query as (...a: unknown[]) => Promise<unknown>)(...args),
     )) as typeof client.query
 
   return client
 }
 
-// Drizzle runs standalone statements through pool.query() and transactions
-// through a client from pool.connect(), so instrumenting only the first would
-// leave every db.transaction() — the quiz write paths — invisible.
 function instrument(pool: Pool): Pool {
   let lastSaturationAt = 0
 
-  // With max: 10, a queue on the pool bites well before any single query is
-  // slow enough to notice.
   const reportSaturation = () => {
-    if (pool.waitingCount === 0) return
+    if (pool.waitingCount === 0 || pool.totalCount < POOL_MAX) return
     const now = performance.now()
     if (now - lastSaturationAt < SATURATION_REPORT_MS) return
     lastSaturationAt = now
-    log.warn("Connection pool saturated: {Waiting} waiting on {Total} connections", {
+    log.warn("Connection pool starved: {Waiting} waiting on {Total} connections", {
       Waiting: pool.waitingCount,
       Total: pool.totalCount,
       Idle: pool.idleCount,
     })
   }
 
+  pool.on("connect", () => {
+    log.info("Database connection opened: {Total} in the pool", { Total: pool.totalCount })
+  })
+
   const query = pool.query.bind(pool)
   // Only the promise form is instrumented; the callback form has no caller
   // here, Drizzle being the sole consumer of this pool.
   pool.query = ((...args: unknown[]) => {
     reportSaturation()
-    return track(args[0], () => (query as (...a: unknown[]) => Promise<unknown>)(...args))
+    return track(pool, args[0], () => (query as (...a: unknown[]) => Promise<unknown>)(...args))
   }) as typeof pool.query
 
   const connect = pool.connect.bind(pool)
@@ -105,7 +109,7 @@ function instrument(pool: Pool): Pool {
     reportSaturation()
     const result = (connect as (...a: unknown[]) => unknown)(...args)
     if (!(result instanceof Promise)) return result
-    return result.then((client) => instrumentClient(client as PoolClient))
+    return result.then((client) => instrumentClient(pool, client as PoolClient))
   }) as typeof pool.connect
 
   return pool
@@ -119,8 +123,8 @@ export function getDb(): Db {
   const connectionString = process.env.DATABASE_URL
   if (!connectionString) throw new Error("DATABASE_URL is not set")
 
-  _pool = new Pool({ connectionString, max: 10 })
-  // An idle client can fail outside any query; unhandled, it crashes the process.
+  _pool = new Pool({ connectionString, max: POOL_MAX })
+
   _pool.on("error", (err) => {
     log.error("Idle database client failed", {}, err)
   })

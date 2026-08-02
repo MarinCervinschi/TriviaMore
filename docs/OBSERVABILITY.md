@@ -61,6 +61,17 @@ distinct event types.
 | `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) |
 | `ErrorCode` | the AppError code, or the Postgres SQLSTATE |
 | `DbQueries` / `DbMs` | accumulated by the pool wrapper |
+| `PoolIdle` / `PoolTotal` | pool state when a query started — see below |
+
+`Elapsed` on a query event is **checkout plus execution**, the latency the caller actually pays.
+Opening a connection costs a TCP round trip, TLS and a SCRAM exchange, and that lands inside
+whichever query triggered it — a trivial `count(*)` can read as 200 ms at cold start while Postgres
+executed it in 0.1 ms. `PoolIdle: 0` on a slow query means it was paying for a connection, not
+waiting on the database; the `Database connection opened` events alongside it confirm the ramp-up.
+
+A `Connection pool starved` warning requires `waitingCount > 0` **and** the pool to be at its
+maximum. `waitingCount` alone is not a signal: pg queues a checkout whenever it cannot hand a client
+over synchronously, including the ordinary case of passing an idle one on the next tick.
 
 ## Levels
 
