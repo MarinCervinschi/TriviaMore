@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import { buildSitemap } from "@/lib/sitemap/server"
+import { buildSitemap } from "@/lib/sitemap/service"
 
 const TTL_MS = 60 * 60 * 1000
 
