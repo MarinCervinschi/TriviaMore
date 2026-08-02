@@ -65,20 +65,20 @@ export function NotificationItem({
     <div
       className={cn(
         "group flex items-start gap-3 rounded-xl px-3 py-3 transition-colors",
-        !notification.is_read && "bg-primary/5",
+        !notification.isRead && "bg-primary/5",
         notification.link && "hover:bg-accent/50 cursor-pointer",
       )}
     >
       <div
         className={cn(
           "flex-shrink-0 rounded-xl p-2",
-          notification.is_read ? "bg-muted" : "bg-primary/10",
+          notification.isRead ? "bg-muted" : "bg-primary/10",
         )}
       >
         <Icon
           className={cn(
             "size-4",
-            notification.is_read ? "text-muted-foreground" : config.color,
+            notification.isRead ? "text-muted-foreground" : config.color,
           )}
           strokeWidth={1.5}
         />
@@ -89,12 +89,12 @@ export function NotificationItem({
           <p
             className={cn(
               "text-sm leading-snug",
-              !notification.is_read && "font-medium",
+              !notification.isRead && "font-medium",
             )}
           >
             {notification.title}
           </p>
-          {!compact && !notification.is_read && (
+          {!compact && !notification.isRead && (
             <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary" />
           )}
         </div>
@@ -104,7 +104,7 @@ export function NotificationItem({
           </p>
         )}
         <p className="mt-1 text-xs text-muted-foreground/70">
-          {timeAgo(notification.created_at)}
+          {timeAgo(notification.createdAt)}
         </p>
       </div>
 
@@ -130,7 +130,7 @@ export function NotificationItem({
       <Link
         to={notification.link as string}
         onClick={() => {
-          if (!notification.is_read && onMarkRead) {
+          if (!notification.isRead && onMarkRead) {
             onMarkRead(notification.id)
           }
           onNavigate?.()

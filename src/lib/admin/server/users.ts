@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
-import { createNotification } from "@/lib/notifications/helpers"
+import { getDb } from "@/db"
+import { createNotification } from "@/lib/notifications/service"
 import { getCatalogAdmin, getQuizAdmin, getSupabaseAdmin } from "@/lib/supabase/admin"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 
@@ -246,7 +247,7 @@ export const addCourseMaintainerFn = createServerFn({ method: "POST" })
       .eq("id", data.course_id)
       .single()
 
-    await createNotification(getSupabaseAdmin(), {
+    await createNotification(getDb(), {
       userId: data.user_id,
       type: "MAINTAINER_ASSIGNED",
       title: "Sei stato nominato maintainer",

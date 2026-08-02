@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { STALE_TIME } from "@/lib/shared/cache"
 
-import { getNotificationsFn, getUnreadCountFn } from "./server"
+import { getNotificationsFn, getUnreadCountFn } from "./api"
 
 export const notificationQueries = {
   all: () =>

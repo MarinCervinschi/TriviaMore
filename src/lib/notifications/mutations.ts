@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { deleteNotificationFn, markAllReadFn, markReadFn } from "./server"
+import { deleteNotificationFn, markAllReadFn, markReadFn } from "./api"
 
 const NOTIFICATION_KEYS = [["notifications"], ["notifications", "unreadCount"]]
 

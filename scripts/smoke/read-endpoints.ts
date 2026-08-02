@@ -22,7 +22,16 @@ import {
   getPlatformStats,
 } from "../../src/lib/browse/service/overview.ts"
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts"
+import {
+  getAcceptanceHistory,
+  getAcceptanceStatus,
+} from "../../src/lib/legal/service.ts"
+import {
+  getNotifications,
+  getUnreadCount,
+} from "../../src/lib/notifications/service.ts"
 import { getQuiz, getQuizResults } from "../../src/lib/quiz/service.ts"
+import { buildSitemap } from "../../src/lib/sitemap/service.ts"
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts"
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts"
 
@@ -171,6 +180,26 @@ if (userId) {
 } else {
   console.log("· flashcard.getFlashcardSession — skipped, no profile")
 }
+
+if (userId) {
+  await check("notifications.getNotifications", () => getNotifications(userId))
+  await check("notifications.getUnreadCount", () => getUnreadCount(userId))
+  await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId))
+  await check("legal.getAcceptanceHistory", () => getAcceptanceHistory(userId))
+} else {
+  console.log("· notifications / legal — skipped, no profile")
+}
+
+// changelogs is absent on purpose: its version list comes from
+// `import.meta.glob`, which only exists under Vite.
+
+await check("sitemap.buildSitemap", async () => {
+  const xml = await buildSitemap()
+  if (!xml.startsWith("<?xml")) throw new Error("not an XML document")
+  const urls = xml.match(/<url>/g)?.length ?? 0
+  if (urls < 5) throw new Error(`only ${urls} urls in the sitemap`)
+  return `${urls} urls`
+})
 
 await closeDb()
 
