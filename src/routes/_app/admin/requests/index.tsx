@@ -35,7 +35,7 @@ import type {
 // acknowledged or rejected) and are hidden from the default view.
 const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"]
 const isOpen = (r: AdminContentRequest) => OPEN_STATUSES.includes(r.status)
-const isReport = (r: AdminContentRequest) => r.request_type === "REPORT"
+const isReport = (r: AdminContentRequest) => r.requestType === "REPORT"
 
 type TypeTab = "proposals" | "reports"
 type StatusFilter = "open" | "handled" | "all"
@@ -79,7 +79,7 @@ function AdminRequestsPage() {
     filtered,
     (item, query) =>
       generateTitle(item.submitted).toLowerCase().includes(query) ||
-      item.target_label.toLowerCase().includes(query) ||
+      item.targetLabel.toLowerCase().includes(query) ||
       (item.user.name?.toLowerCase().includes(query) ?? false),
     search,
     page,
@@ -172,7 +172,7 @@ function AdminRequestsPage() {
                   <TableHead className="pl-6">Utente</TableHead>
                   <TableHead>Stato</TableHead>
                   <TableHead>
-                    <SortableHeader label="Data" sortKey="created_at" sort={sort} onSort={toggleSort} />
+                    <SortableHeader label="Data" sortKey="createdAt" sort={sort} onSort={toggleSort} />
                   </TableHead>
                   <TableHead>Gestita da</TableHead>
                   <TableHead />
@@ -202,19 +202,19 @@ function AdminRequestsPage() {
                       <RequestStatusBadge status={request.status} />
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(request.created_at).toLocaleDateString("it-IT")}
+                      {new Date(request.createdAt).toLocaleDateString("it-IT")}
                     </TableCell>
                     <TableCell>
-                      {request.handled_at ? (
+                      {request.handledAt ? (
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
-                            <AvatarImage src={request.handledBy?.image ?? undefined} />
+                            <AvatarImage src={request.handledByUser?.image ?? undefined} />
                             <AvatarFallback className="text-[9px]">
-                              {(request.handledBy?.name?.[0] ?? "T").toUpperCase()}
+                              {(request.handledByUser?.name?.[0] ?? "T").toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <span className="text-sm text-muted-foreground">
-                            {request.handledBy?.name ?? "Team"}
+                            {request.handledByUser?.name ?? "Team"}
                           </span>
                         </div>
                       ) : (

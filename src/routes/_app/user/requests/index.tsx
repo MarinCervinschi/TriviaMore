@@ -76,6 +76,8 @@ const REPORT_REASON_OPTIONS = [
   { id: "altro", label: "Altro", description: "Specifica nel commento" },
 ] as const
 
+type ReportReason = (typeof REPORT_REASON_OPTIONS)[number]["id"]
+
 function generateTitle(submitted: SubmittedContent): string {
   if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
   if (submitted.type === "report") {
@@ -198,8 +200,8 @@ function ContributionRow({
     REPORT: { bg: "bg-red-500/10", text: "text-red-500" },
     FILE_UPLOAD: { bg: "bg-emerald-500/10", text: "text-emerald-500" },
   }
-  const Icon = iconMap[request.request_type]
-  const colors = colorMap[request.request_type]
+  const Icon = iconMap[request.requestType]
+  const colors = colorMap[request.requestType]
   const title = generateTitle(request.submitted)
 
   return (
@@ -217,12 +219,12 @@ function ContributionRow({
           <p className="truncate text-sm font-medium">{title}</p>
           <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
             <MapPin className="size-3 shrink-0" strokeWidth={1.5} />
-            {request.target_label}
+            {request.targetLabel}
           </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <span className="text-xs text-muted-foreground">{timeAgo(request.updated_at)}</span>
+          <span className="text-xs text-muted-foreground">{timeAgo(request.updatedAt)}</span>
           <RequestStatusBadge status={request.status} />
           <ChevronDown className={cn(
             "size-4 text-muted-foreground transition-transform",
@@ -243,12 +245,12 @@ function ContributionRow({
           >
             <div className="border-t px-5 py-4 space-y-4">
               {/* Admin note */}
-              {request.admin_note && (
+              {request.adminNote && (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
                   <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
                     Nota dello staff
                   </p>
-                  <p className="mt-1 text-sm">{request.admin_note}</p>
+                  <p className="mt-1 text-sm">{request.adminNote}</p>
                 </div>
               )}
 
@@ -597,7 +599,9 @@ function RevisionQuestionEditor({
 
 function ReportEditor({ requestId, report }: { requestId: string; report: SubmittedReport }) {
   const [editing, setEditing] = useState(false)
-  const [reasons, setReasons] = useState<string[]>(report.reasons)
+  const [reasons, setReasons] = useState<ReportReason[]>(
+    report.reasons as ReportReason[],
+  )
   const [comment, setComment] = useState(report.comment ?? "")
   const [confirmDelete, setConfirmDelete] = useState(false)
   const update = useUpdateReport(() => setEditing(false))
@@ -606,7 +610,7 @@ function ReportEditor({ requestId, report }: { requestId: string; report: Submit
   const hasAltro = reasons.includes("altro")
   const canSave = reasons.length > 0 && (!hasAltro || comment.trim().length > 0)
 
-  function toggleReason(id: string) {
+  function toggleReason(id: ReportReason) {
     setReasons((prev) =>
       prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id],
     )
@@ -699,7 +703,7 @@ function ReportEditor({ requestId, report }: { requestId: string; report: Submit
           variant="ghost"
           className="rounded-xl"
           onClick={() => {
-            setReasons(report.reasons)
+            setReasons(report.reasons as ReportReason[])
             setComment(report.comment ?? "")
             setEditing(false)
           }}

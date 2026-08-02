@@ -8,7 +8,7 @@ import {
   handleRequestFn,
   reviseRequestFn,
   updateReportFn,
-} from "./server"
+} from "./api"
 
 // ─── User Mutations ───
 

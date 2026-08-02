@@ -8,7 +8,7 @@ import {
   getContentTreeForRequestsFn,
   getRequestDetailFn,
   getUserRequestsFn,
-} from "./server"
+} from "./api"
 
 export const requestQueries = {
   userRequests: () =>

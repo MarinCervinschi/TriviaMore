@@ -111,11 +111,54 @@ export const storedContentSchema = z.discriminatedUnion("type", [
   fileUploadSubmissionSchema,
 ])
 
-// Admin action schema (unchanged)
+// Rejecting or asking for changes. Approving goes through approveRequestFn, and
+// acknowledging a report or a file through acknowledgeRequestFn.
 export const handleRequestSchema = z.object({
-  id: z.string(),
-  status: z.enum(["APPROVED", "REJECTED", "NEEDS_REVISION"]),
+  id: z.string().uuid(),
+  status: z.enum(["REJECTED", "NEEDS_REVISION"]),
   admin_note: z.string().max(1000).trim().optional(),
 })
 
 export type HandleRequestInput = z.infer<typeof handleRequestSchema>
+
+// ─── Server function inputs ───
+
+export const requestIdSchema = z.object({ id: z.string().uuid() })
+
+export const createRequestSchema = z.object({
+  type: z.enum(["section", "questions", "report", "file_upload"]),
+  target_class_id: z.string().uuid().optional(),
+  target_section_id: z.string().uuid().optional(),
+  submitted_content: z.unknown(),
+})
+
+export const reviseRequestSchema = z.object({
+  id: z.string().uuid(),
+  submitted_content: z.unknown(),
+})
+
+export const updateReportSchema = z
+  .object({
+    id: z.string().uuid(),
+    reasons: z
+      .array(z.enum(["errata", "imprecisa", "fuori_contesto", "altro"]))
+      .min(1, "Seleziona almeno un motivo valido"),
+    comment: z.string().max(1000).nullable(),
+  })
+  .refine(
+    (data) => !data.reasons.includes("altro") || !!data.comment?.trim(),
+    {
+      message: "Il commento è obbligatorio quando selezioni 'Altro'",
+      path: ["comment"],
+    },
+  )
+
+export const acknowledgeRequestSchema = z.object({
+  id: z.string().uuid(),
+  admin_note: z.string().max(2000).optional(),
+})
+
+export const fileDownloadSchema = z.object({ filePath: z.string().min(1) })
+
+export type CreateRequestInput = z.infer<typeof createRequestSchema>
+export type UpdateReportInput = z.infer<typeof updateReportSchema>
