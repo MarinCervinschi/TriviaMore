@@ -136,7 +136,7 @@ function AdminDepartmentsPage() {
                         <Badge variant="secondary" className="rounded-full">{dept.code}</Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        {dept.courses[0]?.count ?? 0}
+                        {dept.courseCount}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
