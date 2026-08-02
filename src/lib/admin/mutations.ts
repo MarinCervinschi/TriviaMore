@@ -4,20 +4,24 @@ import { toast } from "sonner"
 import { useMutationWithToast } from "@/hooks/useMutationWithToast"
 
 import {
+  createCourseFn,
+  createDepartmentFn,
+  deleteCourseFn,
+  deleteDepartmentFn,
+  updateCourseFn,
+  updateDepartmentFn,
+} from "./api"
+import {
   addClassToCourseFn,
   addCourseMaintainerFn,
   addDepartmentAdminFn,
   addSectionAccessFn,
   createClassFn,
-  createCourseFn,
-  createDepartmentFn,
   createExamSimulationSentinelFn,
   createQuestionFn,
   createQuestionsBulkFn,
   createSectionFn,
   deleteClassFn,
-  deleteCourseFn,
-  deleteDepartmentFn,
   deleteQuestionFn,
   deleteSectionFn,
   removeClassFromCourseFn,
@@ -28,8 +32,6 @@ import {
   deleteUserFn,
   updateClassFn,
   updateCourseClassFn,
-  updateCourseFn,
-  updateDepartmentFn,
   updateQuestionFn,
   updateSectionFn,
   updateUserRoleFn,

@@ -61,8 +61,8 @@ function AdminDepartmentDetailPage() {
     id: string
     name: string
     code: string
-    course_type: string
-    classes: { count: number }[]
+    courseType: string
+    classCount: number
   }
 
   const { sort, toggleSort } = useSort<CourseRow>()
@@ -154,7 +154,7 @@ function AdminDepartmentDetailPage() {
                         <SortableHeader label="Codice" sortKey="code" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead>
-                        <SortableHeader label="Tipo" sortKey="course_type" sort={sort} onSort={toggleSort} />
+                        <SortableHeader label="Tipo" sortKey="courseType" sort={sort} onSort={toggleSort} />
                       </TableHead>
                       <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Insegnamenti</TableHead>
                       <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
@@ -177,11 +177,11 @@ function AdminDepartmentDetailPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="rounded-full">
-                            {COURSE_TYPE_CONFIG[course.course_type]?.label ?? course.course_type}
+                            {COURSE_TYPE_CONFIG[course.courseType]?.label ?? course.courseType}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          {course.classes?.[0]?.count ?? 0}
+                          {course.classCount}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">

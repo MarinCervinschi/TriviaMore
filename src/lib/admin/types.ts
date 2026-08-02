@@ -1,20 +1,41 @@
+import type {
+  courseClasses,
+  courses,
+  departments,
+} from "@/db/schema"
 import type { CatalogTables } from "@/lib/supabase/database.helpers"
 import type { Database } from "@/lib/supabase/database.types"
 
-// Row types (catalog schema)
-export type Department = CatalogTables<"departments">
-export type Course = CatalogTables<"courses">
+// Migrated to Drizzle (#91 F1). `fts` is generated and never leaves the server.
+export type Department = typeof departments.$inferSelect
+export type Course = Omit<typeof courses.$inferSelect, "fts">
+export type CourseClassInfo = Pick<
+  typeof courseClasses.$inferSelect,
+  "code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
+>
+
+// Still fed by PostgREST until their own batch, hence snake_case.
 export type Class = CatalogTables<"classes">
 export type Section = CatalogTables<"sections">
 export type Question = CatalogTables<"questions">
-
-// Admin list types (with child counts)
-export type AdminDepartment = Department & { courses: { count: number }[] }
-export type AdminCourse = Course & {
-  course_classes: { count: number }[]
-  department: Department
-}
 export type CourseClassRow = CatalogTables<"course_classes">
+
+export type AdminDepartment = Department & { courseCount: number }
+
+export type AdminDepartmentDetail = Department & {
+  courses: (Course & { classCount: number })[]
+}
+
+export type AdminCourseDetail = Course & {
+  department: Department
+  classes: (CourseClassInfo & {
+    id: string
+    name: string
+    description: string | null
+    cfu: number | null
+    sectionCount: number
+  })[]
+}
 
 export type AdminClass = Class & {
   sections: { count: number }[]

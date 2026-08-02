@@ -50,3 +50,15 @@ export class Invalid extends AppError {
     super("INVALID", message)
   }
 }
+
+// Unique-constraint violations are the one Postgres error the admin catalog can
+// explain to the user: a code is already taken. Everything else is re-thrown
+// untouched, so the error middleware masks it.
+export function rethrowUniqueViolation(error: unknown, message: string): never {
+  const code =
+    typeof error === "object" && error !== null
+      ? (error as { code?: unknown }).code
+      : undefined
+  if (code === "23505") throw new Conflict(message)
+  throw error
+}

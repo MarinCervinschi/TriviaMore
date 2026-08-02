@@ -3,10 +3,12 @@ import { queryOptions } from "@tanstack/react-query"
 import { STALE_TIME } from "@/lib/shared/cache"
 
 import {
-  getAdminClassDetailFn,
   getAdminCourseDetailFn,
   getAdminDepartmentDetailFn,
   getAdminDepartmentsFn,
+} from "./api"
+import {
+  getAdminClassDetailFn,
   getAdminPermissionsFn,
   getAdminQuestionDetailFn,
   getAdminSectionDetailFn,

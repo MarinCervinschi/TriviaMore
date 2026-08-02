@@ -74,21 +74,13 @@ function AdminCourseDetailPage() {
   const [createPending, setCreatePending] = useState(false)
   const deleteClass = useDeleteClass(() => setDeleteClassId(null))
 
-  const { course_classes, department, ...course } = data
+  const { classes: linkedClasses, department, ...course } = data
 
-  const classes = course_classes.map((cc: any) => ({
-    ...cc.class,
-    code: cc.code,
-    class_year: cc.class_year,
-    mandatory: cc.mandatory,
-    curriculum: cc.curriculum,
-    // Real sections only: exclude the "Exam Simulation" sentinel, and (for
-    // maintainers) private sections, which they cannot manage.
-    sectionCount: (
-      (cc.class.sections ?? []) as { name: string; is_public: boolean }[]
-    ).filter(
-      (s) => s.name !== "Exam Simulation" && (!isMaintainer || s.is_public),
-    ).length,
+  // sectionCount already excludes the exam-simulation sentinel, and the private
+  // sections a maintainer cannot manage.
+  const classes = linkedClasses.map((cc) => ({
+    ...cc,
+    class_year: cc.classYear,
   })) as ClassRow[]
 
   const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
@@ -142,7 +134,7 @@ function AdminCourseDetailPage() {
         <Card className="rounded-2xl">
           <CardHeader>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle>Insegnamenti ({course_classes.length})</CardTitle>
+              <CardTitle>Insegnamenti ({linkedClasses.length})</CardTitle>
               <div className="flex items-center gap-2">
                 <div className="w-56">
                   <AdminSearch
