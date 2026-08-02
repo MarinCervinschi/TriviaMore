@@ -21,6 +21,17 @@ src/lib/logging/server.ts    the log API — `log.debug/info/warn/error`
 functions — including the ones a page calls during SSR, which share its trace id because Start
 invokes them directly rather than over HTTP.
 
+Because of that, **a page load produces one `ssr` event, not one per server function it calls.**
+`Source: fn` appears only for calls that cross the network: client-side navigation that misses the
+TanStack Query cache, and mutations.
+
+`RequestServerOptions` declares a `serverFnMeta`, but `createStartHandler` does not pass one on the
+server function branch — a request middleware only ever receives `request`, `pathname` and
+`context`. `Source` is therefore derived from the path prefix, the same signal the handler branches
+on. The readable function name is not in the URL either (that carries the generated id), so
+`serverFnObservabilityMiddleware` — a *function* middleware, where `serverFnMeta` is populated —
+stamps `Fn` onto the open trace for the canonical line to read back.
+
 ### Why not OpenTelemetry
 
 OTel auto-instrumentation patches modules at load time and needs `node --import` plus **unbundled**
@@ -54,7 +65,7 @@ distinct event types.
 | Property | Values |
 |---|---|
 | `Environment` | `preview` \| `production` — **attached by the Seq API key**, never set in code |
-| `Source` | `ssr` \| `fn` \| `job` (`browser` once client reporting lands) |
+| `Source` | `ssr` \| `fn` \| `job` (`browser` once client reporting lands) — see the note above on why `ssr` dominates |
 | `Version` | commit sha, from Coolify's runtime `SOURCE_COMMIT` (or `APP_VERSION` off Coolify) |
 | `@tr` | 32-hex trace id, shared by every event in one request |
 | `UserId` | uuid only — attached by the auth guards |

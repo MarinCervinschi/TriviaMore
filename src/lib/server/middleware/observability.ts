@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start"
 
-import { createContext, runWithContext } from "@/lib/logging/context"
+import { createContext, currentContext, runWithContext } from "@/lib/logging/context"
 import { log } from "@/lib/logging/server"
 
 // One canonical event per request, carrying everything needed to answer "what
@@ -10,6 +10,8 @@ import { log } from "@/lib/logging/server"
 // opens is what every nested log call and every database query attaches to.
 
 const ASSET_PATTERN = /\.(js|mjs|css|map|ico|png|jpe?g|gif|svg|webp|avif|woff2?)$/i
+
+const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/"
 
 function isAsset(pathname: string): boolean {
   return (
@@ -27,13 +29,12 @@ function levelFor(status: number): "info" | "warn" | "error" {
 }
 
 export const observabilityMiddleware = createMiddleware({ type: "request" }).server(
-  async ({ pathname, request, next, serverFnMeta }) => {
+  async ({ pathname, request, next }) => {
     if (isAsset(pathname)) return next()
 
     const context = createContext({
-      source: serverFnMeta ? "fn" : "ssr",
+      source: pathname.startsWith(SERVER_FN_BASE) ? "fn" : "ssr",
       path: pathname,
-      fn: serverFnMeta?.name,
     })
 
     return runWithContext(context, async () => {
@@ -76,5 +77,15 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
         )
       }
     })
+  },
+)
+
+export const serverFnObservabilityMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next, serverFnMeta }) => {
+    const context = currentContext()
+    if (context?.source === "fn" && !context.fn && serverFnMeta.name) {
+      context.fn = serverFnMeta.name
+    }
+    return next()
   },
 )

@@ -1,7 +1,10 @@
 import { createStart } from "@tanstack/react-start"
 
 import { errorMiddleware } from "@/lib/server/middleware/errors"
-import { observabilityMiddleware } from "@/lib/server/middleware/observability"
+import {
+  observabilityMiddleware,
+  serverFnObservabilityMiddleware,
+} from "@/lib/server/middleware/observability"
 
 // `observabilityMiddleware` is a request middleware, so it wraps page renders
 // as well as server functions — including the ones a page calls during SSR,
@@ -12,5 +15,5 @@ import { observabilityMiddleware } from "@/lib/server/middleware/observability"
 // carrying a message meant for the toast — this middleware would have masked them.
 export const startInstance = createStart(() => ({
   requestMiddleware: [observabilityMiddleware],
-  functionMiddleware: [errorMiddleware],
+  functionMiddleware: [serverFnObservabilityMiddleware, errorMiddleware],
 }))
