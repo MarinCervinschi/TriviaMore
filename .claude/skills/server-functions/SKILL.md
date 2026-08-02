@@ -134,5 +134,18 @@ pnpm build                 # must leave no drizzle/pg in .output/public
 explicit alias — see `primaryCourseByClass` in `src/lib/catalog/db/course-classes.ts`. That bug was
 written once and only the smoke test caught it.
 
+**Hard-reload the browser after moving or renaming a server function.** Its id is derived from the
+defining file and export name, and it is baked into the client module the browser already has. A tab
+loaded before the move keeps calling the old id, which fails in one of two ways that look like
+application bugs but are not:
+
+| what happened to the file | what the dev server logs |
+|---|---|
+| deleted (`quiz/server.ts` → `quiz/api/*`) | `Invalid server function ID: <base64>` |
+| still there, export gone (`requireAuth` became a plain function) | `Cannot read properties of undefined (reading 'method')` |
+
+Decode the base64 in the URL to see which file and export the tab is asking for. The same applies in
+production for tabs left open across a deploy, since the id is a hash of the same two values.
+
 When migrating a domain off supabase-js, add its read paths to `scripts/smoke/read-endpoints.ts` as
 you go — that is the only automated check the project has until #109.
