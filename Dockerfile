@@ -31,7 +31,7 @@ ENV INFISICAL_CLIENT_ID=$INFISICAL_CLIENT_ID \
     INFISICAL_PROJECT_ID=$INFISICAL_PROJECT_ID \
     INFISICAL_SITE_URL=$INFISICAL_SITE_URL \
     INFISICAL_ENV=$INFISICAL_ENV
-# Measured: the bundle step OOMs at 3072 and succeeds at 4096.
+
 ENV NODE_OPTIONS=--max-old-space-size=4096
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
