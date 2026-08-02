@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 
+import { canAccessSection, filterAccessibleSections } from "@/lib/auth/checks"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 import { contactSchema } from "./contact-schema"
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "./constants"
@@ -177,14 +178,23 @@ export const getClassWithSectionsFn = createServerFn({ method: "GET" })
     const classData = courseClass.class as any
 
     // Get sections with question type breakdown
-    const { data: sections } = await catalogQuery(supabase)
+    const { data: allSections } = await catalogQuery(supabase)
       .from("sections")
       .select("*")
       .eq("class_id", classData.id)
       .neq("name", "Exam Simulation")
       .order("position")
 
-    if (!sections) return null
+    if (!allSections) return null
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    const allowed = await filterAccessibleSections(
+      user?.id ?? null,
+      allSections.map((s) => s.id),
+    )
+    const sections = allSections.filter((s) => allowed.has(s.id))
 
     // Get question counts per section
     const sectionsWithCounts: BrowseSection[] = await Promise.all(
@@ -309,6 +319,13 @@ export const getSectionDetailFn = createServerFn({ method: "GET" })
       .single()
 
     if (!section) return null
+
+    // A private section is indistinguishable from a missing one, so the URL
+    // does not confirm that it exists.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!(await canAccessSection(user?.id ?? null, section.id))) return null
 
     // Get question counts
     const { count: totalCount } = await catalogQuery(supabase)

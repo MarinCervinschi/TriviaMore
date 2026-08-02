@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
+import { assertSectionAccess, filterAccessibleSections } from "@/lib/auth/checks"
 import { catalogQuery, createServerSupabaseClient } from "@/lib/supabase/server"
 import type { FlashcardQuestion, FlashcardSession } from "./types"
 
@@ -51,7 +52,8 @@ export const startFlashcardFn = createServerFn({ method: "POST" })
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) throw new Error("Non autenticato")
 
-    // Verify section exists and user can access it
+    await assertSectionAccess(user.id, data.sectionId)
+
     const section = await fetchSectionWithChain(supabase, data.sectionId)
     if (!section) throw new Error("Sezione non trovata")
 
@@ -78,6 +80,8 @@ export const startExamFlashcardFn = createServerFn({ method: "POST" })
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) throw new Error("Non autenticato")
 
+    await assertSectionAccess(user.id, data.sectionId)
+
     // Get class_id from sentinel section
     const { data: sentinel } = await catalogQuery(supabase)
       .from("sections")
@@ -93,7 +97,11 @@ export const startExamFlashcardFn = createServerFn({ method: "POST" })
       .eq("class_id", sentinel.class_id)
       .neq("name", "Exam Simulation")
 
-    const sectionIds = (classSections ?? []).map((s) => s.id)
+    const allowed = await filterAccessibleSections(
+      user.id,
+      (classSections ?? []).map((s) => s.id),
+    )
+    const sectionIds = [...allowed]
     if (sectionIds.length === 0) throw new Error("Nessuna sezione trovata")
 
     // Fetch SHORT_ANSWER questions from all sections
@@ -137,6 +145,10 @@ export const getFlashcardSessionFn = createServerFn({ method: "GET" })
       return null
     }
 
+    // sessionId is client-supplied base64, so sectionId is attacker-controlled:
+    // this is a gate, not a revalidation of something already checked.
+    await assertSectionAccess(user.id, sectionId)
+
     const section = await fetchSectionWithChain(supabase, sectionId)
     if (!section) return null
 
@@ -157,7 +169,11 @@ export const getFlashcardSessionFn = createServerFn({ method: "GET" })
         .eq("class_id", sentinel.class_id)
         .neq("name", "Exam Simulation")
 
-      const sectionIds = (classSections ?? []).map((s) => s.id)
+      const allowed = await filterAccessibleSections(
+        user.id,
+        (classSections ?? []).map((s) => s.id),
+      )
+      const sectionIds = [...allowed]
       const { data: qs } = await catalogQuery(supabase)
         .from("questions")
         .select("id, content, correct_answer, explanation, difficulty")
