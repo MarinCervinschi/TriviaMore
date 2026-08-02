@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 
+import { assertSectionAccess, filterAccessibleSections } from "@/lib/auth/checks"
 import { createServerSupabaseClient, catalogQuery, quizQuery } from "@/lib/supabase/server"
 import { selectRandomItems, shuffleArray } from "./randomization"
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types"
@@ -49,6 +50,8 @@ export const startQuizFn = createServerFn({ method: "POST" })
       const { supabase, user } = await getAuthenticatedUser()
       if (!user) throw new Error("Non autenticato")
 
+      await assertSectionAccess(user.id, data.sectionId)
+
       // Get evaluation mode
       let evalModeId = data.evaluationModeId
       if (!evalModeId) {
@@ -78,7 +81,11 @@ export const startQuizFn = createServerFn({ method: "POST" })
           .select("id")
           .eq("class_id", section.class_id)
 
-        const sectionIds = (classSections ?? []).map((s) => s.id)
+        const allowed = await filterAccessibleSections(
+          user.id,
+          (classSections ?? []).map((s) => s.id),
+        )
+        const sectionIds = [...allowed]
 
         const { data: qs } = await catalogQuery(supabase)
           .from("questions")
@@ -157,6 +164,11 @@ export const getQuizFn = createServerFn({ method: "GET" })
       .single()
 
     if (!quiz) return null
+
+    // quizId comes from the URL, so re-check the section it belongs to rather
+    // than trusting that whoever created the quiz is the one fetching it.
+    if (!quiz.section_id) return null
+    await assertSectionAccess(user.id, quiz.section_id)
 
     // Get quiz questions in order
     const { data: quizQuestions } = await quizQuery(supabase)
