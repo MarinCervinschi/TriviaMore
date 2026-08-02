@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm"
+import { and, eq, inArray, notExists, sql } from "drizzle-orm"
 
 import type { DbOrTx } from "@/db"
 import { getDb } from "@/db"
@@ -29,21 +29,52 @@ export async function requireRequestAdmin(): Promise<{
   return { user, scopeCourseIds: await maintainedCourseIds(getDb(), user.id) }
 }
 
-export function isInScope(
-  scopeCourseIds: Set<string> | null,
-  targetCourseId: string | null,
-): boolean {
-  if (!scopeCourseIds) return true
-  return !!targetCourseId && scopeCourseIds.has(targetCourseId)
+type RequestTarget = Pick<ContentRequest, "targetCourseId" | "targetSectionId">
+
+// A maintainer must never see or touch a private section, and a request carries
+// the section's name in its label and its id in `approveRequest`'s insert. So a
+// request aimed at one is out of scope even when the course is not: it stays
+// with ADMIN and SUPERADMIN. Only a user holding explicit `section_access` can
+// file one, which is why this is reachable at all.
+export function requestScope(db: DbOrTx, scopeCourseIds: Set<string> | null) {
+  if (!scopeCourseIds) return undefined
+  return and(
+    inArray(contentRequests.targetCourseId, [...scopeCourseIds]),
+    notExists(
+      db
+        .select({ one: sql`1` })
+        .from(sections)
+        .where(
+          and(
+            eq(sections.id, contentRequests.targetSectionId),
+            eq(sections.isPublic, false),
+          ),
+        ),
+    ),
+  )
 }
 
-export function assertInScope(
+export async function assertInScope(
+  db: DbOrTx,
   scopeCourseIds: Set<string> | null,
-  targetCourseId: string | null,
-): void {
-  if (!isInScope(scopeCourseIds, targetCourseId)) {
+  target: RequestTarget,
+): Promise<void> {
+  const denied = () => {
     throw new Forbidden("Non hai i permessi per gestire questa richiesta.")
   }
+
+  if (!scopeCourseIds) return
+  if (!target.targetCourseId || !scopeCourseIds.has(target.targetCourseId)) {
+    denied()
+  }
+  if (!target.targetSectionId) return
+
+  const [section] = await db
+    .select({ isPublic: sections.isPublic })
+    .from(sections)
+    .where(eq(sections.id, target.targetSectionId))
+    .limit(1)
+  if (section && !section.isPublic) denied()
 }
 
 // submitted_content is jsonb, so its shape is only guaranteed at write time;
