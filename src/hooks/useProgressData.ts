@@ -35,25 +35,25 @@ export type OverallStats = {
 
 export function useProgressData(progressData: UserProgress[]) {
   return useMemo(() => {
-    const study = progressData.filter((p) => p.quiz_mode === "STUDY")
+    const study = progressData.filter((p) => p.quizMode === "STUDY")
     const exam = progressData.filter(
-      (p) => p.quiz_mode === "EXAM_SIMULATION",
+      (p) => p.quizMode === "EXAM_SIMULATION",
     )
 
     const totalStudyQuizzes = study.reduce(
-      (sum, p) => sum + p.quizzes_taken,
+      (sum, p) => sum + p.quizzesTaken,
       0,
     )
     const totalExamQuizzes = exam.reduce(
-      (sum, p) => sum + p.quizzes_taken,
+      (sum, p) => sum + p.quizzesTaken,
       0,
     )
 
     const studyScores = study
-      .map((p) => p.average_score ?? 0)
+      .map((p) => p.averageScore ?? 0)
       .filter((s) => s > 0)
     const examScores = exam
-      .map((p) => p.average_score ?? 0)
+      .map((p) => p.averageScore ?? 0)
       .filter((s) => s > 0)
 
     const avgStudy =
@@ -67,13 +67,13 @@ export function useProgressData(progressData: UserProgress[]) {
 
     const studyChart = study
       .map((p) => ({
-        name: p.section_name.length > 20
-          ? p.section_name.substring(0, 18) + "..."
-          : p.section_name,
-        fullName: p.section_name,
-        averageScore: +(p.average_score ?? 0).toFixed(1),
-        bestScore: +(p.best_score ?? 0).toFixed(1),
-        className: p.class_name,
+        name: p.sectionName.length > 20
+          ? p.sectionName.substring(0, 18) + "..."
+          : p.sectionName,
+        fullName: p.sectionName,
+        averageScore: +(p.averageScore ?? 0).toFixed(1),
+        bestScore: +(p.bestScore ?? 0).toFixed(1),
+        className: p.className,
       }))
       .sort((a, b) => b.averageScore - a.averageScore)
 
@@ -82,16 +82,18 @@ export function useProgressData(progressData: UserProgress[]) {
       { courseName: string; averageScore: number; quizzesTaken: number }
     > = {}
     for (const p of exam) {
-      const name = p.course_name
+      // A class detached from every course has no name to group under.
+      const name = p.courseName
+      if (!name) continue
       examByCourseName[name] = {
         courseName: name,
-        averageScore: +(p.average_score ?? 0).toFixed(1),
-        quizzesTaken: p.quizzes_taken,
+        averageScore: +(p.averageScore ?? 0).toFixed(1),
+        quizzesTaken: p.quizzesTaken,
       }
     }
 
     const totalTimeAll = progressData.reduce(
-      (sum, p) => sum + p.total_time_spent,
+      (sum, p) => sum + p.totalTimeSpent,
       0,
     )
 
@@ -117,8 +119,8 @@ export function useProgressData(progressData: UserProgress[]) {
         totalExamQuizzes,
         avgStudy,
         avgExam,
-        bestStudy: Math.max(...study.map((p) => p.best_score ?? 0), 0),
-        bestExam: Math.max(...exam.map((p) => p.best_score ?? 0), 0),
+        bestStudy: Math.max(...study.map((p) => p.bestScore ?? 0), 0),
+        bestExam: Math.max(...exam.map((p) => p.bestScore ?? 0), 0),
       } satisfies OverallStats,
       studyChartData: studyChart,
       examChartData: Object.values(examByCourseName),

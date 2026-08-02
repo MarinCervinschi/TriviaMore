@@ -65,28 +65,28 @@ function SettingsPage() {
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <UserStatsCard
               label="Quiz Completati"
-              value={profile.stats.total_quizzes}
+              value={profile.stats.totalQuizzes}
               icon={Trophy}
               iconColor="text-yellow-500"
               iconBg="yellow"
             />
             <UserStatsCard
               label="Corsi Seguiti"
-              value={profile.stats.user_classes_count}
+              value={profile.stats.userClassesCount}
               icon={GraduationCap}
               iconColor="text-blue-500"
               iconBg="blue"
             />
             <UserStatsCard
               label="Segnalibri"
-              value={profile.stats.bookmarks_count}
+              value={profile.stats.bookmarksCount}
               icon={BookmarkIcon}
               iconColor="text-purple-500"
               iconBg="purple"
             />
             <UserStatsCard
               label="Punteggio Medio"
-              value={profile.stats.average_score}
+              value={profile.stats.averageScore}
               icon={TrendingUp}
               iconColor="text-green-500"
               iconBg="green"
@@ -113,7 +113,7 @@ function SettingsPage() {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <Label className="text-sm font-medium">Membro dal</Label>
                 <p className="text-sm">
-                  {new Date(profile.created_at).toLocaleDateString("it-IT", {
+                  {new Date(profile.createdAt).toLocaleDateString("it-IT", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -126,7 +126,7 @@ function SettingsPage() {
                   Ultimo aggiornamento
                 </Label>
                 <p className="text-sm">
-                  {new Date(profile.updated_at).toLocaleDateString("it-IT", {
+                  {new Date(profile.updatedAt).toLocaleDateString("it-IT", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",

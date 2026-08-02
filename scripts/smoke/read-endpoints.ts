@@ -32,6 +32,17 @@ import {
 } from "../../src/lib/notifications/service.ts"
 import { getQuiz, getQuizResults } from "../../src/lib/quiz/service.ts"
 import { buildSitemap } from "../../src/lib/sitemap/service.ts"
+import {
+  getBookmarkedQuestionIds,
+  getUserBookmarks,
+} from "../../src/lib/user/service/bookmarks.ts"
+import {
+  getRecentClasses,
+  getUserClasses,
+  isClassSaved,
+} from "../../src/lib/user/service/classes.ts"
+import { getUserProfile } from "../../src/lib/user/service/profile.ts"
+import { getUserProgress } from "../../src/lib/user/service/progress.ts"
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts"
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts"
 
@@ -182,6 +193,17 @@ if (userId) {
 }
 
 if (userId) {
+  await check("user.getUserProfile", () => getUserProfile(userId))
+  await check("user.getUserClasses", () => getUserClasses(userId))
+  await check("user.getRecentClasses", () => getRecentClasses(db, userId))
+  await check("user.getUserBookmarks", () => getUserBookmarks(userId))
+  await check("user.getBookmarkedQuestionIds", () =>
+    getBookmarkedQuestionIds(userId),
+  )
+  await check("user.getUserProgress", () => getUserProgress(userId))
+  await check("user.isClassSaved", () =>
+    isClassSaved(userId, "00000000-0000-0000-0000-000000000000"),
+  )
   await check("notifications.getNotifications", () => getNotifications(userId))
   await check("notifications.getUnreadCount", () => getUnreadCount(userId))
   await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId))

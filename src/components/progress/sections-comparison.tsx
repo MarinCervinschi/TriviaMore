@@ -17,10 +17,10 @@ export function SectionsComparison({
   studyProgress: UserProgress[]
 }) {
   const sectionsWithIssues = studyProgress.filter(
-    (s) => (s.average_score ?? 0) < 18,
+    (s) => (s.averageScore ?? 0) < 18,
   )
   const excellentSections = studyProgress.filter(
-    (s) => (s.average_score ?? 0) >= 27,
+    (s) => (s.averageScore ?? 0) >= 27,
   )
 
   if (sectionsWithIssues.length === 0 && excellentSections.length === 0) {
@@ -50,19 +50,19 @@ export function SectionsComparison({
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {item.section_name}
+                    {item.sectionName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.class_name} &bull; {item.quizzes_taken}{" "}
+                    {item.className} &bull; {item.quizzesTaken}{" "}
                     quiz
                   </p>
                 </div>
                 <div className="ml-3 flex items-center gap-1.5">
                   <ArrowDownRight className="h-4 w-4 text-red-500" />
                   <span
-                    className={`text-lg font-bold ${getGradeColor(item.average_score ?? 0)}`}
+                    className={`text-lg font-bold ${getGradeColor(item.averageScore ?? 0)}`}
                   >
-                    {formatThirtyScaleGrade(item.average_score ?? 0)}
+                    {formatThirtyScaleGrade(item.averageScore ?? 0)}
                   </span>
                 </div>
               </div>
@@ -92,19 +92,19 @@ export function SectionsComparison({
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {item.section_name}
+                    {item.sectionName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.class_name} &bull; {item.quizzes_taken}{" "}
+                    {item.className} &bull; {item.quizzesTaken}{" "}
                     quiz
                   </p>
                 </div>
                 <div className="ml-3 flex items-center gap-1.5">
                   <ArrowUpRight className="h-4 w-4 text-green-500" />
                   <span
-                    className={`text-lg font-bold ${getGradeColor(item.average_score ?? 0)}`}
+                    className={`text-lg font-bold ${getGradeColor(item.averageScore ?? 0)}`}
                   >
-                    {formatThirtyScaleGrade(item.average_score ?? 0)}
+                    {formatThirtyScaleGrade(item.averageScore ?? 0)}
                   </span>
                 </div>
               </div>

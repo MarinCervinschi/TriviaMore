@@ -37,7 +37,7 @@ import { ClassDetailSkeleton } from "@/components/skeletons"
 import { cn } from "@/lib/utils"
 import { useAddClass, useRemoveClass } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
-import { updateRecentClassFn } from "@/lib/user/server"
+import { updateRecentClassFn } from "@/lib/user/api"
 
 const StartExamDialog = lazy(
   () =>
