@@ -38,13 +38,11 @@ src/lib/server/errors.ts             AppError family — the messages users are 
 src/lib/catalog/                     cross-domain catalog queries (section chain, question pools)
 src/lib/auth/guards.ts               requireAuth / requireAdmin / requireSuperadmin
 src/lib/auth/checks.ts               section access gate (replaces the can_access_section RLS helper)
-src/lib/admin/server/access.ts       content-scoped authorization (MAINTAINER scoping)
+src/lib/admin/access.ts              content-scoped authorization (MAINTAINER scoping)
+src/start.ts                         global function middleware
 src/db/                              Drizzle client + schema
 src/routes/                          file-based routes
 ```
-
-Domains not yet migrated still use the old shape: a single `src/lib/<domain>/server.ts` on
-supabase-js, with snake_case view models.
 
 ### The three layers
 
@@ -67,21 +65,21 @@ view models.
 The full rationale, with the reasoning behind each rule, is in the `server-functions` skill — **use
 it when adding or moving a server function.**
 
-Middleware is per-endpoint (`.middleware([errorMiddleware, authMiddleware])`) rather than global,
-because `errorMiddleware` replaces unexpected errors with a generic message and the unmigrated
-domains still rely on `throw new Error("<italian message>")` reaching the toast. It moves to
-`createStart({ functionMiddleware })` in `src/start.ts` once every domain is migrated.
+`errorMiddleware` is registered globally in `src/start.ts`, so an endpoint only declares what it
+adds: `.middleware([authMiddleware])`. An `AppError` reaches the toast with its own message;
+anything else is logged and replaced, so **a message meant for the user must be an `AppError`**.
 
-## Refactor in progress — read #87 first
+## Data access
 
-Data access is moving from supabase-js to Drizzle and PostgREST is being closed. Both paths coexist
-until it lands: **check which one a file uses before editing.** Auth and Storage stay on supabase-js
-permanently. Issue #87 holds the plan, the ordering, the decisions behind it and a checkpoint of how
-far it has got; the phase issues hold the detail.
+Every query runs through Drizzle on a direct connection, as the service role. **RLS therefore never
+filters anything** — a read that used to be narrowed by a policy has to say so in a where clause.
+This caused three near-regressions during the migration; check `pg_policies` before trusting a query
+ported from the old code. Auth and Storage stay on supabase-js, and are all `src/lib/supabase/` still
+contains.
 
-Migrated so far: `quiz`, `browse`, `flashcard`, `catalog` and the section access gate — on Drizzle,
-with camelCase view models. Everything else (`admin`, `requests`, `user`, `notifications`, `legal`,
-`changelogs`, `sitemap`) is still on supabase-js with snake_case view models.
+Issue #87 holds the plan and the decisions; #89 (drop the `_detail` views) and #92 (close PostgREST
+at the edge) are what remain. `scripts/diff/` holds throwaway differential tests that replay the
+pre-Drizzle implementation against the same database — delete them once #91 is signed off.
 
 Automated testing is deliberately deferred until the refactor settles — see #109.
 
