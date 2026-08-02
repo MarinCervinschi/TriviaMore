@@ -1,13 +1,9 @@
 import { getCookies, setCookie } from "@tanstack/react-start/server"
 import { createServerClient } from "@supabase/ssr"
-import type { SupabaseClient } from "@supabase/supabase-js"
 
-import type { Database } from "./database.types"
-
-export type TypedSupabaseClient = SupabaseClient<Database>
-
+// Auth only. Every data path goes through Drizzle.
 export function createServerSupabaseClient() {
-  return createServerClient<Database>(
+  return createServerClient(
     process.env.VITE_SUPABASE_URL!,
     process.env.VITE_SUPABASE_ANON_KEY!,
     {
@@ -27,12 +23,4 @@ export function createServerSupabaseClient() {
       },
     },
   )
-}
-
-export function catalogQuery(supabase: TypedSupabaseClient) {
-  return supabase.schema("catalog")
-}
-
-export function quizQuery(supabase: TypedSupabaseClient) {
-  return supabase.schema("quiz")
 }

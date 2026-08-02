@@ -38,7 +38,7 @@ import {
   findNotificationScope,
 } from "../../src/lib/notifications/db/recipients.ts"
 import type { NotificationTarget } from "../../src/lib/notifications/db/recipients.ts"
-import { getCatalogAdmin, getSupabaseAdmin } from "../../src/lib/supabase/admin.ts"
+import { catalogRest, publicRest } from "./postgrest.ts"
 
 type Target = {
   label: string
@@ -60,7 +60,7 @@ function toNotificationTarget(target: Target): NotificationTarget {
 // ── Reference implementation #1: the old code, on supabase-js ──
 
 async function oldRecipientsViaPostgrest(target: Target): Promise<string[]> {
-  const supabaseAdmin = getSupabaseAdmin()
+  const supabaseAdmin = publicRest()
   const adminUserIds = new Set<string>()
 
   const { data: superadmins } = await supabaseAdmin
@@ -73,13 +73,13 @@ async function oldRecipientsViaPostgrest(target: Target): Promise<string[]> {
   let courseId = target.target_course_id
 
   if (target.target_section_id) {
-    const { data: section } = await getCatalogAdmin()
+    const { data: section } = await catalogRest()
       .from("sections")
       .select("class_id")
       .eq("id", target.target_section_id)
       .single()
     if (section) {
-      const { data: cc } = await getCatalogAdmin()
+      const { data: cc } = await catalogRest()
         .from("course_classes")
         .select("course_id")
         .eq("class_id", section.class_id)
@@ -90,7 +90,7 @@ async function oldRecipientsViaPostgrest(target: Target): Promise<string[]> {
   }
 
   if (target.target_class_id && !courseId) {
-    const { data: cc } = await getCatalogAdmin()
+    const { data: cc } = await catalogRest()
       .from("course_classes")
       .select("course_id")
       .eq("class_id", target.target_class_id)
@@ -100,14 +100,14 @@ async function oldRecipientsViaPostgrest(target: Target): Promise<string[]> {
   }
 
   if (courseId) {
-    const { data: maintainers } = await getCatalogAdmin()
+    const { data: maintainers } = await catalogRest()
       .from("course_maintainers")
       .select("user_id")
       .eq("course_id", courseId)
     for (const m of maintainers ?? []) adminUserIds.add(m.user_id)
 
     if (!departmentId) {
-      const { data: course } = await getCatalogAdmin()
+      const { data: course } = await catalogRest()
         .from("courses")
         .select("department_id")
         .eq("id", courseId)
@@ -117,7 +117,7 @@ async function oldRecipientsViaPostgrest(target: Target): Promise<string[]> {
   }
 
   if (departmentId) {
-    const { data: deptAdmins } = await getCatalogAdmin()
+    const { data: deptAdmins } = await catalogRest()
       .from("department_admins")
       .select("user_id")
       .eq("department_id", departmentId)

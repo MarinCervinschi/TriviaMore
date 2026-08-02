@@ -1,6 +1,6 @@
 ---
 name: server-functions
-description: How server functions are structured in TriviaMore — api/ endpoints, service flow, when a query earns a db/ file, middleware, errors, input validation and view models. Use whenever adding, moving, splitting or reviewing a createServerFn, a Drizzle query behind one, or a domain's api/service/db layout. Also use before migrating a domain off supabase-js.
+description: How server functions are structured in TriviaMore — api/ endpoints, service flow, when a query earns a db/ file, middleware, errors, input validation and view models. Use whenever adding, moving, splitting or reviewing a createServerFn, a Drizzle query behind one, or a domain's api/service/db layout.
 ---
 
 # Server functions
@@ -34,7 +34,7 @@ It declares middleware, validates input, calls a use case. Nothing else.
 
 ```ts
 export const startQuizFn = createServerFn({ method: "POST" })
-  .middleware([errorMiddleware, authMiddleware])
+  .middleware([authMiddleware])
   .inputValidator(startQuizSchema)
   .handler(({ data, context }) => startQuiz(context.user.id, data))
 ```
@@ -87,15 +87,15 @@ behind an interface. Neither transfers:
 | `authMiddleware` | requires a session, puts `context.user` (`id`, `email`) in scope |
 | `optionalAuthMiddleware` | `context.user` or `null` — for pages anonymous visitors can see |
 | `errorMiddleware` | logs the real error, re-throws `AppError` untouched, replaces anything else |
+| `adminMiddleware` / `superadminMiddleware` | load the profile, so `context.user` carries the role |
 
-Attach them per endpoint: `.middleware([errorMiddleware, authMiddleware])`. Not globally, because
-`errorMiddleware` masks unexpected errors and the domains still on supabase-js rely on
-`throw new Error("<italian message>")` reaching the toast. When every domain is migrated it moves to
-`createStart({ functionMiddleware: [...] })` in `src/start.ts`.
+`errorMiddleware` is registered globally in `src/start.ts` via
+`createStart({ functionMiddleware: [...] })`. An endpoint declares only what it adds —
+`.middleware([authMiddleware])`, or nothing at all.
 
 Roles beyond authentication stay where they are: `requireAuth` / `requireAdmin` /
-`requireSuperadmin` in `src/lib/auth/guards.ts`, MAINTAINER scoping in
-`src/lib/admin/server/access.ts`, section access in `src/lib/auth/checks.ts`.
+`requireSuperadmin` in `src/lib/auth/guards.ts`, MAINTAINER scoping in `src/lib/admin/access.ts`,
+section access in `src/lib/auth/checks.ts`.
 
 **Never wrap `createServerFn` in a factory.** The Vite plugin finds it by import binding; a wrapper
 like `authedFn({ ... })` compiles and then silently fails to register the function.
@@ -103,18 +103,19 @@ like `authedFn({ ... })` compiles and then silently fails to register the functi
 ## Errors
 
 `src/lib/server/errors.ts` — `AppError` with `Unauthorized`, `Forbidden`, `NotFound`, `Conflict`,
-`Invalid`. Its message is written for the user and reaches the toast verbatim. Anything else that
-escapes a handler is logged with its stack and replaced by a generic message, so a Postgres error
-never reaches the browser.
+`Invalid`, `Unavailable`. Its message is written for the user and reaches the toast verbatim.
+Anything else that escapes a handler is logged with its stack and replaced by a generic message, so a
+Postgres error never reaches the browser. **A message the user is supposed to read must therefore be
+an `AppError`** — a plain `throw new Error("…")` is masked.
 
-`rethrowPgError(err, { unique: "…" })` turns a constraint violation into a `Conflict` with a message
-worth reading, and re-throws everything else untouched.
+`rethrowUniqueViolation(err, "…")` turns a 23505 into a `Conflict` with a message worth reading, and
+re-throws everything else untouched.
 
 ## Input and output
 
 - Validate with a zod schema from `schemas.ts`, never a passthrough `(input: T) => input`.
-- View models are **camelCase** and derive from `$inferSelect`, not from
-  `src/lib/supabase/database.types.ts` — that file dies with PostgREST.
+- View models are **camelCase** and derive from `$inferSelect`. There is no generated
+  `database.types.ts` any more; it went out with the last PostgREST query.
 - Never ship a generated `fts` column to the client; select columns explicitly (`columns.ts`) when
   `select()` would include one.
 - Return `null` for "not found or not visible" on read endpoints whose route renders a not-found
@@ -129,10 +130,15 @@ pnpm smoke:writes          # write paths in a transaction, rolled back
 pnpm build                 # must leave no drizzle/pg in .output/public
 ```
 
-`tsc` proves nothing about SQL. Aliased subqueries in particular are silent: two joined tables with a
-`code` column will both render as `"alias"."code"` unless every column in the subquery gets an
-explicit alias — see `primaryCourseByClass` in `src/lib/catalog/db/course-classes.ts`. That bug was
-written once and only the smoke test caught it.
+`tsc` proves nothing about SQL. Two traps, both found the hard way and both invisible to the compiler:
+
+- **Aliased subqueries need an explicit alias per column.** Two joined tables with a `code` column
+  both render as `"alias"."code"` otherwise — see `primaryCourseByClass` in
+  `src/lib/catalog/db/course-classes.ts`.
+- **A `sql` template renders column references unqualified.** `sql\`… where ${courseClasses.classId}
+  = ${sections.classId}\`` becomes `where "class_id" = "class_id"` — ambiguous at best, silently
+  wrong at worst. Build correlated subqueries with the query builder (`exists(db.select()…)`), which
+  qualifies them; wrap the result in `sql<boolean>\`${…}\`` if you need to name its type.
 
 **Hard-reload the browser after moving or renaming a server function.** Its id is derived from the
 defining file and export name, and it is baked into the client module the browser already has. A tab
@@ -147,5 +153,6 @@ application bugs but are not:
 Decode the base64 in the URL to see which file and export the tab is asking for. The same applies in
 production for tabs left open across a deploy, since the id is a hash of the same two values.
 
-When migrating a domain off supabase-js, add its read paths to `scripts/smoke/read-endpoints.ts` as
-you go — that is the only automated check the project has until #109.
+Add every new read path to `scripts/smoke/read-endpoints.ts` — that is the only automated check the
+project has until #109. Endpoints that guard themselves with `requireAdmin()` cannot go there: the
+guard needs request cookies, so outside a request they fail before reaching the database.
