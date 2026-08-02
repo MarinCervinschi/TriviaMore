@@ -1,12 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { authMiddleware } from "@/lib/server/middleware/auth"
-import { errorMiddleware } from "@/lib/server/middleware/errors"
 
 import { reviseRequestSchema } from "../schemas"
 import { reviseRequest } from "../service/user-requests"
 
 export const reviseRequestFn = createServerFn({ method: "POST" })
-  .middleware([errorMiddleware, authMiddleware])
+  .middleware([authMiddleware])
   .inputValidator(reviseRequestSchema)
   .handler(({ data, context }) => reviseRequest(context.user.id, data))

@@ -1,12 +1,10 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { errorMiddleware } from "@/lib/server/middleware/errors"
 
 import { oauthProviderSchema } from "../schemas"
 
 export const oauthSignInFn = createServerFn({ method: "POST" })
-  .middleware([errorMiddleware])
   .inputValidator(oauthProviderSchema)
   .handler(async ({ data }) => {
     const { data: authData, error } = await createServerSupabaseClient().auth.signInWithOAuth({
