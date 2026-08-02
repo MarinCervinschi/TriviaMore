@@ -95,7 +95,13 @@ export async function createSection(input: SectionInput) {
 }
 
 export async function updateSection(id: string, updates: UpdateSectionInput) {
-  await requireContentManagerForSection(id)
+  const user = await requireContentManagerForSection(id)
+  // Visibility is a superadmin decision. Without this a maintainer could turn a
+  // section it manages private and then be locked out of it by the very guard
+  // above — and, worse, decide unilaterally who can read it.
+  if (user.role === "MAINTAINER" && updates.is_public === false) {
+    throw new Forbidden("I maintainer non possono rendere privata una sezione.")
+  }
 
   const [section] = await getDb()
     .update(sections)

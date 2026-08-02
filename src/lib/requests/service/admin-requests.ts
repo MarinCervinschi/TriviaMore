@@ -1,10 +1,10 @@
-import { and, count, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, count, desc, eq, sql } from "drizzle-orm"
 
 import { getDb } from "@/db"
 import { contentRequests, questions, sections } from "@/db/schema"
 import { createNotification } from "@/lib/notifications/service"
 import { getSupabaseAdmin } from "@/lib/supabase/admin"
-import { Conflict, Forbidden, Invalid, NotFound } from "@/lib/server/errors"
+import { Conflict, Invalid, NotFound } from "@/lib/server/errors"
 
 import type {
   AdminContentRequest,
@@ -16,8 +16,8 @@ import {
   findRequestOrThrow,
   findRequestUsers,
   generateTitle,
-  isInScope,
   parseSubmittedContent,
+  requestScope,
   requireRequestAdmin,
   resolveTargetLabels,
   targetKey,
@@ -35,11 +35,7 @@ export async function getAdminRequests(): Promise<AdminContentRequest[]> {
   const rows = await db
     .select()
     .from(contentRequests)
-    .where(
-      scopeCourseIds
-        ? inArray(contentRequests.targetCourseId, [...scopeCourseIds])
-        : undefined,
-    )
+    .where(requestScope(db, scopeCourseIds))
     .orderBy(desc(contentRequests.createdAt))
 
   const [labels, users] = await Promise.all([
@@ -63,16 +59,15 @@ export async function getAdminRequests(): Promise<AdminContentRequest[]> {
 export async function getAdminRequestCount(): Promise<number> {
   const { scopeCourseIds } = await requireRequestAdmin()
   if (scopeCourseIds && scopeCourseIds.size === 0) return 0
+  const db = getDb()
 
-  const [row] = await getDb()
+  const [row] = await db
     .select({ value: count() })
     .from(contentRequests)
     .where(
       and(
         eq(contentRequests.status, "PENDING"),
-        scopeCourseIds
-          ? inArray(contentRequests.targetCourseId, [...scopeCourseIds])
-          : undefined,
+        requestScope(db, scopeCourseIds),
       ),
     )
 
@@ -92,9 +87,7 @@ export async function getRequestDetail(
   let handledByUser = null
   if (request.userId !== userId) {
     const { scopeCourseIds } = await requireRequestAdmin()
-    if (!isInScope(scopeCourseIds, request.targetCourseId)) {
-      throw new Forbidden("Non hai i permessi per gestire questa richiesta.")
-    }
+    await assertInScope(db, scopeCourseIds, request)
 
     const users = await findRequestUsers(
       db,
@@ -147,7 +140,7 @@ export async function handleRequest(input: {
 
   await getDb().transaction(async (tx) => {
     const request = await findRequestOrThrow(tx, input.id)
-    assertInScope(scopeCourseIds, request.targetCourseId)
+    await assertInScope(tx, scopeCourseIds, request)
 
     await tx
       .update(contentRequests)
@@ -183,7 +176,7 @@ export async function approveRequest(id: string) {
 
   await getDb().transaction(async (tx) => {
     const target = await findRequestOrThrow(tx, id)
-    assertInScope(scopeCourseIds, target.targetCourseId)
+    await assertInScope(tx, scopeCourseIds, target)
 
     // Atomic claim: PENDING → APPROVED in one statement, so two concurrent
     // clicks cannot both go on to insert catalog content. Inside a transaction a
@@ -256,7 +249,7 @@ export async function acknowledgeRequest(input: {
 
   await getDb().transaction(async (tx) => {
     const request = await findRequestOrThrow(tx, input.id)
-    assertInScope(scopeCourseIds, request.targetCourseId)
+    await assertInScope(tx, scopeCourseIds, request)
 
     const note = input.admin_note?.trim() || null
 
