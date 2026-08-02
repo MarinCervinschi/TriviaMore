@@ -16,9 +16,9 @@ export function getNormalizedEvaluationScale(
 ) {
   const safeN = Math.max(1, totalQuestions)
   const minRatio =
-    evaluationMode.correct_answer_points > 0
-      ? evaluationMode.incorrect_answer_points /
-        evaluationMode.correct_answer_points
+    evaluationMode.correctAnswerPoints > 0
+      ? evaluationMode.incorrectAnswerPoints /
+        evaluationMode.correctAnswerPoints
       : 0
   const maxScaled = THIRTY_SCALE_MAX
   const minScaled = Math.round(minRatio * THIRTY_SCALE_MAX)
@@ -29,7 +29,7 @@ export function getNormalizedEvaluationScale(
     minScaled,
     perQuestionMax,
     perQuestionMin,
-    hasPenalty: evaluationMode.incorrect_answer_points < 0,
+    hasPenalty: evaluationMode.incorrectAnswerPoints < 0,
   }
 }
 
@@ -41,10 +41,10 @@ export function scaleAnswerScore(
   evaluationMode: EvaluationMode,
   totalQuestions: number,
 ): number {
-  if (evaluationMode.correct_answer_points <= 0) return 0
+  if (evaluationMode.correctAnswerPoints <= 0) return 0
   const safeN = Math.max(1, totalQuestions)
   const perQuestionMax = THIRTY_SCALE_MAX / safeN
-  return (rawScore / evaluationMode.correct_answer_points) * perQuestionMax
+  return (rawScore / evaluationMode.correctAnswerPoints) * perQuestionMax
 }
 
 export function formatScaledScore(n: number): string {
@@ -83,35 +83,35 @@ export function calculateAnswerScore(
     totalGiven === totalCorrect
   ) {
     return {
-      score: evaluationMode.correct_answer_points,
+      score: evaluationMode.correctAnswerPoints,
       isCorrect: true,
     }
   }
 
   // Partial credit
   if (correctGiven > 0) {
-    if (evaluationMode.partial_credit_enabled) {
+    if (evaluationMode.partialCreditEnabled) {
       if (
         incorrectGiven > 0 &&
-        evaluationMode.incorrect_answer_points === 0
+        evaluationMode.incorrectAnswerPoints === 0
       ) {
         return { score: 0, isCorrect: false }
       }
 
       const correctnessRatio = correctGiven / totalCorrect
       let score =
-        evaluationMode.correct_answer_points * correctnessRatio
+        evaluationMode.correctAnswerPoints * correctnessRatio
 
       if (
         incorrectGiven > 0 &&
-        evaluationMode.incorrect_answer_points < 0
+        evaluationMode.incorrectAnswerPoints < 0
       ) {
         const penalty =
           incorrectGiven *
-          Math.abs(evaluationMode.incorrect_answer_points)
+          Math.abs(evaluationMode.incorrectAnswerPoints)
         score = Math.max(
           score - penalty,
-          evaluationMode.incorrect_answer_points,
+          evaluationMode.incorrectAnswerPoints,
         )
       }
 
@@ -121,7 +121,7 @@ export function calculateAnswerScore(
   }
 
   return {
-    score: evaluationMode.incorrect_answer_points,
+    score: evaluationMode.incorrectAnswerPoints,
     isCorrect: false,
   }
 }
@@ -154,7 +154,7 @@ export function calculateQuizResults(params: {
 
     const { score, isCorrect } = calculateAnswerScore(
       userAnswer.answer,
-      question.correct_answer,
+      question.correctAnswer,
       evaluationMode,
     )
 
@@ -165,7 +165,7 @@ export function calculateQuizResults(params: {
   })
 
   const maxScore =
-    questions.length * evaluationMode.correct_answer_points
+    questions.length * evaluationMode.correctAnswerPoints
   const normalizedScore =
     maxScore > 0 ? Math.round((totalScore / maxScore) * 33) : 0
 
@@ -181,7 +181,7 @@ export function calculateQuizResults(params: {
       id: q.id,
       content: q.content,
       options: q.options,
-      correctAnswer: q.correct_answer,
+      correctAnswer: q.correctAnswer,
     })),
     answers: answersWithResults.map((a) => ({
       questionId: a.questionId,

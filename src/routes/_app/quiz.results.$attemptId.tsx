@@ -48,17 +48,17 @@ function ResultsPage() {
 
   if (!result) return null
 
-  const evalMode = result.quiz.evaluation_mode
+  const evalMode = result.quiz.evaluationMode
   const totalQuestions = result.quiz.questions.length
   const { perQuestionMax, perQuestionMin, hasPenalty } =
     getNormalizedEvaluationScale(evalMode, totalQuestions)
 
   const counts = result.answers.reduce(
     (acc, a) => {
-      const q = result.quiz.questions.find((q) => q.id === a.question_id)
+      const q = result.quiz.questions.find((q) => q.id === a.questionId)
       if (!q) return acc
-      const userSet = new Set(a.user_answer)
-      const correctSet = new Set(q.correct_answer)
+      const userSet = new Set(a.userAnswer)
+      const correctSet = new Set(q.correctAnswer)
       const isExact =
         userSet.size === correctSet.size &&
         [...userSet].every((v) => correctSet.has(v))
@@ -83,7 +83,7 @@ function ResultsPage() {
 
           <p className="relative mb-1 text-sm text-muted-foreground">
             {result.quiz.section.name} &bull;{" "}
-            {result.quiz.section.course_name}
+            {result.quiz.section.courseName}
           </p>
           <p
             className={cn(
@@ -116,8 +116,8 @@ function ResultsPage() {
             <div className="rounded-2xl bg-muted/50 p-4">
               <Clock className="mx-auto mb-2 h-5 w-5 text-blue-500" />
               <p className="text-2xl font-bold">
-                {result.time_spent
-                  ? formatTimeSpent(result.time_spent)
+                {result.timeSpent
+                  ? formatTimeSpent(result.timeSpent)
                   : "N/A"}
               </p>
               <p className="text-xs text-muted-foreground">Tempo</p>
@@ -156,11 +156,11 @@ function ResultsPage() {
           <div className="space-y-3">
             {result.quiz.questions.map((question, index) => {
               const answer = result.answers.find(
-                (a) => a.question_id === question.id,
+                (a) => a.questionId === question.id,
               )
-              const userAnswers = answer?.user_answer ?? []
+              const userAnswers = answer?.userAnswer ?? []
               const userAnswerSet = new Set(userAnswers)
-              const correctAnswerSet = new Set(question.correct_answer)
+              const correctAnswerSet = new Set(question.correctAnswer)
               const isCorrect =
                 userAnswerSet.size === correctAnswerSet.size &&
                 [...userAnswerSet].every((v) => correctAnswerSet.has(v))
@@ -212,7 +212,7 @@ function ReviewItem({
     id: string
     content: string
     options: string[] | null
-    correct_answer: string[]
+    correctAnswer: string[]
     explanation: string | null
   }
   userAnswerSet: Set<string>
@@ -266,7 +266,7 @@ function ReviewItem({
               {options.map((option, optIndex) => {
                 const isOptionCorrect = isCorrectOption(
                   option.id,
-                  question.correct_answer,
+                  question.correctAnswer,
                 )
                 const isSelected = userAnswerSet.has(option.id)
 

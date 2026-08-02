@@ -6,7 +6,7 @@ import {
   getEvaluationModesFn,
   getQuizFn,
   getQuizResultsFn,
-} from "./server"
+} from "./api"
 
 export const quizQueries = {
   quiz: (quizId: string) =>

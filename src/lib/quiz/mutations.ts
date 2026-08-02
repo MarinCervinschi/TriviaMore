@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { toast } from "sonner"
 
-import { startQuizFn } from "./server"
+import { startQuizFn } from "./api"
 
 export function useStartQuiz(onSuccess?: () => void) {
   const navigate = useNavigate()

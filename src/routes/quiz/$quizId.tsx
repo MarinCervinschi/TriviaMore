@@ -12,7 +12,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { QuizPlaySkeleton } from "@/components/skeletons"
 import { quizQueries } from "@/lib/quiz/queries"
 import { calculateQuizResults } from "@/lib/quiz/scoring"
-import { completeQuizFn, cancelQuizFn } from "@/lib/quiz/server"
+import { completeQuizFn, cancelQuizFn } from "@/lib/quiz/api"
 import type { Quiz, UserAnswer } from "@/lib/quiz/types"
 
 export const Route = createFileRoute("/quiz/$quizId")({
@@ -63,7 +63,7 @@ function QuizPage() {
   )
 
   const handleComplete = useCallback(async () => {
-    if (!quiz || !quiz.attempt_id) return
+    if (!quiz || !quiz.attemptId) return
     if (isCompletingRef.current) return
     isCompletingRef.current = true
     setIsCompleting(true)
@@ -71,7 +71,7 @@ function QuizPage() {
     const quizResults = calculateQuizResults({
       userAnswers,
       questions: quiz.questions,
-      evaluationMode: quiz.evaluation_mode,
+      evaluationMode: quiz.evaluationMode,
       startTime,
       quizId: quiz.id,
       quizTitle: `Quiz: ${quiz.section.name}`,
@@ -80,7 +80,7 @@ function QuizPage() {
     try {
       const { attemptId } = await completeQuizFn({
         data: {
-          quizAttemptId: quiz.attempt_id,
+          quizAttemptId: quiz.attemptId,
           answers: quizResults.answers.map((a) => ({
             questionId: a.questionId,
             userAnswer: a.answer,
@@ -104,9 +104,9 @@ function QuizPage() {
   }, [quiz, userAnswers, startTime, navigate, queryClient])
 
   const confirmExit = useCallback(async () => {
-    if (quiz?.attempt_id) {
+    if (quiz?.attemptId) {
       try {
-        await cancelQuizFn({ data: { quizAttemptId: quiz.attempt_id } })
+        await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } })
       } catch {
         // Ignore cancel errors
       }
@@ -168,7 +168,7 @@ function QuizPage() {
       <QuizHeader
         questionIndex={currentIndex}
         totalQuestions={quiz.questions.length}
-        timeLimit={quiz.time_limit}
+        timeLimit={quiz.timeLimit}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={toggleSidebar}
         onTimeUp={handleComplete}
