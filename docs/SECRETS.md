@@ -66,3 +66,10 @@ deploy leaves the previous one running. It does not start and then serve errors.
 On Coolify, enable **Docker Build Secrets** in the application's environment settings: the five
 variables are then passed as BuildKit secret mounts instead of `--build-arg`, and never reach an
 image layer.
+
+### CLI version pin
+
+`INFISICAL_CLI_VERSION` in the Dockerfile is pinned to the API version our self-hosted Infisical
+speaks. From `0.43.107` the CLI requests `/api/v4/secrets`, which an older server answers with a 404
+and the build fails after a successful login. **Bump the pin only together with the server**, and
+keep it in step with the CLI you run locally (`infisical --version`).
