@@ -69,7 +69,11 @@ image layer.
 
 ### CLI version pin
 
-`INFISICAL_CLI_VERSION` in the Dockerfile is pinned to the API version our self-hosted Infisical
-speaks. From `0.43.107` the CLI requests `/api/v4/secrets`, which an older server answers with a 404
-and the build fails after a successful login. **Bump the pin only together with the server**, and
-keep it in step with the CLI you run locally (`infisical --version`).
+`INFISICAL_CLI_VERSION` is pinned for reproducibility: an unpinned `apt-get install infisical` means
+the same commit builds a different image whenever a new CLI ships. Bump it deliberately.
+
+It is **not** pinned for compatibility — every 0.43.x fetches secrets from `/api/v4/secrets`. What
+matters is the server: an Infisical without that route answers `404 Route not found`, and the build
+fails immediately after a *successful* login, which reads like an auth problem and isn't. Check with
+`curl -o /dev/null -w '%{http_code}' https://<instance>/api/v4/secrets` — 401 means the route exists,
+404 means the server is too old. v0.154.6 serves both v3 and v4.
