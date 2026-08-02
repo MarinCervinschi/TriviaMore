@@ -38,7 +38,7 @@ export const Route = createFileRoute(
     const sectionName = loaderData?.name ?? "Sezione"
     const className = loaderData?.class?.name
     const courseName = loaderData?.class?.course?.name
-    const questionCount = loaderData?.question_count ?? 0
+    const questionCount = loaderData?.questionCount ?? 0
     const titleSuffix = className ? ` – ${className}` : ""
     const fallbackDesc = className
       ? `${questionCount} domande di ${sectionName} per l'esame di ${className}${courseName ? ` (${courseName})` : ""} a UniMore. Modalità studio o simulazione esame su TriviaMore.`
@@ -114,19 +114,19 @@ function SectionPage() {
         badges={
           <>
             <Badge variant="secondary" className="text-xs">
-              {section.question_count}{" "}
-              {section.question_count === 1 ? "domanda" : "domande"}
+              {section.questionCount}{" "}
+              {section.questionCount === 1 ? "domanda" : "domande"}
             </Badge>
-            {section.quiz_question_count > 0 && (
+            {section.quizQuestionCount > 0 && (
               <Badge className="gap-1 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
                 <BookOpen className="h-3 w-3" />
-                {section.quiz_question_count} quiz
+                {section.quizQuestionCount} quiz
               </Badge>
             )}
-            {section.flashcard_question_count > 0 && (
+            {section.flashcardQuestionCount > 0 && (
               <Badge className="gap-1 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
                 <Sparkles className="h-3 w-3" />
-                {section.flashcard_question_count} flashcard
+                {section.flashcardQuestionCount} flashcard
               </Badge>
             )}
           </>
@@ -140,8 +140,8 @@ function SectionPage() {
         }
       />
       <div className="container pt-8">
-        {section.quiz_question_count === 0 &&
-        section.flashcard_question_count === 0 ? (
+        {section.quizQuestionCount === 0 &&
+        section.flashcardQuestionCount === 0 ? (
           <BrowseContributeState message="Nessuna domanda disponibile per questa sezione.">
             <RequestFormDialog
               defaultTargetClassId={section.class.id}
@@ -151,11 +151,11 @@ function SectionPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             <QuizCard
-              questionCount={section.quiz_question_count}
+              questionCount={section.quizQuestionCount}
               sectionId={section.id}
             />
             <FlashcardCard
-              questionCount={section.flashcard_question_count}
+              questionCount={section.flashcardQuestionCount}
               sectionId={section.id}
             />
           </div>

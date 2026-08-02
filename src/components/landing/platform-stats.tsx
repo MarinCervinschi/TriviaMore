@@ -15,7 +15,7 @@ import {
   staggerItem,
   withReducedMotion,
 } from "@/lib/motion"
-import type { PlatformStats } from "@/lib/browse/server"
+import type { PlatformStats } from "@/lib/browse/types"
 import type { LucideIcon } from "lucide-react"
 
 function useAnimatedCounter(

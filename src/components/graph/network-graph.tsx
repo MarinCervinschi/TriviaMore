@@ -133,9 +133,9 @@ export function NetworkGraph({ data, filters = EMPTY_FILTERS }: NetworkGraphProp
     }))
 
     const courseNodes: GraphNode[] = data.courses
-      .filter((c) => deptById.has(c.department_id))
+      .filter((c) => deptById.has(c.departmentId))
       .map((c) => {
-        const dept = deptById.get(c.department_id)!
+        const dept = deptById.get(c.departmentId)!
         return {
           id: `course-${c.id}`,
           label: shortenCourseLabel(c.name),
@@ -145,7 +145,7 @@ export function NetworkGraph({ data, filters = EMPTY_FILTERS }: NetworkGraphProp
             deptCode: dept.code,
             courseCode: c.code,
             name: c.name,
-            courseType: c.course_type,
+            courseType: c.courseType,
           } satisfies NodeMeta,
         }
       })
@@ -157,15 +157,15 @@ export function NetworkGraph({ data, filters = EMPTY_FILTERS }: NetworkGraphProp
     }))
 
     const courseDeptEdges: GraphEdge[] = data.courses
-      .filter((c) => deptById.has(c.department_id))
+      .filter((c) => deptById.has(c.departmentId))
       .map((c) => ({
         id: `dept-course-${c.id}`,
-        source: `dept-${c.department_id}`,
+        source: `dept-${c.departmentId}`,
         target: `course-${c.id}`,
       }))
 
     const courseRootEdges: GraphEdge[] = data.courses
-      .filter((c) => deptById.has(c.department_id))
+      .filter((c) => deptById.has(c.departmentId))
       .map((c) => ({
         id: `root-course-${c.id}`,
         source: ROOT_NODE_ID,

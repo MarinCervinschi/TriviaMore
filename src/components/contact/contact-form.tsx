@@ -29,7 +29,7 @@ import {
   contactTypeOptions,
   type ContactInput,
 } from "@/lib/browse/contact-schema"
-import { submitContactFn } from "@/lib/browse/server"
+import { submitContactFn } from "@/lib/browse/api"
 
 export function ContactForm() {
   const { user, isAuthenticated } = useAuth()

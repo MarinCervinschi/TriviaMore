@@ -43,7 +43,7 @@ export function DepartmentMap({ locations }: { locations: DepartmentLocation[] }
 
   if (locations.length === 0) return null
 
-  const center = locations.find((l) => l.is_primary) ?? locations[0]
+  const center = locations.find((l) => l.isPrimary) ?? locations[0]
   const mapTheme = resolvedTheme === "dark" ? "dark" : "light"
 
   return (
@@ -77,9 +77,9 @@ export function DepartmentMap({ locations }: { locations: DepartmentLocation[] }
                   <div className="min-w-[220px] space-y-2">
                     <p className="font-semibold text-sm leading-snug">{location.name}</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">{location.address}</p>
-                    {location.campus_location && (
+                    {location.campusLocation && (
                       <Badge variant="secondary" className="text-xs">
-                        {CAMPUS_LOCATION_CONFIG[location.campus_location]?.label ?? location.campus_location}
+                        {CAMPUS_LOCATION_CONFIG[location.campusLocation]?.label ?? location.campusLocation}
                       </Badge>
                     )}
                   </div>

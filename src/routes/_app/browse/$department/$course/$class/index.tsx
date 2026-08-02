@@ -120,7 +120,7 @@ function ClassPage() {
   if (!classData) return null
 
   const totalQuestions = classData.sections.reduce(
-    (sum, s) => sum + s.question_count,
+    (sum, s) => sum + s.questionCount,
     0,
   )
 
@@ -164,19 +164,19 @@ function ClassPage() {
         description={classData.description}
         badges={
           <>
-            {COURSE_TYPE_CONFIG[classData.course.course_type] && (
+            {COURSE_TYPE_CONFIG[classData.course.courseType] && (
               <Badge
                 className={cn(
                   "text-xs",
-                  COURSE_TYPE_CONFIG[classData.course.course_type].className,
+                  COURSE_TYPE_CONFIG[classData.course.courseType].className,
                 )}
               >
-                {COURSE_TYPE_CONFIG[classData.course.course_type].label}
+                {COURSE_TYPE_CONFIG[classData.course.courseType].label}
               </Badge>
             )}
-            {classData.courseClass?.class_year && (
+            {classData.courseClass?.classYear && (
               <Badge variant="outline" className="text-xs">
-                Anno {classData.courseClass.class_year}
+                Anno {classData.courseClass.classYear}
               </Badge>
             )}
             {classData.courseClass && (
@@ -208,9 +208,9 @@ function ClassPage() {
                 {classData.courseClass.curriculum}
               </Badge>
             )}
-            {classData.courseClass?.catalogue_url && (
+            {classData.courseClass?.catalogueUrl && (
               <a
-                href={classData.courseClass.catalogue_url}
+                href={classData.courseClass.catalogueUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
@@ -289,7 +289,9 @@ function ClassPage() {
         <>
         <BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
           {paged.map((section) => {
-            const sectionSlug = section.slug
+            // The slug is generated from the name, which is NOT NULL, so it is
+            // only nullable as far as the column definition is concerned.
+            const sectionSlug = section.slug ?? ""
             return (
               <tr key={section.id} className="group">
                 <td className="pl-6 py-4">
@@ -304,7 +306,7 @@ function ClassPage() {
                     className="block"
                   >
                     <span className="flex items-center gap-2 font-medium text-foreground group-hover:text-primary transition-colors">
-                      {!section.is_public && (
+                      {!section.isPublic && (
                         <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                       )}
                       {section.name}
@@ -312,27 +314,27 @@ function ClassPage() {
                   </Link>
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center">
-                  {section.quiz_question_count > 0 ? (
+                  {section.quizQuestionCount > 0 ? (
                     <Badge className="gap-1.5 bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
                       <BookOpen className="h-3 w-3" />
-                      {section.quiz_question_count}
+                      {section.quizQuestionCount}
                     </Badge>
                   ) : (
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center">
-                  {section.flashcard_question_count > 0 ? (
+                  {section.flashcardQuestionCount > 0 ? (
                     <Badge className="gap-1.5 bg-purple-500/10 text-purple-600 border-purple-500/20 text-xs">
                       <Sparkles className="h-3 w-3" />
-                      {section.flashcard_question_count}
+                      {section.flashcardQuestionCount}
                     </Badge>
                   ) : (
                     <span className="text-xs text-muted-foreground/50">—</span>
                   )}
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-center text-sm text-muted-foreground">
-                  {section.question_count}
+                  {section.questionCount}
                 </td>
                 <td className="pr-6 py-4">
                   <Link

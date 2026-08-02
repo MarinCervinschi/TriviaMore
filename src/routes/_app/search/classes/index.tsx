@@ -288,7 +288,7 @@ function SearchClassesPage() {
                 ]}
               >
                 {results.map((cls) => {
-                  const sectionCount = cls.sections[0]?.count ?? 0
+                  const sectionCount = cls.sectionCount
                   return (
                     <motion.tr
                       key={`${cls.id}-${cls.code}`}
@@ -322,7 +322,7 @@ function SearchClassesPage() {
                         <Badge variant="outline" className="text-xs">{cls.course.code}</Badge>
                       </td>
                       <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
-                        <span className="text-sm text-muted-foreground">{cls.class_year}°</span>
+                        <span className="text-sm text-muted-foreground">{cls.classYear}°</span>
                       </td>
                       <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-center">
                         {cls.cfu ? (

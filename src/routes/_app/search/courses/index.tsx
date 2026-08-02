@@ -258,8 +258,8 @@ function SearchCoursesPage() {
                 ]}
               >
                 {results.map((course) => {
-                  const typeConf = COURSE_TYPE_CONFIG[course.course_type]
-                  const classCount = course.course_classes[0]?.count ?? 0
+                  const typeConf = COURSE_TYPE_CONFIG[course.courseType]
+                  const classCount = course.classCount
                   return (
                     <motion.tr
                       key={course.id}
@@ -290,7 +290,7 @@ function SearchCoursesPage() {
                         {typeConf ? (
                           <Badge className={cn("text-xs", typeConf.className)}>{typeConf.label}</Badge>
                         ) : (
-                          <span className="text-xs text-muted-foreground">{course.course_type}</span>
+                          <span className="text-xs text-muted-foreground">{course.courseType}</span>
                         )}
                       </td>
                       <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-center">
