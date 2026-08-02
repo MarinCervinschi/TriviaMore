@@ -1,33 +1,38 @@
-import { getCatalogAdmin } from "@/lib/supabase/admin"
+import { and, eq, inArray } from "drizzle-orm"
+
+import { getDb } from "@/db"
+import { sectionAccess, sections } from "@/db/schema"
+import { findSectionById } from "@/lib/catalog/db/sections"
+import { Forbidden } from "@/lib/server/errors"
 
 // Application-layer replacement for the catalog.can_access_section() RLS helper.
-// Content reads currently go through the RLS client, so the database still
-// filters private sections; once they move to Drizzle on a service-role
-// connection that filter is gone and only these checks remain. They use the
-// service-role client deliberately: the answer must not depend on RLS.
+// Reads now run on a service-role Drizzle connection, where the database no
+// longer filters private sections: these checks are the only thing left between
+// a section id in a URL and its questions.
+
+async function grantedSectionIds(userId: string, sectionIds: string[]) {
+  const rows = await getDb()
+    .select({ sectionId: sectionAccess.sectionId })
+    .from(sectionAccess)
+    .where(
+      and(
+        eq(sectionAccess.userId, userId),
+        inArray(sectionAccess.sectionId, sectionIds),
+      ),
+    )
+  return rows.map((row) => row.sectionId)
+}
 
 export async function canAccessSection(
   userId: string | null,
   sectionId: string,
 ): Promise<boolean> {
-  const { data: section } = await getCatalogAdmin()
-    .from("sections")
-    .select("is_public")
-    .eq("id", sectionId)
-    .maybeSingle()
-
+  const section = await findSectionById(getDb(), sectionId)
   if (!section) return false
-  if (section.is_public) return true
+  if (section.isPublic) return true
   if (!userId) return false
 
-  const { data: grant } = await getCatalogAdmin()
-    .from("section_access")
-    .select("section_id")
-    .eq("user_id", userId)
-    .eq("section_id", sectionId)
-    .maybeSingle()
-
-  return grant !== null
+  return (await grantedSectionIds(userId, [sectionId])).length > 0
 }
 
 export async function assertSectionAccess(
@@ -35,7 +40,7 @@ export async function assertSectionAccess(
   sectionId: string,
 ): Promise<void> {
   if (!(await canAccessSection(userId, sectionId))) {
-    throw new Error("Non hai accesso a questa sezione")
+    throw new Forbidden("Non hai accesso a questa sezione")
   }
 }
 
@@ -47,25 +52,22 @@ export async function filterAccessibleSections(
 ): Promise<Set<string>> {
   if (sectionIds.length === 0) return new Set()
 
-  const { data: sections } = await getCatalogAdmin()
-    .from("sections")
-    .select("id, is_public")
-    .in("id", sectionIds)
+  const visibility = await getDb()
+    .select({ id: sections.id, isPublic: sections.isPublic })
+    .from(sections)
+    .where(inArray(sections.id, sectionIds))
 
   const allowed = new Set<string>()
   const restricted: string[] = []
-  for (const section of sections ?? []) {
-    if (section.is_public) allowed.add(section.id)
+  for (const section of visibility) {
+    if (section.isPublic) allowed.add(section.id)
     else restricted.push(section.id)
   }
 
   if (restricted.length > 0 && userId) {
-    const { data: grants } = await getCatalogAdmin()
-      .from("section_access")
-      .select("section_id")
-      .eq("user_id", userId)
-      .in("section_id", restricted)
-    for (const grant of grants ?? []) allowed.add(grant.section_id)
+    for (const sectionId of await grantedSectionIds(userId, restricted)) {
+      allowed.add(sectionId)
+    }
   }
 
   return allowed

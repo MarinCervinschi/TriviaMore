@@ -3,7 +3,12 @@ import { Pool } from "pg"
 
 import * as schema from "./schema"
 
-type Db = ReturnType<typeof createDb>
+export type Db = ReturnType<typeof createDb>
+export type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0]
+
+// Every db/ function takes this as its first argument, so the same query runs
+// standalone or inside a transaction.
+export type DbOrTx = Db | Tx
 
 let _pool: Pool | null = null
 let _db: Db | null = null
