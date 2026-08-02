@@ -46,7 +46,7 @@ export function QuestionCard({
   const options = parseOptions(question.options)
 
   const handleOptionToggle = (optionId: string) => {
-    if (question.question_type === "TRUE_FALSE") {
+    if (question.questionType === "TRUE_FALSE") {
       if (selectedAnswers.includes(optionId)) {
         onAnswerChange([])
       } else {
@@ -90,7 +90,7 @@ export function QuestionCard({
       </div>
 
       {/* Options */}
-      {question.question_type === "TRUE_FALSE" ? (
+      {question.questionType === "TRUE_FALSE" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {options.map((option) => (
             <button

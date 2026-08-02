@@ -186,7 +186,7 @@ export function EvalBlock({ mode, questionCount }: EvalBlockProps) {
           />
         )}
 
-        {mode.partial_credit_enabled && (
+        {mode.partialCreditEnabled && (
           <div className="flex items-center justify-between border-t border-border/50 pt-2">
             <span className="text-[11px] font-medium text-muted-foreground">
               Credito parziale

@@ -1,42 +1,49 @@
-export type QuizQuestion = {
-  id: string
-  content: string
-  question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-  options: string[] | null
-  correct_answer: string[]
-  explanation: string | null
-  difficulty: "EASY" | "MEDIUM" | "HARD"
+import type { evaluationModes, questions, quizzes } from "@/db/schema"
+
+type QuestionRow = typeof questions.$inferSelect
+
+export type QuizMode = (typeof quizzes.$inferSelect)["quizMode"]
+
+export type EvaluationMode = Pick<
+  typeof evaluationModes.$inferSelect,
+  | "id"
+  | "name"
+  | "description"
+  | "correctAnswerPoints"
+  | "incorrectAnswerPoints"
+  | "partialCreditEnabled"
+>
+
+export type QuizQuestion = Pick<
+  QuestionRow,
+  | "id"
+  | "content"
+  | "questionType"
+  | "options"
+  | "correctAnswer"
+  | "explanation"
+  | "difficulty"
+> & {
   order: number
 }
 
 export type QuizSection = {
   id: string
   name: string
-  class: {
-    name: string
-  }
-  course_name: string | null
-  department_name: string | null
+  className: string
+  courseName: string | null
+  departmentName: string | null
   path: string | null
-}
-
-export type EvaluationMode = {
-  id: string
-  name: string
-  description: string | null
-  correct_answer_points: number
-  incorrect_answer_points: number
-  partial_credit_enabled: boolean
 }
 
 export type Quiz = {
   id: string
-  time_limit: number | null
-  quiz_mode: "STUDY" | "EXAM_SIMULATION"
-  evaluation_mode: EvaluationMode
+  timeLimit: number | null
+  quizMode: QuizMode
+  evaluationMode: EvaluationMode
   section: QuizSection
   questions: QuizQuestion[]
-  attempt_id?: string
+  attemptId?: string
 }
 
 export type UserAnswer = {
@@ -46,6 +53,7 @@ export type UserAnswer = {
   score?: number
 }
 
+// Computed on the client when a run ends, then submitted.
 export type QuizResults = {
   totalScore: number
   correctAnswers: number
@@ -71,27 +79,19 @@ export type QuizResults = {
 export type QuizAttemptResult = {
   id: string
   score: number
-  time_spent: number | null
-  completed_at: string
+  timeSpent: number | null
+  completedAt: string
   quiz: {
     id: string
-    quiz_mode: "STUDY" | "EXAM_SIMULATION"
-    time_limit: number | null
+    quizMode: QuizMode
+    timeLimit: number | null
     section: QuizSection
-    evaluation_mode: EvaluationMode
-    questions: {
-      id: string
-      content: string
-      question_type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER"
-      options: string[] | null
-      correct_answer: string[]
-      explanation: string | null
-      difficulty: "EASY" | "MEDIUM" | "HARD"
-    }[]
+    evaluationMode: EvaluationMode
+    questions: Omit<QuizQuestion, "order">[]
   }
   answers: {
-    question_id: string
-    user_answer: string[]
+    questionId: string
+    userAnswer: string[]
     score: number
   }[]
 }
