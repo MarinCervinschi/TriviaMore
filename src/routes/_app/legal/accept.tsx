@@ -5,14 +5,14 @@ import { Loader2, LogOut, ShieldCheck, Sparkles } from "lucide-react"
 
 import { AcceptanceCheckboxes } from "@/components/legal/acceptance-checkboxes"
 import { Button } from "@/components/ui/button"
-import { requireAuth } from "@/lib/auth/guards"
-import { logoutFn } from "@/lib/auth/server"
+import { requireAuthFn } from "@/lib/auth/api"
+import { logoutFn } from "@/lib/auth/api"
 import { useAcceptLegal } from "@/lib/legal/mutations"
 import { getCurrentLegalNotes } from "@/lib/legal/versions"
 import { seoHead } from "@/lib/seo"
 
 export const Route = createFileRoute("/_app/legal/accept")({
-  beforeLoad: () => requireAuth(),
+  beforeLoad: () => requireAuthFn(),
   head: () =>
     seoHead({
       title: "Aggiornamento documenti legali",

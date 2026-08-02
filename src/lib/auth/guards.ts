@@ -1,76 +1,68 @@
-import { createServerFn } from "@tanstack/react-start"
 import { redirect } from "@tanstack/react-router"
 
+import { getDb } from "@/db"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+
+import { findProfile } from "./db/profiles"
 import type { AuthUser } from "./types"
 
-export const requireAuth = createServerFn({ method: "GET" }).handler(
-  async (): Promise<AuthUser> => {
-    const supabase = createServerSupabaseClient()
+// Plain functions, not server functions: they are called from inside other
+// handlers dozens of times, where an RPC-shaped call would be a round trip to
+// ourselves. The `api/require-*.ts` wrappers exist for route `beforeLoad`, which
+// also runs in the browser.
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser()
+export function toAuthUser(profile: {
+  id: string
+  email: string | null
+  name: string | null
+  image: string | null
+  role: AuthUser["role"]
+}): AuthUser {
+  return {
+    id: profile.id,
+    email: profile.email ?? "",
+    name: profile.name,
+    image: profile.image,
+    role: profile.role,
+  }
+}
 
-    if (error || !user) {
-      throw redirect({ href: "/auth/login" })
-    }
+export async function getAuthUser(): Promise<AuthUser | null> {
+  const supabase = createServerSupabaseClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single()
+  if (error || !user) return null
 
-    if (!profile) {
-      throw redirect({ href: "/auth/login" })
-    }
+  const profile = await findProfile(getDb(), user.id)
+  return profile ? toAuthUser(profile) : null
+}
 
-    return {
-      id: profile.id,
-      email: profile.email ?? "",
-      name: profile.name,
-      image: profile.image,
-      role: profile.role,
-    }
-  },
-)
+export async function requireAuth(): Promise<AuthUser> {
+  const user = await getAuthUser()
+  if (!user) throw redirect({ href: "/auth/login" })
+  return user
+}
 
-export const requireAdmin = createServerFn({ method: "GET" }).handler(
-  async (): Promise<AuthUser> => {
-    const user = await requireAuth()
+export async function requireAdmin(): Promise<AuthUser> {
+  const user = await requireAuth()
+  if (user.role === "STUDENT") throw redirect({ to: "/user" })
+  return user
+}
 
-    if (user.role === "STUDENT") {
-      throw redirect({ to: "/user" })
-    }
+export async function requireSuperadmin(): Promise<AuthUser> {
+  const user = await requireAuth()
+  if (user.role !== "SUPERADMIN") throw redirect({ to: "/user" })
+  return user
+}
 
-    return user
-  },
-)
+export async function requireGuest(): Promise<void> {
+  const supabase = createServerSupabaseClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-export const requireSuperadmin = createServerFn({ method: "GET" }).handler(
-  async (): Promise<AuthUser> => {
-    const user = await requireAuth()
-
-    if (user.role !== "SUPERADMIN") {
-      throw redirect({ to: "/user" })
-    }
-
-    return user
-  },
-)
-
-export const requireGuest = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const supabase = createServerSupabaseClient()
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (user) {
-      throw redirect({ to: "/user" })
-    }
-  },
-)
+  if (user) throw redirect({ to: "/user" })
+}

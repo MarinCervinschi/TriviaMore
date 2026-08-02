@@ -1,0 +1,19 @@
+import { createServerFn } from "@tanstack/react-start"
+import type { EmailOtpType } from "@supabase/supabase-js"
+
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { errorMiddleware } from "@/lib/server/middleware/errors"
+
+import { verifyEmailSchema } from "../schemas"
+
+export const verifyEmailFn = createServerFn({ method: "POST" })
+  .middleware([errorMiddleware])
+  .inputValidator(verifyEmailSchema)
+  .handler(async ({ data }) => {
+    const { error } = await createServerSupabaseClient().auth.verifyOtp({
+      type: data.type as EmailOtpType,
+      token_hash: data.token_hash,
+    })
+    if (error) return { success: false as const, error: error.message }
+    return { success: true as const }
+  })

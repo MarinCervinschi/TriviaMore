@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { getAcceptanceStatusFn } from "./server"
+import { getAcceptanceStatusFn } from "./api"
 
 export const legalQueries = {
   acceptanceStatus: () =>

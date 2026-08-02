@@ -1,11 +1,11 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router"
-import { requireAuth } from "@/lib/auth/guards"
-import { requireLegalAcceptance } from "@/lib/legal/guards"
+import { requireAuthFn } from "@/lib/auth/api"
+import { requireLegalAcceptanceFn } from "@/lib/legal/api"
 
 export const Route = createFileRoute("/_app/user")({
   beforeLoad: async () => {
-    await requireAuth()
-    await requireLegalAcceptance()
+    await requireAuthFn()
+    await requireLegalAcceptanceFn()
   },
   // This layout has no UI of its own — only an auth/legal guard. Push the
   // pending threshold high enough that the global LoadingPage spinner never

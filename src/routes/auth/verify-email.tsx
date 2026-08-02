@@ -6,8 +6,8 @@ import { toast } from "sonner"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { Button } from "@/components/ui/button"
-import { requireGuest } from "@/lib/auth/guards"
-import { resendConfirmationFn } from "@/lib/auth/server"
+import { requireGuestFn } from "@/lib/auth/api"
+import { resendConfirmationFn } from "@/lib/auth/api"
 
 const RESEND_COOLDOWN_SECONDS = 60
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/auth/verify-email")({
     }
     return {}
   },
-  beforeLoad: () => requireGuest(),
+  beforeLoad: () => requireGuestFn(),
   component: VerifyEmailPage,
 })
 

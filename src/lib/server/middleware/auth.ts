@@ -1,5 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start"
 
+import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { Unauthorized } from "../errors"
 
@@ -34,3 +35,15 @@ export const authMiddleware = createMiddleware({ type: "function" }).server(
 export const optionalAuthMiddleware = createMiddleware({
   type: "function",
 }).server(async ({ next }) => next({ context: { user: await readSessionUser() } }))
+
+// These two load the profile, so `context.user` is the full AuthUser with its
+// role. They redirect rather than throw, matching the guards they wrap: an
+// endpoint reached without the right role is a navigation mistake, not a
+// failure the UI should report.
+export const adminMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next }) => next({ context: { user: await requireAdmin() } }),
+)
+
+export const superadminMiddleware = createMiddleware({
+  type: "function",
+}).server(async ({ next }) => next({ context: { user: await requireSuperadmin() } }))
