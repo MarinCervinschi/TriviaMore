@@ -5,7 +5,7 @@ import {
   type LogLevel,
   type LogProperties,
 } from "./clef"
-import { currentContext, recordAuthCheck } from "./context"
+import { currentContext, newTraceId, recordAuthCheck } from "./context"
 import { ship } from "./shipper"
 
 // The server-side logging API. Never import this from a component: it reaches
@@ -73,6 +73,32 @@ export const log = {
 
 export function debugEnabled(): boolean {
   return meetsLevel("Debug", minimumLevel())
+}
+
+// `Source` is stamped here, not by the client, so it cannot be forged.
+export function shipBrowserEvent(event: {
+  level: LogLevel
+  template: string
+  properties?: LogProperties
+  error?: string
+  traceId?: string
+}): void {
+  if (!meetsLevel(event.level, minimumLevel())) return
+
+  const release = appVersion()
+
+  ship({
+    timestamp: new Date().toISOString(),
+    level: event.level,
+    template: event.template,
+    traceId: event.traceId ?? newTraceId(),
+    error: event.error,
+    properties: {
+      Source: "browser",
+      ...(release ? { Version: release } : {}),
+      ...event.properties,
+    },
+  })
 }
 
 export async function timeAuthCheck<T>(run: () => Promise<T>): Promise<T> {

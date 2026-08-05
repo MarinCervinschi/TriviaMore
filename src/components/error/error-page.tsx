@@ -1,9 +1,11 @@
 import { Link, useRouter } from "@tanstack/react-router"
 import { motion } from "framer-motion"
 import { AlertTriangle, Home, RotateCcw } from "lucide-react"
+import { useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
+import { reportBrowserError } from "@/lib/logging/browser"
 import {
   staggerContainer,
   staggerItem,
@@ -17,6 +19,10 @@ export function ErrorPage({
 }) {
   const router = useRouter()
   const prefersReduced = useReducedMotion()
+
+  useEffect(() => {
+    reportBrowserError("Error boundary rendered", error)
+  }, [error])
   const container = withReducedMotion(staggerContainer, prefersReduced)
   const item = withReducedMotion(staggerItem, prefersReduced)
 
