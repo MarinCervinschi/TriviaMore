@@ -2,16 +2,16 @@ import {
   foreignKey,
   index,
   inet,
-  pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core"
 
-import { legalDocumentTypeEnum } from "./enums"
-import { profiles } from "./profiles"
+import { internalSchema } from "../../common"
+import { legalDocumentTypeEnum } from "../public/enums"
+import { profiles } from "../public/profiles"
 
-export const legalAcceptances = pgTable(
+export const legalAcceptances = internalSchema.table(
   "legal_acceptances",
   {
     id: uuid().defaultRandom().primaryKey().notNull(),

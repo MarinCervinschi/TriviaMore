@@ -2,20 +2,20 @@ import {
   foreignKey,
   index,
   jsonb,
-  pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core"
 
+import { internalSchema } from "../../common"
 import { classes } from "../catalog/classes"
 import { courses } from "../catalog/courses"
 import { departments } from "../catalog/departments"
 import { sections } from "../catalog/sections"
-import { contentRequestStatusEnum, contentRequestTypeEnum } from "./enums"
-import { profiles } from "./profiles"
+import { contentRequestStatusEnum, contentRequestTypeEnum } from "../public/enums"
+import { profiles } from "../public/profiles"
 
-export const contentRequests = pgTable(
+export const contentRequests = internalSchema.table(
   "content_requests",
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
