@@ -91,8 +91,7 @@ ported from the old code. Auth and Storage stay on supabase-js, and are all `src
 contains.
 
 Issue #87 holds the plan and the decisions; #89 (drop the `_detail` views) and #92 (close PostgREST
-at the edge) are what remain. `scripts/diff/` holds throwaway differential tests that replay the
-pre-Drizzle implementation against the same database — delete them once #91 is signed off.
+at the edge) are what remain.
 
 Automated testing is deliberately deferred until the refactor settles — see #109.
 
