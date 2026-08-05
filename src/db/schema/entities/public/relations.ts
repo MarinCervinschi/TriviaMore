@@ -1,17 +1,16 @@
 import { relations } from "drizzle-orm"
 
-import { courseMaintainers } from "../catalog/course-maintainers"
 import { classes } from "../catalog/classes"
 import { courses } from "../catalog/courses"
-import { departmentAdmins } from "../catalog/department-admins"
-import { departments } from "../catalog/departments"
 import { questions } from "../catalog/questions"
-import { sectionAccess } from "../catalog/section-access"
 import { sections } from "../catalog/sections"
+import { contentRequests } from "../internal/content-requests"
+import { courseMaintainers } from "../internal/course-maintainers"
+import { departmentAdmins } from "../internal/department-admins"
+import { legalAcceptances } from "../internal/legal-acceptances"
+import { sectionAccess } from "../internal/section-access"
 import { quizAttempts } from "../quiz/quiz-attempts"
 import { bookmarks } from "./bookmarks"
-import { contentRequests } from "./content-requests"
-import { legalAcceptances } from "./legal-acceptances"
 import { notifications } from "./notifications"
 import { profiles } from "./profiles"
 import { progress } from "./progress"
@@ -45,48 +44,6 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [profiles.id],
   }),
 }))
-
-export const contentRequestsRelations = relations(
-  contentRequests,
-  ({ one }) => ({
-    user: one(profiles, {
-      fields: [contentRequests.userId],
-      references: [profiles.id],
-      relationName: "contentRequestAuthor",
-    }),
-    handler: one(profiles, {
-      fields: [contentRequests.handledBy],
-      references: [profiles.id],
-      relationName: "contentRequestHandler",
-    }),
-    targetDepartment: one(departments, {
-      fields: [contentRequests.targetDepartmentId],
-      references: [departments.id],
-    }),
-    targetCourse: one(courses, {
-      fields: [contentRequests.targetCourseId],
-      references: [courses.id],
-    }),
-    targetClass: one(classes, {
-      fields: [contentRequests.targetClassId],
-      references: [classes.id],
-    }),
-    targetSection: one(sections, {
-      fields: [contentRequests.targetSectionId],
-      references: [sections.id],
-    }),
-  }),
-)
-
-export const legalAcceptancesRelations = relations(
-  legalAcceptances,
-  ({ one }) => ({
-    user: one(profiles, {
-      fields: [legalAcceptances.userId],
-      references: [profiles.id],
-    }),
-  }),
-)
 
 export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
   user: one(profiles, {

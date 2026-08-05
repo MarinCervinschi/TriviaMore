@@ -1,7 +1,9 @@
 import { relations } from "drizzle-orm"
 
+import { courseMaintainers } from "../internal/course-maintainers"
+import { departmentAdmins } from "../internal/department-admins"
+import { sectionAccess } from "../internal/section-access"
 import { bookmarks } from "../public/bookmarks"
-import { profiles } from "../public/profiles"
 import { progress } from "../public/progress"
 import { userClasses } from "../public/user-classes"
 import { userRecentClasses } from "../public/user-recent-classes"
@@ -11,12 +13,9 @@ import { quizQuestions } from "../quiz/quiz-questions"
 import { classes } from "./classes"
 import { courseClasses } from "./course-classes"
 import { courses } from "./courses"
-import { courseMaintainers } from "./course-maintainers"
-import { departmentAdmins } from "./department-admins"
 import { departments } from "./departments"
 import { departmentLocations } from "./department-locations"
 import { questions } from "./questions"
-import { sectionAccess } from "./section-access"
 import { sections } from "./sections"
 
 export const departmentsRelations = relations(departments, ({ many }) => ({
@@ -35,20 +34,6 @@ export const departmentLocationsRelations = relations(
   }),
 )
 
-export const departmentAdminsRelations = relations(
-  departmentAdmins,
-  ({ one }) => ({
-    user: one(profiles, {
-      fields: [departmentAdmins.userId],
-      references: [profiles.id],
-    }),
-    department: one(departments, {
-      fields: [departmentAdmins.departmentId],
-      references: [departments.id],
-    }),
-  }),
-)
-
 export const coursesRelations = relations(courses, ({ one, many }) => ({
   department: one(departments, {
     fields: [courses.departmentId],
@@ -59,20 +44,6 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
   userClasses: many(userClasses),
   userRecentClasses: many(userRecentClasses),
 }))
-
-export const courseMaintainersRelations = relations(
-  courseMaintainers,
-  ({ one }) => ({
-    user: one(profiles, {
-      fields: [courseMaintainers.userId],
-      references: [profiles.id],
-    }),
-    course: one(courses, {
-      fields: [courseMaintainers.courseId],
-      references: [courses.id],
-    }),
-  }),
-)
 
 export const classesRelations = relations(classes, ({ many }) => ({
   courseClasses: many(courseClasses),
@@ -101,17 +72,6 @@ export const sectionsRelations = relations(sections, ({ one, many }) => ({
   access: many(sectionAccess),
   quizzes: many(quizzes),
   progress: many(progress),
-}))
-
-export const sectionAccessRelations = relations(sectionAccess, ({ one }) => ({
-  user: one(profiles, {
-    fields: [sectionAccess.userId],
-    references: [profiles.id],
-  }),
-  section: one(sections, {
-    fields: [sectionAccess.sectionId],
-    references: [sections.id],
-  }),
 }))
 
 export const questionsRelations = relations(questions, ({ one, many }) => ({

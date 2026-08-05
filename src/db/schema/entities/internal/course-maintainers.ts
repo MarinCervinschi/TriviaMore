@@ -1,10 +1,10 @@
 import { foreignKey, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core"
 
-import { catalogSchema } from "../../common"
+import { internalSchema } from "../../common"
+import { courses } from "../catalog/courses"
 import { profiles } from "../public/profiles"
-import { courses } from "./courses"
 
-export const courseMaintainers = catalogSchema
+export const courseMaintainers = internalSchema
   .table(
     "course_maintainers",
     {

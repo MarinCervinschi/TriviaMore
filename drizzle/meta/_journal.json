@@ -43,6 +43,13 @@
       "when": 1785957746529,
       "tag": "0005_drop_legacy_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785959665435,
+      "tag": "0006_move_tables_to_internal",
+      "breakpoints": true
     }
   ]
 }
