@@ -21,6 +21,7 @@
     "db:migrate": "infisical run --recursive -- drizzle-kit migrate",
     "db:studio": "infisical run --recursive -- drizzle-kit studio",
     "db:check": "infisical run --recursive -- drizzle-kit check",
+    "db:dump": "bash scripts/db/dump.sh",
     "mcp:questions": "tsx scripts/mcp/questions-server.ts",
     "smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
     "smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts"
