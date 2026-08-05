@@ -88,7 +88,7 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 | `pnpm db:migrate` | Apply pending migrations |
 | `pnpm db:check` | Check the migration history for conflicts |
 | `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm db:types` | Regenerate Supabase TypeScript types |
+| `pnpm db:dump` | Back up the database (schema + data) via the Supabase CLI |
 
 ## Environment variables
 
@@ -153,7 +153,7 @@ pnpm db:migrate                         # apply pending migrations           (ef
 
 There is deliberately no `db:push` — always generate + migrate, so every change leaves a reviewable SQL file.
 
-`DATABASE_URL` must be set (Infisical, or `.env` for the `:no-secrets` flow). `supabase/migrations/` is the historical archive from before the cutover and is no longer applied.
+The app connects through `DATABASE_URL` — the least-privilege `trivia_app` role in production — while `drizzle-kit` and the Supabase CLI connect as the admin role through `SUPABASE_DB_URL` (falling back to `DATABASE_URL` locally). `supabase/migrations/` is the historical archive from before the cutover and is no longer applied.
 
 ### Refresh seed from staging
 
@@ -171,13 +171,14 @@ To restore a full dump locally:
 docker exec -i supabase_db_TriviaMore psql -U postgres -d postgres < data/dump.sql
 ```
 
-### Regenerate TypeScript types
+### Backups
+
+`pnpm db:dump` writes a timestamped schema + data dump under `backups/` (gitignored), using the Supabase CLI's bundled `pg_dump` — no local install needed. Take one before applying a migration to a shared database.
 
 ```bash
-pnpm db:types
+pnpm db:dump                                                                    # local
+SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres' pnpm db:dump prod
 ```
-
-This generates types from the local database and applies post-processing fixes (e.g. `tsvector` columns typed as `string | null`). The fix script is `supabase/scripts/fix-types.ts`.
 
 ### Self-hosted production database
 
