@@ -36,6 +36,13 @@
       "when": 1785595320030,
       "tag": "0004_seed_evaluation_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785957746529,
+      "tag": "0005_drop_legacy_rls",
+      "breakpoints": true
     }
   ]
 }
