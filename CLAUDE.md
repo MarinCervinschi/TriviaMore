@@ -118,8 +118,10 @@ Two rules that are not negotiable:
 
 ## Conventions
 
-- **Comments in English**, and only when they explain something the code cannot — a *why*, a
-  workaround, a non-obvious constraint. No comments that restate the line below them.
+- **Comments are forbidden by default.** Code must read on its own. Two exceptions only, both used
+  with maximum caution: a doc comment where one is genuinely needed, and a *strictly necessary* `why`
+  — a non-obvious constraint, security rule or workaround whose absence would mislead. Both in
+  English. Never restate the code or narrate what a line does. When in doubt, no comment.
 - Prefer editing an existing file over adding one; match the surrounding style.
 - When a route has a `pendingComponent`, update the matching skeleton in
   `src/components/skeletons/` whenever you change the page layout.
