@@ -68,7 +68,7 @@ distinct event types.
 | Property | Values |
 |---|---|
 | `Environment` | `preview` \| `production` — **attached by the Seq API key**, never set in code |
-| `Source` | `ssr` \| `fn` \| `job` (`browser` once client reporting lands) — see the note above on why `ssr` dominates |
+| `Source` | `ssr` \| `fn` \| `job` \| `browser` — see the note above on why `ssr` dominates, and the browser section below |
 | `Version` | commit sha, from Coolify's runtime `SOURCE_COMMIT` (or `APP_VERSION` off Coolify) |
 | `@tr` | 32-hex trace id, shared by every event in one request |
 | `UserId` | uuid only — attached by the auth guards |
@@ -218,12 +218,29 @@ Outcome = 'failed' and Fn = 'startQuizFn'    one endpoint's bugs, excluding its 
 When a user reports an error, the toast carries the first 8 characters of the trace id
 (`(rif. 4bf92f35)`). `@tr like '4bf92f35%'` goes straight to it.
 
-## Not built yet
+## Browser errors
 
-**Browser errors.** The API key can never reach the bundle, so client reporting needs a server route
-to proxy it — accepting a strict schema, rate-limited, re-stamping `Source=browser` server-side. It
-would send unhandled errors, the root `errorComponent`, and failed mutations. Not navigation
-breadcrumbs or clicks: that is product analytics, and it would multiply the volume.
+The API key can never reach the bundle, so the browser cannot POST to Seq. `src/lib/logging/browser.ts`
+is the client entry point — the *only* logging module a component may import — and it POSTs to the
+`/api/log` server route, which holds the key, validates against a strict schema
+(`src/lib/logging/schemas.ts`), rate-limits per IP, and re-stamps `Source=browser` so the client
+cannot forge it. The IP is a rate-limit key only; it is never logged.
+
+Three sources feed it, and nothing else — navigation breadcrumbs and clicks are product analytics and
+would multiply the volume:
+
+- **Unhandled errors** and **promise rejections** — `installBrowserErrorHandlers()`, wired once in
+  `src/router.tsx`. `Error` level.
+- **The root error boundary** — `ErrorPage` reports on mount. `Error` level.
+- **Failed mutations** — the `QueryClient` `MutationCache.onError` in `src/router.tsx`. `Warning`
+  level, because most are expected `AppError` rejections, not bugs — reporting them at `Error` would
+  break the rule that `@Level = 'Error'` means a human needs to look.
+
+The client dedupes by message within 5 s and caps itself at 20 events/minute, below the route's limit,
+so a render loop that throws every frame cannot flood Seq. A browser event carries the failing
+request's trace id when one is known, otherwise a fresh one.
+
+## Not built yet
 
 **Spans.** Nothing writes `@sp` today. The database, Supabase auth and nodemailer are the three
 call sites that would justify it.

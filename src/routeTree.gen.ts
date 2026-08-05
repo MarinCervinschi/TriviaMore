@@ -21,6 +21,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
+import { Route as ApiLogRouteImport } from './routes/api/log'
 import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
 import { Route as AppAboutRouteImport } from './routes/_app/about'
@@ -122,6 +123,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
   id: '/auth/auth-code-error',
   path: '/auth/auth-code-error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLogRoute = ApiLogRouteImport.update({
+  id: '/api/log',
+  path: '/api/log',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppNewsRoute = AppNewsRouteImport.update({
@@ -363,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -474,6 +482,7 @@ export interface FileRoutesById {
   '/_app/about': typeof AppAboutRoute
   '/_app/contact': typeof AppContactRoute
   '/_app/news': typeof AppNewsRoute
+  '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
     | '/auth/confirm'
@@ -586,6 +596,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
     | '/auth/confirm'
@@ -643,6 +654,7 @@ export interface FileRouteTypes {
     | '/_app/about'
     | '/_app/contact'
     | '/_app/news'
+    | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
     | '/auth/confirm'
@@ -695,6 +707,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiLogRoute: typeof ApiLogRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
@@ -789,6 +802,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/auth-code-error'
       fullPath: '/auth/auth-code-error'
       preLoaderRoute: typeof AuthAuthCodeErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/log': {
+      id: '/api/log'
+      path: '/api/log'
+      fullPath: '/api/log'
+      preLoaderRoute: typeof ApiLogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/news': {
@@ -1230,6 +1250,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiLogRoute: ApiLogRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthConfirmRoute: AuthConfirmRoute,

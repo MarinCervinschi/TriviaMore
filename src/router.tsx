@@ -1,11 +1,13 @@
-import { QueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryClient } from '@tanstack/react-query'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 
 import { LoadingPage } from '@/components/loading/loading-page'
+import { installBrowserErrorHandlers, reportBrowserError } from '@/lib/logging/browser'
 import { routeTree } from './routeTree.gen'
 
 if (typeof window !== 'undefined') {
+  installBrowserErrorHandlers()
   window.addEventListener('vite:preloadError', () => {
     const key = 'tm:preload-reloaded-at'
     const last = Number(sessionStorage.getItem(key) ?? 0)
@@ -19,6 +21,19 @@ const FIVE_MINUTES = 1000 * 60 * 5
 
 export function getRouter() {
   const queryClient = new QueryClient({
+    mutationCache: new MutationCache({
+      onError: (error, _variables, _context, mutation) => {
+        if (typeof window === 'undefined') return
+        const key = mutation.options.mutationKey
+        reportBrowserError('Mutation failed', error, {
+          level: 'Warning',
+          properties: {
+            Path: window.location.pathname,
+            ...(key ? { Mutation: JSON.stringify(key) } : {}),
+          },
+        })
+      },
+    }),
     defaultOptions: {
       queries: {
         staleTime: FIVE_MINUTES,
