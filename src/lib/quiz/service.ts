@@ -104,7 +104,7 @@ export async function startQuiz(
 ): Promise<{ quizId: string; attemptId: string }> {
   const db = getDb()
 
-  await assertSectionAccess(userId, input.sectionId)
+  await assertSectionAccess(db, userId, input.sectionId)
 
   const evaluationModeId =
     input.evaluationModeId ?? (await findDefaultEvaluationModeId(db))
@@ -154,7 +154,7 @@ export async function getQuiz(
 
   // quizId comes from the URL, so re-check the section it belongs to rather
   // than trusting that whoever created the quiz is the one fetching it.
-  await assertSectionAccess(userId, quiz.sectionId)
+  await assertSectionAccess(db, userId, quiz.sectionId)
 
   const order = await findQuizQuestionOrder(db, quizId)
   if (order.length === 0) return null

@@ -52,6 +52,7 @@ export async function getClassWithSections(
 
   const all = await findSectionsInClass(db, cls.id)
   const allowed = await filterAccessibleSections(
+    db,
     userId,
     all.map((section) => section.id),
   )

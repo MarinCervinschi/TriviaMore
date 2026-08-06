@@ -65,10 +65,11 @@ async function startSession(
   input: StartFlashcardInput,
   mode: FlashcardMode,
 ): Promise<{ sessionId: string }> {
-  await assertSectionAccess(userId, input.sectionId)
+  const db = getDb()
+  await assertSectionAccess(db, userId, input.sectionId)
 
   const sections = await sourceSections(userId, mode, input.sectionId)
-  const available = await countCards(getDb(), sections)
+  const available = await countCards(db, sections)
   if (available === 0) {
     throw new Conflict(
       mode === "exam"
@@ -109,13 +110,14 @@ export async function getFlashcardSession(
 
   // The section id travels in the URL, so this is the gate, not a re-check of
   // something already verified when the session was created.
-  await assertSectionAccess(userId, session.sectionId)
+  const db = getDb()
+  await assertSectionAccess(db, userId, session.sectionId)
 
-  const chain = await findSectionChain(getDb(), session.sectionId)
+  const chain = await findSectionChain(db, session.sectionId)
   if (!chain) return null
 
   const sections = await sourceSections(userId, session.mode, session.sectionId)
-  const pool = await findCards(getDb(), sections)
+  const pool = await findCards(db, sections)
   if (pool.length === 0) return null
 
   const selected = selectRandomItemsWithSeed(

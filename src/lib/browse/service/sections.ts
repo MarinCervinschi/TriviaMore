@@ -41,7 +41,7 @@ export async function getSectionDetail(
 
   // A private section is indistinguishable from a missing one, so the URL does
   // not confirm that it exists.
-  if (!(await canAccessSection(userId, section.id))) return null
+  if (!(await canAccessSection(db, userId, section.id))) return null
 
   const counts = (await countQuestionsBySection(db, [section.id])).get(
     section.id,
