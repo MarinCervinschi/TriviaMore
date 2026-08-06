@@ -10,7 +10,8 @@ questions.
 |---|---|
 | `pnpm dev` | dev server (Infisical injects secrets) |
 | `pnpm build:dev` | production build with secrets |
-| `pnpm test` | Vitest |
+| `pnpm test` | Vitest — unit tier only (`*.test.ts`, offline) |
+| `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, needs local Supabase) |
 | `pnpm exec tsc --noEmit` | typecheck |
 | `pnpm db:generate --name x` | generate a migration from the Drizzle schema |
 | `pnpm db:migrate` | apply pending migrations |
@@ -131,3 +132,8 @@ Two rules that are not negotiable:
 
 Run `pnpm exec tsc --noEmit`, `pnpm test` and the build yourself, and report the real output.
 **Browser verification is the user's job** — never claim a UI change works because it compiles.
+
+Tests are co-located with the source they cover. Two tiers, split by suffix, in `vitest.config.ts`
+(kept separate from `vite.config.ts`): `*.test.ts` is pure logic with no I/O — offline, CI-safe, the
+`pnpm test` gate; `*.itest.ts` is DB-backed and runs against a local Supabase via `pnpm test:db`.
+Component tests are deliberately out of scope (#109).
