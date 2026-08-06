@@ -135,5 +135,8 @@ Run `pnpm exec tsc --noEmit`, `pnpm test` and the build yourself, and report the
 
 Tests are co-located with the source they cover. Two tiers, split by suffix, in `vitest.config.ts`
 (kept separate from `vite.config.ts`): `*.test.ts` is pure logic with no I/O — offline, CI-safe, the
-`pnpm test` gate; `*.itest.ts` is DB-backed and runs against a local Supabase via `pnpm test:db`.
-Component tests are deliberately out of scope (#109).
+`pnpm test` gate; `*.itest.ts` is DB-backed via `pnpm test:db`. The integration tier needs the local
+stack up (`supabase start`), connects as the postgres admin through `TEST_DATABASE_URL` (defaults to
+the local database, refuses any non-local host), and runs each test inside a transaction that is
+always rolled back — so it seeds its own fixtures and leaves the database untouched. Helpers live in
+`src/lib/testing/`. Component tests are deliberately out of scope (#109).
