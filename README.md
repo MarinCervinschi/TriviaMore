@@ -34,13 +34,13 @@ TriviaMore is an open source study **ecosystem** for the University of Modena an
 A short tour of the technologies that power the platform — click any name to jump to its docs.
 
 - <img src="https://api.iconify.design/logos:react.svg" height="16" /> **[React 19](https://react.dev)** — UI library, Server Components-aware.
-- <img src="https://api.iconify.design/logos:typescript-icon.svg" height="16" /> **[TypeScript](https://www.typescriptlang.org)** — Strict end-to-end typing across client, server functions and Supabase schema.
+- <img src="https://api.iconify.design/logos:typescript-icon.svg" height="16" /> **[TypeScript](https://www.typescriptlang.org)** — Strict end-to-end typing across client, server functions and the Drizzle schema.
 - <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Start](https://tanstack.com/start)** — Full-stack React framework with file-based routing, server functions and built-in data loading.
 - <img src="https://api.iconify.design/logos:vitejs.svg" height="16" /> **[Vite](https://vite.dev)** — Dev server and build tool.
 - <img src="https://api.iconify.design/logos:tailwindcss-icon.svg" height="16" /> **[Tailwind CSS v4](https://tailwindcss.com)** — Utility-first styling with CSS variables and `@theme`.
 - <img src="https://api.iconify.design/simple-icons:shadcnui.svg" height="16" /> **[shadcn/ui](https://ui.shadcn.com)** — New York style components on top of Radix UI primitives.
 - <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Query](https://tanstack.com/query)** — Server-state cache with persistent storage.
-- <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Postgres database, auth, storage and realtime.
+- <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Postgres database, auth and storage.
 - <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets management, injected by the CLI in dev and in the container entrypoint.
 - <img src="https://api.iconify.design/logos:vitest.svg" height="16" /> **[Vitest](https://vitest.dev)** — Unit testing.
 
@@ -155,22 +155,6 @@ There is deliberately no `db:push` — always generate + migrate, so every chang
 
 The app connects through `DATABASE_URL` — the least-privilege `trivia_app` role in production — while `drizzle-kit` and the Supabase CLI connect as the admin role through `SUPABASE_DB_URL` (falling back to `DATABASE_URL` locally). `supabase/migrations/` is the historical archive from before the cutover and is no longer applied.
 
-### Refresh seed from staging
-
-```bash
-# Catalog-only (used to update seed.sql)
-infisical run --recursive -- supabase db dump --data-only --linked --schema catalog -f supabase/seed_catalog.sql
-
-# Full backup
-infisical run --recursive -- supabase db dump --data-only --linked -f data/dump.sql
-```
-
-To restore a full dump locally:
-
-```bash
-docker exec -i supabase_db_TriviaMore psql -U postgres -d postgres < data/dump.sql
-```
-
 ### Backups
 
 `pnpm db:dump` writes a timestamped schema + data dump under `backups/` (gitignored), using the Supabase CLI's bundled `pg_dump` — no local install needed. Take one before applying a migration to a shared database.
@@ -179,20 +163,6 @@ docker exec -i supabase_db_TriviaMore psql -U postgres -d postgres < data/dump.s
 pnpm db:dump                                                                    # local
 SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres' pnpm db:dump prod
 ```
-
-### Self-hosted production database
-
-The production database runs on a self-hosted Supabase instance (Postgres without TLS exposed on the host). To connect via the Supabase CLI for `db push`, `migration list`, `db dump`, etc., set both `PGSSLMODE` and the connection string:
-
-```bash
-export PGSSLMODE=disable
-export SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres'
-
-supabase migration list --db-url "$SUPABASE_DB_URL"
-supabase db push --db-url "$SUPABASE_DB_URL"
-```
-
-**Why `PGSSLMODE=disable` and not `?sslmode=disable` in the URL?** The Supabase CLI (≥2.40.4) ignores the `sslmode` query parameter in `--db-url`, so the env var is the only working way to disable TLS. See [supabase/cli#4142](https://github.com/supabase/cli/issues/4142).
 
 ### Auth email templates
 
@@ -216,16 +186,17 @@ Contributions are welcome — both to the code and to the catalog content.
 - **Found a wrong question or missing topic?** Open an issue with the `content` label and link to the affected section.
 - **Found a bug or want to propose a feature?** Open an issue with the `bug` or `enhancement` label.
 - **Code contributions:**
-  1. Fork the repo and create a branch off `master` (e.g. `feat/quiz-shortcuts`, `fix/sitemap-encoding`).
+  1. Fork the repo and create a branch off `preview` (e.g. `feat/quiz-shortcuts`, `fix/sitemap-encoding`).
   2. Follow the existing patterns and keep commits small and logical.
   3. Run `pnpm test` and `pnpm build` before pushing.
-  4. Open a pull request against `master` with a short description and screenshots for UI changes.
+  4. Open a pull request against `preview` with a short description and screenshots for UI changes.
 
 Want to maintain the catalog of your own department? Open an issue and we'll grant you the maintainer role for that scope.
 
 ## Branches
 
 ```
+preview         → Active development
 master          → Production (TanStack Start v3.0)
 trivia-more-3.0 → Reference: old Next.js code + migration roadmap
 ```
