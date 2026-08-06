@@ -64,6 +64,13 @@
       "when": 1785999936026,
       "tag": "0008_revoke_transitional_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1786039589394,
+      "tag": "0009_drop_protect_profile_role",
+      "breakpoints": true
     }
   ]
 }
