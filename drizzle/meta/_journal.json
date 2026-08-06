@@ -57,6 +57,13 @@
       "when": 1785997866603,
       "tag": "0007_create_api_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785999936026,
+      "tag": "0008_revoke_transitional_grants",
+      "breakpoints": true
     }
   ]
 }
