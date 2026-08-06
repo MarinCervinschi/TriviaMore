@@ -1,6 +1,6 @@
 import { and, eq, inArray } from "drizzle-orm"
 
-import { getDb } from "@/db"
+import type { DbOrTx } from "@/db"
 import { sectionAccess, sections } from "@/db/schema"
 import { findSectionById } from "@/lib/catalog/db/sections"
 import { Forbidden } from "@/lib/server/errors"
@@ -9,9 +9,15 @@ import { Forbidden } from "@/lib/server/errors"
 // Reads now run on a service-role Drizzle connection, where the database no
 // longer filters private sections: these checks are the only thing left between
 // a section id in a URL and its questions.
+//
+// `db` first so the same check runs standalone or inside a caller's transaction.
 
-async function grantedSectionIds(userId: string, sectionIds: string[]) {
-  const rows = await getDb()
+async function grantedSectionIds(
+  db: DbOrTx,
+  userId: string,
+  sectionIds: string[],
+) {
+  const rows = await db
     .select({ sectionId: sectionAccess.sectionId })
     .from(sectionAccess)
     .where(
@@ -24,22 +30,24 @@ async function grantedSectionIds(userId: string, sectionIds: string[]) {
 }
 
 export async function canAccessSection(
+  db: DbOrTx,
   userId: string | null,
   sectionId: string,
 ): Promise<boolean> {
-  const section = await findSectionById(getDb(), sectionId)
+  const section = await findSectionById(db, sectionId)
   if (!section) return false
   if (section.isPublic) return true
   if (!userId) return false
 
-  return (await grantedSectionIds(userId, [sectionId])).length > 0
+  return (await grantedSectionIds(db, userId, [sectionId])).length > 0
 }
 
 export async function assertSectionAccess(
+  db: DbOrTx,
   userId: string | null,
   sectionId: string,
 ): Promise<void> {
-  if (!(await canAccessSection(userId, sectionId))) {
+  if (!(await canAccessSection(db, userId, sectionId))) {
     throw new Forbidden("Non hai accesso a questa sezione")
   }
 }
@@ -47,12 +55,13 @@ export async function assertSectionAccess(
 // Batch form for the paths that span a whole class — a per-section round trip
 // would turn one query into dozens.
 export async function filterAccessibleSections(
+  db: DbOrTx,
   userId: string | null,
   sectionIds: string[],
 ): Promise<Set<string>> {
   if (sectionIds.length === 0) return new Set()
 
-  const visibility = await getDb()
+  const visibility = await db
     .select({ id: sections.id, isPublic: sections.isPublic })
     .from(sections)
     .where(inArray(sections.id, sectionIds))
@@ -65,7 +74,7 @@ export async function filterAccessibleSections(
   }
 
   if (restricted.length > 0 && userId) {
-    for (const sectionId of await grantedSectionIds(userId, restricted)) {
+    for (const sectionId of await grantedSectionIds(db, userId, restricted)) {
       allowed.add(sectionId)
     }
   }

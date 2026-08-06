@@ -9,8 +9,10 @@ export async function accessibleSectionIdsInClass(
   userId: string | null,
   classId: string,
 ): Promise<string[]> {
-  const all = await findSectionsInClass(getDb(), classId)
+  const db = getDb()
+  const all = await findSectionsInClass(db, classId)
   const allowed = await filterAccessibleSections(
+    db,
     userId,
     all.map((section) => section.id),
   )
