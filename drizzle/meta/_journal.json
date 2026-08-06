@@ -50,6 +50,13 @@
       "when": 1785959665435,
       "tag": "0006_move_tables_to_internal",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785997866603,
+      "tag": "0007_create_api_schema",
+      "breakpoints": true
     }
   ]
 }
