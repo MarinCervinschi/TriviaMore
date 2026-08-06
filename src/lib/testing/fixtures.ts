@@ -8,6 +8,7 @@ import {
   courses,
   departments,
   profiles,
+  sectionAccess,
   sections,
 } from "@/db/schema"
 
@@ -117,4 +118,28 @@ export async function seedMaintainerScope(tx: TestTx): Promise<MaintainerScope> 
     privateSection: await createSection(tx, classInScope, false),
     sectionOutOfScope: await createSection(tx, classOutOfScope, true),
   }
+}
+
+export type SectionAccessScope = {
+  student: string
+  publicSection: string
+  privateGranted: string
+  privateDenied: string
+}
+
+// A student with one explicit grant, plus a public section and a private
+// section they cannot reach: the three cases the section-access gate turns on.
+export async function seedSectionAccessScope(
+  tx: TestTx,
+): Promise<SectionAccessScope> {
+  const student = await createUser(tx, "STUDENT")
+  const classId = await createClass(tx)
+
+  const publicSection = await createSection(tx, classId, true)
+  const privateGranted = await createSection(tx, classId, false)
+  const privateDenied = await createSection(tx, classId, false)
+
+  await tx.insert(sectionAccess).values({ userId: student, sectionId: privateGranted })
+
+  return { student, publicSection, privateGranted, privateDenied }
 }
