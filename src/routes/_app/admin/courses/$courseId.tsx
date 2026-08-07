@@ -21,7 +21,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Table,
 	TableBody,
@@ -31,6 +31,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useAuth } from "@/hooks/useAuth";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { addClassToCourseFn, createClassFn } from "@/lib/admin/api";
 import { useDeleteClass, useUpdateCourse } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";

@@ -10,7 +10,7 @@ import { SortableHeader, useSort } from "@/components/admin/sortable-header";
 import { RequestStatusBadge } from "@/components/requests/request-status-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Table,
 	TableBody,
@@ -20,6 +20,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { requestQueries } from "@/lib/requests/queries";
 import type {
 	AdminContentRequest,
