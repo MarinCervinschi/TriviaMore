@@ -1,23 +1,12 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
-import { AnimatedBlock } from "@/components/session-config/animated-block"
+import { QuizConfigFields, QuizSummary } from "@/components/session-config/quiz-config"
 import {
   SessionDialogColumn,
   SessionDialogShell,
 } from "@/components/session-config/session-dialog"
-import {
-  EvalInfoCard,
-  EvalSelect,
-  SliderWithInput,
-  TimeTickRow,
-} from "@/components/session-config/session-form-blocks"
 import { SummaryPanel } from "@/components/session-config/summary-panel"
-import {
-  EvalBlock,
-  MetricBlock,
-  TimeBlock,
-} from "@/components/session-config/summary-blocks"
 import { TIME_STEPS } from "@/lib/quiz/constants"
 import { useStartQuiz } from "@/lib/quiz/mutations"
 import { quizQueries } from "@/lib/quiz/queries"
@@ -73,63 +62,26 @@ export function StartQuizDialog({
         onCancel={() => onOpenChange(false)}
         isPending={mutation.isPending}
       >
-        <AnimatedBlock>
-          <SliderWithInput
-            label="Numero di domande"
-            value={questionCount}
-            onChange={setQuestionCount}
-            min={1}
-            max={maxQuestions}
-            hint={
-              questionCount === maxQuestions
-                ? `Tutte (${maxQuestions})`
-                : `${questionCount} di ${maxQuestions}`
-            }
-          />
-        </AnimatedBlock>
-
-        <AnimatedBlock>
-          <TimeTickRow
-            steps={TIME_STEPS}
-            index={timeStepIndex}
-            onChange={setTimeStepIndex}
-          />
-        </AnimatedBlock>
-
-        {evalModes && evalModes.length >= 2 && (
-          <AnimatedBlock>
-            <EvalSelect
-              modes={evalModes}
-              value={evalModeId}
-              onChange={setEvalModeId}
-            />
-          </AnimatedBlock>
-        )}
-
-        {selectedEvalMode && (
-          <AnimatedBlock>
-            <EvalInfoCard mode={selectedEvalMode} />
-          </AnimatedBlock>
-        )}
+        <QuizConfigFields
+          questionCount={questionCount}
+          setQuestionCount={setQuestionCount}
+          timeStepIndex={timeStepIndex}
+          setTimeStepIndex={setTimeStepIndex}
+          evalModeId={evalModeId}
+          setEvalModeId={setEvalModeId}
+          evalModes={evalModes}
+          selectedEvalMode={selectedEvalMode}
+          maxQuestions={maxQuestions}
+        />
       </SessionDialogColumn>
 
       <SummaryPanel footerTip="La sessione si avvia subito e non può essere messa in pausa.">
-        <AnimatedBlock>
-          <TimeBlock minutes={timeLimit} questionCount={questionCount} />
-        </AnimatedBlock>
-        <AnimatedBlock>
-          <MetricBlock
-            eyebrow="Domande"
-            value={questionCount}
-            total={maxQuestions}
-            showBar
-          />
-        </AnimatedBlock>
-        {selectedEvalMode && (
-          <AnimatedBlock>
-            <EvalBlock mode={selectedEvalMode} questionCount={questionCount} />
-          </AnimatedBlock>
-        )}
+        <QuizSummary
+          timeLimit={timeLimit}
+          questionCount={questionCount}
+          maxQuestions={maxQuestions}
+          selectedEvalMode={selectedEvalMode}
+        />
       </SummaryPanel>
     </SessionDialogShell>
   )
