@@ -1,7 +1,6 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -21,6 +20,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { type DepartmentInput, departmentSchema } from "@/lib/admin/schemas";
 import type { Department } from "@/lib/admin/types";
+
+import { FormSubmitButton } from "./form-submit-button";
 
 type DepartmentFormProps = {
 	department?: Department;
@@ -120,13 +121,11 @@ export function DepartmentForm({
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" disabled={isPending}>
-					{isPending
-						? "Salvataggio..."
-						: department
-							? "Aggiorna dipartimento"
-							: "Crea dipartimento"}
-				</Button>
+				<FormSubmitButton
+					isPending={isPending}
+					isEdit={!!department}
+					entityLabel="dipartimento"
+				/>
 			</form>
 		</Form>
 	);

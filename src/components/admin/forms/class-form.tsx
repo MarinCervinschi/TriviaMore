@@ -1,7 +1,6 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Form,
@@ -15,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { type ClassInput, classSchema, courseClassSchema } from "@/lib/admin/schemas";
 import type { AdminClassDetail } from "@/lib/admin/types";
+
+import { FormSubmitButton } from "./form-submit-button";
 
 const classWithJunctionSchema = classSchema.merge(
 	courseClassSchema.pick({
@@ -180,13 +181,11 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" disabled={isPending}>
-					{isPending
-						? "Salvataggio..."
-						: cls
-							? "Aggiorna insegnamento"
-							: "Crea insegnamento"}
-				</Button>
+				<FormSubmitButton
+					isPending={isPending}
+					isEdit={!!cls}
+					entityLabel="insegnamento"
+				/>
 			</form>
 		</Form>
 	);

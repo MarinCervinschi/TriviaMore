@@ -1,7 +1,6 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Form,
@@ -16,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { type SectionInput, sectionSchema } from "@/lib/admin/schemas";
 import type { AdminSectionDetail } from "@/lib/admin/types";
+
+import { FormSubmitButton } from "./form-submit-button";
 
 type SectionFormProps = {
 	section?: Pick<AdminSectionDetail, "name" | "description" | "isPublic" | "classId">;
@@ -97,9 +98,11 @@ export function SectionForm({
 						)}
 					/>
 				)}
-				<Button type="submit" disabled={isPending}>
-					{isPending ? "Salvataggio..." : section ? "Aggiorna sezione" : "Crea sezione"}
-				</Button>
+				<FormSubmitButton
+					isPending={isPending}
+					isEdit={!!section}
+					entityLabel="sezione"
+				/>
 			</form>
 		</Form>
 	);
