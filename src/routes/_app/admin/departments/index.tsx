@@ -6,9 +6,9 @@ import { Library, Pencil, Plus, Trash2 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import {
-  AdminPagination,
+  Pagination,
   usePaginatedSearch,
-} from "@/components/admin/admin-pagination"
+} from "@/components/ui/pagination"
 import { AdminSearch } from "@/components/admin/admin-search"
 import { SortableHeader, useSort } from "@/components/admin/sortable-header"
 import { DepartmentForm } from "@/components/admin/forms/department-form"
@@ -162,7 +162,7 @@ function AdminDepartmentsPage() {
                   ))}
                 </TableBody>
               </Table>
-              <AdminPagination
+              <Pagination
                 page={safePage}
                 totalPages={totalPages}
                 onPageChange={setPage}

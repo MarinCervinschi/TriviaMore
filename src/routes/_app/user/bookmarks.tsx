@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { ReportButton } from "@/components/requests/report-button"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
-import { UserEmptyState } from "@/components/user/user-empty-state"
+import { EmptyState } from "@/components/ui/empty-state"
 import { UserHero } from "@/components/user/user-hero"
 import { useToggleBookmark } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
@@ -58,7 +58,7 @@ function BookmarksPage() {
         <UserBreadcrumb current="Segnalibri" />
 
         {bookmarks.length === 0 ? (
-          <UserEmptyState
+          <EmptyState
             icon={Bookmark}
             title="Nessun segnalibro salvato"
             description="Durante i quiz, clicca sull'icona del segnalibro per salvare le domande interessanti!"

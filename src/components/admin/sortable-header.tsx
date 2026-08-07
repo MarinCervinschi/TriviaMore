@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import type { SortState } from "./admin-pagination"
+import type { SortState } from "@/components/ui/pagination"
 
 type SortableHeaderProps<T> = {
   label: string

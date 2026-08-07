@@ -7,7 +7,7 @@ import { TrendingUp, Trophy } from "lucide-react"
 
 import { ProgressSkeleton } from "@/components/skeletons"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
-import { UserEmptyState } from "@/components/user/user-empty-state"
+import { EmptyState } from "@/components/ui/empty-state"
 import { UserHero } from "@/components/user/user-hero"
 import { useProgressData } from "@/hooks/useProgressData"
 import { ProgressStats } from "@/components/progress/progress-stats"
@@ -52,7 +52,7 @@ function ProgressPage() {
         />
         <div className="container space-y-6">
           <UserBreadcrumb current="Progressi" />
-          <UserEmptyState
+          <EmptyState
             icon={Trophy}
             title="Nessun progresso disponibile"
             description="Inizia a completare alcuni quiz per vedere i tuoi progressi qui!"

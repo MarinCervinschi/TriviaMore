@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
-import { UserEmptyState } from "@/components/user/user-empty-state"
+import { EmptyState } from "@/components/ui/empty-state"
 import { UserHero } from "@/components/user/user-hero"
 import { useRemoveClass } from "@/lib/user/mutations"
 import { userQueries } from "@/lib/user/queries"
@@ -213,7 +213,7 @@ function ClassesPage() {
         {/* Classes Table */}
         {filtered.length === 0 ? (
           userClasses.length === 0 ? (
-            <UserEmptyState
+            <EmptyState
               icon={GraduationCap}
               title="Nessun corso salvato"
               description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"

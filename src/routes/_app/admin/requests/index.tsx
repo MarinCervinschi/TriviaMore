@@ -6,9 +6,9 @@ import { ArrowRight, Inbox } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import {
-  AdminPagination,
+  Pagination,
   usePaginatedSearch,
-} from "@/components/admin/admin-pagination"
+} from "@/components/ui/pagination"
 import { AdminSearch } from "@/components/admin/admin-search"
 import { SortableHeader, useSort } from "@/components/admin/sortable-header"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -230,7 +230,7 @@ function AdminRequestsPage() {
             </Table>
           </div>
 
-          <AdminPagination
+          <Pagination
             page={safePage}
             totalPages={totalPages}
             totalItems={totalItems}

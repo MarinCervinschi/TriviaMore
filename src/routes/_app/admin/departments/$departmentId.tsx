@@ -8,9 +8,9 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { BrowsePublicButton } from "@/components/admin/browse-public-button"
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import {
-  AdminPagination,
+  Pagination,
   usePaginatedSearch,
-} from "@/components/admin/admin-pagination"
+} from "@/components/ui/pagination"
 import { AdminSearch } from "@/components/admin/admin-search"
 import { SortableHeader, useSort } from "@/components/admin/sortable-header"
 import { CourseForm } from "@/components/admin/forms/course-form"
@@ -207,7 +207,7 @@ function AdminDepartmentDetailPage() {
                     ))}
                   </TableBody>
                 </Table>
-                <AdminPagination
+                <Pagination
                   page={safePage}
                   totalPages={totalPages}
                   onPageChange={setPage}
