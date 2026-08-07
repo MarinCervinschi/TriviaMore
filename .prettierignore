@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Build output
+.output
+.nitro
+.tanstack
+.vinxi
+.wrangler
+dist
+build
+storybook-static
+
+# Generated
+src/routeTree.gen.ts
+*.tsbuildinfo
+
+# Data layer (migrations + frozen archive are hand-managed)
+drizzle
+supabase
+
+# Tooling / secrets / assets
+.claude
+.gemini
+.infisical.json
+public
+backups
+pnpm-lock.yaml
+package-lock.json
+
+# Docs are hand-formatted
+*.md

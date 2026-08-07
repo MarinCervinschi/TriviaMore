@@ -18,6 +18,8 @@
     "preview": "infisical run --recursive -- vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",
     "test:db": "vitest run --project integration --passWithNoTests",
