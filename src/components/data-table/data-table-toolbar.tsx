@@ -18,6 +18,7 @@ export function DataTableToolbar<TData extends RowData>({
 	searchPlaceholder = "Cerca...",
 	searchable = true,
 	showViewOptions = true,
+	filters,
 	actions,
 	className,
 }: {
@@ -25,6 +26,8 @@ export function DataTableToolbar<TData extends RowData>({
 	searchPlaceholder?: string;
 	searchable?: boolean;
 	showViewOptions?: boolean;
+	/** Extra filter controls, for state the table itself does not own. */
+	filters?: ReactNode;
 	/** Page-level buttons rendered at the end of the toolbar. */
 	actions?: ReactNode;
 	className?: string;
@@ -68,6 +71,8 @@ export function DataTableToolbar<TData extends RowData>({
 						/>
 					</div>
 				)}
+
+				{filters}
 
 				{filterColumns.map(column => (
 					<DataTableFacetedFilter

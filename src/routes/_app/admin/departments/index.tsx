@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Library, Pencil, Plus, Trash2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Library, Pencil, Plus } from "lucide-react";
+import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminSearch } from "@/components/admin/admin-search";
+import { AdminRowActions } from "@/components/admin/admin-row-actions";
 import { DepartmentForm } from "@/components/admin/forms/department-form";
-import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import {
+	DataTable,
+	DataTableEmpty,
+	DataTableToolbar,
+	createDataTableColumns,
+	dataTableSearchFields,
+	useDataTable,
+} from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,47 +26,92 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Pagination } from "@/components/ui/pagination";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { useCreateDepartment, useDeleteDepartment } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
+import type { AdminDepartment } from "@/lib/admin/types";
 import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/admin/departments/")({
+	validateSearch: z.object(dataTableSearchFields),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(adminQueries.departments()),
 	component: AdminDepartmentsPage,
 	head: () => seoHead({ title: "Dipartimenti | Gestione", noindex: true }),
 });
 
+const column = createDataTableColumns<AdminDepartment>();
+
+function buildColumns(onDelete: (id: string) => void) {
+	return [
+		column.accessor("name", {
+			header: "Nome",
+			meta: { label: "Nome" },
+			cell: ({ row }) => (
+				<Link
+					to="/admin/departments/$departmentId"
+					params={{ departmentId: row.original.id }}
+					className="font-medium hover:underline"
+				>
+					{row.original.name}
+				</Link>
+			),
+		}),
+		column.accessor("code", {
+			header: "Codice",
+			meta: { label: "Codice" },
+			cell: ({ row }) => (
+				<Badge variant="secondary" className="rounded-full">
+					{row.original.code}
+				</Badge>
+			),
+		}),
+		column.accessor("courseCount", {
+			header: "Corsi",
+			meta: { label: "Corsi", align: "center" },
+		}),
+		column.display({
+			id: "actions",
+			header: "Azioni",
+			enableHiding: false,
+			meta: { label: "Azioni", align: "right" },
+			cell: ({ row }) => (
+				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+					<Link
+						to="/admin/departments/$departmentId"
+						params={{ departmentId: row.original.id }}
+					>
+						<Pencil className="h-4 w-4" />
+					</Link>
+				</AdminRowActions>
+			),
+		}),
+	];
+}
+
 function AdminDepartmentsPage() {
+	const navigate = useNavigate({ from: Route.fullPath });
+	const search = Route.useSearch();
 	const { data: departments } = useSuspenseQuery(adminQueries.departments());
 	const [createOpen, setCreateOpen] = useState(false);
 	const [deleteId, setDeleteId] = useState<string | null>(null);
-	const [search, setSearch] = useState("");
-	const [page, setPage] = useState(1);
-
-	const { sort, toggleSort } = useSort<(typeof departments)[0]>();
 
 	const createDepartment = useCreateDepartment(() => setCreateOpen(false));
 	const deleteDepartment = useDeleteDepartment(() => setDeleteId(null));
 
-	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-		departments,
-		(d, q) => d.name.toLowerCase().includes(q) || d.code.toLowerCase().includes(q),
-		search,
-		page,
-		10,
-		sort
-	);
+	const columns = useMemo(() => buildColumns(setDeleteId), []);
+
+	const table = useDataTable({
+		data: departments,
+		columns,
+		getRowId: row => row.id,
+		searchFn: (department, query) =>
+			department.name.toLowerCase().includes(query) ||
+			department.code.toLowerCase().includes(query),
+		urlState: {
+			values: search,
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
 
 	return (
 		<div className="py-2">
@@ -78,115 +131,27 @@ function AdminDepartmentsPage() {
 
 			<Card className="rounded-2xl">
 				<CardHeader>
-					<div className="flex items-center justify-between gap-4">
-						<CardTitle>Lista dipartimenti</CardTitle>
-						<div className="w-64">
-							<AdminSearch
-								value={search}
-								onChange={v => {
-									setSearch(v);
-									setPage(1);
-								}}
-								placeholder="Cerca dipartimenti..."
-							/>
-						</div>
-					</div>
+					<CardTitle>Lista dipartimenti</CardTitle>
 				</CardHeader>
 				<CardContent>
-					{paged.length === 0 ? (
-						<p className="text-muted-foreground py-8 text-center">
-							{search
-								? "Nessun dipartimento trovato."
-								: "Nessun dipartimento. Crea il primo!"}
-						</p>
-					) : (
-						<>
-							<Table>
-								<TableHeader>
-									<TableRow className="bg-muted/50">
-										<TableHead>
-											<SortableHeader
-												label="Nome"
-												sortKey="name"
-												sort={sort}
-												onSort={toggleSort}
-											/>
-										</TableHead>
-										<TableHead>
-											<SortableHeader
-												label="Codice"
-												sortKey="code"
-												sort={sort}
-												onSort={toggleSort}
-											/>
-										</TableHead>
-										<TableHead className="text-center text-xs font-medium tracking-wider uppercase">
-											Corsi
-										</TableHead>
-										<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
-											Azioni
-										</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{paged.map(dept => (
-										<TableRow
-											key={dept.id}
-											className="hover:bg-muted/30 transition-colors"
-										>
-											<TableCell>
-												<Link
-													to="/admin/departments/$departmentId"
-													params={{ departmentId: dept.id }}
-													className="font-medium hover:underline"
-												>
-													{dept.name}
-												</Link>
-											</TableCell>
-											<TableCell>
-												<Badge variant="secondary" className="rounded-full">
-													{dept.code}
-												</Badge>
-											</TableCell>
-											<TableCell className="text-center">{dept.courseCount}</TableCell>
-											<TableCell className="text-right">
-												<div className="flex items-center justify-end gap-1">
-													<Button
-														variant="ghost"
-														size="icon"
-														className="rounded-lg"
-														asChild
-													>
-														<Link
-															to="/admin/departments/$departmentId"
-															params={{ departmentId: dept.id }}
-														>
-															<Pencil className="h-4 w-4" />
-														</Link>
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="rounded-lg"
-														onClick={() => setDeleteId(dept.id)}
-													>
-														<Trash2 className="text-destructive h-4 w-4" />
-													</Button>
-												</div>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-							<Pagination
-								page={safePage}
-								totalPages={totalPages}
-								onPageChange={setPage}
-								totalItems={totalItems}
-								pageSize={10}
+					<DataTable
+						table={table}
+						density="compact"
+						bordered={false}
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca dipartimenti..."
 							/>
-						</>
-					)}
+						}
+						empty={
+							<DataTableEmpty>
+								{search.q
+									? "Nessun dipartimento trovato."
+									: "Nessun dipartimento. Crea il primo!"}
+							</DataTableEmpty>
+						}
+					/>
 				</CardContent>
 			</Card>
 

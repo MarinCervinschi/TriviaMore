@@ -1,27 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Pencil, Trash2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Pencil } from "lucide-react";
+import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminSearch } from "@/components/admin/admin-search";
-import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import { AdminRowActions } from "@/components/admin/admin-row-actions";
+import {
+	DataTable,
+	DataTableEmpty,
+	DataTableToolbar,
+	createDataTableColumns,
+	dataTableFilterField,
+	dataTableSearchFields,
+	useDataTable,
+} from "@/components/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Pagination } from "@/components/ui/pagination";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { useDeleteUser } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import type { AdminUser } from "@/lib/admin/types";
@@ -44,39 +42,118 @@ const ROLE_VARIANTS: Record<
 	STUDENT: "outline",
 };
 
+const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({
+	value,
+	label,
+}));
+
 export const Route = createFileRoute("/_app/admin/users/")({
+	validateSearch: z.object({
+		...dataTableSearchFields,
+		role: dataTableFilterField,
+	}),
 	loader: ({ context }) => context.queryClient.ensureQueryData(adminQueries.users()),
 	component: AdminUsersPage,
 	head: () => seoHead({ title: "Utenti | Gestione", noindex: true }),
 });
 
+const column = createDataTableColumns<AdminUser>();
+
+function initials(name: string | null) {
+	if (!name) return "?";
+	return name
+		.split(" ")
+		.map(part => part[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2);
+}
+
+function buildColumns(onDelete: (id: string) => void) {
+	return [
+		column.accessor("name", {
+			header: "Utente",
+			meta: { label: "Utente" },
+			cell: ({ row }) => (
+				<div className="flex items-center gap-3">
+					<Avatar className="ring-background h-8 w-8 ring-2">
+						<AvatarImage
+							src={row.original.image ?? undefined}
+							alt={row.original.name ?? ""}
+						/>
+						<AvatarFallback className="text-xs">
+							{initials(row.original.name)}
+						</AvatarFallback>
+					</Avatar>
+					<div>
+						<Link
+							to="/admin/users/$userId"
+							params={{ userId: row.original.id }}
+							className="font-medium hover:underline"
+						>
+							{row.original.name ?? "—"}
+						</Link>
+						<p className="text-muted-foreground text-xs">{row.original.email}</p>
+					</div>
+				</div>
+			),
+		}),
+		column.accessor("role", {
+			header: "Ruolo",
+			filterFn: "arrIncludesSome",
+			meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS } },
+			cell: ({ row }) => (
+				<Badge variant={ROLE_VARIANTS[row.original.role]} className="rounded-full">
+					{ROLE_LABELS[row.original.role] ?? row.original.role}
+				</Badge>
+			),
+		}),
+		column.accessor("quizAttemptsCount", {
+			header: "Quiz",
+			meta: { label: "Quiz", align: "center" },
+		}),
+		column.accessor("createdAt", {
+			header: "Registrato",
+			meta: { label: "Registrato", cellClassName: "text-muted-foreground text-sm" },
+			cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("it-IT"),
+		}),
+		column.display({
+			id: "actions",
+			header: "Azioni",
+			enableHiding: false,
+			meta: { label: "Azioni", align: "right" },
+			cell: ({ row }) => (
+				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+					<Link to="/admin/users/$userId" params={{ userId: row.original.id }}>
+						<Pencil className="h-4 w-4" />
+					</Link>
+				</AdminRowActions>
+			),
+		}),
+	];
+}
+
 function AdminUsersPage() {
+	const navigate = useNavigate({ from: Route.fullPath });
+	const search = Route.useSearch();
 	const { data: users } = useSuspenseQuery(adminQueries.users());
-	const [search, setSearch] = useState("");
-	const [roleFilter, setRoleFilter] = useState<string>("all");
 	const [deleteId, setDeleteId] = useState<string | null>(null);
-	const [page, setPage] = useState(1);
-	const { sort, toggleSort } = useSort<AdminUser>();
 	const deleteUser = useDeleteUser(() => setDeleteId(null));
 
-	const filtered =
-		roleFilter === "all" ? users : users.filter(u => u.role === roleFilter);
+	const columns = useMemo(() => buildColumns(setDeleteId), []);
 
-	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-		filtered,
-		(u, q) =>
-			(u.name?.toLowerCase().includes(q) ?? false) ||
-			(u.email?.toLowerCase().includes(q) ?? false),
-		search,
-		page,
-		10,
-		sort
-	);
-
-	const roleCounts = users.reduce<Record<string, number>>((acc, u) => {
-		acc[u.role] = (acc[u.role] ?? 0) + 1;
-		return acc;
-	}, {});
+	const table = useDataTable({
+		data: users,
+		columns,
+		getRowId: row => row.id,
+		searchFn: (user, query) =>
+			(user.name?.toLowerCase().includes(query) ?? false) ||
+			(user.email?.toLowerCase().includes(query) ?? false),
+		urlState: {
+			values: search,
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
 
 	return (
 		<div className="py-2">
@@ -87,181 +164,29 @@ function AdminUsersPage() {
 				backLabel="Dashboard"
 			/>
 
-			{/* Role filter chips */}
-			<div className="mb-4 flex flex-wrap gap-2">
-				<Badge
-					variant={roleFilter === "all" ? "default" : "outline"}
-					className="cursor-pointer rounded-xl"
-					onClick={() => {
-						setRoleFilter("all");
-						setPage(1);
-					}}
-				>
-					Tutti ({users.length})
-				</Badge>
-				{(["SUPERADMIN", "ADMIN", "MAINTAINER", "STUDENT"] as const).map(role => (
-					<Badge
-						key={role}
-						variant={roleFilter === role ? ROLE_VARIANTS[role] : "outline"}
-						className="cursor-pointer rounded-xl"
-						onClick={() => {
-							setRoleFilter(role);
-							setPage(1);
-						}}
-					>
-						{ROLE_LABELS[role]} ({roleCounts[role] ?? 0})
-					</Badge>
-				))}
-			</div>
-
 			<Card className="rounded-2xl">
 				<CardHeader>
-					<div className="flex items-center justify-between gap-4">
-						<CardTitle>Lista utenti</CardTitle>
-						<div className="w-64">
-							<AdminSearch
-								value={search}
-								onChange={v => {
-									setSearch(v);
-									setPage(1);
-								}}
-								placeholder="Cerca per nome o email..."
-							/>
-						</div>
-					</div>
+					<CardTitle>Lista utenti</CardTitle>
 				</CardHeader>
 				<CardContent>
-					{paged.length === 0 ? (
-						<p className="text-muted-foreground py-8 text-center">
-							{search || roleFilter !== "all"
-								? "Nessun utente trovato."
-								: "Nessun utente registrato."}
-						</p>
-					) : (
-						<>
-							<Table>
-								<TableHeader>
-									<TableRow className="bg-muted/50">
-										<TableHead>Utente</TableHead>
-										<TableHead>
-											<SortableHeader
-												label="Ruolo"
-												sortKey="role"
-												sort={sort}
-												onSort={toggleSort}
-											/>
-										</TableHead>
-										<TableHead className="text-center">
-											<SortableHeader
-												label="Quiz"
-												sortKey="quizAttemptsCount"
-												sort={sort}
-												onSort={toggleSort}
-											/>
-										</TableHead>
-										<TableHead>
-											<SortableHeader
-												label="Registrato"
-												sortKey="createdAt"
-												sort={sort}
-												onSort={toggleSort}
-											/>
-										</TableHead>
-										<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
-											Azioni
-										</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{paged.map(user => (
-										<TableRow
-											key={user.id}
-											className="hover:bg-muted/30 transition-colors"
-										>
-											<TableCell>
-												<div className="flex items-center gap-3">
-													<Avatar className="ring-background h-8 w-8 ring-2">
-														<AvatarImage
-															src={user.image ?? undefined}
-															alt={user.name ?? ""}
-														/>
-														<AvatarFallback className="text-xs">
-															{user.name
-																? user.name
-																		.split(" ")
-																		.map(n => n[0])
-																		.join("")
-																		.toUpperCase()
-																		.slice(0, 2)
-																: "?"}
-														</AvatarFallback>
-													</Avatar>
-													<div>
-														<Link
-															to="/admin/users/$userId"
-															params={{ userId: user.id }}
-															className="font-medium hover:underline"
-														>
-															{user.name ?? "—"}
-														</Link>
-														<p className="text-muted-foreground text-xs">
-															{user.email}
-														</p>
-													</div>
-												</div>
-											</TableCell>
-											<TableCell>
-												<Badge
-													variant={ROLE_VARIANTS[user.role]}
-													className="rounded-full"
-												>
-													{ROLE_LABELS[user.role] ?? user.role}
-												</Badge>
-											</TableCell>
-											<TableCell className="text-center">
-												{user.quizAttemptsCount}
-											</TableCell>
-											<TableCell className="text-muted-foreground text-sm">
-												{new Date(user.createdAt).toLocaleDateString("it-IT")}
-											</TableCell>
-											<TableCell className="text-right">
-												<div className="flex items-center justify-end gap-1">
-													<Button
-														variant="ghost"
-														size="icon"
-														className="rounded-lg"
-														asChild
-													>
-														<Link
-															to="/admin/users/$userId"
-															params={{ userId: user.id }}
-														>
-															<Pencil className="h-4 w-4" />
-														</Link>
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="rounded-lg"
-														onClick={() => setDeleteId(user.id)}
-													>
-														<Trash2 className="text-destructive h-4 w-4" />
-													</Button>
-												</div>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-							<Pagination
-								page={safePage}
-								totalPages={totalPages}
-								onPageChange={setPage}
-								totalItems={totalItems}
-								pageSize={10}
+					<DataTable
+						table={table}
+						density="compact"
+						bordered={false}
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca per nome o email..."
 							/>
-						</>
-					)}
+						}
+						empty={
+							<DataTableEmpty>
+								{search.q || search.role
+									? "Nessun utente trovato."
+									: "Nessun utente registrato."}
+							</DataTableEmpty>
+						}
+					/>
 				</CardContent>
 			</Card>
 

@@ -1,16 +1,24 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminSearch } from "@/components/admin/admin-search";
+import { AdminRowActions } from "@/components/admin/admin-row-actions";
 import { BrowsePublicButton } from "@/components/admin/browse-public-button";
 import { ClassForm } from "@/components/admin/forms/class-form";
 import { CourseForm } from "@/components/admin/forms/course-form";
-import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import {
+	DataTable,
+	DataTableEmpty,
+	DataTableToolbar,
+	createDataTableColumns,
+	dataTableSearchFields,
+	useDataTable,
+} from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,70 +29,115 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Pagination } from "@/components/ui/pagination";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { useAuth } from "@/hooks/useAuth";
-import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { addClassToCourseFn, createClassFn } from "@/lib/admin/api";
 import { useDeleteClass, useUpdateCourse } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
+import type { AdminCourseDetail } from "@/lib/admin/types";
 import { seoHead } from "@/lib/seo";
 
+type ClassRow = AdminCourseDetail["classes"][number];
+
 export const Route = createFileRoute("/_app/admin/courses/$courseId")({
+	validateSearch: z.object(dataTableSearchFields),
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.course(params.courseId)),
 	component: AdminCourseDetailPage,
 	head: () => seoHead({ title: "Dettaglio Corso | Gestione", noindex: true }),
 });
 
+const column = createDataTableColumns<ClassRow>();
+
+function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
+	return [
+		column.accessor("name", {
+			header: "Nome",
+			meta: { label: "Nome" },
+			cell: ({ row }) => (
+				<Link
+					to="/admin/classes/$classId"
+					params={{ classId: row.original.id }}
+					className="font-medium hover:underline"
+				>
+					{row.original.name}
+				</Link>
+			),
+		}),
+		column.accessor("code", {
+			header: "Codice",
+			meta: { label: "Codice" },
+			cell: ({ row }) => (
+				<Badge variant="secondary" className="rounded-full">
+					{row.original.code}
+				</Badge>
+			),
+		}),
+		column.accessor("classYear", {
+			header: "Anno",
+			meta: { label: "Anno", align: "center" },
+		}),
+		// Already excludes the exam-simulation sentinel, and the private sections a
+		// maintainer cannot manage.
+		column.accessor("sectionCount", {
+			header: "Sezioni",
+			meta: { label: "Sezioni", align: "center" },
+		}),
+		...(canManage
+			? [
+					column.display({
+						id: "actions",
+						header: "Azioni",
+						enableHiding: false,
+						meta: { label: "Azioni", align: "right" as const },
+						cell: ({ row }) => (
+							<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+								<Link
+									to="/admin/classes/$classId"
+									params={{ classId: row.original.id }}
+								>
+									<Pencil className="h-4 w-4" />
+								</Link>
+							</AdminRowActions>
+						),
+					}),
+				]
+			: []),
+	];
+}
+
 function AdminCourseDetailPage() {
 	const { courseId } = Route.useParams();
+	const navigate = useNavigate({ from: Route.fullPath });
+	const search = Route.useSearch();
 	const { data } = useSuspenseQuery(adminQueries.course(courseId));
 	const { user } = useAuth();
 	const isMaintainer = user?.role === "MAINTAINER";
 	const [createClassOpen, setCreateClassOpen] = useState(false);
 	const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
-	const [search, setSearch] = useState("");
-	const [page, setPage] = useState(1);
+	const [createPending, setCreatePending] = useState(false);
 
-	type ClassRow = {
-		id: string;
-		name: string;
-		code: string;
-		class_year: number;
-		sectionCount: number;
-	};
-
-	const { sort, toggleSort } = useSort<ClassRow>();
 	const queryClient = useQueryClient();
 	const updateCourse = useUpdateCourse();
-	const [createPending, setCreatePending] = useState(false);
 	const deleteClass = useDeleteClass(() => setDeleteClassId(null));
 
-	const { classes: linkedClasses, department, ...course } = data;
+	const { classes, department, ...course } = data;
 
-	// sectionCount already excludes the exam-simulation sentinel, and the private
-	// sections a maintainer cannot manage.
-	const classes = linkedClasses.map(cc => ({
-		...cc,
-		class_year: cc.classYear,
-	})) as ClassRow[];
-
-	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-		classes,
-		(c, q) => c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
-		search,
-		page,
-		10,
-		sort
+	const columns = useMemo(
+		() => buildColumns(!isMaintainer, setDeleteClassId),
+		[isMaintainer]
 	);
+
+	const table = useDataTable({
+		data: classes,
+		columns,
+		getRowId: row => row.id,
+		searchFn: (cls, query) =>
+			cls.name.toLowerCase().includes(query) || cls.code.toLowerCase().includes(query),
+		urlState: {
+			values: search,
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
 
 	return (
 		<div className="py-2">
@@ -126,147 +179,39 @@ function AdminCourseDetailPage() {
 
 				<Card className="rounded-2xl">
 					<CardHeader>
-						<div className="flex items-center justify-between gap-4">
-							<CardTitle>Insegnamenti ({linkedClasses.length})</CardTitle>
-							<div className="flex items-center gap-2">
-								<div className="w-56">
-									<AdminSearch
-										value={search}
-										onChange={v => {
-											setSearch(v);
-											setPage(1);
-										}}
-										placeholder="Cerca insegnamenti..."
-									/>
-								</div>
-								{!isMaintainer && (
-									<Button
-										size="sm"
-										className="rounded-xl"
-										onClick={() => setCreateClassOpen(true)}
-									>
-										<Plus className="mr-1 h-4 w-4" />
-										Nuova
-									</Button>
-								)}
-							</div>
-						</div>
+						<CardTitle>Insegnamenti ({classes.length})</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{paged.length === 0 ? (
-							<p className="text-muted-foreground py-4 text-center">
-								{search
-									? "Nessun insegnamento trovato."
-									: "Nessun insegnamento in questo corso."}
-							</p>
-						) : (
-							<>
-								<Table>
-									<TableHeader>
-										<TableRow className="bg-muted/50">
-											<TableHead>
-												<SortableHeader
-													label="Nome"
-													sortKey="name"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead>
-												<SortableHeader
-													label="Codice"
-													sortKey="code"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead className="text-center">
-												<SortableHeader
-													label="Anno"
-													sortKey="class_year"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead className="text-center">
-												<SortableHeader
-													label="Sezioni"
-													sortKey="sectionCount"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											{!isMaintainer && (
-												<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
-													Azioni
-												</TableHead>
-											)}
-										</TableRow>
-									</TableHeader>
-									<TableBody>
-										{paged.map(cls => (
-											<TableRow
-												key={cls.id}
-												className="hover:bg-muted/30 transition-colors"
+						<DataTable
+							table={table}
+							density="compact"
+							bordered={false}
+							toolbar={
+								<DataTableToolbar
+									table={table}
+									searchPlaceholder="Cerca insegnamenti..."
+									actions={
+										!isMaintainer && (
+											<Button
+												size="sm"
+												className="rounded-xl"
+												onClick={() => setCreateClassOpen(true)}
 											>
-												<TableCell>
-													<Link
-														to="/admin/classes/$classId"
-														params={{ classId: cls.id }}
-														className="font-medium hover:underline"
-													>
-														{cls.name}
-													</Link>
-												</TableCell>
-												<TableCell>
-													<Badge variant="secondary" className="rounded-full">
-														{cls.code}
-													</Badge>
-												</TableCell>
-												<TableCell className="text-center">{cls.class_year}</TableCell>
-												<TableCell className="text-center">
-													{cls.sectionCount}
-												</TableCell>
-												{!isMaintainer && (
-													<TableCell className="text-right">
-														<div className="flex items-center justify-end gap-1">
-															<Button
-																variant="ghost"
-																size="icon"
-																className="rounded-lg"
-																asChild
-															>
-																<Link
-																	to="/admin/classes/$classId"
-																	params={{ classId: cls.id }}
-																>
-																	<Pencil className="h-4 w-4" />
-																</Link>
-															</Button>
-															<Button
-																variant="ghost"
-																size="icon"
-																className="rounded-lg"
-																onClick={() => setDeleteClassId(cls.id)}
-															>
-																<Trash2 className="text-destructive h-4 w-4" />
-															</Button>
-														</div>
-													</TableCell>
-												)}
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-								<Pagination
-									page={safePage}
-									totalPages={totalPages}
-									onPageChange={setPage}
-									totalItems={totalItems}
-									pageSize={10}
+												<Plus className="mr-1 h-4 w-4" />
+												Nuova
+											</Button>
+										)
+									}
 								/>
-							</>
-						)}
+							}
+							empty={
+								<DataTableEmpty>
+									{search.q
+										? "Nessun insegnamento trovato."
+										: "Nessun insegnamento in questo corso."}
+								</DataTableEmpty>
+							}
+						/>
 					</CardContent>
 				</Card>
 			</div>
