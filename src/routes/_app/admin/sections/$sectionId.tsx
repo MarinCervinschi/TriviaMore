@@ -7,9 +7,9 @@ import { Pencil, Plus, Trash2, Users } from "lucide-react"
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { BrowsePublicButton } from "@/components/admin/browse-public-button"
 import {
-  AdminPagination,
+  Pagination,
   usePaginatedSearch,
-} from "@/components/admin/admin-pagination"
+} from "@/components/ui/pagination"
 import { AdminSearch } from "@/components/admin/admin-search"
 import { SortableHeader, useSort } from "@/components/admin/sortable-header"
 import { SectionForm } from "@/components/admin/forms/section-form"
@@ -398,7 +398,7 @@ function AdminSectionDetailPage() {
                     ))}
                   </TableBody>
                 </Table>
-                <AdminPagination
+                <Pagination
                   page={safePage}
                   totalPages={totalPages}
                   onPageChange={setPage}
