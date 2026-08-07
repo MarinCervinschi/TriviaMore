@@ -1,9 +1,9 @@
 import { FileUp, Flag, FolderPlus, MessageSquarePlus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import type { ContentRequestType } from "@/lib/requests/types";
-import { cn } from "@/lib/utils";
+
+import { ConfigBadge } from "./config-badge";
 
 const typeConfig: Record<
 	ContentRequestType,
@@ -35,18 +35,7 @@ const typeConfig: Record<
 
 export function RequestTypeBadge({ type }: { type: ContentRequestType }) {
 	const config = typeConfig[type];
-	const Icon = config.icon;
-
 	return (
-		<Badge
-			variant="outline"
-			className={cn(
-				"inline-flex items-center gap-1 rounded-full text-xs font-medium",
-				config.className
-			)}
-		>
-			<Icon className="size-3" strokeWidth={1.5} />
-			{config.label}
-		</Badge>
+		<ConfigBadge label={config.label} className={config.className} icon={config.icon} />
 	);
 }
