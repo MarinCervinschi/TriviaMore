@@ -22,3 +22,7 @@ supabase/snippets/
 .vercel
 pending-questions/
 backups/
+
+# Storybook
+storybook-static/
+*storybook.log
