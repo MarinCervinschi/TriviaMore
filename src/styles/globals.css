@@ -24,6 +24,12 @@
 	--color-accent-foreground: hsl(var(--accent-foreground));
 	--color-destructive: hsl(var(--destructive));
 	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-success: hsl(var(--success));
+	--color-success-foreground: hsl(var(--success-foreground));
+	--color-warning: hsl(var(--warning));
+	--color-warning-foreground: hsl(var(--warning-foreground));
+	--color-info: hsl(var(--info));
+	--color-info-foreground: hsl(var(--info-foreground));
 	--color-border: hsl(var(--border));
 	--color-input: hsl(var(--input));
 	--color-ring: hsl(var(--ring));
@@ -64,6 +70,13 @@
 	--accent-foreground: 224 71% 4%;
 	--destructive: 0 84% 60%;
 	--destructive-foreground: 210 40% 98%;
+	/* Semantic status colours (tuned for text/badge use; auto-adapt in dark) */
+	--success: 142 72% 36%;
+	--success-foreground: 0 0% 100%;
+	--warning: 38 92% 45%;
+	--warning-foreground: 0 0% 100%;
+	--info: 217 91% 52%;
+	--info-foreground: 0 0% 100%;
 	--border: 220 13% 91%;
 	--input: 220 13% 91%;
 	--ring: 10 76% 42%;
@@ -102,6 +115,12 @@
 	--accent-foreground: 210 20% 98%;
 	--destructive: 0 62.8% 30.6%;
 	--destructive-foreground: 210 40% 98%;
+	--success: 142 60% 55%;
+	--success-foreground: 224 71% 4%;
+	--warning: 38 92% 60%;
+	--warning-foreground: 224 71% 4%;
+	--info: 217 91% 65%;
+	--info-foreground: 224 71% 4%;
 	--border: 215 28% 17%;
 	--input: 215 28% 17%;
 	--ring: 10 76% 42%;

@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils";
 function difficultyBadgeClass(difficulty: string): string {
 	switch (difficulty) {
 		case "EASY":
-			return "bg-green-500/10 text-green-600 border-green-500/20";
+			return "bg-success/10 text-success border-success/20";
 		case "MEDIUM":
-			return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+			return "bg-warning/10 text-warning border-warning/20";
 		case "HARD":
-			return "bg-red-500/10 text-red-600 border-red-500/20";
+			return "bg-destructive/10 text-destructive border-destructive/20";
 		default:
 			return "";
 	}
