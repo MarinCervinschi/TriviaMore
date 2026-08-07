@@ -1,7 +1,6 @@
-import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -16,14 +15,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { useAuth } from "@/hooks/useAuth"
 import { registerSchema, type RegisterInput } from "@/lib/auth/schemas"
 
 export function RegisterForm() {
   const navigate = useNavigate()
   const { signup } = useAuth()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
   const form = useForm<RegisterInput>({
     resolver: standardSchemaResolver(registerSchema),
@@ -99,30 +97,11 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min. 6 caratteri, maiuscola e numero"
-                    autoComplete="new-password"
-                    className="pr-10"
-                    {...field}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="sr-only">
-                      {showPassword ? "Nascondi password" : "Mostra password"}
-                    </span>
-                  </button>
-                </div>
+                <PasswordInput
+                  placeholder="Min. 6 caratteri, maiuscola e numero"
+                  autoComplete="new-password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,32 +114,11 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Conferma password</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showPasswordConfirm ? "text" : "password"}
-                    placeholder="Ripeti la password"
-                    autoComplete="new-password"
-                    className="pr-10"
-                    {...field}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                    tabIndex={-1}
-                  >
-                    {showPasswordConfirm ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="sr-only">
-                      {showPasswordConfirm
-                        ? "Nascondi conferma password"
-                        : "Mostra conferma password"}
-                    </span>
-                  </button>
-                </div>
+                <PasswordInput
+                  placeholder="Ripeti la password"
+                  autoComplete="new-password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

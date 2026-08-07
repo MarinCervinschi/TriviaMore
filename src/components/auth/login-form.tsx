@@ -1,7 +1,6 @@
-import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -15,13 +14,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { useAuth } from "@/hooks/useAuth"
 import { loginSchema, type LoginInput } from "@/lib/auth/schemas"
 
 export function LoginForm() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<LoginInput>({
     resolver: standardSchemaResolver(loginSchema),
@@ -69,30 +68,11 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="La tua password"
-                    autoComplete="current-password"
-                    className="pr-10"
-                    {...field}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="sr-only">
-                      {showPassword ? "Nascondi password" : "Mostra password"}
-                    </span>
-                  </button>
-                </div>
+                <PasswordInput
+                  placeholder="La tua password"
+                  autoComplete="current-password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
