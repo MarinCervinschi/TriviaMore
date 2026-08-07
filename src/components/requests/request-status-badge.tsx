@@ -1,6 +1,6 @@
-import { Badge } from "@/components/ui/badge";
 import type { ContentRequestStatus } from "@/lib/requests/types";
-import { cn } from "@/lib/utils";
+
+import { ConfigBadge } from "./config-badge";
 
 const statusConfig: Record<ContentRequestStatus, { label: string; className: string }> =
 	{
@@ -27,13 +27,5 @@ const statusConfig: Record<ContentRequestStatus, { label: string; className: str
 
 export function RequestStatusBadge({ status }: { status: ContentRequestStatus }) {
 	const config = statusConfig[status];
-
-	return (
-		<Badge
-			variant="outline"
-			className={cn("rounded-full text-xs font-medium", config.className)}
-		>
-			{config.label}
-		</Badge>
-	);
+	return <ConfigBadge label={config.label} className={config.className} />;
 }
