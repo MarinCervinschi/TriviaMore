@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Pagination } from "./pagination";
 
@@ -20,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	render: (args) => {
+	render: args => {
 		const [page, setPage] = useState(args.page);
 		return <Pagination {...args} page={page} onPageChange={setPage} />;
 	},
@@ -28,7 +29,7 @@ export const Default: Story = {
 
 export const ManyPages: Story = {
 	args: { page: 6, totalPages: 12, totalItems: 118, pageSize: 10 },
-	render: (args) => {
+	render: args => {
 		const [page, setPage] = useState(args.page);
 		return <Pagination {...args} page={page} onPageChange={setPage} />;
 	},

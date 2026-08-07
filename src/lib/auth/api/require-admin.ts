@@ -1,6 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { requireAdmin } from "../guards"
+import { requireAdmin } from "../guards";
 
-export const requireAdminFn = createServerFn({ method: "GET" })
-  .handler(() => requireAdmin())
+export const requireAdminFn = createServerFn({ method: "GET" }).handler(() =>
+	requireAdmin()
+);

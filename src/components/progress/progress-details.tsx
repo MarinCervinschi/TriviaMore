@@ -1,160 +1,148 @@
-import { Target, Trophy } from "lucide-react"
+import { Target, Trophy } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge"
-import { BrowseTable } from "@/components/browse/browse-table"
-import {
-  formatThirtyScaleGrade,
-  getGradeColor,
-} from "@/lib/utils/grading"
-import { formatTimeSpent } from "@/lib/utils/quiz-results"
-import type { OverallStats } from "@/hooks/useProgressData"
-import type { UserProgress } from "@/lib/user/types"
+import { BrowseTable } from "@/components/browse/browse-table";
+import { Badge } from "@/components/ui/badge";
+import type { OverallStats } from "@/hooks/useProgressData";
+import type { UserProgress } from "@/lib/user/types";
+import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
+import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 export function ProgressDetails({
-  overallStats,
-  progressData,
+	overallStats,
+	progressData,
 }: {
-  overallStats: OverallStats
-  progressData: UserProgress[]
+	overallStats: OverallStats;
+	progressData: UserProgress[];
 }) {
-  return (
-    <div className="space-y-6">
-      {/* Summary cards — study vs exam side by side */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="relative overflow-hidden rounded-2xl border bg-card p-6">
-          <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-500/10 blur-[30px]" />
-          <div className="relative space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="rounded-xl bg-blue-500/10 p-2">
-                <Target className="h-5 w-5 text-blue-500" />
-              </div>
-              <h3 className="font-bold">Studio</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
-              <div>
-                <p className="text-xl font-bold sm:text-2xl">
-                  {overallStats.totalStudyQuizzes}
-                </p>
-                <p className="text-xs text-muted-foreground">Quiz</p>
-              </div>
-              <div>
-                <p
-                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgStudy)}`}
-                >
-                  {formatThirtyScaleGrade(overallStats.avgStudy)}
-                </p>
-                <p className="text-xs text-muted-foreground">Media</p>
-              </div>
-              <div>
-                <p
-                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestStudy)}`}
-                >
-                  {formatThirtyScaleGrade(overallStats.bestStudy)}
-                </p>
-                <p className="text-xs text-muted-foreground">Migliore</p>
-              </div>
-            </div>
-          </div>
-        </div>
+	return (
+		<div className="space-y-6">
+			{/* Summary cards — study vs exam side by side */}
+			<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+				<div className="bg-card relative overflow-hidden rounded-2xl border p-6">
+					<div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-blue-500/10 blur-[30px]" />
+					<div className="relative space-y-4">
+						<div className="flex items-center gap-2">
+							<div className="rounded-xl bg-blue-500/10 p-2">
+								<Target className="h-5 w-5 text-blue-500" />
+							</div>
+							<h3 className="font-bold">Studio</h3>
+						</div>
+						<div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
+							<div>
+								<p className="text-xl font-bold sm:text-2xl">
+									{overallStats.totalStudyQuizzes}
+								</p>
+								<p className="text-muted-foreground text-xs">Quiz</p>
+							</div>
+							<div>
+								<p
+									className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgStudy)}`}
+								>
+									{formatThirtyScaleGrade(overallStats.avgStudy)}
+								</p>
+								<p className="text-muted-foreground text-xs">Media</p>
+							</div>
+							<div>
+								<p
+									className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestStudy)}`}
+								>
+									{formatThirtyScaleGrade(overallStats.bestStudy)}
+								</p>
+								<p className="text-muted-foreground text-xs">Migliore</p>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        <div className="relative overflow-hidden rounded-2xl border bg-card p-6">
-          <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-yellow-500/10 blur-[30px]" />
-          <div className="relative space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="rounded-xl bg-yellow-500/10 p-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-              </div>
-              <h3 className="font-bold">Esame</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
-              <div>
-                <p className="text-xl font-bold sm:text-2xl">
-                  {overallStats.totalExamQuizzes}
-                </p>
-                <p className="text-xs text-muted-foreground">Quiz</p>
-              </div>
-              <div>
-                <p
-                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgExam)}`}
-                >
-                  {formatThirtyScaleGrade(overallStats.avgExam)}
-                </p>
-                <p className="text-xs text-muted-foreground">Media</p>
-              </div>
-              <div>
-                <p
-                  className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestExam)}`}
-                >
-                  {formatThirtyScaleGrade(overallStats.bestExam)}
-                </p>
-                <p className="text-xs text-muted-foreground">Migliore</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+				<div className="bg-card relative overflow-hidden rounded-2xl border p-6">
+					<div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-yellow-500/10 blur-[30px]" />
+					<div className="relative space-y-4">
+						<div className="flex items-center gap-2">
+							<div className="rounded-xl bg-yellow-500/10 p-2">
+								<Trophy className="h-5 w-5 text-yellow-500" />
+							</div>
+							<h3 className="font-bold">Esame</h3>
+						</div>
+						<div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
+							<div>
+								<p className="text-xl font-bold sm:text-2xl">
+									{overallStats.totalExamQuizzes}
+								</p>
+								<p className="text-muted-foreground text-xs">Quiz</p>
+							</div>
+							<div>
+								<p
+									className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.avgExam)}`}
+								>
+									{formatThirtyScaleGrade(overallStats.avgExam)}
+								</p>
+								<p className="text-muted-foreground text-xs">Media</p>
+							</div>
+							<div>
+								<p
+									className={`text-xl font-bold sm:text-2xl ${getGradeColor(overallStats.bestExam)}`}
+								>
+									{formatThirtyScaleGrade(overallStats.bestExam)}
+								</p>
+								<p className="text-muted-foreground text-xs">Migliore</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      {/* Detailed table using BrowseTable */}
-      <div>
-        <h3 className="mb-3 text-lg font-bold">
-          Tutti i Record di Progresso
-        </h3>
-        <BrowseTable
-          headers={[
-            "Sezione",
-            "Insegnamento",
-            "Modalita",
-            "Quiz",
-            "Media",
-            "Migliore",
-            "Tempo",
-          ]}
-        >
-          {progressData.map((record) => (
-            <tr
-              key={record.id}
-              className="group transition-colors hover:bg-muted/30"
-            >
-              <td className="min-w-[14rem] py-3 pl-6 pr-3 align-top font-medium">
-                {record.sectionName}
-              </td>
-              <td className="min-w-[12rem] px-4 py-3 align-top text-center text-sm text-muted-foreground">
-                {record.className}
-              </td>
-              <td className="px-4 py-3 text-center">
-                <Badge
-                  variant={
-                    record.quizMode === "STUDY"
-                      ? "default"
-                      : "secondary"
-                  }
-                  className="rounded-full"
-                >
-                  {record.quizMode === "STUDY" ? "Studio" : "Esame"}
-                </Badge>
-              </td>
-              <td className="px-4 py-3 text-center font-medium">
-                {record.quizzesTaken}
-              </td>
-              <td
-                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.averageScore ?? 0)}`}
-              >
-                {formatThirtyScaleGrade(record.averageScore ?? 0)}
-              </td>
-              <td
-                className={`px-4 py-3 text-center font-bold ${getGradeColor(record.bestScore ?? 0)}`}
-              >
-                {formatThirtyScaleGrade(record.bestScore ?? 0)}
-              </td>
-              <td className="px-4 py-3 pr-6 text-center text-sm text-muted-foreground">
-                {formatTimeSpent(record.totalTimeSpent)}
-              </td>
-              {/* Empty cell for arrow column from BrowseTable */}
-              <td />
-            </tr>
-          ))}
-        </BrowseTable>
-      </div>
-    </div>
-  )
+			{/* Detailed table using BrowseTable */}
+			<div>
+				<h3 className="mb-3 text-lg font-bold">Tutti i Record di Progresso</h3>
+				<BrowseTable
+					headers={[
+						"Sezione",
+						"Insegnamento",
+						"Modalita",
+						"Quiz",
+						"Media",
+						"Migliore",
+						"Tempo",
+					]}
+				>
+					{progressData.map(record => (
+						<tr key={record.id} className="group hover:bg-muted/30 transition-colors">
+							<td className="min-w-[14rem] py-3 pr-3 pl-6 align-top font-medium">
+								{record.sectionName}
+							</td>
+							<td className="text-muted-foreground min-w-[12rem] px-4 py-3 text-center align-top text-sm">
+								{record.className}
+							</td>
+							<td className="px-4 py-3 text-center">
+								<Badge
+									variant={record.quizMode === "STUDY" ? "default" : "secondary"}
+									className="rounded-full"
+								>
+									{record.quizMode === "STUDY" ? "Studio" : "Esame"}
+								</Badge>
+							</td>
+							<td className="px-4 py-3 text-center font-medium">
+								{record.quizzesTaken}
+							</td>
+							<td
+								className={`px-4 py-3 text-center font-bold ${getGradeColor(record.averageScore ?? 0)}`}
+							>
+								{formatThirtyScaleGrade(record.averageScore ?? 0)}
+							</td>
+							<td
+								className={`px-4 py-3 text-center font-bold ${getGradeColor(record.bestScore ?? 0)}`}
+							>
+								{formatThirtyScaleGrade(record.bestScore ?? 0)}
+							</td>
+							<td className="text-muted-foreground px-4 py-3 pr-6 text-center text-sm">
+								{formatTimeSpent(record.totalTimeSpent)}
+							</td>
+							{/* Empty cell for arrow column from BrowseTable */}
+							<td />
+						</tr>
+					))}
+				</BrowseTable>
+			</div>
+		</div>
+	);
 }

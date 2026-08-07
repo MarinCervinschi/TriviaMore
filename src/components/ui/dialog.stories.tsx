@@ -31,8 +31,8 @@ export const Default: Story = {
 				<DialogHeader>
 					<DialogTitle>Modifica sezione</DialogTitle>
 					<DialogDescription>
-						Aggiorna il titolo della sezione "Limiti e continuità" del corso di
-						Analisi Matematica I.
+						Aggiorna il titolo della sezione "Limiti e continuità" del corso di Analisi
+						Matematica I.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
@@ -53,8 +53,7 @@ export const Open: Story = {
 				<DialogHeader>
 					<DialogTitle>Elimina domanda</DialogTitle>
 					<DialogDescription>
-						Questa domanda verrà rimossa dalla sezione. L'operazione non è
-						reversibile.
+						Questa domanda verrà rimossa dalla sezione. L'operazione non è reversibile.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>

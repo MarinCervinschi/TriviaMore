@@ -1,269 +1,264 @@
-import { useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
-import { seoHead } from "@/lib/seo"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useState } from "react";
+
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import {
-  BookmarkIcon,
-  Calendar,
-  Camera,
-  GraduationCap,
-  Loader2,
-  Save,
-  Settings,
-  TrendingUp,
-  Trophy,
-  X,
-} from "lucide-react"
-import { SettingsSkeleton } from "@/components/skeletons"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
-import { UserHero } from "@/components/user/user-hero"
-import { StatCard } from "@/components/shared/stat-card"
-import { useUpdateProfile } from "@/lib/user/mutations"
+	BookmarkIcon,
+	Calendar,
+	Camera,
+	GraduationCap,
+	Loader2,
+	Save,
+	Settings,
+	TrendingUp,
+	Trophy,
+	X,
+} from "lucide-react";
+
+import { StatCard } from "@/components/shared/stat-card";
+import { SettingsSkeleton } from "@/components/skeletons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
+import { UserHero } from "@/components/user/user-hero";
+import { seoHead } from "@/lib/seo";
+import { useUpdateProfile } from "@/lib/user/mutations";
 // TODO: uncomment when RLS DELETE policies are in place
 // import { useDeleteAccount } from "@/lib/user/mutations"
-import { userQueries } from "@/lib/user/queries"
-import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
-import type { UserProfile } from "@/lib/user/types"
+import { userQueries } from "@/lib/user/queries";
+import type { UserProfile } from "@/lib/user/types";
+import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
 
 export const Route = createFileRoute("/_app/user/settings")({
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(userQueries.profile()),
-  head: () => seoHead({ title: "Impostazioni", noindex: true }),
-  pendingComponent: SettingsSkeleton,
-  component: SettingsPage,
-})
+	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.profile()),
+	head: () => seoHead({ title: "Impostazioni", noindex: true }),
+	pendingComponent: SettingsSkeleton,
+	component: SettingsPage,
+});
 
 function SettingsPage() {
-  const { data: profile } = useSuspenseQuery(userQueries.profile())
+	const { data: profile } = useSuspenseQuery(userQueries.profile());
 
-  if (!profile) return null
+	if (!profile) return null;
 
-  return (
-    <div className="space-y-8 pb-8">
-      <UserHero
-        icon={Settings}
-        title="Impostazioni Profilo"
-        description="Gestisci le informazioni del tuo account e le preferenze"
-      />
+	return (
+		<div className="space-y-8 pb-8">
+			<UserHero
+				icon={Settings}
+				title="Impostazioni Profilo"
+				description="Gestisci le informazioni del tuo account e le preferenze"
+			/>
 
-      <div className="container space-y-6">
-        <UserBreadcrumb current="Impostazioni" />
+			<div className="container space-y-6">
+				<UserBreadcrumb current="Impostazioni" />
 
-        <ProfileForm profile={profile} />
+				<ProfileForm profile={profile} />
 
-        {/* Account Stats */}
-        <div>
-          <h2 className="mb-1 text-xl font-bold">Statistiche Account</h2>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Informazioni sul tuo utilizzo della piattaforma
-          </p>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard
-              label="Quiz Completati"
-              value={profile.stats.totalQuizzes}
-              icon={Trophy}
-              color="yellow"
-            />
-            <StatCard
-              label="Corsi Seguiti"
-              value={profile.stats.userClassesCount}
-              icon={GraduationCap}
-              color="blue"
-            />
-            <StatCard
-              label="Segnalibri"
-              value={profile.stats.bookmarksCount}
-              icon={BookmarkIcon}
-              color="purple"
-            />
-            <StatCard
-              label="Punteggio Medio"
-              value={profile.stats.averageScore}
-              icon={TrendingUp}
-              color="green"
-            />
-          </div>
-        </div>
+				{/* Account Stats */}
+				<div>
+					<h2 className="mb-1 text-xl font-bold">Statistiche Account</h2>
+					<p className="text-muted-foreground mb-4 text-sm">
+						Informazioni sul tuo utilizzo della piattaforma
+					</p>
+					<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+						<StatCard
+							label="Quiz Completati"
+							value={profile.stats.totalQuizzes}
+							icon={Trophy}
+							color="yellow"
+						/>
+						<StatCard
+							label="Corsi Seguiti"
+							value={profile.stats.userClassesCount}
+							icon={GraduationCap}
+							color="blue"
+						/>
+						<StatCard
+							label="Segnalibri"
+							value={profile.stats.bookmarksCount}
+							icon={BookmarkIcon}
+							color="purple"
+						/>
+						<StatCard
+							label="Punteggio Medio"
+							value={profile.stats.averageScore}
+							icon={TrendingUp}
+							color="green"
+						/>
+					</div>
+				</div>
 
-        {/* Account Details */}
-        <div className="relative overflow-hidden rounded-3xl border bg-card">
-          <div className="p-6 sm:p-8">
-            <h2 className="mb-1 text-xl font-bold">Dettagli Account</h2>
-            <p className="mb-6 text-sm text-muted-foreground">
-              Informazioni tecniche sul tuo account
-            </p>
+				{/* Account Details */}
+				<div className="bg-card relative overflow-hidden rounded-3xl border">
+					<div className="p-6 sm:p-8">
+						<h2 className="mb-1 text-xl font-bold">Dettagli Account</h2>
+						<p className="text-muted-foreground mb-6 text-sm">
+							Informazioni tecniche sul tuo account
+						</p>
 
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium">ID Utente</Label>
-                <p className="rounded-xl bg-muted/50 p-3 font-mono text-sm">
-                  {profile.id}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <Label className="text-sm font-medium">Membro dal</Label>
-                <p className="text-sm">
-                  {new Date(profile.createdAt).toLocaleDateString("it-IT", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <Label className="text-sm font-medium">
-                  Ultimo aggiornamento
-                </Label>
-                <p className="text-sm">
-                  {new Date(profile.updatedAt).toLocaleDateString("it-IT", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+						<div className="space-y-4">
+							<div className="space-y-1.5">
+								<Label className="text-sm font-medium">ID Utente</Label>
+								<p className="bg-muted/50 rounded-xl p-3 font-mono text-sm">
+									{profile.id}
+								</p>
+							</div>
+							<div className="flex items-center gap-2">
+								<Calendar className="text-muted-foreground h-4 w-4" />
+								<Label className="text-sm font-medium">Membro dal</Label>
+								<p className="text-sm">
+									{new Date(profile.createdAt).toLocaleDateString("it-IT", {
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+									})}
+								</p>
+							</div>
+							<div className="flex items-center gap-2">
+								<Calendar className="text-muted-foreground h-4 w-4" />
+								<Label className="text-sm font-medium">Ultimo aggiornamento</Label>
+								<p className="text-sm">
+									{new Date(profile.updatedAt).toLocaleDateString("it-IT", {
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+									})}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        {/* TODO: implement account deletion with proper RLS policies */}
-        {/* <DeleteAccountSection /> */}
-      </div>
-    </div>
-  )
+				{/* TODO: implement account deletion with proper RLS policies */}
+				{/* <DeleteAccountSection /> */}
+			</div>
+		</div>
+	);
 }
 
 function ProfileForm({ profile }: { profile: UserProfile }) {
-  const updateProfile = useUpdateProfile()
-  const displayName = getDisplayName(profile)
-  const initials = getInitials(profile)
+	const updateProfile = useUpdateProfile();
+	const displayName = getDisplayName(profile);
+	const initials = getInitials(profile);
 
-  const [name, setName] = useState(profile.name ?? "")
-  const [imageUrl, setImageUrl] = useState(profile.image ?? "")
+	const [name, setName] = useState(profile.name ?? "");
+	const [imageUrl, setImageUrl] = useState(profile.image ?? "");
 
-  const hasChanges =
-    name !== (profile.name ?? "") || imageUrl !== (profile.image ?? "")
+	const hasChanges =
+		name !== (profile.name ?? "") || imageUrl !== (profile.image ?? "");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name.trim()) return
-    updateProfile.mutate({
-      name: name.trim(),
-      image: imageUrl.trim() || null,
-    })
-  }
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!name.trim()) return;
+		updateProfile.mutate({
+			name: name.trim(),
+			image: imageUrl.trim() || null,
+		});
+	};
 
-  const handleReset = () => {
-    setName(profile.name ?? "")
-    setImageUrl(profile.image ?? "")
-  }
+	const handleReset = () => {
+		setName(profile.name ?? "");
+		setImageUrl(profile.image ?? "");
+	};
 
-  return (
-    <div className="relative overflow-hidden rounded-3xl border bg-card">
-      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
+	return (
+		<div className="bg-card relative overflow-hidden rounded-3xl border">
+			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
 
-      <form onSubmit={handleSubmit} className="relative p-6 sm:p-8">
-        <h2 className="mb-1 text-xl font-bold">Informazioni Profilo</h2>
-        <p className="mb-6 text-sm text-muted-foreground">
-          Modifica le tue informazioni personali
-        </p>
+			<form onSubmit={handleSubmit} className="relative p-6 sm:p-8">
+				<h2 className="mb-1 text-xl font-bold">Informazioni Profilo</h2>
+				<p className="text-muted-foreground mb-6 text-sm">
+					Modifica le tue informazioni personali
+				</p>
 
-        <div className="mb-6 flex items-center gap-4">
-          <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/20">
-            <AvatarImage
-              src={imageUrl || profile.image || undefined}
-              alt={displayName}
-            />
-            <AvatarFallback className="bg-primary/10 text-xl font-bold text-primary">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="text-lg font-semibold">{name || displayName}</h3>
-            <Badge className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
-              {getRoleLabel(profile.role)}
-            </Badge>
-          </div>
-        </div>
+				<div className="mb-6 flex items-center gap-4">
+					<Avatar className="border-background ring-primary/20 h-24 w-24 border-4 shadow-xl ring-2">
+						<AvatarImage
+							src={imageUrl || profile.image || undefined}
+							alt={displayName}
+						/>
+						<AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+							{initials}
+						</AvatarFallback>
+					</Avatar>
+					<div>
+						<h3 className="text-lg font-semibold">{name || displayName}</h3>
+						<Badge className="border-primary/20 bg-primary/5 text-primary rounded-full border px-3 py-1 text-sm font-medium">
+							{getRoleLabel(profile.role)}
+						</Badge>
+					</div>
+				</div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome completo</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Il tuo nome completo"
-              className="rounded-xl"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              value={profile.email ?? ""}
-              disabled
-              className="rounded-xl bg-muted/30"
-            />
-            <p className="text-xs text-muted-foreground">
-              L'email non può essere modificata
-            </p>
-          </div>
-        </div>
+				<div className="grid gap-4 md:grid-cols-2">
+					<div className="space-y-2">
+						<Label htmlFor="name">Nome completo</Label>
+						<Input
+							id="name"
+							value={name}
+							onChange={e => setName(e.target.value)}
+							placeholder="Il tuo nome completo"
+							className="rounded-xl"
+							required
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="email">Email</Label>
+						<Input
+							id="email"
+							value={profile.email ?? ""}
+							disabled
+							className="bg-muted/30 rounded-xl"
+						/>
+						<p className="text-muted-foreground text-xs">
+							L'email non può essere modificata
+						</p>
+					</div>
+				</div>
 
-        <div className="mt-4 space-y-2">
-          <Label htmlFor="image">
-            <Camera className="mr-1 inline h-4 w-4" />
-            URL Immagine Profilo
-          </Label>
-          <Input
-            id="image"
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://esempio.com/la-tua-foto.jpg"
-            className="rounded-xl"
-          />
-          <p className="text-xs text-muted-foreground">
-            Inserisci l'URL di un'immagine per il tuo avatar
-          </p>
-        </div>
+				<div className="mt-4 space-y-2">
+					<Label htmlFor="image">
+						<Camera className="mr-1 inline h-4 w-4" />
+						URL Immagine Profilo
+					</Label>
+					<Input
+						id="image"
+						type="url"
+						value={imageUrl}
+						onChange={e => setImageUrl(e.target.value)}
+						placeholder="https://esempio.com/la-tua-foto.jpg"
+						className="rounded-xl"
+					/>
+					<p className="text-muted-foreground text-xs">
+						Inserisci l'URL di un'immagine per il tuo avatar
+					</p>
+				</div>
 
-        <div className="mt-6 flex items-center gap-3">
-          <Button
-            type="submit"
-            disabled={!hasChanges || !name.trim() || updateProfile.isPending}
-            className="shadow-lg shadow-primary/25"
-          >
-            {updateProfile.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
-            )}
-            Salva Modifiche
-          </Button>
-          {hasChanges && (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleReset}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Annulla
-            </Button>
-          )}
-        </div>
-      </form>
-    </div>
-  )
+				<div className="mt-6 flex items-center gap-3">
+					<Button
+						type="submit"
+						disabled={!hasChanges || !name.trim() || updateProfile.isPending}
+						className="shadow-primary/25 shadow-lg"
+					>
+						{updateProfile.isPending ? (
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+						) : (
+							<Save className="mr-2 h-4 w-4" />
+						)}
+						Salva Modifiche
+					</Button>
+					{hasChanges && (
+						<Button type="button" variant="ghost" onClick={handleReset}>
+							<X className="mr-2 h-4 w-4" />
+							Annulla
+						</Button>
+					)}
+				</div>
+			</form>
+		</div>
+	);
 }
 
 // TODO: uncomment when RLS DELETE policies are in place

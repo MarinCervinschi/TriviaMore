@@ -52,8 +52,8 @@ export const Open: Story = {
 				<AlertDialogHeader>
 					<AlertDialogTitle>Terminare il quiz?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Le risposte già date verranno salvate, ma il quiz risulterà incompleto e
-						non potrà essere ripreso.
+						Le risposte già date verranno salvate, ma il quiz risulterà incompleto e non
+						potrà essere ripreso.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

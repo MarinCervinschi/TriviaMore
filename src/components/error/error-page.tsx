@@ -1,91 +1,81 @@
-import { Link, useRouter } from "@tanstack/react-router"
-import { motion } from "framer-motion"
-import { AlertTriangle, Home, RotateCcw } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect } from "react";
 
-import { Button } from "@/components/ui/button"
-import { useReducedMotion } from "@/hooks/useReducedMotion"
-import { reportBrowserError } from "@/lib/logging/browser"
-import {
-  staggerContainer,
-  staggerItem,
-  withReducedMotion,
-} from "@/lib/motion"
+import { Link, useRouter } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { AlertTriangle, Home, RotateCcw } from "lucide-react";
 
-export function ErrorPage({
-  error,
-}: {
-  error: Error
-}) {
-  const router = useRouter()
-  const prefersReduced = useReducedMotion()
+import { Button } from "@/components/ui/button";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { reportBrowserError } from "@/lib/logging/browser";
+import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 
-  useEffect(() => {
-    reportBrowserError("Error boundary rendered", error)
-  }, [error])
-  const container = withReducedMotion(staggerContainer, prefersReduced)
-  const item = withReducedMotion(staggerItem, prefersReduced)
+export function ErrorPage({ error }: { error: Error }) {
+	const router = useRouter();
+	const prefersReduced = useReducedMotion();
 
-  return (
-    <div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 text-center">
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 dot-pattern opacity-40" />
-        <div className="absolute -right-24 top-1/3 h-[350px] w-[350px] rounded-full bg-destructive/8 blur-[90px]" />
-      </div>
+	useEffect(() => {
+		reportBrowserError("Error boundary rendered", error);
+	}, [error]);
+	const container = withReducedMotion(staggerContainer, prefersReduced);
+	const item = withReducedMotion(staggerItem, prefersReduced);
 
-      <motion.div
-        className="relative flex flex-col items-center"
-        variants={container}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Icon with glow */}
-        <motion.div className="mb-6" variants={item}>
-          <div className="relative inline-flex rounded-3xl bg-destructive/10 p-6">
-            <div className="pointer-events-none absolute inset-0 rounded-3xl shadow-[0_0_30px_hsl(var(--destructive)/0.15)]" />
-            <AlertTriangle className="relative h-12 w-12 text-destructive" strokeWidth={1.5} />
-          </div>
-        </motion.div>
+	return (
+		<div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 text-center">
+			{/* Background */}
+			<div className="pointer-events-none absolute inset-0 -z-10">
+				<div className="dot-pattern absolute inset-0 opacity-40" />
+				<div className="bg-destructive/8 absolute top-1/3 -right-24 h-[350px] w-[350px] rounded-full blur-[90px]" />
+			</div>
 
-        <motion.h1
-          className="text-2xl font-bold sm:text-3xl"
-          variants={item}
-        >
-          Qualcosa è andato storto
-        </motion.h1>
+			<motion.div
+				className="relative flex flex-col items-center"
+				variants={container}
+				initial="hidden"
+				animate="visible"
+			>
+				{/* Icon with glow */}
+				<motion.div className="mb-6" variants={item}>
+					<div className="bg-destructive/10 relative inline-flex rounded-3xl p-6">
+						<div className="pointer-events-none absolute inset-0 rounded-3xl shadow-[0_0_30px_hsl(var(--destructive)/0.15)]" />
+						<AlertTriangle
+							className="text-destructive relative h-12 w-12"
+							strokeWidth={1.5}
+						/>
+					</div>
+				</motion.div>
 
-        <motion.p
-          className="mt-3 max-w-md text-muted-foreground"
-          variants={item}
-        >
-          Si è verificato un errore imprevisto. Riprova o torna alla home.
-        </motion.p>
+				<motion.h1 className="text-2xl font-bold sm:text-3xl" variants={item}>
+					Qualcosa è andato storto
+				</motion.h1>
 
-        {/* Dev error message */}
-        {import.meta.env.DEV && error.message && (
-          <motion.pre
-            className="mt-6 max-w-lg overflow-auto rounded-2xl border bg-muted/50 p-4 text-left font-mono text-xs text-muted-foreground"
-            variants={item}
-          >
-            {error.message}
-          </motion.pre>
-        )}
+				<motion.p className="text-muted-foreground mt-3 max-w-md" variants={item}>
+					Si è verificato un errore imprevisto. Riprova o torna alla home.
+				</motion.p>
 
-        {/* Buttons */}
-        <motion.div className="mt-10 flex gap-3" variants={item}>
-          <Button onClick={() => router.invalidate()}>
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Riprova
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/">
-              <Home className="mr-2 h-4 w-4" />
-              Torna alla home
-            </Link>
-          </Button>
-        </motion.div>
-      </motion.div>
-    </div>
-  )
+				{/* Dev error message */}
+				{import.meta.env.DEV && error.message && (
+					<motion.pre
+						className="bg-muted/50 text-muted-foreground mt-6 max-w-lg overflow-auto rounded-2xl border p-4 text-left font-mono text-xs"
+						variants={item}
+					>
+						{error.message}
+					</motion.pre>
+				)}
+
+				{/* Buttons */}
+				<motion.div className="mt-10 flex gap-3" variants={item}>
+					<Button onClick={() => router.invalidate()}>
+						<RotateCcw className="mr-2 h-4 w-4" />
+						Riprova
+					</Button>
+					<Button variant="outline" asChild>
+						<Link to="/">
+							<Home className="mr-2 h-4 w-4" />
+							Torna alla home
+						</Link>
+					</Button>
+				</motion.div>
+			</motion.div>
+		</div>
+	);
 }

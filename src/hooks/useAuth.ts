@@ -1,58 +1,53 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  getSessionFn,
-  loginFn,
-  logoutFn,
-  signupFn,
-} from "@/lib/auth/api"
-import type { AuthSession } from "@/lib/auth/types"
+import { getSessionFn, loginFn, logoutFn, signupFn } from "@/lib/auth/api";
+import type { AuthSession } from "@/lib/auth/types";
 
 export function useAuth() {
-  const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
-  const {
-    data: session,
-    isLoading,
-    error,
-  } = useQuery<AuthSession | null>({
-    queryKey: ["auth", "session"],
-    queryFn: () => getSessionFn(),
-    retry: false,
-    staleTime: 1000 * 60 * 5,
-  })
+	const {
+		data: session,
+		isLoading,
+		error,
+	} = useQuery<AuthSession | null>({
+		queryKey: ["auth", "session"],
+		queryFn: () => getSessionFn(),
+		retry: false,
+		staleTime: 1000 * 60 * 5,
+	});
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({
-      queryKey: ["auth", "session"],
-    })
+	const invalidate = () =>
+		queryClient.invalidateQueries({
+			queryKey: ["auth", "session"],
+		});
 
-  const login = useMutation({
-    mutationFn: loginFn,
-    onSuccess: invalidate,
-  })
+	const login = useMutation({
+		mutationFn: loginFn,
+		onSuccess: invalidate,
+	});
 
-  const signup = useMutation({
-    mutationFn: signupFn,
-    onSuccess: invalidate,
-  })
+	const signup = useMutation({
+		mutationFn: signupFn,
+		onSuccess: invalidate,
+	});
 
-  const logout = useMutation({
-    mutationFn: logoutFn,
-    onSuccess: () => {
-      queryClient.clear()
-      window.location.href = "/"
-    },
-  })
+	const logout = useMutation({
+		mutationFn: logoutFn,
+		onSuccess: () => {
+			queryClient.clear();
+			window.location.href = "/";
+		},
+	});
 
-  return {
-    session,
-    user: session?.user ?? null,
-    isLoading,
-    isAuthenticated: !!session,
-    error,
-    login,
-    signup,
-    logout,
-  }
+	return {
+		session,
+		user: session?.user ?? null,
+		isLoading,
+		isAuthenticated: !!session,
+		error,
+		login,
+		signup,
+		logout,
+	};
 }

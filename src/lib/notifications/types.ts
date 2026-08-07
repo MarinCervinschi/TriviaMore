@@ -1,5 +1,5 @@
-import type { notifications } from "@/db/schema"
+import type { notifications } from "@/db/schema";
 
-export type Notification = typeof notifications.$inferSelect
+export type Notification = typeof notifications.$inferSelect;
 
-export type NotificationType = Notification["type"]
+export type NotificationType = Notification["type"];

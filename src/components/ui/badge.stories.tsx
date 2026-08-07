@@ -15,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Variants: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex flex-wrap items-center gap-2">
 			<Badge {...args} variant="default">
 				Default

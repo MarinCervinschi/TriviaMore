@@ -11,7 +11,7 @@ const meta = {
 	component: Toaster,
 	tags: ["autodocs"],
 	decorators: [
-		(Story) => (
+		Story => (
 			<ThemeProvider>
 				<Story />
 			</ThemeProvider>
@@ -26,9 +26,7 @@ export const Default: Story = {
 	render: () => (
 		<div className="flex flex-wrap gap-3">
 			<Toaster />
-			<Button onClick={() => toast("Quiz salvato tra le bozze")}>
-				Notifica
-			</Button>
+			<Button onClick={() => toast("Quiz salvato tra le bozze")}>Notifica</Button>
 			<Button
 				variant="secondary"
 				onClick={() =>

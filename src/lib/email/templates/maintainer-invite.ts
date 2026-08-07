@@ -1,65 +1,65 @@
 type MaintainerInviteDefaultsInput = {
-  courseName: string
-  inviteeName?: string | null
-}
+	courseName: string;
+	inviteeName?: string | null;
+};
 
 // Builds the default, editable subject + body for a maintainer invitation.
 // Kept client-safe (pure string logic) so the admin dialog can prefill it.
 export function buildMaintainerInviteDefaults({
-  courseName,
-  inviteeName,
+	courseName,
+	inviteeName,
 }: MaintainerInviteDefaultsInput): { subject: string; body: string } {
-  const greeting = inviteeName?.trim() ? `Ciao ${inviteeName.trim()},` : "Ciao,"
-  const subject = `Invito a diventare maintainer del corso ${courseName}`
+	const greeting = inviteeName?.trim() ? `Ciao ${inviteeName.trim()},` : "Ciao,";
+	const subject = `Invito a diventare maintainer del corso ${courseName}`;
 
-  const body = [
-    greeting,
-    "",
-    `ti scriviamo da TriviaMore perché vorremmo proporti di diventare maintainer del corso «${courseName}».`,
-    "",
-    "Cosa potrai fare come maintainer:",
-    "• Creare e modificare le sezioni e le domande del corso",
-    "• Revisionare e approvare le proposte di contenuto degli studenti",
-    "• Mantenere aggiornato il materiale didattico del corso",
-    "",
-    "Quali sono i vincoli:",
-    `• Il tuo accesso è limitato al corso «${courseName}»: non potrai gestire altri corsi o dipartimenti`,
-    "• Sei responsabile della qualità e della correttezza dei contenuti che pubblichi",
-    "• Il ruolo può essere revocato in qualsiasi momento dallo staff",
-    "",
-    "Se sei interessato/a, rispondi a questa email e procederemo con l'attivazione.",
-    "",
-    "Grazie,",
-    "Lo staff di TriviaMore",
-  ].join("\n")
+	const body = [
+		greeting,
+		"",
+		`ti scriviamo da TriviaMore perché vorremmo proporti di diventare maintainer del corso «${courseName}».`,
+		"",
+		"Cosa potrai fare come maintainer:",
+		"• Creare e modificare le sezioni e le domande del corso",
+		"• Revisionare e approvare le proposte di contenuto degli studenti",
+		"• Mantenere aggiornato il materiale didattico del corso",
+		"",
+		"Quali sono i vincoli:",
+		`• Il tuo accesso è limitato al corso «${courseName}»: non potrai gestire altri corsi o dipartimenti`,
+		"• Sei responsabile della qualità e della correttezza dei contenuti che pubblichi",
+		"• Il ruolo può essere revocato in qualsiasi momento dallo staff",
+		"",
+		"Se sei interessato/a, rispondi a questa email e procederemo con l'attivazione.",
+		"",
+		"Grazie,",
+		"Lo staff di TriviaMore",
+	].join("\n");
 
-  return { subject, body }
+	return { subject, body };
 }
 
 function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
+	return str
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
 }
 
 // Wraps the (possibly edited) plain-text body into the branded TriviaMore shell.
 // Only the body is user-editable; the header and footer stay fixed.
 export function renderMaintainerInviteHtml({
-  body,
-  courseName,
-  logoUrl,
+	body,
+	courseName,
+	logoUrl,
 }: {
-  body: string
-  courseName: string
-  logoUrl: string
+	body: string;
+	courseName: string;
+	logoUrl: string;
 }): string {
-  const safeBody = escapeHtml(body).replace(/\n/g, "<br />")
-  const safeCourse = escapeHtml(courseName)
+	const safeBody = escapeHtml(body).replace(/\n/g, "<br />");
+	const safeCourse = escapeHtml(courseName);
 
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
@@ -102,5 +102,5 @@ export function renderMaintainerInviteHtml({
       </tr>
     </table>
   </body>
-</html>`
+</html>`;
 }

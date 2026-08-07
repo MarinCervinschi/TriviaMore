@@ -1,3 +1,3 @@
-import { z } from "zod"
+import { z } from "zod";
 
-export const notificationIdSchema = z.object({ id: z.string().uuid() })
+export const notificationIdSchema = z.object({ id: z.string().uuid() });

@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithInput: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="grid w-72 gap-2">
 			<Label {...args} htmlFor="email" />
 			<Input id="email" type="email" placeholder="mario@studenti.unimore.it" />

@@ -1,6 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { getAdminRequestCount } from "../service/admin-requests"
+import { getAdminRequestCount } from "../service/admin-requests";
 
-export const getAdminRequestCountFn = createServerFn({ method: "GET" })
-  .handler(() => getAdminRequestCount())
+export const getAdminRequestCountFn = createServerFn({ method: "GET" }).handler(() =>
+	getAdminRequestCount()
+);

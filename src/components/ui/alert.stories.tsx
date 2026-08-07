@@ -1,6 +1,5 @@
-import { AlertTriangle, Info } from "lucide-react";
-
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { AlertTriangle, Info } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 

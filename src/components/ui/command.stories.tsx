@@ -64,9 +64,7 @@ export const AsDialog: Story = {
 							<CommandItem onSelect={() => setOpen(false)}>
 								Analisi Matematica I
 							</CommandItem>
-							<CommandItem onSelect={() => setOpen(false)}>
-								Basi di Dati
-							</CommandItem>
+							<CommandItem onSelect={() => setOpen(false)}>Basi di Dati</CommandItem>
 						</CommandGroup>
 					</CommandList>
 				</CommandDialog>

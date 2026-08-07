@@ -20,7 +20,7 @@ export const Disabled: Story = {
 };
 
 export const WithLabel: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="grid w-96 gap-2">
 			<Label htmlFor="spiegazione">Spiegazione</Label>
 			<Textarea

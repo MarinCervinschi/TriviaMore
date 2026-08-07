@@ -17,7 +17,7 @@ export const Default: Story = {};
 export const Checked: Story = { args: { defaultChecked: true } };
 
 export const WithLabel: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex items-center gap-2">
 			<Switch {...args} id="notifications" />
 			<Label htmlFor="notifications">Notifiche email</Label>

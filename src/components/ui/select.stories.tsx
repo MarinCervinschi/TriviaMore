@@ -30,9 +30,7 @@ export const Default: Story = {
 				<SelectItem value="analisi-1">Analisi Matematica I</SelectItem>
 				<SelectItem value="algebra">Algebra Lineare</SelectItem>
 				<SelectItem value="fisica-1">Fisica Generale I</SelectItem>
-				<SelectItem value="programmazione">
-					Fondamenti di Programmazione
-				</SelectItem>
+				<SelectItem value="programmazione">Fondamenti di Programmazione</SelectItem>
 			</SelectContent>
 		</Select>
 	),

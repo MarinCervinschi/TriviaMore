@@ -1,6 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { requireLegalAcceptance } from "../guards"
+import { requireLegalAcceptance } from "../guards";
 
-export const requireLegalAcceptanceFn = createServerFn({ method: "GET" })
-  .handler(() => requireLegalAcceptance())
+export const requireLegalAcceptanceFn = createServerFn({ method: "GET" }).handler(() =>
+	requireLegalAcceptance()
+);

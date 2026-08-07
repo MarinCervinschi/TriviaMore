@@ -20,7 +20,7 @@ export const Disabled: Story = {
 };
 
 export const WithLabel: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="grid w-72 gap-2">
 			<Label htmlFor="email">Email</Label>
 			<Input {...args} id="email" type="email" placeholder="mario@unimore.it" />

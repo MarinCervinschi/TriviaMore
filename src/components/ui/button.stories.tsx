@@ -9,14 +9,7 @@ const meta = {
 	argTypes: {
 		variant: {
 			control: "select",
-			options: [
-				"default",
-				"secondary",
-				"destructive",
-				"outline",
-				"ghost",
-				"link",
-			],
+			options: ["default", "secondary", "destructive", "outline", "ghost", "link"],
 		},
 		size: { control: "select", options: ["default", "sm", "lg", "icon"] },
 	},
@@ -29,7 +22,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Variants: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex flex-wrap items-center gap-3">
 			<Button {...args} variant="default">
 				Default
@@ -54,7 +47,7 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex flex-wrap items-center gap-3">
 			<Button {...args} size="sm">
 				Small

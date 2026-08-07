@@ -17,7 +17,7 @@ export const Default: Story = {};
 export const Checked: Story = { args: { defaultChecked: true } };
 
 export const WithLabel: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex items-center gap-2">
 			<Checkbox {...args} id="terms" />
 			<Label htmlFor="terms">Accetto i termini</Label>

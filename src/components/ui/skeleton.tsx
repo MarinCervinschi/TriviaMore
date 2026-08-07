@@ -5,10 +5,7 @@ function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>)
 		<div
 			aria-hidden="true"
 			role="presentation"
-			className={cn(
-				"shimmer rounded-xl",
-				className
-			)}
+			className={cn("shimmer rounded-xl", className)}
 			{...props}
 		/>
 	);

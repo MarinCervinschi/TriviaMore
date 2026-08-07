@@ -1,252 +1,268 @@
-import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { seoHead } from "@/lib/seo"
-import { ArrowRight, Inbox } from "lucide-react"
+import { useState } from "react";
 
-import { AdminPageHeader } from "@/components/admin/admin-page-header"
-import {
-  Pagination,
-  usePaginatedSearch,
-} from "@/components/ui/pagination"
-import { AdminSearch } from "@/components/admin/admin-search"
-import { SortableHeader, useSort } from "@/components/admin/sortable-header"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { RequestStatusBadge } from "@/components/requests/request-status-badge"
-import { requestQueries } from "@/lib/requests/queries"
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { ArrowRight, Inbox } from "lucide-react";
 
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AdminSearch } from "@/components/admin/admin-search";
+import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import { RequestStatusBadge } from "@/components/requests/request-status-badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requestQueries } from "@/lib/requests/queries";
 import type {
-  AdminContentRequest,
-  ContentRequestStatus,
-  SubmittedContent,
-} from "@/lib/requests/types"
+	AdminContentRequest,
+	ContentRequestStatus,
+	SubmittedContent,
+} from "@/lib/requests/types";
+import { seoHead } from "@/lib/seo";
 
 // Open requests still await action; the rest are considered handled (approved,
 // acknowledged or rejected) and are hidden from the default view.
-const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"]
-const isOpen = (r: AdminContentRequest) => OPEN_STATUSES.includes(r.status)
-const isReport = (r: AdminContentRequest) => r.requestType === "REPORT"
+const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"];
+const isOpen = (r: AdminContentRequest) => OPEN_STATUSES.includes(r.status);
+const isReport = (r: AdminContentRequest) => r.requestType === "REPORT";
 
-type TypeTab = "proposals" | "reports"
-type StatusFilter = "open" | "handled" | "all"
+type TypeTab = "proposals" | "reports";
+type StatusFilter = "open" | "handled" | "all";
 
 function generateTitle(submitted: SubmittedContent): string {
-  if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`
-  if (submitted.type === "report") return "Segnalazione"
-  if (submitted.type === "file_upload") return `File: ${submitted.file_name}`
-  const count = submitted.questions.length
-  return `${count} ${count === 1 ? "domanda" : "domande"}`
+	if (submitted.type === "section") return `Nuova sezione: ${submitted.name}`;
+	if (submitted.type === "report") return "Segnalazione";
+	if (submitted.type === "file_upload") return `File: ${submitted.file_name}`;
+	const count = submitted.questions.length;
+	return `${count} ${count === 1 ? "domanda" : "domande"}`;
 }
 
 export const Route = createFileRoute("/_app/admin/requests/")({
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(requestQueries.adminRequests()),
-  head: () => seoHead({ title: "Richieste Contenuto", noindex: true }),
-  component: AdminRequestsPage,
-})
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(requestQueries.adminRequests()),
+	head: () => seoHead({ title: "Richieste Contenuto", noindex: true }),
+	component: AdminRequestsPage,
+});
 
 function AdminRequestsPage() {
-  const { data: requests } = useSuspenseQuery(requestQueries.adminRequests())
-  const [search, setSearch] = useState("")
-  const [page, setPage] = useState(1)
-  const [tab, setTab] = useState<TypeTab>("reports")
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("open")
-  const { sort, toggleSort } = useSort<AdminContentRequest>()
+	const { data: requests } = useSuspenseQuery(requestQueries.adminRequests());
+	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
+	const [tab, setTab] = useState<TypeTab>("reports");
+	const [statusFilter, setStatusFilter] = useState<StatusFilter>("open");
+	const { sort, toggleSort } = useSort<AdminContentRequest>();
 
-  const openProposals = requests.filter((r) => !isReport(r) && isOpen(r)).length
-  const openReports = requests.filter((r) => isReport(r) && isOpen(r)).length
+	const openProposals = requests.filter(r => !isReport(r) && isOpen(r)).length;
+	const openReports = requests.filter(r => isReport(r) && isOpen(r)).length;
 
-  const byTab = requests.filter((r) =>
-    tab === "reports" ? isReport(r) : !isReport(r),
-  )
-  const filtered = byTab.filter((r) => {
-    if (statusFilter === "open") return isOpen(r)
-    if (statusFilter === "handled") return !isOpen(r)
-    return true
-  })
+	const byTab = requests.filter(r => (tab === "reports" ? isReport(r) : !isReport(r)));
+	const filtered = byTab.filter(r => {
+		if (statusFilter === "open") return isOpen(r);
+		if (statusFilter === "handled") return !isOpen(r);
+		return true;
+	});
 
-  const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    filtered,
-    (item, query) =>
-      generateTitle(item.submitted).toLowerCase().includes(query) ||
-      item.targetLabel.toLowerCase().includes(query) ||
-      (item.user.name?.toLowerCase().includes(query) ?? false),
-    search,
-    page,
-    10,
-    sort,
-  )
+	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
+		filtered,
+		(item, query) =>
+			generateTitle(item.submitted).toLowerCase().includes(query) ||
+			item.targetLabel.toLowerCase().includes(query) ||
+			(item.user.name?.toLowerCase().includes(query) ?? false),
+		search,
+		page,
+		10,
+		sort
+	);
 
-  return (
-    <div className="space-y-6 py-2">
-      <AdminPageHeader
-        title="Richieste Contenuto"
-        description="Gestisci le richieste degli utenti per nuovi contenuti e segnalazioni."
-      />
+	return (
+		<div className="space-y-6 py-2">
+			<AdminPageHeader
+				title="Richieste Contenuto"
+				description="Gestisci le richieste degli utenti per nuovi contenuti e segnalazioni."
+			/>
 
-      <Tabs
-        value={tab}
-        onValueChange={(v) => {
-          setTab(v as TypeTab)
-          setPage(1)
-        }}
-      >
-        <TabsList className="rounded-2xl bg-muted/50 p-1">
-          <TabsTrigger
-            value="reports"
-            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
-          >
-            Segnalazioni
-            {openReports > 0 && <TabCount value={openReports} />}
-          </TabsTrigger>
-          <TabsTrigger
-            value="proposals"
-            className="gap-1.5 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm"
-          >
-            Contenuti proposti
-            {openProposals > 0 && <TabCount value={openProposals} />}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+			<Tabs
+				value={tab}
+				onValueChange={v => {
+					setTab(v as TypeTab);
+					setPage(1);
+				}}
+			>
+				<TabsList className="bg-muted/50 rounded-2xl p-1">
+					<TabsTrigger
+						value="reports"
+						className="data-[state=active]:bg-background gap-1.5 rounded-xl data-[state=active]:shadow-sm"
+					>
+						Segnalazioni
+						{openReports > 0 && <TabCount value={openReports} />}
+					</TabsTrigger>
+					<TabsTrigger
+						value="proposals"
+						className="data-[state=active]:bg-background gap-1.5 rounded-xl data-[state=active]:shadow-sm"
+					>
+						Contenuti proposti
+						{openProposals > 0 && <TabCount value={openProposals} />}
+					</TabsTrigger>
+				</TabsList>
+			</Tabs>
 
-      {/* Status filter + Search */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { value: "open", label: "Da gestire" },
-            { value: "handled", label: "Gestite" },
-            { value: "all", label: "Tutte" },
-          ].map((f) => (
-            <button
-              key={f.value}
-              onClick={() => {
-                setStatusFilter(f.value as StatusFilter)
-                setPage(1)
-              }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
-                statusFilter === f.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-accent"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <AdminSearch value={search} onChange={(val) => { setSearch(val); setPage(1) }} />
-      </div>
+			{/* Status filter + Search */}
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<div className="flex flex-wrap gap-1.5">
+					{[
+						{ value: "open", label: "Da gestire" },
+						{ value: "handled", label: "Gestite" },
+						{ value: "all", label: "Tutte" },
+					].map(f => (
+						<button
+							key={f.value}
+							onClick={() => {
+								setStatusFilter(f.value as StatusFilter);
+								setPage(1);
+							}}
+							className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+								statusFilter === f.value
+									? "bg-primary text-primary-foreground"
+									: "bg-muted text-muted-foreground hover:bg-accent"
+							}`}
+						>
+							{f.label}
+						</button>
+					))}
+				</div>
+				<AdminSearch
+					value={search}
+					onChange={val => {
+						setSearch(val);
+						setPage(1);
+					}}
+				/>
+			</div>
 
-      {/* Table */}
-      {filtered.length === 0 ? (
-        <EmptyState
-          icon={Inbox}
-          title={statusFilter === "open" ? "Nessuna richiesta da gestire" : "Nessuna richiesta"}
-          description={
-            tab === "reports"
-              ? "Non ci sono segnalazioni in questa vista."
-              : "Non ci sono contenuti proposti in questa vista."
-          }
-        />
-      ) : paged.length === 0 ? (
-        <EmptyState
-          icon={Inbox}
-          title="Nessun risultato"
-          description="Prova a modificare i filtri o la ricerca."
-        />
-      ) : (
-        <>
-          <div className="overflow-hidden rounded-2xl border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="pl-6">Utente</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead>
-                    <SortableHeader label="Data" sortKey="createdAt" sort={sort} onSort={toggleSort} />
-                  </TableHead>
-                  <TableHead>Gestita da</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paged.map((request) => (
-                  <TableRow key={request.id} className="group">
-                    <TableCell className="py-4 pl-6">
-                      <Link
-                        to="/admin/requests/$requestId"
-                        params={{ requestId: request.id }}
-                        className="flex items-center gap-2"
-                      >
-                        <Avatar className="h-7 w-7">
-                          <AvatarImage src={request.user.image ?? undefined} />
-                          <AvatarFallback className="text-[10px]">
-                            {(request.user.name?.[0] ?? request.user.email?.[0] ?? "?").toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-medium transition-colors group-hover:text-primary">
-                          {request.user.name ?? request.user.email ?? "Utente"}
-                        </span>
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <RequestStatusBadge status={request.status} />
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(request.createdAt).toLocaleDateString("it-IT")}
-                    </TableCell>
-                    <TableCell>
-                      {request.handledAt ? (
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={request.handledByUser?.image ?? undefined} />
-                            <AvatarFallback className="text-[9px]">
-                              {(request.handledByUser?.name?.[0] ?? "T").toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm text-muted-foreground">
-                            {request.handledByUser?.name ?? "Team"}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground/50">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="pr-6">
-                      <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+			{/* Table */}
+			{filtered.length === 0 ? (
+				<EmptyState
+					icon={Inbox}
+					title={
+						statusFilter === "open"
+							? "Nessuna richiesta da gestire"
+							: "Nessuna richiesta"
+					}
+					description={
+						tab === "reports"
+							? "Non ci sono segnalazioni in questa vista."
+							: "Non ci sono contenuti proposti in questa vista."
+					}
+				/>
+			) : paged.length === 0 ? (
+				<EmptyState
+					icon={Inbox}
+					title="Nessun risultato"
+					description="Prova a modificare i filtri o la ricerca."
+				/>
+			) : (
+				<>
+					<div className="overflow-hidden rounded-2xl border">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="pl-6">Utente</TableHead>
+									<TableHead>Stato</TableHead>
+									<TableHead>
+										<SortableHeader
+											label="Data"
+											sortKey="createdAt"
+											sort={sort}
+											onSort={toggleSort}
+										/>
+									</TableHead>
+									<TableHead>Gestita da</TableHead>
+									<TableHead />
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{paged.map(request => (
+									<TableRow key={request.id} className="group">
+										<TableCell className="py-4 pl-6">
+											<Link
+												to="/admin/requests/$requestId"
+												params={{ requestId: request.id }}
+												className="flex items-center gap-2"
+											>
+												<Avatar className="h-7 w-7">
+													<AvatarImage src={request.user.image ?? undefined} />
+													<AvatarFallback className="text-[10px]">
+														{(
+															request.user.name?.[0] ??
+															request.user.email?.[0] ??
+															"?"
+														).toUpperCase()}
+													</AvatarFallback>
+												</Avatar>
+												<span className="group-hover:text-primary text-sm font-medium transition-colors">
+													{request.user.name ?? request.user.email ?? "Utente"}
+												</span>
+											</Link>
+										</TableCell>
+										<TableCell>
+											<RequestStatusBadge status={request.status} />
+										</TableCell>
+										<TableCell className="text-muted-foreground text-sm">
+											{new Date(request.createdAt).toLocaleDateString("it-IT")}
+										</TableCell>
+										<TableCell>
+											{request.handledAt ? (
+												<div className="flex items-center gap-2">
+													<Avatar className="h-6 w-6">
+														<AvatarImage
+															src={request.handledByUser?.image ?? undefined}
+														/>
+														<AvatarFallback className="text-[9px]">
+															{(request.handledByUser?.name?.[0] ?? "T").toUpperCase()}
+														</AvatarFallback>
+													</Avatar>
+													<span className="text-muted-foreground text-sm">
+														{request.handledByUser?.name ?? "Team"}
+													</span>
+												</div>
+											) : (
+												<span className="text-muted-foreground/50 text-sm">—</span>
+											)}
+										</TableCell>
+										<TableCell className="pr-6">
+											<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</div>
 
-          <Pagination
-            page={safePage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            pageSize={10}
-            onPageChange={setPage}
-          />
-        </>
-      )}
-    </div>
-  )
+					<Pagination
+						page={safePage}
+						totalPages={totalPages}
+						totalItems={totalItems}
+						pageSize={10}
+						onPageChange={setPage}
+					/>
+				</>
+			)}
+		</div>
+	);
 }
 
 function TabCount({ value }: { value: number }) {
-  return (
-    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
-      {value}
-    </span>
-  )
+	return (
+		<span className="bg-primary text-primary-foreground flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+			{value}
+		</span>
+	);
 }

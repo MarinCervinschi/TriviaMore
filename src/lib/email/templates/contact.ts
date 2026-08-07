@@ -1,32 +1,32 @@
-import type { ContactInput } from "@/lib/browse/contact-schema"
+import type { ContactInput } from "@/lib/browse/contact-schema";
 
 const TYPE_META: Record<
-  ContactInput["type"],
-  { label: string; color: string; bg: string }
+	ContactInput["type"],
+	{ label: string; color: string; bg: string }
 > = {
-  bug: { label: "Bug", color: "#dc2626", bg: "#fee2e2" },
-  feature: { label: "Funzionalita'", color: "#d97706", bg: "#fef3c7" },
-  content: { label: "Contenuti", color: "#2563eb", bg: "#dbeafe" },
-  other: { label: "Altro", color: "#6b7280", bg: "#e5e7eb" },
-}
+	bug: { label: "Bug", color: "#dc2626", bg: "#fee2e2" },
+	feature: { label: "Funzionalita'", color: "#d97706", bg: "#fef3c7" },
+	content: { label: "Contenuti", color: "#2563eb", bg: "#dbeafe" },
+	other: { label: "Altro", color: "#6b7280", bg: "#e5e7eb" },
+};
 
 function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
+	return str
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
 }
 
 export function renderContactEmailHtml(data: ContactInput): string {
-  const meta = TYPE_META[data.type]
-  const name = escapeHtml(data.name)
-  const email = escapeHtml(data.email)
-  const subject = escapeHtml(data.subject)
-  const message = escapeHtml(data.message).replace(/\n/g, "<br />")
+	const meta = TYPE_META[data.type];
+	const name = escapeHtml(data.name);
+	const email = escapeHtml(data.email);
+	const subject = escapeHtml(data.subject);
+	const message = escapeHtml(data.message).replace(/\n/g, "<br />");
 
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
@@ -84,24 +84,24 @@ export function renderContactEmailHtml(data: ContactInput): string {
       </tr>
     </table>
   </body>
-</html>`
+</html>`;
 }
 
 export function renderContactEmailText(data: ContactInput): string {
-  const meta = TYPE_META[data.type]
-  return [
-    `Nuovo messaggio dal modulo contatti TriviaMore`,
-    ``,
-    `Tipo: ${meta.label}`,
-    `Da: ${data.name}`,
-    `Email: ${data.email}`,
-    `Oggetto: ${data.subject}`,
-    ``,
-    `---`,
-    ``,
-    data.message,
-    ``,
-    `---`,
-    `Per rispondere usa "Rispondi": il Reply-To punta all'indirizzo del mittente.`,
-  ].join("\n")
+	const meta = TYPE_META[data.type];
+	return [
+		`Nuovo messaggio dal modulo contatti TriviaMore`,
+		``,
+		`Tipo: ${meta.label}`,
+		`Da: ${data.name}`,
+		`Email: ${data.email}`,
+		`Oggetto: ${data.subject}`,
+		``,
+		`---`,
+		``,
+		data.message,
+		``,
+		`---`,
+		`Per rispondere usa "Rispondi": il Reply-To punta all'indirizzo del mittente.`,
+	].join("\n");
 }

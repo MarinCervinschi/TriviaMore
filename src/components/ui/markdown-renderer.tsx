@@ -1,8 +1,8 @@
+import "katex/dist/katex.min.css";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import "katex/dist/katex.min.css";
 
 interface MarkdownRendererProps {
 	content: string;
@@ -10,7 +10,11 @@ interface MarkdownRendererProps {
 	inline?: boolean;
 }
 
-export function MarkdownRenderer({ content, className = "", inline = false }: MarkdownRendererProps) {
+export function MarkdownRenderer({
+	content,
+	className = "",
+	inline = false,
+}: MarkdownRendererProps) {
 	if (inline) {
 		return (
 			<span className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>

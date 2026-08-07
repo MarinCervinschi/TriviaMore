@@ -54,9 +54,7 @@ export const LeftSide: Story = {
 			<SheetContent side="left">
 				<SheetHeader>
 					<SheetTitle>Ingegneria Informatica</SheetTitle>
-					<SheetDescription>
-						Naviga tra i corsi del tuo dipartimento.
-					</SheetDescription>
+					<SheetDescription>Naviga tra i corsi del tuo dipartimento.</SheetDescription>
 				</SheetHeader>
 			</SheetContent>
 		</Sheet>
