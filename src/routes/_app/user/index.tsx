@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button"
 import { BrowseTable } from "@/components/browse/browse-table"
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
 import { UserHero } from "@/components/user/user-hero"
-import { UserStatsCard } from "@/components/user/user-stats-card"
+import { StatCard } from "@/components/shared/stat-card"
 import { userQueries } from "@/lib/user/queries"
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
@@ -92,33 +92,29 @@ function DashboardPage() {
       <div className="container space-y-8">
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <UserStatsCard
+          <StatCard
             label="Quiz Completati"
             value={profile.stats.totalQuizzes}
             icon={Trophy}
-            iconColor="text-yellow-500"
-            iconBg="yellow"
+            color="yellow"
           />
-          <UserStatsCard
+          <StatCard
             label="Punteggio Medio"
             value={`${profile.stats.averageScore}/33`}
             icon={TrendingUp}
-            iconColor="text-green-500"
-            iconBg="green"
+            color="green"
           />
-          <UserStatsCard
+          <StatCard
             label="Corsi Seguiti"
             value={profile.stats.userClassesCount}
             icon={GraduationCap}
-            iconColor="text-blue-500"
-            iconBg="blue"
+            color="blue"
           />
-          <UserStatsCard
+          <StatCard
             label="Segnalibri"
             value={profile.stats.bookmarksCount}
             icon={BookmarkIcon}
-            iconColor="text-purple-500"
-            iconBg="purple"
+            color="purple"
           />
         </div>
 

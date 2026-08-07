@@ -5,7 +5,7 @@ import {
   ResponsiveContainer,
 } from "recharts"
 
-import { UserStatsCard } from "@/components/user/user-stats-card"
+import { StatCard } from "@/components/shared/stat-card"
 import {
   formatThirtyScaleGrade,
   getGradeColor,
@@ -25,26 +25,23 @@ export function ProgressStats({
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
-      <UserStatsCard
+      <StatCard
         label="Quiz Studio"
         value={overallStats.totalStudyQuizzes}
         icon={Target}
-        iconColor="text-blue-500"
-        iconBg="blue"
+        color="blue"
       />
-      <UserStatsCard
+      <StatCard
         label="Quiz Esame"
         value={overallStats.totalExamQuizzes}
         icon={Trophy}
-        iconColor="text-yellow-500"
-        iconBg="yellow"
+        color="yellow"
       />
-      <UserStatsCard
+      <StatCard
         label="Tempo Totale"
         value={formatTimeSpent(totalTime)}
         icon={Clock}
-        iconColor="text-purple-500"
-        iconBg="purple"
+        color="purple"
       />
 
       {/* Average score card with radial gauge */}

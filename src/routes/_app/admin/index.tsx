@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
-import { AdminStatCard } from "@/components/admin/admin-stat-card"
+import { StatCard } from "@/components/shared/stat-card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -71,7 +71,7 @@ function AdminDashboard() {
       </p>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {contentCards.map((card) => (
-          <AdminStatCard
+          <StatCard
             key={card.label}
             label={card.label}
             value={card.value}
@@ -89,7 +89,7 @@ function AdminDashboard() {
             Utenti e Utilizzo
           </p>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <AdminStatCard
+            <StatCard
               label="Utenti totali"
               value={userStats.totalUsers}
               icon={Users}
@@ -101,14 +101,14 @@ function AdminDashboard() {
                 )
                 .join(" · ")}
             />
-            <AdminStatCard
+            <StatCard
               label="Quiz completati"
               value={userStats.totalQuizAttempts}
               icon={Trophy}
               color="yellow"
               subtitle={`${userStats.recentQuizAttempts} negli ultimi 30 giorni`}
             />
-            <AdminStatCard
+            <StatCard
               label="Punteggio medio"
               value={
                 userStats.averageScore != null
@@ -118,7 +118,7 @@ function AdminDashboard() {
               icon={Target}
               color="green"
             />
-            <AdminStatCard
+            <StatCard
               label="Utenti attivi"
               value={userStats.activeUsers}
               icon={Users}
