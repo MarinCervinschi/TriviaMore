@@ -18,7 +18,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Table,
 	TableBody,
@@ -27,6 +27,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { useCreateDepartment, useDeleteDepartment } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import { seoHead } from "@/lib/seo";

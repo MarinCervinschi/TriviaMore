@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Table,
 	TableBody,
@@ -21,6 +21,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { useDeleteUser } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import type { AdminUser } from "@/lib/admin/types";

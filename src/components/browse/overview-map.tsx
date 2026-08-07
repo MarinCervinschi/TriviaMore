@@ -3,8 +3,6 @@ import { useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Map,
 	MapControls,
@@ -12,7 +10,9 @@ import {
 	MarkerContent,
 	MarkerPopup,
 	useMap,
-} from "@/components/ui/map";
+} from "@/components/browse/map";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTheme } from "@/hooks/useTheme";
 import { CAMPUS_LOCATION_CONFIG } from "@/lib/browse/constants";
 import type { OverviewLocation } from "@/lib/browse/types";

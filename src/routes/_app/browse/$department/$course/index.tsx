@@ -13,7 +13,7 @@ import { SearchFilter } from "@/components/browse/search-filter";
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { CourseDetailSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
-import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -21,6 +21,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
 import type { BrowseClassInCourse } from "@/lib/browse/types";
