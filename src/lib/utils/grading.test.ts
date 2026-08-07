@@ -16,14 +16,14 @@ describe("formatThirtyScaleGrade", () => {
 
 describe("getGradeColor", () => {
 	it.each([
-		[17, "text-red-600"],
-		[18, "text-yellow-600"],
-		[23, "text-yellow-600"],
-		[24, "text-blue-600"],
-		[26, "text-blue-600"],
-		[27, "text-green-600"],
-		[30, "text-green-600"],
-		[31, "text-purple-600"],
+		[17, "text-destructive"],
+		[18, "text-warning"],
+		[23, "text-warning"],
+		[24, "text-info"],
+		[26, "text-info"],
+		[27, "text-success"],
+		[30, "text-success"],
+		[31, "text-purple-600 dark:text-purple-400"],
 	])("maps %d to %s", (score, expected) => {
 		expect(getGradeColor(score)).toBe(expected);
 	});
