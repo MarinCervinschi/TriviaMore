@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "../src/styles/globals.css";
 import "../src/styles/markdown.css";
+import { withRouter } from "./router-decorator";
 
 // Provided globally so any component using TanStack Query renders. Retries off
 // so server-function calls that cannot reach a backend fail fast instead of
@@ -36,6 +37,7 @@ const preview: Preview = {
 				<Story />
 			</QueryClientProvider>
 		),
+		withRouter,
 		Story => (
 			<div className="bg-background text-foreground w-full min-w-64 rounded-xl p-8">
 				<Story />
