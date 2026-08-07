@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Pencil, Plus, Trash2, Users } from "lucide-react";
+import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminSearch } from "@/components/admin/admin-search";
+import { AdminRowActions } from "@/components/admin/admin-row-actions";
 import { BrowsePublicButton } from "@/components/admin/browse-public-button";
 import { SectionForm } from "@/components/admin/forms/section-form";
-import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import {
+	DataTable,
+	DataTableEmpty,
+	DataTableToolbar,
+	createDataTableColumns,
+	dataTableFilterField,
+	dataTableSearchFields,
+	useDataTable,
+} from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -21,16 +29,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { useAuth } from "@/hooks/useAuth";
-import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import {
 	useAddSectionAccess,
 	useDeleteQuestion,
@@ -53,26 +52,101 @@ const TYPE_LABELS: Record<string, string> = {
 	SHORT_ANSWER: "Risposta breve",
 };
 
+const toOptions = (labels: Record<string, string>) =>
+	Object.entries(labels).map(([value, label]) => ({ value, label }));
+
 export const Route = createFileRoute("/_app/admin/sections/$sectionId")({
+	validateSearch: z.object({
+		...dataTableSearchFields,
+		questionType: dataTableFilterField,
+		difficulty: dataTableFilterField,
+	}),
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.section(params.sectionId)),
 	component: AdminSectionDetailPage,
 	head: () => seoHead({ title: "Dettaglio Sezione | Gestione", noindex: true }),
 });
 
+const column = createDataTableColumns<AdminQuestion>();
+
+function buildColumns(onDelete: (id: string) => void) {
+	return [
+		column.accessor("content", {
+			header: "Contenuto",
+			meta: {
+				label: "Contenuto",
+				headerClassName: "w-[50%]",
+				cellClassName: "max-w-xs",
+			},
+			cell: ({ row }) => (
+				<Link
+					to="/admin/questions/$questionId"
+					params={{ questionId: row.original.id }}
+					className="line-clamp-2 font-medium hover:underline"
+				>
+					{row.original.content}
+				</Link>
+			),
+		}),
+		column.accessor("questionType", {
+			header: "Tipo",
+			filterFn: "arrIncludesSome",
+			meta: { label: "Tipo", facet: { options: toOptions(TYPE_LABELS) } },
+			cell: ({ row }) => (
+				<Badge variant="outline" className="rounded-full">
+					{TYPE_LABELS[row.original.questionType] ?? row.original.questionType}
+				</Badge>
+			),
+		}),
+		column.accessor("difficulty", {
+			header: "Difficoltà",
+			filterFn: "arrIncludesSome",
+			meta: { label: "Difficoltà", facet: { options: toOptions(DIFFICULTY_LABELS) } },
+			cell: ({ row }) => (
+				<Badge
+					className="rounded-full"
+					variant={
+						row.original.difficulty === "HARD"
+							? "destructive"
+							: row.original.difficulty === "MEDIUM"
+								? "default"
+								: "secondary"
+					}
+				>
+					{DIFFICULTY_LABELS[row.original.difficulty] ?? row.original.difficulty}
+				</Badge>
+			),
+		}),
+		column.display({
+			id: "actions",
+			header: "Azioni",
+			enableHiding: false,
+			meta: { label: "Azioni", align: "right" },
+			cell: ({ row }) => (
+				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+					<Link
+						to="/admin/questions/$questionId"
+						params={{ questionId: row.original.id }}
+					>
+						<Pencil className="h-4 w-4" />
+					</Link>
+				</AdminRowActions>
+			),
+		}),
+	];
+}
+
 function AdminSectionDetailPage() {
 	const { sectionId } = Route.useParams();
+	const navigate = useNavigate({ from: Route.fullPath });
+	const search = Route.useSearch();
 	const { data } = useSuspenseQuery(adminQueries.section(sectionId));
 	const { user } = useAuth();
 	const isSuperadmin = user?.role === "SUPERADMIN";
 	const isMaintainer = user?.role === "MAINTAINER";
 	const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
-	const [search, setSearch] = useState("");
-	const [page, setPage] = useState(1);
-
 	const [addUserId, setAddUserId] = useState("");
 
-	const { sort, toggleSort } = useSort<AdminQuestion>();
 	const updateSection = useUpdateSection();
 	const deleteQuestion = useDeleteQuestion(() => setDeleteQuestionId(null));
 	const addAccess = useAddSectionAccess();
@@ -91,14 +165,21 @@ function AdminSectionDetailPage() {
 		enabled: !section.isPublic && isSuperadmin,
 	});
 
-	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-		questions as AdminQuestion[],
-		(q, query) => q.content.toLowerCase().includes(query),
-		search,
-		page,
-		10,
-		sort
-	);
+	const columns = useMemo(() => buildColumns(setDeleteQuestionId), []);
+
+	const table = useDataTable({
+		data: questions,
+		columns,
+		getRowId: row => row.id,
+		searchFn: (question, query) => question.content.toLowerCase().includes(query),
+		urlState: {
+			values: search,
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
+
+	const countByType = (type: string) =>
+		questions.filter(question => question.questionType === type).length;
 
 	return (
 		<div className="py-2">
@@ -163,32 +244,16 @@ function AdminSectionDetailPage() {
 								<div className="bg-muted/30 rounded-xl p-4">
 									<dt className="text-muted-foreground text-sm">Scelta multipla</dt>
 									<dd className="text-2xl font-bold">
-										{
-											(questions as AdminQuestion[]).filter(
-												q => q.questionType === "MULTIPLE_CHOICE"
-											).length
-										}
+										{countByType("MULTIPLE_CHOICE")}
 									</dd>
 								</div>
 								<div className="bg-muted/30 rounded-xl p-4">
 									<dt className="text-muted-foreground text-sm">Vero/Falso</dt>
-									<dd className="text-2xl font-bold">
-										{
-											(questions as AdminQuestion[]).filter(
-												q => q.questionType === "TRUE_FALSE"
-											).length
-										}
-									</dd>
+									<dd className="text-2xl font-bold">{countByType("TRUE_FALSE")}</dd>
 								</div>
 								<div className="bg-muted/30 rounded-xl p-4">
 									<dt className="text-muted-foreground text-sm">Risposta breve</dt>
-									<dd className="text-2xl font-bold">
-										{
-											(questions as AdminQuestion[]).filter(
-												q => q.questionType === "SHORT_ANSWER"
-											).length
-										}
-									</dd>
+									<dd className="text-2xl font-bold">{countByType("SHORT_ANSWER")}</dd>
 								</div>
 							</dl>
 						</CardContent>
@@ -277,148 +342,38 @@ function AdminSectionDetailPage() {
 
 				<Card className="rounded-2xl">
 					<CardHeader>
-						<div className="flex items-center justify-between gap-4">
-							<CardTitle>Domande ({questions.length})</CardTitle>
-							<div className="flex items-center gap-2">
-								<div className="w-64">
-									<AdminSearch
-										value={search}
-										onChange={v => {
-											setSearch(v);
-											setPage(1);
-										}}
-										placeholder="Cerca domande..."
-									/>
-								</div>
-								<Button size="sm" asChild>
-									<Link
-										to="/admin/questions/$questionId"
-										params={{ questionId: "new" }}
-										search={{ sectionId: section.id } as never}
-									>
-										Nuova domanda
-									</Link>
-								</Button>
-							</div>
-						</div>
+						<CardTitle>Domande ({questions.length})</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{paged.length === 0 ? (
-							<p className="text-muted-foreground py-4 text-center">
-								{search
-									? "Nessuna domanda trovata."
-									: "Nessuna domanda in questa sezione."}
-							</p>
-						) : (
-							<>
-								<Table>
-									<TableHeader>
-										<TableRow className="bg-muted/50">
-											<TableHead className="w-[50%]">
-												<SortableHeader
-													label="Contenuto"
-													sortKey="content"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead>
-												<SortableHeader
-													label="Tipo"
-													sortKey="questionType"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead>
-												<SortableHeader
-													label="Difficoltà"
-													sortKey="difficulty"
-													sort={sort}
-													onSort={toggleSort}
-												/>
-											</TableHead>
-											<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
-												Azioni
-											</TableHead>
-										</TableRow>
-									</TableHeader>
-									<TableBody>
-										{paged.map(question => (
-											<TableRow
-												key={question.id}
-												className="hover:bg-muted/30 transition-colors"
+						<DataTable
+							table={table}
+							density="compact"
+							bordered={false}
+							toolbar={
+								<DataTableToolbar
+									table={table}
+									searchPlaceholder="Cerca domande..."
+									actions={
+										<Button size="sm" asChild>
+											<Link
+												to="/admin/questions/$questionId"
+												params={{ questionId: "new" }}
+												search={{ sectionId: section.id } as never}
 											>
-												<TableCell className="max-w-xs truncate">
-													<Link
-														to="/admin/questions/$questionId"
-														params={{ questionId: question.id }}
-														className="font-medium hover:underline"
-													>
-														{question.content.length > 80
-															? `${question.content.slice(0, 80)}...`
-															: question.content}
-													</Link>
-												</TableCell>
-												<TableCell>
-													<Badge variant="outline" className="rounded-full">
-														{TYPE_LABELS[question.questionType] ??
-															question.questionType}
-													</Badge>
-												</TableCell>
-												<TableCell>
-													<Badge
-														className="rounded-full"
-														variant={
-															question.difficulty === "HARD"
-																? "destructive"
-																: question.difficulty === "MEDIUM"
-																	? "default"
-																	: "secondary"
-														}
-													>
-														{DIFFICULTY_LABELS[question.difficulty] ??
-															question.difficulty}
-													</Badge>
-												</TableCell>
-												<TableCell className="text-right">
-													<div className="flex items-center justify-end gap-1">
-														<Button
-															variant="ghost"
-															size="icon"
-															className="rounded-lg"
-															asChild
-														>
-															<Link
-																to="/admin/questions/$questionId"
-																params={{ questionId: question.id }}
-															>
-																<Pencil className="h-4 w-4" />
-															</Link>
-														</Button>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="rounded-lg"
-															onClick={() => setDeleteQuestionId(question.id)}
-														>
-															<Trash2 className="text-destructive h-4 w-4" />
-														</Button>
-													</div>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-								<Pagination
-									page={safePage}
-									totalPages={totalPages}
-									onPageChange={setPage}
-									totalItems={totalItems}
-									pageSize={10}
+												Nuova domanda
+											</Link>
+										</Button>
+									}
 								/>
-							</>
-						)}
+							}
+							empty={
+								<DataTableEmpty>
+									{search.q
+										? "Nessuna domanda trovata."
+										: "Nessuna domanda in questa sezione."}
+								</DataTableEmpty>
+							}
+						/>
 					</CardContent>
 				</Card>
 			</div>

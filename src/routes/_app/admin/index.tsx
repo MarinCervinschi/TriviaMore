@@ -1,7 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
-	ArrowRight,
 	BookOpen,
 	FileQuestion,
 	FolderOpen,
@@ -14,21 +13,47 @@ import {
 } from "lucide-react";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import {
+	DataTable,
+	createDataTableColumns,
+	useDataTable,
+} from "@/components/data-table";
 import { StatCard } from "@/components/shared/stat-card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { useAuth } from "@/hooks/useAuth";
 import { adminQueries } from "@/lib/admin/queries";
 import { seoHead } from "@/lib/seo";
+
+type MaintainedCourse = { id: string; name: string; code: string };
+
+const column = createDataTableColumns<MaintainedCourse>();
+
+const maintainedCourseColumns = [
+	column.accessor("name", {
+		header: "Corso",
+		enableSorting: false,
+		meta: { label: "Corso" },
+		cell: ({ row }) => (
+			<Link
+				to="/admin/courses/$courseId"
+				params={{ courseId: row.original.id }}
+				className="font-medium hover:underline"
+			>
+				{row.original.name}
+			</Link>
+		),
+	}),
+	column.accessor("code", {
+		header: "Codice",
+		enableSorting: false,
+		meta: { label: "Codice" },
+		cell: ({ row }) => (
+			<Badge variant="secondary" className="rounded-full">
+				{row.original.code}
+			</Badge>
+		),
+	}),
+];
 
 export const Route = createFileRoute("/_app/admin/")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(adminQueries.stats()),
@@ -165,65 +190,33 @@ function AdminDashboard() {
 					<p className="text-primary mb-4 text-xs font-semibold tracking-widest uppercase">
 						I miei corsi mantenuti
 					</p>
-					<Card className="overflow-hidden rounded-2xl">
-						<CardContent className="p-0">
-							<Table>
-								<TableHeader>
-									<TableRow className="bg-muted/50">
-										<TableHead className="text-xs font-medium tracking-wider uppercase">
-											Corso
-										</TableHead>
-										<TableHead className="text-xs font-medium tracking-wider uppercase">
-											Codice
-										</TableHead>
-										<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
-											Azioni
-										</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{(myCourses ?? []).map(course => (
-										<TableRow
-											key={course.id}
-											className="hover:bg-muted/30 transition-colors"
-										>
-											<TableCell>
-												<Link
-													to="/admin/courses/$courseId"
-													params={{ courseId: course.id }}
-													className="font-medium hover:underline"
-												>
-													{course.name}
-												</Link>
-											</TableCell>
-											<TableCell>
-												<Badge variant="secondary" className="rounded-full">
-													{course.code}
-												</Badge>
-											</TableCell>
-											<TableCell className="text-right">
-												<Button
-													variant="ghost"
-													size="icon"
-													className="rounded-lg"
-													asChild
-												>
-													<Link
-														to="/admin/courses/$courseId"
-														params={{ courseId: course.id }}
-													>
-														<ArrowRight className="h-4 w-4" />
-													</Link>
-												</Button>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</CardContent>
-					</Card>
+					<MaintainedCoursesTable courses={myCourses ?? []} />
 				</div>
 			)}
 		</div>
+	);
+}
+
+function MaintainedCoursesTable({ courses }: { courses: MaintainedCourse[] }) {
+	const table = useDataTable({
+		data: courses,
+		columns: maintainedCourseColumns,
+		getRowId: row => row.id,
+		pageSize: courses.length || 1,
+	});
+
+	return (
+		<DataTable
+			table={table}
+			density="compact"
+			showPagination={false}
+			rowLink={row => (
+				<Link
+					to="/admin/courses/$courseId"
+					params={{ courseId: row.id }}
+					aria-label={`Apri ${row.name}`}
+				/>
+			)}
+		/>
 	);
 }
