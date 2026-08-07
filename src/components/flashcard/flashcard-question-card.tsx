@@ -1,34 +1,8 @@
-import { Badge } from "@/components/ui/badge"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import { BookmarkButton } from "@/components/quiz/bookmark-button"
 import { ReportButton } from "@/components/requests/report-button"
+import { QuestionHeader } from "@/components/quiz/question-header"
 import type { FlashcardQuestion } from "@/lib/flashcard/types"
-
-function getDifficultyColor(difficulty: string) {
-  switch (difficulty) {
-    case "EASY":
-      return "bg-green-500/10 text-green-600 border-green-500/20"
-    case "MEDIUM":
-      return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
-    case "HARD":
-      return "bg-red-500/10 text-red-600 border-red-500/20"
-    default:
-      return ""
-  }
-}
-
-function getDifficultyLabel(difficulty: string) {
-  switch (difficulty) {
-    case "EASY":
-      return "Facile"
-    case "MEDIUM":
-      return "Medio"
-    case "HARD":
-      return "Difficile"
-    default:
-      return difficulty
-  }
-}
 
 export function FlashcardQuestionCard({
   question,
@@ -53,26 +27,23 @@ export function FlashcardQuestionCard({
       >
         {/* Front */}
         <div className="max-h-[80vh] min-h-[400px] overflow-y-auto wrap-anywhere rounded-2xl border bg-card p-6 shadow-sm [backface-visibility:hidden] sm:p-8">
-          <div className="flex items-center justify-between pb-6">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold gradient-text">
-                {questionNumber}
-              </span>
-              <Badge className={getDifficultyColor(question.difficulty)}>
-                {getDifficultyLabel(question.difficulty)}
-              </Badge>
-            </div>
-            <div className="flex items-center gap-1">
-              <BookmarkButton questionId={question.id} />
-              <ReportButton
-                questionId={question.id}
-                questionContent={question.content}
-              />
-              <span className="text-xs text-muted-foreground">
-                Clicca per girare
-              </span>
-            </div>
-          </div>
+          <QuestionHeader
+            number={questionNumber}
+            difficulty={question.difficulty}
+            className="pb-6"
+            actions={
+              <>
+                <BookmarkButton questionId={question.id} />
+                <ReportButton
+                  questionId={question.id}
+                  questionContent={question.content}
+                />
+                <span className="text-xs text-muted-foreground">
+                  Clicca per girare
+                </span>
+              </>
+            }
+          />
           <div className="flex min-h-[280px] items-center justify-center">
             <div className="text-lg leading-relaxed">
               <MarkdownRenderer

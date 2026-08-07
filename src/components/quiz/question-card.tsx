@@ -1,36 +1,10 @@
-import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { QuizQuestion } from "@/lib/quiz/types"
 import { parseOptions } from "@/lib/quiz/options"
 import { ReportButton } from "@/components/requests/report-button"
 import { BookmarkButton } from "./bookmark-button"
-
-function getDifficultyColor(difficulty: string) {
-  switch (difficulty) {
-    case "EASY":
-      return "bg-green-500/10 text-green-600 border-green-500/20"
-    case "MEDIUM":
-      return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
-    case "HARD":
-      return "bg-red-500/10 text-red-600 border-red-500/20"
-    default:
-      return ""
-  }
-}
-
-function getDifficultyLabel(difficulty: string) {
-  switch (difficulty) {
-    case "EASY":
-      return "Facile"
-    case "MEDIUM":
-      return "Medio"
-    case "HARD":
-      return "Difficile"
-    default:
-      return difficulty
-  }
-}
+import { QuestionHeader } from "./question-header"
 
 export function QuestionCard({
   question,
@@ -63,21 +37,20 @@ export function QuestionCard({
 
   return (
     <div className="mx-auto max-w-3xl">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold gradient-text">
-            {questionNumber}
-          </span>
-          <Badge className={getDifficultyColor(question.difficulty)}>
-            {getDifficultyLabel(question.difficulty)}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-1">
-          <ReportButton questionId={question.id} questionContent={question.content} />
-          <BookmarkButton questionId={question.id} />
-        </div>
-      </div>
+      <QuestionHeader
+        number={questionNumber}
+        difficulty={question.difficulty}
+        className="mb-6"
+        actions={
+          <>
+            <ReportButton
+              questionId={question.id}
+              questionContent={question.content}
+            />
+            <BookmarkButton questionId={question.id} />
+          </>
+        }
+      />
 
       {/* Question content */}
       <div className="mb-8 rounded-2xl border bg-card p-6">
