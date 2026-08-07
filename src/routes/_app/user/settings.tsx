@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb"
 import { UserHero } from "@/components/user/user-hero"
-import { UserStatsCard } from "@/components/user/user-stats-card"
+import { StatCard } from "@/components/shared/stat-card"
 import { useUpdateProfile } from "@/lib/user/mutations"
 // TODO: uncomment when RLS DELETE policies are in place
 // import { useDeleteAccount } from "@/lib/user/mutations"
@@ -63,33 +63,29 @@ function SettingsPage() {
             Informazioni sul tuo utilizzo della piattaforma
           </p>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <UserStatsCard
+            <StatCard
               label="Quiz Completati"
               value={profile.stats.totalQuizzes}
               icon={Trophy}
-              iconColor="text-yellow-500"
-              iconBg="yellow"
+              color="yellow"
             />
-            <UserStatsCard
+            <StatCard
               label="Corsi Seguiti"
               value={profile.stats.userClassesCount}
               icon={GraduationCap}
-              iconColor="text-blue-500"
-              iconBg="blue"
+              color="blue"
             />
-            <UserStatsCard
+            <StatCard
               label="Segnalibri"
               value={profile.stats.bookmarksCount}
               icon={BookmarkIcon}
-              iconColor="text-purple-500"
-              iconBg="purple"
+              color="purple"
             />
-            <UserStatsCard
+            <StatCard
               label="Punteggio Medio"
               value={profile.stats.averageScore}
               icon={TrendingUp}
-              iconColor="text-green-500"
-              iconBg="green"
+              color="green"
             />
           </div>
         </div>
