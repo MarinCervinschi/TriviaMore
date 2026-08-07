@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Sizes: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="flex flex-col items-start gap-4">
 			<Logo {...args} size="sm" />
 			<Logo {...args} size="md" />

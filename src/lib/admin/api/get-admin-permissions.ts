@@ -1,6 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { getAdminPermissions } from "../service/dashboard"
+import { getAdminPermissions } from "../service/dashboard";
 
-export const getAdminPermissionsFn = createServerFn({ method: "GET" })
-  .handler(() => getAdminPermissions())
+export const getAdminPermissionsFn = createServerFn({ method: "GET" }).handler(() =>
+	getAdminPermissions()
+);

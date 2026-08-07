@@ -1,5 +1,5 @@
-export { deleteNotificationFn } from "./delete-notification"
-export { getNotificationsFn } from "./get-notifications"
-export { getUnreadCountFn } from "./get-unread-count"
-export { markAllReadFn } from "./mark-all-read"
-export { markReadFn } from "./mark-read"
+export { deleteNotificationFn } from "./delete-notification";
+export { getNotificationsFn } from "./get-notifications";
+export { getUnreadCountFn } from "./get-unread-count";
+export { markAllReadFn } from "./mark-all-read";
+export { markReadFn } from "./mark-read";

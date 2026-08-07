@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Button } from "./button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "./tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 const meta = {
 	title: "UI/Tooltip",
@@ -39,9 +34,7 @@ export const Open: Story = {
 						?
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>
-					Solo i maintainer del corso possono modificarla
-				</TooltipContent>
+				<TooltipContent>Solo i maintainer del corso possono modificarla</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
 	),

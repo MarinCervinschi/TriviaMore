@@ -1,6 +1,5 @@
-import { Inbox } from "lucide-react";
-
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Inbox } from "lucide-react";
 
 import { EmptyState } from "./empty-state";
 

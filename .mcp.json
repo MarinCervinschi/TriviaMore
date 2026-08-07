@@ -1,8 +1,8 @@
 {
-  "mcpServers": {
-    "trivia-more-questions": {
-      "command": "pnpm",
-      "args": ["mcp:questions"]
-    }
-  }
+	"mcpServers": {
+		"trivia-more-questions": {
+			"command": "pnpm",
+			"args": ["mcp:questions"]
+		}
+	}
 }

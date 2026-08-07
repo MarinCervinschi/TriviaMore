@@ -63,7 +63,7 @@ export const WithSelections: Story = {
 					<DropdownMenuLabel>Visibilità</DropdownMenuLabel>
 					<DropdownMenuCheckboxItem
 						checked={showPrivate}
-						onCheckedChange={(value) => setShowPrivate(!!value)}
+						onCheckedChange={value => setShowPrivate(!!value)}
 					>
 						Mostra sezioni private
 					</DropdownMenuCheckboxItem>
@@ -72,9 +72,7 @@ export const WithSelections: Story = {
 					<DropdownMenuRadioGroup value={difficulty} onValueChange={setDifficulty}>
 						<DropdownMenuRadioItem value="facile">Facile</DropdownMenuRadioItem>
 						<DropdownMenuRadioItem value="media">Media</DropdownMenuRadioItem>
-						<DropdownMenuRadioItem value="difficile">
-							Difficile
-						</DropdownMenuRadioItem>
+						<DropdownMenuRadioItem value="difficile">Difficile</DropdownMenuRadioItem>
 					</DropdownMenuRadioGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>

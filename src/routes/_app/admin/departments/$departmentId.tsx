@@ -1,249 +1,278 @@
-import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { seoHead } from "@/lib/seo"
-import { Pencil, Plus, Trash2 } from "lucide-react"
+import { useState } from "react";
 
-import { AdminPageHeader } from "@/components/admin/admin-page-header"
-import { BrowsePublicButton } from "@/components/admin/browse-public-button"
-import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants"
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AdminSearch } from "@/components/admin/admin-search";
+import { BrowsePublicButton } from "@/components/admin/browse-public-button";
+import { CourseForm } from "@/components/admin/forms/course-form";
+import { DepartmentForm } from "@/components/admin/forms/department-form";
+import { SortableHeader, useSort } from "@/components/admin/sortable-header";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
-  Pagination,
-  usePaginatedSearch,
-} from "@/components/ui/pagination"
-import { AdminSearch } from "@/components/admin/admin-search"
-import { SortableHeader, useSort } from "@/components/admin/sortable-header"
-import { CourseForm } from "@/components/admin/forms/course-form"
-import { DepartmentForm } from "@/components/admin/forms/department-form"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Pagination, usePaginatedSearch } from "@/components/ui/pagination";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  useCreateCourse,
-  useDeleteCourse,
-  useUpdateDepartment,
-} from "@/lib/admin/mutations"
-import { adminQueries } from "@/lib/admin/queries"
+	useCreateCourse,
+	useDeleteCourse,
+	useUpdateDepartment,
+} from "@/lib/admin/mutations";
+import { adminQueries } from "@/lib/admin/queries";
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/admin/departments/$departmentId")({
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
-      adminQueries.department(params.departmentId),
-    ),
-  component: AdminDepartmentDetailPage,
-  head: () => seoHead({ title: "Dettaglio Dipartimento | Gestione", noindex: true }),
-})
+	loader: ({ context, params }) =>
+		context.queryClient.ensureQueryData(adminQueries.department(params.departmentId)),
+	component: AdminDepartmentDetailPage,
+	head: () => seoHead({ title: "Dettaglio Dipartimento | Gestione", noindex: true }),
+});
 
 function AdminDepartmentDetailPage() {
-  const { departmentId } = Route.useParams()
-  const { data } = useSuspenseQuery(adminQueries.department(departmentId))
-  const [createCourseOpen, setCreateCourseOpen] = useState(false)
-  const [deleteCourseId, setDeleteCourseId] = useState<string | null>(null)
-  const [search, setSearch] = useState("")
-  const [page, setPage] = useState(1)
+	const { departmentId } = Route.useParams();
+	const { data } = useSuspenseQuery(adminQueries.department(departmentId));
+	const [createCourseOpen, setCreateCourseOpen] = useState(false);
+	const [deleteCourseId, setDeleteCourseId] = useState<string | null>(null);
+	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
 
-  type CourseRow = {
-    id: string
-    name: string
-    code: string
-    courseType: string
-    classCount: number
-  }
+	type CourseRow = {
+		id: string;
+		name: string;
+		code: string;
+		courseType: string;
+		classCount: number;
+	};
 
-  const { sort, toggleSort } = useSort<CourseRow>()
-  const updateDepartment = useUpdateDepartment()
-  const createCourse = useCreateCourse(() => setCreateCourseOpen(false))
-  const deleteCourse = useDeleteCourse(() => setDeleteCourseId(null))
+	const { sort, toggleSort } = useSort<CourseRow>();
+	const updateDepartment = useUpdateDepartment();
+	const createCourse = useCreateCourse(() => setCreateCourseOpen(false));
+	const deleteCourse = useDeleteCourse(() => setDeleteCourseId(null));
 
-  const { courses, ...department } = data
+	const { courses, ...department } = data;
 
-  const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-    courses as CourseRow[],
-    (c, q) =>
-      c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
-    search,
-    page,
-    10,
-    sort,
-  )
+	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
+		courses as CourseRow[],
+		(c, q) => c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
+		search,
+		page,
+		10,
+		sort
+	);
 
-  return (
-    <div className="py-2">
-      <AdminPageHeader
-        title={department.name}
-        description={`Codice: ${department.code}`}
-        backTo="/admin/departments"
-        backLabel="Dipartimenti"
-        actions={
-          <BrowsePublicButton
-            to="/browse/$department"
-            params={{ department: department.code.toLowerCase() }}
-          />
-        }
-      />
+	return (
+		<div className="py-2">
+			<AdminPageHeader
+				title={department.name}
+				description={`Codice: ${department.code}`}
+				backTo="/admin/departments"
+				backLabel="Dipartimenti"
+				actions={
+					<BrowsePublicButton
+						to="/browse/$department"
+						params={{ department: department.code.toLowerCase() }}
+					/>
+				}
+			/>
 
-      <div className="grid gap-6">
-        <Card className="rounded-2xl">
-          <CardHeader className="pb-4">
-            <CardTitle>Modifica dipartimento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DepartmentForm
-              department={department}
-              onSubmit={(formData) =>
-                updateDepartment.mutate({ id: department.id, ...formData })
-              }
-              isPending={updateDepartment.isPending}
-            />
-          </CardContent>
-        </Card>
+			<div className="grid gap-6">
+				<Card className="rounded-2xl">
+					<CardHeader className="pb-4">
+						<CardTitle>Modifica dipartimento</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<DepartmentForm
+							department={department}
+							onSubmit={formData =>
+								updateDepartment.mutate({ id: department.id, ...formData })
+							}
+							isPending={updateDepartment.isPending}
+						/>
+					</CardContent>
+				</Card>
 
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <div className="flex items-center justify-between gap-4">
-              <CardTitle>Corsi ({courses.length})</CardTitle>
-              <div className="flex items-center gap-2">
-                <div className="w-56">
-                  <AdminSearch
-                    value={search}
-                    onChange={(v) => {
-                      setSearch(v)
-                      setPage(1)
-                    }}
-                    placeholder="Cerca corsi..."
-                  />
-                </div>
-                <Button size="sm" className="rounded-xl" onClick={() => setCreateCourseOpen(true)}>
-                  <Plus className="mr-1 h-4 w-4" />
-                  Nuovo
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {paged.length === 0 ? (
-              <p className="py-4 text-center text-muted-foreground">
-                {search
-                  ? "Nessun corso trovato."
-                  : "Nessun corso in questo dipartimento."}
-              </p>
-            ) : (
-              <>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50">
-                      <TableHead>
-                        <SortableHeader label="Nome" sortKey="name" sort={sort} onSort={toggleSort} />
-                      </TableHead>
-                      <TableHead>
-                        <SortableHeader label="Codice" sortKey="code" sort={sort} onSort={toggleSort} />
-                      </TableHead>
-                      <TableHead>
-                        <SortableHeader label="Tipo" sortKey="courseType" sort={sort} onSort={toggleSort} />
-                      </TableHead>
-                      <TableHead className="text-center text-xs font-medium uppercase tracking-wider">Insegnamenti</TableHead>
-                      <TableHead className="text-right text-xs font-medium uppercase tracking-wider">Azioni</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paged.map((course) => (
-                      <TableRow key={course.id} className="transition-colors hover:bg-muted/30">
-                        <TableCell>
-                          <Link
-                            to="/admin/courses/$courseId"
-                            params={{ courseId: course.id }}
-                            className="font-medium hover:underline"
-                          >
-                            {course.name}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="rounded-full">{course.code}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="rounded-full">
-                            {COURSE_TYPE_CONFIG[course.courseType]?.label ?? course.courseType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {course.classCount}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" className="rounded-lg" asChild>
-                              <Link
-                                to="/admin/courses/$courseId"
-                                params={{ courseId: course.id }}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-lg"
-                              onClick={() => setDeleteCourseId(course.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <Pagination
-                  page={safePage}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                  totalItems={totalItems}
-                  pageSize={10}
-                />
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+				<Card className="rounded-2xl">
+					<CardHeader>
+						<div className="flex items-center justify-between gap-4">
+							<CardTitle>Corsi ({courses.length})</CardTitle>
+							<div className="flex items-center gap-2">
+								<div className="w-56">
+									<AdminSearch
+										value={search}
+										onChange={v => {
+											setSearch(v);
+											setPage(1);
+										}}
+										placeholder="Cerca corsi..."
+									/>
+								</div>
+								<Button
+									size="sm"
+									className="rounded-xl"
+									onClick={() => setCreateCourseOpen(true)}
+								>
+									<Plus className="mr-1 h-4 w-4" />
+									Nuovo
+								</Button>
+							</div>
+						</div>
+					</CardHeader>
+					<CardContent>
+						{paged.length === 0 ? (
+							<p className="text-muted-foreground py-4 text-center">
+								{search
+									? "Nessun corso trovato."
+									: "Nessun corso in questo dipartimento."}
+							</p>
+						) : (
+							<>
+								<Table>
+									<TableHeader>
+										<TableRow className="bg-muted/50">
+											<TableHead>
+												<SortableHeader
+													label="Nome"
+													sortKey="name"
+													sort={sort}
+													onSort={toggleSort}
+												/>
+											</TableHead>
+											<TableHead>
+												<SortableHeader
+													label="Codice"
+													sortKey="code"
+													sort={sort}
+													onSort={toggleSort}
+												/>
+											</TableHead>
+											<TableHead>
+												<SortableHeader
+													label="Tipo"
+													sortKey="courseType"
+													sort={sort}
+													onSort={toggleSort}
+												/>
+											</TableHead>
+											<TableHead className="text-center text-xs font-medium tracking-wider uppercase">
+												Insegnamenti
+											</TableHead>
+											<TableHead className="text-right text-xs font-medium tracking-wider uppercase">
+												Azioni
+											</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{paged.map(course => (
+											<TableRow
+												key={course.id}
+												className="hover:bg-muted/30 transition-colors"
+											>
+												<TableCell>
+													<Link
+														to="/admin/courses/$courseId"
+														params={{ courseId: course.id }}
+														className="font-medium hover:underline"
+													>
+														{course.name}
+													</Link>
+												</TableCell>
+												<TableCell>
+													<Badge variant="secondary" className="rounded-full">
+														{course.code}
+													</Badge>
+												</TableCell>
+												<TableCell>
+													<Badge variant="outline" className="rounded-full">
+														{COURSE_TYPE_CONFIG[course.courseType]?.label ??
+															course.courseType}
+													</Badge>
+												</TableCell>
+												<TableCell className="text-center">
+													{course.classCount}
+												</TableCell>
+												<TableCell className="text-right">
+													<div className="flex items-center justify-end gap-1">
+														<Button
+															variant="ghost"
+															size="icon"
+															className="rounded-lg"
+															asChild
+														>
+															<Link
+																to="/admin/courses/$courseId"
+																params={{ courseId: course.id }}
+															>
+																<Pencil className="h-4 w-4" />
+															</Link>
+														</Button>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="rounded-lg"
+															onClick={() => setDeleteCourseId(course.id)}
+														>
+															<Trash2 className="text-destructive h-4 w-4" />
+														</Button>
+													</div>
+												</TableCell>
+											</TableRow>
+										))}
+									</TableBody>
+								</Table>
+								<Pagination
+									page={safePage}
+									totalPages={totalPages}
+									onPageChange={setPage}
+									totalItems={totalItems}
+									pageSize={10}
+								/>
+							</>
+						)}
+					</CardContent>
+				</Card>
+			</div>
 
-      <Dialog open={createCourseOpen} onOpenChange={setCreateCourseOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nuovo corso</DialogTitle>
-          </DialogHeader>
-          <CourseForm
-            departmentId={department.id}
-            onSubmit={(formData) => createCourse.mutate(formData)}
-            isPending={createCourse.isPending}
-          />
-        </DialogContent>
-      </Dialog>
+			<Dialog open={createCourseOpen} onOpenChange={setCreateCourseOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Nuovo corso</DialogTitle>
+					</DialogHeader>
+					<CourseForm
+						departmentId={department.id}
+						onSubmit={formData => createCourse.mutate(formData)}
+						isPending={createCourse.isPending}
+					/>
+				</DialogContent>
+			</Dialog>
 
-      <ConfirmationDialog
-        open={!!deleteCourseId}
-        onOpenChange={(open) => !open && setDeleteCourseId(null)}
-        title="Elimina corso"
-        description="Sei sicuro di voler eliminare questo corso? L'operazione è irreversibile."
-        confirmText="Elimina"
-        variant="destructive"
-        onConfirm={() => {
-          if (deleteCourseId) deleteCourse.mutate({ id: deleteCourseId })
-        }}
-      />
-    </div>
-  )
+			<ConfirmationDialog
+				open={!!deleteCourseId}
+				onOpenChange={open => !open && setDeleteCourseId(null)}
+				title="Elimina corso"
+				description="Sei sicuro di voler eliminare questo corso? L'operazione è irreversibile."
+				confirmText="Elimina"
+				variant="destructive"
+				onConfirm={() => {
+					if (deleteCourseId) deleteCourse.mutate({ id: deleteCourseId });
+				}}
+			/>
+		</div>
+	);
 }

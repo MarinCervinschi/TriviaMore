@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithLabel: Story = {
-	render: (args) => (
+	render: args => (
 		<div className="grid w-72 gap-2">
 			<Label htmlFor="pw">Password</Label>
 			<PasswordInput {...args} id="pw" autoComplete="current-password" />

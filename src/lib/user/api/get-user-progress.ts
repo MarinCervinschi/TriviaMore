@@ -1,12 +1,13 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { optionalAuthMiddleware } from "@/lib/server/middleware/auth"
+import { optionalAuthMiddleware } from "@/lib/server/middleware/auth";
 
-import { getUserProgress } from "../service/progress"
-import type { UserProgress } from "../types"
+import { getUserProgress } from "../service/progress";
+import type { UserProgress } from "../types";
 
 export const getUserProgressFn = createServerFn({ method: "GET" })
-  .middleware([optionalAuthMiddleware])
-  .handler(({ context }): Promise<UserProgress[]> =>
-    context.user ? getUserProgress(context.user.id) : Promise.resolve([]),
-  )
+	.middleware([optionalAuthMiddleware])
+	.handler(
+		({ context }): Promise<UserProgress[]> =>
+			context.user ? getUserProgress(context.user.id) : Promise.resolve([])
+	);

@@ -1,13 +1,11 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { optionalAuthMiddleware } from "@/lib/server/middleware/auth"
+import { optionalAuthMiddleware } from "@/lib/server/middleware/auth";
 
-import { classIdSchema } from "../schemas"
-import { isClassSaved } from "../service/classes"
+import { classIdSchema } from "../schemas";
+import { isClassSaved } from "../service/classes";
 
 export const isClassSavedFn = createServerFn({ method: "GET" })
-  .middleware([optionalAuthMiddleware])
-  .inputValidator(classIdSchema)
-  .handler(({ data, context }) =>
-    isClassSaved(context.user?.id ?? null, data.classId),
-  )
+	.middleware([optionalAuthMiddleware])
+	.inputValidator(classIdSchema)
+	.handler(({ data, context }) => isClassSaved(context.user?.id ?? null, data.classId));

@@ -1,42 +1,41 @@
-import { Bookmark, Flag } from "lucide-react"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Bookmark, Flag } from "lucide-react";
 
-import type { Meta, StoryObj } from "@storybook/react-vite"
+import { Button } from "@/components/ui/button";
 
-import { Button } from "@/components/ui/button"
-
-import { QuestionHeader } from "./question-header"
+import { QuestionHeader } from "./question-header";
 
 // Stand-in for the real report/bookmark actions (which are server-fn-coupled and
 // live in the card bodies). The header itself is presentational.
 const actions = (
-  <>
-    <Button variant="ghost" size="icon" aria-label="Segnala">
-      <Flag />
-    </Button>
-    <Button variant="ghost" size="icon" aria-label="Salva">
-      <Bookmark />
-    </Button>
-  </>
-)
+	<>
+		<Button variant="ghost" size="icon" aria-label="Segnala">
+			<Flag />
+		</Button>
+		<Button variant="ghost" size="icon" aria-label="Salva">
+			<Bookmark />
+		</Button>
+	</>
+);
 
 const meta = {
-  title: "Question Cards/Header",
-  component: QuestionHeader,
-  tags: ["autodocs"],
-  args: { number: 1, difficulty: "MEDIUM", actions },
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-2xl">
-        <Story />
-      </div>
-    ),
-  ],
-} satisfies Meta<typeof QuestionHeader>
+	title: "Question Cards/Header",
+	component: QuestionHeader,
+	tags: ["autodocs"],
+	args: { number: 1, difficulty: "MEDIUM", actions },
+	decorators: [
+		Story => (
+			<div className="w-full max-w-2xl">
+				<Story />
+			</div>
+		),
+	],
+} satisfies Meta<typeof QuestionHeader>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-export const Easy: Story = { args: { difficulty: "EASY" } }
-export const Medium: Story = { args: { difficulty: "MEDIUM" } }
-export const Hard: Story = { args: { difficulty: "HARD" } }
-export const WithoutActions: Story = { args: { actions: undefined } }
+export const Easy: Story = { args: { difficulty: "EASY" } };
+export const Medium: Story = { args: { difficulty: "MEDIUM" } };
+export const Hard: Story = { args: { difficulty: "HARD" } };
+export const WithoutActions: Story = { args: { actions: undefined } };

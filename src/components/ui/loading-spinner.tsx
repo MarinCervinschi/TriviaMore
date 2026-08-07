@@ -1,29 +1,29 @@
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
-import { cn } from "@/lib/utils"
-import { useReducedMotion } from "@/hooks/useReducedMotion"
-import { LogoIcon } from "@/components/ui/logo"
+import { LogoIcon } from "@/components/ui/logo";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps {
-	size?: "sm" | "default" | "lg"
-	className?: string
-	text?: string
+	size?: "sm" | "default" | "lg";
+	className?: string;
+	text?: string;
 }
 
 const sizeConfig = {
 	sm: { logo: 16, ring: 28, stroke: 2 },
 	default: { logo: 24, ring: 40, stroke: 2.5 },
 	lg: { logo: 32, ring: 52, stroke: 3 },
-}
+};
 
 export function LoadingSpinner({
 	size = "default",
 	className,
 	text,
 }: LoadingSpinnerProps) {
-	const prefersReduced = useReducedMotion()
-	const { logo, ring, stroke } = sizeConfig[size]
-	const r = (ring - stroke) / 2
+	const prefersReduced = useReducedMotion();
+	const { logo, ring, stroke } = sizeConfig[size];
+	const r = (ring - stroke) / 2;
 
 	return (
 		<div className={cn("flex flex-col items-center justify-center gap-3", className)}>
@@ -77,14 +77,18 @@ export function LoadingSpinner({
 
 			{text && (
 				<motion.span
-					className="text-sm text-muted-foreground"
+					className="text-muted-foreground text-sm"
 					initial={prefersReduced ? undefined : { opacity: 0 }}
 					animate={prefersReduced ? undefined : { opacity: [0.5, 1, 0.5] }}
-					transition={prefersReduced ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
+					transition={
+						prefersReduced
+							? undefined
+							: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+					}
 				>
 					{text}
 				</motion.span>
 			)}
 		</div>
-	)
+	);
 }

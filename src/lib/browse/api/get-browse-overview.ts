@@ -1,6 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { getBrowseOverview } from "../service/overview"
+import { getBrowseOverview } from "../service/overview";
 
-export const getBrowseOverviewFn = createServerFn({ method: "GET" })
-  .handler(() => getBrowseOverview())
+export const getBrowseOverviewFn = createServerFn({ method: "GET" }).handler(() =>
+	getBrowseOverview()
+);

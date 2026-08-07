@@ -20,7 +20,7 @@ export const Default: Story = {
 			</PopoverTrigger>
 			<PopoverContent>
 				<div className="space-y-2">
-					<h4 className="font-medium leading-none">Impostazioni quiz</h4>
+					<h4 className="leading-none font-medium">Impostazioni quiz</h4>
 					<p className="text-muted-foreground text-sm">
 						20 domande estratte casualmente dalla sezione, 30 minuti di tempo.
 					</p>
@@ -39,9 +39,7 @@ export const Open: Story = {
 			<PopoverContent>
 				<div className="space-y-1 text-sm">
 					<p className="font-medium">Limiti e continuità</p>
-					<p className="text-muted-foreground">
-						142 domande · aggiornata 3 giorni fa
-					</p>
+					<p className="text-muted-foreground">142 domande · aggiornata 3 giorni fa</p>
 				</div>
 			</PopoverContent>
 		</Popover>

@@ -43,9 +43,7 @@ export const Open: Story = {
 				</CollapsibleTrigger>
 			</div>
 			<CollapsibleContent className="space-y-2">
-				<div className="rounded-lg border px-3 py-2 text-sm">
-					Livello di trasporto
-				</div>
+				<div className="rounded-lg border px-3 py-2 text-sm">Livello di trasporto</div>
 				<div className="rounded-lg border px-3 py-2 text-sm">Instradamento IP</div>
 			</CollapsibleContent>
 		</Collapsible>

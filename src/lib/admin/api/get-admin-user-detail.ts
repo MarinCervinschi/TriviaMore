@@ -1,8 +1,8 @@
-import { createServerFn } from "@tanstack/react-start"
+import { createServerFn } from "@tanstack/react-start";
 
-import { idSchema } from "../schemas"
-import { getAdminUserDetail } from "../service/users"
+import { idSchema } from "../schemas";
+import { getAdminUserDetail } from "../service/users";
 
 export const getAdminUserDetailFn = createServerFn({ method: "GET" })
-  .inputValidator(idSchema)
-  .handler(({ data }) => getAdminUserDetail(data.id))
+	.inputValidator(idSchema)
+	.handler(({ data }) => getAdminUserDetail(data.id));
