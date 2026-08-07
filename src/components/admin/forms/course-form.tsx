@@ -1,7 +1,6 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -21,6 +20,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { type CourseInput, courseSchema } from "@/lib/admin/schemas";
 import type { Course } from "@/lib/admin/types";
+
+import { FormSubmitButton } from "./form-submit-button";
 
 type CourseFormProps = {
 	course?: Course;
@@ -168,9 +169,7 @@ export function CourseForm({
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" disabled={isPending}>
-					{isPending ? "Salvataggio..." : course ? "Aggiorna corso" : "Crea corso"}
-				</Button>
+				<FormSubmitButton isPending={isPending} isEdit={!!course} entityLabel="corso" />
 			</form>
 		</Form>
 	);

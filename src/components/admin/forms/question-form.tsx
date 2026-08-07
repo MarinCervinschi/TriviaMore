@@ -4,7 +4,6 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { type FieldValues, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -26,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AdminQuestion } from "@/lib/admin/types";
 import { type QuestionOption, parseOptions } from "@/lib/quiz/options";
 
+import { FormSubmitButton } from "./form-submit-button";
 import { MultipleChoiceOptions } from "./multiple-choice-options";
 import { QuestionContentField } from "./question-content-field";
 
@@ -315,13 +315,11 @@ export function QuestionForm({
 					)}
 				/>
 
-				<Button type="submit" disabled={isPending}>
-					{isPending
-						? "Salvataggio..."
-						: question
-							? "Aggiorna domanda"
-							: "Crea domanda"}
-				</Button>
+				<FormSubmitButton
+					isPending={isPending}
+					isEdit={!!question}
+					entityLabel="domanda"
+				/>
 			</form>
 		</Form>
 	);
