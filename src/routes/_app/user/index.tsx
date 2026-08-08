@@ -13,7 +13,11 @@ import {
 	Trophy,
 } from "lucide-react";
 
-import { BrowseTable } from "@/components/browse/browse-table";
+import {
+	DataTable,
+	createDataTableColumns,
+	useDataTable,
+} from "@/components/data-table";
 import { StatCard } from "@/components/shared/stat-card";
 import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -257,60 +261,93 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 				</Button>
 			</div>
 
-			<BrowseTable headers={["Corso", "Dipartimento", "Tipo", "Anno"]}>
-				{classes.map(item => (
-					<tr key={item.classId} className="group">
-						<td className="min-w-[16rem] py-4 pr-3 pl-6 align-top">
-							<Link
-								to="/browse/$department/$course/$class"
-								params={{
-									department: item.departmentCode.toLowerCase(),
-									course: item.courseCode.toLowerCase(),
-									class: (item.classCode ?? "").toLowerCase(),
-								}}
-								className="block"
-							>
-								<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
-									{item.className}
-								</span>
-								<p className="text-muted-foreground mt-0.5 text-xs">
-									{item.courseName}
-								</p>
-							</Link>
-						</td>
-						<td className="px-3 py-4 text-center whitespace-nowrap">
-							<Badge variant="outline" className="text-xs">
-								{item.departmentCode}
-							</Badge>
-						</td>
-						<td className="px-3 py-4 text-center whitespace-nowrap">
-							<Badge
-								className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[item.courseType]?.className ?? ""}`}
-							>
-								{COURSE_TYPE_CONFIG[item.courseType]?.label ?? item.courseType}
-							</Badge>
-						</td>
-						<td className="text-muted-foreground px-4 py-4 text-center text-sm">
-							{item.classYear}
-						</td>
-						<td className="py-4 pr-6">
-							<Link
-								to="/browse/$department/$course/$class"
-								params={{
-									department: item.departmentCode.toLowerCase(),
-									course: item.courseCode.toLowerCase(),
-									class: (item.classCode ?? "").toLowerCase(),
-								}}
-								className="inline-flex"
-								aria-label={`Apri ${item.className}`}
-							>
-								<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
-							</Link>
-						</td>
-					</tr>
-				))}
-			</BrowseTable>
+			<RecentClassesTable classes={classes} />
 		</div>
+	);
+}
+
+const recentClassColumn = createDataTableColumns<RecentClass>();
+
+function recentClassParams(item: RecentClass) {
+	return {
+		department: item.departmentCode.toLowerCase(),
+		course: item.courseCode.toLowerCase(),
+		class: (item.classCode ?? "").toLowerCase(),
+	};
+}
+
+const recentClassColumns = [
+	recentClassColumn.accessor("className", {
+		header: "Corso",
+		enableSorting: false,
+		meta: { label: "Corso", cellClassName: "min-w-[16rem]" },
+		cell: ({ row }) => (
+			<Link
+				to="/browse/$department/$course/$class"
+				params={recentClassParams(row.original)}
+			>
+				<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+					{row.original.className}
+				</span>
+				<p className="text-muted-foreground mt-0.5 text-xs">
+					{row.original.courseName}
+				</p>
+			</Link>
+		),
+	}),
+	recentClassColumn.accessor("departmentCode", {
+		header: "Dipartimento",
+		enableSorting: false,
+		meta: { label: "Dipartimento", align: "center" },
+		cell: ({ row }) => (
+			<Badge variant="outline" className="text-xs">
+				{row.original.departmentCode}
+			</Badge>
+		),
+	}),
+	recentClassColumn.accessor("courseType", {
+		header: "Tipo",
+		enableSorting: false,
+		meta: { label: "Tipo", align: "center" },
+		cell: ({ row }) => (
+			<Badge
+				className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
+			>
+				{COURSE_TYPE_CONFIG[row.original.courseType]?.label ?? row.original.courseType}
+			</Badge>
+		),
+	}),
+	recentClassColumn.accessor("classYear", {
+		header: "Anno",
+		enableSorting: false,
+		meta: {
+			label: "Anno",
+			align: "center",
+			cellClassName: "text-muted-foreground text-sm",
+		},
+	}),
+];
+
+function RecentClassesTable({ classes }: { classes: RecentClass[] }) {
+	const table = useDataTable({
+		data: classes,
+		columns: recentClassColumns,
+		getRowId: row => row.classId,
+		pageSize: Math.max(classes.length, 1),
+	});
+
+	return (
+		<DataTable
+			table={table}
+			showPagination={false}
+			rowLink={row => (
+				<Link
+					to="/browse/$department/$course/$class"
+					params={recentClassParams(row)}
+					aria-label={`Apri ${row.className}`}
+				/>
+			)}
+		/>
 	);
 }
 

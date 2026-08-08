@@ -188,17 +188,17 @@ export function UserClassesSkeleton() {
 			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />
 
-				{/* Search + filters toolbar */}
+				{/* Data table toolbar: search, faceted filters, column visibility */}
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<Skeleton className="h-10 w-full max-w-sm rounded-xl" />
-					<div className="flex flex-wrap gap-2">
-						<Skeleton className="h-10 w-40 rounded-xl" />
-						<Skeleton className="h-10 w-32 rounded-xl" />
-						<Skeleton className="h-10 w-32 rounded-xl" />
+					<div className="flex flex-1 flex-wrap items-center gap-2">
+						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
+						<Skeleton className="h-9 w-36 rounded-xl" />
+						<Skeleton className="h-9 w-24 rounded-xl" />
 					</div>
+					<Skeleton className="h-9 w-28 rounded-xl" />
 				</div>
 
-				<SkeletonTable rows={6} columns={5} />
+				<SkeletonTable rows={6} columns={6} />
 			</div>
 		</SkeletonRoot>
 	);
