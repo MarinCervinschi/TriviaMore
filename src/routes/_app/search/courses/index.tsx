@@ -1,17 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, GraduationCap, Search, X } from "lucide-react";
+import { GraduationCap, Search, X } from "lucide-react";
 import { z } from "zod";
 
-import { BrowseTable } from "@/components/browse/browse-table";
+import {
+	DataTable,
+	createDataTableColumns,
+	useDataTable,
+} from "@/components/data-table";
 import { SearchResultsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -20,11 +23,12 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { UserHero } from "@/components/user/user-hero";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
-import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
+import type { SearchCourseResult } from "@/lib/browse/types";
+import { staggerContainer, withReducedMotion } from "@/lib/motion";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +55,96 @@ export const Route = createFileRoute("/_app/search/courses/")({
 	component: SearchCoursesPage,
 });
 
+const column = createDataTableColumns<SearchCourseResult>();
+
+// The API neither sorts nor filters on the client's behalf, so every column is
+// display-only: the server owns the result order.
+const columns = [
+	column.accessor("name", {
+		header: "Nome",
+		enableSorting: false,
+		meta: { label: "Nome", headerClassName: "w-[40%]" },
+		cell: ({ row }) => (
+			<Link
+				to="/browse/$department/$course"
+				params={{
+					department: row.original.department.code.toLowerCase(),
+					course: row.original.code.toLowerCase(),
+				}}
+				className="block"
+			>
+				<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+					{row.original.name}
+				</span>
+			</Link>
+		),
+	}),
+	column.accessor("code", {
+		header: "Codice",
+		enableSorting: false,
+		meta: { label: "Codice", align: "center", hideBelow: "md" },
+		cell: ({ row }) => (
+			<Badge variant="outline" className="text-xs">
+				{row.original.code}
+			</Badge>
+		),
+	}),
+	column.accessor(course => course.department.code, {
+		id: "department",
+		header: "Dipartimento",
+		enableSorting: false,
+		meta: { label: "Dipartimento", align: "center", hideBelow: "lg" },
+		cell: ({ row }) => (
+			<Badge variant="outline" className="text-xs">
+				{row.original.department.code}
+			</Badge>
+		),
+	}),
+	column.accessor("courseType", {
+		header: "Tipo",
+		enableSorting: false,
+		meta: { label: "Tipo", align: "center", hideBelow: "sm" },
+		cell: ({ row }) => {
+			const config = COURSE_TYPE_CONFIG[row.original.courseType];
+			return config ? (
+				<Badge className={cn("text-xs", config.className)}>{config.label}</Badge>
+			) : (
+				<span className="text-muted-foreground text-xs">{row.original.courseType}</span>
+			);
+		},
+	}),
+	column.accessor("location", {
+		header: "Campus",
+		enableSorting: false,
+		meta: { label: "Campus", align: "center", hideBelow: "lg" },
+		cell: ({ row }) =>
+			row.original.location ? (
+				<span className="text-muted-foreground text-sm">
+					{CAMPUS_LOCATION_CONFIG[row.original.location]?.short ??
+						row.original.location}
+				</span>
+			) : (
+				<span className="text-muted-foreground/50 text-xs">—</span>
+			),
+	}),
+	column.accessor("cfu", {
+		header: "CFU",
+		enableSorting: false,
+		meta: { label: "CFU", align: "center", hideBelow: "md" },
+		cell: ({ row }) =>
+			row.original.cfu ? (
+				<span className="text-muted-foreground text-sm">{row.original.cfu}</span>
+			) : (
+				<span className="text-muted-foreground/50 text-xs">—</span>
+			),
+	}),
+	column.accessor("classCount", {
+		header: "Insegnamenti",
+		enableSorting: false,
+		meta: { label: "Insegnamenti", align: "center", cellClassName: "font-semibold" },
+	}),
+];
+
 function SearchCoursesPage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const { q, dept, type, campus, page } = Route.useSearch();
@@ -58,52 +152,6 @@ function SearchCoursesPage() {
 	const prefersReduced = useReducedMotion();
 
 	const currentPage = page ?? 1;
-
-	// Local state for the search input keeps typing snappy: the URL (and the DB query)
-	// are only updated after the debounce settles, instead of on every keystroke.
-	const [localQ, setLocalQ] = useState(q ?? "");
-	const debouncedQuery = useDebounce(localQ, 400);
-
-	// Push debounced value into the URL.
-	useEffect(() => {
-		if (debouncedQuery !== (q ?? "")) {
-			updateSearch({ q: debouncedQuery || undefined });
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [debouncedQuery]);
-
-	// Pull external URL changes (back/forward, clearFilters) back into local state.
-	useEffect(() => {
-		setLocalQ(q ?? "");
-	}, [q]);
-
-	const searchParams = useMemo(
-		() => ({
-			query: debouncedQuery || undefined,
-			departmentId: dept || undefined,
-			courseType: type || undefined,
-			campus: campus || undefined,
-			page: currentPage,
-			pageSize: PAGE_SIZE,
-		}),
-		[debouncedQuery, dept, type, campus, currentPage]
-	);
-
-	const hasFilters = !!(
-		searchParams.query ||
-		searchParams.departmentId ||
-		searchParams.courseType ||
-		searchParams.campus
-	);
-
-	const { data: response, isFetching } = useQuery(
-		browseQueries.searchCourses(searchParams)
-	);
-
-	const results = response?.data;
-	const totalItems = response?.total ?? 0;
-	const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-	const safePage = Math.min(currentPage, totalPages);
 
 	// Filter changes reset to page 1; pagination clicks preserve all other filters.
 	const updateSearch = (updates: Record<string, string | number | undefined>) => {
@@ -123,16 +171,54 @@ function SearchCoursesPage() {
 		});
 	};
 
-	const goToPage = (p: number) => {
-		navigate({
-			search: prev => ({ ...prev, page: p === 1 ? undefined : p }),
-			replace: false,
-		});
-	};
-
 	const clearFilters = () => {
 		navigate({ search: {}, replace: true });
 	};
+
+	const [localQ, setLocalQ] = useDebouncedSearchParam(q, next =>
+		updateSearch({ q: next })
+	);
+
+	const searchParams = useMemo(
+		() => ({
+			query: q || undefined,
+			departmentId: dept || undefined,
+			courseType: type || undefined,
+			campus: campus || undefined,
+			page: currentPage,
+			pageSize: PAGE_SIZE,
+		}),
+		[q, dept, type, campus, currentPage]
+	);
+
+	const hasFilters = !!(
+		searchParams.query ||
+		searchParams.departmentId ||
+		searchParams.courseType ||
+		searchParams.campus
+	);
+
+	const { data: response, isFetching } = useQuery(
+		browseQueries.searchCourses(searchParams)
+	);
+
+	const results = response?.data;
+	const totalItems = response?.total ?? 0;
+
+	const table = useDataTable({
+		data: results ?? [],
+		columns,
+		getRowId: row => row.id,
+		pageSize: PAGE_SIZE,
+		manual: {
+			pageCount: Math.max(1, Math.ceil(totalItems / PAGE_SIZE)),
+			rowCount: totalItems,
+		},
+		urlState: {
+			values: { page },
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
 
 	return (
 		<div>
@@ -269,112 +355,20 @@ function SearchCoursesPage() {
 							initial="hidden"
 							animate="visible"
 						>
-							<BrowseTable
-								headers={[
-									"Nome",
-									{ label: "Codice", className: "hidden md:table-cell" },
-									{ label: "Dipartimento", className: "hidden lg:table-cell" },
-									{ label: "Tipo", className: "hidden sm:table-cell" },
-									{ label: "Campus", className: "hidden lg:table-cell" },
-									{ label: "CFU", className: "hidden md:table-cell" },
-									"Insegnamenti",
-								]}
-							>
-								{results.map(course => {
-									const typeConf = COURSE_TYPE_CONFIG[course.courseType];
-									const classCount = course.classCount;
-									return (
-										<motion.tr
-											key={course.id}
-											variants={withReducedMotion(staggerItem, prefersReduced)}
-											className="group"
-										>
-											<td className="py-4 pr-3 pl-6 align-top">
-												<Link
-													to="/browse/$department/$course"
-													params={{
-														department: course.department.code.toLowerCase(),
-														course: course.code.toLowerCase(),
-													}}
-													className="block"
-												>
-													<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
-														{course.name}
-													</span>
-												</Link>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap md:table-cell">
-												<Badge variant="outline" className="text-xs">
-													{course.code}
-												</Badge>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap lg:table-cell">
-												<Badge variant="outline" className="text-xs">
-													{course.department.code}
-												</Badge>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap sm:table-cell">
-												{typeConf ? (
-													<Badge className={cn("text-xs", typeConf.className)}>
-														{typeConf.label}
-													</Badge>
-												) : (
-													<span className="text-muted-foreground text-xs">
-														{course.courseType}
-													</span>
-												)}
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap lg:table-cell">
-												{course.location ? (
-													<span className="text-muted-foreground text-sm">
-														{CAMPUS_LOCATION_CONFIG[course.location]?.short ??
-															course.location}
-													</span>
-												) : (
-													<span className="text-muted-foreground/50 text-xs">—</span>
-												)}
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap md:table-cell">
-												{course.cfu ? (
-													<span className="text-muted-foreground text-sm">
-														{course.cfu}
-													</span>
-												) : (
-													<span className="text-muted-foreground/50 text-xs">—</span>
-												)}
-											</td>
-											<td className="px-3 py-4 text-center whitespace-nowrap">
-												<span className="text-foreground text-sm font-semibold">
-													{classCount}
-												</span>
-											</td>
-											<td className="py-4 pr-6">
-												<Link
-													to="/browse/$department/$course"
-													params={{
-														department: course.department.code.toLowerCase(),
-														course: course.code.toLowerCase(),
-													}}
-													className="inline-flex"
-													aria-label={`Apri ${course.name}`}
-												>
-													<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
-												</Link>
-											</td>
-										</motion.tr>
-									);
-								})}
-							</BrowseTable>
-						</motion.div>
-						{totalPages > 1 && (
-							<Pagination
-								page={safePage}
-								totalPages={totalPages}
-								onPageChange={goToPage}
-								totalItems={totalItems}
-								pageSize={PAGE_SIZE}
+							<DataTable
+								table={table}
+								rowLink={row => (
+									<Link
+										to="/browse/$department/$course"
+										params={{
+											department: row.department.code.toLowerCase(),
+											course: row.code.toLowerCase(),
+										}}
+										aria-label={`Apri ${row.name}`}
+									/>
+								)}
 							/>
-						)}
+						</motion.div>
 					</div>
 				)}
 			</div>
