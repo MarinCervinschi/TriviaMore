@@ -1,7 +1,7 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowRight,
 	BookOpen,
@@ -13,6 +13,7 @@ import {
 	MessageSquarePlus,
 	Sparkles,
 } from "lucide-react";
+import { z } from "zod";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb";
@@ -21,18 +22,23 @@ import {
 	BrowseEmptyState,
 } from "@/components/browse/browse-empty-state";
 import { BrowsePageHeader } from "@/components/browse/browse-page-header";
-import { BrowseTable } from "@/components/browse/browse-table";
 import { SearchFilter } from "@/components/browse/search-filter";
+import {
+	DataTable,
+	createDataTableColumns,
+	dataTableFilterField,
+	useDataTable,
+} from "@/components/data-table";
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { RequestFormDialog } from "@/components/requests/request-form-dialog";
 import { ClassDetailSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pagination } from "@/components/ui/pagination";
 import { useAuth } from "@/hooks/useAuth";
-import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
+import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
+import type { ClassWithSections } from "@/lib/browse/types";
 import { breadcrumbJsonLd } from "@/lib/json-ld";
 import { quizQueries } from "@/lib/quiz/queries";
 import { seoHead } from "@/lib/seo";
@@ -48,6 +54,12 @@ const StartExamDialog = lazy(() =>
 );
 
 export const Route = createFileRoute("/_app/browse/$department/$course/$class/")({
+	validateSearch: z.object({
+		q: dataTableFilterField,
+		page: z.coerce.number().int().min(1).optional().catch(undefined),
+		sort: dataTableFilterField,
+		dir: z.enum(["asc", "desc"]).optional().catch(undefined),
+	}),
 	loader: async ({ context, params }) => {
 		void context.queryClient.prefetchQuery(quizQueries.evaluationModes());
 
@@ -85,18 +97,96 @@ export const Route = createFileRoute("/_app/browse/$department/$course/$class/")
 	),
 });
 
+type SectionRow = ClassWithSections["sections"][number];
+
+const column = createDataTableColumns<SectionRow>();
+
+// The slug is generated from the name, which is NOT NULL, so it is only
+// nullable as far as the column definition is concerned.
+const sectionParams = (
+	deptCode: string,
+	courseCode: string,
+	classCode: string,
+	section: SectionRow
+) => ({
+	department: deptCode.toLowerCase(),
+	course: courseCode.toLowerCase(),
+	class: classCode.toLowerCase(),
+	section: section.slug ?? "",
+});
+
+function buildColumns(deptCode: string, courseCode: string, classCode: string) {
+	return [
+		column.accessor("name", {
+			header: "Sezione",
+			meta: { label: "Sezione", headerClassName: "w-[40%]" },
+			cell: ({ row }) => (
+				<Link
+					to="/browse/$department/$course/$class/$section"
+					params={sectionParams(deptCode, courseCode, classCode, row.original)}
+					className="block"
+				>
+					<span className="text-foreground group-hover:text-primary flex items-center gap-2 font-medium transition-colors">
+						{!row.original.isPublic && (
+							<Lock className="text-muted-foreground h-3.5 w-3.5" />
+						)}
+						{row.original.name}
+					</span>
+				</Link>
+			),
+		}),
+		column.accessor("quizQuestionCount", {
+			header: "Quiz",
+			meta: { label: "Quiz", align: "center" },
+			cell: ({ row }) =>
+				row.original.quizQuestionCount > 0 ? (
+					<Badge className="gap-1.5 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
+						<BookOpen className="h-3 w-3" />
+						{row.original.quizQuestionCount}
+					</Badge>
+				) : (
+					<span className="text-muted-foreground/50 text-xs">—</span>
+				),
+		}),
+		column.accessor("flashcardQuestionCount", {
+			header: "Flashcard",
+			meta: { label: "Flashcard", align: "center" },
+			cell: ({ row }) =>
+				row.original.flashcardQuestionCount > 0 ? (
+					<Badge className="gap-1.5 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
+						<Sparkles className="h-3 w-3" />
+						{row.original.flashcardQuestionCount}
+					</Badge>
+				) : (
+					<span className="text-muted-foreground/50 text-xs">—</span>
+				),
+		}),
+		column.accessor("questionCount", {
+			header: "Totale",
+			meta: {
+				label: "Totale",
+				align: "center",
+				cellClassName: "text-muted-foreground text-sm",
+			},
+		}),
+	];
+}
+
 function ClassPage() {
 	const {
 		department: deptCode,
 		course: courseCode,
 		class: classCode,
 	} = Route.useParams();
+	const navigate = useNavigate({ from: Route.fullPath });
+	const search = Route.useSearch();
 	const { data: classData } = useSuspenseQuery(
 		browseQueries.class(deptCode, courseCode, classCode)
 	);
 
-	const [search, setSearch] = useState("");
-	const [page, setPage] = useState(1);
+	const [searchInput, setSearchInput] = useDebouncedSearchParam(search.q, next =>
+		navigate({ search: prev => ({ ...prev, q: next, page: undefined }) })
+	);
 	const queryClient = useQueryClient();
 
 	const { isAuthenticated } = useAuth();
@@ -118,19 +208,27 @@ function ClassPage() {
 		}
 	}, [isAuthenticated, classData?.id, classData?.course?.id, queryClient]);
 
+	const columns = useMemo(
+		() => buildColumns(deptCode, courseCode, classCode),
+		[deptCode, courseCode, classCode]
+	);
+
+	const table = useDataTable({
+		data: classData?.sections ?? [],
+		columns,
+		getRowId: row => row.id,
+		searchFn: (section, query) => section.name.toLowerCase().includes(query),
+		urlState: {
+			values: search,
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
+
 	if (!classData) return null;
 
 	const totalQuestions = classData.sections.reduce(
 		(sum, s) => sum + s.questionCount,
 		0
-	);
-
-	const { paged, totalPages, safePage, totalItems } = usePaginatedSearch(
-		classData.sections,
-		(s, q) => s.name.toLowerCase().includes(q),
-		search,
-		page,
-		10
 	);
 
 	const handleToggleSave = () => {
@@ -274,97 +372,26 @@ function ClassPage() {
 						/>
 					)}
 				<SearchFilter
-					value={search}
-					onChange={v => {
-						setSearch(v);
-						setPage(1);
-					}}
+					value={searchInput}
+					onChange={setSearchInput}
 					placeholder="Cerca sezioni..."
 				/>
 				{classData.sections.length === 0 ? (
 					<BrowseContributeState message="Nessuna sezione disponibile per questo insegnamento.">
 						<RequestFormDialog defaultTargetClassId={classData.id} />
 					</BrowseContributeState>
-				) : paged.length === 0 ? (
-					<BrowseEmptyState message="Nessuna sezione trovata." />
 				) : (
-					<>
-						<BrowseTable headers={["Sezione", "Quiz", "Flashcard", "Totale"]}>
-							{paged.map(section => {
-								// The slug is generated from the name, which is NOT NULL, so it is
-								// only nullable as far as the column definition is concerned.
-								const sectionSlug = section.slug ?? "";
-								return (
-									<tr key={section.id} className="group">
-										<td className="py-4 pl-6">
-											<Link
-												to="/browse/$department/$course/$class/$section"
-												params={{
-													department: deptCode.toLowerCase(),
-													course: courseCode.toLowerCase(),
-													class: classCode.toLowerCase(),
-													section: sectionSlug,
-												}}
-												className="block"
-											>
-												<span className="text-foreground group-hover:text-primary flex items-center gap-2 font-medium transition-colors">
-													{!section.isPublic && (
-														<Lock className="text-muted-foreground h-3.5 w-3.5" />
-													)}
-													{section.name}
-												</span>
-											</Link>
-										</td>
-										<td className="px-3 py-4 text-center whitespace-nowrap">
-											{section.quizQuestionCount > 0 ? (
-												<Badge className="gap-1.5 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
-													<BookOpen className="h-3 w-3" />
-													{section.quizQuestionCount}
-												</Badge>
-											) : (
-												<span className="text-muted-foreground/50 text-xs">—</span>
-											)}
-										</td>
-										<td className="px-3 py-4 text-center whitespace-nowrap">
-											{section.flashcardQuestionCount > 0 ? (
-												<Badge className="gap-1.5 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
-													<Sparkles className="h-3 w-3" />
-													{section.flashcardQuestionCount}
-												</Badge>
-											) : (
-												<span className="text-muted-foreground/50 text-xs">—</span>
-											)}
-										</td>
-										<td className="text-muted-foreground px-3 py-4 text-center text-sm whitespace-nowrap">
-											{section.questionCount}
-										</td>
-										<td className="py-4 pr-6">
-											<Link
-												to="/browse/$department/$course/$class/$section"
-												params={{
-													department: deptCode.toLowerCase(),
-													course: courseCode.toLowerCase(),
-													class: classCode.toLowerCase(),
-													section: sectionSlug,
-												}}
-												className="inline-flex"
-												aria-label={`Apri ${section.name}`}
-											>
-												<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
-											</Link>
-										</td>
-									</tr>
-								);
-							})}
-						</BrowseTable>
-						<Pagination
-							page={safePage}
-							totalPages={totalPages}
-							onPageChange={setPage}
-							totalItems={totalItems}
-							pageSize={10}
-						/>
-					</>
+					<DataTable
+						table={table}
+						empty={<BrowseEmptyState message="Nessuna sezione trovata." />}
+						rowLink={row => (
+							<Link
+								to="/browse/$department/$course/$class/$section"
+								params={sectionParams(deptCode, courseCode, classCode, row)}
+								aria-label={`Apri ${row.name}`}
+							/>
+						)}
+					/>
 				)}
 			</div>
 		</div>

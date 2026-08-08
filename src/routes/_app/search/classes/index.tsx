@@ -1,17 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Search, X } from "lucide-react";
+import { BookOpen, Search, X } from "lucide-react";
 import { z } from "zod";
 
-import { BrowseTable } from "@/components/browse/browse-table";
+import {
+	DataTable,
+	createDataTableColumns,
+	useDataTable,
+} from "@/components/data-table";
 import { SearchResultsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -20,10 +23,11 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { UserHero } from "@/components/user/user-hero";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { browseQueries } from "@/lib/browse/queries";
-import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
+import type { SearchClassResult } from "@/lib/browse/types";
+import { staggerContainer, withReducedMotion } from "@/lib/motion";
 import { seoHead } from "@/lib/seo";
 
 const PAGE_SIZE = 10;
@@ -50,6 +54,99 @@ export const Route = createFileRoute("/_app/search/classes/")({
 	component: SearchClassesPage,
 });
 
+const column = createDataTableColumns<SearchClassResult>();
+
+// The API neither sorts nor filters on the client's behalf, so every column is
+// display-only: the server owns the result order.
+const columns = [
+	column.accessor("name", {
+		header: "Nome",
+		enableSorting: false,
+		meta: { label: "Nome", headerClassName: "w-[40%]" },
+		cell: ({ row }) => (
+			<Link
+				to="/browse/$department/$course/$class"
+				params={{
+					department: row.original.course.department.code.toLowerCase(),
+					course: row.original.course.code.toLowerCase(),
+					class: row.original.code.toLowerCase(),
+				}}
+				className="block"
+			>
+				<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+					{row.original.name}
+				</span>
+				{row.original.description && (
+					<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+						{row.original.description}
+					</p>
+				)}
+			</Link>
+		),
+	}),
+	column.accessor("code", {
+		header: "Codice",
+		enableSorting: false,
+		meta: { label: "Codice", align: "center", hideBelow: "lg" },
+		cell: ({ row }) => (
+			<Badge variant="outline" className="text-xs">
+				{row.original.code}
+			</Badge>
+		),
+	}),
+	column.accessor(cls => cls.course.code, {
+		id: "course",
+		header: "Corso",
+		enableSorting: false,
+		meta: { label: "Corso", align: "center", hideBelow: "lg" },
+		cell: ({ row }) => (
+			<Badge variant="outline" className="text-xs">
+				{row.original.course.code}
+			</Badge>
+		),
+	}),
+	column.accessor("classYear", {
+		header: "Anno",
+		enableSorting: false,
+		meta: {
+			label: "Anno",
+			align: "center",
+			hideBelow: "md",
+			cellClassName: "text-muted-foreground text-sm",
+		},
+		cell: ({ row }) => `${row.original.classYear}°`,
+	}),
+	column.accessor("cfu", {
+		header: "CFU",
+		enableSorting: false,
+		meta: { label: "CFU", align: "center", hideBelow: "md" },
+		cell: ({ row }) =>
+			row.original.cfu ? (
+				<span className="text-muted-foreground text-sm">{row.original.cfu}</span>
+			) : (
+				<span className="text-muted-foreground/50 text-xs">—</span>
+			),
+	}),
+	column.accessor("mandatory", {
+		header: "Tipo",
+		enableSorting: false,
+		meta: { label: "Tipo", align: "center", hideBelow: "sm" },
+		cell: ({ row }) => (
+			<Badge
+				variant={row.original.mandatory ? "default" : "secondary"}
+				className="text-xs"
+			>
+				{row.original.mandatory ? "Obbligatorio" : "A scelta"}
+			</Badge>
+		),
+	}),
+	column.accessor("sectionCount", {
+		header: "Sezioni",
+		enableSorting: false,
+		meta: { label: "Sezioni", align: "center", cellClassName: "font-semibold" },
+	}),
+];
+
 function SearchClassesPage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const { q, dept, course, year, mandatory, page } = Route.useSearch();
@@ -57,63 +154,6 @@ function SearchClassesPage() {
 	const prefersReduced = useReducedMotion();
 
 	const currentPage = page ?? 1;
-
-	// Local state for the search input keeps typing snappy: the URL (and the DB query)
-	// are only updated after the debounce settles, instead of on every keystroke.
-	const [localQ, setLocalQ] = useState(q ?? "");
-	const debouncedQuery = useDebounce(localQ, 400);
-
-	// Push debounced value into the URL.
-	useEffect(() => {
-		if (debouncedQuery !== (q ?? "")) {
-			updateSearch({ q: debouncedQuery || undefined });
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [debouncedQuery]);
-
-	// Pull external URL changes (back/forward, clearFilters) back into local state.
-	useEffect(() => {
-		setLocalQ(q ?? "");
-	}, [q]);
-
-	const { data: departmentCourses } = useQuery(
-		browseQueries.departmentCourseList(dept)
-	);
-
-	const { data: availableYears } = useQuery(
-		browseQueries.availableClassYears(dept, course)
-	);
-
-	const searchParams = useMemo(
-		() => ({
-			query: debouncedQuery || undefined,
-			departmentId: dept || undefined,
-			courseId: course || undefined,
-			classYear: year,
-			mandatory:
-				mandatory === "true" ? true : mandatory === "false" ? false : undefined,
-			page: currentPage,
-			pageSize: PAGE_SIZE,
-		}),
-		[debouncedQuery, dept, course, year, mandatory, currentPage]
-	);
-
-	const hasFilters = !!(
-		searchParams.query ||
-		searchParams.departmentId ||
-		searchParams.courseId ||
-		searchParams.classYear !== undefined ||
-		searchParams.mandatory !== undefined
-	);
-
-	const { data: response, isFetching } = useQuery(
-		browseQueries.searchClasses(searchParams)
-	);
-
-	const results = response?.data;
-	const totalItems = response?.total ?? 0;
-	const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-	const safePage = Math.min(currentPage, totalPages);
 
 	// Filter changes reset to page 1; pagination clicks preserve all other filters.
 	const updateSearch = (updates: Record<string, string | number | undefined>) => {
@@ -133,16 +173,65 @@ function SearchClassesPage() {
 		});
 	};
 
-	const goToPage = (p: number) => {
-		navigate({
-			search: prev => ({ ...prev, page: p === 1 ? undefined : p }),
-			replace: false,
-		});
-	};
-
 	const clearFilters = () => {
 		navigate({ search: {}, replace: true });
 	};
+
+	const [localQ, setLocalQ] = useDebouncedSearchParam(q, next =>
+		updateSearch({ q: next })
+	);
+
+	const { data: departmentCourses } = useQuery(
+		browseQueries.departmentCourseList(dept)
+	);
+
+	const { data: availableYears } = useQuery(
+		browseQueries.availableClassYears(dept, course)
+	);
+
+	const searchParams = useMemo(
+		() => ({
+			query: q || undefined,
+			departmentId: dept || undefined,
+			courseId: course || undefined,
+			classYear: year,
+			mandatory:
+				mandatory === "true" ? true : mandatory === "false" ? false : undefined,
+			page: currentPage,
+			pageSize: PAGE_SIZE,
+		}),
+		[q, dept, course, year, mandatory, currentPage]
+	);
+
+	const hasFilters = !!(
+		searchParams.query ||
+		searchParams.departmentId ||
+		searchParams.courseId ||
+		searchParams.classYear !== undefined ||
+		searchParams.mandatory !== undefined
+	);
+
+	const { data: response, isFetching } = useQuery(
+		browseQueries.searchClasses(searchParams)
+	);
+
+	const results = response?.data;
+	const totalItems = response?.total ?? 0;
+
+	const table = useDataTable({
+		data: results ?? [],
+		columns,
+		getRowId: row => `${row.id}-${row.code}`,
+		pageSize: PAGE_SIZE,
+		manual: {
+			pageCount: Math.max(1, Math.ceil(totalItems / PAGE_SIZE)),
+			rowCount: totalItems,
+		},
+		urlState: {
+			values: { page },
+			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
+		},
+	});
 
 	const years = availableYears ?? [1, 2, 3];
 
@@ -309,110 +398,21 @@ function SearchClassesPage() {
 							initial="hidden"
 							animate="visible"
 						>
-							<BrowseTable
-								headers={[
-									"Nome",
-									{ label: "Codice", className: "hidden lg:table-cell" },
-									{ label: "Corso", className: "hidden lg:table-cell" },
-									{ label: "Anno", className: "hidden md:table-cell" },
-									{ label: "CFU", className: "hidden md:table-cell" },
-									{ label: "Tipo", className: "hidden sm:table-cell" },
-									"Sezioni",
-								]}
-							>
-								{results.map(cls => {
-									const sectionCount = cls.sectionCount;
-									return (
-										<motion.tr
-											key={`${cls.id}-${cls.code}`}
-											variants={withReducedMotion(staggerItem, prefersReduced)}
-											className="group"
-										>
-											<td className="py-4 pr-3 pl-6 align-top">
-												<Link
-													to="/browse/$department/$course/$class"
-													params={{
-														department: cls.course.department.code.toLowerCase(),
-														course: cls.course.code.toLowerCase(),
-														class: cls.code.toLowerCase(),
-													}}
-													className="block"
-												>
-													<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
-														{cls.name}
-													</span>
-													{cls.description && (
-														<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
-															{cls.description}
-														</p>
-													)}
-												</Link>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap lg:table-cell">
-												<Badge variant="outline" className="text-xs">
-													{cls.code}
-												</Badge>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap lg:table-cell">
-												<Badge variant="outline" className="text-xs">
-													{cls.course.code}
-												</Badge>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap md:table-cell">
-												<span className="text-muted-foreground text-sm">
-													{cls.classYear}°
-												</span>
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap md:table-cell">
-												{cls.cfu ? (
-													<span className="text-muted-foreground text-sm">
-														{cls.cfu}
-													</span>
-												) : (
-													<span className="text-muted-foreground/50 text-xs">—</span>
-												)}
-											</td>
-											<td className="hidden px-3 py-4 text-center whitespace-nowrap sm:table-cell">
-												<Badge
-													variant={cls.mandatory ? "default" : "secondary"}
-													className="text-xs"
-												>
-													{cls.mandatory ? "Obbligatorio" : "A scelta"}
-												</Badge>
-											</td>
-											<td className="px-3 py-4 text-center whitespace-nowrap">
-												<span className="text-foreground text-sm font-semibold">
-													{sectionCount}
-												</span>
-											</td>
-											<td className="py-4 pr-6">
-												<Link
-													to="/browse/$department/$course/$class"
-													params={{
-														department: cls.course.department.code.toLowerCase(),
-														course: cls.course.code.toLowerCase(),
-														class: cls.code.toLowerCase(),
-													}}
-													className="inline-flex"
-													aria-label={`Apri ${cls.name}`}
-												>
-													<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
-												</Link>
-											</td>
-										</motion.tr>
-									);
-								})}
-							</BrowseTable>
-						</motion.div>
-						{totalPages > 1 && (
-							<Pagination
-								page={safePage}
-								totalPages={totalPages}
-								onPageChange={goToPage}
-								totalItems={totalItems}
-								pageSize={PAGE_SIZE}
+							<DataTable
+								table={table}
+								rowLink={row => (
+									<Link
+										to="/browse/$department/$course/$class"
+										params={{
+											department: row.course.department.code.toLowerCase(),
+											course: row.course.code.toLowerCase(),
+											class: row.code.toLowerCase(),
+										}}
+										aria-label={`Apri ${row.name}`}
+									/>
+								)}
 							/>
-						)}
+						</motion.div>
 					</div>
 				)}
 			</div>
