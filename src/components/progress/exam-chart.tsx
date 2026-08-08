@@ -1,23 +1,17 @@
-import {
-	Area,
-	AreaChart,
-	CartesianGrid,
-	Tooltip as RechartsTooltip,
-	ResponsiveContainer,
-	XAxis,
-	YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import {
+	type ChartConfig,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@/components/ui/chart";
 import type { ExamChartItem } from "@/hooks/useProgressData";
 import { formatThirtyScaleGrade } from "@/lib/utils/grading";
 
-const tooltipStyle = {
-	borderRadius: "12px",
-	border: "1px solid hsl(var(--border))",
-	boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-	backgroundColor: "hsl(var(--card))",
-	color: "hsl(var(--foreground))",
-};
+const config = {
+	averageScore: { label: "Media", color: "var(--color-chart-1)" },
+} satisfies ChartConfig;
 
 export function ExamChart({ data }: { data: ExamChartItem[] }) {
 	if (data.length === 0) return null;
@@ -31,12 +25,20 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 				</p>
 			</div>
 			<div className="px-2 pb-6 sm:px-6">
-				<ResponsiveContainer width="100%" height={300}>
+				<ChartContainer config={config} className="aspect-auto h-[300px] w-full">
 					<AreaChart data={data}>
 						<defs>
 							<linearGradient id="examAreaGrad" x1="0" y1="0" x2="0" y2="1">
-								<stop offset="0%" stopColor="#d14124" stopOpacity={0.3} />
-								<stop offset="100%" stopColor="#d14124" stopOpacity={0.02} />
+								<stop
+									offset="0%"
+									stopColor="var(--color-averageScore)"
+									stopOpacity={0.3}
+								/>
+								<stop
+									offset="100%"
+									stopColor="var(--color-averageScore)"
+									stopOpacity={0.02}
+								/>
 							</linearGradient>
 						</defs>
 						<CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
@@ -52,26 +54,33 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 							className="fill-muted-foreground"
 							tickLine={false}
 						/>
-						<RechartsTooltip
-							contentStyle={tooltipStyle}
-							formatter={value => [formatThirtyScaleGrade(value as number), "Media"]}
+						<ChartTooltip
+							content={
+								<ChartTooltipContent
+									formatter={value => (
+										<span className="font-mono font-semibold tabular-nums">
+											{formatThirtyScaleGrade(value as number)}
+										</span>
+									)}
+								/>
+							}
 						/>
 						<Area
 							type="monotone"
 							dataKey="averageScore"
-							stroke="#d14124"
+							stroke="var(--color-averageScore)"
 							strokeWidth={2}
 							fill="url(#examAreaGrad)"
 							dot={{
 								r: 5,
-								fill: "#d14124",
+								fill: "var(--color-averageScore)",
 								strokeWidth: 2,
 								stroke: "hsl(var(--card))",
 							}}
 							activeDot={{ r: 7 }}
 						/>
 					</AreaChart>
-				</ResponsiveContainer>
+				</ChartContainer>
 			</div>
 		</div>
 	);

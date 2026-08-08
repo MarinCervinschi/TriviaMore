@@ -11,12 +11,13 @@ import {
 type CampusChartData = { campus: string; label: string; count: number };
 
 // Skip chart-1 (brand orange used for the primary single-series chart) so each
-// campus has its own distinct hue without clashing with the dept bar.
+// campus has its own distinct hue without clashing with the dept bar. Slot order
+// is kept: it is the order the palette was validated in.
 const COLOR_VARS = [
 	"var(--color-chart-2)",
+	"var(--color-chart-3)",
 	"var(--color-chart-4)",
 	"var(--color-chart-5)",
-	"var(--color-chart-3)",
 ];
 
 export function CampusBarChart({ data }: { data: CampusChartData[] }) {
