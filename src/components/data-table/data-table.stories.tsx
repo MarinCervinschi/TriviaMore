@@ -111,7 +111,7 @@ const columns = [
 				],
 			},
 		},
-		filterFn: "arrIncludesSome",
+		filterFn: "arrHas",
 		cell: ({ row }) => (
 			<Badge variant="outline" className="rounded-full">
 				{DIFFICULTY_LABELS[row.original.difficulty]}
@@ -131,7 +131,7 @@ const columns = [
 				],
 			},
 		},
-		filterFn: "arrIncludesSome",
+		filterFn: "arrHas",
 		cell: ({ row }) => (
 			<Badge
 				variant={row.original.visibility === "public" ? "default" : "secondary"}
@@ -163,7 +163,6 @@ function AdminExample() {
 			column.display({
 				id: "actions",
 				header: "Azioni",
-				enableSorting: false,
 				enableHiding: false,
 				meta: { label: "Azioni", align: "right" },
 				cell: () => (

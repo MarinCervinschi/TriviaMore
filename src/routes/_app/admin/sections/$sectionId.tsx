@@ -90,7 +90,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("questionType", {
 			header: "Tipo",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: { label: "Tipo", facet: { options: toOptions(TYPE_LABELS) } },
 			cell: ({ row }) => (
 				<Badge variant="outline" className="rounded-full">
@@ -100,7 +100,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("difficulty", {
 			header: "Difficoltà",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: { label: "Difficoltà", facet: { options: toOptions(DIFFICULTY_LABELS) } },
 			cell: ({ row }) => (
 				<Badge

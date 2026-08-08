@@ -84,7 +84,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("courseType", {
 			header: "Tipo",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: { label: "Tipo", facet: { options: COURSE_TYPE_OPTIONS } },
 			cell: ({ row }) => (
 				<Badge variant="outline" className="rounded-full">

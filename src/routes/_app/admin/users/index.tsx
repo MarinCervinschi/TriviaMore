@@ -100,7 +100,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("role", {
 			header: "Ruolo",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS } },
 			cell: ({ row }) => (
 				<Badge variant={ROLE_VARIANTS[row.original.role]} className="rounded-full">
