@@ -44,6 +44,7 @@ src/lib/logging/                     structured logging to Seq — server only
 src/start.ts                         global request and function middleware
 src/db/                              Drizzle client + schema
 src/routes/                          file-based routes
+src/components/data-table/           the one table component — every table goes through it
 ```
 
 ### The three layers
@@ -101,6 +102,14 @@ Automated testing is deliberately deferred until the refactor settles — see #1
 `SUPERADMIN > ADMIN > MAINTAINER > STUDENT`. Platform-level features (changelogs, news, user roles)
 are **SUPERADMIN-only**. ADMIN and MAINTAINER are content-scoped: a MAINTAINER may only touch
 sections and questions of classes belonging to a course they maintain, and never private sections.
+
+### Tables
+
+Every table in the app is the one `DataTable` in `src/components/data-table/`, built on TanStack
+Table **v9** — a redesign, so v8 snippets from shadcn or elsewhere do not transfer. Column defs own
+the header, sorting, alignment, responsive hiding and filters; state lives in the route's search
+params. **For any table, column or filter work, use the `data-tables` skill** — it holds the recipes
+and the traps that `tsc` cannot catch.
 
 ## Database
 
