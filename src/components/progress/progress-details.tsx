@@ -1,11 +1,75 @@
 import { Target, Trophy } from "lucide-react";
 
-import { BrowseTable } from "@/components/browse/browse-table";
+import {
+	DataTable,
+	createDataTableColumns,
+	useDataTable,
+} from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import type { OverallStats } from "@/hooks/useProgressData";
 import type { UserProgress } from "@/lib/user/types";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
+
+const column = createDataTableColumns<UserProgress>();
+
+const columns = [
+	column.accessor("sectionName", {
+		header: "Sezione",
+		meta: { label: "Sezione", cellClassName: "min-w-[14rem] font-medium" },
+	}),
+	column.accessor("className", {
+		header: "Insegnamento",
+		meta: {
+			label: "Insegnamento",
+			align: "center",
+			cellClassName: "text-muted-foreground min-w-[12rem] text-sm",
+		},
+	}),
+	column.accessor("quizMode", {
+		header: "Modalità",
+		meta: { label: "Modalità", align: "center" },
+		cell: ({ row }) => (
+			<Badge
+				variant={row.original.quizMode === "STUDY" ? "default" : "secondary"}
+				className="rounded-full"
+			>
+				{row.original.quizMode === "STUDY" ? "Studio" : "Esame"}
+			</Badge>
+		),
+	}),
+	column.accessor("quizzesTaken", {
+		header: "Quiz",
+		meta: { label: "Quiz", align: "center", cellClassName: "font-medium" },
+	}),
+	column.accessor("averageScore", {
+		header: "Media",
+		meta: { label: "Media", align: "center", cellClassName: "font-bold" },
+		cell: ({ row }) => (
+			<span className={getGradeColor(row.original.averageScore ?? 0)}>
+				{formatThirtyScaleGrade(row.original.averageScore ?? 0)}
+			</span>
+		),
+	}),
+	column.accessor("bestScore", {
+		header: "Migliore",
+		meta: { label: "Migliore", align: "center", cellClassName: "font-bold" },
+		cell: ({ row }) => (
+			<span className={getGradeColor(row.original.bestScore ?? 0)}>
+				{formatThirtyScaleGrade(row.original.bestScore ?? 0)}
+			</span>
+		),
+	}),
+	column.accessor("totalTimeSpent", {
+		header: "Tempo",
+		meta: {
+			label: "Tempo",
+			align: "center",
+			cellClassName: "text-muted-foreground text-sm",
+		},
+		cell: ({ row }) => formatTimeSpent(row.original.totalTimeSpent),
+	}),
+];
 
 export function ProgressDetails({
 	overallStats,
@@ -91,58 +155,21 @@ export function ProgressDetails({
 				</div>
 			</div>
 
-			{/* Detailed table using BrowseTable */}
 			<div>
 				<h3 className="mb-3 text-lg font-bold">Tutti i Record di Progresso</h3>
-				<BrowseTable
-					headers={[
-						"Sezione",
-						"Insegnamento",
-						"Modalita",
-						"Quiz",
-						"Media",
-						"Migliore",
-						"Tempo",
-					]}
-				>
-					{progressData.map(record => (
-						<tr key={record.id} className="group hover:bg-muted/30 transition-colors">
-							<td className="min-w-[14rem] py-3 pr-3 pl-6 align-top font-medium">
-								{record.sectionName}
-							</td>
-							<td className="text-muted-foreground min-w-[12rem] px-4 py-3 text-center align-top text-sm">
-								{record.className}
-							</td>
-							<td className="px-4 py-3 text-center">
-								<Badge
-									variant={record.quizMode === "STUDY" ? "default" : "secondary"}
-									className="rounded-full"
-								>
-									{record.quizMode === "STUDY" ? "Studio" : "Esame"}
-								</Badge>
-							</td>
-							<td className="px-4 py-3 text-center font-medium">
-								{record.quizzesTaken}
-							</td>
-							<td
-								className={`px-4 py-3 text-center font-bold ${getGradeColor(record.averageScore ?? 0)}`}
-							>
-								{formatThirtyScaleGrade(record.averageScore ?? 0)}
-							</td>
-							<td
-								className={`px-4 py-3 text-center font-bold ${getGradeColor(record.bestScore ?? 0)}`}
-							>
-								{formatThirtyScaleGrade(record.bestScore ?? 0)}
-							</td>
-							<td className="text-muted-foreground px-4 py-3 pr-6 text-center text-sm">
-								{formatTimeSpent(record.totalTimeSpent)}
-							</td>
-							{/* Empty cell for arrow column from BrowseTable */}
-							<td />
-						</tr>
-					))}
-				</BrowseTable>
+				<ProgressTable progressData={progressData} />
 			</div>
 		</div>
 	);
+}
+
+function ProgressTable({ progressData }: { progressData: UserProgress[] }) {
+	const table = useDataTable({
+		data: progressData,
+		columns,
+		getRowId: row => row.id,
+		pageSize: Math.max(progressData.length, 1),
+	});
+
+	return <DataTable table={table} density="compact" showPagination={false} />;
 }
