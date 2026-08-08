@@ -8,7 +8,7 @@ import {
 	createFilteredRowModel,
 	createPaginatedRowModel,
 	createSortedRowModel,
-	filterFn_arrIncludesSome,
+	filterFn_arrHas,
 	filterFn_includesString,
 	globalFilteringFeature,
 	rowPaginationFeature,
@@ -65,7 +65,7 @@ export const dataTableFeatures = tableFeatures({
 	paginatedRowModel: createPaginatedRowModel(),
 	sortedRowModel: createSortedRowModel(),
 	filterFns: {
-		arrIncludesSome: filterFn_arrIncludesSome,
+		arrHas: filterFn_arrHas,
 		includesString: filterFn_includesString,
 	},
 	sortFns: {

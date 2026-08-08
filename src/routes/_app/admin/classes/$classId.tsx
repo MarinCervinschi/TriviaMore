@@ -74,7 +74,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		column.accessor(section => (section.isPublic ? "public" : "private"), {
 			id: "visibility",
 			header: "Visibilità",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: {
 				label: "Visibilità",
 				align: "center",

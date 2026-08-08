@@ -73,7 +73,7 @@ function buildColumns(
 		}),
 		column.accessor("departmentCode", {
 			header: "Dipartimento",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: {
 				label: "Dipartimento",
 				align: "center",
@@ -87,7 +87,7 @@ function buildColumns(
 		}),
 		column.accessor("courseType", {
 			header: "Tipo",
-			filterFn: "arrIncludesSome",
+			filterFn: "arrHas",
 			meta: { label: "Tipo", align: "center", facet: { options: courseTypeOptions } },
 			cell: ({ row }) => (
 				<Badge
