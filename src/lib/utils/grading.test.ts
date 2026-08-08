@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formatThirtyScaleGrade, getGradeColor, getGradeDescription } from "./grading";
+import {
+	formatThirtyScaleGrade,
+	getGradeChartColor,
+	getGradeColor,
+	getGradeDescription,
+} from "./grading";
 
 describe("formatThirtyScaleGrade", () => {
 	it("rounds a score at or below 30 to a whole number", () => {
@@ -26,6 +31,33 @@ describe("getGradeColor", () => {
 		[31, "text-purple-600 dark:text-purple-400"],
 	])("maps %d to %s", (score, expected) => {
 		expect(getGradeColor(score)).toBe(expected);
+	});
+});
+
+describe("getGradeChartColor", () => {
+	it.each([
+		[17, "var(--color-destructive)"],
+		[18, "var(--color-warning)"],
+		[23, "var(--color-warning)"],
+		[24, "var(--color-info)"],
+		[26, "var(--color-info)"],
+		[27, "var(--color-success)"],
+		[30, "var(--color-success)"],
+		[31, "var(--color-chart-4)"],
+	])("maps %d to %s", (score, expected) => {
+		expect(getGradeChartColor(score)).toBe(expected);
+	});
+
+	it("shares its band edges with getGradeColor", () => {
+		for (const score of [0, 17.9, 18, 23.9, 24, 26.9, 27, 30, 30.1]) {
+			const textBand = getGradeColor(score);
+			const chartBand = getGradeChartColor(score);
+			// Both helpers must switch band at the same scores, never one before the other.
+			expect(textBand.includes("destructive")).toBe(chartBand.includes("destructive"));
+			expect(textBand.includes("warning")).toBe(chartBand.includes("warning"));
+			expect(textBand.includes("info")).toBe(chartBand.includes("info"));
+			expect(textBand.includes("success")).toBe(chartBand.includes("success"));
+		}
 	});
 });
 

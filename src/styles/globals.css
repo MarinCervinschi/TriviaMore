@@ -80,12 +80,16 @@
 	--border: 220 13% 91%;
 	--input: 220 13% 91%;
 	--ring: 10 76% 42%;
-	/* Brand-aligned palette: chart-1 = primary brand orange */
-	--chart-1: 10 76% 50%;
-	--chart-2: 217 91% 55%;
-	--chart-3: 262 83% 58%;
-	--chart-4: 142 71% 40%;
-	--chart-5: 43 96% 50%;
+	/* Categorical chart palette, assigned in slot order and never cycled.
+	   chart-1 is the brand orange. Green sits between blue and violet on
+	   purpose: adjacent slots must stay apart under colour-vision deficiency,
+	   and blue↔violet is the pair that collapses. Lightness is tuned so every
+	   slot clears 3:1 on the surface — validated, not eyeballed. */
+	--chart-1: 10 76% 53%;
+	--chart-2: 217 91% 59%;
+	--chart-3: 142 71% 37%;
+	--chart-4: 262 83% 66.5%;
+	--chart-5: 43 96% 34.5%;
 	--sidebar-background: 0 0% 98%;
 	--sidebar-foreground: 240 5.3% 26.1%;
 	--sidebar-primary: 10 76% 42%;
@@ -124,12 +128,13 @@
 	--border: 215 28% 17%;
 	--input: 215 28% 17%;
 	--ring: 10 76% 42%;
-	/* Brand-aligned palette: chart-1 = primary brand orange (lifted for dark bg) */
-	--chart-1: 10 76% 60%;
-	--chart-2: 217 91% 65%;
-	--chart-3: 262 83% 70%;
-	--chart-4: 142 71% 50%;
-	--chart-5: 43 96% 60%;
+	/* Same slot order, re-stepped against the dark surface rather than flipped:
+	   the dark lightness band is narrower, so these are not the light values lifted. */
+	--chart-1: 10 76% 58.5%;
+	--chart-2: 217 91% 63.5%;
+	--chart-3: 142 71% 39.5%;
+	--chart-4: 262 83% 69.5%;
+	--chart-5: 43 96% 37%;
 	--sidebar-background: 240 5.9% 10%;
 	--sidebar-foreground: 240 4.8% 95.9%;
 	--sidebar-primary: 10 76% 42%;

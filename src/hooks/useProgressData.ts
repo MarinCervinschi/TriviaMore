@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import type { UserProgress } from "@/lib/user/types";
+import { getGradeChartColor } from "@/lib/utils/grading";
 
 export type StudyChartItem = {
 	name: string;
@@ -93,7 +94,7 @@ export function useProgressData(progressData: UserProgress[]) {
 				name: "Media",
 				value: +((overallAvg / 33) * 100).toFixed(0),
 				score: +overallAvg.toFixed(1),
-				fill: overallAvg >= 27 ? "#22c55e" : overallAvg >= 18 ? "#d14124" : "#ef4444",
+				fill: getGradeChartColor(overallAvg),
 			},
 		];
 

@@ -1,7 +1,8 @@
 import { Clock, Target, Trophy } from "lucide-react";
-import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { RadialBar, RadialBarChart } from "recharts";
 
 import { StatCard } from "@/components/shared/stat-card";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import type { OverallStats, RadialDataItem } from "@/hooks/useProgressData";
 import {
 	formatThirtyScaleGrade,
@@ -9,6 +10,9 @@ import {
 	getGradeDescription,
 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
+
+// The gauge fill comes from the datum, which already carries the grade band.
+const gaugeConfig = { value: { label: "Media" } } satisfies ChartConfig;
 
 export function ProgressStats({
 	overallStats,
@@ -45,7 +49,7 @@ export function ProgressStats({
 				<div className="bg-primary/10 pointer-events-none absolute -top-4 -right-4 h-20 w-20 rounded-full blur-[30px]" />
 				<div className="relative flex items-center gap-4">
 					<div className="shrink-0">
-						<ResponsiveContainer width={96} height={96}>
+						<ChartContainer config={gaugeConfig} className="aspect-auto h-24 w-24">
 							<RadialBarChart
 								cx="50%"
 								cy="50%"
@@ -61,7 +65,7 @@ export function ProgressStats({
 									background={{ fill: "hsl(var(--muted))" }}
 								/>
 							</RadialBarChart>
-						</ResponsiveContainer>
+						</ChartContainer>
 					</div>
 					<div>
 						<p className="text-muted-foreground text-sm font-medium">Media Generale</p>

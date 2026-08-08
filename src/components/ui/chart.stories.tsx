@@ -17,20 +17,20 @@ const barData = [
 ];
 
 const barConfig = {
-	quiz: { label: "Quiz completati", color: "#6366f1" },
+	quiz: { label: "Quiz completati", color: "var(--color-chart-1)" },
 } satisfies ChartConfig;
 
 const pieData = [
-	{ esito: "corrette", risposte: 68, fill: "#22c55e" },
-	{ esito: "errate", risposte: 22, fill: "#ef4444" },
-	{ esito: "saltate", risposte: 10, fill: "#a1a1aa" },
+	{ esito: "corrette", risposte: 68, fill: "var(--color-success)" },
+	{ esito: "errate", risposte: 22, fill: "var(--color-destructive)" },
+	{ esito: "saltate", risposte: 10, fill: "var(--color-muted-foreground)" },
 ];
 
 const pieConfig = {
 	risposte: { label: "Risposte" },
-	corrette: { label: "Corrette", color: "#22c55e" },
-	errate: { label: "Errate", color: "#ef4444" },
-	saltate: { label: "Saltate", color: "#a1a1aa" },
+	corrette: { label: "Corrette", color: "var(--color-success)" },
+	errate: { label: "Errate", color: "var(--color-destructive)" },
+	saltate: { label: "Saltate", color: "var(--color-muted-foreground)" },
 } satisfies ChartConfig;
 
 const meta = {
