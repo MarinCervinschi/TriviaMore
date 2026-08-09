@@ -8,6 +8,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatNumber } from "@/lib/utils/format";
 
 import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
 import { ChartDefs, seriesFill } from "./chart-defs";
@@ -84,7 +85,7 @@ export function DonutChart({
 									<span className="truncate">{entry.label}</span>
 								</span>
 								<span className="text-foreground font-mono font-semibold tabular-nums">
-									{entry.value.toLocaleString("it-IT")}
+									{formatNumber(entry.value)}
 								</span>
 							</li>
 						))}
@@ -112,7 +113,7 @@ export function DonutChart({
 												{(key && config[key]?.label) ?? ""}
 											</span>
 											<span className="font-mono font-semibold tabular-nums">
-												{(value as number).toLocaleString("it-IT")} {unitLabel}
+												{formatNumber(value as number)} {unitLabel}
 											</span>
 										</div>
 									);
@@ -143,7 +144,7 @@ export function DonutChart({
 											y={viewBox.cy}
 											className="fill-foreground text-2xl font-bold"
 										>
-											{total.toLocaleString("it-IT")}
+											{formatNumber(total)}
 										</tspan>
 										<tspan
 											x={viewBox.cx}

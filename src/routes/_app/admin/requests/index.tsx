@@ -25,6 +25,7 @@ import type {
 } from "@/lib/requests/types";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/format";
 
 // Open requests still await action; the rest are considered handled (approved,
 // acknowledged or rejected) and are hidden from the default view.
@@ -98,7 +99,7 @@ const columns = [
 	column.accessor("createdAt", {
 		header: "Data",
 		meta: { label: "Data", cellClassName: "text-muted-foreground text-sm" },
-		cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("it-IT"),
+		cell: ({ row }) => formatDate(row.original.createdAt),
 	}),
 	column.accessor(request => request.handledByUser?.name ?? "", {
 		id: "handledBy",

@@ -31,6 +31,7 @@ import {
 import { adminQueries } from "@/lib/admin/queries";
 import type { UserRole } from "@/lib/admin/types";
 import { seoHead } from "@/lib/seo";
+import { formatDateLong, formatDateTime } from "@/lib/utils/format";
 
 const ROLE_LABELS: Record<string, string> = {
 	SUPERADMIN: "Superadmin",
@@ -120,12 +121,7 @@ function AdminUserDetailPage() {
 									<p className="text-lg font-semibold">{user.name ?? "—"}</p>
 									<p className="text-muted-foreground text-sm">{user.email}</p>
 									<p className="text-muted-foreground mt-1 text-xs">
-										Registrato il{" "}
-										{new Date(user.createdAt).toLocaleDateString("it-IT", {
-											day: "numeric",
-											month: "long",
-											year: "numeric",
-										})}
+										Registrato il {formatDateLong(user.createdAt)}
 									</p>
 								</div>
 							</div>
@@ -199,13 +195,7 @@ function AdminUserDetailPage() {
 									<dt className="text-muted-foreground text-sm">Ultimo quiz</dt>
 									<dd className="text-sm">
 										{user.stats.lastQuizAt
-											? new Date(user.stats.lastQuizAt).toLocaleDateString("it-IT", {
-													day: "numeric",
-													month: "long",
-													year: "numeric",
-													hour: "2-digit",
-													minute: "2-digit",
-												})
+											? formatDateTime(user.stats.lastQuizAt)
 											: "Nessun quiz completato"}
 									</dd>
 								</div>

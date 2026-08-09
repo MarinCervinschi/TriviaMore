@@ -25,6 +25,7 @@ import {
 	getDifficultyLabel,
 	getQuestionTypeLabel,
 } from "@/lib/user/utils";
+import { formatDate } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/bookmarks")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.bookmarks()),
@@ -140,7 +141,7 @@ function BookmarkCard({
 						</div>
 						<div className="flex items-center gap-2">
 							<span className="text-muted-foreground text-xs">
-								Salvato il {new Date(bookmark.createdAt).toLocaleDateString("it-IT")}
+								Salvato il {formatDate(bookmark.createdAt)}
 							</span>
 							<ReportButton
 								questionId={bookmark.questionId}

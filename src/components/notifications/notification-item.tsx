@@ -15,6 +15,7 @@ import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Notification } from "@/lib/notifications/types";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/format";
 
 const typeConfig: Record<Notification["type"], { icon: LucideIcon; color: string }> = {
 	REQUEST_STATUS_CHANGED: { icon: CheckCircle2, color: "text-green-500" },
@@ -35,7 +36,7 @@ function timeAgo(dateStr: string): string {
 	if (hours < 24) return `${hours}h fa`;
 	const days = Math.floor(hours / 24);
 	if (days < 7) return `${days}g fa`;
-	return new Date(dateStr).toLocaleDateString("it-IT");
+	return formatDate(dateStr);
 }
 
 export function NotificationItem({

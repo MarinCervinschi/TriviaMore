@@ -7,6 +7,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatNumber } from "@/lib/utils/format";
 
 type DepartmentChartData = { name: string; code: string; count: number };
 
@@ -77,7 +78,7 @@ export function DepartmentBarChart({ data }: { data: DepartmentChartData[] }) {
 											<div className="flex w-full flex-col gap-0.5">
 												<span className="text-foreground font-medium">{dept}</span>
 												<span className="text-muted-foreground font-mono text-xs">
-													{(value as number).toLocaleString("it-IT")} corsi
+													{formatNumber(value as number)} corsi
 												</span>
 											</div>
 										);

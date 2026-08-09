@@ -31,6 +31,7 @@ import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { RecentClass, RecentQuizAttempt } from "@/lib/user/types";
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
+import { formatDate } from "@/lib/utils/format";
 import { getScoreBadgeVariant } from "@/lib/utils/quiz-results";
 
 export const Route = createFileRoute("/_app/user/")({
@@ -78,7 +79,7 @@ function DashboardPage() {
 							<div className="flex items-center gap-1.5">
 								<Calendar className="h-4 w-4 shrink-0" />
 								<span className="text-sm">
-									Membro dal {new Date(profile.createdAt).toLocaleDateString("it-IT")}
+									Membro dal {formatDate(profile.createdAt)}
 								</span>
 							</div>
 						</div>
@@ -394,7 +395,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 									{attempt.score}/33
 								</Badge>
 								<p className="text-muted-foreground mt-1 text-xs">
-									{new Date(attempt.completedAt).toLocaleDateString("it-IT")}
+									{formatDate(attempt.completedAt)}
 								</p>
 							</div>
 							<Button asChild variant="outline" size="sm" className="rounded-xl">

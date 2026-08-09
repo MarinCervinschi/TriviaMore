@@ -24,6 +24,7 @@ import { useDeleteUser } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import type { AdminUser } from "@/lib/admin/types";
 import { seoHead } from "@/lib/seo";
+import { formatDate } from "@/lib/utils/format";
 
 const ROLE_LABELS: Record<string, string> = {
 	SUPERADMIN: "Superadmin",
@@ -115,7 +116,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		column.accessor("createdAt", {
 			header: "Registrato",
 			meta: { label: "Registrato", cellClassName: "text-muted-foreground text-sm" },
-			cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("it-IT"),
+			cell: ({ row }) => formatDate(row.original.createdAt),
 		}),
 		column.display({
 			id: "actions",

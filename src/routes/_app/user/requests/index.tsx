@@ -53,6 +53,7 @@ import type {
 } from "@/lib/requests/types";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { formatDayMonth } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/requests/")({
 	loader: ({ context }) =>
@@ -116,10 +117,7 @@ function timeAgo(dateStr: string): string {
 	if (hours < 24) return `${hours}h`;
 	const days = Math.floor(hours / 24);
 	if (days < 7) return `${days}g`;
-	return new Date(dateStr).toLocaleDateString("it-IT", {
-		day: "numeric",
-		month: "short",
-	});
+	return formatDayMonth(dateStr, new Date());
 }
 
 function UserContributionsPage() {
