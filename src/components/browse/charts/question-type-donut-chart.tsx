@@ -1,18 +1,24 @@
-import { DonutChart, type DonutDatum } from "./donut-chart";
+import { DonutChart } from "@/components/charts";
 
-// Match the Quiz/Flashcard badges used elsewhere: blue for quiz, violet for flashcard.
+// Match the Quiz/Flashcard badges used elsewhere.
 const TYPE_COLORS: Record<string, string> = {
 	QUIZ: "var(--color-chart-2)",
 	FLASHCARD: "var(--color-chart-3)",
 };
 
-export function QuestionTypeDonutChart({ data }: { data: DonutDatum[] }) {
+export type QuestionTypeDatum = { type: string; label: string; count: number };
+
+export function QuestionTypeDonutChart({ data }: { data: QuestionTypeDatum[] }) {
 	return (
 		<DonutChart
 			title="Domande per tipo"
 			unitLabel="domande"
-			colors={TYPE_COLORS}
-			data={data}
+			data={data.map(entry => ({
+				key: entry.type,
+				label: entry.label,
+				value: entry.count,
+				color: TYPE_COLORS[entry.type],
+			}))}
 		/>
 	);
 }
