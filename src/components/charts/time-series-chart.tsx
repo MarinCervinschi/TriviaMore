@@ -17,8 +17,16 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { cn } from "@/lib/utils";
 
-import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import {
+	CHART_PLOT_CLASS,
+	ChartCard,
+	type ChartCardProps,
+	ChartEmpty,
+} from "./chart-card";
+import { AreaFadeDefs } from "./chart-defs";
 import { CHART_SURFACE, type ChartSeries, seriesConfig } from "./palette";
 
 export type TimeSeriesChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
@@ -34,6 +42,8 @@ export type TimeSeriesChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	xFormatter?: (value: string) => string;
 	emptyMessage?: string;
 };
+
+const ANIMATION_MS = 420;
 
 /**
  * Change over time: one line or filled area per series. Never two y-scales — a
@@ -52,18 +62,21 @@ export function TimeSeriesChart<TDatum>({
 	emptyMessage,
 	...card
 }: TimeSeriesChartProps<TDatum>) {
-	const gradientId = useId().replace(/:/g, "");
+	const scope = `ts-${useId().replace(/:/g, "")}`;
+	const reduced = useReducedMotion();
 	const config = seriesConfig(series);
 	const showLegend = series.length > 1;
 
 	const axes = [
-		<CartesianGrid key="grid" vertical={false} strokeDasharray="3 3" />,
+		// Solid hairlines: a dashed grid reads as a threshold or a projection when
+		// it is only chrome.
+		<CartesianGrid key="grid" vertical={false} stroke="hsl(var(--border))" />,
 		<XAxis
 			key="x"
 			dataKey={xKey}
 			tickLine={false}
 			axisLine={false}
-			tickMargin={8}
+			tickMargin={10}
 			tickFormatter={xFormatter}
 		/>,
 		<YAxis
@@ -88,39 +101,26 @@ export function TimeSeriesChart<TDatum>({
 	];
 
 	const activeDot = { r: 4, strokeWidth: 2, stroke: CHART_SURFACE };
+	const motion = (index: number) => ({
+		isAnimationActive: !reduced,
+		animationDuration: ANIMATION_MS,
+		animationBegin: index * 90,
+	});
 
 	const body =
 		data.length === 0 ? (
 			<ChartEmpty message={emptyMessage} />
 		) : (
-			<ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
+			<ChartContainer
+				config={config}
+				className={cn("aspect-auto w-full", CHART_PLOT_CLASS)}
+				style={{ height }}
+			>
 				{variant === "area" ? (
 					<AreaChart data={data} margin={{ left: 4, right: 8, top: 8 }}>
-						<defs>
-							{series.map(item => (
-								<linearGradient
-									key={item.key}
-									id={`${gradientId}-${item.key}`}
-									x1="0"
-									y1="0"
-									x2="0"
-									y2="1"
-								>
-									<stop
-										offset="0%"
-										stopColor={`var(--color-${item.key})`}
-										stopOpacity={0.28}
-									/>
-									<stop
-										offset="100%"
-										stopColor={`var(--color-${item.key})`}
-										stopOpacity={0.02}
-									/>
-								</linearGradient>
-							))}
-						</defs>
+						<AreaFadeDefs scope={scope} series={series} />
 						{axes}
-						{series.map(item => (
+						{series.map((item, index) => (
 							<Area
 								key={item.key}
 								type="monotone"
@@ -130,29 +130,33 @@ export function TimeSeriesChart<TDatum>({
 								// reads as a gap instead of one colour meeting another.
 								stroke={stacked ? CHART_SURFACE : `var(--color-${item.key})`}
 								strokeWidth={2}
+								strokeLinecap="round"
 								fill={
 									stacked
 										? `var(--color-${item.key})`
-										: `url(#${gradientId}-${item.key})`
+										: `url(#${scope}-fade-${item.key})`
 								}
 								fillOpacity={stacked ? 0.85 : 1}
 								dot={false}
 								activeDot={activeDot}
+								{...motion(index)}
 							/>
 						))}
 					</AreaChart>
 				) : (
 					<LineChart data={data} margin={{ left: 4, right: 8, top: 8 }}>
 						{axes}
-						{series.map(item => (
+						{series.map((item, index) => (
 							<Line
 								key={item.key}
 								type="monotone"
 								dataKey={item.key}
 								stroke={`var(--color-${item.key})`}
 								strokeWidth={2}
+								strokeLinecap="round"
 								dot={false}
 								activeDot={activeDot}
+								{...motion(index)}
 							/>
 						))}
 					</LineChart>

@@ -1,6 +1,8 @@
+export { AreaFadeDefs, ChartDefs, seriesFill } from "./chart-defs";
+export type { ChartFill, DefSeries } from "./chart-defs";
 export { CalendarHeatmap } from "./calendar-heatmap";
 export type { CalendarDatum, CalendarHeatmapProps } from "./calendar-heatmap";
-export { ChartCard, ChartEmpty } from "./chart-card";
+export { CHART_PLOT_CLASS, ChartCard, ChartEmpty } from "./chart-card";
 export type { ChartCardProps } from "./chart-card";
 export { HEAT_EMPTY, HEAT_LEGEND, HEAT_STEPS, heatColor } from "./heat-scale";
 export { MatrixHeatmap } from "./matrix-heatmap";

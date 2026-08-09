@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import { Label, Pie, PieChart } from "recharts";
 
 import {
@@ -8,6 +10,7 @@ import {
 } from "@/components/ui/chart";
 
 import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartDefs, seriesFill } from "./chart-defs";
 import { CHART_NEUTRAL, chartColor } from "./palette";
 
 export type DonutDatum = {
@@ -17,6 +20,8 @@ export type DonutDatum = {
 	value: number;
 	/** Overrides the categorical slot, for a slice whose colour carries meaning. */
 	color?: string;
+	/** `hatched` marks a slice that is not a real category — the folded tail. */
+	fill?: "solid" | "gradient" | "hatched";
 };
 
 export type DonutChartProps = Omit<ChartCardProps, "children" | "footer"> & {
@@ -42,6 +47,7 @@ export function DonutChart({
 	emptyMessage,
 	...card
 }: DonutChartProps) {
+	const scope = `donut-${useId().replace(/:/g, "")}`;
 	const config: ChartConfig = data.reduce<ChartConfig>((acc, entry, index) => {
 		acc[entry.key] = { label: entry.label, color: entry.color ?? chartColor(index) };
 		return acc;
@@ -49,7 +55,8 @@ export function DonutChart({
 
 	const chartData = data.map(entry => ({
 		...entry,
-		fill: `var(--color-${entry.key})`,
+		fill: seriesFill(scope, entry),
+		legendColor: entry.color ?? `var(--color-${entry.key})`,
 	}));
 	const total = data.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -72,7 +79,7 @@ export function DonutChart({
 								<span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
 									<span
 										className="h-2 w-2 shrink-0 rounded-full"
-										style={{ backgroundColor: entry.fill }}
+										style={{ backgroundColor: entry.legendColor }}
 									/>
 									<span className="truncate">{entry.label}</span>
 								</span>
@@ -91,6 +98,7 @@ export function DonutChart({
 				style={{ maxWidth: size }}
 			>
 				<PieChart>
+					<ChartDefs scope={scope} series={data} />
 					<ChartTooltip
 						cursor={false}
 						content={
@@ -171,6 +179,8 @@ export function foldDonutTail(
 			label,
 			value: tail.reduce((sum, entry) => sum + entry.value, 0),
 			color: CHART_NEUTRAL,
+			// Texture, because this slice is a bucket rather than a real category.
+			fill: "hatched",
 		},
 	];
 }

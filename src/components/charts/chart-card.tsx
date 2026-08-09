@@ -10,6 +10,11 @@ export type ChartCardProps = {
 	actions?: ReactNode;
 	/** Rendered under the plot — a legend list, a total, a caveat. */
 	footer?: ReactNode;
+	/**
+	 * The blurred brand orb behind the plot, the same device the hero and the
+	 * empty states use. Off for a chart that sits inside another card.
+	 */
+	accent?: boolean;
 	className?: string;
 	children: ReactNode;
 };
@@ -23,13 +28,25 @@ export function ChartCard({
 	description,
 	actions,
 	footer,
+	accent = true,
 	className,
 	children,
 }: ChartCardProps) {
 	return (
-		<Card className={cn("flex h-full flex-col rounded-2xl", className)}>
+		<Card
+			className={cn(
+				"relative flex h-full flex-col overflow-hidden rounded-2xl",
+				className
+			)}
+		>
+			{accent && (
+				<div
+					aria-hidden
+					className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[80px]"
+				/>
+			)}
 			{(title || actions) && (
-				<CardHeader className="pb-2">
+				<CardHeader className="relative pb-2">
 					<div className="flex items-start justify-between gap-4">
 						<div className="min-w-0">
 							{title && <CardTitle className="text-base">{title}</CardTitle>}
@@ -43,7 +60,7 @@ export function ChartCard({
 					</div>
 				</CardHeader>
 			)}
-			<CardContent className="flex flex-1 flex-col justify-center gap-4 pb-6">
+			<CardContent className="relative flex flex-1 flex-col justify-center gap-4 pb-6">
 				{children}
 				{footer}
 			</CardContent>
@@ -58,3 +75,12 @@ export function ChartEmpty({
 }) {
 	return <p className="text-muted-foreground py-10 text-center text-sm">{message}</p>;
 }
+
+/**
+ * Shared plot chrome: the page's own dot grid, held far back so it reads as
+ * paper rather than as a second set of gridlines.
+ */
+export const CHART_PLOT_CLASS =
+	"chart-plot [&_.recharts-cartesian-axis-tick_text]:font-mono " +
+	"[&_.recharts-cartesian-axis-tick_text]:tabular-nums " +
+	"[&_.recharts-cartesian-axis-tick_text]:text-[11px]";

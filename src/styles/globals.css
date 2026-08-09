@@ -38,6 +38,8 @@
 	--color-chart-3: hsl(var(--chart-3));
 	--color-chart-4: hsl(var(--chart-4));
 	--color-chart-5: hsl(var(--chart-5));
+	--color-gradient-from: hsl(var(--gradient-from));
+	--color-gradient-to: hsl(var(--gradient-to));
 	--color-heat-1: hsl(var(--heat-1));
 	--color-heat-2: hsl(var(--heat-2));
 	--color-heat-3: hsl(var(--heat-3));
@@ -85,6 +87,10 @@
 	--border: 220 13% 91%;
 	--input: 220 13% 91%;
 	--ring: 10 76% 42%;
+	/* The brand gradient stops, shared by the CTAs, the quiz bar and the charts.
+	   Theme-constant on purpose: the gradient is brand, not surface. */
+	--gradient-from: 10 70% 48%;
+	--gradient-to: 0 88% 68%;
 	/* Categorical chart palette, assigned in slot order and never cycled.
 	   chart-1 is the brand orange. Green sits between blue and violet on
 	   purpose: adjacent slots must stay apart under colour-vision deficiency,
@@ -214,6 +220,17 @@ body {
 	background-size: 24px 24px;
 }
 
+/* The plot area picks up the page's own dot grid, held further back so it reads
+   as paper rather than as a second set of gridlines. */
+.chart-plot {
+	background-image: radial-gradient(
+		circle,
+		hsl(var(--foreground) / 0.05) 1px,
+		transparent 1px
+	);
+	background-size: 16px 16px;
+}
+
 /* Full-bleed band: extends bg + horizontal borders across the floating
    sidebar gutter so dividers feel continuous. Inner content is pushed back
    into the padded column via padding-left, keeping alignment with the hero.
@@ -227,11 +244,19 @@ body {
 }
 
 .gradient-bg {
-	background: linear-gradient(135deg, #d14124 0%, #f56565 100%);
+	background: linear-gradient(
+		135deg,
+		hsl(var(--gradient-from)) 0%,
+		hsl(var(--gradient-to)) 100%
+	);
 }
 
 .gradient-text {
-	background: linear-gradient(135deg, #d14124 0%, #f56565 100%);
+	background: linear-gradient(
+		135deg,
+		hsl(var(--gradient-from)) 0%,
+		hsl(var(--gradient-to)) 100%
+	);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
@@ -239,7 +264,11 @@ body {
 
 /* Quiz interface */
 .quiz-progress {
-	background: linear-gradient(90deg, #d14124 0%, #f56565 100%);
+	background: linear-gradient(
+		90deg,
+		hsl(var(--gradient-from)) 0%,
+		hsl(var(--gradient-to)) 100%
+	);
 }
 
 .quiz-timer {

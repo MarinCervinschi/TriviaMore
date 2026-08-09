@@ -1,9 +1,11 @@
+import { useId } from "react";
+
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
-import { chartColor } from "./palette";
+import { ChartDefs, seriesFill } from "./chart-defs";
 
 const config = { value: { label: "Valore" } } satisfies ChartConfig;
 
@@ -13,6 +15,7 @@ export type RadialGaugeProps = {
 	/** The big number in the middle. Defaults to `value` of `max`. */
 	label?: string;
 	caption?: string;
+	/** A semantic colour. Left unset, the ring uses the brand ramp. */
 	color?: string;
 	size?: number;
 	className?: string;
@@ -27,12 +30,15 @@ export function RadialGauge({
 	max = 100,
 	label,
 	caption,
-	color = chartColor(0),
+	color,
 	size = 96,
 	className,
 }: RadialGaugeProps) {
+	const scope = `gauge-${useId().replace(/:/g, "")}`;
 	const clamped = Math.max(0, Math.min(value, max));
-	const data = [{ name: "value", value: clamped, fill: color }];
+	// No explicit colour means the brand ring, the same ramp as the quiz bar.
+	const slice = { key: "value", color };
+	const data = [{ name: "value", value: clamped, fill: seriesFill(scope, slice) }];
 
 	return (
 		<div
@@ -49,6 +55,7 @@ export function RadialGauge({
 					startAngle={90}
 					endAngle={-270}
 				>
+					<ChartDefs scope={scope} series={[slice]} brandFirst />
 					<PolarAngleAxis type="number" domain={[0, max]} tick={false} />
 					<RadialBar
 						dataKey="value"
