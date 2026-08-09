@@ -38,6 +38,11 @@
 	--color-chart-3: hsl(var(--chart-3));
 	--color-chart-4: hsl(var(--chart-4));
 	--color-chart-5: hsl(var(--chart-5));
+	--color-heat-1: hsl(var(--heat-1));
+	--color-heat-2: hsl(var(--heat-2));
+	--color-heat-3: hsl(var(--heat-3));
+	--color-heat-4: hsl(var(--heat-4));
+	--color-heat-5: hsl(var(--heat-5));
 	--color-sidebar-background: hsl(var(--sidebar-background));
 	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
 	--color-sidebar-primary: hsl(var(--sidebar-primary));
@@ -90,6 +95,13 @@
 	--chart-3: 142 71% 37%;
 	--chart-4: 262 83% 66.5%;
 	--chart-5: 43 96% 34.5%;
+	/* Sequential ramp for heatmaps: one hue, monotone lightness, and a pale end
+	   that still clears the surface. Magnitude, never identity. */
+	--heat-1: 10 38% 74%;
+	--heat-2: 10 48% 64%;
+	--heat-3: 10 58% 54%;
+	--heat-4: 10 68% 44%;
+	--heat-5: 10 78% 34%;
 	--sidebar-background: 0 0% 98%;
 	--sidebar-foreground: 240 5.3% 26.1%;
 	--sidebar-primary: 10 76% 42%;
@@ -135,6 +147,13 @@
 	--chart-3: 142 71% 39.5%;
 	--chart-4: 262 83% 69.5%;
 	--chart-5: 43 96% 37%;
+	/* The ramp runs the other way here: its dim end must still clear the dark
+	   surface, so these are not the light steps inverted. */
+	--heat-1: 10 38% 30%;
+	--heat-2: 10 48% 40%;
+	--heat-3: 10 58% 50%;
+	--heat-4: 10 68% 60%;
+	--heat-5: 10 78% 70%;
 	--sidebar-background: 240 5.9% 10%;
 	--sidebar-foreground: 240 4.8% 95.9%;
 	--sidebar-primary: 10 76% 42%;

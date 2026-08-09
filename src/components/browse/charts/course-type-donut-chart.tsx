@@ -1,20 +1,26 @@
-import { DonutChart, type DonutDatum } from "./donut-chart";
+import { DonutChart } from "@/components/charts";
 
-// Match the existing COURSE_TYPE_CONFIG badge palette across the app:
-// triennale = blue, magistrale = violet, ciclo unico = emerald.
+// Match the COURSE_TYPE_CONFIG badge palette used across the app, so a course
+// type keeps the same colour in a badge and in the ring.
 const TYPE_COLORS: Record<string, string> = {
 	BACHELOR: "var(--color-chart-2)",
 	MASTER: "var(--color-chart-3)",
 	SINGLE_CYCLE: "var(--color-chart-4)",
 };
 
-export function CourseTypeDonutChart({ data }: { data: DonutDatum[] }) {
+export type CourseTypeDatum = { type: string; label: string; count: number };
+
+export function CourseTypeDonutChart({ data }: { data: CourseTypeDatum[] }) {
 	return (
 		<DonutChart
 			title="Corsi per tipo"
 			unitLabel="corsi"
-			colors={TYPE_COLORS}
-			data={data}
+			data={data.map(entry => ({
+				key: entry.type,
+				label: entry.label,
+				value: entry.count,
+				color: TYPE_COLORS[entry.type],
+			}))}
 		/>
 	);
 }
