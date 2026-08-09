@@ -24,7 +24,7 @@ export function SectionsComparison({
 							<AlertTriangle className="h-5 w-5 text-orange-600" />
 						</div>
 						<div>
-							<h3 className="font-bold">Da Migliorare</h3>
+							<h3 className="font-bold">Da migliorare</h3>
 							<p className="text-muted-foreground text-xs">
 								Sotto la sufficienza (&lt;18)
 							</p>

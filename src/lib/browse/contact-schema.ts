@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const contactTypeOptions = [
-	{ value: "bug", label: "Segnalazione Bug" },
-	{ value: "feature", label: "Proposta Funzionalità" },
-	{ value: "content", label: "Contenuti Corso" },
+	{ value: "bug", label: "Segnalazione bug" },
+	{ value: "feature", label: "Proposta funzionalità" },
+	{ value: "content", label: "Contenuti corso" },
 	{ value: "other", label: "Altro" },
 ] as const;
 

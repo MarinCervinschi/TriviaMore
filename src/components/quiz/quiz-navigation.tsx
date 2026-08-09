@@ -48,7 +48,7 @@ export function QuizNavigation({
 				) : (
 					<>
 						<CheckCircle className="mr-1.5 h-4 w-4" />
-						<span className="hidden sm:inline">Completa Quiz</span>
+						<span className="hidden sm:inline">Completa quiz</span>
 						<span className="sm:hidden">Completa</span>
 					</>
 				)}

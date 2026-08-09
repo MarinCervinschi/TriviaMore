@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_app/contact")({
 const quickLinks = [
 	{
 		icon: Bug,
-		title: "Segnala un Bug",
+		title: "Segnala un bug",
 		description: "Hai trovato un problema? Apri una issue su GitHub.",
 		color: "text-red-500",
 		bg: "bg-red-500/10",
@@ -47,7 +47,7 @@ const quickLinks = [
 	},
 	{
 		icon: Lightbulb,
-		title: "Proponi una Funzionalità",
+		title: "Proponi una funzionalità",
 		description: "Hai un'idea per migliorare TriviaMore?",
 		color: "text-amber-500",
 		bg: "bg-amber-500/10",
@@ -212,7 +212,7 @@ function ContactPage() {
 										</div>
 										<div>
 											<h2 className="text-xl font-semibold tracking-tight">
-												Invia un Messaggio
+												Invia un messaggio
 											</h2>
 											<p className="text-muted-foreground text-sm">
 												Ti risponderemo il prima possibile
@@ -244,7 +244,7 @@ function ContactPage() {
 											target="_blank"
 											rel="noopener noreferrer"
 										>
-											Visita il Repository
+											Visita il repository
 											<ArrowUpRight className="ml-2 h-4 w-4" />
 										</a>
 									</Button>
@@ -254,7 +254,7 @@ function ContactPage() {
 							{/* Guidelines */}
 							<div className="bg-card rounded-2xl border p-6 sm:p-8">
 								<h3 className="mb-4 text-lg font-semibold tracking-tight">
-									Linee Guida
+									Linee guida
 								</h3>
 								<div className="space-y-3">
 									{[
@@ -290,7 +290,7 @@ function ContactPage() {
 							FAQ
 						</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-							Domande Frequenti
+							Domande frequenti
 						</h2>
 					</div>
 

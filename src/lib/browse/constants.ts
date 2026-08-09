@@ -47,7 +47,7 @@ export const AREA_CONFIG: Record<
 		accent: "bg-emerald-500",
 	},
 	SOCIETA_CULTURA: {
-		label: "Societa e Cultura",
+		label: "Società e cultura",
 		gradient: "from-amber-500/15 to-orange-500/5",
 		accent: "bg-amber-500",
 	},

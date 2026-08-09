@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_app/search/courses/")({
 		context.queryClient.ensureQueryData(browseQueries.departments()),
 	head: () =>
 		seoHead({
-			title: "Cerca Corso",
+			title: "Cerca corso",
 			description: "Cerca corsi di laurea per nome o codice.",
 			path: "/search/courses",
 		}),
@@ -224,7 +224,7 @@ function SearchCoursesPage() {
 		<div>
 			<UserHero
 				icon={GraduationCap}
-				title="Cerca Corso"
+				title="Cerca corso"
 				description="Cerca corsi di laurea per nome o codice"
 				stats={
 					hasFilters && results

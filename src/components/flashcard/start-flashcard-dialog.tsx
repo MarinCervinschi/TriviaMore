@@ -28,7 +28,7 @@ export function StartFlashcardDialog({
 	return (
 		<SessionDialogShell open={open} onOpenChange={onOpenChange}>
 			<SessionDialogColumn
-				title="Configura Flashcard"
+				title="Configura flashcard"
 				description="Scegli quante carte vuoi studiare"
 				submitLabel="Inizia Flashcard"
 				onSubmit={() =>

@@ -26,19 +26,19 @@ export function ProgressStats({
 	return (
 		<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
 			<StatCard
-				label="Quiz Studio"
+				label="Quiz studio"
 				value={overallStats.totalStudyQuizzes}
 				icon={Target}
 				color="blue"
 			/>
 			<StatCard
-				label="Quiz Esame"
+				label="Quiz esame"
 				value={overallStats.totalExamQuizzes}
 				icon={Trophy}
 				color="yellow"
 			/>
 			<StatCard
-				label="Tempo Totale"
+				label="Tempo totale"
 				value={formatTimeSpent(totalTime)}
 				icon={Clock}
 				color="purple"
@@ -68,7 +68,7 @@ export function ProgressStats({
 						</ChartContainer>
 					</div>
 					<div>
-						<p className="text-muted-foreground text-sm font-medium">Media Generale</p>
+						<p className="text-muted-foreground text-sm font-medium">Media generale</p>
 						<p className={`text-3xl font-bold ${getGradeColor(radialData[0].score)}`}>
 							{formatThirtyScaleGrade(radialData[0].score)}
 						</p>

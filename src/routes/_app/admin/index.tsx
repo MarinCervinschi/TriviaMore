@@ -58,7 +58,7 @@ const maintainedCourseColumns = [
 export const Route = createFileRoute("/_app/admin/")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(adminQueries.stats()),
 	component: AdminDashboard,
-	head: () => seoHead({ title: "Gestione Contenuti", noindex: true }),
+	head: () => seoHead({ title: "Gestione contenuti", noindex: true }),
 });
 
 function AdminDashboard() {
@@ -115,7 +115,7 @@ function AdminDashboard() {
 		<div className="py-2">
 			<AdminPageHeader
 				icon={LayoutDashboard}
-				title="Gestione Contenuti"
+				title="Gestione contenuti"
 				description="Panoramica della piattaforma"
 			/>
 
@@ -140,7 +140,7 @@ function AdminDashboard() {
 			{userStats && (
 				<>
 					<p className="text-primary mb-4 text-xs font-semibold tracking-widest uppercase">
-						Utenti e Utilizzo
+						Utenti e utilizzo
 					</p>
 					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 						<StatCard

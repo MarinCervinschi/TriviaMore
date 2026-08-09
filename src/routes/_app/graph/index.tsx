@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_app/graph/")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(browseQueries.graph()),
 	head: () =>
 		seoHead({
-			title: "Mappa dei Contenuti",
+			title: "Mappa dei contenuti",
 			description:
 				"Esplora interattivamente la rete di dipartimenti e corsi UniMore disponibili su TriviaMore.",
 			path: "/graph",

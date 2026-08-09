@@ -64,7 +64,7 @@ export const Route = createFileRoute("/_app/admin/sections/$sectionId")({
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.section(params.sectionId)),
 	component: AdminSectionDetailPage,
-	head: () => seoHead({ title: "Dettaglio Sezione | Gestione", noindex: true }),
+	head: () => seoHead({ title: "Dettaglio sezione | Gestione", noindex: true }),
 });
 
 const column = createDataTableColumns<AdminQuestion>();

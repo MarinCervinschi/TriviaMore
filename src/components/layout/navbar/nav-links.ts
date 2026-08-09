@@ -38,13 +38,13 @@ const EXPLORE_DROPDOWN: NavDropdownItem = {
 	children: [
 		{
 			to: "/search/courses",
-			label: "Cerca Corso",
+			label: "Cerca corso",
 			icon: GraduationCap,
 			description: "Trova un corso per nome",
 		},
 		{
 			to: "/search/classes",
-			label: "Cerca Insegnamento",
+			label: "Cerca insegnamento",
 			icon: BookOpen,
 			description: "Trova un insegnamento per nome",
 		},
@@ -53,17 +53,17 @@ const EXPLORE_DROPDOWN: NavDropdownItem = {
 
 export const GUEST_NAV_ITEMS: NavItem[] = [
 	EXPLORE_DROPDOWN,
-	{ type: "link", to: "/about", label: "Chi Siamo", icon: Info },
+	{ type: "link", to: "/about", label: "Chi siamo", icon: Info },
 	{ type: "link", to: "/contact", label: "Contatti", icon: Mail },
 	{ type: "link", to: "/graph", label: "Grafo", icon: Network },
 	{ type: "link", to: "/news", label: "Novità", icon: Megaphone },
 ];
 
 export const AUTH_NAV_ITEMS: NavItem[] = [
-	{ type: "link", to: "/user", label: "Il Mio Profilo", icon: Home },
+	{ type: "link", to: "/user", label: "Il mio profilo", icon: Home },
 	EXPLORE_DROPDOWN,
 	{ type: "link", to: "/graph", label: "Grafo", icon: Network },
-	{ type: "link", to: "/user/classes", label: "I Miei Corsi", icon: GraduationCap },
+	{ type: "link", to: "/user/classes", label: "I miei corsi", icon: GraduationCap },
 ];
 
 export const ADMIN_NAV_ITEM: NavLinkItem = {
@@ -74,7 +74,7 @@ export const ADMIN_NAV_ITEM: NavLinkItem = {
 };
 
 export const USER_MENU_LINKS: NavLinkItem[] = [
-	{ type: "link", to: "/user", label: "Il Mio Profilo", icon: User },
+	{ type: "link", to: "/user", label: "Il mio profilo", icon: User },
 	{ type: "link", to: "/news", label: "Novità", icon: Megaphone },
 	{ type: "link", to: "/contact", label: "Contatti", icon: Mail },
 	{ type: "link", to: "/user/settings", label: "Impostazioni", icon: Settings },

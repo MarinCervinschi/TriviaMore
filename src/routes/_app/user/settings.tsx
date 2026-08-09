@@ -49,7 +49,7 @@ function SettingsPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={Settings}
-				title="Impostazioni Profilo"
+				title="Impostazioni profilo"
 				description="Gestisci le informazioni del tuo account e le preferenze"
 			/>
 
@@ -60,19 +60,19 @@ function SettingsPage() {
 
 				{/* Account Stats */}
 				<div>
-					<h2 className="mb-1 text-xl font-bold">Statistiche Account</h2>
+					<h2 className="mb-1 text-xl font-bold">Statistiche account</h2>
 					<p className="text-muted-foreground mb-4 text-sm">
 						Informazioni sul tuo utilizzo della piattaforma
 					</p>
 					<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 						<StatCard
-							label="Quiz Completati"
+							label="Quiz completati"
 							value={profile.stats.totalQuizzes}
 							icon={Trophy}
 							color="yellow"
 						/>
 						<StatCard
-							label="Corsi Seguiti"
+							label="Corsi seguiti"
 							value={profile.stats.userClassesCount}
 							icon={GraduationCap}
 							color="blue"
@@ -84,7 +84,7 @@ function SettingsPage() {
 							color="purple"
 						/>
 						<StatCard
-							label="Punteggio Medio"
+							label="Punteggio medio"
 							value={profile.stats.averageScore}
 							icon={TrendingUp}
 							color="green"
@@ -95,7 +95,7 @@ function SettingsPage() {
 				{/* Account Details */}
 				<div className="bg-card relative overflow-hidden rounded-3xl border">
 					<div className="p-6 sm:p-8">
-						<h2 className="mb-1 text-xl font-bold">Dettagli Account</h2>
+						<h2 className="mb-1 text-xl font-bold">Dettagli account</h2>
 						<p className="text-muted-foreground mb-6 text-sm">
 							Informazioni tecniche sul tuo account
 						</p>
@@ -158,7 +158,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
 
 			<form onSubmit={handleSubmit} className="relative p-6 sm:p-8">
-				<h2 className="mb-1 text-xl font-bold">Informazioni Profilo</h2>
+				<h2 className="mb-1 text-xl font-bold">Informazioni profilo</h2>
 				<p className="text-muted-foreground mb-6 text-sm">
 					Modifica le tue informazioni personali
 				</p>
@@ -210,7 +210,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 				<div className="mt-4 space-y-2">
 					<Label htmlFor="image">
 						<Camera className="mr-1 inline h-4 w-4" />
-						URL Immagine Profilo
+						URL immagine profilo
 					</Label>
 					<Input
 						id="image"

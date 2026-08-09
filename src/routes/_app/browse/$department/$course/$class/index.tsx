@@ -404,7 +404,7 @@ function ExamSimulationSection({
 							<GraduationCap className="h-5 w-5 text-amber-600" />
 						</div>
 						<div>
-							<h2 className="font-semibold tracking-tight">Simulazione Esame</h2>
+							<h2 className="font-semibold tracking-tight">Simulazione esame</h2>
 							<div className="mt-1 flex flex-wrap items-center gap-2">
 								{examSimulation.totalQuizQuestions > 0 && (
 									<Badge className="gap-1 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
@@ -427,7 +427,7 @@ function ExamSimulationSection({
 							className="shrink-0 shadow-sm"
 							onClick={() => setDialogOpen(true)}
 						>
-							Simula Esame
+							Simula esame
 							<ArrowRight className="ml-2 h-4 w-4" />
 						</Button>
 					) : (

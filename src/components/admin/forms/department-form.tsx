@@ -97,7 +97,7 @@ export function DepartmentForm({
 									<SelectItem value="TECNOLOGIA">Tecnologia</SelectItem>
 									<SelectItem value="SALUTE">Salute</SelectItem>
 									<SelectItem value="VITA">Vita</SelectItem>
-									<SelectItem value="SOCIETA_CULTURA">Societa e Cultura</SelectItem>
+									<SelectItem value="SOCIETA_CULTURA">Società e cultura</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

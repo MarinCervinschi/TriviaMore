@@ -54,7 +54,7 @@ export function StartQuizDialog({
 	return (
 		<SessionDialogShell open={open} onOpenChange={onOpenChange}>
 			<SessionDialogColumn
-				title="Configura Quiz"
+				title="Configura quiz"
 				description="Personalizza la sessione di studio"
 				submitLabel="Inizia Quiz"
 				onSubmit={handleStart}

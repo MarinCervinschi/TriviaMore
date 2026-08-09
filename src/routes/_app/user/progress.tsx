@@ -44,7 +44,7 @@ function ProgressPage() {
 			<div className="space-y-8 pb-8">
 				<UserHero
 					icon={TrendingUp}
-					title="I Miei Progressi"
+					title="I miei progressi"
 					description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
 				/>
 				<div className="container space-y-6">
@@ -65,7 +65,7 @@ function ProgressPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={TrendingUp}
-				title="I Miei Progressi"
+				title="I miei progressi"
 				description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
 				stats={[
 					{
@@ -112,7 +112,7 @@ function ProgressPage() {
 								: "text-muted-foreground hover:text-foreground"
 						}`}
 					>
-						Dettaglio Performance
+						Dettaglio performance
 					</button>
 				</div>
 

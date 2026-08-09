@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_app/about")({
 	component: AboutPage,
 	head: () =>
 		seoHead({
-			title: "Chi Siamo",
+			title: "Chi siamo",
 			description:
 				"Trivia More è una piattaforma open source creata da studenti per studenti dell'Università di Modena e Reggio Emilia.",
 			path: "/about",
@@ -67,7 +67,7 @@ const values = [
 	},
 	{
 		icon: Lightbulb,
-		title: "Innovazione Continua",
+		title: "Innovazione continua",
 		description: "Tecnologie moderne per un'esperienza coinvolgente.",
 		detail:
 			"React 19, TanStack Start, Framer Motion, Drizzle ORM — scegliamo gli strumenti migliori per offrire un'esperienza fluida e veloce.",
@@ -104,7 +104,7 @@ function AboutPage() {
 							className="text-primary mb-4 text-sm font-semibold tracking-widest uppercase"
 							variants={item}
 						>
-							Chi Siamo
+							Chi siamo
 						</motion.p>
 						<motion.h1
 							className="mb-6 text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl lg:text-6xl"
@@ -140,7 +140,7 @@ function AboutPage() {
 								<Target className="h-8 w-8 text-blue-600" strokeWidth={1.5} />
 							</div>
 							<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-								La Nostra Missione
+								La nostra missione
 							</h2>
 							<p className="text-muted-foreground text-lg leading-relaxed">
 								Crediamo che l&apos;apprendimento debba essere accessibile,
@@ -176,7 +176,7 @@ function AboutPage() {
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center sm:mb-16">
 						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							I Nostri Valori
+							I nostri valori
 						</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 							Cosa ci guida
@@ -235,7 +235,7 @@ function AboutPage() {
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mb-10 text-center">
 						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							Stack Tecnologico
+							Stack tecnologico
 						</p>
 						<h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
 							Costruito con tecnologie moderne
@@ -258,7 +258,7 @@ function AboutPage() {
 						<div className="pointer-events-none absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-orange-300/10 blur-[80px]" />
 
 						<h2 className="relative mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-							Unisciti alla Community
+							Unisciti alla community
 						</h2>
 						<p className="text-muted-foreground relative mx-auto mb-8 max-w-2xl text-lg">
 							Che tu sia uno sviluppatore, un designer o semplicemente uno studente con
