@@ -17,6 +17,7 @@ import type { ChangelogEntry } from "@/lib/changelogs/types";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { formatDateLong } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/news")({
 	head: () =>
@@ -28,12 +29,7 @@ export const Route = createFileRoute("/_app/news")({
 	component: NewsPage,
 });
 
-const formatDate = (iso: string) =>
-	new Date(iso).toLocaleDateString("it-IT", {
-		day: "numeric",
-		month: "long",
-		year: "numeric",
-	});
+const formatDate = formatDateLong;
 
 const DOT_COLOR: Record<ChangelogEntry["category"], string> = {
 	new: "bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.15)]",

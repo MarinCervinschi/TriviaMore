@@ -24,6 +24,7 @@ import { seoHead } from "@/lib/seo";
 import { useRemoveClass } from "@/lib/user/mutations";
 import { userQueries } from "@/lib/user/queries";
 import type { UserClass } from "@/lib/user/types";
+import { formatDate } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/classes")({
 	validateSearch: z.object({
@@ -113,7 +114,7 @@ function buildColumns(
 				align: "center",
 				cellClassName: "text-muted-foreground text-xs",
 			},
-			cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("it-IT"),
+			cell: ({ row }) => formatDate(row.original.createdAt),
 		}),
 		column.display({
 			id: "remove",

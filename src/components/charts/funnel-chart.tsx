@@ -8,6 +8,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatNumber } from "@/lib/utils/format";
 
 import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
 import { ChartDefs, seriesFill } from "./chart-defs";
@@ -66,8 +67,7 @@ export function FunnelChart({
 										<div className="flex w-full items-center justify-between gap-3">
 											<span className="text-muted-foreground">{stage?.label}</span>
 											<span className="font-mono font-semibold tabular-nums">
-												{valueFormatter?.(Number(value)) ??
-													Number(value).toLocaleString("it-IT")}{" "}
+												{valueFormatter?.(Number(value)) ?? formatNumber(Number(value))}{" "}
 												<span className="text-muted-foreground">({share}%)</span>
 											</span>
 										</div>

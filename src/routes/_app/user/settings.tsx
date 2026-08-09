@@ -31,6 +31,7 @@ import { useUpdateProfile } from "@/lib/user/mutations";
 import { userQueries } from "@/lib/user/queries";
 import type { UserProfile } from "@/lib/user/types";
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
+import { formatDateLong } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/settings")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.profile()),
@@ -109,24 +110,12 @@ function SettingsPage() {
 							<div className="flex items-center gap-2">
 								<Calendar className="text-muted-foreground h-4 w-4" />
 								<Label className="text-sm font-medium">Membro dal</Label>
-								<p className="text-sm">
-									{new Date(profile.createdAt).toLocaleDateString("it-IT", {
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									})}
-								</p>
+								<p className="text-sm">{formatDateLong(profile.createdAt)}</p>
 							</div>
 							<div className="flex items-center gap-2">
 								<Calendar className="text-muted-foreground h-4 w-4" />
 								<Label className="text-sm font-medium">Ultimo aggiornamento</Label>
-								<p className="text-sm">
-									{new Date(profile.updatedAt).toLocaleDateString("it-IT", {
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									})}
-								</p>
+								<p className="text-sm">{formatDateLong(profile.updatedAt)}</p>
 							</div>
 						</div>
 					</div>

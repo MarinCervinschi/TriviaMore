@@ -43,6 +43,7 @@ import type {
 } from "@/lib/requests/types";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { formatDayMonth, formatTime } from "@/lib/utils/format";
 
 const REASON_LABELS: Record<string, string> = {
 	errata: "Errata",
@@ -58,18 +59,7 @@ const ACK_PRESETS = [
 ];
 
 function formatDateTime(iso: string): string {
-	const d = new Date(iso);
-	const sameYear = d.getFullYear() === new Date().getFullYear();
-	const date = d.toLocaleDateString("it-IT", {
-		day: "numeric",
-		month: "short",
-		...(sameYear ? {} : { year: "numeric" }),
-	});
-	const time = d.toLocaleTimeString("it-IT", {
-		hour: "2-digit",
-		minute: "2-digit",
-	});
-	return `${date}, ${time}`;
+	return `${formatDayMonth(iso, new Date())}, ${formatTime(iso)}`;
 }
 
 export const Route = createFileRoute("/_app/admin/requests/$requestId")({

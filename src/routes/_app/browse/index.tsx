@@ -23,6 +23,7 @@ import {
 } from "@/lib/motion";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/format";
 
 const DepartmentBarChart = lazy(() =>
 	import("@/components/browse/charts/department-bar-chart").then(m => ({
@@ -322,7 +323,7 @@ function InlineStat({ value, label }: { value: number; label: string }) {
 	return (
 		<span className="inline-flex items-baseline gap-1.5">
 			<span className="text-foreground text-base font-bold tabular-nums sm:text-lg">
-				{value.toLocaleString("it-IT")}
+				{formatNumber(value)}
 			</span>
 			<span>{label}</span>
 		</span>
@@ -402,7 +403,7 @@ function TopClassesStrip({
 								<span className="text-muted-foreground inline-flex shrink-0 items-center gap-1 text-xs">
 									<BookOpen className="h-3.5 w-3.5" strokeWidth={1.75} />
 									<span className="text-foreground font-semibold tabular-nums">
-										{cls.questionCount.toLocaleString("it-IT")}
+										{formatNumber(cls.questionCount)}
 									</span>
 									<span className="hidden sm:inline">dom.</span>
 								</span>

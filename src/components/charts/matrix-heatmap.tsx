@@ -1,3 +1,5 @@
+import { formatNumber } from "@/lib/utils/format";
+
 import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
 import { HEAT_EMPTY, HEAT_LEGEND, heatColor } from "./heat-scale";
 
@@ -49,7 +51,7 @@ export function MatrixHeatmap({
 		cells.map(cell => [cellKey(cell.row, cell.column), cell.value])
 	);
 	const ceiling = max ?? Math.max(...cells.map(cell => cell.value), 1);
-	const format = valueFormatter ?? ((value: number) => value.toLocaleString("it-IT"));
+	const format = valueFormatter ?? ((value: number) => formatNumber(value));
 
 	return (
 		<ChartCard

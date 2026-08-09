@@ -13,6 +13,7 @@ import {
 	staggerItem,
 	withReducedMotion,
 } from "@/lib/motion";
+import { formatNumber } from "@/lib/utils/format";
 
 function useAnimatedCounter(
 	target: number,
@@ -83,7 +84,7 @@ function StatItem({
 			</div>
 
 			<p className="relative text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
-				{animatedValue.toLocaleString("it-IT")}
+				{formatNumber(animatedValue)}
 			</p>
 
 			<p className="text-muted-foreground relative mt-2 text-sm font-medium sm:text-base">
