@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import { Funnel, LabelList, FunnelChart as RechartsFunnelChart } from "recharts";
 
 import {
@@ -8,6 +10,7 @@ import {
 } from "@/components/ui/chart";
 
 import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartDefs, seriesFill } from "./chart-defs";
 import { chartColor } from "./palette";
 
 export type FunnelStage = {
@@ -35,12 +38,13 @@ export function FunnelChart({
 	emptyMessage,
 	...card
 }: FunnelChartProps) {
+	const scope = `funnel-${useId().replace(/:/g, "")}`;
 	const config: ChartConfig = stages.reduce<ChartConfig>((acc, stage, index) => {
 		acc[stage.key] = { label: stage.label, color: stage.color ?? chartColor(index) };
 		return acc;
 	}, {});
 
-	const data = stages.map(stage => ({ ...stage, fill: `var(--color-${stage.key})` }));
+	const data = stages.map(stage => ({ ...stage, fill: seriesFill(scope, stage) }));
 	const first = stages[0]?.value ?? 0;
 
 	const body =
@@ -49,6 +53,7 @@ export function FunnelChart({
 		) : (
 			<ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
 				<RechartsFunnelChart margin={{ left: 8, right: 8 }}>
+					<ChartDefs scope={scope} series={stages} brandFirst />
 					<ChartTooltip
 						content={
 							<ChartTooltipContent

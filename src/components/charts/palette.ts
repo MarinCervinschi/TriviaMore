@@ -1,5 +1,7 @@
 import type { ChartConfig } from "@/components/ui/chart";
 
+import type { ChartFill } from "./chart-defs";
+
 /**
  * The categorical slots, in the order they were validated. Assign them in this
  * order and never cycle: slot order is what keeps adjacent series apart under
@@ -32,6 +34,12 @@ export type ChartSeries<TDatum> = {
 	label: string;
 	/** Defaults to the next categorical slot. Set it only for a semantic series. */
 	color?: string;
+	/**
+	 * `gradient` (default) washes the series colour; `solid` is flat; `hatched`
+	 * is the 45° texture — opt-in only, for a series that means something extra
+	 * (a partial period, a folded bucket) or as the print / CVD fallback.
+	 */
+	fill?: ChartFill;
 };
 
 /** Builds the `ChartConfig` the shared wrapper needs, assigning slots in order. */
