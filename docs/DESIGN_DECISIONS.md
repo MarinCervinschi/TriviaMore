@@ -333,6 +333,82 @@ Both themes come from the same tokens, so the separate `.dark` scrollbar block d
 
 ---
 
+## The rules these decisions serve
+
+**Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
+satisfy. Where a decision and a rule collide, the rule wins — a rule is why a choice is right, not
+a matter of taste.
+
+### Hierarchy of action
+
+- **One primary action per view.** The Von Restorff effect is why a primary button works: it is
+  the only one. A second one halves both.
+- **A destructive action never carries the primary's weight.** Red belongs to destruction and
+  error, and to nothing else — the moment it decorates, it stops warning.
+- **Confirmation or undo, decided by reversibility and frequency.** Confirmation for the rare and
+  irreversible (deleting an account, a section with its questions); **undo** for the frequent and
+  reversible (removing a bookmark, unfollowing a class). A dialog shown often becomes background
+  noise and stops being read — its power is its rarity.
+- **A dialog title names the object and the act** — "Elimina la sezione?" — not "Sei sicuro?".
+
+### Hierarchy of colour
+
+- **Colour never carries meaning on its own** (WCAG 1.4.1): always with text, shape or position.
+- Each colour has exactly one job: brand orange for brand and the primary action; red for
+  destruction and error; the status tokens for status; `--chart-*` for data identity; `--heat-*`
+  for magnitude. The decorative card colour of D4 sits deliberately outside that list and must
+  never be readable as meaning.
+- **Contrast is a gate, not a review step**, and it is checked in light first (D2).
+
+### Order and position
+
+- **Serial position:** people recall the first and last items of a series and lose the middle. What
+  matters goes at the ends — in navigation, in a form, in a dashboard.
+- **Fitts:** the more frequent the action, the larger it is and the closer to where the pointer or
+  thumb already is. On mobile that argues for the bottom, not the top.
+- **Hick:** keep the top level short. The sidebar is about to carry study, planner, discussions,
+  gamification and admin — that is a grouping problem (#148), not a longer list.
+- **Gestalt proximity beats decoration:** spacing groups more reliably than a border does, which is
+  the same reasoning that gives dense surfaces no texture in D12.
+
+### Perception, motion and time
+
+- The eye catches **movement first, then contrast, then colour, then shape**. So motion is spent on
+  state the user caused (D9), never on ambience — an animated background competes with the content
+  for the one channel the eye cannot ignore.
+- `prefers-reduced-motion` is not optional, and **Framer Motion does not honour it by itself** —
+  see the trap below.
+- **Doherty:** under ~400ms reads as instant; past that the interface owes the user a visible
+  state. Skeletons cover today's routes. The AI grading of #140 is seconds, not milliseconds, and
+  will need a real progress affordance rather than a spinner.
+
+### The accessibility floor — WCAG 2.2 AA
+
+- Text **4.5:1**; large text and UI components **3:1**.
+- Every interactive target at least **24×24 px** with spacing (2.5.8). The 44px rule in
+  `globals.css` only applies to coarse pointers, so it does not discharge this.
+- **Every control has an accessible name** (4.1.2) — an icon alone is not a name.
+- Focus is **visible** (2.4.7) and **not obscured** (2.4.11).
+
+### Measured against the app on 2026-08-09
+
+Three failures, computed rather than eyeballed — they are tracked as issues, not fixed here:
+
+| | Measured | Required |
+|---|---|---|
+|`text-muted-foreground` on `bg-muted`, light|**4.39:1**|4.5:1|
+|`text-primary` as text on the dark surface|**3.51:1**|4.5:1|
+|Icon-only buttons with an accessible name|**6 of 26**|all|
+
+Tracked as #152 (contrast), #153 (accessible names, and target size with it) and #154 (undo).
+
+The first is systemic: it is the `TabsList`, the admin sidebar and the quiz timer. The second
+follows from `--primary` being deliberately theme-constant, so a value tuned for light is too dark
+against the dark surface — it passes as a UI component but not as text. Both pass the 3:1 bar for
+large text and components, so neither is a crisis; both are below the floor this file just set.
+
+---
+
 ## The reduced-motion trap
 
 The `prefers-reduced-motion` block in `globals.css` zeroes `animation-duration` and
@@ -392,3 +468,4 @@ idea. Decide only after the D3 + D11 sweep has landed.
 | 2026-08-09 | D12: dot field with a vertical falloff, and the L0/L1/L2 levels; gradients opened as O6 |
 | 2026-08-09 | D13–D15: anchored single-source wash, one brand ramp, dead CSS removed; O6 closed, O7–O8 opened |
 | 2026-08-09 | O8 settled: ramp allow-list, flat progress bar, timer on --warning, quiet brand scrollbar |
+| 2026-08-09 | Design rules written and measured against the app; three failures filed as #152–#154 |
