@@ -129,14 +129,14 @@ export function BenefitsSection({
 						animate={headingVisible ? "visible" : "hidden"}
 					>
 						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							Perche' TriviaMore
+							Perché TriviaMore
 						</p>
 						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-							Progettato per il tuo successo
+							Scritto da chi l&apos;esame l&apos;ha già dato
 						</h2>
 						<p className="text-muted-foreground mb-8 text-lg">
-							Ogni funzionalita' e' pensata per aiutarti a prepararti meglio, piu'
-							velocemente e con piu' sicurezza.
+							Non è un generatore di domande né un manuale riassunto: è il materiale che
+							gli studenti si passano, messo in ordine e reso interrogabile.
 						</p>
 					</motion.div>
 

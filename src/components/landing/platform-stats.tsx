@@ -75,7 +75,7 @@ function StatItem({
 	const animatedValue = useAnimatedCounter(value, isVisible, prefersReduced);
 
 	return (
-		<div className="group bg-card relative overflow-hidden rounded-2xl border p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8">
+		<div className="bg-card relative overflow-hidden rounded-2xl border p-6 text-center sm:p-8">
 			<div className="from-primary/5 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
 			<div className={`mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
