@@ -273,40 +273,26 @@ function ClassPage() {
 								{COURSE_TYPE_CONFIG[classData.course.courseType].label}
 							</Badge>
 						)}
-						{classData.courseClass?.classYear && (
-							<Badge variant="outline" className="text-xs">
-								Anno {classData.courseClass.classYear}
-							</Badge>
-						)}
 						{classData.courseClass && (
-							<Badge
-								variant="outline"
-								className={cn(
-									"text-xs",
-									classData.courseClass.mandatory
-										? "border-green-500/20 bg-green-500/10 text-green-600"
-										: "border-orange-500/20 bg-orange-500/10 text-orange-600"
-								)}
-							>
+							<Badge variant="outline" className="text-xs">
 								{classData.courseClass.mandatory ? "Obbligatorio" : "A scelta"}
 							</Badge>
 						)}
-						{classData.course.location && (
-							<Badge variant="outline" className="text-xs">
-								{CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ??
-									classData.course.location}
-							</Badge>
-						)}
-						{classData.cfu && (
-							<Badge variant="secondary" className="text-xs">
-								{classData.cfu} CFU
-							</Badge>
-						)}
-						{classData.courseClass?.curriculum && (
-							<Badge variant="outline" className="text-xs">
-								{classData.courseClass.curriculum}
-							</Badge>
-						)}
+						{/* Anno, CFU, sede e curriculum sono attributi, non stati: una riga di
+						    metadati si legge meglio di una fila di pill tutte uguali. */}
+						<span className="text-muted-foreground text-xs">
+							{[
+								classData.courseClass?.classYear &&
+									`Anno ${classData.courseClass.classYear}`,
+								classData.cfu && `${classData.cfu} CFU`,
+								classData.course.location &&
+									(CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ??
+										classData.course.location),
+								classData.courseClass?.curriculum,
+							]
+								.filter(Boolean)
+								.join(" · ")}
+						</span>
 						{classData.courseClass?.catalogueUrl && (
 							<a
 								href={classData.courseClass.catalogueUrl}

@@ -23,15 +23,16 @@ function FeatureCardComponent({
 	return (
 		<div
 			className={cn(
-				"group bg-card relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8",
+				"bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8",
 				className
 			)}
 		>
-			{/* Subtle gradient accent on hover */}
-			<div className="from-primary/5 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
 			<div className={`mb-4 inline-flex rounded-2xl p-3 ${feature.iconBg}`}>
-				<Icon className={`h-7 w-7 ${feature.iconColor}`} strokeWidth={1.5} />
+				<Icon
+					className={`h-7 w-7 ${feature.iconColor}`}
+					strokeWidth={1.5}
+					aria-hidden
+				/>
 			</div>
 			<h3 className="mb-2 text-lg font-semibold tracking-tight">{feature.title}</h3>
 			<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -65,14 +66,13 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
 					animate={headingVisible ? "visible" : "hidden"}
 				>
 					<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-						Funzionalita'
+						Funzionalità
 					</p>
 					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-						Tutto quello che ti serve
+						Cosa lo rende diverso
 					</h2>
 					<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-						Strumenti pensati per uno studio efficace e una preparazione ottimale agli
-						esami.
+						Chi scrive le domande, per quale università, e a quali condizioni si usa.
 					</p>
 				</motion.div>
 

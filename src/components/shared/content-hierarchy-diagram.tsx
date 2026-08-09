@@ -71,7 +71,7 @@ function TreeCard({ level }: { level: ContentLevel }) {
 	return (
 		<div
 			className={cn(
-				"bg-card h-full w-full rounded-2xl border p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-5",
+				"bg-card h-full w-full rounded-2xl border p-4 sm:p-5",
 				level.borderColor
 			)}
 		>

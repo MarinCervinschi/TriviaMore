@@ -108,7 +108,7 @@ export const benefits: BenefitItem[] = [
 	{
 		title: "Preparazione che funziona",
 		description:
-			"Domande scritte da chi ha gia' superato gli esami, non estratte da manuali generici. Studi quello che conta davvero.",
+			"Domande scritte da chi ha già superato gli esami, non estratte da manuali generici. Studi quello che conta davvero.",
 	},
 	{
 		title: "Trova subito il tuo corso",
@@ -118,24 +118,24 @@ export const benefits: BenefitItem[] = [
 	{
 		title: "Studia come preferisci",
 		description:
-			"Quiz con timer per simulare l'esame, modalita' studio per ripassare con calma, flashcard per memorizzare i concetti chiave.",
+			"Quiz con timer per simulare l'esame, modalità studio per ripassare con calma, flashcard per memorizzare i concetti chiave.",
 	},
 	{
-		title: "Zero costi, zero pubblicita'",
+		title: "Zero costi, zero pubblicità",
 		description:
-			"Nessun paywall, nessun abbonamento. Tutto il materiale e' accessibile subito, gratis, per sempre.",
+			"Nessun paywall, nessun abbonamento. Tutto il materiale è accessibile subito, gratis, per sempre.",
 	},
 ];
 
 export const ctaCardContent: CTACardProps = {
-	title: "Pronto per iniziare?",
+	title: "Comincia dal tuo insegnamento",
 	description:
-		"Unisciti agli studenti che stanno già migliorando la loro preparazione con Trivia More. Contribuisci anche tu alla crescita della piattaforma!",
-	buttonText: "Registrati gratuitamente",
+		"Il catalogo si consulta senza account: registrarsi serve a salvare i progressi e i segnalibri. Se il tuo corso non c'è ancora, puoi proporlo.",
+	buttonText: "Crea un account",
 	buttonHref: "/auth/register",
 	secondaryButtonText: "Contribuisci su GitHub",
 	secondaryButtonHref: "https://github.com/MarinCervinschi/TriviaMore",
-	disclaimer: "Nessuna carta di credito richiesta • Sempre gratuito • Open Source",
+	disclaimer: "Gratuito e senza pubblicità • Codice e contenuti aperti su GitHub",
 };
 
 export const showcaseFeatures: ShowcaseFeature[] = [
@@ -146,7 +146,7 @@ export const showcaseFeatures: ShowcaseFeature[] = [
 		description:
 			"Metti alla prova le tue conoscenze con quiz cronometrati che simulano l'esperienza d'esame reale.",
 		highlights: [
-			"Modalita' studio e simulazione esame",
+			"Modalità studio e simulazione esame",
 			"Timer configurabile con avvisi",
 			"Feedback istantaneo con spiegazioni",
 			"Navigazione rapida tra domande",
@@ -159,7 +159,7 @@ export const showcaseFeatures: ShowcaseFeature[] = [
 		icon: BarChart3,
 		title: "Dashboard personale",
 		description:
-			"Tieni sotto controllo la tua preparazione con statistiche dettagliate e attivita' recenti.",
+			"Tieni sotto controllo la tua preparazione con statistiche dettagliate e attività recenti.",
 		highlights: [
 			"Statistiche quiz e punteggi",
 			"Corsi visualizzati di recente",

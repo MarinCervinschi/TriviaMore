@@ -40,10 +40,9 @@ const values = [
 		description:
 			"Codice completamente aperto su GitHub. Trasparenza e collaborazione guidano ogni decisione.",
 		detail:
-			"Ogni riga di codice, ogni decisione di design, ogni contenuto e' visibile e modificabile. Non crediamo nei muri — crediamo nella condivisione.",
+			"Ogni riga di codice, ogni decisione di design, ogni contenuto è visibile e modificabile. Non crediamo nei muri — crediamo nella condivisione.",
 		color: "text-red-500",
 		bg: "bg-red-500/10",
-		accent: "from-red-500/10 to-transparent",
 		span: "sm:col-span-2" as const,
 	},
 	{
@@ -51,21 +50,19 @@ const values = [
 		title: "Community-Driven",
 		description: "La community guida lo sviluppo.",
 		detail:
-			"Ogni funzionalita' nasce da un'esigenza reale. Studenti che hanno affrontato gli stessi esami contribuiscono con domande, correzioni e idee.",
+			"Ogni funzionalità nasce da un'esigenza reale. Studenti che hanno affrontato gli stessi esami contribuiscono con domande, correzioni e idee.",
 		color: "text-green-500",
 		bg: "bg-green-500/10",
-		accent: "from-green-500/10 to-transparent",
 		span: "" as const,
 	},
 	{
 		icon: GraduationCap,
 		title: "Focalizzato su UNIMORE",
-		description: "Contenuti mirati per l'Universita' di Modena e Reggio Emilia.",
+		description: "Contenuti mirati per l'Università di Modena e Reggio Emilia.",
 		detail:
 			"Non un quiz generico ma materiale organizzato per dipartimento, corso e sezione — esattamente come il tuo piano di studi.",
 		color: "text-blue-500",
 		bg: "bg-blue-500/10",
-		accent: "from-blue-500/10 to-transparent",
 		span: "" as const,
 	},
 	{
@@ -76,7 +73,6 @@ const values = [
 			"React 19, TanStack Start, Framer Motion, Drizzle ORM — scegliamo gli strumenti migliori per offrire un'esperienza fluida e veloce.",
 		color: "text-yellow-500",
 		bg: "bg-yellow-500/10",
-		accent: "from-yellow-500/10 to-transparent",
 		span: "sm:col-span-2" as const,
 	},
 ];
@@ -120,8 +116,8 @@ function AboutPage() {
 							className="text-muted-foreground text-lg leading-relaxed sm:text-xl"
 							variants={item}
 						>
-							TriviaMore e' una piattaforma open source creata da studenti per studenti
-							dell&apos;Universita' di Modena e Reggio Emilia. Nata da un&apos;esigenza
+							TriviaMore è una piattaforma open source creata da studenti per studenti
+							dell&apos;Università di Modena e Reggio Emilia. Nata da un&apos;esigenza
 							reale, cresciuta con la community.
 						</motion.p>
 					</div>
@@ -199,24 +195,19 @@ function AboutPage() {
 							return (
 								<motion.div
 									key={value.title}
-									className={`group bg-card relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${value.span}`}
+									className={`bg-card relative overflow-hidden rounded-2xl border ${value.span}`}
 									variants={item}
 								>
-									{/* Accent gradient on hover */}
-									<div
-										className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${value.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-									/>
-
 									<div
 										className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}
 									>
-										{/* Icon badge */}
 										<div
 											className={`inline-flex shrink-0 rounded-2xl p-3 sm:p-4 ${value.bg}`}
 										>
 											<Icon
 												className={`h-6 w-6 sm:h-7 sm:w-7 ${value.color}`}
 												strokeWidth={1.5}
+												aria-hidden
 											/>
 										</div>
 
@@ -271,7 +262,7 @@ function AboutPage() {
 						</h2>
 						<p className="text-muted-foreground relative mx-auto mb-8 max-w-2xl text-lg">
 							Che tu sia uno sviluppatore, un designer o semplicemente uno studente con
-							idee, il tuo contributo e' prezioso!
+							idee, il tuo contributo è prezioso!
 						</p>
 						<div className="relative flex flex-col items-center justify-center gap-4 sm:flex-row">
 							<Button size="lg" className="shadow-primary/25 shadow-lg" asChild>
