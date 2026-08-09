@@ -1,11 +1,19 @@
 # TriviaMore — Design System Reference
 
 > Reference for developers and LLMs working on the TriviaMore UI.
-> This file is the **single source of truth** for design decisions, patterns, and conventions.
+> This file describes the system **as it is today**.
+>
+> ⚠️ **It is no longer the source of truth for decisions.** Choices taken during the restyle live
+> in [`DESIGN_DECISIONS.md`](./DESIGN_DECISIONS.md) — where the two disagree, that file is newer
+> and wins. This one gets rewritten from it once the restyle lands.
 
 ---
 
 ## Philosophy
+
+> ⚠️ **Superseded by D1.** The paragraph below is the opposite of the current brief: the app keeps
+> its visual identity, and the work happens at the level of typography and detail. Three wholesale
+> redesigns were prototyped and rejected. Do not follow this section.
 
 **Bold, not incremental.** Every page and component should feel intentional, polished, and branded. When modifying UI, don't preserve existing structure for its own sake — rebuild with the design system in mind.
 
