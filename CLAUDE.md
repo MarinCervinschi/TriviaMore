@@ -13,6 +13,9 @@ questions.
 | `pnpm test` | Vitest — unit tier only (`*.test.ts`, offline) |
 | `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, needs local Supabase) |
 | `pnpm exec tsc --noEmit` | typecheck |
+| `pnpm storybook` | component workbench on :6006 |
+| `pnpm build-storybook` | verify every story compiles |
+| `pnpm format` | Prettier — the house style is tabs + semicolons |
 | `pnpm db:generate --name x` | generate a migration from the Drizzle schema |
 | `pnpm db:migrate` | apply pending migrations |
 | `pnpm smoke:reads` | run every migrated read path against the live database |
@@ -139,8 +142,14 @@ Two rules that are not negotiable:
 
 ## Verification
 
-Run `pnpm exec tsc --noEmit`, `pnpm test` and the build yourself, and report the real output.
-**Browser verification is the user's job** — never claim a UI change works because it compiles.
+Run `pnpm exec tsc --noEmit`, `pnpm test` and the build yourself, and report the real output. A UI
+change also has to pass `pnpm build-storybook`. **Browser verification is the user's job** — never
+claim a UI change works because it compiles, and note that a green Storybook build proves a story
+*compiles*, not that it renders.
+
+Components live in Storybook: every `ui/` primitive has a story, and so does every shared component.
+**For writing or fixing a story, or anything under `.storybook/`, use the `storybook` skill** — it
+holds the two story shapes, the title taxonomy and the components that cannot be storied at all.
 
 Tests are co-located with the source they cover. Two tiers, split by suffix, in `vitest.config.ts`
 (kept separate from `vite.config.ts`): `*.test.ts` is pure logic with no I/O — offline, CI-safe, the
