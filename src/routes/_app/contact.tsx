@@ -47,7 +47,7 @@ const quickLinks = [
 	},
 	{
 		icon: Lightbulb,
-		title: "Proponi una Funzionalita'",
+		title: "Proponi una Funzionalità",
 		description: "Hai un'idea per migliorare TriviaMore?",
 		color: "text-amber-500",
 		bg: "bg-amber-500/10",
@@ -66,11 +66,11 @@ const quickLinks = [
 const faqs = [
 	{
 		q: "Come posso contribuire al progetto?",
-		a: "Puoi contribuire in molti modi: sviluppando nuove funzionalita', migliorando il design, aggiungendo contenuti per i corsi, o semplicemente segnalando bug e suggerimenti.",
+		a: "Puoi contribuire in molti modi: sviluppando nuove funzionalità, migliorando il design, aggiungendo contenuti per i corsi, o semplicemente segnalando bug e suggerimenti.",
 	},
 	{
-		q: "TriviaMore e' davvero gratuito?",
-		a: "Si', completamente! TriviaMore e' un progetto open source gratuito e sempre lo sara'. E' fatto da studenti per studenti.",
+		q: "TriviaMore è davvero gratuito?",
+		a: "Sì, completamente! TriviaMore è un progetto open source gratuito e sempre lo sarà. È fatto da studenti per studenti.",
 	},
 	{
 		q: "Posso aggiungere contenuti per il mio corso?",
@@ -236,7 +236,7 @@ function ContactPage() {
 									</h3>
 									<p className="text-muted-foreground mb-6 text-sm leading-relaxed">
 										Il modo migliore per contribuire al progetto, segnalare bug o
-										proporre nuove funzionalita'.
+										proporre nuove funzionalità.
 									</p>
 									<Button variant="outline" className="w-full" asChild>
 										<a

@@ -42,7 +42,7 @@ function VerifyEmailPage() {
 			}
 		},
 		onError: () => {
-			toast.error("Impossibile inviare l'email. Riprova piu' tardi.");
+			toast.error("Impossibile inviare l'email. Riprova più tardi.");
 		},
 	});
 

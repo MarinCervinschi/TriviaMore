@@ -31,7 +31,7 @@ function RegisterPage() {
 				</div>
 				<OAuthButtons />
 				<p className="text-muted-foreground text-center text-sm">
-					Hai gia' un account?{" "}
+					Hai già un account?{" "}
 					<Link
 						to="/auth/login"
 						className="text-primary font-semibold underline-offset-4 hover:underline"

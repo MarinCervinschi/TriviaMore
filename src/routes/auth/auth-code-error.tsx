@@ -12,7 +12,7 @@ function AuthCodeErrorPage() {
 	return (
 		<AuthCard
 			title="Link non valido"
-			description="Non e' stato possibile confermare la tua email"
+			description="Non è stato possibile confermare la tua email"
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
@@ -22,8 +22,8 @@ function AuthCodeErrorPage() {
 				</div>
 
 				<p className="text-muted-foreground text-center text-sm">
-					Il link di conferma e' scaduto o e' gia' stato utilizzato. Prova a richiedere
-					un nuovo link dalla pagina di registrazione.
+					Il link di conferma è scaduto o è già stato utilizzato. Prova a richiedere un
+					nuovo link dalla pagina di registrazione.
 				</p>
 
 				<div className="grid gap-3">
