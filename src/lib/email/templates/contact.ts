@@ -5,7 +5,7 @@ const TYPE_META: Record<
 	{ label: string; color: string; bg: string }
 > = {
 	bug: { label: "Bug", color: "#dc2626", bg: "#fee2e2" },
-	feature: { label: "Funzionalita'", color: "#d97706", bg: "#fef3c7" },
+	feature: { label: "Funzionalità", color: "#d97706", bg: "#fef3c7" },
 	content: { label: "Contenuti", color: "#2563eb", bg: "#dbeafe" },
 	other: { label: "Altro", color: "#6b7280", bg: "#e5e7eb" },
 };
@@ -70,7 +70,7 @@ export function renderContactEmailHtml(data: ContactInput): string {
                 </table>
                 <div style="padding:20px;background-color:#faf8f5;border-left:3px solid ${meta.color};border-radius:8px;font-size:14px;line-height:1.6;color:#2a2a2a;white-space:pre-wrap;">${message}</div>
                 <p style="margin:24px 0 0 0;font-size:13px;color:#8a8a8a;line-height:1.6;">
-                  Per rispondere, usa il pulsante "Rispondi" del tuo client di posta: il campo Reply-To e' impostato sull'indirizzo del mittente.
+                  Per rispondere, usa il pulsante "Rispondi" del tuo client di posta: il campo Reply-To è impostato sull'indirizzo del mittente.
                 </p>
               </td>
             </tr>

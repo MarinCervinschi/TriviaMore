@@ -36,7 +36,7 @@ export async function submitContact(
 		console.error("Failed to send contact email:", err);
 		return {
 			success: false,
-			error: "Errore durante l'invio. Riprova piu' tardi.",
+			error: "Errore durante l'invio. Riprova più tardi.",
 		};
 	}
 }

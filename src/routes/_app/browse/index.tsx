@@ -61,7 +61,7 @@ export const Route = createFileRoute("/_app/browse/")({
 		seoHead({
 			title: "Esplora",
 			description:
-				"Esplora i dipartimenti, i corsi e gli insegnamenti dell'Universita' di Modena e Reggio Emilia su TriviaMore.",
+				"Esplora i dipartimenti, i corsi e gli insegnamenti dell'Università di Modena e Reggio Emilia su TriviaMore.",
 			path: "/browse",
 		}),
 	pendingComponent: BrowseOverviewSkeleton,
