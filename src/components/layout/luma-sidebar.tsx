@@ -128,7 +128,7 @@ function SidebarSearchHover() {
 							className="text-muted-foreground hover:bg-accent hover:text-foreground flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors"
 						>
 							<GraduationCap className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
-							Cerca Corso
+							Cerca corso
 						</Link>
 						<Link
 							to="/search/classes"
@@ -136,7 +136,7 @@ function SidebarSearchHover() {
 							className="text-muted-foreground hover:bg-accent hover:text-foreground flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors"
 						>
 							<BookOpen className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
-							Cerca Insegnamento
+							Cerca insegnamento
 						</Link>
 					</div>
 				</div>

@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_app/admin/departments/$departmentId")({
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.department(params.departmentId)),
 	component: AdminDepartmentDetailPage,
-	head: () => seoHead({ title: "Dettaglio Dipartimento | Gestione", noindex: true }),
+	head: () => seoHead({ title: "Dettaglio dipartimento | Gestione", noindex: true }),
 });
 
 const column = createDataTableColumns<CourseRow>();

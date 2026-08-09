@@ -84,7 +84,7 @@ export function FlashcardResults({
 
 				{/* Card Review */}
 				<div>
-					<h2 className="mb-4 text-xl font-bold tracking-tight">Riepilogo Carte</h2>
+					<h2 className="mb-4 text-xl font-bold tracking-tight">Riepilogo carte</h2>
 					<div className="space-y-3">
 						{questions.map((question, index) => {
 							const wasStudied = studiedCards.has(index);
@@ -123,7 +123,7 @@ export function FlashcardResults({
 				{/* Actions */}
 				<div className="flex justify-center gap-4 pb-8">
 					<Button variant="outline" size="lg" onClick={onExit}>
-						Torna alla Home
+						Torna alla home
 					</Button>
 					{onRetry && (
 						<Button size="lg" onClick={onRetry}>

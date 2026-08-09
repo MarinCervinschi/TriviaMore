@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_app/admin/users/$userId")({
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.user(params.userId)),
 	component: AdminUserDetailPage,
-	head: () => seoHead({ title: "Dettaglio Utente | Gestione", noindex: true }),
+	head: () => seoHead({ title: "Dettaglio utente | Gestione", noindex: true }),
 });
 
 function AdminUserDetailPage() {

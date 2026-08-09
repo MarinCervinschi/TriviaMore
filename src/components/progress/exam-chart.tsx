@@ -19,7 +19,7 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 	return (
 		<div className="bg-card overflow-hidden rounded-2xl border">
 			<div className="p-6">
-				<h3 className="text-lg font-bold">Performance Esami</h3>
+				<h3 className="text-lg font-bold">Performance esami</h3>
 				<p className="text-muted-foreground text-sm">
 					Risultati delle simulazioni d'esame per corso
 				</p>

@@ -156,7 +156,7 @@ export function ProgressDetails({
 			</div>
 
 			<div>
-				<h3 className="mb-3 text-lg font-bold">Tutti i Record di Progresso</h3>
+				<h3 className="mb-3 text-lg font-bold">Tutti i record di progresso</h3>
 				<ProgressTable progressData={progressData} />
 			</div>
 		</div>

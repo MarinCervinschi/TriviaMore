@@ -111,7 +111,7 @@ const statConfig: {
 	{
 		key: "courses",
 		icon: GraduationCap,
-		label: "Corsi di Laurea",
+		label: "Corsi di laurea",
 		color: "text-blue-600",
 		bg: "bg-blue-500/10",
 	},
@@ -172,7 +172,7 @@ export function PlatformStatsSection({ stats }: { stats: PlatformStats }) {
 					animate={headingVisible ? "visible" : "hidden"}
 				>
 					<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-						La Piattaforma in Numeri
+						La piattaforma in numeri
 					</p>
 					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 						Cresce ogni giorno grazie alla community

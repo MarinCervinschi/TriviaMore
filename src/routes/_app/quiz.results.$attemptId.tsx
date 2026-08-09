@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
 		if (!data) throw notFound();
 		return data;
 	},
-	head: () => seoHead({ title: "Risultati Quiz", noindex: true }),
+	head: () => seoHead({ title: "Risultati quiz", noindex: true }),
 	pendingComponent: QuizResultsSkeleton,
 	component: ResultsPage,
 	notFoundComponent: () => (
@@ -148,7 +148,7 @@ function ResultsPage() {
 
 				{/* Question Review */}
 				<div>
-					<h2 className="mb-4 text-xl font-bold tracking-tight">Revisione Domande</h2>
+					<h2 className="mb-4 text-xl font-bold tracking-tight">Revisione domande</h2>
 					<div className="space-y-3">
 						{result.quiz.questions.map((question, index) => {
 							const answer = result.answers.find(a => a.questionId === question.id);
@@ -181,7 +181,7 @@ function ResultsPage() {
 				{/* Actions */}
 				<div className="flex flex-wrap justify-center gap-3 pb-8">
 					<Button variant="outline" size="lg" asChild>
-						<Link to="/">Torna alla Home</Link>
+						<Link to="/">Torna alla home</Link>
 					</Button>
 					{result.quiz.section.path && (
 						<Button size="lg" asChild>

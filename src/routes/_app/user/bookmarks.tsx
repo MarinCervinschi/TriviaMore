@@ -45,7 +45,7 @@ function BookmarksPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={Bookmark}
-				title="I Miei Segnalibri"
+				title="I miei segnalibri"
 				description="Domande che hai salvato per ripassare piu tardi"
 				stats={
 					bookmarks.length > 0

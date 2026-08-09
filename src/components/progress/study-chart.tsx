@@ -19,7 +19,7 @@ export function StudyChart({ data }: { data: StudyChartItem[] }) {
 	return (
 		<div className="bg-card overflow-hidden rounded-2xl border">
 			<div className="p-6">
-				<h3 className="text-lg font-bold">Performance Studio</h3>
+				<h3 className="text-lg font-bold">Performance studio</h3>
 				<p className="text-muted-foreground text-sm">
 					Media per sezione, in 33esimi. Il colore segue la fascia di voto.
 				</p>

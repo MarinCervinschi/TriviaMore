@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_app/admin/courses/$courseId")({
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(adminQueries.course(params.courseId)),
 	component: AdminCourseDetailPage,
-	head: () => seoHead({ title: "Dettaglio Corso | Gestione", noindex: true }),
+	head: () => seoHead({ title: "Dettaglio corso | Gestione", noindex: true }),
 });
 
 const column = createDataTableColumns<ClassRow>();

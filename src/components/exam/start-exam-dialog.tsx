@@ -115,7 +115,7 @@ export function StartExamDialog({
 		<SessionDialogShell open={open} onOpenChange={onOpenChange}>
 			<div className="flex flex-col">
 				<DialogHeader className="border-b px-6 pt-5 pb-4 text-left">
-					<DialogTitle>Simulazione Esame</DialogTitle>
+					<DialogTitle>Simulazione esame</DialogTitle>
 					<DialogDescription>
 						Domande da tutte le sezioni dell&apos;insegnamento
 					</DialogDescription>

@@ -129,7 +129,7 @@ function UserContributionsPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={Inbox}
-				title="I Miei Contributi"
+				title="I miei contributi"
 				description="Proponi nuovi contenuti per la piattaforma."
 			/>
 

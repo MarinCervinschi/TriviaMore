@@ -91,19 +91,19 @@ function DashboardPage() {
 				{/* Stats */}
 				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 					<StatCard
-						label="Quiz Completati"
+						label="Quiz completati"
 						value={profile.stats.totalQuizzes}
 						icon={Trophy}
 						color="yellow"
 					/>
 					<StatCard
-						label="Punteggio Medio"
+						label="Punteggio medio"
 						value={`${profile.stats.averageScore}/33`}
 						icon={TrendingUp}
 						color="green"
 					/>
 					<StatCard
-						label="Corsi Seguiti"
+						label="Corsi seguiti"
 						value={profile.stats.userClassesCount}
 						icon={GraduationCap}
 						color="blue"
@@ -121,28 +121,28 @@ function DashboardPage() {
 					<QuickActionCard
 						icon={Inbox}
 						color="amber"
-						title="I Miei Contributi"
+						title="I miei contributi"
 						description="Proponi nuovi contenuti per la piattaforma"
 						href="/user/requests"
 					/>
 					<QuickActionCard
 						icon={TrendingUp}
 						color="green"
-						title="I Miei Progressi"
+						title="I miei progressi"
 						description="Visualizza i tuoi progressi dettagliati per ogni materia"
 						href="/user/progress"
 					/>
 					<QuickActionCard
 						icon={GraduationCap}
 						color="blue"
-						title="I Miei Corsi"
+						title="I miei corsi"
 						description="Gestisci i corsi che stai seguendo al meglio"
 						href="/user/classes"
 					/>
 					<QuickActionCard
 						icon={BookmarkIcon}
 						color="purple"
-						title="I Miei Segnalibri"
+						title="I miei segnalibri"
 						description="Accedi alle domande che hai salvato per dopo"
 						href="/user/bookmarks"
 					/>
@@ -251,12 +251,12 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 					<p className="text-primary text-sm font-semibold tracking-widest uppercase">
 						I tuoi corsi
 					</p>
-					<h2 className="text-xl font-bold">Corsi Visti Recentemente</h2>
+					<h2 className="text-xl font-bold">Corsi visti recentemente</h2>
 				</div>
 				<Button asChild variant="ghost" size="sm" className="group">
 					<Link to="/user/classes" className="flex items-center gap-1">
 						<GraduationCap className="h-4 w-4" />
-						Tutti i Corsi
+						Tutti i corsi
 						<ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
 					</Link>
 				</Button>
@@ -363,7 +363,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 				<p className="text-primary text-sm font-semibold tracking-widest uppercase">
 					La tua attivita
 				</p>
-				<h2 className="text-xl font-bold">Ultimi {attempts.length} Quiz Completati</h2>
+				<h2 className="text-xl font-bold">Ultimi {attempts.length} Quiz completati</h2>
 			</div>
 
 			<motion.div

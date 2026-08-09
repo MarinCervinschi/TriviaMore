@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_app/user/classes")({
 		courseType: dataTableFilterField,
 	}),
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.classes()),
-	head: () => seoHead({ title: "I Miei Corsi", noindex: true }),
+	head: () => seoHead({ title: "I miei corsi", noindex: true }),
 	pendingComponent: UserClassesSkeleton,
 	component: ClassesPage,
 });
@@ -196,7 +196,7 @@ function ClassesPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={GraduationCap}
-				title="I Miei Corsi"
+				title="I miei corsi"
 				description="Gestisci i corsi che stai seguendo"
 				stats={[
 					{ label: "corsi totali", value: userClasses.length },
@@ -205,7 +205,7 @@ function ClassesPage() {
 			/>
 
 			<div className="container space-y-6">
-				<UserBreadcrumb current="I Miei Corsi" />
+				<UserBreadcrumb current="I miei corsi" />
 
 				{userClasses.length === 0 ? (
 					<EmptyState

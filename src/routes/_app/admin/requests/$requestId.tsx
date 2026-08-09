@@ -65,7 +65,7 @@ function formatDateTime(iso: string): string {
 export const Route = createFileRoute("/_app/admin/requests/$requestId")({
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(requestQueries.requestDetail(params.requestId)),
-	head: () => seoHead({ title: "Dettaglio Richiesta", noindex: true }),
+	head: () => seoHead({ title: "Dettaglio richiesta", noindex: true }),
 	component: AdminRequestDetailPage,
 });
 

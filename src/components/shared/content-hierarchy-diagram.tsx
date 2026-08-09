@@ -38,7 +38,7 @@ export const CONTENT_LEVELS: ContentLevel[] = [
 	},
 	{
 		icon: GraduationCap,
-		label: "Corso di Laurea",
+		label: "Corso di laurea",
 		example: "Ingegneria Informatica",
 		description: "il percorso di laurea",
 		color: "text-blue-600",
@@ -153,7 +153,7 @@ export function ContentHierarchyDiagram({
 			initial="hidden"
 			animate={isVisible ? "visible" : "hidden"}
 			role="img"
-			aria-label="Gerarchia dei contenuti: Dipartimento, Corso di Laurea, Insegnamento, Sezione"
+			aria-label="Gerarchia dei contenuti: Dipartimento, Corso di laurea, Insegnamento, Sezione"
 		>
 			{isHorizontal ? (
 				<div className="flex flex-col items-center gap-0 lg:flex-row lg:items-stretch lg:justify-between lg:gap-2 xl:gap-3">

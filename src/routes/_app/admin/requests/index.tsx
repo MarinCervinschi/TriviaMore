@@ -62,7 +62,7 @@ export const Route = createFileRoute("/_app/admin/requests/")({
 	}),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(requestQueries.adminRequests()),
-	head: () => seoHead({ title: "Richieste Contenuto", noindex: true }),
+	head: () => seoHead({ title: "Richieste contenuto", noindex: true }),
 	component: AdminRequestsPage,
 });
 
@@ -167,7 +167,7 @@ function AdminRequestsPage() {
 	return (
 		<div className="space-y-6 py-2">
 			<AdminPageHeader
-				title="Richieste Contenuto"
+				title="Richieste contenuto"
 				description="Gestisci le richieste degli utenti per nuovi contenuti e segnalazioni."
 			/>
 
