@@ -55,9 +55,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 					{item.label}
 				</Link>
 			) : (
-				<p className="text-muted-foreground mt-2 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
-					{item.label}
-				</p>
+				<p className="text-muted-foreground eyebrow mt-2 mb-1 px-3">{item.label}</p>
 			)}
 			{item.children.map(child => (
 				<Link

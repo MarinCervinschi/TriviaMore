@@ -295,9 +295,7 @@ function NodeCard({
 	return (
 		<div className="bg-card/95 absolute right-4 bottom-4 z-10 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border p-4 shadow-lg backdrop-blur-sm sm:right-6 sm:bottom-6">
 			<div className="flex items-center justify-between gap-2">
-				<div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-					{kindLabel}
-				</div>
+				<div className="text-muted-foreground eyebrow">{kindLabel}</div>
 				{isPinned && (
 					<button
 						type="button"

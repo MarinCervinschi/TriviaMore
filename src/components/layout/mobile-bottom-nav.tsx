@@ -173,9 +173,7 @@ function ProfileSheet({
 				</div>
 
 				{/* Tools */}
-				<p className="text-muted-foreground mb-2 px-1 text-xs font-semibold tracking-wider uppercase">
-					Strumenti
-				</p>
+				<p className="text-muted-foreground eyebrow mb-2 px-1">Strumenti</p>
 				<div className="grid grid-cols-2 gap-2">
 					<ToolTile
 						to="/user/notifications"
@@ -223,9 +221,7 @@ function ProfileSheet({
 				<Separator className="my-4" />
 
 				{/* Account */}
-				<p className="text-muted-foreground mb-2 px-1 text-xs font-semibold tracking-wider uppercase">
-					Account
-				</p>
+				<p className="text-muted-foreground eyebrow mb-2 px-1">Account</p>
 				<div className="flex flex-col gap-1">
 					<Link
 						to="/user/settings"

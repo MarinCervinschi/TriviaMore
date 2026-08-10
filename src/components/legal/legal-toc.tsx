@@ -29,7 +29,7 @@ export function LegalToc({ items, className }: LegalTocProps) {
 				className
 			)}
 		>
-			<div className="text-muted-foreground mb-4 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
+			<div className="text-muted-foreground eyebrow mb-4 flex items-center gap-2">
 				<ListIcon className="h-3.5 w-3.5" />
 				In questa pagina
 			</div>

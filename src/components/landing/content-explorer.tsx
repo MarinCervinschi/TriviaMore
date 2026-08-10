@@ -30,9 +30,7 @@ export function ContentExplorer() {
 						initial="hidden"
 						animate={headingVisible ? "visible" : "hidden"}
 					>
-						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							Come funziona
-						</p>
+						<p className="text-primary eyebrow-lg mb-3">Come funziona</p>
 						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Contenuti organizzati come il tuo piano di studi
 						</h2>

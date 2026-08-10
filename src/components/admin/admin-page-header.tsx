@@ -27,11 +27,7 @@ export function AdminPageHeader({
 		<div className="border-border/50 mb-8 border-b pb-6">
 			{backTo && (
 				<div className="mb-4">
-					{backLabel && (
-						<p className="text-primary mb-1 text-xs font-semibold tracking-widest uppercase">
-							{backLabel}
-						</p>
-					)}
+					{backLabel && <p className="text-primary eyebrow mb-1">{backLabel}</p>}
 					<Button variant="ghost" size="sm" className="-ml-2 rounded-xl" asChild>
 						<Link to={backTo} params={backParams}>
 							<ArrowLeftIcon className="mr-1 h-4 w-4" />

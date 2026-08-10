@@ -275,9 +275,7 @@ function FilterSection({
 }) {
 	return (
 		<div>
-			<h3 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-				{title}
-			</h3>
+			<h3 className="text-muted-foreground eyebrow mb-2">{title}</h3>
 			{children}
 		</div>
 	);

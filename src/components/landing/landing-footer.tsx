@@ -35,9 +35,7 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
 
 					{sections.map(section => (
 						<div key={section.title}>
-							<h4 className="text-foreground/70 mb-4 text-sm font-semibold tracking-wider uppercase">
-								{section.title}
-							</h4>
+							<h4 className="text-foreground/70 eyebrow-lg mb-4">{section.title}</h4>
 							<ul className="space-y-3">
 								{section.links.map(link => (
 									<li key={link.label}>

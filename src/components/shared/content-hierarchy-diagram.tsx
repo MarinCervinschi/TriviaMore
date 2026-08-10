@@ -78,14 +78,7 @@ function TreeCard({ level }: { level: ContentLevel }) {
 					<Icon className={cn("h-5 w-5", level.color)} aria-hidden />
 				</div>
 				<div className="min-w-0">
-					<p
-						className={cn(
-							"text-xs font-semibold tracking-wider uppercase",
-							level.color
-						)}
-					>
-						{level.label}
-					</p>
+					<p className={cn("eyebrow", level.color)}>{level.label}</p>
 					<p className="truncate text-sm font-medium">{level.example}</p>
 				</div>
 			</div>

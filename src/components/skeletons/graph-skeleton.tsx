@@ -10,9 +10,7 @@ export function GraphPageSkeleton() {
 		>
 			{/* Static header — same copy as the loaded page */}
 			<header className="pointer-events-none relative z-10 max-w-2xl p-6 sm:p-10">
-				<p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-					Mappa dei contenuti
-				</p>
+				<p className="text-muted-foreground eyebrow">Mappa dei contenuti</p>
 				<h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
 					La rete UniMore su TriviaMore
 				</h1>

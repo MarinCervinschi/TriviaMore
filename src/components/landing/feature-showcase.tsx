@@ -272,10 +272,7 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 					initial="hidden"
 					animate={headingVisible ? "visible" : "hidden"}
 				>
-					<motion.p
-						className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase"
-						variants={headingItem}
-					>
+					<motion.p className="text-primary eyebrow-lg mb-3" variants={headingItem}>
 						Funzionalita'
 					</motion.p>
 					<motion.h2

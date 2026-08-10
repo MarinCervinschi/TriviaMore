@@ -130,10 +130,7 @@ function ContactPage() {
 					animate={heroVisible ? "visible" : "hidden"}
 				>
 					<div className="mx-auto max-w-3xl text-center">
-						<motion.p
-							className="text-primary mb-4 text-sm font-semibold tracking-widest uppercase"
-							variants={item}
-						>
+						<motion.p className="text-primary eyebrow-lg mb-4" variants={item}>
 							Contatti
 						</motion.p>
 						<motion.h1
@@ -284,9 +281,7 @@ function ContactPage() {
 					animate={faqVisible ? "visible" : "hidden"}
 				>
 					<div className="mb-12 text-center">
-						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							FAQ
-						</p>
+						<p className="text-primary eyebrow-lg mb-3">FAQ</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 							Domande frequenti
 						</h2>
