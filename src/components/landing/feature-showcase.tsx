@@ -282,7 +282,7 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 						Funzionalita'
 					</motion.p>
 					<motion.h2
-						className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
+						className="font-display mb-4 text-3xl font-normal tracking-tight sm:text-4xl"
 						variants={headingItem}
 					>
 						Scopri cosa puoi fare con <span className="gradient-text">TriviaMore</span>
