@@ -33,7 +33,7 @@ export function renderContactEmailHtml(data: ContactInput): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nuovo messaggio - ${subject}</title>
   </head>
-  <body style="margin:0;padding:0;background-color:#f6f4f1;font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a1a;">
+  <body style="margin:0;padding:0;background-color:#f6f4f1;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a1a;">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f6f4f1;padding:32px 16px;">
       <tr>
         <td align="center">

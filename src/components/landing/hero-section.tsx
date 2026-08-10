@@ -73,7 +73,7 @@ export function HeroSection({
 				</motion.div>
 
 				<motion.h1
-					className="mx-auto mb-8 max-w-4xl text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+					className="font-display mx-auto mb-8 max-w-4xl text-4xl leading-[1.1] font-normal tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
 					variants={item}
 				>
 					<span className="gradient-text">Studia meglio,</span>

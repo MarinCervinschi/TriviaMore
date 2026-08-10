@@ -139,7 +139,7 @@ function ContactPage() {
 							Contatti
 						</motion.p>
 						<motion.h1
-							className="mb-6 text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl lg:text-6xl"
+							className="font-display mb-6 text-4xl leading-[1.1] font-normal tracking-tight sm:text-5xl lg:text-6xl"
 							variants={item}
 						>
 							Parliamo del <span className="gradient-text">tuo progetto</span>

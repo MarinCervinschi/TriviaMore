@@ -7,7 +7,8 @@
 
 /* ===== Theme: map CSS variables to Tailwind utilities ===== */
 @theme {
-	--font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+	--font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-display: "DM Serif Display", ui-serif, Georgia, serif;
 	--color-background: hsl(var(--background));
 	--color-foreground: hsl(var(--foreground));
 	--color-card: hsl(var(--card));
