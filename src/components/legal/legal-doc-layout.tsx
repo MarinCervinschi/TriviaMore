@@ -125,7 +125,7 @@ export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
 										<tbody className="divide-border/50 divide-y">{children}</tbody>
 									),
 									th: ({ children }) => (
-										<th className="text-muted-foreground px-4 py-3 text-left text-[11px] font-semibold tracking-wider uppercase">
+										<th className="text-muted-foreground eyebrow px-4 py-3 text-left">
 											{children}
 										</th>
 									),

@@ -92,7 +92,7 @@ export function DataTable<TData extends RowData>({
 													key={header.id}
 													colSpan={header.colSpan}
 													className={cn(
-														"text-muted-foreground h-auto text-xs font-medium tracking-wider whitespace-nowrap uppercase",
+														"text-muted-foreground eyebrow h-auto whitespace-nowrap",
 														cellPadding,
 														ALIGN_CLASS[align],
 														meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],

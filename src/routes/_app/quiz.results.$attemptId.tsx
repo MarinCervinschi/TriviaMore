@@ -303,7 +303,7 @@ function ReviewItem({
 					)}
 					{question.explanation && (
 						<div className="border-primary bg-muted/40 rounded-xl border-l-4 p-4">
-							<div className="text-primary mb-1 flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase">
+							<div className="text-primary eyebrow mb-1 flex items-center gap-1.5">
 								<LightbulbMinimalisticIcon className="h-3.5 w-3.5" />
 								Spiegazione
 							</div>

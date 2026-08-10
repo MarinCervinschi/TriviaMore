@@ -167,9 +167,7 @@ function AdminRequestDetailPage() {
 								</AvatarFallback>
 							</Avatar>
 							<div className="min-w-0 space-y-1.5">
-								<p className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
-									Inviata da
-								</p>
+								<p className="text-muted-foreground eyebrow">Inviata da</p>
 								<p className="truncate text-sm font-semibold">
 									{request.user.name ?? "Utente"}
 								</p>
@@ -297,11 +295,7 @@ function AdminRequestDetailPage() {
 }
 
 function SectionLabel({ children }: { children: ReactNode }) {
-	return (
-		<h3 className="text-primary px-1 text-xs font-semibold tracking-widest uppercase">
-			{children}
-		</h3>
-	);
+	return <h3 className="text-primary eyebrow px-1">{children}</h3>;
 }
 
 // ─── Material preview (the content under review, without the user's words) ───

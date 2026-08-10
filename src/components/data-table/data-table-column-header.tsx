@@ -28,10 +28,7 @@ export function DataTableColumnHeader<TData extends RowData>({
 		<Button
 			variant="ghost"
 			size="sm"
-			className={cn(
-				"h-8 px-2 text-xs font-medium tracking-wider uppercase",
-				ALIGN_CLASS[align]
-			)}
+			className={cn("eyebrow h-8 px-2", ALIGN_CLASS[align])}
 			onClick={header.column.getToggleSortingHandler()}
 		>
 			<FlexRender header={header} />

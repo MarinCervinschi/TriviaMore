@@ -84,12 +84,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						)}
 					</div>
 					<div className="min-w-0 flex-1">
-						<p
-							className={cn(
-								"truncate text-[10px] font-bold tracking-[0.16em] uppercase",
-								areaTextClass
-							)}
-						>
+						<p className={cn("eyebrow truncate", areaTextClass)}>
 							{areaConf?.label ?? "Area"}
 						</p>
 						<p className="text-muted-foreground truncate font-mono text-xs">

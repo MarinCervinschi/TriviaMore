@@ -246,9 +246,7 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 		<div className="space-y-4">
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<p className="text-primary text-sm font-semibold tracking-widest uppercase">
-						I tuoi corsi
-					</p>
+					<p className="text-primary eyebrow-lg">I tuoi corsi</p>
 					<h2 className="text-xl font-bold">Corsi visti recentemente</h2>
 				</div>
 				<Button asChild variant="ghost" size="sm" className="group">
@@ -358,9 +356,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 	return (
 		<div className="space-y-4">
 			<div>
-				<p className="text-primary text-sm font-semibold tracking-widest uppercase">
-					La tua attivita
-				</p>
+				<p className="text-primary eyebrow-lg">La tua attivita</p>
 				<h2 className="text-xl font-bold">Ultimi {attempts.length} Quiz completati</h2>
 			</div>
 

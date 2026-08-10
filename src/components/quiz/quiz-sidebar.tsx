@@ -15,9 +15,7 @@ export function QuizSidebarContent({
 }: QuizSidebarContentProps) {
 	return (
 		<div>
-			<h3 className="text-muted-foreground mb-3 text-xs font-medium tracking-wider uppercase">
-				Domande
-			</h3>
+			<h3 className="text-muted-foreground eyebrow mb-3">Domande</h3>
 			<div className="grid grid-cols-5 gap-2">
 				{Array.from({ length: totalQuestions }, (_, i) => (
 					<button

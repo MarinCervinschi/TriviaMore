@@ -174,9 +174,7 @@ export function PlatformStatsSection({ stats }: { stats: PlatformStats }) {
 					initial="hidden"
 					animate={headingVisible ? "visible" : "hidden"}
 				>
-					<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-						La piattaforma in numeri
-					</p>
+					<p className="text-primary eyebrow-lg mb-3">La piattaforma in numeri</p>
 					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 						Cresce ogni giorno grazie alla community
 					</h2>

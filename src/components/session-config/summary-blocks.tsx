@@ -18,14 +18,7 @@ export function Eyebrow({
 	className?: string;
 }) {
 	return (
-		<div
-			className={cn(
-				"text-muted-foreground text-[10px] font-semibold tracking-[0.16em] uppercase",
-				className
-			)}
-		>
-			{children}
-		</div>
+		<div className={cn("text-muted-foreground eyebrow", className)}>{children}</div>
 	);
 }
 

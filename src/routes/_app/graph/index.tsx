@@ -51,9 +51,7 @@ function GraphPage() {
 	return (
 		<div className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
 			<header className="pointer-events-none absolute top-0 left-0 z-10 max-w-2xl p-6 sm:p-10">
-				<p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-					Mappa dei contenuti
-				</p>
+				<p className="text-muted-foreground eyebrow">Mappa dei contenuti</p>
 				<h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
 					La rete UniMore su TriviaMore
 				</h1>

@@ -199,9 +199,7 @@ function BrowsePage() {
 						animate={hierarchyVisible ? "visible" : "hidden"}
 						className="mx-auto mb-10 max-w-2xl text-center"
 					>
-						<p className="text-primary mb-2 text-xs font-bold tracking-[0.18em] uppercase">
-							Come è organizzato
-						</p>
+						<p className="text-primary eyebrow mb-2">Come è organizzato</p>
 						<h2 className="mb-3 text-2xl font-bold tracking-tight sm:text-3xl">
 							Dal dipartimento al singolo argomento
 						</h2>
@@ -223,9 +221,7 @@ function BrowsePage() {
 					animate={dataVisible ? "visible" : "hidden"}
 					className="mb-8"
 				>
-					<p className="text-primary mb-2 text-xs font-bold tracking-[0.18em] uppercase">
-						Dati e statistiche
-					</p>
+					<p className="text-primary eyebrow mb-2">Dati e statistiche</p>
 					<div className="flex flex-wrap items-end justify-between gap-3">
 						<h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
 							Uno sguardo d&apos;insieme
@@ -365,9 +361,7 @@ function TopClassesStrip({
 			<div className="mb-4 flex items-baseline justify-between gap-3">
 				<div className="flex items-center gap-2">
 					<CupFirstIcon className="text-primary h-4 w-4" />
-					<p className="text-primary text-[10px] font-bold tracking-[0.18em] uppercase">
-						Insegnamenti più contribuiti
-					</p>
+					<p className="text-primary eyebrow">Insegnamenti più contribuiti</p>
 				</div>
 				<p className="text-muted-foreground text-xs">Per numero di sezioni</p>
 			</div>

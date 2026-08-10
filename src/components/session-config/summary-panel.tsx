@@ -20,9 +20,7 @@ export function SummaryPanel({ children, footerTip, className }: SummaryPanelPro
 			)}
 		>
 			<h2 className="sr-only">Riepilogo della sessione</h2>
-			<div className="text-muted-foreground text-[10px] font-semibold tracking-[0.16em] uppercase">
-				Riepilogo
-			</div>
+			<div className="text-muted-foreground eyebrow">Riepilogo</div>
 			<AnimatedStack className="flex flex-1 flex-col gap-5">{children}</AnimatedStack>
 			{footerTip && (
 				<div className="border-border/60 text-muted-foreground mt-auto border-t pt-4 text-xs leading-relaxed">

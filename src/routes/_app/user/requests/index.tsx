@@ -307,9 +307,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
 	if (submitted.type === "file_upload") {
 		return (
 			<div className="space-y-2">
-				<p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
-					File caricato
-				</p>
+				<p className="text-muted-foreground eyebrow">File caricato</p>
 				<div className="bg-muted/30 flex items-center gap-3 rounded-2xl border p-4">
 					<div className="rounded-xl bg-emerald-500/10 p-2">
 						<CloudUploadIcon className="size-5 text-emerald-500" />
@@ -331,9 +329,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
 	if (submitted.type === "section") {
 		return (
 			<div className="space-y-2">
-				<p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
-					Sezione proposta
-				</p>
+				<p className="text-muted-foreground eyebrow">Sezione proposta</p>
 				<div className="bg-muted/30 rounded-2xl border p-4">
 					<p className="text-sm font-medium">{submitted.name}</p>
 					{submitted.description && (
@@ -348,7 +344,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
 
 	return (
 		<div className="space-y-2">
-			<p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+			<p className="text-muted-foreground eyebrow">
 				Domande proposte ({submitted.questions.length})
 			</p>
 			<div className="space-y-2">
@@ -803,9 +799,7 @@ function ReportEditor({
 function ReportPreview({ report }: { report: SubmittedReport }) {
 	return (
 		<div className="space-y-2">
-			<p className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
-				Segnalazione
-			</p>
+			<p className="text-muted-foreground eyebrow">Segnalazione</p>
 			<div className="bg-muted/30 space-y-3 rounded-2xl border p-4">
 				<div className="flex flex-wrap gap-1.5">
 					{report.reasons.map(r => (

@@ -130,9 +130,7 @@ export function BenefitsSection({
 						initial="hidden"
 						animate={headingVisible ? "visible" : "hidden"}
 					>
-						<p className="text-primary mb-3 text-sm font-semibold tracking-widest uppercase">
-							Perché TriviaMore
-						</p>
+						<p className="text-primary eyebrow-lg mb-3">Perché TriviaMore</p>
 						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Scritto da chi l&apos;esame l&apos;ha già dato
 						</h2>

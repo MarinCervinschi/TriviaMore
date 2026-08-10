@@ -64,15 +64,9 @@ export function AdminSidebar() {
 				)}
 			>
 				<RoleIcon className={cn("h-4 w-4 shrink-0", theme.pillText)} />
-				<span
-					className={cn("text-xs font-bold tracking-wider uppercase", theme.pillText)}
-				>
-					{theme.label}
-				</span>
+				<span className={cn("eyebrow", theme.pillText)}>{theme.label}</span>
 			</div>
-			<p className="text-primary mb-2 px-3 text-xs font-semibold tracking-widest uppercase">
-				Gestione
-			</p>
+			<p className="text-primary eyebrow mb-2 px-3">Gestione</p>
 			<div className="flex flex-col gap-0.5">
 				{/* Dashboard */}
 				<Link
@@ -129,9 +123,7 @@ export function AdminSidebar() {
 
 			{/* Stats: Contenuti */}
 			<div className="border-border/50 my-4 border-t pt-4">
-				<p className="text-primary mb-2 px-3 text-xs font-semibold tracking-widest uppercase">
-					Contenuti
-				</p>
+				<p className="text-primary eyebrow mb-2 px-3">Contenuti</p>
 				<div className="flex flex-col gap-0.5">
 					<SidebarStat icon={DiplomaIcon} label="Corsi" count={stats?.courseCount} />
 					<SidebarStat
@@ -151,9 +143,7 @@ export function AdminSidebar() {
 			{/* Stats: Utenti — SUPERADMIN only */}
 			{isSuperadmin && (
 				<div className="border-border/50 border-t pt-4">
-					<p className="text-primary mb-2 px-3 text-xs font-semibold tracking-widest uppercase">
-						Utenti
-					</p>
+					<p className="text-primary eyebrow mb-2 px-3">Utenti</p>
 					<div className="flex flex-col gap-0.5">
 						<SidebarStat
 							icon={UsersGroupRoundedIcon}
