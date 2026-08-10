@@ -33,6 +33,7 @@
 		"smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts"
 	},
 	"dependencies": {
+		"@fontsource/dm-mono": "^5.3.0",
 		"@fontsource/dm-sans": "^5.3.0",
 		"@fontsource/dm-serif-display": "^5.3.0",
 		"@hookform/resolvers": "^5.2.2",
