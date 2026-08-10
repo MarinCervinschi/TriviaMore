@@ -9,6 +9,11 @@
 @theme {
 	--font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 	--font-display: "DM Serif Display", ui-serif, Georgia, serif;
+	--font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+	/* The only step below --text-xs. Figures and prose never go smaller: at 10px a
+	   label is already at the edge of legibility, so there is nothing left to spend. */
+	--text-2xs: 0.625rem;
+	--text-2xs--line-height: 0.875rem;
 	--color-background: hsl(var(--background));
 	--color-foreground: hsl(var(--foreground));
 	--color-card: hsl(var(--card));
@@ -250,6 +255,25 @@ body {
 		hsl(var(--gradient-from)) 0%,
 		hsl(var(--gradient-to)) 100%
 	);
+}
+
+/* The overline. One voice, two sizes: `eyebrow` inside cards and panels, `eyebrow-lg` for the
+   section openers on the public pages. Colour stays at the call site — it is the one part that
+   legitimately varies. Named `eyebrow` because Tailwind already owns the class `overline`. */
+@utility eyebrow {
+	font-size: var(--text-xs);
+	line-height: var(--text-xs--line-height);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+@utility eyebrow-lg {
+	font-size: var(--text-sm);
+	line-height: var(--text-sm--line-height);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
 }
 
 .gradient-text {
