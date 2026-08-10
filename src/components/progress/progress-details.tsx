@@ -1,4 +1,5 @@
-import { Target, Trophy } from "lucide-react";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { TargetIcon } from "@solar-icons/react/linear/target";
 
 import {
 	DataTable,
@@ -87,7 +88,7 @@ export function ProgressDetails({
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-blue-500/10 p-2">
-								<Target className="h-5 w-5 text-blue-500" />
+								<TargetIcon className="h-5 w-5 text-blue-500" />
 							</div>
 							<h3 className="font-bold">Studio</h3>
 						</div>
@@ -123,7 +124,7 @@ export function ProgressDetails({
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-yellow-500/10 p-2">
-								<Trophy className="h-5 w-5 text-yellow-500" />
+								<CupFirstIcon className="h-5 w-5 text-yellow-500" />
 							</div>
 							<h3 className="font-bold">Esame</h3>
 						</div>

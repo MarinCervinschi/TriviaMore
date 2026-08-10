@@ -1,11 +1,16 @@
 import { useState } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { LibraryIcon } from "@solar-icons/react/linear/library";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, GraduationCap, Library, Plus, Trash2, Trophy } from "lucide-react";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { MaintainerInviteDialog } from "@/components/admin/maintainer-invite-dialog";
+import { PlusGlyph } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -179,7 +184,7 @@ function AdminUserDetailPage() {
 								<div>
 									<dt className="text-muted-foreground text-sm">Quiz completati</dt>
 									<dd className="flex items-center gap-2 text-2xl font-bold">
-										<Trophy className="h-5 w-5 text-yellow-500" />
+										<CupFirstIcon className="h-5 w-5 text-yellow-500" />
 										{user.stats.totalQuizzes}
 									</dd>
 								</div>
@@ -210,7 +215,7 @@ function AdminUserDetailPage() {
 						<CardHeader className="flex flex-row items-center justify-between">
 							<div>
 								<CardTitle className="flex items-center gap-2">
-									<Library className="h-5 w-5" />
+									<LibraryIcon className="h-5 w-5" />
 									Dipartimenti gestiti
 								</CardTitle>
 								<p className="text-muted-foreground mt-1 text-sm">
@@ -239,7 +244,7 @@ function AdminUserDetailPage() {
 													})
 												}
 											>
-												<Trash2 className="text-destructive h-3 w-3" />
+												<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
 											</Button>
 										</Badge>
 									))}
@@ -272,7 +277,7 @@ function AdminUserDetailPage() {
 											}
 										}}
 									>
-										<Plus className="mr-1 h-4 w-4" />
+										<PlusGlyph className="mr-1 h-4 w-4" />
 										Aggiungi
 									</Button>
 								</div>
@@ -291,7 +296,7 @@ function AdminUserDetailPage() {
 					<Card className="rounded-2xl">
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
-								<GraduationCap className="h-5 w-5" />
+								<DiplomaIcon className="h-5 w-5" />
 								Corsi mantenuti
 							</CardTitle>
 							<p className="text-muted-foreground text-sm">
@@ -319,7 +324,7 @@ function AdminUserDetailPage() {
 													})
 												}
 											>
-												<Trash2 className="text-destructive h-3 w-3" />
+												<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
 											</Button>
 										</Badge>
 									))}
@@ -352,7 +357,7 @@ function AdminUserDetailPage() {
 											}
 										}}
 									>
-										<Plus className="mr-1 h-4 w-4" />
+										<PlusGlyph className="mr-1 h-4 w-4" />
 										Aggiungi
 									</Button>
 								</div>
@@ -370,7 +375,7 @@ function AdminUserDetailPage() {
 				<Card className="rounded-2xl">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<BookOpen className="h-5 w-5" />
+							<BookIcon className="h-5 w-5" />
 							Accessi sezioni private
 						</CardTitle>
 						<p className="text-muted-foreground text-sm">
@@ -398,7 +403,7 @@ function AdminUserDetailPage() {
 												})
 											}
 										>
-											<Trash2 className="text-destructive h-3 w-3" />
+											<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
 										</Button>
 									</Badge>
 								))}
@@ -435,7 +440,7 @@ function AdminUserDetailPage() {
 											}
 										}}
 									>
-										<Plus className="mr-1 h-4 w-4" />
+										<PlusGlyph className="mr-1 h-4 w-4" />
 										Aggiungi
 									</Button>
 								</div>

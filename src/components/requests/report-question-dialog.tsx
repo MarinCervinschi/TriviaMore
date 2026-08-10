@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Flag } from "lucide-react";
+import { FlagIcon } from "@solar-icons/react/linear/flag";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -82,7 +82,7 @@ export function ReportQuestionDialog({
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">
-						<Flag className="size-4 text-red-500" strokeWidth={1.5} />
+						<FlagIcon className="size-4 text-red-500" />
 						Segnala domanda
 					</DialogTitle>
 					<DialogDescription>Seleziona il motivo della segnalazione.</DialogDescription>

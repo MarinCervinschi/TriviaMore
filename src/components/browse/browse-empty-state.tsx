@@ -1,4 +1,5 @@
-import { PackageOpen, SearchX } from "lucide-react";
+import { BoxMinimalisticIcon } from "@solar-icons/react/linear/box-minimalistic";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -9,7 +10,7 @@ export function BrowseEmptyState({
 }) {
 	return (
 		<EmptyState
-			icon={SearchX}
+			icon={MagnifierIcon}
 			title={message}
 			description="Prova a cercare qualcos'altro"
 		/>
@@ -25,7 +26,7 @@ export function BrowseContributeState({
 }) {
 	return (
 		<EmptyState
-			icon={PackageOpen}
+			icon={BoxMinimalisticIcon}
 			title={message}
 			description="Aiutaci a far crescere la piattaforma contribuendo con nuovi contenuti!"
 		>

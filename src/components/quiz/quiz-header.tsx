@@ -1,4 +1,6 @@
-import { LogOut, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { SidebarIcon } from "@solar-icons/react/linear/sidebar";
+import { SidebarMinimalisticIcon } from "@solar-icons/react/linear/sidebar-minimalistic";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -32,9 +34,9 @@ export function QuizHeader({
 					className="h-9 w-9 rounded-xl"
 				>
 					{sidebarOpen ? (
-						<PanelLeftClose className="h-4 w-4" />
+						<SidebarIcon className="h-4 w-4" />
 					) : (
-						<PanelLeft className="h-4 w-4" />
+						<SidebarMinimalisticIcon className="h-4 w-4" />
 					)}
 				</Button>
 				<span className="bg-muted rounded-lg px-3 py-1 text-sm font-medium">
@@ -52,7 +54,7 @@ export function QuizHeader({
 					onClick={onExit}
 					className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-xl"
 				>
-					<LogOut className="mr-1.5 h-4 w-4" />
+					<Logout3Icon className="mr-1.5 h-4 w-4" />
 					Esci
 				</Button>
 			</div>

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
 
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
@@ -70,7 +70,7 @@ function DesktopNavDropdown({
 					}}
 				>
 					{item.label}
-					<ChevronDown
+					<AltArrowDownIcon
 						className={cn(
 							"h-3.5 w-3.5 transition-transform duration-200",
 							open && "rotate-180"
@@ -85,7 +85,7 @@ function DesktopNavDropdown({
 					)}
 				>
 					{item.label}
-					<ChevronDown
+					<AltArrowDownIcon
 						className={cn(
 							"h-3.5 w-3.5 transition-transform duration-200",
 							open && "rotate-180"
@@ -107,7 +107,7 @@ function DesktopNavDropdown({
 							>
 								{child.icon && (
 									<div className="bg-primary/10 mt-0.5 flex-shrink-0 rounded-lg p-1.5">
-										<child.icon className="text-primary h-4 w-4" strokeWidth={1.5} />
+										<child.icon className="text-primary h-4 w-4" />
 									</div>
 								)}
 								<div className="min-w-0">

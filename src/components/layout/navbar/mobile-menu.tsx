@@ -1,7 +1,8 @@
 import { useState } from "react";
 
+import { HamburgerMenuIcon } from "@solar-icons/react/linear/hamburger-menu";
+import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
 import { Link } from "@tanstack/react-router";
-import { LogOut, Menu } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 					className: "bg-primary/10 text-primary font-semibold",
 				}}
 			>
-				{item.icon && <item.icon className="h-4 w-4" strokeWidth={1.5} />}
+				{item.icon && <item.icon className="h-4 w-4" />}
 				{item.label}
 			</Link>
 		);
@@ -50,7 +51,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 						className: "bg-primary/10 text-primary font-semibold",
 					}}
 				>
-					{item.icon && <item.icon className="h-4 w-4" strokeWidth={1.5} />}
+					{item.icon && <item.icon className="h-4 w-4" />}
 					{item.label}
 				</Link>
 			) : (
@@ -68,7 +69,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 						className: "bg-primary/10 text-primary font-semibold",
 					}}
 				>
-					{child.icon && <child.icon className="h-4 w-4" strokeWidth={1.5} />}
+					{child.icon && <child.icon className="h-4 w-4" />}
 					{child.label}
 				</Link>
 			))}
@@ -87,7 +88,7 @@ export function MobileMenu() {
 		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTrigger asChild>
 				<Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl md:hidden">
-					<Menu className="h-5 w-5" />
+					<HamburgerMenuIcon className="h-5 w-5" />
 					<span className="sr-only">Menu</span>
 				</Button>
 			</SheetTrigger>
@@ -150,7 +151,7 @@ export function MobileMenu() {
 								onClick={close}
 								className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
 							>
-								{link.icon && <link.icon className="h-4 w-4" strokeWidth={1.5} />}
+								{link.icon && <link.icon className="h-4 w-4" />}
 								{link.label}
 							</Link>
 						))}
@@ -162,7 +163,7 @@ export function MobileMenu() {
 							}}
 							className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors"
 						>
-							<LogOut className="h-4 w-4" strokeWidth={1.5} />
+							<Logout3Icon className="h-4 w-4" />
 							Esci
 						</button>
 					</div>

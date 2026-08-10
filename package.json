@@ -74,7 +74,6 @@
 		"drizzle-orm": "^0.45.2",
 		"framer-motion": "^12.38.0",
 		"katex": "^0.16.40",
-		"lucide-react": "^0.545.0",
 		"maplibre-gl": "^5.22.0",
 		"nodemailer": "^8.0.6",
 		"pg": "^8.22.0",

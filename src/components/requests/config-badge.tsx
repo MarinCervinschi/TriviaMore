@@ -1,5 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-
+import type { Icon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +11,7 @@ export function ConfigBadge({
 }: {
 	label: string;
 	className: string;
-	icon?: LucideIcon;
+	icon?: Icon;
 }) {
 	return (
 		<Badge
@@ -22,7 +21,7 @@ export function ConfigBadge({
 				className
 			)}
 		>
-			{Icon && <Icon className="size-3" strokeWidth={1.5} />}
+			{Icon && <Icon className="size-3" />}
 			{label}
 		</Badge>
 	);

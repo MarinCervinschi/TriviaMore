@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { motion } from "framer-motion";
-import { BookOpen, Building2, FileText, GraduationCap } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import type { PlatformStats } from "@/lib/browse/types";
@@ -55,7 +58,7 @@ function useAnimatedCounter(
 }
 
 interface StatItemProps {
-	icon: LucideIcon;
+	icon: Icon;
 	value: number;
 	label: string;
 	color: string;
@@ -80,7 +83,7 @@ function StatItem({
 			<div className="from-primary/5 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
 			<div className={`mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
-				<Icon className={`h-6 w-6 ${color}`} strokeWidth={1.5} />
+				<Icon className={`h-6 w-6 ${color}`} />
 			</div>
 
 			<p className="relative text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
@@ -96,35 +99,35 @@ function StatItem({
 
 const statConfig: {
 	key: keyof PlatformStats;
-	icon: LucideIcon;
+	icon: Icon;
 	label: string;
 	color: string;
 	bg: string;
 }[] = [
 	{
 		key: "departments",
-		icon: Building2,
+		icon: BuildingsIcon,
 		label: "Dipartimenti",
 		color: "text-primary",
 		bg: "bg-primary/10",
 	},
 	{
 		key: "courses",
-		icon: GraduationCap,
+		icon: DiplomaIcon,
 		label: "Corsi di laurea",
 		color: "text-blue-600",
 		bg: "bg-blue-500/10",
 	},
 	{
 		key: "classes",
-		icon: BookOpen,
+		icon: BookIcon,
 		label: "Corsi",
 		color: "text-purple-600",
 		bg: "bg-purple-500/10",
 	},
 	{
 		key: "sections",
-		icon: FileText,
+		icon: DocumentTextIcon,
 		label: "Sezioni",
 		color: "text-green-600",
 		bg: "bg-green-500/10",

@@ -1,8 +1,12 @@
 import { useState } from "react";
 
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
+import { CloseCircleIcon } from "@solar-icons/react/linear/close-circle";
+import { LightbulbMinimalisticIcon } from "@solar-icons/react/linear/lightbulb-minimalistic";
+import { RecordCircleIcon } from "@solar-icons/react/linear/record-circle";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
-import { CheckCircle, CircleDot, Clock, Lightbulb, XCircle } from "lucide-react";
 
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { BookmarkButton } from "@/components/quiz/bookmark-button";
@@ -99,22 +103,22 @@ function ResultsPage() {
 
 					<div className="relative mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<CheckCircle className="mx-auto mb-2 h-5 w-5 text-green-500" />
+							<CheckCircleIcon className="mx-auto mb-2 h-5 w-5 text-green-500" />
 							<p className="text-2xl font-bold">{correctCount}</p>
 							<p className="text-muted-foreground text-xs">Corrette</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<CircleDot className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
+							<RecordCircleIcon className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
 							<p className="text-2xl font-bold">{partialCount}</p>
 							<p className="text-muted-foreground text-xs">Parziali</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<XCircle className="mx-auto mb-2 h-5 w-5 text-red-500" />
+							<CloseCircleIcon className="mx-auto mb-2 h-5 w-5 text-red-500" />
 							<p className="text-2xl font-bold">{wrongCount}</p>
 							<p className="text-muted-foreground text-xs">Errate</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<Clock className="mx-auto mb-2 h-5 w-5 text-blue-500" />
+							<ClockCircleIcon className="mx-auto mb-2 h-5 w-5 text-blue-500" />
 							<p className="text-2xl font-bold">
 								{result.timeSpent ? formatTimeSpent(result.timeSpent) : "N/A"}
 							</p>
@@ -300,7 +304,7 @@ function ReviewItem({
 					{question.explanation && (
 						<div className="border-primary bg-muted/40 rounded-xl border-l-4 p-4">
 							<div className="text-primary mb-1 flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase">
-								<Lightbulb className="h-3.5 w-3.5" />
+								<LightbulbMinimalisticIcon className="h-3.5 w-3.5" />
 								Spiegazione
 							</div>
 							<div className="text-foreground/90 text-sm">

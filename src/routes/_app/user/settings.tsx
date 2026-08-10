@@ -1,20 +1,17 @@
 import { useState } from "react";
 
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
+import { CameraIcon } from "@solar-icons/react/linear/camera";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { DisketteIcon } from "@solar-icons/react/linear/diskette";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
+import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-	BookmarkIcon,
-	Calendar,
-	Camera,
-	GraduationCap,
-	Loader2,
-	Save,
-	Settings,
-	TrendingUp,
-	Trophy,
-	X,
-} from "lucide-react";
 
+import { CloseGlyph, Spinner } from "@/components/icons";
 import { StatCard } from "@/components/shared/stat-card";
 import { SettingsSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,7 +45,7 @@ function SettingsPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={Settings}
+				icon={SettingsIcon}
 				title="Impostazioni profilo"
 				description="Gestisci le informazioni del tuo account e le preferenze"
 			/>
@@ -68,13 +65,13 @@ function SettingsPage() {
 						<StatCard
 							label="Quiz completati"
 							value={profile.stats.totalQuizzes}
-							icon={Trophy}
+							icon={CupFirstIcon}
 							color="yellow"
 						/>
 						<StatCard
 							label="Corsi seguiti"
 							value={profile.stats.userClassesCount}
-							icon={GraduationCap}
+							icon={DiplomaIcon}
 							color="blue"
 						/>
 						<StatCard
@@ -86,7 +83,7 @@ function SettingsPage() {
 						<StatCard
 							label="Punteggio medio"
 							value={profile.stats.averageScore}
-							icon={TrendingUp}
+							icon={GraphUpIcon}
 							color="green"
 						/>
 					</div>
@@ -108,12 +105,12 @@ function SettingsPage() {
 								</p>
 							</div>
 							<div className="flex items-center gap-2">
-								<Calendar className="text-muted-foreground h-4 w-4" />
+								<CalendarMinimalisticIcon className="text-muted-foreground h-4 w-4" />
 								<Label className="text-sm font-medium">Membro dal</Label>
 								<p className="text-sm">{formatDateLong(profile.createdAt)}</p>
 							</div>
 							<div className="flex items-center gap-2">
-								<Calendar className="text-muted-foreground h-4 w-4" />
+								<CalendarMinimalisticIcon className="text-muted-foreground h-4 w-4" />
 								<Label className="text-sm font-medium">Ultimo aggiornamento</Label>
 								<p className="text-sm">{formatDateLong(profile.updatedAt)}</p>
 							</div>
@@ -209,7 +206,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 
 				<div className="mt-4 space-y-2">
 					<Label htmlFor="image">
-						<Camera className="mr-1 inline h-4 w-4" />
+						<CameraIcon className="mr-1 inline h-4 w-4" />
 						URL immagine profilo
 					</Label>
 					<Input
@@ -232,15 +229,15 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 						className="shadow-primary/25 shadow-lg"
 					>
 						{updateProfile.isPending ? (
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							<Spinner className="mr-2" />
 						) : (
-							<Save className="mr-2 h-4 w-4" />
+							<DisketteIcon className="mr-2 h-4 w-4" />
 						)}
 						Salva Modifiche
 					</Button>
 					{hasChanges && (
 						<Button type="button" variant="ghost" onClick={handleReset}>
-							<X className="mr-2 h-4 w-4" />
+							<CloseGlyph className="mr-2 h-4 w-4" />
 							Annulla
 						</Button>
 					)}

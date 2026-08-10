@@ -1,5 +1,6 @@
+import { DangerTriangleIcon } from "@solar-icons/react/linear/danger-triangle";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AlertTriangle, Info } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 
@@ -15,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	render: () => (
 		<Alert className="w-96">
-			<Info />
+			<InfoCircleIcon />
 			<AlertTitle>Suggerimento</AlertTitle>
 			<AlertDescription>
 				Puoi riprendere un quiz interrotto dalla tua area personale.
@@ -27,7 +28,7 @@ export const Default: Story = {
 export const Destructive: Story = {
 	render: () => (
 		<Alert variant="destructive" className="w-96">
-			<AlertTriangle />
+			<DangerTriangleIcon />
 			<AlertTitle>Errore</AlertTitle>
 			<AlertDescription>Non hai accesso a questa sezione.</AlertDescription>
 		</Alert>

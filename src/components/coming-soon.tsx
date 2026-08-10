@@ -1,6 +1,8 @@
+import { RocketIcon } from "@solar-icons/react/linear/rocket";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { motion } from "framer-motion";
-import { Construction, Github, Sparkles } from "lucide-react";
 
+import { GithubIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -53,7 +55,7 @@ export function ComingSoon() {
 					className="border-primary/20 bg-primary/5 text-primary mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
 				>
-					<Construction className="h-4 w-4" />
+					<RocketIcon className="h-4 w-4" />
 					<span>Versione 3.0 in arrivo</span>
 				</motion.div>
 
@@ -87,7 +89,7 @@ export function ComingSoon() {
 							key={feature}
 							className="border-border/50 bg-card/50 text-muted-foreground rounded-full border px-3 py-1 text-sm backdrop-blur-sm"
 						>
-							<Sparkles className="text-primary mr-1 inline h-3 w-3" />
+							<StarsIcon className="text-primary mr-1 inline h-3 w-3" />
 							{feature}
 						</span>
 					))}
@@ -105,7 +107,7 @@ export function ComingSoon() {
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							<Github className="mr-2 h-5 w-5" />
+							<GithubIcon className="mr-2 h-5 w-5" />
 							Seguici su GitHub
 						</a>
 					</Button>

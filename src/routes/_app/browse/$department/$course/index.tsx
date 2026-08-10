@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { GraduationCap } from "lucide-react";
 import { z } from "zod";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
@@ -263,7 +263,7 @@ function CoursePage() {
 						current={course.name}
 					/>
 				}
-				icon={GraduationCap}
+				icon={DiplomaIcon}
 				title={course.name}
 				description={course.description}
 				badges={

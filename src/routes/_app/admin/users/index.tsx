@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Pencil } from "lucide-react";
 import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -126,7 +126,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			cell: ({ row }) => (
 				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
 					<Link to="/admin/users/$userId" params={{ userId: row.original.id }}>
-						<Pencil className="h-4 w-4" />
+						<Pen2Icon className="h-4 w-4" />
 					</Link>
 				</AdminRowActions>
 			),

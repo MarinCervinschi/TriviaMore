@@ -2,10 +2,10 @@ import { useEffect } from "react";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -180,7 +180,7 @@ export function ContactForm() {
 				>
 					{mutation.isPending ? (
 						<>
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							<Spinner className="mr-2" />
 							Invio in corso...
 						</>
 					) : (

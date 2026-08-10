@@ -1,5 +1,5 @@
+import { HomeIcon } from "@solar-icons/react/linear/home";
 import { Link } from "@tanstack/react-router";
-import { Home } from "lucide-react";
 
 import {
 	Breadcrumb,
@@ -28,7 +28,7 @@ export function BrowseBreadcrumb({
 				<BreadcrumbItem>
 					<BreadcrumbLink asChild>
 						<Link to="/">
-							<Home className="h-4 w-4" />
+							<HomeIcon className="h-4 w-4" />
 						</Link>
 					</BreadcrumbLink>
 				</BreadcrumbItem>

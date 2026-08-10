@@ -1,5 +1,8 @@
-import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { AltArrowLeftIcon } from "@solar-icons/react/linear/alt-arrow-left";
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 export function QuizNavigation({
@@ -28,7 +31,7 @@ export function QuizNavigation({
 				disabled={isFirst || isCompleting}
 				className="rounded-xl text-sm sm:text-base"
 			>
-				<ChevronLeft className="h-4 w-4 sm:mr-1.5" />
+				<AltArrowLeftIcon className="h-4 w-4 sm:mr-1.5" />
 				<span className="hidden sm:inline">Precedente</span>
 			</Button>
 
@@ -41,13 +44,13 @@ export function QuizNavigation({
 			>
 				{isCompleting ? (
 					<>
-						<Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+						<Spinner className="mr-1.5" />
 						<span className="hidden sm:inline">Completamento...</span>
 						<span className="sm:hidden">Attendi</span>
 					</>
 				) : (
 					<>
-						<CheckCircle className="mr-1.5 h-4 w-4" />
+						<CheckCircleIcon className="mr-1.5 h-4 w-4" />
 						<span className="hidden sm:inline">Completa quiz</span>
 						<span className="sm:hidden">Completa</span>
 					</>
@@ -61,7 +64,7 @@ export function QuizNavigation({
 				className="rounded-xl text-sm sm:text-base"
 			>
 				<span className="hidden sm:inline">Successiva</span>
-				<ChevronRight className="h-4 w-4 sm:ml-1.5" />
+				<AltArrowRightIcon className="h-4 w-4 sm:ml-1.5" />
 			</Button>
 		</div>
 	);

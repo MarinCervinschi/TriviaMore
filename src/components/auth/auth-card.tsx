@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
+import { ArrowLeftIcon } from "@solar-icons/react/linear/arrow-left";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Logo } from "@/components/ui/logo";
@@ -37,7 +37,7 @@ export function AuthCard({
 						to="/"
 						className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
 					>
-						<ArrowLeft className="h-4 w-4" />
+						<ArrowLeftIcon className="h-4 w-4" />
 						Torna alla home
 					</Link>
 				</div>

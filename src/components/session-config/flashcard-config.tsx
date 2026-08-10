@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 
 import { AnimatedBlock } from "./animated-block";
 import { SliderWithInput } from "./session-form-blocks";
@@ -34,10 +34,7 @@ export function FlashcardConfigFields({
 			</AnimatedBlock>
 			<AnimatedBlock>
 				<div className="bg-muted/50 text-muted-foreground flex gap-2 rounded-lg p-3 text-xs">
-					<Info
-						className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0"
-						strokeWidth={1.75}
-					/>
+					<InfoCircleIcon className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
 					<p className="leading-relaxed">
 						Modalità studio libero. Gira la carta, valuta la tua confidenza con{" "}
 						<span className="text-foreground font-semibold">Sapevo</span> /{" "}

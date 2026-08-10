@@ -1,5 +1,6 @@
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { BookOpen, Sparkles } from "lucide-react";
 
 import { SessionLaunchCard } from "./session-launch-card";
 
@@ -9,7 +10,7 @@ const meta = {
 	tags: ["autodocs"],
 	args: {
 		accent: "blue",
-		icon: BookOpen,
+		icon: BookIcon,
 		title: "Quiz",
 		unitLabel: "domande disponibili",
 		count: 142,
@@ -35,7 +36,7 @@ export const Quiz: Story = {};
 export const Flashcard: Story = {
 	args: {
 		accent: "purple",
-		icon: Sparkles,
+		icon: StarsIcon,
 		title: "Flashcard",
 		unitLabel: "carte disponibili",
 		count: 80,

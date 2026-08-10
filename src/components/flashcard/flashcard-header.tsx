@@ -1,4 +1,7 @@
-import { Eye, LogOut, PanelLeft, PanelLeftClose } from "lucide-react";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
+import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { SidebarIcon } from "@solar-icons/react/linear/sidebar";
+import { SidebarMinimalisticIcon } from "@solar-icons/react/linear/sidebar-minimalistic";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -29,9 +32,9 @@ export function FlashcardHeader({
 					className="h-9 w-9 rounded-xl"
 				>
 					{sidebarOpen ? (
-						<PanelLeftClose className="h-4 w-4" />
+						<SidebarIcon className="h-4 w-4" />
 					) : (
-						<PanelLeft className="h-4 w-4" />
+						<SidebarMinimalisticIcon className="h-4 w-4" />
 					)}
 				</Button>
 				<span className="bg-muted rounded-lg px-3 py-1 text-sm font-medium">
@@ -42,7 +45,7 @@ export function FlashcardHeader({
 
 			<div className="flex items-center gap-3">
 				<Badge variant="secondary" className="gap-1.5 rounded-xl px-3 py-1">
-					<Eye className="h-3.5 w-3.5" />
+					<EyeIcon className="h-3.5 w-3.5" />
 					{studiedCount}/{totalQuestions}
 				</Badge>
 				<ThemeToggle className="h-9 w-9" />
@@ -52,7 +55,7 @@ export function FlashcardHeader({
 					onClick={onExit}
 					className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-xl"
 				>
-					<LogOut className="mr-1.5 h-4 w-4" />
+					<Logout3Icon className="mr-1.5 h-4 w-4" />
 					Esci
 				</Button>
 			</div>

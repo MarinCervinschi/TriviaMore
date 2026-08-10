@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AltArrowLeftIcon } from "@solar-icons/react/linear/alt-arrow-left";
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
 
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +36,7 @@ export function Pagination({
 					disabled={page <= 1}
 					onClick={() => onPageChange(page - 1)}
 				>
-					<ChevronLeft className="h-4 w-4" />
+					<AltArrowLeftIcon className="h-4 w-4" />
 				</Button>
 				{Array.from({ length: totalPages }, (_, i) => i + 1)
 					.filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
@@ -68,7 +69,7 @@ export function Pagination({
 					disabled={page >= totalPages}
 					onClick={() => onPageChange(page + 1)}
 				>
-					<ChevronRight className="h-4 w-4" />
+					<AltArrowRightIcon className="h-4 w-4" />
 				</Button>
 			</div>
 		</div>

@@ -1,6 +1,6 @@
+import { ConfettiIcon } from "@solar-icons/react/linear/confetti";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Megaphone } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { changelogQueries } from "@/lib/changelogs/queries";
@@ -18,7 +18,7 @@ export function SidebarChangelogMegaphone() {
 					aria-label={`Novità${unreadCount > 0 ? ` (${unreadCount} non lette)` : ""}`}
 					className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground focus-visible:ring-ring relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:ring-2 focus-visible:outline-none"
 				>
-					<Megaphone className="size-[18px]" strokeWidth={1.5} />
+					<ConfettiIcon className="size-[18px]" />
 					{unreadCount > 0 && (
 						<span
 							className={cn(

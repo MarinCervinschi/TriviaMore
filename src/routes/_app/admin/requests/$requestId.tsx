@@ -1,18 +1,16 @@
 import { type ReactNode, useState } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
+import { CloudUploadIcon } from "@solar-icons/react/linear/cloud-upload";
+import { DownloadMinimalisticIcon } from "@solar-icons/react/linear/download-minimalistic";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { SettingsMinimalisticIcon } from "@solar-icons/react/linear/settings-minimalistic";
+import { UserIdIcon } from "@solar-icons/react/linear/user-id";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-	CheckCircle2,
-	ChevronDown,
-	Clock,
-	Download,
-	Eye,
-	FileUp,
-	Pencil,
-	Settings2,
-	UserCog,
-} from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -117,7 +115,7 @@ function AdminRequestDetailPage() {
 								className="gap-1.5 rounded-xl"
 								onClick={() => setHandleOpen(true)}
 							>
-								<Settings2 className="size-4" />
+								<SettingsMinimalisticIcon className="size-4" />
 								Rifiuta / Modifiche
 							</Button>
 							<Button
@@ -126,7 +124,7 @@ function AdminRequestDetailPage() {
 								onClick={() => approve.mutate({ id: request.id })}
 								disabled={approve.isPending}
 							>
-								<CheckCircle2 className="size-4" />
+								<CheckCircleIcon className="size-4" />
 								{approve.isPending ? "Approvazione..." : "Approva e pubblica"}
 							</Button>
 						</>
@@ -143,7 +141,7 @@ function AdminRequestDetailPage() {
 					</div>
 					{request.handledAt && (
 						<p className="text-muted-foreground flex items-center gap-1.5 text-xs">
-							<CheckCircle2 className="size-3.5 shrink-0" strokeWidth={1.5} />
+							<CheckCircleIcon className="size-3.5 shrink-0" />
 							<span>
 								Gestita da{" "}
 								<span className="text-foreground font-medium">
@@ -181,7 +179,7 @@ function AdminRequestDetailPage() {
 									</p>
 								)}
 								<p className="text-muted-foreground flex items-center gap-1.5 pt-1 text-xs">
-									<Clock className="size-3 shrink-0" strokeWidth={1.5} />
+									<ClockCircleIcon className="size-3 shrink-0" />
 									<span>Inviata {formatDateTime(request.createdAt)}</span>
 								</p>
 							</div>
@@ -194,7 +192,7 @@ function AdminRequestDetailPage() {
 								className="shrink-0 gap-1.5 rounded-xl"
 							>
 								<Link to="/admin/users/$userId" params={{ userId: request.user.id }}>
-									<UserCog className="size-4" />
+									<UserIdIcon className="size-4" />
 									Scheda utente
 								</Link>
 							</Button>
@@ -245,7 +243,7 @@ function AdminRequestDetailPage() {
 								to="/admin/questions/$questionId"
 								params={{ questionId: reportedQuestionId }}
 							>
-								<Pencil className="size-3.5" />
+								<Pen2Icon className="size-3.5" />
 								Modifica domanda
 							</Link>
 						</Button>
@@ -281,7 +279,7 @@ function AdminRequestDetailPage() {
 								}
 								disabled={acknowledge.isPending}
 							>
-								<Eye className="size-4" />
+								<EyeIcon className="size-4" />
 								{acknowledge.isPending ? "Salvataggio..." : "Presa visione"}
 							</Button>
 						</div>
@@ -420,7 +418,7 @@ function QuestionCard({
 								</span>
 								<MarkdownRenderer content={opt} inline />
 								{isCorrect && (
-									<CheckCircle2 className="ml-auto size-4 shrink-0 text-green-500" />
+									<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
 								)}
 							</div>
 						);
@@ -498,7 +496,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 						className="w-full justify-between gap-1.5 rounded-xl"
 					>
 						{open ? "Nascondi opzioni e risposta" : "Mostra opzioni e risposta"}
-						<ChevronDown
+						<AltArrowDownIcon
 							className={cn("size-4 transition-transform", open && "rotate-180")}
 						/>
 					</Button>
@@ -522,7 +520,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 									</span>
 									<MarkdownRenderer content={option.text} inline />
 									{isCorrect && (
-										<CheckCircle2 className="ml-auto size-4 shrink-0 text-green-500" />
+										<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
 									)}
 								</div>
 							);
@@ -578,7 +576,7 @@ function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
 	return (
 		<div className="bg-card flex items-center gap-4 rounded-2xl border p-5">
 			<div className="rounded-xl bg-emerald-500/10 p-3">
-				<FileUp className="size-6 text-emerald-500" strokeWidth={1.5} />
+				<CloudUploadIcon className="size-6 text-emerald-500" />
 			</div>
 			<div className="flex-1">
 				<p className="font-medium">{file.file_name}</p>
@@ -593,7 +591,7 @@ function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
 				onClick={handleDownload}
 				disabled={downloading}
 			>
-				<Download className="size-4" />
+				<DownloadMinimalisticIcon className="size-4" />
 				{downloading ? "Download..." : "Scarica"}
 			</Button>
 		</div>

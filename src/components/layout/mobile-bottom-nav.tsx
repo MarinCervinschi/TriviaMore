@@ -1,21 +1,19 @@
 import { useState } from "react";
 
+import { BellIcon } from "@solar-icons/react/linear/bell";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { FeedIcon } from "@solar-icons/react/linear/feed";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
+import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { SettingsIcon } from "@solar-icons/react/linear/settings";
+import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-	Bell,
-	BookOpen,
-	GraduationCap,
-	Info,
-	LogOut,
-	Mail,
-	Megaphone,
-	Settings,
-	Shield,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -71,7 +69,7 @@ function BottomNavItem({
 						transition={prefersReduced ? { duration: 0 } : springSnappy}
 					/>
 				)}
-				<Icon className="size-[22px]" strokeWidth={1.5} aria-hidden />
+				<Icon className="size-[22px]" aria-hidden />
 				<span className="text-[10px] leading-none font-medium">{item.label}</span>
 			</Link>
 		</li>
@@ -87,7 +85,7 @@ function ToolTile({
 	external,
 }: {
 	to: string;
-	icon: LucideIcon;
+	icon: Icon;
 	label: string;
 	badge?: number;
 	onClose: () => void;
@@ -111,7 +109,7 @@ function ToolTile({
 						: "bg-muted text-foreground"
 				)}
 			>
-				<Icon className="size-[18px]" strokeWidth={1.5} aria-hidden />
+				<Icon className="size-[18px]" aria-hidden />
 			</span>
 			<span className="min-w-0 flex-1 text-sm font-medium">{label}</span>
 			{external?.variant === "admin" && (
@@ -181,40 +179,40 @@ function ProfileSheet({
 				<div className="grid grid-cols-2 gap-2">
 					<ToolTile
 						to="/user/notifications"
-						icon={Bell}
+						icon={BellIcon}
 						label="Notifiche"
 						badge={unreadNotifications}
 						onClose={close}
 					/>
 					<ToolTile
 						to="/news"
-						icon={Megaphone}
+						icon={FeedIcon}
 						label="Novità"
 						badge={unreadChangelogs}
 						onClose={close}
 					/>
 					<ToolTile
 						to="/search/courses"
-						icon={GraduationCap}
+						icon={DiplomaIcon}
 						label="Cerca corsi"
 						onClose={close}
 					/>
 					<ToolTile
 						to="/search/classes"
-						icon={BookOpen}
+						icon={BookIcon}
 						label="Cerca insegn."
 						onClose={close}
 					/>
 					<ToolTile
 						to={ABOUT_ITEM.to}
-						icon={Info}
+						icon={InfoCircleIcon}
 						label={ABOUT_ITEM.label}
 						onClose={close}
 					/>
 					{isAdmin && (
 						<ToolTile
 							to={ADMIN_ITEM.to}
-							icon={Shield}
+							icon={ShieldIcon}
 							label={ADMIN_ITEM.label}
 							external={{ variant: "admin" }}
 							onClose={close}
@@ -234,7 +232,7 @@ function ProfileSheet({
 						onClick={close}
 						className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
 					>
-						<Settings className="size-4" strokeWidth={1.5} aria-hidden />
+						<SettingsIcon className="size-4" aria-hidden />
 						Impostazioni
 					</Link>
 					<Link
@@ -242,7 +240,7 @@ function ProfileSheet({
 						onClick={close}
 						className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
 					>
-						<Mail className="size-4" strokeWidth={1.5} aria-hidden />
+						<LetterIcon className="size-4" aria-hidden />
 						Contatti
 					</Link>
 				</div>
@@ -293,7 +291,7 @@ function ProfileSheet({
 					}}
 					className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/10 flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors"
 				>
-					<LogOut className="size-4" strokeWidth={1.5} aria-hidden />
+					<Logout3Icon className="size-4" aria-hidden />
 					Esci
 				</button>
 			</SheetContent>

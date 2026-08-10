@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState } from "react";
 
-import { BookOpen } from "lucide-react";
+import { BookIcon } from "@solar-icons/react/linear/book";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -28,7 +28,7 @@ export function QuizCard({
 		<>
 			<SessionLaunchCard
 				accent="blue"
-				icon={BookOpen}
+				icon={BookIcon}
 				title="Quiz"
 				unitLabel="domande disponibili"
 				count={questionCount}

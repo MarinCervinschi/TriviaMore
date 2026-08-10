@@ -1,5 +1,5 @@
+import { Tuning2Icon } from "@solar-icons/react/linear/tuning-2";
 import type { RowData } from "@tanstack/react-table";
-import { SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ export function DataTableViewOptions<TData extends RowData>({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="outline" size="sm" className="h-9 rounded-xl">
-					<SlidersHorizontal className="h-4 w-4" />
+					<Tuning2Icon className="h-4 w-4" />
 					<span className="hidden sm:inline">Colonne</span>
 				</Button>
 			</DropdownMenuTrigger>

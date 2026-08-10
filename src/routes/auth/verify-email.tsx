@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
+import { LetterOpenedIcon } from "@solar-icons/react/linear/letter-opened";
 import { useMutation } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { AuthCard } from "@/components/auth/auth-card";
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { requireGuestFn } from "@/lib/auth/api";
 import { resendConfirmationFn } from "@/lib/auth/api";
@@ -64,7 +65,7 @@ function VerifyEmailPage() {
 			<div className="grid gap-6">
 				<div className="flex justify-center">
 					<div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-2xl">
-						<MailCheck className="h-8 w-8" />
+						<LetterOpenedIcon className="h-8 w-8" />
 					</div>
 				</div>
 
@@ -97,7 +98,7 @@ function VerifyEmailPage() {
 					>
 						{resend.isPending ? (
 							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								<Spinner className="mr-2" />
 								Invio in corso...
 							</>
 						) : cooldown > 0 ? (

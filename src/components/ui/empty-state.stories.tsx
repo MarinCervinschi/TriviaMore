@@ -1,5 +1,5 @@
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Inbox } from "lucide-react";
 
 import { EmptyState } from "./empty-state";
 
@@ -8,7 +8,7 @@ const meta = {
 	component: EmptyState,
 	tags: ["autodocs"],
 	args: {
-		icon: Inbox,
+		icon: InboxIcon,
 		title: "Nessun risultato",
 		description: "Non ci sono ancora elementi da mostrare qui.",
 	},

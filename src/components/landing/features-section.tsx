@@ -28,11 +28,7 @@ function FeatureCardComponent({
 			)}
 		>
 			<div className={`mb-4 inline-flex rounded-2xl p-3 ${feature.iconBg}`}>
-				<Icon
-					className={`h-7 w-7 ${feature.iconColor}`}
-					strokeWidth={1.5}
-					aria-hidden
-				/>
+				<Icon className={`h-7 w-7 ${feature.iconColor}`} aria-hidden />
 			</div>
 			<h3 className="mb-2 text-lg font-semibold tracking-tight">{feature.title}</h3>
 			<p className="text-muted-foreground leading-relaxed">{feature.description}</p>

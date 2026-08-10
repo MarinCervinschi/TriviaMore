@@ -1,4 +1,4 @@
-import { List } from "lucide-react";
+import { ListIcon } from "@solar-icons/react/linear/list";
 
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ export function LegalToc({ items, className }: LegalTocProps) {
 			)}
 		>
 			<div className="text-muted-foreground mb-4 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-				<List className="h-3.5 w-3.5" />
+				<ListIcon className="h-3.5 w-3.5" />
 				In questa pagina
 			</div>
 			<ol className="border-border/60 space-y-2.5 border-l text-sm">

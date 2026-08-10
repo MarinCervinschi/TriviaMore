@@ -1,6 +1,7 @@
 import { useRef } from "react";
 
-import { FileUp, Upload } from "lucide-react";
+import { CloudUploadIcon } from "@solar-icons/react/linear/cloud-upload";
+import { UploadMinimalisticIcon } from "@solar-icons/react/linear/upload-minimalistic";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ export function FileUploadForm({
 				{file ? (
 					<div className="space-y-2">
 						<div className="bg-primary/10 mx-auto inline-flex rounded-2xl p-3">
-							<FileUp className="text-primary size-6" strokeWidth={1.5} />
+							<CloudUploadIcon className="text-primary size-6" />
 						</div>
 						<p className="text-sm font-medium">{file.name}</p>
 						<p className="text-muted-foreground text-xs">{formatSize(file.size)}</p>
@@ -67,7 +68,7 @@ export function FileUploadForm({
 				) : (
 					<div className="space-y-2">
 						<div className="bg-muted mx-auto inline-flex rounded-2xl p-3">
-							<Upload className="text-muted-foreground size-6" strokeWidth={1.5} />
+							<UploadMinimalisticIcon className="text-muted-foreground size-6" />
 						</div>
 						<p className="text-muted-foreground text-sm">
 							Clicca o trascina un file qui

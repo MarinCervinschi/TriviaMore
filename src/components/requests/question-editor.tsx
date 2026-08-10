@@ -1,5 +1,6 @@
-import { Plus, Trash2 } from "lucide-react";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 
+import { PlusGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,7 +35,7 @@ export function QuestionEditor({
 				</p>
 				{onRemove && (
 					<Button variant="ghost" size="icon" className="size-7" onClick={onRemove}>
-						<Trash2 className="text-destructive size-3.5" />
+						<TrashBinMinimalisticIcon className="text-destructive size-3.5" />
 					</Button>
 				)}
 			</div>
@@ -143,7 +144,7 @@ export function QuestionEditor({
 											});
 										}}
 									>
-										<Trash2 className="text-muted-foreground size-3" />
+										<TrashBinMinimalisticIcon className="text-muted-foreground size-3" />
 									</Button>
 								)}
 							</div>
@@ -158,7 +159,7 @@ export function QuestionEditor({
 							}
 							className="gap-1 text-xs"
 						>
-							<Plus className="size-3" /> Aggiungi opzione
+							<PlusGlyph className="size-3" /> Aggiungi opzione
 						</Button>
 					)}
 				</div>

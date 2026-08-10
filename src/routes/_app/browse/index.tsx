@@ -1,9 +1,13 @@
 import { Suspense, lazy, useMemo, useState } from "react";
 
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { CompassIcon } from "@solar-icons/react/linear/compass";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Compass, FileText, Trophy } from "lucide-react";
 
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state";
 import { DepartmentCard } from "@/components/browse/department-card";
@@ -112,7 +116,7 @@ function BrowsePage() {
 					animate={deptVisible ? "visible" : "hidden"}
 				>
 					<div className="bg-primary/10 mb-4 inline-flex rounded-2xl p-3">
-						<Compass className="text-primary h-7 w-7" strokeWidth={1.5} />
+						<CompassIcon className="text-primary h-7 w-7" />
 					</div>
 					<h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
 						Esplora UNIMORE
@@ -360,7 +364,7 @@ function TopClassesStrip({
 			<div className="from-primary/5 to-primary/0 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br via-transparent" />
 			<div className="mb-4 flex items-baseline justify-between gap-3">
 				<div className="flex items-center gap-2">
-					<Trophy className="text-primary h-4 w-4" strokeWidth={1.75} />
+					<CupFirstIcon className="text-primary h-4 w-4" />
 					<p className="text-primary text-[10px] font-bold tracking-[0.18em] uppercase">
 						Insegnamenti più contribuiti
 					</p>
@@ -394,20 +398,20 @@ function TopClassesStrip({
 									{cls.name}
 								</p>
 								<span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-xs sm:inline-flex">
-									<FileText className="h-3.5 w-3.5" strokeWidth={1.75} />
+									<DocumentTextIcon className="h-3.5 w-3.5" />
 									<span className="text-foreground font-semibold tabular-nums">
 										{cls.sectionCount}
 									</span>
 									<span>sez.</span>
 								</span>
 								<span className="text-muted-foreground inline-flex shrink-0 items-center gap-1 text-xs">
-									<BookOpen className="h-3.5 w-3.5" strokeWidth={1.75} />
+									<BookIcon className="h-3.5 w-3.5" />
 									<span className="text-foreground font-semibold tabular-nums">
 										{formatNumber(cls.questionCount)}
 									</span>
 									<span className="hidden sm:inline">dom.</span>
 								</span>
-								<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" />
+								<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" />
 							</Link>
 						</li>
 					);

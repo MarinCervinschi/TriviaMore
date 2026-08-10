@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Inbox } from "lucide-react";
 import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -239,7 +239,7 @@ function AdminRequestsPage() {
 				}
 				empty={
 					<EmptyState
-						icon={Inbox}
+						icon={InboxIcon}
 						title={
 							filtered.length === 0
 								? statusFilter === "open"

@@ -1,8 +1,9 @@
 import { Suspense, lazy, useMemo } from "react";
 
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { MapPointIcon } from "@solar-icons/react/linear/map-point";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { Building2, MapPin } from "lucide-react";
 import { z } from "zod";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
@@ -230,7 +231,7 @@ function DepartmentPage() {
 						current={department.name}
 					/>
 				}
-				icon={Building2}
+				icon={BuildingsIcon}
 				title={department.name}
 				description={department.description}
 				badges={
@@ -245,7 +246,7 @@ function DepartmentPage() {
 						)}
 						{department.locations.length > 0 && (
 							<span className="text-muted-foreground flex items-center gap-1 text-xs">
-								<MapPin className="h-3.5 w-3.5" />
+								<MapPointIcon className="h-3.5 w-3.5" />
 								{[
 									...new Set(
 										department.locations.map(l => l.campusLocation).filter(Boolean)

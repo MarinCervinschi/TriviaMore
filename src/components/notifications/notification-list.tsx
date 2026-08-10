@@ -1,6 +1,6 @@
+import { BellOffIcon } from "@solar-icons/react/linear/bell-off";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { BellOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -27,7 +27,7 @@ export function NotificationList() {
 	if (notifications.length === 0) {
 		return (
 			<EmptyState
-				icon={BellOff}
+				icon={BellOffIcon}
 				title="Nessuna notifica"
 				description="Quando riceverai aggiornamenti sulle tue richieste, appariranno qui."
 			/>

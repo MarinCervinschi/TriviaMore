@@ -1,13 +1,13 @@
+import { ArrowLeftIcon } from "@solar-icons/react/linear/arrow-left";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 type AdminPageHeaderProps = {
 	title: string;
 	description?: string;
-	icon?: LucideIcon;
+	icon?: Icon;
 	backTo?: string;
 	backParams?: Record<string, string>;
 	backLabel?: string;
@@ -34,7 +34,7 @@ export function AdminPageHeader({
 					)}
 					<Button variant="ghost" size="sm" className="-ml-2 rounded-xl" asChild>
 						<Link to={backTo} params={backParams}>
-							<ArrowLeft className="mr-1 h-4 w-4" />
+							<ArrowLeftIcon className="mr-1 h-4 w-4" />
 							Indietro
 						</Link>
 					</Button>
@@ -44,7 +44,7 @@ export function AdminPageHeader({
 				<div className="flex items-center gap-4">
 					{Icon && (
 						<div className="bg-primary/10 inline-flex rounded-2xl p-3">
-							<Icon className="text-primary h-6 w-6" strokeWidth={1.5} />
+							<Icon className="text-primary h-6 w-6" />
 						</div>
 					)}
 					<div>

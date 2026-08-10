@@ -1,5 +1,6 @@
+import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { Login3Icon } from "@solar-icons/react/linear/login-3";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { LogIn, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { seoHead } from "@/lib/seo";
@@ -47,13 +48,13 @@ function DeclinedPage() {
 				<div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
 					<Button asChild variant="outline">
 						<a href={DELETION_REQUEST_MAILTO}>
-							<Mail className="mr-2 h-4 w-4" />
+							<LetterIcon className="mr-2 h-4 w-4" />
 							Richiedi eliminazione account
 						</a>
 					</Button>
 					<Button asChild>
 						<Link to="/auth/login">
-							<LogIn className="mr-2 h-4 w-4" />
+							<Login3Icon className="mr-2 h-4 w-4" />
 							Torna al login
 						</Link>
 					</Button>

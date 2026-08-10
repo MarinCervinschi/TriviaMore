@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { FileEdit, XCircle } from "lucide-react";
+import { CloseCircleIcon } from "@solar-icons/react/linear/close-circle";
+import { PenNewSquareIcon } from "@solar-icons/react/linear/pen-new-square";
 
 import { PresetReplies } from "@/components/requests/preset-replies";
 import { Button } from "@/components/ui/button";
@@ -31,14 +32,14 @@ const ACTIONS = [
 	{
 		status: "REJECTED" as const,
 		label: "Rifiuta",
-		icon: XCircle,
+		icon: CloseCircleIcon,
 		color: "bg-red-500 hover:bg-red-600 text-white",
 		description: "La proposta verra rifiutata e l'utente sara notificato.",
 	},
 	{
 		status: "NEEDS_REVISION" as const,
 		label: "Richiedi modifiche",
-		icon: FileEdit,
+		icon: PenNewSquareIcon,
 		color: "bg-amber-500 hover:bg-amber-600 text-white",
 		description: "L'utente ricevera una notifica per modificare la proposta.",
 	},
@@ -91,7 +92,7 @@ export function HandleRequestDialog({
 									<div
 										className={`flex h-9 w-9 items-center justify-center rounded-xl ${action.color}`}
 									>
-										<Icon className="size-4" strokeWidth={1.5} />
+										<Icon className="size-4" />
 									</div>
 									<div>
 										<p className="text-sm font-medium">{action.label}</p>

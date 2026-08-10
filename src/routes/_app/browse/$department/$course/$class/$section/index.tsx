@@ -1,6 +1,8 @@
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { BookOpen, FileText, Sparkles } from "lucide-react";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb";
@@ -108,7 +110,7 @@ function SectionPage() {
 						current={section.name}
 					/>
 				}
-				icon={FileText}
+				icon={DocumentTextIcon}
 				title={section.name}
 				description={section.description}
 				badges={
@@ -119,13 +121,13 @@ function SectionPage() {
 						</Badge>
 						{section.quizQuestionCount > 0 && (
 							<Badge className="gap-1 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
-								<BookOpen className="h-3 w-3" />
+								<BookIcon className="h-3 w-3" />
 								{section.quizQuestionCount} quiz
 							</Badge>
 						)}
 						{section.flashcardQuestionCount > 0 && (
 							<Badge className="gap-1 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
-								<Sparkles className="h-3 w-3" />
+								<StarsIcon className="h-3 w-3" />
 								{section.flashcardQuestionCount} flashcard
 							</Badge>
 						)}

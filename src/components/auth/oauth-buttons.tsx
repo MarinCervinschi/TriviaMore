@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-import { Loader2 } from "lucide-react";
-
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { oauthSignInFn } from "@/lib/auth/api";
 
@@ -59,11 +58,7 @@ export function OAuthButtons() {
 				disabled={loading !== null}
 				onClick={() => handleOAuth("github")}
 			>
-				{loading === "github" ? (
-					<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-				) : (
-					<GitHubIcon />
-				)}
+				{loading === "github" ? <Spinner className="mr-2" /> : <GitHubIcon />}
 				GitHub
 			</Button>
 			<Button
@@ -72,11 +67,7 @@ export function OAuthButtons() {
 				disabled={loading !== null}
 				onClick={() => handleOAuth("google")}
 			>
-				{loading === "google" ? (
-					<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-				) : (
-					<GoogleIcon />
-				)}
+				{loading === "google" ? <Spinner className="mr-2" /> : <GoogleIcon />}
 				Google
 			</Button>
 		</div>

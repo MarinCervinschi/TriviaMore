@@ -1,9 +1,9 @@
 import { cloneElement } from "react";
 import type { ReactElement, ReactNode } from "react";
 
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { FlexRender } from "@tanstack/react-table";
 import type { RowData } from "@tanstack/react-table";
-import { ArrowRight } from "lucide-react";
 
 import {
 	Table,
@@ -137,7 +137,7 @@ export function DataTable<TData extends RowData>({
 													{cloneElement(
 														link,
 														{ className: "inline-flex" } as never,
-														<ArrowRight className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+														<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
 													)}
 												</TableCell>
 											)}

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { LucideIcon } from "lucide-react";
+import type { Icon } from "@/components/icons";
 
 import { ExpandableDescription } from "./expandable-description";
 
@@ -14,7 +14,7 @@ export function BrowsePageHeader({
 	actions,
 }: {
 	breadcrumb?: ReactNode;
-	icon?: LucideIcon;
+	icon?: Icon;
 	title: string;
 	description?: string | null;
 	badges?: ReactNode;
@@ -33,11 +33,7 @@ export function BrowsePageHeader({
 					<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 						{Icon ? (
 							<div className="bg-primary/10 inline-flex shrink-0 rounded-2xl p-3">
-								<Icon
-									className="text-primary h-6 w-6 sm:h-7 sm:w-7"
-									strokeWidth={1.5}
-									aria-hidden
-								/>
+								<Icon className="text-primary h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
 							</div>
 						) : (
 							<span aria-hidden />

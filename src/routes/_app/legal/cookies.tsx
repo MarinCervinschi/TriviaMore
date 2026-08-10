@@ -1,5 +1,5 @@
+import { DonutBittenIcon } from "@solar-icons/react/linear/donut-bitten";
 import { createFileRoute } from "@tanstack/react-router";
-import { Cookie } from "lucide-react";
 
 import { LegalDocLayout } from "@/components/legal/legal-doc-layout";
 import cookiesMarkdown from "@/content/legal/cookies.it.md?raw";
@@ -25,7 +25,7 @@ function CookiesPage() {
 				title: "Cookie Policy",
 				description:
 					"I cookie tecnici e analitici utilizzati dal Servizio, in linea con le linee guida del Garante per la Protezione dei Dati Personali.",
-				icon: Cookie,
+				icon: DonutBittenIcon,
 				version: CURRENT_COOKIE_POLICY_VERSION,
 				lastUpdated: "13 giugno 2026",
 			}}

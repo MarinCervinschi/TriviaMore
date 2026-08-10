@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import type {
 	Control,
 	FieldArrayWithId,
@@ -6,6 +6,7 @@ import type {
 	UseFormRegister,
 } from "react-hook-form";
 
+import { PlusGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
 	FormDescription,
@@ -81,7 +82,7 @@ export function MultipleChoiceOptions({
 								className="mt-1"
 								onClick={() => remove(index)}
 							>
-								<Trash2 className="text-destructive h-4 w-4" />
+								<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
 							</Button>
 						)}
 					</div>
@@ -94,7 +95,7 @@ export function MultipleChoiceOptions({
 					size="sm"
 					onClick={() => append({ id: ID_LETTERS[fields.length], text: "" })}
 				>
-					<Plus className="mr-1 h-4 w-4" />
+					<PlusGlyph className="mr-1 h-4 w-4" />
 					Aggiungi opzione
 				</Button>
 			)}

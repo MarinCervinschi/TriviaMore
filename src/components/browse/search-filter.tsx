@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 
 import { Input } from "@/components/ui/input";
 
@@ -13,7 +13,7 @@ export function SearchFilter({
 }) {
 	return (
 		<div className="relative mb-6">
-			<Search className="text-muted-foreground absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+			<MagnifierIcon className="text-muted-foreground absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
 			<Input
 				type="search"
 				placeholder={placeholder}

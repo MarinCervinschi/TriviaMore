@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-import { Plus } from "lucide-react";
-
+import { PlusGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,7 +29,7 @@ export function RequestFormDialog({
 			<DialogTrigger asChild>
 				{trigger ?? (
 					<Button className="shadow-primary/25 gap-2 rounded-xl shadow-lg">
-						<Plus className="size-4" />
+						<PlusGlyph className="size-4" />
 						Proponi contenuto
 					</Button>
 				)}

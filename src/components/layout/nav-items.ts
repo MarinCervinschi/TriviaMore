@@ -1,47 +1,45 @@
-import {
-	Compass,
-	GraduationCap,
-	Home,
-	Inbox,
-	Info,
-	Network,
-	Shield,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { CompassIcon } from "@solar-icons/react/linear/compass";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { HomeIcon } from "@solar-icons/react/linear/home";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
+import { ShieldIcon } from "@solar-icons/react/linear/shield";
+import { StructureIcon } from "@solar-icons/react/linear/structure";
 
+import type { Icon } from "@/components/icons";
 import { useAuth } from "@/hooks/useAuth";
 
 export interface NavItem {
 	to: string;
-	icon: LucideIcon;
+	icon: Icon;
 	label: string;
 	fuzzy: boolean;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-	{ to: "/user", icon: Home, label: "Dashboard", fuzzy: false },
-	{ to: "/browse", icon: Compass, label: "Esplora", fuzzy: false },
-	{ to: "/user/classes", icon: GraduationCap, label: "I miei corsi", fuzzy: false },
-	{ to: "/user/requests", icon: Inbox, label: "Contributi", fuzzy: true },
+	{ to: "/user", icon: HomeIcon, label: "Dashboard", fuzzy: false },
+	{ to: "/browse", icon: CompassIcon, label: "Esplora", fuzzy: false },
+	{ to: "/user/classes", icon: DiplomaIcon, label: "I miei corsi", fuzzy: false },
+	{ to: "/user/requests", icon: InboxIcon, label: "Contributi", fuzzy: true },
 ];
 
 export const GRAPH_ITEM: NavItem = {
 	to: "/graph",
-	icon: Network,
+	icon: StructureIcon,
 	label: "Grafo",
 	fuzzy: false,
 };
 
 export const ABOUT_ITEM: NavItem = {
 	to: "/about",
-	icon: Info,
+	icon: InfoCircleIcon,
 	label: "Chi siamo",
 	fuzzy: false,
 };
 
 export const ADMIN_ITEM: NavItem = {
 	to: "/admin",
-	icon: Shield,
+	icon: ShieldIcon,
 	label: "Gestione",
 	fuzzy: true,
 };

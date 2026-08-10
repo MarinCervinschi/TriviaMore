@@ -1,4 +1,6 @@
-import { CheckCircle, Clock, Eye } from "lucide-react";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -63,19 +65,19 @@ export function FlashcardResults({
 					{/* Stats row */}
 					<div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<Eye className="mx-auto mb-2 h-5 w-5 text-green-500" />
+							<EyeIcon className="mx-auto mb-2 h-5 w-5 text-green-500" />
 							<p className="text-2xl font-bold">
 								{studiedCount}/{totalCards}
 							</p>
 							<p className="text-muted-foreground text-xs">Studiate</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<CheckCircle className="text-primary mx-auto mb-2 h-5 w-5" />
+							<CheckCircleIcon className="text-primary mx-auto mb-2 h-5 w-5" />
 							<p className="text-2xl font-bold">{percentage}%</p>
 							<p className="text-muted-foreground text-xs">Completamento</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<Clock className="mx-auto mb-2 h-5 w-5 text-blue-500" />
+							<ClockCircleIcon className="mx-auto mb-2 h-5 w-5 text-blue-500" />
 							<p className="text-2xl font-bold">{formatTime(timeSpent)}</p>
 							<p className="text-muted-foreground text-xs">Tempo</p>
 						</div>

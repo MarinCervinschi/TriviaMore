@@ -1,4 +1,6 @@
-import { Clock, Target, Trophy } from "lucide-react";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { TargetIcon } from "@solar-icons/react/linear/target";
 import { RadialBar, RadialBarChart } from "recharts";
 
 import { StatCard } from "@/components/shared/stat-card";
@@ -28,19 +30,19 @@ export function ProgressStats({
 			<StatCard
 				label="Quiz studio"
 				value={overallStats.totalStudyQuizzes}
-				icon={Target}
+				icon={TargetIcon}
 				color="blue"
 			/>
 			<StatCard
 				label="Quiz esame"
 				value={overallStats.totalExamQuizzes}
-				icon={Trophy}
+				icon={CupFirstIcon}
 				color="yellow"
 			/>
 			<StatCard
 				label="Tempo totale"
 				value={formatTimeSpent(totalTime)}
-				icon={Clock}
+				icon={ClockCircleIcon}
 				color="purple"
 			/>
 

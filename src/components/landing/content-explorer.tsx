@@ -46,11 +46,7 @@ export function ContentExplorer() {
 								return (
 									<div key={level.label} className="flex items-center gap-2.5">
 										<div className={`rounded-lg p-1.5 ${level.bg}`}>
-											<Icon
-												className={`h-3.5 w-3.5 ${level.color}`}
-												strokeWidth={1.5}
-												aria-hidden
-											/>
+											<Icon className={`h-3.5 w-3.5 ${level.color}`} aria-hidden />
 										</div>
 										<span>
 											<span className="text-foreground font-medium">{level.label}</span>

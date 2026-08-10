@@ -1,23 +1,21 @@
 import { Fragment } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { motion } from "framer-motion";
-import {
-	BookOpen,
-	Building2,
-	ChevronDown,
-	ChevronRight,
-	FileText,
-	GraduationCap,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export interface ContentLevel {
-	icon: LucideIcon;
+	icon: Icon;
 	label: string;
 	example: string;
 	description: string;
@@ -28,7 +26,7 @@ export interface ContentLevel {
 
 export const CONTENT_LEVELS: ContentLevel[] = [
 	{
-		icon: Building2,
+		icon: BuildingsIcon,
 		label: "Dipartimento",
 		example: 'Ingegneria "Enzo Ferrari"',
 		description: "la facoltà di riferimento",
@@ -37,7 +35,7 @@ export const CONTENT_LEVELS: ContentLevel[] = [
 		borderColor: "border-primary/30",
 	},
 	{
-		icon: GraduationCap,
+		icon: DiplomaIcon,
 		label: "Corso di laurea",
 		example: "Ingegneria Informatica",
 		description: "il percorso di laurea",
@@ -46,7 +44,7 @@ export const CONTENT_LEVELS: ContentLevel[] = [
 		borderColor: "border-blue-500/30",
 	},
 	{
-		icon: BookOpen,
+		icon: BookIcon,
 		label: "Insegnamento",
 		example: "Basi di Dati",
 		description: "l'insegnamento specifico",
@@ -55,7 +53,7 @@ export const CONTENT_LEVELS: ContentLevel[] = [
 		borderColor: "border-purple-500/30",
 	},
 	{
-		icon: FileText,
+		icon: DocumentTextIcon,
 		label: "Sezione",
 		example: "SQL e Algebra Relazionale",
 		description: "l'argomento su cui esercitarti",
@@ -77,7 +75,7 @@ function TreeCard({ level }: { level: ContentLevel }) {
 		>
 			<div className="flex items-center gap-3">
 				<div className={cn("shrink-0 rounded-xl p-2.5", level.bg)}>
-					<Icon className={cn("h-5 w-5", level.color)} strokeWidth={1.5} aria-hidden />
+					<Icon className={cn("h-5 w-5", level.color)} aria-hidden />
 				</div>
 				<div className="min-w-0">
 					<p
@@ -99,10 +97,7 @@ function VerticalConnector() {
 	return (
 		<div className="flex flex-col items-center py-2" aria-hidden>
 			<div className="bg-border h-4 w-px" />
-			<ChevronDown
-				className="text-muted-foreground/60 -mt-1 h-4 w-4"
-				strokeWidth={1.5}
-			/>
+			<AltArrowDownIcon className="text-muted-foreground/60 -mt-1 h-4 w-4" />
 		</div>
 	);
 }
@@ -116,12 +111,12 @@ function ResponsiveConnector() {
 			{/* Mobile/tablet: down arrow */}
 			<div className="flex flex-col items-center py-2 lg:hidden">
 				<div className="bg-border h-4 w-px" />
-				<ChevronDown className="-mt-1 h-4 w-4" strokeWidth={1.5} />
+				<AltArrowDownIcon className="-mt-1 h-4 w-4" />
 			</div>
 			{/* Desktop: right arrow */}
 			<div className="hidden flex-row items-center lg:flex">
 				<div className="bg-border h-px w-3 xl:w-4" />
-				<ChevronRight className="-ml-1 h-4 w-4" strokeWidth={1.5} />
+				<AltArrowRightIcon className="-ml-1 h-4 w-4" />
 			</div>
 		</div>
 	);

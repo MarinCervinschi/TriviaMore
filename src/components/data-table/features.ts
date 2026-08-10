@@ -20,7 +20,8 @@ import {
 	tableFeatures,
 } from "@tanstack/react-table";
 import type { ColumnDef, ReactTable, RowData } from "@tanstack/react-table";
-import type { LucideIcon } from "lucide-react";
+
+import type { Icon } from "@/components/icons";
 
 export type DataTableAlign = "left" | "center" | "right";
 export type DataTableBreakpoint = "sm" | "md" | "lg" | "xl";
@@ -28,7 +29,7 @@ export type DataTableBreakpoint = "sm" | "md" | "lg" | "xl";
 export type DataTableFacetOption = {
 	value: string;
 	label: string;
-	icon?: LucideIcon;
+	icon?: Icon;
 };
 
 export type DataTableColumnMeta = {

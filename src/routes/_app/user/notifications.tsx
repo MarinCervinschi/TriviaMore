@@ -1,5 +1,5 @@
+import { BellIcon } from "@solar-icons/react/linear/bell";
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell } from "lucide-react";
 
 import { NotificationList } from "@/components/notifications/notification-list";
 import { NotificationsSkeleton } from "@/components/skeletons";
@@ -19,7 +19,7 @@ function NotificationsPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={Bell}
+				icon={BellIcon}
 				title="Notifiche"
 				description="Tutti gli aggiornamenti sulle tue richieste e contenuti."
 			/>

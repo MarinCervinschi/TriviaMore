@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Github } from "lucide-react";
 
+import { GithubIcon } from "@/components/icons";
 import { Logo } from "@/components/ui/logo";
 
 import type { FooterSection } from "./data";
@@ -28,7 +28,7 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
 							rel="noopener noreferrer"
 							className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors duration-200"
 						>
-							<Github className="h-4 w-4" />
+							<GithubIcon className="h-4 w-4" />
 							GitHub
 						</a>
 					</div>
@@ -70,8 +70,28 @@ export function LandingFooter({ sections }: { sections: FooterSection[] }) {
 						&copy; {new Date().getFullYear()} TriviaMore. Progetto open source per la
 						community studentesca.
 					</p>
-					<div className="flex items-center gap-4">
+					<div className="flex flex-col items-center gap-1 sm:items-end">
 						<p>Fatto con cura a Modena</p>
+						<p>
+							Icone{" "}
+							<a
+								href="https://www.figma.com/community/file/1166831539721848736"
+								className="hover:text-foreground underline underline-offset-2 transition-colors"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Solar
+							</a>{" "}
+							di 480 Design,{" "}
+							<a
+								href="https://creativecommons.org/licenses/by/4.0/"
+								className="hover:text-foreground underline underline-offset-2 transition-colors"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								CC BY 4.0
+							</a>
+						</p>
 					</div>
 				</div>
 			</div>

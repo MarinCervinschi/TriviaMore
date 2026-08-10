@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import type { LucideIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import type { Icon } from "@/components/icons";
 import { LegalHero } from "@/components/legal/legal-hero";
 import {
 	type LegalDocSlug,
@@ -17,7 +17,7 @@ interface LegalDocLayoutProps {
 	meta: {
 		title: string;
 		description: string;
-		icon: LucideIcon;
+		icon: Icon;
 		version: string;
 		lastUpdated: string;
 		slug: LegalDocSlug;

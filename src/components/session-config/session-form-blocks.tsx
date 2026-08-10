@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-import { Infinity as InfinityIcon, Info } from "lucide-react";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,19 +93,16 @@ export function TimeTickRow({ steps, index, onChange, className }: TimeTickRowPr
 		idx: number;
 		label: string;
 		ariaLabel: string;
-		isInfinity: boolean;
 	}[] = [
 		...steps.map((m, i) => ({
 			idx: i,
 			label: `${m}`,
 			ariaLabel: `${m} minuti`,
-			isInfinity: false,
 		})),
 		{
 			idx: unlimitedIndex,
 			label: "∞",
 			ariaLabel: "Tempo illimitato",
-			isInfinity: true,
 		},
 	];
 
@@ -135,11 +132,7 @@ export function TimeTickRow({ steps, index, onChange, className }: TimeTickRowPr
 									: "border-border bg-background text-foreground hover:border-primary/40 hover:bg-muted"
 							)}
 						>
-							{t.isInfinity ? (
-								<InfinityIcon className="h-4 w-4" strokeWidth={1.75} />
-							) : (
-								t.label
-							)}
+							{t.label}
 						</button>
 					);
 				})}
@@ -190,7 +183,7 @@ export function EvalInfoCard({ mode, className }: EvalInfoCardProps) {
 				className
 			)}
 		>
-			<Info className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+			<InfoCircleIcon className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
 			<p className="leading-relaxed">{mode.description}</p>
 		</div>
 	);

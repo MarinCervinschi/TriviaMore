@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { GraduationCap, X } from "lucide-react";
 import { z } from "zod";
 
 import {
@@ -13,6 +13,7 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
+import { CloseGlyph } from "@/components/icons";
 import { UserClassesSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -133,7 +134,7 @@ function buildColumns(
 					className="text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg p-0"
 					title="Rimuovi corso"
 				>
-					<X className="h-4 w-4" />
+					<CloseGlyph className="h-4 w-4" />
 				</Button>
 			),
 		}),
@@ -195,7 +196,7 @@ function ClassesPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={GraduationCap}
+				icon={DiplomaIcon}
 				title="I miei corsi"
 				description="Gestisci i corsi che stai seguendo"
 				stats={[
@@ -209,7 +210,7 @@ function ClassesPage() {
 
 				{userClasses.length === 0 ? (
 					<EmptyState
-						icon={GraduationCap}
+						icon={DiplomaIcon}
 						title="Nessun corso salvato"
 						description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
 						actionLabel="Esplora Corsi"
@@ -226,7 +227,7 @@ function ClassesPage() {
 						}
 						empty={
 							<EmptyState
-								icon={GraduationCap}
+								icon={DiplomaIcon}
 								title="Nessun corso trovato"
 								description="Prova a modificare i filtri di ricerca."
 								actionLabel="Pulisci filtri"
