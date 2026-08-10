@@ -1,27 +1,25 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { AtomIcon } from "@solar-icons/react/linear/atom";
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { CityIcon } from "@solar-icons/react/linear/city";
+import { CpuIcon } from "@solar-icons/react/linear/cpu";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { HeartPulseIcon } from "@solar-icons/react/linear/heart-pulse";
+import { LeafIcon } from "@solar-icons/react/linear/leaf";
+import { MapPointIcon } from "@solar-icons/react/linear/map-point";
 import { Link } from "@tanstack/react-router";
-import {
-	ArrowRight,
-	Atom,
-	Building2,
-	Cpu,
-	GraduationCap,
-	HeartPulse,
-	Landmark,
-	Leaf,
-	type LucideIcon,
-	MapPin,
-} from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { AREA_CONFIG, CAMPUS_LOCATION_CONFIG } from "@/lib/browse/constants";
 import { cn } from "@/lib/utils";
 
-const AREA_ICONS: Record<string, LucideIcon> = {
-	SCIENZE: Atom,
-	TECNOLOGIA: Cpu,
-	SALUTE: HeartPulse,
-	VITA: Leaf,
-	SOCIETA_CULTURA: Landmark,
+const AREA_ICONS: Record<string, Icon> = {
+	SCIENZE: AtomIcon,
+	TECNOLOGIA: CpuIcon,
+	SALUTE: HeartPulseIcon,
+	VITA: LeafIcon,
+	SOCIETA_CULTURA: CityIcon,
 };
 
 const AREA_BANNER_TEXT: Record<string, string> = {
@@ -80,9 +78,9 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						)}
 					>
 						{AreaIcon ? (
-							<AreaIcon className="h-4 w-4" strokeWidth={1.75} />
+							<AreaIcon className="h-4 w-4" />
 						) : (
-							<Building2 className="h-4 w-4" strokeWidth={1.75} />
+							<BuildingsIcon className="h-4 w-4" />
 						)}
 					</div>
 					<div className="min-w-0 flex-1">
@@ -105,7 +103,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 							"group-hover:translate-x-0.5"
 						)}
 					>
-						<ArrowRight
+						<ArrowRightIcon
 							className={cn("h-3.5 w-3.5 transition-colors", areaTextClass)}
 						/>
 					</div>
@@ -125,7 +123,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 					{/* Footer */}
 					<div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-3 text-sm">
 						<span className="text-muted-foreground flex items-center gap-1.5">
-							<GraduationCap className="h-4 w-4" strokeWidth={1.75} />
+							<DiplomaIcon className="h-4 w-4" />
 							<span className="text-foreground font-semibold tabular-nums">
 								{courseCount}
 							</span>
@@ -135,7 +133,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						</span>
 						{campuses.length > 0 && (
 							<span className="text-muted-foreground flex items-center gap-1">
-								<MapPin className="h-3.5 w-3.5" strokeWidth={1.75} />
+								<MapPointIcon className="h-3.5 w-3.5" />
 								<span className="flex flex-wrap gap-1">
 									{campuses.map(c => (
 										<Badge key={c} variant="outline" className="font-mono text-[10px]">

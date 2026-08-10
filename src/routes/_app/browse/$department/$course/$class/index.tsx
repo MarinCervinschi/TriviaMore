@@ -1,18 +1,16 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { ChatRoundDotsIcon } from "@solar-icons/react/linear/chat-round-dots";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { HeartIcon } from "@solar-icons/react/linear/heart";
+import { LockKeyholeIcon } from "@solar-icons/react/linear/lock-keyhole";
+import { Login3Icon } from "@solar-icons/react/linear/login-3";
+import { SquareArrowRightUpIcon } from "@solar-icons/react/linear/square-arrow-right-up";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import {
-	ArrowRight,
-	BookOpen,
-	ExternalLink,
-	GraduationCap,
-	Heart,
-	Lock,
-	LogIn,
-	MessageSquarePlus,
-	Sparkles,
-} from "lucide-react";
 import { z } from "zod";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
@@ -128,7 +126,7 @@ function buildColumns(deptCode: string, courseCode: string, classCode: string) {
 				>
 					<span className="text-foreground group-hover:text-primary flex items-center gap-2 font-medium transition-colors">
 						{!row.original.isPublic && (
-							<Lock className="text-muted-foreground h-3.5 w-3.5" />
+							<LockKeyholeIcon className="text-muted-foreground h-3.5 w-3.5" />
 						)}
 						{row.original.name}
 					</span>
@@ -141,7 +139,7 @@ function buildColumns(deptCode: string, courseCode: string, classCode: string) {
 			cell: ({ row }) =>
 				row.original.quizQuestionCount > 0 ? (
 					<Badge className="gap-1.5 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
-						<BookOpen className="h-3 w-3" />
+						<BookIcon className="h-3 w-3" />
 						{row.original.quizQuestionCount}
 					</Badge>
 				) : (
@@ -154,7 +152,7 @@ function buildColumns(deptCode: string, courseCode: string, classCode: string) {
 			cell: ({ row }) =>
 				row.original.flashcardQuestionCount > 0 ? (
 					<Badge className="gap-1.5 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
-						<Sparkles className="h-3 w-3" />
+						<StarsIcon className="h-3 w-3" />
 						{row.original.flashcardQuestionCount}
 					</Badge>
 				) : (
@@ -258,7 +256,7 @@ function ClassPage() {
 						current={classData.name}
 					/>
 				}
-				icon={BookOpen}
+				icon={BookIcon}
 				title={classData.name}
 				description={classData.description}
 				badges={
@@ -300,7 +298,7 @@ function ClassPage() {
 								rel="noopener noreferrer"
 								className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs transition-colors"
 							>
-								<ExternalLink className="h-3 w-3" />
+								<SquareArrowRightUpIcon className="h-3 w-3" />
 								Catalogo
 							</a>
 						)}
@@ -329,7 +327,7 @@ function ClassPage() {
 									defaultTargetClassId={classData.id}
 									trigger={
 										<Button variant="outline" size="sm" className="gap-1.5">
-											<MessageSquarePlus className="h-4 w-4" />
+											<ChatRoundDotsIcon className="h-4 w-4" />
 											<span className="hidden sm:inline">Proponi contenuto</span>
 										</Button>
 									}
@@ -340,7 +338,9 @@ function ClassPage() {
 									onClick={handleToggleSave}
 									disabled={addClass.isPending || removeClass.isPending}
 								>
-									<Heart className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
+									<HeartIcon
+										className={`mr-2 h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+									/>
 									{isSaved ? "Salvato" : "Salva"}
 								</Button>
 							</>
@@ -401,20 +401,20 @@ function ExamSimulationSection({
 				<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex items-center gap-3">
 						<div className="inline-flex shrink-0 rounded-xl bg-amber-500/10 p-2.5">
-							<GraduationCap className="h-5 w-5 text-amber-600" />
+							<DiplomaIcon className="h-5 w-5 text-amber-600" />
 						</div>
 						<div>
 							<h2 className="font-semibold tracking-tight">Simulazione esame</h2>
 							<div className="mt-1 flex flex-wrap items-center gap-2">
 								{examSimulation.totalQuizQuestions > 0 && (
 									<Badge className="gap-1 border-blue-500/20 bg-blue-500/10 text-xs text-blue-600">
-										<BookOpen className="h-3 w-3" />
+										<BookIcon className="h-3 w-3" />
 										{examSimulation.totalQuizQuestions} quiz
 									</Badge>
 								)}
 								{examSimulation.totalFlashcardQuestions > 0 && (
 									<Badge className="gap-1 border-purple-500/20 bg-purple-500/10 text-xs text-purple-600">
-										<Sparkles className="h-3 w-3" />
+										<StarsIcon className="h-3 w-3" />
 										{examSimulation.totalFlashcardQuestions} flashcard
 									</Badge>
 								)}
@@ -428,12 +428,12 @@ function ExamSimulationSection({
 							onClick={() => setDialogOpen(true)}
 						>
 							Simula esame
-							<ArrowRight className="ml-2 h-4 w-4" />
+							<ArrowRightIcon className="ml-2 h-4 w-4" />
 						</Button>
 					) : (
 						<Button size="sm" className="shrink-0 shadow-sm" asChild>
 							<Link to="/auth/register">
-								<LogIn className="mr-2 h-4 w-4" />
+								<Login3Icon className="mr-2 h-4 w-4" />
 								Registrati per iniziare
 							</Link>
 						</Button>

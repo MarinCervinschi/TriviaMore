@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
 import type { Control, FieldValues } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export function QuestionContentField({
 							size="sm"
 							onClick={() => setShowPreview(!showPreview)}
 						>
-							<Eye className="mr-1 h-3.5 w-3.5" />
+							<EyeIcon className="mr-1 h-3.5 w-3.5" />
 							{showPreview ? "Editor" : "Anteprima"}
 						</Button>
 					</div>

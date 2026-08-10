@@ -1,7 +1,8 @@
 import * as React from "react";
 
 import { Slot } from "@radix-ui/react-slot";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { MenuDotsIcon } from "@solar-icons/react/linear/menu-dots";
 
 import { cn } from "@/lib/utils";
 
@@ -84,7 +85,7 @@ const BreadcrumbSeparator = ({
 		className={cn("[&>svg]:h-3.5 [&>svg]:w-3.5", className)}
 		{...props}
 	>
-		{children ?? <ChevronRight />}
+		{children ?? <AltArrowRightIcon />}
 	</li>
 );
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
@@ -96,7 +97,7 @@ const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<"span"
 		className={cn("flex h-9 w-9 items-center justify-center", className)}
 		{...props}
 	>
-		<MoreHorizontal className="h-4 w-4" />
+		<MenuDotsIcon className="h-4 w-4" />
 		<span className="sr-only">More</span>
 	</span>
 );

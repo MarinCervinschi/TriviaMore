@@ -1,9 +1,9 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useNavigate } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { Spinner } from "@/components/icons";
 import { AcceptanceCheckboxes } from "@/components/legal/acceptance-checkboxes";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,7 +145,7 @@ export function RegisterForm() {
 				>
 					{signup.isPending ? (
 						<>
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							<Spinner className="mr-2" />
 							Registrazione in corso...
 						</>
 					) : (

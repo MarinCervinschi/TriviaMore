@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -19,6 +19,7 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
+import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,7 +96,7 @@ function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
 									to="/admin/classes/$classId"
 									params={{ classId: row.original.id }}
 								>
-									<Pencil className="h-4 w-4" />
+									<Pen2Icon className="h-4 w-4" />
 								</Link>
 							</AdminRowActions>
 						),
@@ -197,7 +198,7 @@ function AdminCourseDetailPage() {
 												className="rounded-xl"
 												onClick={() => setCreateClassOpen(true)}
 											>
-												<Plus className="mr-1 h-4 w-4" />
+												<PlusGlyph className="mr-1 h-4 w-4" />
 												Nuova
 											</Button>
 										)

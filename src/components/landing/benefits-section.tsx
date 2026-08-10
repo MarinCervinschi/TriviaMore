@@ -1,7 +1,9 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Github } from "lucide-react";
 
+import { GithubIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -75,13 +77,13 @@ function CTACard({
 				<Button size="lg" className="shadow-primary/25 shadow-lg" asChild>
 					<Link to={buttonHref}>
 						{buttonText}
-						<ArrowRight className="ml-2 h-4 w-4" />
+						<ArrowRightIcon className="ml-2 h-4 w-4" />
 					</Link>
 				</Button>
 				{secondaryButtonText && secondaryButtonHref && (
 					<Button size="lg" variant="outline" asChild>
 						<a href={secondaryButtonHref} target="_blank" rel="noopener noreferrer">
-							<Github className="mr-2 h-4 w-4" />
+							<GithubIcon className="mr-2 h-4 w-4" />
 							{secondaryButtonText}
 						</a>
 					</Button>
@@ -92,7 +94,7 @@ function CTACard({
 				<div className="text-muted-foreground mt-6 flex flex-wrap items-center gap-x-1 text-xs">
 					{disclaimer.split("•").map((item, i) => (
 						<span key={i} className="flex items-center gap-1">
-							<CheckCircle className="h-3 w-3 text-green-500" />
+							<CheckCircleIcon className="h-3 w-3 text-green-500" />
 							{item.trim()}
 						</span>
 					))}

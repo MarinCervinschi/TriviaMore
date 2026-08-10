@@ -1,8 +1,9 @@
 import { type Ref, useEffect, useRef } from "react";
 
+import { FeedIcon } from "@solar-icons/react/linear/feed";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Megaphone, Newspaper, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -76,7 +77,7 @@ function NewsPage() {
 						className="border-primary/20 bg-primary/5 text-primary mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-widest uppercase"
 						variants={item}
 					>
-						<Megaphone className="h-3.5 w-3.5" strokeWidth={2} />
+						<FeedIcon className="h-3.5 w-3.5" />
 						Novità e aggiornamenti
 					</motion.div>
 					<motion.h1
@@ -91,7 +92,7 @@ function NewsPage() {
 							variants={item}
 						>
 							<span className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs font-semibold">
-								<Sparkles className="h-3 w-3" strokeWidth={2.5} />v{latest.version}
+								<StarsIcon className="h-3 w-3" />v{latest.version}
 							</span>
 							<span>
 								l&apos;ultima release è stata pubblicata il{" "}
@@ -107,7 +108,7 @@ function NewsPage() {
 				<div className="mx-auto max-w-3xl px-4 sm:px-6">
 					{CHANGELOGS.length === 0 ? (
 						<EmptyState
-							icon={Newspaper}
+							icon={FeedIcon}
 							title="Nessuna novità ancora"
 							description="Le novità e gli aggiornamenti verranno pubblicati qui."
 						/>

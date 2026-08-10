@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 const colorMap: Record<string, { orb: string; badge: string; icon: string }> = {
@@ -39,7 +39,7 @@ export function StatCard({
 }: {
 	label: string;
 	value: string | number;
-	icon: LucideIcon;
+	icon: Icon;
 	color?: string;
 	href?: string;
 	subtitle?: string;
@@ -56,10 +56,7 @@ export function StatCard({
 			/>
 			<div className="relative flex flex-col gap-3">
 				<div className={cn("inline-flex w-fit rounded-xl p-2 sm:p-2.5", colors.badge)}>
-					<Icon
-						className={cn("h-4 w-4 sm:h-5 sm:w-5", colors.icon)}
-						strokeWidth={1.5}
-					/>
+					<Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", colors.icon)} />
 				</div>
 				<div className="min-w-0">
 					<p className="text-muted-foreground truncate text-xs font-medium sm:text-sm">

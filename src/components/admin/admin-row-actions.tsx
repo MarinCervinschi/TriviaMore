@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Trash2 } from "lucide-react";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 
 import { Button } from "@/components/ui/button";
 
@@ -27,7 +27,7 @@ export function AdminRowActions({
 					onClick={onDelete}
 					aria-label="Elimina"
 				>
-					<Trash2 className="text-destructive h-4 w-4" />
+					<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
 				</Button>
 			)}
 		</div>

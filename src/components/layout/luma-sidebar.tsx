@@ -1,7 +1,12 @@
 import { useRef, useState } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
+import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { BookOpen, GraduationCap, LogOut, Mail, Search, Settings } from "lucide-react";
 
 import { ThemeIcons } from "@/components/layout/theme-toggle";
 import { SidebarChangelogMegaphone } from "@/components/notifications/changelog-megaphone";
@@ -52,7 +57,7 @@ function SidebarNavIcon({ item, isActive }: { item: NavItem; isActive: boolean }
 					className={cn(ITEM_BASE, isActive ? ITEM_ACTIVE : ITEM_IDLE)}
 				>
 					{isActive && <ActiveBar />}
-					<Icon className="size-[18px]" strokeWidth={1.5} />
+					<Icon className="size-[18px]" />
 				</Link>
 			</TooltipTrigger>
 			<TooltipContent side="right" sideOffset={14}>
@@ -74,7 +79,7 @@ function SidebarThemeToggle() {
 					aria-label="Cambia tema"
 					className={cn(ITEM_BASE, ITEM_IDLE)}
 				>
-					<ThemeIcons className="size-[18px] [&_svg]:size-[18px]" strokeWidth={1.5} />
+					<ThemeIcons className="size-[18px] [&_svg]:size-[18px]" />
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="right" sideOffset={14}>
@@ -105,7 +110,7 @@ function SidebarSearchHover() {
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<button aria-label="Cerca" className={cn(ITEM_BASE, ITEM_IDLE)}>
-						<Search className="size-[18px]" strokeWidth={1.5} />
+						<MagnifierIcon className="size-[18px]" />
 					</button>
 				</TooltipTrigger>
 				{!open && (
@@ -127,7 +132,7 @@ function SidebarSearchHover() {
 							onClick={() => setOpen(false)}
 							className="text-muted-foreground hover:bg-accent hover:text-foreground flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors"
 						>
-							<GraduationCap className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
+							<DiplomaIcon className="h-4 w-4 flex-shrink-0" />
 							Cerca corso
 						</Link>
 						<Link
@@ -135,7 +140,7 @@ function SidebarSearchHover() {
 							onClick={() => setOpen(false)}
 							className="text-muted-foreground hover:bg-accent hover:text-foreground flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors"
 						>
-							<BookOpen className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} />
+							<BookIcon className="h-4 w-4 flex-shrink-0" />
 							Cerca insegnamento
 						</Link>
 					</div>
@@ -203,7 +208,7 @@ function SidebarProfile({
 						onClick={() => setOpen(false)}
 						className="hover:bg-accent flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
 					>
-						<Settings className="h-4 w-4" strokeWidth={1.5} />
+						<SettingsIcon className="h-4 w-4" />
 						Impostazioni
 					</Link>
 					<Link
@@ -211,7 +216,7 @@ function SidebarProfile({
 						onClick={() => setOpen(false)}
 						className="hover:bg-accent flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
 					>
-						<Mail className="h-4 w-4" strokeWidth={1.5} />
+						<LetterIcon className="h-4 w-4" />
 						Contatti
 					</Link>
 				</div>
@@ -254,7 +259,7 @@ function SidebarProfile({
 						}}
 						className="text-destructive hover:bg-destructive/10 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
 					>
-						<LogOut className="h-4 w-4" strokeWidth={1.5} />
+						<Logout3Icon className="h-4 w-4" />
 						Esci
 					</button>
 				</div>

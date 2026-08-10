@@ -1,8 +1,10 @@
 import { useState } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Loader2, Sparkles } from "lucide-react";
 
+import { Spinner } from "@/components/icons";
 import { AnimatedStack } from "@/components/session-config/animated-block";
 import {
 	FlashcardConfigFields,
@@ -133,14 +135,14 @@ export function StartExamDialog({
 									value="quiz"
 									className="gap-1.5 focus-visible:shadow-none focus-visible:ring-offset-0"
 								>
-									<BookOpen className="h-3.5 w-3.5" />
+									<BookIcon className="h-3.5 w-3.5" />
 									Quiz
 								</TabsTrigger>
 								<TabsTrigger
 									value="flashcard"
 									className="gap-1.5 focus-visible:shadow-none focus-visible:ring-offset-0"
 								>
-									<Sparkles className="h-3.5 w-3.5" />
+									<StarsIcon className="h-3.5 w-3.5" />
 									Flashcard
 								</TabsTrigger>
 							</TabsList>
@@ -174,7 +176,7 @@ export function StartExamDialog({
 						onClick={tab === "quiz" ? handleStartQuiz : handleStartFlashcard}
 						disabled={loading}
 					>
-						{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+						{loading && <Spinner className="mr-2" />}
 						{tab === "quiz" ? "Inizia Quiz" : "Inizia Flashcard"}
 					</Button>
 				</DialogFooter>

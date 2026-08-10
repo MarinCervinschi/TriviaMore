@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2, Users } from "lucide-react";
 import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -18,6 +20,7 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
+import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,7 +131,7 @@ function buildColumns(onDelete: (id: string) => void) {
 						to="/admin/questions/$questionId"
 						params={{ questionId: row.original.id }}
 					>
-						<Pencil className="h-4 w-4" />
+						<Pen2Icon className="h-4 w-4" />
 					</Link>
 				</AdminRowActions>
 			),
@@ -265,7 +268,7 @@ function AdminSectionDetailPage() {
 					<Card className="rounded-2xl">
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
-								<Users className="h-5 w-5" />
+								<UsersGroupRoundedIcon className="h-5 w-5" />
 								Accessi utente ({accessUsers?.length ?? 0})
 							</CardTitle>
 							<p className="text-muted-foreground text-sm">
@@ -293,7 +296,7 @@ function AdminSectionDetailPage() {
 													})
 												}
 											>
-												<Trash2 className="text-destructive h-3 w-3" />
+												<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
 											</Button>
 										</Badge>
 									))}
@@ -330,7 +333,7 @@ function AdminSectionDetailPage() {
 												}
 											}}
 										>
-											<Plus className="mr-1 h-4 w-4" />
+											<PlusGlyph className="mr-1 h-4 w-4" />
 											Aggiungi
 										</Button>
 									</div>

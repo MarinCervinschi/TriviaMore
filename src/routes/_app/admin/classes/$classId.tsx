@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
+import { EyeClosedIcon } from "@solar-icons/react/linear/eye-closed";
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, GraduationCap, Pencil, Plus } from "lucide-react";
 import { z } from "zod";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -19,6 +22,7 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
+import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,20 +84,20 @@ function buildColumns(onDelete: (id: string) => void) {
 				align: "center",
 				facet: {
 					options: [
-						{ value: "public", label: "Pubblica", icon: Eye },
-						{ value: "private", label: "Privata", icon: EyeOff },
+						{ value: "public", label: "Pubblica", icon: EyeIcon },
+						{ value: "private", label: "Privata", icon: EyeClosedIcon },
 					],
 				},
 			},
 			cell: ({ row }) =>
 				row.original.isPublic ? (
 					<Badge variant="default" className="gap-1 rounded-full">
-						<Eye className="h-3 w-3" />
+						<EyeIcon className="h-3 w-3" />
 						Pubblica
 					</Badge>
 				) : (
 					<Badge variant="secondary" className="gap-1 rounded-full">
-						<EyeOff className="h-3 w-3" />
+						<EyeClosedIcon className="h-3 w-3" />
 						Privata
 					</Badge>
 				),
@@ -110,7 +114,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			cell: ({ row }) => (
 				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
 					<Link to="/admin/sections/$sectionId" params={{ sectionId: row.original.id }}>
-						<Pencil className="h-4 w-4" />
+						<Pen2Icon className="h-4 w-4" />
 					</Link>
 				</AdminRowActions>
 			),
@@ -236,7 +240,7 @@ function AdminClassDetailPage() {
 													className="rounded-xl"
 													onClick={() => setCreateExamSimulationOpen(true)}
 												>
-													<GraduationCap className="mr-1 h-4 w-4" />
+													<DiplomaIcon className="mr-1 h-4 w-4" />
 													Crea Exam Simulation
 												</Button>
 											)}
@@ -245,7 +249,7 @@ function AdminClassDetailPage() {
 												className="rounded-xl"
 												onClick={() => setCreateSectionOpen(true)}
 											>
-												<Plus className="mr-1 h-4 w-4" />
+												<PlusGlyph className="mr-1 h-4 w-4" />
 												Nuova
 											</Button>
 										</>

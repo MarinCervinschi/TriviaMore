@@ -1,6 +1,7 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { BellOffIcon } from "@solar-icons/react/linear/bell-off";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BellOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -39,7 +40,7 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
 			{/* Notification list */}
 			{unread.length === 0 ? (
 				<div className="flex flex-col items-center gap-2 py-8 text-center">
-					<BellOff className="text-muted-foreground/40 size-8" strokeWidth={1.5} />
+					<BellOffIcon className="text-muted-foreground/40 size-8" />
 					<p className="text-muted-foreground text-sm">Nessuna notifica non letta</p>
 				</div>
 			) : (
@@ -69,7 +70,7 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
 						>
 							<Link to="/user/notifications">
 								Vedi tutte
-								<ArrowRight className="size-3" />
+								<ArrowRightIcon className="size-3" />
 							</Link>
 						</Button>
 					</div>

@@ -1,5 +1,6 @@
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { FlagIcon } from "@solar-icons/react/linear/flag";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Bookmark, Flag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,10 +11,10 @@ import { QuestionHeader } from "./question-header";
 const actions = (
 	<>
 		<Button variant="ghost" size="icon" aria-label="Segnala">
-			<Flag />
+			<FlagIcon />
 		</Button>
 		<Button variant="ghost" size="icon" aria-label="Salva">
-			<Bookmark />
+			<BookmarkIcon />
 		</Button>
 	</>
 );

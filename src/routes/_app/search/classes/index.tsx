@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, Search, X } from "lucide-react";
 import { z } from "zod";
 
 import {
@@ -11,6 +12,7 @@ import {
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
+import { CloseGlyph } from "@/components/icons";
 import { SearchResultsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -238,7 +240,7 @@ function SearchClassesPage() {
 	return (
 		<div>
 			<UserHero
-				icon={BookOpen}
+				icon={BookIcon}
 				title="Cerca insegnamento"
 				description="Cerca insegnamenti per nome"
 				stats={
@@ -253,7 +255,7 @@ function SearchClassesPage() {
 				<div className="mb-6 space-y-3">
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 						<div className="relative flex-1">
-							<Search className="text-muted-foreground absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+							<MagnifierIcon className="text-muted-foreground absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
 							<Input
 								type="search"
 								placeholder="es. Analisi Matematica, Algoritmi, Basi di Dati..."
@@ -269,7 +271,7 @@ function SearchClassesPage() {
 								onClick={clearFilters}
 								className="text-muted-foreground shrink-0"
 							>
-								<X className="mr-1.5 h-3.5 w-3.5" />
+								<CloseGlyph className="mr-1.5 h-3.5 w-3.5" />
 								Pulisci filtri
 							</Button>
 						)}
@@ -361,7 +363,7 @@ function SearchClassesPage() {
 				{!hasFilters ? (
 					<div className="bg-card rounded-2xl border p-12 text-center">
 						<div className="bg-primary/10 mx-auto mb-4 inline-flex rounded-2xl p-3">
-							<Search className="text-primary h-6 w-6" strokeWidth={1.5} />
+							<MagnifierIcon className="text-primary h-6 w-6" />
 						</div>
 						<h3 className="text-lg font-semibold">Inizia a cercare</h3>
 						<p className="text-muted-foreground mt-1 text-sm">

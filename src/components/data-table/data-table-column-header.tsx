@@ -1,6 +1,8 @@
+import { ArrowDownIcon } from "@solar-icons/react/linear/arrow-down";
+import { ArrowUpIcon } from "@solar-icons/react/linear/arrow-up";
+import { SortVerticalIcon } from "@solar-icons/react/linear/sort-vertical";
 import { FlexRender } from "@tanstack/react-table";
 import type { Header, RowData } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,11 +36,11 @@ export function DataTableColumnHeader<TData extends RowData>({
 		>
 			<FlexRender header={header} />
 			{sorted === "asc" ? (
-				<ArrowUp className="h-3.5 w-3.5" />
+				<ArrowUpIcon className="h-3.5 w-3.5" />
 			) : sorted === "desc" ? (
-				<ArrowDown className="h-3.5 w-3.5" />
+				<ArrowDownIcon className="h-3.5 w-3.5" />
 			) : (
-				<ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+				<SortVerticalIcon className="h-3.5 w-3.5 opacity-40" />
 			)}
 		</Button>
 	);

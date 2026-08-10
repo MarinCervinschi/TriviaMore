@@ -1,5 +1,6 @@
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { HomeIcon } from "@solar-icons/react/linear/home";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, Home } from "lucide-react";
 
 export function UserBreadcrumb({ current }: { current: string }) {
 	return (
@@ -8,10 +9,10 @@ export function UserBreadcrumb({ current }: { current: string }) {
 				to="/user"
 				className="text-muted-foreground hover:text-foreground flex items-center gap-1"
 			>
-				<Home className="h-4 w-4" />
+				<HomeIcon className="h-4 w-4" />
 				Dashboard
 			</Link>
-			<ChevronRight className="text-muted-foreground/50 h-3.5 w-3.5" />
+			<AltArrowRightIcon className="text-muted-foreground/50 h-3.5 w-3.5" />
 			<span className="text-foreground font-medium">{current}</span>
 		</nav>
 	);

@@ -1,17 +1,15 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { SquareArrowRightUpIcon } from "@solar-icons/react/linear/square-arrow-right-up";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-	ArrowRight,
-	BookmarkIcon,
-	Calendar,
-	ExternalLink,
-	GraduationCap,
-	Inbox,
-	Mail,
-	TrendingUp,
-	Trophy,
-} from "lucide-react";
 
 import {
 	DataTable,
@@ -52,7 +50,7 @@ function DashboardPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			{/* Hero */}
-			<UserHero icon={Trophy} title="" description="">
+			<UserHero icon={CupFirstIcon} title="" description="">
 				<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
 					<Avatar className="border-background ring-primary/20 h-16 w-16 shrink-0 border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
 						<AvatarImage src={profile.image ?? undefined} alt={displayName} />
@@ -72,12 +70,12 @@ function DashboardPage() {
 						<div className="text-muted-foreground flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
 							{profile.email && (
 								<div className="flex min-w-0 items-center gap-1.5">
-									<Mail className="h-4 w-4 shrink-0" />
+									<LetterIcon className="h-4 w-4 shrink-0" />
 									<span className="truncate text-sm">{profile.email}</span>
 								</div>
 							)}
 							<div className="flex items-center gap-1.5">
-								<Calendar className="h-4 w-4 shrink-0" />
+								<CalendarMinimalisticIcon className="h-4 w-4 shrink-0" />
 								<span className="text-sm">
 									Membro dal {formatDate(profile.createdAt)}
 								</span>
@@ -93,19 +91,19 @@ function DashboardPage() {
 					<StatCard
 						label="Quiz completati"
 						value={profile.stats.totalQuizzes}
-						icon={Trophy}
+						icon={CupFirstIcon}
 						color="yellow"
 					/>
 					<StatCard
 						label="Punteggio medio"
 						value={`${profile.stats.averageScore}/33`}
-						icon={TrendingUp}
+						icon={GraphUpIcon}
 						color="green"
 					/>
 					<StatCard
 						label="Corsi seguiti"
 						value={profile.stats.userClassesCount}
-						icon={GraduationCap}
+						icon={DiplomaIcon}
 						color="blue"
 					/>
 					<StatCard
@@ -119,21 +117,21 @@ function DashboardPage() {
 				{/* Quick Actions */}
 				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 					<QuickActionCard
-						icon={Inbox}
+						icon={InboxIcon}
 						color="amber"
 						title="I miei contributi"
 						description="Proponi nuovi contenuti per la piattaforma"
 						href="/user/requests"
 					/>
 					<QuickActionCard
-						icon={TrendingUp}
+						icon={GraphUpIcon}
 						color="green"
 						title="I miei progressi"
 						description="Visualizza i tuoi progressi dettagliati per ogni materia"
 						href="/user/progress"
 					/>
 					<QuickActionCard
-						icon={GraduationCap}
+						icon={DiplomaIcon}
 						color="blue"
 						title="I miei corsi"
 						description="Gestisci i corsi che stai seguendo al meglio"
@@ -210,7 +208,7 @@ function QuickActionCard({
 	description,
 	href,
 }: {
-	icon: typeof Trophy;
+	icon: typeof CupFirstIcon;
 	color: string;
 	title: string;
 	description: string;
@@ -230,13 +228,13 @@ function QuickActionCard({
 
 			<div className="relative">
 				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
-					<Icon className={`h-6 w-6 ${colors.iconColor}`} strokeWidth={1.5} />
+					<Icon className={`h-6 w-6 ${colors.iconColor}`} />
 				</div>
 				<h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
 				<p className="text-muted-foreground mb-4 text-sm">{description}</p>
 				<div className="text-primary flex items-center gap-1 text-sm font-medium">
 					Vai
-					<ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+					<ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
 				</div>
 			</div>
 		</Link>
@@ -255,9 +253,9 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 				</div>
 				<Button asChild variant="ghost" size="sm" className="group">
 					<Link to="/user/classes" className="flex items-center gap-1">
-						<GraduationCap className="h-4 w-4" />
+						<DiplomaIcon className="h-4 w-4" />
 						Tutti i corsi
-						<ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+						<ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
 					</Link>
 				</Button>
 			</div>
@@ -380,7 +378,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 					>
 						<div className="flex items-start gap-3">
 							<div className="bg-primary/10 rounded-xl p-2">
-								<Trophy className="text-primary h-4 w-4" />
+								<CupFirstIcon className="text-primary h-4 w-4" />
 							</div>
 							<div className="min-w-0 flex-1">
 								<p className="font-medium">{attempt.sectionName}</p>
@@ -404,7 +402,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 									params={{ attemptId: attempt.id }}
 									className="flex items-center gap-1"
 								>
-									<ExternalLink className="h-3 w-3" />
+									<SquareArrowRightUpIcon className="h-3 w-3" />
 									Vedi
 								</Link>
 							</Button>

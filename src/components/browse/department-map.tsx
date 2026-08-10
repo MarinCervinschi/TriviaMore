@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { MapPin } from "lucide-react";
+import { MapPointIcon } from "@solar-icons/react/linear/map-point";
 
 import {
 	Map,
@@ -58,7 +58,7 @@ export function DepartmentMap({ locations }: { locations: DepartmentLocation[] }
 		<Card className="mb-6 overflow-hidden">
 			<CardHeader className="pb-2">
 				<CardTitle className="flex items-center gap-2 text-base">
-					<MapPin className="text-primary h-4 w-4" />
+					<MapPointIcon className="text-primary h-4 w-4" />
 					Sedi
 				</CardTitle>
 			</CardHeader>
@@ -79,7 +79,7 @@ export function DepartmentMap({ locations }: { locations: DepartmentLocation[] }
 								latitude={Number(location.latitude)}
 							>
 								<MarkerContent className="bg-primary text-primary-foreground ring-background flex h-9 w-9 items-center justify-center rounded-full shadow-lg ring-2 transition-transform hover:scale-110">
-									<MapPin className="h-4 w-4" />
+									<MapPointIcon className="h-4 w-4" />
 								</MarkerContent>
 								<MarkerPopup>
 									<div className="min-w-[220px] space-y-2">

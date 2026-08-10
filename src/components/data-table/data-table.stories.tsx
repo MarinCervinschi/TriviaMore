@@ -1,6 +1,9 @@
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Inbox, Pencil, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -168,10 +171,10 @@ function AdminExample() {
 				cell: () => (
 					<div className="flex items-center justify-end gap-1">
 						<Button variant="ghost" size="icon" className="rounded-lg">
-							<Pencil className="h-4 w-4" />
+							<Pen2Icon className="h-4 w-4" />
 						</Button>
 						<Button variant="ghost" size="icon" className="rounded-lg">
-							<Trash2 className="text-destructive h-4 w-4" />
+							<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
 						</Button>
 					</div>
 				),
@@ -190,7 +193,7 @@ function AdminExample() {
 			toolbar={<DataTableToolbar table={table} searchPlaceholder="Cerca sezioni..." />}
 			empty={
 				<EmptyState
-					icon={Inbox}
+					icon={InboxIcon}
 					title="Nessuna sezione trovata"
 					description="Prova a modificare la ricerca o i filtri."
 				/>
@@ -225,7 +228,7 @@ function EmptyExample() {
 			toolbar={<DataTableToolbar table={table} searchable={false} />}
 			empty={
 				<EmptyState
-					icon={BookOpen}
+					icon={BookIcon}
 					title="Nessuna sezione"
 					description="Questo insegnamento non ha ancora sezioni."
 				/>

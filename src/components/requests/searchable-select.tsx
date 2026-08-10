@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { Check, ChevronsUpDown } from "lucide-react";
+import { SortVerticalIcon } from "@solar-icons/react/linear/sort-vertical";
 
+import { CheckGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -40,7 +41,7 @@ export function SearchableSelect({
 					<span className={cn("truncate", !selected && "text-muted-foreground")}>
 						{selected?.label ?? placeholder}
 					</span>
-					<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+					<SortVerticalIcon className="ml-2 size-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
@@ -61,7 +62,7 @@ export function SearchableSelect({
 										setOpen(false);
 									}}
 								>
-									<Check
+									<CheckGlyph
 										className={cn(
 											"mr-2 size-4",
 											value === item.value ? "opacity-100" : "opacity-0"

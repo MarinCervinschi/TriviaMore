@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { Eye, EyeOff } from "lucide-react";
+import { EyeIcon } from "@solar-icons/react/linear/eye";
+import { EyeClosedIcon } from "@solar-icons/react/linear/eye-closed";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,7 @@ const PasswordInput = React.forwardRef<
 				className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
 				tabIndex={-1}
 			>
-				{show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+				{show ? <EyeClosedIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
 				<span className="sr-only">
 					{show ? "Nascondi password" : "Mostra password"}
 				</span>

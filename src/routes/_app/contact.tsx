@@ -1,18 +1,16 @@
 import { useState } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { ArrowRightUpIcon } from "@solar-icons/react/linear/arrow-right-up";
+import { BugIcon } from "@solar-icons/react/linear/bug";
+import { HeartIcon } from "@solar-icons/react/linear/heart";
+import { LightbulbMinimalisticIcon } from "@solar-icons/react/linear/lightbulb-minimalistic";
+import { Plane2Icon } from "@solar-icons/react/linear/plane-2";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-	ArrowUpRight,
-	Bug,
-	ChevronDown,
-	Github,
-	Heart,
-	Lightbulb,
-	Send,
-} from "lucide-react";
 
 import { ContactForm } from "@/components/contact/contact-form";
+import { GithubIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -38,7 +36,7 @@ export const Route = createFileRoute("/_app/contact")({
 
 const quickLinks = [
 	{
-		icon: Bug,
+		icon: BugIcon,
 		title: "Segnala un bug",
 		description: "Hai trovato un problema? Apri una issue su GitHub.",
 		color: "text-red-500",
@@ -46,7 +44,7 @@ const quickLinks = [
 		href: "https://github.com/MarinCervinschi/TriviaMore/issues/new?template=bug_report.md",
 	},
 	{
-		icon: Lightbulb,
+		icon: LightbulbMinimalisticIcon,
 		title: "Proponi una funzionalità",
 		description: "Hai un'idea per migliorare TriviaMore?",
 		color: "text-amber-500",
@@ -54,7 +52,7 @@ const quickLinks = [
 		href: "https://github.com/MarinCervinschi/TriviaMore/issues/new?template=feature_request.md",
 	},
 	{
-		icon: Heart,
+		icon: HeartIcon,
 		title: "Contribuisci",
 		description: "Sviluppatore, designer o appassionato? Aiutaci!",
 		color: "text-pink-500",
@@ -87,7 +85,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 				className="hover:text-primary flex w-full items-center justify-between py-5 text-left transition-colors"
 			>
 				<span className="pr-4 font-semibold">{q}</span>
-				<ChevronDown
+				<AltArrowDownIcon
 					className={cn(
 						"text-muted-foreground h-5 w-5 shrink-0 transition-transform duration-200",
 						open && "rotate-180"
@@ -176,13 +174,13 @@ function ContactPage() {
 									variants={item}
 								>
 									<div className={`shrink-0 rounded-xl p-3 ${link.bg}`}>
-										<Icon className={`h-5 w-5 ${link.color}`} strokeWidth={1.5} />
+										<Icon className={`h-5 w-5 ${link.color}`} />
 									</div>
 									<div className="min-w-0 flex-1">
 										<p className="font-semibold">{link.title}</p>
 										<p className="text-muted-foreground text-sm">{link.description}</p>
 									</div>
-									<ArrowUpRight className="text-muted-foreground h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+									<ArrowRightUpIcon className="text-muted-foreground h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
 								</motion.a>
 							);
 						})}
@@ -208,7 +206,7 @@ function ContactPage() {
 								<div className="relative">
 									<div className="mb-6 flex items-center gap-3">
 										<div className="bg-primary/10 inline-flex rounded-xl p-3">
-											<Send className="text-primary h-5 w-5" strokeWidth={1.5} />
+											<Plane2Icon className="text-primary h-5 w-5" />
 										</div>
 										<div>
 											<h2 className="text-xl font-semibold tracking-tight">
@@ -230,7 +228,7 @@ function ContactPage() {
 							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
 								<div className="bg-muted/50 pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full blur-[40px]" />
 								<div className="relative">
-									<Github className="mb-4 h-10 w-10" strokeWidth={1.2} />
+									<GithubIcon className="mb-4 h-10 w-10" />
 									<h3 className="mb-2 text-lg font-semibold tracking-tight">
 										Contribuisci su GitHub
 									</h3>
@@ -245,7 +243,7 @@ function ContactPage() {
 											rel="noopener noreferrer"
 										>
 											Visita il repository
-											<ArrowUpRight className="ml-2 h-4 w-4" />
+											<ArrowRightUpIcon className="ml-2 h-4 w-4" />
 										</a>
 									</Button>
 								</div>

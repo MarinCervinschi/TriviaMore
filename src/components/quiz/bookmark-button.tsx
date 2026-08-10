@@ -1,5 +1,6 @@
+import { BookmarkIcon as BookmarkFilledIcon } from "@solar-icons/react/bold/bookmark";
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { useQuery } from "@tanstack/react-query";
-import { Bookmark, BookmarkCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,9 +45,9 @@ export function BookmarkButton({
 						)}
 					>
 						{isBookmarked ? (
-							<BookmarkCheck className="h-4 w-4" />
+							<BookmarkFilledIcon className="h-4 w-4" />
 						) : (
-							<Bookmark className="h-4 w-4" />
+							<BookmarkIcon className="h-4 w-4" />
 						)}
 					</Button>
 				</TooltipTrigger>

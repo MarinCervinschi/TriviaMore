@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Clock } from "lucide-react";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 
 export function QuizTimer({
 	timeLimitMinutes,
@@ -48,7 +48,7 @@ export function QuizTimer({
 			}`}
 			aria-label={isUnlimited ? "Tempo trascorso" : "Tempo rimanente"}
 		>
-			<Clock className="h-3.5 w-3.5" />
+			<ClockCircleIcon className="h-3.5 w-3.5" />
 			{display}
 		</div>
 	);

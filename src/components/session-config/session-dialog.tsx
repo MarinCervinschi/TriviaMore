@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Loader2 } from "lucide-react";
-
+import { Spinner } from "@/components/icons";
 import { AnimatedStack } from "@/components/session-config/animated-block";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,7 +71,7 @@ export function SessionDialogColumn({
 					Annulla
 				</Button>
 				<Button onClick={onSubmit} disabled={isPending}>
-					{isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+					{isPending && <Spinner className="mr-2" />}
 					{submitLabel}
 				</Button>
 			</DialogFooter>

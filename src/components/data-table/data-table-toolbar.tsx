@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import type { RowData } from "@tanstack/react-table";
-import { Search, X } from "lucide-react";
 
+import { CloseGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -62,7 +63,7 @@ export function DataTableToolbar<TData extends RowData>({
 			<div className="flex flex-1 flex-wrap items-center gap-2">
 				{searchable && (
 					<div className="relative w-full sm:w-64">
-						<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+						<MagnifierIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 						<Input
 							value={query}
 							onChange={event => setQuery(event.target.value)}
@@ -91,7 +92,7 @@ export function DataTableToolbar<TData extends RowData>({
 						onClick={() => table.options.meta?.resetFilters()}
 					>
 						Pulisci
-						<X className="h-4 w-4" />
+						<CloseGlyph className="h-4 w-4" />
 					</Button>
 				)}
 			</div>

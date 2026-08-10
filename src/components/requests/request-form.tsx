@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
 
+import { AddFolderIcon } from "@solar-icons/react/linear/add-folder";
+import { ChatRoundDotsIcon } from "@solar-icons/react/linear/chat-round-dots";
+import { CloudUploadIcon } from "@solar-icons/react/linear/cloud-upload";
 import { useQuery } from "@tanstack/react-query";
-import { FileUp, FolderPlus, MessageSquarePlus, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { PlusGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -160,21 +163,21 @@ export function RequestForm({
 				<p className="text-sm font-medium">Cosa vuoi proporre?</p>
 				<div className="grid gap-3">
 					<TypeCard
-						icon={FolderPlus}
+						icon={AddFolderIcon}
 						title="Nuova sezione"
 						description="Proponi una nuova sezione per un insegnamento"
 						selected={type === "section"}
 						onClick={() => setType("section")}
 					/>
 					<TypeCard
-						icon={MessageSquarePlus}
+						icon={ChatRoundDotsIcon}
 						title="Nuove domande"
 						description="Proponi domande per una sezione esistente"
 						selected={type === "questions"}
 						onClick={() => setType("questions")}
 					/>
 					<TypeCard
-						icon={FileUp}
+						icon={CloudUploadIcon}
 						title="Carica file"
 						description="Carica un file con domande gia pronte (PDF, DOCX)"
 						selected={type === "file_upload"}
@@ -312,7 +315,7 @@ export function RequestForm({
 							onClick={() => setQuestions([...questions, { ...EMPTY_QUESTION }])}
 							className="gap-1 rounded-xl"
 						>
-							<Plus className="size-3.5" />
+							<PlusGlyph className="size-3.5" />
 							Aggiungi
 						</Button>
 					</div>

@@ -1,23 +1,21 @@
 import { useState } from "react";
 
+import { AddFolderIcon } from "@solar-icons/react/linear/add-folder";
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { ChatRoundDotsIcon } from "@solar-icons/react/linear/chat-round-dots";
+import { CloudUploadIcon } from "@solar-icons/react/linear/cloud-upload";
+import { FlagIcon } from "@solar-icons/react/linear/flag";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
+import { MapPointIcon } from "@solar-icons/react/linear/map-point";
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { Plane2Icon } from "@solar-icons/react/linear/plane-2";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	ChevronDown,
-	FileUp,
-	Flag,
-	FolderPlus,
-	Inbox,
-	Info,
-	MapPin,
-	MessageSquarePlus,
-	Pencil,
-	Plus,
-	Send,
-	Trash2,
-} from "lucide-react";
 
+import { PlusGlyph } from "@/components/icons";
 import { RequestFormDialog } from "@/components/requests/request-form-dialog";
 import { RequestStatusBadge } from "@/components/requests/request-status-badge";
 import { UserRequestsSkeleton } from "@/components/skeletons";
@@ -128,7 +126,7 @@ function UserContributionsPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={Inbox}
+				icon={InboxIcon}
 				title="I miei contributi"
 				description="Proponi nuovi contenuti per la piattaforma."
 			/>
@@ -138,7 +136,7 @@ function UserContributionsPage() {
 
 				{/* Info banner */}
 				<div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
-					<Info className="size-4 shrink-0 text-blue-500" strokeWidth={1.5} />
+					<InfoCircleIcon className="size-4 shrink-0 text-blue-500" />
 					<p className="text-muted-foreground text-xs">
 						Per segnalare bug o fare richieste particolari, visita la pagina{" "}
 						<Link to="/contact" className="text-primary font-medium hover:underline">
@@ -158,7 +156,7 @@ function UserContributionsPage() {
 								size="sm"
 								className="shadow-primary/25 gap-1.5 rounded-xl shadow-lg"
 							>
-								<Plus className="size-4" />
+								<PlusGlyph className="size-4" />
 								Proponi contenuto
 							</Button>
 						}
@@ -167,7 +165,7 @@ function UserContributionsPage() {
 
 				{requests.length === 0 ? (
 					<EmptyState
-						icon={Inbox}
+						icon={InboxIcon}
 						title="Nessuna proposta"
 						description="Contribuisci proponendo sezioni o domande!"
 					/>
@@ -215,10 +213,10 @@ function ContributionRow({
 	prefersReduced: boolean;
 }) {
 	const iconMap = {
-		NEW_SECTION: FolderPlus,
-		NEW_QUESTIONS: MessageSquarePlus,
-		REPORT: Flag,
-		FILE_UPLOAD: FileUp,
+		NEW_SECTION: AddFolderIcon,
+		NEW_QUESTIONS: ChatRoundDotsIcon,
+		REPORT: FlagIcon,
+		FILE_UPLOAD: CloudUploadIcon,
 	};
 	const colorMap = {
 		NEW_SECTION: { bg: "bg-blue-500/10", text: "text-blue-500" },
@@ -238,13 +236,13 @@ function ContributionRow({
 				className="hover:bg-accent/30 flex w-full items-center gap-3 px-5 py-4 text-left transition-colors"
 			>
 				<div className={cn("rounded-xl p-2", colors.bg)}>
-					<Icon className={cn("size-4", colors.text)} strokeWidth={1.5} />
+					<Icon className={cn("size-4", colors.text)} />
 				</div>
 
 				<div className="min-w-0 flex-1">
 					<p className="truncate text-sm font-medium">{title}</p>
 					<p className="text-muted-foreground mt-0.5 flex items-center gap-1.5 truncate text-xs">
-						<MapPin className="size-3 shrink-0" strokeWidth={1.5} />
+						<MapPointIcon className="size-3 shrink-0" />
 						{request.targetLabel}
 					</p>
 				</div>
@@ -254,7 +252,7 @@ function ContributionRow({
 						{timeAgo(request.updatedAt)}
 					</span>
 					<RequestStatusBadge status={request.status} />
-					<ChevronDown
+					<AltArrowDownIcon
 						className={cn(
 							"text-muted-foreground size-4 transition-transform",
 							isExpanded && "rotate-180"
@@ -314,7 +312,7 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
 				</p>
 				<div className="bg-muted/30 flex items-center gap-3 rounded-2xl border p-4">
 					<div className="rounded-xl bg-emerald-500/10 p-2">
-						<FileUp className="size-5 text-emerald-500" strokeWidth={1.5} />
+						<CloudUploadIcon className="size-5 text-emerald-500" />
 					</div>
 					<div>
 						<p className="text-sm font-medium">{submitted.file_name}</p>
@@ -385,7 +383,7 @@ function RevisionForm({
 					className="gap-1.5 rounded-xl"
 					onClick={() => setEditing(true)}
 				>
-					<Pencil className="size-3.5" />
+					<Pen2Icon className="size-3.5" />
 					Modifica e reinvia
 				</Button>
 			</div>
@@ -422,7 +420,7 @@ function RevisionForm({
 					onClick={() => revise.mutate({ id: requestId, submitted_content: content })}
 					disabled={revise.isPending}
 				>
-					<Send className="size-3.5" />
+					<Plane2Icon className="size-3.5" />
 					{revise.isPending ? "Invio..." : "Reinvia proposta"}
 				</Button>
 			</div>
@@ -505,7 +503,7 @@ function QuestionsEditor({
 				/>
 			))}
 			<Button variant="ghost" size="sm" onClick={addQuestion} className="gap-1 text-xs">
-				<Plus className="size-3" /> Aggiungi domanda
+				<PlusGlyph className="size-3" /> Aggiungi domanda
 			</Button>
 		</div>
 	);
@@ -532,7 +530,7 @@ function RevisionQuestionEditor({
 				</p>
 				{onRemove && (
 					<Button variant="ghost" size="icon" className="size-6" onClick={onRemove}>
-						<Trash2 className="text-destructive size-3" />
+						<TrashBinMinimalisticIcon className="text-destructive size-3" />
 					</Button>
 				)}
 			</div>
@@ -700,7 +698,7 @@ function ReportEditor({
 						className="gap-1.5 rounded-xl"
 						onClick={() => setEditing(true)}
 					>
-						<Pencil className="size-3.5" />
+						<Pen2Icon className="size-3.5" />
 						Modifica
 					</Button>
 					<Button
@@ -709,7 +707,7 @@ function ReportEditor({
 						className="text-destructive hover:text-destructive gap-1.5 rounded-xl"
 						onClick={() => setConfirmDelete(true)}
 					>
-						<Trash2 className="size-3.5" />
+						<TrashBinMinimalisticIcon className="size-3.5" />
 						Elimina
 					</Button>
 				</div>
@@ -794,7 +792,7 @@ function ReportEditor({
 					}
 					disabled={!canSave || update.isPending}
 				>
-					<Send className="size-3.5" />
+					<Plane2Icon className="size-3.5" />
 					{update.isPending ? "Salvataggio..." : "Salva modifiche"}
 				</Button>
 			</div>

@@ -1,6 +1,6 @@
+import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,7 +35,7 @@ export function BrowseAdminButton({ to, params, courseId }: BrowseAdminButtonPro
 	return (
 		<Button variant="outline" size="sm" className="rounded-xl" asChild>
 			<Link to={to} params={params}>
-				<Settings className="text-primary mr-1.5 h-4 w-4" />
+				<SettingsIcon className="text-primary mr-1.5 h-4 w-4" />
 				Gestisci
 			</Link>
 		</Button>

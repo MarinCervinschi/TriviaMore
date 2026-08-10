@@ -1,9 +1,10 @@
 import { useState } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Bookmark, ChevronDown } from "lucide-react";
 
 import { ReportButton } from "@/components/requests/report-button";
 import { BookmarksSkeleton } from "@/components/skeletons";
@@ -44,7 +45,7 @@ function BookmarksPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={Bookmark}
+				icon={BookmarkIcon}
 				title="I miei segnalibri"
 				description="Domande che hai salvato per ripassare piu tardi"
 				stats={
@@ -59,7 +60,7 @@ function BookmarksPage() {
 
 				{bookmarks.length === 0 ? (
 					<EmptyState
-						icon={Bookmark}
+						icon={BookmarkIcon}
 						title="Nessun segnalibro salvato"
 						description="Durante i quiz, clicca sull'icona del segnalibro per salvare le domande interessanti!"
 						actionLabel="Esplora i Quiz"
@@ -117,7 +118,7 @@ function BookmarkCard({
 					<Badge variant="outline" className="rounded-full">
 						{getQuestionTypeLabel(bookmark.questionType)}
 					</Badge>
-					<ChevronDown
+					<AltArrowDownIcon
 						className={`text-muted-foreground h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
 					/>
 				</div>
@@ -157,7 +158,7 @@ function BookmarkCard({
 								title="Rimuovi segnalibro"
 								className="rounded-xl"
 							>
-								<Bookmark className="h-4 w-4 fill-current" />
+								<BookmarkIcon className="h-4 w-4 fill-current" />
 							</Button>
 						</div>
 					</div>

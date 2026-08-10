@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState } from "react";
 
-import { Sparkles } from "lucide-react";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -28,7 +28,7 @@ export function FlashcardCard({
 		<>
 			<SessionLaunchCard
 				accent="purple"
-				icon={Sparkles}
+				icon={StarsIcon}
 				title="Flashcard"
 				unitLabel="carte disponibili"
 				count={questionCount}

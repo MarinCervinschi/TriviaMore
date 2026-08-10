@@ -1,7 +1,8 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { Login3Icon } from "@solar-icons/react/linear/login-3";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, LogIn } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ export function SessionLaunchCard({
 	onStart,
 }: {
 	accent: keyof typeof accents;
-	icon: LucideIcon;
+	icon: Icon;
 	title: string;
 	unitLabel: string;
 	count: number;
@@ -64,12 +65,12 @@ export function SessionLaunchCard({
 				{isAuthenticated ? (
 					<Button size="sm" className="shrink-0 shadow-sm" onClick={onStart}>
 						Inizia
-						<ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+						<ArrowRightIcon className="ml-1.5 h-3.5 w-3.5" />
 					</Button>
 				) : (
 					<Button size="sm" className="shrink-0 shadow-sm" asChild>
 						<Link to="/auth/register">
-							<LogIn className="mr-1.5 h-3.5 w-3.5" />
+							<Login3Icon className="mr-1.5 h-3.5 w-3.5" />
 							Registrati
 						</Link>
 					</Button>

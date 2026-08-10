@@ -1,7 +1,7 @@
 import { useState } from "react";
 
+import { BellIcon } from "@solar-icons/react/linear/bell";
 import { useQuery } from "@tanstack/react-query";
-import { Bell } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -23,7 +23,7 @@ export function SidebarNotificationBell() {
 							aria-label={`Notifiche${unreadCount > 0 ? ` (${unreadCount} non lette)` : ""}`}
 							className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground focus-visible:ring-ring relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:ring-2 focus-visible:outline-none"
 						>
-							<Bell className="size-[18px]" strokeWidth={1.5} />
+							<BellIcon className="size-[18px]" />
 							{unreadCount > 0 && (
 								<span
 									className={cn(

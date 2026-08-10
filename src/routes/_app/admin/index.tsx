@@ -1,16 +1,14 @@
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { FolderOpenIcon } from "@solar-icons/react/linear/folder-open";
+import { LibraryIcon } from "@solar-icons/react/linear/library";
+import { QuestionSquareIcon } from "@solar-icons/react/linear/question-square";
+import { TargetIcon } from "@solar-icons/react/linear/target";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
+import { Widget2Icon } from "@solar-icons/react/linear/widget-2";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-	BookOpen,
-	FileQuestion,
-	FolderOpen,
-	GraduationCap,
-	LayoutDashboard,
-	Library,
-	Target,
-	Trophy,
-	Users,
-} from "lucide-react";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import {
@@ -77,35 +75,35 @@ function AdminDashboard() {
 		{
 			label: "Dipartimenti",
 			value: stats.departmentCount,
-			icon: Library,
+			icon: LibraryIcon,
 			to: "/admin/departments",
 			color: "blue",
 		},
 		{
 			label: "Corsi",
 			value: stats.courseCount,
-			icon: GraduationCap,
+			icon: DiplomaIcon,
 			to: "/admin/departments",
 			color: "green",
 		},
 		{
 			label: "Insegnamenti",
 			value: stats.classCount,
-			icon: FolderOpen,
+			icon: FolderOpenIcon,
 			to: "/admin/departments",
 			color: "orange",
 		},
 		{
 			label: "Sezioni",
 			value: stats.sectionCount,
-			icon: BookOpen,
+			icon: BookIcon,
 			to: "/admin/departments",
 			color: "purple",
 		},
 		{
 			label: "Domande",
 			value: stats.questionCount,
-			icon: FileQuestion,
+			icon: QuestionSquareIcon,
 			to: "/admin/departments",
 			color: "red",
 		},
@@ -114,7 +112,7 @@ function AdminDashboard() {
 	return (
 		<div className="py-2">
 			<AdminPageHeader
-				icon={LayoutDashboard}
+				icon={Widget2Icon}
 				title="Gestione contenuti"
 				description="Panoramica della piattaforma"
 			/>
@@ -146,7 +144,7 @@ function AdminDashboard() {
 						<StatCard
 							label="Utenti totali"
 							value={userStats.totalUsers}
-							icon={Users}
+							icon={UsersGroupRoundedIcon}
 							color="blue"
 							href="/admin/users"
 							subtitle={Object.entries(userStats.byRole)
@@ -159,7 +157,7 @@ function AdminDashboard() {
 						<StatCard
 							label="Quiz completati"
 							value={userStats.totalQuizAttempts}
-							icon={Trophy}
+							icon={CupFirstIcon}
 							color="yellow"
 							subtitle={`${userStats.recentQuizAttempts} negli ultimi 30 giorni`}
 						/>
@@ -170,13 +168,13 @@ function AdminDashboard() {
 									? `${Math.round((userStats.averageScore / 33) * 100)}%`
 									: "—"
 							}
-							icon={Target}
+							icon={TargetIcon}
 							color="green"
 						/>
 						<StatCard
 							label="Utenti attivi"
 							value={userStats.activeUsers}
-							icon={Users}
+							icon={UsersGroupRoundedIcon}
 							color="purple"
 							subtitle="con almeno 1 quiz completato"
 						/>

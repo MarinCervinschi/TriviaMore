@@ -1,4 +1,6 @@
-import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { AltArrowLeftIcon } from "@solar-icons/react/linear/alt-arrow-left";
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +28,7 @@ export function FlashcardNavigation({
 				disabled={isFirst}
 				className="rounded-xl text-sm sm:text-base"
 			>
-				<ChevronLeft className="h-4 w-4 sm:mr-1.5" />
+				<AltArrowLeftIcon className="h-4 w-4 sm:mr-1.5" />
 				<span className="hidden sm:inline">Precedente</span>
 			</Button>
 
@@ -35,7 +37,7 @@ export function FlashcardNavigation({
 				variant="default"
 				className="rounded-xl text-sm shadow-sm sm:text-base"
 			>
-				<CheckCircle className="mr-1.5 h-4 w-4" />
+				<CheckCircleIcon className="mr-1.5 h-4 w-4" />
 				Termina
 			</Button>
 
@@ -46,7 +48,7 @@ export function FlashcardNavigation({
 				className="rounded-xl text-sm sm:text-base"
 			>
 				<span className="hidden sm:inline">Successiva</span>
-				<ChevronRight className="h-4 w-4 sm:ml-1.5" />
+				<AltArrowRightIcon className="h-4 w-4 sm:ml-1.5" />
 			</Button>
 		</div>
 	);

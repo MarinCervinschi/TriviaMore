@@ -1,5 +1,5 @@
+import { ShieldCheckIcon } from "@solar-icons/react/linear/shield-check";
 import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
 
 import { LegalDocLayout } from "@/components/legal/legal-doc-layout";
 import privacyMarkdown from "@/content/legal/privacy.it.md?raw";
@@ -25,7 +25,7 @@ function PrivacyPage() {
 				title: "Informativa sulla Privacy",
 				description:
 					"Quali dati raccogliamo, perché li trattiamo, con chi li condividiamo e quali diritti ti riconosce il Regolamento UE 2016/679 (GDPR).",
-				icon: ShieldCheck,
+				icon: ShieldCheckIcon,
 				version: CURRENT_PRIVACY_VERSION,
 				lastUpdated: "13 giugno 2026",
 			}}

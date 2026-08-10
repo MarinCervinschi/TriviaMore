@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { Mail, Send } from "lucide-react";
+import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { Plane2Icon } from "@solar-icons/react/linear/plane-2";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -82,7 +83,7 @@ export function MaintainerInviteDialog({
 		>
 			<DialogTrigger asChild>
 				<Button size="sm" variant="outline" className="gap-1.5 rounded-xl">
-					<Mail className="h-4 w-4" />
+					<LetterIcon className="h-4 w-4" />
 					Invita come maintainer
 				</Button>
 			</DialogTrigger>
@@ -161,7 +162,7 @@ export function MaintainerInviteDialog({
 							send.mutate({ user_id: userId, course_id: courseId, subject, body })
 						}
 					>
-						<Send className="h-4 w-4" />
+						<Plane2Icon className="h-4 w-4" />
 						{send.isPending ? "Invio..." : "Invia email"}
 					</Button>
 				</DialogFooter>

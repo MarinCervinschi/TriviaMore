@@ -1,4 +1,4 @@
-import type { FolderPlus } from "lucide-react";
+import type { AddFolderIcon } from "@solar-icons/react/linear/add-folder";
 
 import { cn } from "@/lib/utils";
 
@@ -9,7 +9,7 @@ export function TypeCard({
 	selected,
 	onClick,
 }: {
-	icon: typeof FolderPlus;
+	icon: typeof AddFolderIcon;
 	title: string;
 	description: string;
 	selected: boolean;
@@ -28,7 +28,6 @@ export function TypeCard({
 			<div className={cn("rounded-xl p-2", selected ? "bg-primary/10" : "bg-muted")}>
 				<Icon
 					className={cn("size-5", selected ? "text-primary" : "text-muted-foreground")}
-					strokeWidth={1.5}
 				/>
 			</div>
 			<div>

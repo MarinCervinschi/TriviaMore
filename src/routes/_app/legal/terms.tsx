@@ -1,5 +1,5 @@
+import { ScaleIcon } from "@solar-icons/react/linear/scale";
 import { createFileRoute } from "@tanstack/react-router";
-import { Scale } from "lucide-react";
 
 import { LegalDocLayout } from "@/components/legal/legal-doc-layout";
 import termsMarkdown from "@/content/legal/terms.it.md?raw";
@@ -25,7 +25,7 @@ function TermsPage() {
 				title: "Termini e Condizioni",
 				description:
 					"Le regole che disciplinano l'utilizzo del Servizio TriviaMore. Ti consigliamo di leggerle con attenzione prima di creare un account.",
-				icon: Scale,
+				icon: ScaleIcon,
 				version: CURRENT_TERMS_VERSION,
 				lastUpdated: "24 aprile 2026",
 			}}

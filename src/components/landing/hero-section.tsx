@@ -1,6 +1,7 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -68,7 +69,7 @@ export function HeroSection({
 					className="border-primary/20 bg-primary/5 text-primary mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
 				>
-					<Sparkles className="h-4 w-4" />
+					<StarsIcon className="h-4 w-4" />
 					<span>Open Source &bull; Gratuito &bull; Per studenti</span>
 				</motion.div>
 
@@ -99,7 +100,7 @@ export function HeroSection({
 					>
 						<Link to={primaryCTA.href}>
 							{primaryCTA.text}
-							<ArrowRight className="ml-2 h-5 w-5" />
+							<ArrowRightIcon className="ml-2 h-5 w-5" />
 						</Link>
 					</Button>
 					<Button

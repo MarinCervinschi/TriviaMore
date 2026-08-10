@@ -1,5 +1,5 @@
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -197,7 +197,7 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 					className={cn("mb-4 inline-flex rounded-2xl p-3", feature.iconBg)}
 					variants={item}
 				>
-					<Icon className={cn("h-7 w-7", feature.iconColor)} strokeWidth={1.5} />
+					<Icon className={cn("h-7 w-7", feature.iconColor)} />
 				</motion.div>
 
 				<motion.h3
@@ -217,10 +217,7 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 				<motion.ul className="space-y-3" variants={item}>
 					{feature.highlights.map(highlight => (
 						<li key={highlight} className="flex items-start gap-3">
-							<CheckCircle
-								className="text-primary mt-0.5 h-5 w-5 shrink-0"
-								strokeWidth={1.5}
-							/>
+							<CheckCircleIcon className="text-primary mt-0.5 h-5 w-5 shrink-0" />
 							<span className="text-muted-foreground">{highlight}</span>
 						</li>
 					))}

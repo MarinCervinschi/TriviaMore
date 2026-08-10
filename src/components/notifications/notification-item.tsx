@@ -1,30 +1,28 @@
+import { BellIcon } from "@solar-icons/react/linear/bell";
+import { ChatSquareIcon } from "@solar-icons/react/linear/chat-square";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { PenNewSquareIcon } from "@solar-icons/react/linear/pen-new-square";
+import { RefreshIcon } from "@solar-icons/react/linear/refresh";
+import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { Link } from "@tanstack/react-router";
-import {
-	Bell,
-	CheckCircle2,
-	FileEdit,
-	GraduationCap,
-	Inbox,
-	MessageSquare,
-	RefreshCw,
-	Sparkles,
-	X,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import type { Icon } from "@/components/icons";
+import { CloseGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import type { Notification } from "@/lib/notifications/types";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 
-const typeConfig: Record<Notification["type"], { icon: LucideIcon; color: string }> = {
-	REQUEST_STATUS_CHANGED: { icon: CheckCircle2, color: "text-green-500" },
-	NEW_REQUEST_RECEIVED: { icon: Inbox, color: "text-blue-500" },
-	REQUEST_NEEDS_REVISION: { icon: FileEdit, color: "text-amber-500" },
-	REQUEST_REVISED: { icon: RefreshCw, color: "text-purple-500" },
-	CONTENT_UPDATED: { icon: Sparkles, color: "text-primary" },
-	NEW_SECTION_ADDED: { icon: MessageSquare, color: "text-primary" },
-	MAINTAINER_ASSIGNED: { icon: GraduationCap, color: "text-primary" },
+const typeConfig: Record<Notification["type"], { icon: Icon; color: string }> = {
+	REQUEST_STATUS_CHANGED: { icon: CheckCircleIcon, color: "text-green-500" },
+	NEW_REQUEST_RECEIVED: { icon: InboxIcon, color: "text-blue-500" },
+	REQUEST_NEEDS_REVISION: { icon: PenNewSquareIcon, color: "text-amber-500" },
+	REQUEST_REVISED: { icon: RefreshIcon, color: "text-purple-500" },
+	CONTENT_UPDATED: { icon: StarsIcon, color: "text-primary" },
+	NEW_SECTION_ADDED: { icon: ChatSquareIcon, color: "text-primary" },
+	MAINTAINER_ASSIGNED: { icon: DiplomaIcon, color: "text-primary" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -53,7 +51,7 @@ export function NotificationItem({
 	compact?: boolean;
 }) {
 	const config = typeConfig[notification.type] ?? {
-		icon: Bell,
+		icon: BellIcon,
 		color: "text-muted-foreground",
 	};
 	const Icon = config.icon;
@@ -77,7 +75,6 @@ export function NotificationItem({
 						"size-4",
 						notification.isRead ? "text-muted-foreground" : config.color
 					)}
-					strokeWidth={1.5}
 				/>
 			</div>
 
@@ -116,7 +113,7 @@ export function NotificationItem({
 						onDelete(notification.id);
 					}}
 				>
-					<X className="size-3.5" />
+					<CloseGlyph className="size-3.5" />
 				</Button>
 			)}
 		</div>

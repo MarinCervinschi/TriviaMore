@@ -1,4 +1,7 @@
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, Award } from "lucide-react";
+import { ArrowRightDownIcon } from "@solar-icons/react/linear/arrow-right-down";
+import { ArrowRightUpIcon } from "@solar-icons/react/linear/arrow-right-up";
+import { DangerTriangleIcon } from "@solar-icons/react/linear/danger-triangle";
+import { MedalStarIcon } from "@solar-icons/react/linear/medal-star";
 
 import type { UserProgress } from "@/lib/user/types";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
@@ -21,7 +24,7 @@ export function SectionsComparison({
 				<div className="bg-card overflow-hidden rounded-2xl border">
 					<div className="flex items-center gap-3 border-b p-5">
 						<div className="rounded-xl bg-orange-500/10 p-2">
-							<AlertTriangle className="h-5 w-5 text-orange-600" />
+							<DangerTriangleIcon className="h-5 w-5 text-orange-600" />
 						</div>
 						<div>
 							<h3 className="font-bold">Da migliorare</h3>
@@ -43,7 +46,7 @@ export function SectionsComparison({
 									</p>
 								</div>
 								<div className="ml-3 flex items-center gap-1.5">
-									<ArrowDownRight className="h-4 w-4 text-red-500" />
+									<ArrowRightDownIcon className="h-4 w-4 text-red-500" />
 									<span
 										className={`text-lg font-bold ${getGradeColor(item.averageScore ?? 0)}`}
 									>
@@ -60,7 +63,7 @@ export function SectionsComparison({
 				<div className="bg-card overflow-hidden rounded-2xl border">
 					<div className="flex items-center gap-3 border-b p-5">
 						<div className="rounded-xl bg-green-500/10 p-2">
-							<Award className="h-5 w-5 text-green-600" />
+							<MedalStarIcon className="h-5 w-5 text-green-600" />
 						</div>
 						<div>
 							<h3 className="font-bold">Eccellenti</h3>
@@ -80,7 +83,7 @@ export function SectionsComparison({
 									</p>
 								</div>
 								<div className="ml-3 flex items-center gap-1.5">
-									<ArrowUpRight className="h-4 w-4 text-green-500" />
+									<ArrowRightUpIcon className="h-4 w-4 text-green-500" />
 									<span
 										className={`text-lg font-bold ${getGradeColor(item.averageScore ?? 0)}`}
 									>

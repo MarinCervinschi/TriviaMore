@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
 
 import { cn } from "@/lib/utils";
 
@@ -69,7 +69,7 @@ export function ExpandableDescription({
 					className="text-primary hover:text-primary/80 focus-visible:ring-ring focus-visible:ring-offset-background mt-2 inline-flex items-center gap-1 rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
 				>
 					{isExpanded ? "Mostra meno" : "Mostra di più"}
-					<ChevronDown
+					<AltArrowDownIcon
 						className={cn(
 							"h-4 w-4 transition-transform duration-200",
 							isExpanded && "rotate-180"

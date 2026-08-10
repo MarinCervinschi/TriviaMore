@@ -1,6 +1,7 @@
+import { AddCircleIcon } from "@solar-icons/react/linear/add-circle";
 import type { Column, RowData } from "@tanstack/react-table";
-import { Check, PlusCircle } from "lucide-react";
 
+import { CheckGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +43,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 		<Popover>
 			<PopoverTrigger asChild>
 				<Button variant="outline" size="sm" className="h-9 rounded-xl border-dashed">
-					<PlusCircle className="h-4 w-4" />
+					<AddCircleIcon className="h-4 w-4" />
 					{title}
 					{selected.size > 0 && (
 						<>
@@ -92,7 +93,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 													: "opacity-50 [&_svg]:invisible"
 											)}
 										>
-											<Check className="h-3 w-3" />
+											<CheckGlyph className="h-3 w-3" />
 										</div>
 										{Icon && <Icon className="text-muted-foreground h-4 w-4" />}
 										<span className="truncate">{option.label}</span>

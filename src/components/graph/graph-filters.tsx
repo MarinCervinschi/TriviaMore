@@ -1,8 +1,10 @@
 import { useState } from "react";
 
+import { AltArrowUpIcon } from "@solar-icons/react/linear/alt-arrow-up";
+import { FilterIcon } from "@solar-icons/react/linear/filter";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronUp, SlidersHorizontal, X } from "lucide-react";
 
+import { CloseGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -178,7 +180,7 @@ export function GraphFilters({
 								onClick={() => setCollapsed(false)}
 								className="bg-card/95 relative rounded-full shadow-lg backdrop-blur-sm"
 							>
-								<SlidersHorizontal strokeWidth={1.5} className="size-5" />
+								<FilterIcon className="size-5" />
 								{!isEmpty && (
 									<span
 										aria-hidden
@@ -206,11 +208,7 @@ export function GraphFilters({
 						>
 							<div className="mb-4 flex items-center justify-between gap-2">
 								<div className="flex items-center gap-2">
-									<SlidersHorizontal
-										strokeWidth={1.5}
-										className="text-primary size-4"
-										aria-hidden
-									/>
+									<FilterIcon className="text-primary size-4" aria-hidden />
 									<h2 className="text-sm font-semibold tracking-tight">Filtri</h2>
 								</div>
 								<button
@@ -223,7 +221,7 @@ export function GraphFilters({
 										"focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
 									)}
 								>
-									<ChevronUp strokeWidth={2} className="size-4" />
+									<AltArrowUpIcon className="size-4" />
 								</button>
 							</div>
 							{body}
@@ -244,7 +242,7 @@ export function GraphFilters({
 							"bg-card/95 backdrop-blur-sm md:hidden"
 						)}
 					>
-						<SlidersHorizontal strokeWidth={1.5} className="size-5" />
+						<FilterIcon className="size-5" />
 						{!isEmpty && (
 							<span
 								aria-hidden
@@ -258,11 +256,7 @@ export function GraphFilters({
 					className="max-h-[85vh] overflow-y-auto rounded-t-2xl border-t"
 				>
 					<div className="mb-4 flex items-center gap-2">
-						<SlidersHorizontal
-							strokeWidth={1.5}
-							className="text-primary size-4"
-							aria-hidden
-						/>
+						<FilterIcon className="text-primary size-4" aria-hidden />
 						<h2 className="text-sm font-semibold tracking-tight">Filtri</h2>
 					</div>
 					{body}
@@ -324,9 +318,7 @@ function FilterChip({
 				/>
 			)}
 			{children}
-			{active && (
-				<X aria-hidden strokeWidth={2} className="-mr-0.5 size-3 opacity-80" />
-			)}
+			{active && <CloseGlyph aria-hidden className="-mr-0.5 size-3 opacity-80" />}
 		</button>
 	);
 }

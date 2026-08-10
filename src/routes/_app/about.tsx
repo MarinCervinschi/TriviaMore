@@ -1,15 +1,13 @@
+import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { HeartIcon } from "@solar-icons/react/linear/heart";
+import { LightbulbMinimalisticIcon } from "@solar-icons/react/linear/lightbulb-minimalistic";
+import { TargetIcon } from "@solar-icons/react/linear/target";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-	ArrowRight,
-	Github,
-	GraduationCap,
-	Heart,
-	Lightbulb,
-	Target,
-	Users,
-} from "lucide-react";
 
+import { GithubIcon } from "@/components/icons";
 import { OrbitingTechStack } from "@/components/landing";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -35,7 +33,7 @@ export const Route = createFileRoute("/_app/about")({
 
 const values = [
 	{
-		icon: Heart,
+		icon: HeartIcon,
 		title: "Open Source",
 		description:
 			"Codice completamente aperto su GitHub. Trasparenza e collaborazione guidano ogni decisione.",
@@ -46,7 +44,7 @@ const values = [
 		span: "sm:col-span-2" as const,
 	},
 	{
-		icon: Users,
+		icon: UsersGroupRoundedIcon,
 		title: "Community-Driven",
 		description: "La community guida lo sviluppo.",
 		detail:
@@ -56,7 +54,7 @@ const values = [
 		span: "" as const,
 	},
 	{
-		icon: GraduationCap,
+		icon: DiplomaIcon,
 		title: "Focalizzato su UNIMORE",
 		description: "Contenuti mirati per l'Università di Modena e Reggio Emilia.",
 		detail:
@@ -66,7 +64,7 @@ const values = [
 		span: "" as const,
 	},
 	{
-		icon: Lightbulb,
+		icon: LightbulbMinimalisticIcon,
 		title: "Innovazione continua",
 		description: "Tecnologie moderne per un'esperienza coinvolgente.",
 		detail:
@@ -137,7 +135,7 @@ function AboutPage() {
 					<div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
 						<div>
 							<div className="mb-4 inline-flex rounded-2xl bg-blue-500/10 p-4">
-								<Target className="h-8 w-8 text-blue-600" strokeWidth={1.5} />
+								<TargetIcon className="h-8 w-8 text-blue-600" />
 							</div>
 							<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 								La nostra missione
@@ -206,7 +204,6 @@ function AboutPage() {
 										>
 											<Icon
 												className={`h-6 w-6 sm:h-7 sm:w-7 ${value.color}`}
-												strokeWidth={1.5}
 												aria-hidden
 											/>
 										</div>
@@ -242,6 +239,29 @@ function AboutPage() {
 						</h2>
 					</div>
 					<OrbitingTechStack />
+
+					<p className="text-muted-foreground/70 mt-10 text-center text-xs">
+						Le icone dell&apos;interfaccia sono il{" "}
+						<a
+							href="https://www.figma.com/community/file/1166831539721848736"
+							className="hover:text-foreground underline underline-offset-2 transition-colors"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Solar Icons Set
+						</a>{" "}
+						di 480 Design, distribuito con licenza{" "}
+						<a
+							href="https://creativecommons.org/licenses/by/4.0/"
+							className="hover:text-foreground underline underline-offset-2 transition-colors"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							CC BY 4.0
+						</a>
+						. I caratteri sono DM Sans e DM Serif Display, con licenza SIL Open Font
+						License.
+					</p>
 				</div>
 			</section>
 
@@ -271,14 +291,14 @@ function AboutPage() {
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<Github className="mr-2 h-5 w-5" />
+									<GithubIcon className="mr-2 h-5 w-5" />
 									Contribuisci su GitHub
 								</a>
 							</Button>
 							<Button variant="outline" size="lg" asChild>
 								<Link to="/contact">
 									Contattaci
-									<ArrowRight className="ml-2 h-4 w-4" />
+									<ArrowRightIcon className="ml-2 h-4 w-4" />
 								</Link>
 							</Button>
 						</div>

@@ -1,22 +1,20 @@
 import { useState } from "react";
 
+import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { FolderOpenIcon } from "@solar-icons/react/linear/folder-open";
+import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { LibraryIcon } from "@solar-icons/react/linear/library";
+import { QuestionSquareIcon } from "@solar-icons/react/linear/question-square";
+import { ShieldIcon } from "@solar-icons/react/linear/shield";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
+import { Widget2Icon } from "@solar-icons/react/linear/widget-2";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import {
-	BookOpen,
-	ChevronRight,
-	FileQuestion,
-	FolderOpen,
-	GraduationCap,
-	Inbox,
-	LayoutDashboard,
-	Library,
-	type LucideIcon,
-	Shield,
-	Trophy,
-	Users,
-} from "lucide-react";
 
+import type { Icon } from "@/components/icons";
 import { useAuth } from "@/hooks/useAuth";
 import { adminQueries } from "@/lib/admin/queries";
 import { getRoleTheme } from "@/lib/admin/role-theme";
@@ -65,10 +63,7 @@ export function AdminSidebar() {
 					theme.pillBg
 				)}
 			>
-				<RoleIcon
-					className={cn("h-4 w-4 shrink-0", theme.pillText)}
-					strokeWidth={1.5}
-				/>
+				<RoleIcon className={cn("h-4 w-4 shrink-0", theme.pillText)} />
 				<span
 					className={cn("text-xs font-bold tracking-wider uppercase", theme.pillText)}
 				>
@@ -87,7 +82,7 @@ export function AdminSidebar() {
 						isDashboardActive && "bg-primary/10 text-primary font-semibold"
 					)}
 				>
-					<LayoutDashboard className="h-4 w-4" />
+					<Widget2Icon className="h-4 w-4" />
 					Dashboard
 				</Link>
 
@@ -109,7 +104,7 @@ export function AdminSidebar() {
 							isUsersActive && "bg-primary/10 text-primary font-semibold"
 						)}
 					>
-						<Users className="h-4 w-4" />
+						<UsersGroupRoundedIcon className="h-4 w-4" />
 						Utenti
 					</Link>
 				)}
@@ -122,7 +117,7 @@ export function AdminSidebar() {
 						isRequestsActive && "bg-primary/10 text-primary font-semibold"
 					)}
 				>
-					<Inbox className="h-4 w-4" />
+					<InboxIcon className="h-4 w-4" />
 					Richieste
 					{(requestCount ?? 0) > 0 && (
 						<span className="bg-primary text-primary-foreground ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
@@ -138,15 +133,15 @@ export function AdminSidebar() {
 					Contenuti
 				</p>
 				<div className="flex flex-col gap-0.5">
-					<SidebarStat icon={GraduationCap} label="Corsi" count={stats?.courseCount} />
+					<SidebarStat icon={DiplomaIcon} label="Corsi" count={stats?.courseCount} />
 					<SidebarStat
-						icon={FolderOpen}
+						icon={FolderOpenIcon}
 						label="Insegnamenti"
 						count={stats?.classCount}
 					/>
-					<SidebarStat icon={BookOpen} label="Sezioni" count={stats?.sectionCount} />
+					<SidebarStat icon={BookIcon} label="Sezioni" count={stats?.sectionCount} />
 					<SidebarStat
-						icon={FileQuestion}
+						icon={QuestionSquareIcon}
 						label="Domande"
 						count={stats?.questionCount}
 					/>
@@ -161,12 +156,12 @@ export function AdminSidebar() {
 					</p>
 					<div className="flex flex-col gap-0.5">
 						<SidebarStat
-							icon={Users}
+							icon={UsersGroupRoundedIcon}
 							label="Registrati"
 							count={userStats?.totalUsers}
 						/>
 						<SidebarStat
-							icon={Shield}
+							icon={ShieldIcon}
 							label="Admin"
 							count={
 								(userStats?.byRole?.SUPERADMIN ?? 0) +
@@ -175,7 +170,7 @@ export function AdminSidebar() {
 							}
 						/>
 						<SidebarStat
-							icon={Trophy}
+							icon={CupFirstIcon}
 							label="Quiz completati"
 							count={userStats?.totalQuizAttempts}
 						/>
@@ -213,7 +208,7 @@ function DepartmentsTreeLink({
 					onClick={() => hasTree && setOpen(!open)}
 					className="shrink-0 px-2 py-2"
 				>
-					<ChevronRight
+					<AltArrowRightIcon
 						className={cn(
 							"text-muted-foreground/50 h-3.5 w-3.5 transition-transform duration-200",
 							open && "rotate-90",
@@ -230,7 +225,7 @@ function DepartmentsTreeLink({
 						isActive ? "text-primary font-semibold" : "text-foreground"
 					)}
 				>
-					<Library className="h-4 w-4" />
+					<LibraryIcon className="h-4 w-4" />
 					<span className="flex-1">Dipartimenti</span>
 					{departmentCount !== undefined && (
 						<span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs font-medium">
@@ -264,14 +259,14 @@ function DepartmentNode({ department }: { department: ContentTreeDepartment }) {
 				onClick={() => hasCourses && setOpen(!open)}
 				className="hover:bg-accent/50 flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors"
 			>
-				<ChevronRight
+				<AltArrowRightIcon
 					className={cn(
 						"text-muted-foreground/50 h-3 w-3 shrink-0 transition-transform duration-200",
 						open && "rotate-90",
 						!hasCourses && "invisible"
 					)}
 				/>
-				<Library className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+				<LibraryIcon className="h-3.5 w-3.5 shrink-0 text-blue-500" />
 				<Link
 					to="/admin/departments/$departmentId"
 					params={{ departmentId: department.id }}
@@ -306,14 +301,14 @@ function CourseNode({ course }: { course: ContentTreeCourse }) {
 				onClick={() => hasClasses && setOpen(!open)}
 				className="hover:bg-accent/50 flex w-full items-center gap-2 rounded-lg px-2 py-1 text-xs transition-colors"
 			>
-				<ChevronRight
+				<AltArrowRightIcon
 					className={cn(
 						"text-muted-foreground/50 h-3 w-3 shrink-0 transition-transform duration-200",
 						open && "rotate-90",
 						!hasClasses && "invisible"
 					)}
 				/>
-				<GraduationCap className="h-3.5 w-3.5 shrink-0 text-green-500" />
+				<DiplomaIcon className="h-3.5 w-3.5 shrink-0 text-green-500" />
 				<Link
 					to="/admin/courses/$courseId"
 					params={{ courseId: course.id }}
@@ -348,14 +343,14 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 				onClick={() => hasSections && setOpen(!open)}
 				className="hover:bg-accent/50 flex w-full items-center gap-2 rounded-lg px-2 py-1 text-xs transition-colors"
 			>
-				<ChevronRight
+				<AltArrowRightIcon
 					className={cn(
 						"text-muted-foreground/50 h-3 w-3 shrink-0 transition-transform duration-200",
 						open && "rotate-90",
 						!hasSections && "invisible"
 					)}
 				/>
-				<FolderOpen className="h-3.5 w-3.5 shrink-0 text-orange-500" />
+				<FolderOpenIcon className="h-3.5 w-3.5 shrink-0 text-orange-500" />
 				<Link
 					to="/admin/classes/$classId"
 					params={{ classId: cls.id }}
@@ -379,7 +374,7 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 							className="hover:bg-accent/50 flex items-center gap-2 rounded-lg px-2 py-1 text-xs transition-colors"
 						>
 							<span className="h-3 w-3" />
-							<BookOpen className="h-3.5 w-3.5 shrink-0 text-purple-500" />
+							<BookIcon className="h-3.5 w-3.5 shrink-0 text-purple-500" />
 							<span className="text-foreground hover:text-primary flex-1 truncate">
 								{section.name}
 							</span>
@@ -398,7 +393,7 @@ function SidebarStat({
 	label,
 	count,
 }: {
-	icon: LucideIcon;
+	icon: Icon;
 	label: string;
 	count?: number;
 }) {

@@ -1,6 +1,8 @@
+import { HomeIcon } from "@solar-icons/react/linear/home";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
+import { QuestionCircleIcon } from "@solar-icons/react/linear/question-circle";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { HelpCircle, Home, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -47,7 +49,7 @@ export function NotFoundPage({
 					}
 				>
 					<div className="bg-primary/10 inline-flex rounded-3xl p-5">
-						<HelpCircle className="text-primary h-12 w-12" strokeWidth={1.5} />
+						<QuestionCircleIcon className="text-primary h-12 w-12" />
 					</div>
 				</motion.div>
 
@@ -72,13 +74,13 @@ export function NotFoundPage({
 				<motion.div className="mt-10 flex gap-3" variants={item}>
 					<Button asChild>
 						<Link to="/">
-							<Home className="mr-2 h-4 w-4" />
+							<HomeIcon className="mr-2 h-4 w-4" />
 							Torna alla home
 						</Link>
 					</Button>
 					<Button variant="outline" asChild>
 						<Link to="/browse">
-							<Search className="mr-2 h-4 w-4" />
+							<MagnifierIcon className="mr-2 h-4 w-4" />
 							Esplora
 						</Link>
 					</Button>

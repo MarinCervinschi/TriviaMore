@@ -1,16 +1,15 @@
-import {
-	BarChart3,
-	BookOpen,
-	CheckCircle,
-	Github,
-	Target,
-	Timer,
-	Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { BookIcon } from "@solar-icons/react/linear/book";
+import { Chart2Icon } from "@solar-icons/react/linear/chart-2";
+import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
+import { StopwatchIcon } from "@solar-icons/react/linear/stopwatch";
+import { TargetIcon } from "@solar-icons/react/linear/target";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
+
+import type { Icon } from "@/components/icons";
+import { GithubIcon } from "@/components/icons";
 
 export interface FeatureCard {
-	icon: LucideIcon;
+	icon: Icon;
 	title: string;
 	description: string;
 	iconColor: string;
@@ -39,7 +38,7 @@ export interface FooterSection {
 
 export interface ShowcaseFeature {
 	id: string;
-	icon: LucideIcon;
+	icon: Icon;
 	title: string;
 	description: string;
 	highlights: string[];
@@ -71,7 +70,7 @@ export const heroContent: HeroContent = {
 
 export const features: FeatureCard[] = [
 	{
-		icon: BookOpen,
+		icon: BookIcon,
 		title: "Materiale collaborativo",
 		description:
 			"Quiz, domande e contenuti basati su appunti di studenti reali. Creato dalla community per la community.",
@@ -79,7 +78,7 @@ export const features: FeatureCard[] = [
 		iconBg: "bg-blue-500/10",
 	},
 	{
-		icon: Target,
+		icon: TargetIcon,
 		title: "Focus UNIMORE",
 		description:
 			"Nata per supportare la preparazione degli esami all'Università di Modena e Reggio Emilia, ma pensata per tutti gli studenti.",
@@ -87,7 +86,7 @@ export const features: FeatureCard[] = [
 		iconBg: "bg-green-500/10",
 	},
 	{
-		icon: Github,
+		icon: GithubIcon,
 		title: "Open Source",
 		description:
 			"Codice e contenuti aperti, ospitati su GitHub. Chiunque può contribuire e migliorare la piattaforma.",
@@ -95,7 +94,7 @@ export const features: FeatureCard[] = [
 		iconBg: "bg-purple-500/10",
 	},
 	{
-		icon: Users,
+		icon: UsersGroupRoundedIcon,
 		title: "Per la community",
 		description:
 			"Un progetto creato per necessità reali, con l'obiettivo di aiutare altri studenti ad affrontare esami universitari con più sicurezza.",
@@ -141,7 +140,7 @@ export const ctaCardContent: CTACardProps = {
 export const showcaseFeatures: ShowcaseFeature[] = [
 	{
 		id: "quiz",
-		icon: Timer,
+		icon: StopwatchIcon,
 		title: "Quiz interattivi con timer",
 		description:
 			"Metti alla prova le tue conoscenze con quiz cronometrati che simulano l'esperienza d'esame reale.",
@@ -156,7 +155,7 @@ export const showcaseFeatures: ShowcaseFeature[] = [
 	},
 	{
 		id: "dashboard",
-		icon: BarChart3,
+		icon: Chart2Icon,
 		title: "Dashboard personale",
 		description:
 			"Tieni sotto controllo la tua preparazione con statistiche dettagliate e attività recenti.",
@@ -171,7 +170,7 @@ export const showcaseFeatures: ShowcaseFeature[] = [
 	},
 	{
 		id: "progress",
-		icon: CheckCircle,
+		icon: CheckCircleIcon,
 		title: "Tracciamento progressi",
 		description:
 			"Monitora i tuoi miglioramenti con grafici dettagliati e analisi personalizzate.",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Flag } from "lucide-react";
+import { FlagIcon } from "@solar-icons/react/linear/flag";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +41,7 @@ export function ReportButton({
 								className
 							)}
 						>
-							<Flag className="h-4 w-4" />
+							<FlagIcon className="h-4 w-4" />
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { LucideIcon } from "lucide-react";
+import type { Icon } from "@/components/icons";
 
 export function UserHero({
 	icon: Icon,
@@ -9,7 +9,7 @@ export function UserHero({
 	stats,
 	children,
 }: {
-	icon: LucideIcon;
+	icon: Icon;
 	title: string;
 	description: string;
 	stats?: { label: string; value: string | number }[];
@@ -23,7 +23,7 @@ export function UserHero({
 				) : (
 					<>
 						<div className="bg-primary/10 mb-3 inline-flex rounded-2xl p-3">
-							<Icon className="text-primary h-7 w-7" strokeWidth={1.5} />
+							<Icon className="text-primary h-7 w-7" />
 						</div>
 						<h1 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
 							{title}

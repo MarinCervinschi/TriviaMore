@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Upload } from "lucide-react";
+import { UploadMinimalisticIcon } from "@solar-icons/react/linear/upload-minimalistic";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -96,7 +96,7 @@ export function BulkImportForm({
 			</div>
 
 			<Button onClick={handleSubmit} disabled={isPending || !json.trim()}>
-				<Upload className="mr-2 h-4 w-4" />
+				<UploadMinimalisticIcon className="mr-2 h-4 w-4" />
 				{isPending ? "Importazione..." : "Importa domande"}
 			</Button>
 		</div>

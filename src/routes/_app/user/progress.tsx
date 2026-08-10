@@ -1,8 +1,9 @@
 import { useState } from "react";
 
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { TrendingUp, Trophy } from "lucide-react";
 
 import { ExamChart } from "@/components/progress/exam-chart";
 import { ProgressDetails } from "@/components/progress/progress-details";
@@ -43,14 +44,14 @@ function ProgressPage() {
 		return (
 			<div className="space-y-8 pb-8">
 				<UserHero
-					icon={TrendingUp}
+					icon={GraphUpIcon}
 					title="I miei progressi"
 					description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
 				/>
 				<div className="container space-y-6">
 					<UserBreadcrumb current="Progressi" />
 					<EmptyState
-						icon={Trophy}
+						icon={CupFirstIcon}
 						title="Nessun progresso disponibile"
 						description="Inizia a completare alcuni quiz per vedere i tuoi progressi qui!"
 						actionLabel="Esplora i Corsi"
@@ -64,7 +65,7 @@ function ProgressPage() {
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
-				icon={TrendingUp}
+				icon={GraphUpIcon}
 				title="I miei progressi"
 				description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
 				stats={[
