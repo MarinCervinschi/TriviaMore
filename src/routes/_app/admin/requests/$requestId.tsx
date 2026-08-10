@@ -383,12 +383,13 @@ function QuestionCard({
 					Domanda {index + 1}
 				</p>
 				<div className="flex gap-1.5">
-					<Badge variant="outline" className="rounded-full text-[10px]">
+					<Badge variant="outline" size="sm">
 						{typeLabels[question.question_type]}
 					</Badge>
 					<Badge
 						variant="outline"
-						className={cn("rounded-full text-[10px]", diffColors[question.difficulty])}
+						size="sm"
+						className={diffColors[question.difficulty]}
 					>
 						{diffLabels[question.difficulty]}
 					</Badge>
@@ -475,13 +476,10 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 	return (
 		<div className="bg-card space-y-3 rounded-2xl border p-5">
 			<div className="flex items-center justify-end gap-1.5">
-				<Badge variant="outline" className="rounded-full text-[10px]">
+				<Badge variant="outline" size="sm">
 					{typeLabels[question.questionType]}
 				</Badge>
-				<Badge
-					variant="outline"
-					className={cn("rounded-full text-[10px]", diffColors[question.difficulty])}
-				>
+				<Badge variant="outline" size="sm" className={diffColors[question.difficulty]}>
 					{diffLabels[question.difficulty]}
 				</Badge>
 			</div>

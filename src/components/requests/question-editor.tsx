@@ -107,7 +107,7 @@ export function QuestionEditor({
 										onChange({ ...question, correct_answer: newAnswer });
 									}}
 									className={cn(
-										"flex size-6 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold transition-colors",
+										"text-2xs flex size-6 shrink-0 items-center justify-center rounded-full border-2 font-bold transition-colors",
 										isCorrect
 											? "border-green-500 bg-green-500 text-white"
 											: "border-border text-muted-foreground hover:border-green-500/50"

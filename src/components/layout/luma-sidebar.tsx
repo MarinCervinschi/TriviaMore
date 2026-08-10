@@ -174,7 +174,7 @@ function SidebarProfile({
 									src={user?.image ?? undefined}
 									alt={user?.name ?? "Utente"}
 								/>
-								<AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+								<AvatarFallback className="bg-primary/10 text-primary text-2xs font-semibold">
 									{initials}
 								</AvatarFallback>
 							</Avatar>

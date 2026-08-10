@@ -68,9 +68,7 @@ export function RadialGauge({
 				<span className="text-foreground text-sm font-bold tabular-nums">
 					{label ?? `${Math.round(clamped)}`}
 				</span>
-				{caption && (
-					<span className="text-muted-foreground text-[10px]">{caption}</span>
-				)}
+				{caption && <span className="text-muted-foreground text-2xs">{caption}</span>}
 			</div>
 		</div>
 	);

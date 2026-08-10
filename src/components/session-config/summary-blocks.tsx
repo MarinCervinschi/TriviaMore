@@ -54,11 +54,11 @@ export function MetricBlock({
 		<div className="flex flex-col gap-1.5">
 			<Eyebrow>{eyebrow}</Eyebrow>
 			<div className="flex items-baseline gap-1.5">
-				<div className="text-foreground text-[28px] leading-none font-bold tabular-nums">
+				<div className="text-foreground text-3xl leading-none font-bold tabular-nums">
 					{value}
 				</div>
 				{total !== undefined && (
-					<div className="text-muted-foreground text-[11px]">/ {total}</div>
+					<div className="text-muted-foreground text-xs">/ {total}</div>
 				)}
 			</div>
 			{showBar && total !== undefined && (
@@ -69,7 +69,7 @@ export function MetricBlock({
 					/>
 				</div>
 			)}
-			{hint && <div className="text-muted-foreground/80 text-[10.5px]">{hint}</div>}
+			{hint && <div className="text-muted-foreground/80 text-xs">{hint}</div>}
 		</div>
 	);
 }
@@ -97,12 +97,12 @@ export function TimeBlock({ minutes, questionCount }: TimeBlockProps) {
 			<div className="flex flex-col gap-1">
 				<Eyebrow>Durata</Eyebrow>
 				<div className="flex items-baseline gap-1.5">
-					<div className="text-foreground text-[24px] leading-none font-bold tabular-nums">
+					<div className="text-foreground text-2xl leading-none font-bold tabular-nums">
 						{isUnlimited ? "∞" : minutes}
 					</div>
-					{!isUnlimited && <div className="text-muted-foreground text-[11px]">min</div>}
+					{!isUnlimited && <div className="text-muted-foreground text-xs">min</div>}
 				</div>
-				<div className="text-muted-foreground/80 text-[10.5px]">
+				<div className="text-muted-foreground/80 text-xs">
 					{isUnlimited
 						? "Tempo illimitato"
 						: perQuestion !== null
@@ -126,16 +126,16 @@ export function CardStackBlock({ count, max }: CardStackBlockProps) {
 				<div className="border-border bg-muted absolute inset-0 rotate-[-8deg] rounded-xl border" />
 				<div className="border-border bg-muted/80 absolute inset-0 rotate-[-3deg] rounded-xl border" />
 				<div className="to-primary absolute inset-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#fb6f3d] text-white shadow-md">
-					<div className="text-[28px] leading-none font-bold tabular-nums">{count}</div>
+					<div className="text-3xl leading-none font-bold tabular-nums">{count}</div>
 				</div>
 			</div>
 			<div className="flex flex-col gap-1">
 				<Eyebrow>Carte</Eyebrow>
 				<div className="flex items-baseline gap-1.5">
-					<div className="text-foreground text-[24px] leading-none font-bold tabular-nums">
+					<div className="text-foreground text-2xl leading-none font-bold tabular-nums">
 						{count}
 					</div>
-					<div className="text-muted-foreground text-[11px]">/ {max}</div>
+					<div className="text-muted-foreground text-xs">/ {max}</div>
 				</div>
 			</div>
 		</div>
@@ -182,10 +182,10 @@ export function EvalBlock({ mode, questionCount }: EvalBlockProps) {
 
 				{mode.partialCreditEnabled && (
 					<div className="border-border/50 flex items-center justify-between border-t pt-2">
-						<span className="text-muted-foreground text-[11px] font-medium">
+						<span className="text-muted-foreground text-xs font-medium">
 							Credito parziale
 						</span>
-						<span className="text-[12px] font-semibold text-indigo-600 dark:text-indigo-400">
+						<span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
 							Attivo
 						</span>
 					</div>
@@ -220,18 +220,16 @@ function ScorePair({
 	return (
 		<div className="flex flex-col gap-0.5">
 			<div className="flex items-baseline justify-between">
-				<span className="text-muted-foreground text-[11px] font-medium">{label}</span>
+				<span className="text-muted-foreground text-xs font-medium">{label}</span>
 				<span
-					className={cn("text-[15px] leading-none font-bold tabular-nums", totalColor)}
+					className={cn("text-base leading-none font-bold tabular-nums", totalColor)}
 				>
 					{totalValue}
 				</span>
 			</div>
 			<div className="flex items-baseline justify-between pl-3">
-				<span className="text-muted-foreground/70 text-[10px]">{perQuestionLabel}</span>
-				<span
-					className={cn("text-[10.5px] font-medium tabular-nums", perQuestionColor)}
-				>
+				<span className="text-muted-foreground/70 text-2xs">{perQuestionLabel}</span>
+				<span className={cn("text-xs font-medium tabular-nums", perQuestionColor)}>
 					{perQuestionValue}
 				</span>
 			</div>

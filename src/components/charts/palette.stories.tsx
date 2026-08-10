@@ -18,7 +18,7 @@ function Swatch({ color, label }: { color: string; label: string }) {
 				className="h-16 w-16 rounded-xl border"
 				style={{ backgroundColor: color }}
 			/>
-			<span className="text-muted-foreground font-mono text-[10px]">{label}</span>
+			<span className="text-muted-foreground text-2xs font-mono">{label}</span>
 		</div>
 	);
 }

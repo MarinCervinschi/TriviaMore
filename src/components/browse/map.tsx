@@ -676,7 +676,7 @@ function MarkerLabel({ children, className, position = "top" }: MarkerLabelProps
 		<div
 			className={cn(
 				"absolute left-1/2 -translate-x-1/2 whitespace-nowrap",
-				"text-foreground text-[10px] font-medium",
+				"text-foreground text-2xs font-medium",
 				positionClasses[position],
 				className
 			)}

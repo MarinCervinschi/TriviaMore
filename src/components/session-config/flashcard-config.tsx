@@ -62,8 +62,8 @@ export function FlashcardSummary({
 			<AnimatedBlock>
 				<div className="flex flex-col gap-1">
 					<Eyebrow>Modalità</Eyebrow>
-					<div className="text-foreground text-[13px] font-semibold">Studio libero</div>
-					<p className="text-muted-foreground text-[10.5px] leading-relaxed">
+					<div className="text-foreground text-sm font-semibold">Studio libero</div>
+					<p className="text-muted-foreground text-xs leading-relaxed">
 						Gira, valuta, ripeti. Senza tempo né penalità.
 					</p>
 				</div>

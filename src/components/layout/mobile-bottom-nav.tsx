@@ -70,7 +70,7 @@ function BottomNavItem({
 					/>
 				)}
 				<Icon className="size-[22px]" aria-hidden />
-				<span className="text-[10px] leading-none font-medium">{item.label}</span>
+				<span className="text-2xs leading-none font-medium">{item.label}</span>
 			</Link>
 		</li>
 	);
@@ -113,12 +113,12 @@ function ToolTile({
 			</span>
 			<span className="min-w-0 flex-1 text-sm font-medium">{label}</span>
 			{external?.variant === "admin" && (
-				<span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase">
+				<span className="bg-primary text-primary-foreground text-2xs rounded-full px-2 py-0.5 font-semibold tracking-wide uppercase">
 					Admin
 				</span>
 			)}
 			{typeof badge === "number" && badge > 0 && (
-				<span className="bg-primary text-primary-foreground flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+				<span className="bg-primary text-primary-foreground text-2xs flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold">
 					{badge > 99 ? "99+" : badge}
 				</span>
 			)}
@@ -368,7 +368,7 @@ export function MobileBottomNav() {
 											src={user?.image ?? undefined}
 											alt={user?.name ?? "Utente"}
 										/>
-										<AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+										<AvatarFallback className="bg-primary/10 text-primary text-2xs font-semibold">
 											{initials}
 										</AvatarFallback>
 									</Avatar>
@@ -379,7 +379,7 @@ export function MobileBottomNav() {
 										/>
 									)}
 								</span>
-								<span className="text-[10px] leading-none font-medium">Profilo</span>
+								<span className="text-2xs leading-none font-medium">Profilo</span>
 							</button>
 						</SheetTrigger>
 						<ProfileSheet

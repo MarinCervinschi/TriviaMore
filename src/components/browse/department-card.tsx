@@ -92,7 +92,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						>
 							{areaConf?.label ?? "Area"}
 						</p>
-						<p className="text-muted-foreground truncate font-mono text-[11px]">
+						<p className="text-muted-foreground truncate font-mono text-xs">
 							{department.code}
 						</p>
 					</div>
@@ -136,7 +136,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 								<MapPointIcon className="h-3.5 w-3.5" />
 								<span className="flex flex-wrap gap-1">
 									{campuses.map(c => (
-										<Badge key={c} variant="outline" className="font-mono text-[10px]">
+										<Badge key={c} variant="outline" size="sm" className="font-mono">
 											{CAMPUS_LOCATION_CONFIG[c]?.short ?? c}
 										</Badge>
 									))}

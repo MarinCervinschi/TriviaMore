@@ -369,7 +369,7 @@ function TopClassesStrip({
 						Insegnamenti più contribuiti
 					</p>
 				</div>
-				<p className="text-muted-foreground text-[11px]">Per numero di sezioni</p>
+				<p className="text-muted-foreground text-xs">Per numero di sezioni</p>
 			</div>
 			<ol className="flex flex-1 flex-col justify-center gap-1.5">
 				{data.map((cls, i) => {

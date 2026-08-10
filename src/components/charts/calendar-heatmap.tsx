@@ -123,7 +123,7 @@ export function CalendarHeatmap({
 		>
 			<div className="overflow-x-auto">
 				<div className="flex min-w-max gap-2">
-					<div className="text-muted-foreground grid shrink-0 grid-rows-7 gap-[3px] pt-[18px] text-[10px]">
+					<div className="text-muted-foreground text-2xs grid shrink-0 grid-rows-7 gap-[3px] pt-[18px]">
 						{DAY_LABELS.map((label, index) => (
 							<span key={index} className="flex h-3 items-center leading-none">
 								{label}
@@ -132,7 +132,7 @@ export function CalendarHeatmap({
 					</div>
 
 					<div>
-						<div className="text-muted-foreground mb-1 flex gap-[3px] text-[10px]">
+						<div className="text-muted-foreground text-2xs mb-1 flex gap-[3px]">
 							{grid.columns.map((column, index) => {
 								const first = column[0];
 								const previous = grid.columns[index - 1]?.[0];
