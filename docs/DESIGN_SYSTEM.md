@@ -31,10 +31,11 @@
 | Variants | class-variance-authority (CVA) | Used by Button, Badge |
 | Class merging | `cn()` from `src/lib/utils` | `clsx` + `tailwind-merge` — use everywhere |
 | Animation | Framer Motion v12 | Variants in `src/lib/motion.ts` |
-| Icons | Lucide React | `strokeWidth={1.5}` for lighter feel |
+| Icons | Solar, Linear style | `@solar-icons/react/linear/<icon>`; `strokeWidth` 1.5 is the package default, never passed. Glyphs, the GitHub mark and the spinner live in `src/components/icons/` — see `ICON_MAP.md` |
 | Toasts | Sonner | Configured in `src/components/ui/sonner.tsx` |
 | Forms | React Hook Form + Zod | Schema-driven validation |
-| Font | Poppins (400, 500, 600, 700) | Via `@fontsource/poppins`, set in `--font-sans` |
+| Font | DM Sans (400, 500, 600, 700) | `--font-sans`; per D3 |
+| Display font | DM Serif Display (400) | `--font-display` → `font-display`; L2 display headings only, and never with `font-bold` |
 
 ---
 
