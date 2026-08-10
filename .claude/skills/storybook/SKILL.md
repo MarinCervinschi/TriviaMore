@@ -25,7 +25,7 @@ TanStack Start + Nitro pipeline — the same reasoning as the separate
 
 | | |
 |---|---|
-| `globals.css` + Poppins | the real tokens, so a story is not "close to" the app |
+| `globals.css` + DM Sans / DM Serif Display | the real tokens, so a story is not "close to" the app |
 | `withThemeByClassName` | light/dark from the toolbar, toggling the app's own `.dark` class |
 | `QueryClientProvider` | retries off, so a component using TanStack Query renders |
 | `withRouter` | a memory-history router, so `<Link>` works — see below |

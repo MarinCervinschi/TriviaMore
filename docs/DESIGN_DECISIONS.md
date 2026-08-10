@@ -71,7 +71,16 @@ mode that makes most pairings look accidental.
 **Not adopted:** a third mono voice for figures. It was on the table and was left out — see the
 open question O1, which still needs answering either way.
 
-**Status: decided, not yet implemented.** The app still ships Poppins.
+**DM Serif Display ships one weight, 400** — so `font-display` and `font-bold` cannot be combined:
+the browser would synthesise a fake bold, which on a display serif is exactly the accidental look
+the pairing was chosen to avoid. Every heading that takes the serif drops `font-bold` for
+`font-normal`.
+
+**Status: implemented 2026-08-10.** `--font-sans` is DM Sans and a `--font-display` token carries
+the serif; `@fontsource/poppins` is removed. The serif is applied to the four L2 display headings —
+the landing hero and section opener, and the about and contact heroes. Deliberately *not* applied:
+the auth card titles (below display size), the legal heroes and the news page (L1 per D12), and the
+404 numerals — all four want a browser look before they get the serif or stay sans.
 
 ---
 
@@ -223,7 +232,21 @@ a credits section — has to ship **with** the icons, not after.
 **Do it in the same sweep as D3.** Fonts and icons are both global visual changes needing one
 browser pass over every page; splitting them doubles the verification for no benefit.
 
-**Status: decided, not yet implemented.**
+**The mapping table now exists at `docs/ICON_MAP.md`**, verified name by name against
+`@solar-icons/react@2.0.0`. Three things it found that this decision had not anticipated:
+
+- **`strokeWidth` already defaults to 1.5.** The prop this entry asks for goes on no call site, and
+  every `strokeWidth={2}` written to fight Lucide's default is deleted rather than translated.
+- **Solar has no bare glyphs.** ✕, ＋, −, ✓ and ● exist only wrapped in a circle or a square, and 30
+  of our call sites — most of them inside `ui/` primitives — need them unwrapped. They are interface
+  punctuation, not iconography, and are drawn from Solar's own paths lifted out of the circled
+  variants, so the hand and the weight stay identical.
+- **Solar carries no brand marks and no spinner.** `Github` becomes our own glyph; `Loader2` becomes
+  a `Spinner` primitive, which is what it should have been — a spinner is motion, and it can then
+  carry `role="status"` instead of being an `aria-hidden` icon that happens to spin.
+
+**Status: decided, mapped, not yet applied.** 17 substitutions are flagged in `ICON_MAP.md` as
+needing a look before the sweep is committed.
 
 ---
 
@@ -437,8 +460,10 @@ end), surfaces and elevation, the radius scale bound to `--radius`, the shadow t
 replace the duplicated focus ring and CTA glow, and the motion rules. Contrast is a gate on all
 of them, checked in light first per D2.
 
-**O4 — ~~The icon set~~ → resolved by D11 (Solar).** Two things it leaves behind: the 115-icon
-mapping table still has to be written, and the CC BY 4.0 attribution has to ship with the icons.
+**O4 — ~~The icon set~~ → resolved by D11 (Solar); both leftovers closed on 2026-08-10.** The mapping
+table is `docs/ICON_MAP.md`, and the CC BY 4.0 credit ships in the landing footer *and* on the about
+page — the footer alone was not enough, since it only renders for unauthenticated users while logged-in
+users see the same icons.
 
 **O6 — ~~Gradients~~ → answered by D13, D14 and D15**, except for what O7 and O8 carry.
 
@@ -469,3 +494,4 @@ idea. Decide only after the D3 + D11 sweep has landed.
 | 2026-08-09 | D13–D15: anchored single-source wash, one brand ramp, dead CSS removed; O6 closed, O7–O8 opened |
 | 2026-08-09 | O8 settled: ramp allow-list, flat progress bar, timer on --warning, quiet brand scrollbar |
 | 2026-08-09 | Design rules written and measured against the app; three failures filed as #152–#154 |
+| 2026-08-10 | D3 implemented; D11 mapped in `docs/ICON_MAP.md`, which adds the glyph, brand-mark and spinner escape hatches |
