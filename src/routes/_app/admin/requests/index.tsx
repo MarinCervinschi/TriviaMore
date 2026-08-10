@@ -77,7 +77,7 @@ const columns = [
 			<div className="flex items-center gap-2">
 				<Avatar className="h-7 w-7">
 					<AvatarImage src={row.original.user.image ?? undefined} />
-					<AvatarFallback className="text-[10px]">
+					<AvatarFallback className="text-2xs">
 						{(
 							row.original.user.name?.[0] ??
 							row.original.user.email?.[0] ??
@@ -110,7 +110,7 @@ const columns = [
 				<div className="flex items-center gap-2">
 					<Avatar className="h-6 w-6">
 						<AvatarImage src={row.original.handledByUser?.image ?? undefined} />
-						<AvatarFallback className="text-[9px]">
+						<AvatarFallback className="text-2xs">
 							{(row.original.handledByUser?.name?.[0] ?? "T").toUpperCase()}
 						</AvatarFallback>
 					</Avatar>
@@ -263,7 +263,7 @@ function AdminRequestsPage() {
 
 function TabCount({ value }: { value: number }) {
 	return (
-		<span className="bg-primary text-primary-foreground flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+		<span className="bg-primary text-primary-foreground text-2xs flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold">
 			{value}
 		</span>
 	);

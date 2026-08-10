@@ -163,7 +163,7 @@ function NewsPage() {
 											<Badge
 												variant="outline"
 												className={cn(
-													"rounded-full border text-[11px] font-semibold tracking-wider uppercase",
+													"rounded-full border text-xs font-semibold tracking-wider uppercase",
 													catConfig.bg,
 													catConfig.color,
 													catConfig.border
@@ -178,7 +178,7 @@ function NewsPage() {
 												{formatDate(entry.publishedAt)}
 											</time>
 											{isLatest && (
-												<span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
+												<span className="bg-primary/10 text-primary text-2xs rounded-full px-2 py-0.5 font-bold tracking-wider uppercase">
 													Ultima
 												</span>
 											)}

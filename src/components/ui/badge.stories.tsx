@@ -32,3 +32,16 @@ export const Variants: Story = {
 		</div>
 	),
 };
+
+export const Sizes: Story = {
+	render: args => (
+		<div className="flex flex-wrap items-center gap-2">
+			<Badge {...args} variant="outline" size="default">
+				Default
+			</Badge>
+			<Badge {...args} variant="outline" size="sm">
+				Small
+			</Badge>
+		</div>
+	),
+};

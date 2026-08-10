@@ -22,7 +22,7 @@ export function SidebarChangelogMegaphone() {
 					{unreadCount > 0 && (
 						<span
 							className={cn(
-								"bg-primary text-primary-foreground ring-background absolute top-1 right-1 flex items-center justify-center rounded-full text-[9px] font-bold ring-2",
+								"bg-primary text-primary-foreground ring-background text-2xs absolute top-1 right-1 flex items-center justify-center rounded-full font-bold ring-2",
 								unreadCount > 9 ? "h-[14px] min-w-[14px] px-0.5" : "h-[14px] w-[14px]"
 							)}
 						>

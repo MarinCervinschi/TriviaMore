@@ -599,7 +599,7 @@ function RevisionQuestionEditor({
 										onChange({ ...question, correct_answer: newAnswer });
 									}}
 									className={cn(
-										"flex size-5 shrink-0 items-center justify-center rounded-full border-2 text-[9px] font-bold transition-colors",
+										"text-2xs flex size-5 shrink-0 items-center justify-center rounded-full border-2 font-bold transition-colors",
 										isCorrect
 											? "border-green-500 bg-green-500 text-white"
 											: "border-border hover:border-green-500/50"
@@ -848,10 +848,10 @@ function QuestionPreview({
 			<div className="flex items-center justify-between">
 				<p className="text-muted-foreground text-xs font-medium">Domanda {index + 1}</p>
 				<div className="flex gap-1.5">
-					<Badge variant="outline" className="rounded-full text-[10px]">
+					<Badge variant="outline" size="sm">
 						{typeLabels[question.question_type]}
 					</Badge>
-					<Badge variant="outline" className="rounded-full text-[10px]">
+					<Badge variant="outline" size="sm">
 						{diffLabels[question.difficulty]}
 					</Badge>
 				</div>

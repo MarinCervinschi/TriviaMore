@@ -25,7 +25,7 @@ export function SummaryPanel({ children, footerTip, className }: SummaryPanelPro
 			</div>
 			<AnimatedStack className="flex flex-1 flex-col gap-5">{children}</AnimatedStack>
 			{footerTip && (
-				<div className="border-border/60 text-muted-foreground mt-auto border-t pt-4 text-[10.5px] leading-relaxed">
+				<div className="border-border/60 text-muted-foreground mt-auto border-t pt-4 text-xs leading-relaxed">
 					{footerTip}
 				</div>
 			)}

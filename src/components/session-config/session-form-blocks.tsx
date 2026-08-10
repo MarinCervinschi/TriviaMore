@@ -71,9 +71,7 @@ export function SliderWithInput({
 				step={step}
 				aria-label={label}
 			/>
-			{hint && (
-				<div className="text-muted-foreground text-[11px] tabular-nums">{hint}</div>
-			)}
+			{hint && <div className="text-muted-foreground text-xs tabular-nums">{hint}</div>}
 		</div>
 	);
 }

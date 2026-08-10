@@ -340,7 +340,7 @@ function CandidateCell({ name, Comp, chosen }: Candidate) {
 				<Comp className="size-5" />
 				<Comp className="size-7" />
 			</div>
-			<p className="text-muted-foreground text-center text-[11px] break-all">{name}</p>
+			<p className="text-muted-foreground text-2xs text-center break-all">{name}</p>
 		</div>
 	);
 }

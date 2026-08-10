@@ -120,7 +120,7 @@ export function AdminSidebar() {
 					<InboxIcon className="h-4 w-4" />
 					Richieste
 					{(requestCount ?? 0) > 0 && (
-						<span className="bg-primary text-primary-foreground ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+						<span className="bg-primary text-primary-foreground text-2xs ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold">
 							{requestCount}
 						</span>
 					)}
@@ -275,7 +275,7 @@ function DepartmentNode({ department }: { department: ContentTreeDepartment }) {
 				>
 					{department.name}
 				</Link>
-				<span className="text-muted-foreground/50 shrink-0 text-[10px]">
+				<span className="text-muted-foreground/50 text-2xs shrink-0">
 					{department.courses.length}
 				</span>
 			</button>
@@ -317,7 +317,7 @@ function CourseNode({ course }: { course: ContentTreeCourse }) {
 				>
 					{course.name}
 				</Link>
-				<span className="text-muted-foreground/50 shrink-0 text-[10px]">
+				<span className="text-muted-foreground/50 text-2xs shrink-0">
 					{course.classes.length}
 				</span>
 			</button>
@@ -359,7 +359,7 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 				>
 					{cls.name}
 				</Link>
-				<span className="text-muted-foreground/50 shrink-0 text-[10px]">
+				<span className="text-muted-foreground/50 text-2xs shrink-0">
 					{cls.sections.length}
 				</span>
 			</button>
