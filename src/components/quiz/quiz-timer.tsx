@@ -41,7 +41,7 @@ export function QuizTimer({
 
 	return (
 		<div
-			className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 font-mono text-sm font-medium transition-colors ${
+			className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium tabular-nums transition-colors ${
 				isWarning
 					? "bg-gradient-to-r from-red-500/10 to-orange-500/10 text-red-600 dark:text-red-400"
 					: "bg-muted text-muted-foreground"

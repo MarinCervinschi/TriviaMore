@@ -98,7 +98,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 										{Icon && <Icon className="text-muted-foreground h-4 w-4" />}
 										<span className="truncate">{option.label}</span>
 										{facets.get(option.value) != null && (
-											<span className="text-muted-foreground ml-auto font-mono text-xs">
+											<span className="text-muted-foreground ml-auto text-xs tabular-nums">
 												{facets.get(option.value)}
 											</span>
 										)}

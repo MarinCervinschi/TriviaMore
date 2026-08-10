@@ -33,7 +33,7 @@ export function LegalHero({
 				{description}
 			</p>
 			<div className="text-muted-foreground flex flex-wrap items-center gap-2 pt-1 text-xs">
-				<span className="inline-flex items-center gap-1.5 font-mono">
+				<span className="inline-flex items-center gap-1.5">
 					<TagIcon className="h-3 w-3" />
 					Versione {version}
 				</span>

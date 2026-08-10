@@ -82,7 +82,7 @@ export function CampusBarChart({ data }: { data: CampusChartData[] }) {
 										return (
 											<div className="flex w-full items-center justify-between gap-3">
 												<span className="text-muted-foreground">{label}</span>
-												<span className="font-mono font-semibold tabular-nums">
+												<span className="font-semibold tabular-nums">
 													{formatNumber(value as number)} corsi
 												</span>
 											</div>
@@ -103,7 +103,7 @@ export function CampusBarChart({ data }: { data: CampusChartData[] }) {
 								/>
 								<span className="truncate">{entry.label}</span>
 							</span>
-							<span className="text-foreground font-mono font-semibold tabular-nums">
+							<span className="text-foreground font-semibold tabular-nums">
 								{entry.count}
 							</span>
 						</li>
