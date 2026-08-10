@@ -68,8 +68,8 @@ mode that makes most pairings look accidental.
 - Hierarchy inside the interface is made with **weight and size in DM Sans**, not by reaching for
   the serif.
 
-**Not adopted:** a third mono voice for figures. It was on the table and was left out — see the
-open question O1, which still needs answering either way.
+**Not adopted:** a third mono voice for figures — and D17 later confirmed why: figures want
+`tabular-nums`, not a second face. A mono *is* declared, for code and identifiers only.
 
 **DM Serif Display ships one weight, 400** — so `font-display` and `font-bold` cannot be combined:
 the browser would synthesise a fake bold, which on a display serif is exactly the accidental look
@@ -356,6 +356,86 @@ Both themes come from the same tokens, so the separate `.dark` scrollbar block d
 
 ---
 
+## D16 — One step below `text-xs`, and one voice for the overline
+
+**Decided and implemented 2026-08-10.** The named scale was already carrying the app — **798 uses**,
+`text-sm` ×337 and `text-xs` ×251. The 61 arbitrary `text-[Npx]` values were not a scale the system
+lacked; they were leaks out of the one it has. None of them was treated as a considered choice.
+
+**The dense end gets exactly one new token.**
+
+| Was | Now | Sites |
+|---|---|---|
+| `text-[11px]` ×11, `text-[10.5px]` ×5, `text-[12px]` | `text-xs` (12/16) | 17 |
+| `text-[10px]` ×32, `text-[9px]` ×4 | **`text-2xs`** (10/14) | 36 |
+| `text-[13px]` | `text-sm` | 1 |
+| `text-[15px]` ×2 | `text-base` | 2 |
+| `text-[24px]` ×2 | `text-2xl` — exactly equal | 2 |
+| `text-[28px]` ×2 | `text-3xl` | 2 |
+
+**Nothing below 10px.** At `text-2xs` a label is already at the edge of legibility, so there is
+nothing left to spend — and 9px sat under `--muted-foreground`, which #152 already shows failing at a
+larger size. **10.5px is not a step**; a half-pixel is an argument that lost. Both the 11px and the
+10.5px sites go *up*, which is the only direction contrast allows.
+
+**Where they came from:** 21 of the 61 were in `src/components/session-config/` alone — that one
+component family had grown a private scale (28, 24, 15, 13, 12, 11 and 10.5px). It is the place where
+this collapse is most visible and the first thing to look at in a browser.
+
+### The overline is a utility, not fifty class strings
+
+It was written **~50 ways**: three sizes, five trackings (`wide`, `wider`, `widest`, `[0.16em]`,
+`[0.18em]`), three weights. A size token cannot fix that, so `globals.css` declares two utilities:
+
+| | |
+|---|---|
+| `eyebrow` | 12px, 600, `0.1em`, uppercase — inside cards, panels, table headers |
+| `eyebrow-lg` | 14px, 600, `0.1em`, uppercase — section openers on the public pages |
+
+**Colour stays at the call site** — it is the one part that legitimately varies
+(`text-muted-foreground`, `text-primary`, an area colour). Named `eyebrow` because Tailwind already
+owns the class `overline`.
+
+**48 sites converted. The rule that decided each one: a pill is not an overline.** A class string
+carrying a background or a border is `Badge`'s job, and the four that have one were left alone.
+
+`Badge` also gained a `size` variant — `sm` is 10px — which absorbs the seven call sites that were
+overriding its type size by hand. Five of them were also re-declaring `rounded-full`, which the base
+class already sets.
+
+**Rules out:** a new `text-[Npx]` anywhere. If a size is missing from the scale, the scale is the
+thing to change.
+
+---
+
+## D17 — `--font-mono` is DM Mono, and figures are not its job
+
+**Decided and implemented 2026-08-10, closing O1.** O1's premise was wrong on two counts:
+
+1. **Tailwind v4 declares `--font-mono` itself** — `ui-monospace, SFMono-Regular, Menlo, …`. Mono
+   text was never unstyled, it was the *system* stack: machine-dependent, which is a different and
+   smaller problem than undefined.
+2. There was a **second** mono, and a worse one: `markdown.css` hardcoded
+   `"Courier New", Courier, monospace` for flashcard code. That one was a genuine leak, and it is
+   deleted — there is now one mono, not three.
+
+**`font-mono`'s 27 uses were doing two jobs.**
+
+- **Figures** (14 sites) — every chart tooltip, axis tick, gauge, count and the quiz timer. All of
+  them already carried `tabular-nums`, which is the *only* thing mono was wanted for. `font-mono` is
+  removed from all 14; the three that were missing `tabular-nums` gained it, because mono had been
+  standing in for it. The digits now belong to the interface instead of reading as an inlay.
+- **Code and identifiers** (11 sites) — the JSON import textarea, the error page's stack trace,
+  department and campus codes, request IDs, version strings. Here a real monospace is the point.
+
+`--font-mono` is therefore **DM Mono**: the same superfamily as DM Sans and DM Serif Display, which
+is D3's own argument applied to the third role. One weight, 400.
+
+**How to choose, going forward:** if the reason is *alignment*, it is `tabular-nums`. Only if the
+reason is *that the text is code* does it get `font-mono`.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -446,19 +526,16 @@ to see animation. AutoAnimate is the exception: it checks the media query itself
 
 ## Open questions
 
-**O1 — `--font-mono` is undefined.** `font-mono` is used in 21 files, mostly for tabular figures,
-but the token was never declared — so those figures fall back to whatever monospace the operating
-system provides, and change from machine to machine. This needs a decision regardless of D3:
-either declare a mono face, or remove the `font-mono` usages and let the figures render in
-DM Sans.
+**O1 — ~~`--font-mono` is undefined~~ → answered by D17**, which also corrects the premise: Tailwind
+v4 declares the token itself, and the real leak was a second hardcoded Courier New in `markdown.css`.
 
 **O2 — The badge audit is unfinished.** Roughly 70 badges across 33 files have not been reviewed
 against D6. Most look legitimate; the sweep needs a human pass, not a regex.
 
-**O3 — The rest of the system.** Still to decide under #145: the type scale (including the dense
-end), surfaces and elevation, the radius scale bound to `--radius`, the shadow tokens that would
-replace the duplicated focus ring and CTA glow, and the motion rules. Contrast is a gate on all
-of them, checked in light first per D2.
+**O3 — The rest of the system.** The type scale is answered by D16. Still to decide under #145:
+surfaces and elevation, the radius scale bound to `--radius`, the shadow tokens that would replace the
+duplicated focus ring and CTA glow, and the motion rules. Contrast is a gate on all of them, checked
+in light first per D2.
 
 **O4 — ~~The icon set~~ → resolved by D11 (Solar); both leftovers closed on 2026-08-10.** The mapping
 table is `docs/ICON_MAP.md`, and the CC BY 4.0 credit ships in the landing footer *and* on the about
@@ -495,3 +572,4 @@ idea. Decide only after the D3 + D11 sweep has landed.
 | 2026-08-09 | O8 settled: ramp allow-list, flat progress bar, timer on --warning, quiet brand scrollbar |
 | 2026-08-09 | Design rules written and measured against the app; three failures filed as #152–#154 |
 | 2026-08-10 | D3 implemented; D11 mapped in `docs/ICON_MAP.md`, which adds the glyph, brand-mark and spinner escape hatches |
+| 2026-08-10 | D16–D17: one step below `text-xs`, the overline as a utility, `--font-mono` on DM Mono; O1 closed, the type scale struck from O3 |

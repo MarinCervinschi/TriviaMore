@@ -36,6 +36,8 @@
 | Forms | React Hook Form + Zod | Schema-driven validation |
 | Font | DM Sans (400, 500, 600, 700) | `--font-sans`; per D3 |
 | Display font | DM Serif Display (400) | `--font-display` → `font-display`; L2 display headings only, and never with `font-bold` |
+| Mono font | DM Mono (400) | `--font-mono`; code and identifiers only. Figures use `tabular-nums` — per D17 |
+| Type scale | `text-2xs` … `text-7xl` | `text-2xs` (10/14) is the floor; a `text-[Npx]` anywhere is a leak. The overline is the `eyebrow` / `eyebrow-lg` utility — per D16 |
 
 ---
 
