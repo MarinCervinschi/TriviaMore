@@ -58,7 +58,7 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 							content={
 								<ChartTooltipContent
 									formatter={value => (
-										<span className="font-mono font-semibold tabular-nums">
+										<span className="font-semibold tabular-nums">
 											{formatThirtyScaleGrade(value as number)}
 										</span>
 									)}

@@ -151,7 +151,7 @@ export function ComparisonChart<TDatum>({
 								<LabelList
 									dataKey={item.key}
 									position={isHorizontal ? "right" : "top"}
-									className="fill-muted-foreground font-mono tabular-nums"
+									className="fill-muted-foreground tabular-nums"
 									fontSize={11}
 									formatter={
 										valueFormatter

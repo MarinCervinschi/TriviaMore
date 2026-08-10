@@ -77,7 +77,7 @@ export function DepartmentBarChart({ data }: { data: DepartmentChartData[] }) {
 										return (
 											<div className="flex w-full flex-col gap-0.5">
 												<span className="text-foreground font-medium">{dept}</span>
-												<span className="text-muted-foreground font-mono text-xs">
+												<span className="text-muted-foreground text-xs tabular-nums">
 													{formatNumber(value as number)} corsi
 												</span>
 											</div>

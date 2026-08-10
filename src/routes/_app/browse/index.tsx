@@ -379,7 +379,7 @@ function TopClassesStrip({
 								}}
 								className="group bg-muted/40 hover:border-primary/20 hover:bg-card flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-colors"
 							>
-								<span className="bg-background text-muted-foreground ring-border flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold tabular-nums ring-1">
+								<span className="bg-background text-muted-foreground ring-border flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums ring-1">
 									{i + 1}
 								</span>
 								{accent && (
