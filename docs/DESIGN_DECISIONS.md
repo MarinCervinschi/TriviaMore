@@ -280,7 +280,32 @@ the harm.
 again through `.dot-pattern` at 6% in 12 places, each modulated by a different `opacity-30/40/50`.
 Five intensities of the same texture, several of them weaker on top than underneath.
 
-**Status: decided, not yet implemented.**
+**Status: implemented 2026-08-10, with one change to the mechanism and one count correction.**
+
+**The texture lives in a band at the top of the page, not in a falloff over the page.** This entry
+proposed dots fading out by ~64% of the page height. That needs the page's height to be known and the
+dense content to happen to fall in the faded part. Instead the dots and the glow live inside the
+page-header band, which fades at its own bottom edge — so **L0 is free**: every dense surface sits
+below the band and is flat by construction, with no per-surface opt-out and no measuring. It works
+because 25 of the L1 routes already open with one of four header components; five more that open
+without one got a band directly.
+
+**It was three definitions, not two.** `.chart-plot` was a *third* dot field, at 16px pitch, drawn
+**inside every chart** — a dot grid behind gridlines, which is the exact thing this decision's
+governing principle forbids, and the densest surface in the app. Deleted.
+
+The seven intensities included one that was subtracting contrast: `.dot-pattern` at `opacity-30`
+renders 0.018, **below** the 0.040 the `body` field already laid underneath it. Nobody noticed
+because at those values nothing is visible either way.
+
+**Intensity, decided by looking:** `--dot-alpha` is `0.18` light / `0.22` dark and `--beam-alpha`
+`0.16` / `0.26`. L2 is the same band with both turned up (`0.24` / `0.30` and `0.24` / `0.38`) —
+**not a second system**. Both are tokens, so the whole app re-tunes from two lines. The light itself
+is D18's beam; this entry's radial glow is retired.
+
+**A texture repeated per section is decoration, so one band per page.** The mid-page dot fields on
+the landing sections, about, contact and browse all went; their surface tints stayed, because a tint
+is a surface and not a texture.
 
 ---
 
@@ -296,10 +321,71 @@ Five intensities of the same texture, several of them weaker on top than underne
 - **One light source, not two.** The current wash is a primary orb plus a warm orange one in
   opposite corners; two hues in two corners is what makes it read as decoration rather than as
   light. With the dots carrying the texture, the wash only has to say "the page starts here".
-- **Intensity ~10% of `--primary`** (~16% in dark), from the option-D/option-E comparison.
+- **Intensity is `--beam-alpha`, and the shape of the light is D18's beam** — this entry's radial
+  corner glow is retired. One lesson survives the swap and is worth keeping: **three attenuations
+  compound.** The alpha, the gradient's own `transparent` stop, and the band's mask, which starts
+  cutting at 45% of the band's height and throws away the lower half of the light before it reaches
+  the eye. When a light reads as barely there, raising the alpha is only one of the three levers, and
+  usually not the strongest — widening the source did as much work.
 
-⚠️ **The origin is not settled** — see O7. The lab put it at the top left; the per-component orbs
-run 11 top-right to 4 top-left. Whichever direction wins applies to this too.
+**Status: implemented 2026-08-10. O7 is answered: the light comes from the top left.** The
+per-component orbs are explicitly *not* in conflict with it, because they are a different scale — a
+card orb is tens of pixels at `-top-16 -right-16`, a page orb was 300–500px with a 100px blur. Two
+systems that shared a name; this decision only ever governed the second. The card orbs stay
+untouched, under D4.
+
+**`DecorativeBackground` is deleted, not converted.** Once the band carries both the dots and the one
+light source, a second app-wide mechanism was doing the same job in a second way. The band replaced
+it at all four mount sites.
+
+**21 page-level orbs removed.** They were the second, third and sometimes fourth light source on the
+same screen — auth alone had a top-down wash plus three orbs. Several were *animated*, which does not
+just lose to this decision, it loses to a rule: motion is spent on state the user caused, never on
+ambience, because movement is the one channel the eye cannot ignore.
+
+**The four L1 headers were deliberately *not* merged**, which this entry and D12 both implied they
+would be. They share about ten lines of markup — a tinted icon tile, an `h1`, a description — and
+diverge in wrapper, extras (a back link, actions, stats, version metadata) and type scale. One
+component covering all four means eight props and four modes, which is the thing that reads as one
+component pretending to be four. What they actually shared was the band, and that is now extracted on
+its own. The icon-tile duplication is still worth a look, separately.
+
+**The play routes get the L1 band.** Quiz and flashcard are focused reading rather than dense
+surfaces, so L0 does not apply to them by density — and a completely flat play screen reads as unset
+rather than as calm. The band fades out above the question card, so the reading surface itself is
+untextured either way.
+
+### The seam against the sidebar — and why it kept coming back
+
+**Corrected after the browser pass.** The band was first mounted inside each page header, and the
+result was a visible vertical seam: the content column carried the warm glow while the floating
+sidebar stayed neutral, so the two read as different surfaces.
+
+**The cause is one line in `luma-sidebar.tsx`**: the panel is `bg-background/40 backdrop-blur-sm`, and
+its own comment says the translucency exists *"so the shared app decor still bleeds through"*. It was
+built as a **window onto a full-viewport background** — which is exactly what an anchored,
+column-bound band stops being.
+
+It also explains why this recurred under the old system: at 40% the sidebar always showed a *weaker
+value of the same wash* than the content did. The two could never match; they were the same colour at
+two opacities, and the seam was only ever a question of how visible.
+
+Two things fix it, and both were needed:
+
+1. **One band, mounted in the app shell** rather than in each header. It is the only place that spans
+   the sidebar gutter — the four headers sit at different nesting depths (`UserHero` at the column
+   root, `AdminPageHeader` inside `container > main`), so none of them can reach the viewport edge.
+   Its level follows `isAuthenticated`, which maps onto L1/L2 exactly: logged out is the public pages,
+   logged in is the app. 19 mount points became 12, and the 6 that remain are the surfaces genuinely
+   outside `_app` — auth, quiz, flashcard, the error and not-found pages, maintenance.
+2. **The sidebar becomes an actual window** — border and `backdrop-blur`, no fill. With nothing to
+   match, a mismatch cannot exist; the separation comes from the border and the gap, per the Gestalt
+   rule that spacing groups more reliably than colour.
+
+**Two more light sources found and removed on the way:** the admin layout painted its own
+`from-muted/20` top wash on top of the band, and `globals.css` declared **16 `--sidebar-*` tokens
+across `@theme`, `:root` and `.dark` that no component has ever read** — the sidebar uses
+`--background`. 24 lines deleted, in the spirit of D15.
 
 ---
 
@@ -436,6 +522,129 @@ reason is *that the text is code* does it get `font-mono`.
 
 ---
 
+## D18 — The diagonal shafts are parked; one soft orb serves both levels
+
+**Decided and implemented 2026-08-11**, adapted from a
+[21st.dev pattern](https://21st.dev/@jatin-yadav05/components/elegant-dark-pattern). Three gradients
+and no new dependency — the same primitives the band already uses.
+
+**Outcome: the shafts ship nowhere, and D12/D13's single orb stands.** `--glow-alpha` is 0.18 light /
+0.28 dark, turned up to 0.26 / 0.38 on L2 — the same light at two intensities, which is what D12 asked
+for in the first place. The `band-beam` and `band-beam-fade` utilities and `--beam-alpha` are deleted
+rather than left dormant: unused CSS is the thing this phase spent its time removing, and everything
+needed to rebuild them is in this entry.
+
+**Why it was parked, in order.** Scoped to L2 first. Then extended to L1, on the argument that two
+grammars across the levels is the kind of seam D12 exists to remove — and seen on a dashboard it was
+plainly too aggressive. Then pulled back to L2 only. Then pulled from L2 as well: even on a sparse
+public page it asserted more than a page opener should.
+
+**What the exercise was worth**, since the code is gone and the lessons are not:
+
+- **One angle cannot do two jobs.** In a `linear-gradient` the colour bands run *perpendicular* to the
+  angle, so the band axis and the travel axis are ninety degrees apart. The shafts were `30deg` with a
+  `120deg` mask. Using one angle for both gives a wavefront, not a beam.
+- **Check the mask before you turn the angle.** The first attempt read as a blob in the corner and
+  "wrong corner" looked like the obvious diagnosis; the fault was a vertical mask eating the part that
+  makes a diagonal diagonal.
+- **A mask along one axis does not stop a hard edge on another.** At the bottom-left corner the travel
+  mask was still only ~15% along its own axis — fully opaque — so the light ran into the layer's edge
+  at full strength and cut a hard horizontal line. Fixing it needs a second, vertical dissolve, and
+  since `mask-composite` is not dependable across browsers, the portable way to intersect two masks is
+  to nest: **a parent's mask applies to its whole subtree.**
+- **Percentage stops on a diagonal axis drift with the aspect ratio.** The top-left corner landed at
+  21% of the band axis at 3440px wide against 51% at 1280px, so anything narrow only sits where you
+  put it at one window size.
+
+**The trick worth stealing is the gap, not the beam.** Streaks with `transparent` between them let
+the page's own surface cut through, and *that* is what reads as light. Without it the identical colour
+stops are a wash. The reference achieves its whole character with that one omission.
+
+**Direction: in at the top left**, which keeps O7's answer for the orb that ships and for the shafts
+that did not.
+
+**Two angles, ninety degrees apart, and this is the whole geometry of the thing.** In a
+`linear-gradient` the colour bands run **perpendicular** to the angle. So the *bands* are `30deg`,
+which is what lays the shafts **along** the top-left → bottom-right diagonal; putting the travel
+direction there instead lays the bands **across** it, which is a wavefront, not a beam. The **mask** is
+`120deg` — the travel direction — so the shaft loses strength as it goes, and it is the mask, not the
+colour stops, that empties the far corner.
+
+It took three passes to land, and every wrong turn had the same root: **one angle cannot do both
+jobs.** Pass one faded vertically, which ate the part that makes a diagonal diagonal and left a blob in
+the corner. Pass two fixed the corner but still used one angle for bands and travel, so the stripes ran
+across the beam. The lesson worth keeping: **when a gradient does not read as directional, separate the
+band axis from the fade axis before you start turning angles.**
+
+**Four shafts, not one, with uneven widths and strengths.** A single broad band reads as a floodlight;
+light through slats reads as light. The unevenness is the point — four even stripes read as a pattern.
+Spreading them across 5–84% of the band axis also settles a problem that a single shaft could not:
+percentage stops on a diagonal axis drift with the aspect ratio, and the top-left corner lands at 21%
+of that axis at 3440px wide against 51% at 1280px. One narrow shaft would only sit on the corner at
+one window size; several always straddle it.
+
+**Three masks, because two of them are doing different jobs and one element cannot hold both.** The
+dots fade vertically. The light fades along its travel direction, `120deg` — and then needs a *second*,
+vertical dissolve, because the travel mask is still only ~15% along its own axis at the bottom-left
+corner, so it is fully opaque there and the light runs into the layer's bottom edge at full strength.
+That was a hard horizontal cut across the page. `mask-composite` would compose the two on one element
+but is not dependable across browsers, so the beam nests inside a wrapper that carries the vertical
+dissolve: **a parent's mask applies to its whole subtree**, which is the portable way to intersect two
+masks.
+
+**Two layers, not one, because the two devices cannot share a mask.** This was the bug that made the
+first attempt read as a blob: the dots fade *vertically* — that is what makes every dense surface
+below the band flat — and a vertical mask applied to a diagonal eats exactly the part that makes it
+diagonal, leaving the top slice in one corner. The light therefore fades along its **own** axis, and
+runs taller than the dots (34rem against 20rem on L1), because a diagonal needs height to read as
+one.
+
+**One hue: `--primary`.** The reference is teal, which arrives cool and recedes; the same beam in the
+brand orange is a warm mass across half the screen, and the colour rules give orange exactly one job —
+brand and the primary action. Four candidates were compared in the lab, including a cool one, and a
+new tint was rejected on the rule rather than on looks: it would be **a fourth colour with no job**,
+and it could not borrow `--chart-2` because D4 forbids using the categorical palette as decoration.
+`--beam-alpha` is `0.30` light / `0.34` dark — raised twice after the light theme read as barely
+there both times — and the streaks step down from it by 0.85 and 0.5, so the whole beam re-tunes from
+one number. **Light needs a bigger value than intuition suggests**, and the gap between the two themes
+is much smaller here than it is for the dots: a translucent hue over white loses more than the same
+hue over near-black.
+
+**Not L1, and this was measured rather than assumed.** In the reference the dots never fade — they run
+to the bottom of the page. Put that behind a table (`Style Lab/Fascio diagonale`, story 2) and it is
+two grids competing plus a beam sliding under the rows: exactly what D12's governing principle
+forbids. The beam therefore lives *inside* `page-band` as the L2 variant and does not replace it.
+
+**How it composes:** the beam is the bottom layer of `page-band` itself, with the dots over it as in
+the reference. It was briefly a separate `page-beam` utility feeding a `--band-beam` slot, which was
+only ever needed to compose two `background-image` declarations — once the beam is the *only* light,
+there is nothing to compose and the indirection went.
+
+### Chrome sits above the light, and that means opaque
+
+**A translucent surface is tinted by whatever passes behind it.** Invisible on a flat page, obvious
+over a band — and it is what made the browse search field read as coloured from halfway across.
+
+The cause was three `ui/` primitives: **`Input`, `Textarea` and `SelectTrigger` were `bg-transparent`**,
+straight from the shadcn defaults. They are now `bg-background`. One edit each, every form control in
+the app fixed.
+
+Nine chrome bars were `bg-background/70` for the same reason — the navbar, the quiz and flashcard
+headers, sidebars and navigation bars, the user breadcrumb. All opaque now. The floating sidebar goes
+with them: it had lost its fill entirely to fix the seam (see D13), and an unfilled panel is a window,
+which is the opposite of what chrome should be. It is `bg-background` with the border and the gap
+doing the floating, and its `backdrop-blur` is gone because it had nothing left to blur.
+
+**The rule, stated once:** a surface that sits *over* the band is opaque. Translucency belongs to
+scrims and overlays — `sheet`'s backdrop, the map's loading veil, a toast — where seeing through is the
+point. The `/80` and `/70` fills still inside `department-card` are fine: they sit on an opaque card,
+not on the band.
+
+**Rules out:** the beam on L1 or on any dense surface; a beam hue that is not `--primary`; a
+translucent chrome surface anywhere the band reaches.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -544,7 +753,8 @@ users see the same icons.
 
 **O6 — ~~Gradients~~ → answered by D13, D14 and D15**, except for what O7 and O8 carry.
 
-**O7 — Which direction does the light come from?** The per-component orbs already lean one way:
+**O7 — ~~Which direction does the light come from?~~ → answered inside D13 on 2026-08-10: top left**,
+and the per-component orbs are out of scope because they are a different scale. Original note:
 **11 top-right** (`-top-16 -right-16` ×4, `-top-6 -right-6` ×3, `-top-4 -right-4` ×2, and two
 others) against **4 top-left** (`-top-20 -left-20` ×3, `top-0 -left-32` ×1). The outlier is the
 page-level wash, which is top-left. Deciding this settles D13's origin too, and the cheap answer
@@ -573,3 +783,6 @@ idea. Decide only after the D3 + D11 sweep has landed.
 | 2026-08-09 | Design rules written and measured against the app; three failures filed as #152–#154 |
 | 2026-08-10 | D3 implemented; D11 mapped in `docs/ICON_MAP.md`, which adds the glyph, brand-mark and spinner escape hatches |
 | 2026-08-10 | D16–D17: one step below `text-xs`, the overline as a utility, `--font-mono` on DM Mono; O1 closed, the type scale struck from O3 |
+| 2026-08-10 | D12–D13 implemented as one band per page instead of a page-height falloff; O7 answered (top left); `DecorativeBackground` and 21 page orbs deleted |
+| 2026-08-11 | D13 corrected after the browser pass: one band in the shell, the sidebar made a real window, 16 dead `--sidebar-*` tokens deleted |
+| 2026-08-11 | D18: L2 takes a diagonal beam on `--primary`, L1 keeps the anchored glow — one device per level |
