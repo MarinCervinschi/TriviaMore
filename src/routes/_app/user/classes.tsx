@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_app/user/classes")({
 		courseType: dataTableFilterField,
 	}),
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.classes()),
-	head: () => seoHead({ title: "I miei corsi", noindex: true }),
+	head: () => seoHead({ title: "I miei insegnamenti", noindex: true }),
 	pendingComponent: UserClassesSkeleton,
 	component: ClassesPage,
 });
@@ -57,8 +57,8 @@ function buildColumns(
 ) {
 	return [
 		column.accessor("className", {
-			header: "Corso",
-			meta: { label: "Corso", cellClassName: "min-w-[16rem]" },
+			header: "Insegnamento",
+			meta: { label: "Insegnamento", cellClassName: "min-w-[16rem]" },
 			cell: ({ row }) => (
 				<Link
 					to="/browse/$department/$course/$class"
@@ -132,7 +132,7 @@ function buildColumns(
 					}}
 					disabled={isRemoving}
 					className="text-muted-foreground hover:text-danger h-8 w-8 rounded-lg p-0"
-					title="Rimuovi corso"
+					title="Rimuovi l’insegnamento"
 				>
 					<CloseGlyph className="h-4 w-4" />
 				</Button>
@@ -197,23 +197,23 @@ function ClassesPage() {
 		<div className="space-y-8 pb-8">
 			<UserHero
 				icon={DiplomaIcon}
-				title="I miei corsi"
-				description="Gestisci i corsi che stai seguendo"
+				title="I miei insegnamenti"
+				description="Gestisci gli insegnamenti che stai seguendo"
 				stats={[
-					{ label: "corsi totali", value: userClasses.length },
+					{ label: "insegnamenti totali", value: userClasses.length },
 					{ label: "visualizzati", value: visibleCount },
 				]}
 			/>
 
 			<div className="container space-y-6">
-				<UserBreadcrumb current="I miei corsi" />
+				<UserBreadcrumb current="I miei insegnamenti" />
 
 				{userClasses.length === 0 ? (
 					<EmptyState
 						icon={DiplomaIcon}
-						title="Nessun corso salvato"
-						description="Esplora i dipartimenti e aggiungi i corsi che ti interessano!"
-						actionLabel="Esplora Corsi"
+						title="Nessun insegnamento salvato"
+						description="Esplora i dipartimenti e aggiungi gli insegnamenti che ti interessano!"
+						actionLabel="Esplora i dipartimenti"
 						actionHref="/browse"
 					/>
 				) : (
@@ -222,13 +222,13 @@ function ClassesPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
-								searchPlaceholder="Cerca corso, dipartimento..."
+								searchPlaceholder="Cerca insegnamento, dipartimento..."
 							/>
 						}
 						empty={
 							<EmptyState
 								icon={DiplomaIcon}
-								title="Nessun corso trovato"
+								title="Nessun insegnamento trovato"
 								description="Prova a modificare i filtri di ricerca."
 								actionLabel="Pulisci filtri"
 								onAction={() => table.options.meta?.resetFilters()}

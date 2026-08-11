@@ -192,13 +192,13 @@ function ProfileSheet({
 					<ToolTile
 						to="/search/courses"
 						icon={DiplomaIcon}
-						label="Cerca corsi"
+						label="Corsi di laurea"
 						onClose={close}
 					/>
 					<ToolTile
 						to="/search/classes"
 						icon={BookIcon}
-						label="Cerca insegn."
+						label="Insegnamenti"
 						onClose={close}
 					/>
 					<ToolTile

@@ -54,7 +54,7 @@ function ProgressPage() {
 						icon={CupFirstIcon}
 						title="Nessun progresso disponibile"
 						description="Inizia a completare alcuni quiz per vedere i tuoi progressi qui!"
-						actionLabel="Esplora i Corsi"
+						actionLabel="Esplora i dipartimenti"
 						actionHref="/browse"
 					/>
 				</div>

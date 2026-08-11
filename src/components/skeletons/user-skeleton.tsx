@@ -182,7 +182,7 @@ export function BookmarksSkeleton() {
 
 export function UserClassesSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento corsi…" className="space-y-8 pb-8">
+		<SkeletonRoot label="Caricamento insegnamenti…" className="space-y-8 pb-8">
 			<SkeletonHero withStats={2} />
 
 			<div className="container space-y-6">

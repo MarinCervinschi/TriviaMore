@@ -101,7 +101,7 @@ function DashboardPage() {
 						color="green"
 					/>
 					<StatCard
-						label="Corsi seguiti"
+						label="Insegnamenti seguiti"
 						value={profile.stats.userClassesCount}
 						icon={DiplomaIcon}
 						color="blue"
@@ -133,8 +133,8 @@ function DashboardPage() {
 					<QuickActionCard
 						icon={DiplomaIcon}
 						color="blue"
-						title="I miei corsi"
-						description="Gestisci i corsi che stai seguendo al meglio"
+						title="I miei insegnamenti"
+						description="Gestisci gli insegnamenti che stai seguendo"
 						href="/user/classes"
 					/>
 					<QuickActionCard
@@ -246,13 +246,13 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 		<div className="space-y-4">
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<p className="text-brand eyebrow-lg">I tuoi corsi</p>
-					<h2 className="text-xl font-bold">Corsi visti recentemente</h2>
+					<p className="text-brand eyebrow-lg">I tuoi insegnamenti</p>
+					<h2 className="text-xl font-bold">Insegnamenti visti di recente</h2>
 				</div>
 				<Button asChild variant="ghost" size="sm" className="group">
 					<Link to="/user/classes" className="flex items-center gap-1">
 						<DiplomaIcon className="h-4 w-4" />
-						Tutti i corsi
+						Tutti gli insegnamenti
 						<ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
 					</Link>
 				</Button>
@@ -275,9 +275,9 @@ function recentClassParams(item: RecentClass) {
 
 const recentClassColumns = [
 	recentClassColumn.accessor("className", {
-		header: "Corso",
+		header: "Insegnamento",
 		enableSorting: false,
-		meta: { label: "Corso", cellClassName: "min-w-[16rem]" },
+		meta: { label: "Insegnamento", cellClassName: "min-w-[16rem]" },
 		cell: ({ row }) => (
 			<Link
 				to="/browse/$department/$course/$class"
