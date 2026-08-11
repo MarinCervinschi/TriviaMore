@@ -170,10 +170,20 @@ function AdminExample() {
 				meta: { label: "Azioni", align: "right" },
 				cell: () => (
 					<div className="flex items-center justify-end gap-1">
-						<Button variant="ghost" size="icon" className="rounded-lg">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="rounded-lg"
+							aria-label="Modifica"
+						>
 							<Pen2Icon className="h-4 w-4" />
 						</Button>
-						<Button variant="ghost" size="icon" className="rounded-lg">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="rounded-lg"
+							aria-label="Elimina"
+						>
 							<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
 						</Button>
 					</div>

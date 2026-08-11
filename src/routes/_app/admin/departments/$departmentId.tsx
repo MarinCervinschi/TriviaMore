@@ -104,7 +104,10 @@ function buildColumns(onDelete: (id: string) => void) {
 			enableHiding: false,
 			meta: { label: "Azioni", align: "right" },
 			cell: ({ row }) => (
-				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+				<AdminRowActions
+					onDelete={() => onDelete(row.original.id)}
+					label={row.original.name}
+				>
 					<Link to="/admin/courses/$courseId" params={{ courseId: row.original.id }}>
 						<Pen2Icon className="h-4 w-4" />
 					</Link>

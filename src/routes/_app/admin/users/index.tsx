@@ -124,7 +124,10 @@ function buildColumns(onDelete: (id: string) => void) {
 			enableHiding: false,
 			meta: { label: "Azioni", align: "right" },
 			cell: ({ row }) => (
-				<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+				<AdminRowActions
+					onDelete={() => onDelete(row.original.id)}
+					label={row.original.name ?? row.original.email ?? undefined}
+				>
 					<Link to="/admin/users/$userId" params={{ userId: row.original.id }}>
 						<Pen2Icon className="h-4 w-4" />
 					</Link>

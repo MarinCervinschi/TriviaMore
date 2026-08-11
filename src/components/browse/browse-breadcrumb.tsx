@@ -27,7 +27,7 @@ export function BrowseBreadcrumb({
 			<BreadcrumbList>
 				<BreadcrumbItem>
 					<BreadcrumbLink asChild>
-						<Link to="/">
+						<Link to="/" aria-label="Home">
 							<HomeIcon className="h-4 w-4" />
 						</Link>
 					</BreadcrumbLink>

@@ -236,7 +236,8 @@ function AdminUserDetailPage() {
 											<Button
 												variant="ghost"
 												size="icon"
-												className="hover:bg-destructive/20 h-4 w-4"
+												className="hover:bg-destructive/20 size-6"
+												aria-label={`Revoca ${dept.name}`}
 												onClick={() =>
 													removeDeptAdmin.mutate({
 														user_id: userId,
@@ -316,7 +317,8 @@ function AdminUserDetailPage() {
 											<Button
 												variant="ghost"
 												size="icon"
-												className="hover:bg-destructive/20 h-4 w-4"
+												className="hover:bg-destructive/20 size-6"
+												aria-label={`Revoca ${course.name}`}
 												onClick={() =>
 													removeMaintainer.mutate({
 														user_id: userId,
@@ -395,7 +397,8 @@ function AdminUserDetailPage() {
 										<Button
 											variant="ghost"
 											size="icon"
-											className="hover:bg-destructive/20 h-4 w-4"
+											className="hover:bg-destructive/20 size-6"
+											aria-label={`Revoca ${section.name}`}
 											onClick={() =>
 												removeSectionAccess.mutate({
 													user_id: userId,

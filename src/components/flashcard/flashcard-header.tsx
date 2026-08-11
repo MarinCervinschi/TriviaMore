@@ -30,6 +30,11 @@ export function FlashcardHeader({
 					size="icon"
 					onClick={onToggleSidebar}
 					className="h-9 w-9 rounded-xl"
+					aria-label={
+						sidebarOpen
+							? "Chiudi l\u2019elenco delle domande"
+							: "Apri l\u2019elenco delle domande"
+					}
 				>
 					{sidebarOpen ? (
 						<SidebarIcon className="h-4 w-4" />

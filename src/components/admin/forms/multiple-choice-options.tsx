@@ -81,6 +81,7 @@ export function MultipleChoiceOptions({
 								size="icon"
 								className="mt-1"
 								onClick={() => remove(index)}
+								aria-label={`Rimuovi l\u2019opzione ${index + 1}`}
 							>
 								<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
 							</Button>

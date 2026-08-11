@@ -525,7 +525,13 @@ function RevisionQuestionEditor({
 					Domanda {index + 1}
 				</p>
 				{onRemove && (
-					<Button variant="ghost" size="icon" className="size-6" onClick={onRemove}>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="size-6"
+						onClick={onRemove}
+						aria-label={`Rimuovi la domanda ${index + 1}`}
+					>
 						<TrashBinMinimalisticIcon className="text-destructive size-3" />
 					</Button>
 				)}
