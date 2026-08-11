@@ -710,9 +710,25 @@ Three failures, computed rather than eyeballed — they are tracked as issues, n
 |---|---|---|
 |`text-muted-foreground` on `bg-muted`, light|**4.39:1**|4.5:1|
 |`text-primary` as text on the dark surface|**3.51:1**|4.5:1|
-|Icon-only buttons with an accessible name|**6 of 26**|all|
+|Icon-only buttons with an accessible name|~~6 of 26~~ → **26 of 26**|all|
 
 Tracked as #152 (contrast), #153 (accessible names, and target size with it) and #154 (undo).
+**#153 is closed — 2026-08-11.** Four things are worth keeping from it:
+
+- **A tooltip is not an accessible name.** Radix `Tooltip` sets `aria-describedby`, not
+  `aria-labelledby`, so `bookmark-button` and `report-button` read as unnamed despite having perfectly
+  good tooltip text. A description supplements a name; it does not supply one.
+- **Name the object, not the action.** `AdminRowActions` gained a `label` prop, so a table reads
+  "Modifica Analisi matematica I" rather than twenty identical "Modifica". 4.1.2 is satisfied either
+  way; only one of the two is usable. One prop covers five tables.
+- **A name can arrive from another file.** Radix `Slot` merges the parent's props onto the child —
+  `mergeProps` returns `{...slotProps, ...childProps}` — so `<Button asChild aria-label>` names the
+  `<Link>` it wraps. A static audit cannot see that across a component boundary, which is why six
+  sites looked unnamed and were not.
+- **Target size (2.5.8) was four sites, not a systemic problem.** `Button`'s `icon` size is 40px and
+  `sm` is 32px, so the components clear 24×24 on their own; the failures were four revoke chips inside
+  badges, hard-coded to `h-4 w-4` — 16px. Now `size-6`. The `@media (pointer: coarse)` 44px block in
+  `globals.css` is an enhancement and never discharged 2.5.8, which applies to every pointer.
 
 The first is systemic: it is the `TabsList`, the admin sidebar and the quiz timer. The second
 follows from `--primary` being deliberately theme-constant, so a value tuned for light is too dark
