@@ -29,7 +29,12 @@ export const Grid: Story = {
 	render: () => (
 		<div className="grid grid-cols-2 gap-4">
 			<StatCard label="Quiz completati" value={42} icon={CupFirstIcon} color="yellow" />
-			<StatCard label="Corsi seguiti" value={8} icon={DiplomaIcon} color="blue" />
+			<StatCard
+				label="Insegnamenti seguiti"
+				value={8}
+				icon={DiplomaIcon}
+				color="blue"
+			/>
 			<StatCard label="Segnalibri" value={17} icon={BookmarkIcon} color="purple" />
 			<StatCard label="Media" value="27/33" icon={GraphUpIcon} color="green" />
 		</div>

@@ -69,7 +69,7 @@ function SettingsPage() {
 							color="yellow"
 						/>
 						<StatCard
-							label="Corsi seguiti"
+							label="Insegnamenti seguiti"
 							value={profile.stats.userClassesCount}
 							icon={DiplomaIcon}
 							color="blue"

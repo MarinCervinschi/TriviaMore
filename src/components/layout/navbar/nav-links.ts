@@ -61,7 +61,12 @@ export const AUTH_NAV_ITEMS: NavItem[] = [
 	{ type: "link", to: "/user", label: "Il mio profilo", icon: HomeIcon },
 	EXPLORE_DROPDOWN,
 	{ type: "link", to: "/graph", label: "Grafo", icon: StructureIcon },
-	{ type: "link", to: "/user/classes", label: "I miei corsi", icon: DiplomaIcon },
+	{
+		type: "link",
+		to: "/user/classes",
+		label: "I miei insegnamenti",
+		icon: DiplomaIcon,
+	},
 ];
 
 export const ADMIN_NAV_ITEM: NavLinkItem = {

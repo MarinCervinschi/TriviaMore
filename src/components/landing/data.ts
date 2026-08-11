@@ -161,7 +161,7 @@ export const showcaseFeatures: ShowcaseFeature[] = [
 			"Tieni sotto controllo la tua preparazione con statistiche dettagliate e attività recenti.",
 		highlights: [
 			"Statistiche quiz e punteggi",
-			"Corsi visualizzati di recente",
+			"Insegnamenti visti di recente",
 			"Panoramica progressi per materia",
 			"Accesso rapido alle azioni frequenti",
 		],

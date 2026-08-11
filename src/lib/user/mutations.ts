@@ -27,7 +27,7 @@ export function useAddClass() {
 			for (const key of CLASS_INVALIDATE_KEYS) {
 				queryClient.invalidateQueries({ queryKey: key });
 			}
-			toast.success("Classe aggiunta alla tua lista");
+			toast.success("Insegnamento aggiunto alla tua lista");
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
@@ -51,7 +51,7 @@ export function useRemoveClass() {
 			invalidate();
 			// Re-adding needs the course, so a row that has lost it cannot be put back.
 			if (!courseId) {
-				toast.success("Classe rimossa dalla tua lista");
+				toast.success("Insegnamento rimosso dalla tua lista");
 				return;
 			}
 			toastUndo("Classe rimossa dalla tua lista", () => {

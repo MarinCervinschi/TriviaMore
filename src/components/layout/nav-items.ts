@@ -19,7 +19,12 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
 	{ to: "/user", icon: HomeIcon, label: "Dashboard", fuzzy: false },
 	{ to: "/browse", icon: CompassIcon, label: "Esplora", fuzzy: false },
-	{ to: "/user/classes", icon: DiplomaIcon, label: "I miei corsi", fuzzy: false },
+	{
+		to: "/user/classes",
+		icon: DiplomaIcon,
+		label: "I miei insegnamenti",
+		fuzzy: false,
+	},
 	{ to: "/user/requests", icon: InboxIcon, label: "Contributi", fuzzy: true },
 ];
 
