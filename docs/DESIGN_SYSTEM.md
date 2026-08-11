@@ -42,6 +42,25 @@
 
 ---
 
+## Vocabulary
+
+One Italian word per level of the catalog, per D21. The data model is English; the interface is
+Italian, and each level has exactly one name in it.
+
+| Entity | Interface | Never |
+|--------|-----------|-------|
+| `departments` | dipartimento | |
+| `courses` | corso *(corso di laurea where there is room)* | |
+| `classes` | **insegnamento** | ~~corso~~, ~~classe~~ |
+| `sections` | sezione | |
+| `questions` | domanda | |
+
+`corso` naming a `class` is the mistake to watch for: it collides with the level directly above it,
+and it took ~26 call sites to undo. Never abbreviate an entity to fit a control either — resize the
+label.
+
+---
+
 ## Color Palette
 
 All colors are HSL-based CSS variables defined in `src/styles/globals.css`.

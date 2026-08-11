@@ -750,6 +750,47 @@ says so, because an admin deciding whether to delete something needs to know wha
 
 ---
 
+## D21 — One Italian word per level, and "corso" is not one of them for a class
+
+**Decided and implemented 2026-08-11.** The queue carried this as "the data model says *class*, the UI
+says *insegnamento*, and one label is abbreviated". The English-vs-Italian split is not a problem —
+code is English, the interface is Italian. The actual problem was worse and inside the Italian:
+**"corso" named two different levels of the hierarchy at once.**
+
+The canonical vocabulary was already written down, by the component that explains the hierarchy to
+users. `content-hierarchy-diagram` says: **Dipartimento → Corso di laurea → Insegnamento → Sezione →
+Domanda.** Nothing new had to be invented; the app just had to say it everywhere.
+
+| Entity | Word | Never |
+|---|---|---|
+| `departments` | dipartimento | |
+| `courses` | corso *(di laurea where there is room)* | |
+| `classes` | **insegnamento** | ~~corso~~, ~~classe~~ |
+| `sections` | sezione | |
+| `questions` | domanda | |
+
+**Where it was broken:** the followed- and recent-classes feature — the user dashboard, `/user/classes`,
+settings, the progress empty state, both nav entries, the landing copy and a skeleton — called classes
+**"corsi"** in ~26 places. So "I miei corsi" listed insegnamenti, and a table column headed *Corso*
+rendered `className`. A user reading "Corsi seguiti" next to "Corsi di laurea" in the same navigation
+had no way to tell they were different things.
+
+`user/mutations.ts` added a **third** word, toasting "Classe aggiunta alla tua lista" for the same
+action the page called adding a corso.
+
+**The abbreviation was a symptom, not the bug.** `Cerca insegn.` sat in the mobile tool grid because
+the verb had eaten the width — and its sibling tiles are plain nouns ("Notifiche", "Novità"). Dropping
+the verb fixes it without cutting a word short: **"Corsi di laurea"** and **"Insegnamenti"**.
+
+**What was deliberately left alone:** `corso` where it really is a `course` — the browse and admin
+course pages, `/search/courses`, the maintainer copy, the department course counts. Those were right
+all along, and they only read as ambiguous while classes were also called corsi.
+
+**Rules out:** "corso" or "classe" for a `class` in user-facing copy; abbreviating an entity name to
+fit a control — resize the label, not the vocabulary.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
