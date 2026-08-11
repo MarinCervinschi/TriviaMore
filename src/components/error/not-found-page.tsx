@@ -4,6 +4,7 @@ import { QuestionCircleIcon } from "@solar-icons/react/linear/question-circle";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
+import { PageBand } from "@/components/layout/page-band";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import {
@@ -26,11 +27,7 @@ export function NotFoundPage({
 	return (
 		<div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 text-center">
 			{/* Background */}
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="dot-pattern absolute inset-0 opacity-40" />
-				<div className="bg-primary/8 absolute top-1/4 -left-32 h-[400px] w-[400px] rounded-full blur-[100px]" />
-				<div className="absolute -right-32 bottom-1/4 h-[350px] w-[350px] rounded-full bg-orange-300/10 blur-[80px] dark:bg-orange-500/8" />
-			</div>
+			<PageBand />
 
 			<motion.div
 				className="relative flex flex-col items-center"

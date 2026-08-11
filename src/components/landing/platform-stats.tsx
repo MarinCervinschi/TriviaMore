@@ -145,27 +145,6 @@ export function PlatformStatsSection({ stats }: { stats: PlatformStats }) {
 
 	return (
 		<section className="relative overflow-hidden py-20 sm:py-28">
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<motion.div
-					className="bg-primary/8 absolute top-1/3 -left-32 h-[350px] w-[350px] rounded-full blur-[100px]"
-					animate={prefersReduced ? undefined : { x: [0, 20, 0], y: [0, -15, 0] }}
-					transition={
-						prefersReduced
-							? undefined
-							: { duration: 12, repeat: Infinity, ease: "easeInOut" }
-					}
-				/>
-				<motion.div
-					className="absolute -right-32 bottom-1/4 h-[300px] w-[300px] rounded-full bg-blue-400/8 blur-[80px]"
-					animate={prefersReduced ? undefined : { x: [0, -15, 0], y: [0, 10, 0] }}
-					transition={
-						prefersReduced
-							? undefined
-							: { duration: 10, repeat: Infinity, ease: "easeInOut" }
-					}
-				/>
-			</div>
-
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<motion.div
 					ref={headingRef}

@@ -10,10 +10,6 @@ export function PlatformStatsSectionSkeleton() {
 			className="relative overflow-hidden py-20 sm:py-28"
 		>
 			{/* Decorative orbs — match PlatformStatsSection */}
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="bg-primary/8 absolute top-1/3 -left-32 h-[350px] w-[350px] rounded-full blur-[100px]" />
-				<div className="absolute -right-32 bottom-1/4 h-[300px] w-[300px] rounded-full bg-blue-400/8 blur-[80px]" />
-			</div>
 
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="mb-16 space-y-3 text-center">

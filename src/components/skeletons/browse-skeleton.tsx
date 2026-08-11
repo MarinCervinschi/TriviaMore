@@ -32,7 +32,7 @@ export function BrowseOverviewSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento panoramica…">
 			{/* Hero + toolbar + grid (single tight block) */}
-			<section className="container pt-10 pb-12 sm:pt-14">
+			<section className="relative container pt-10 pb-12 sm:pt-14">
 				<div className="space-y-3">
 					<Skeleton className="h-13 w-13 rounded-2xl" />
 					<Skeleton className="h-10 w-2/3 max-w-md" />

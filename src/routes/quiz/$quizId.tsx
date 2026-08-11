@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { DecorativeBackground } from "@/components/layout/decorative-background";
+import { PageBand } from "@/components/layout/page-band";
 import { QuestionCard } from "@/components/quiz/question-card";
 import { QuizHeader } from "@/components/quiz/quiz-header";
 import { QuizNavigation } from "@/components/quiz/quiz-navigation";
@@ -140,8 +140,8 @@ function QuizPage() {
 	if (!quiz) {
 		return (
 			<>
-				<DecorativeBackground />
-				<div className="flex min-h-screen items-center justify-center">
+				<PageBand />
+				<div className="relative isolate flex min-h-screen items-center justify-center">
 					<p className="text-muted-foreground">Quiz non trovato.</p>
 				</div>
 			</>
@@ -157,8 +157,8 @@ function QuizPage() {
 	});
 
 	return (
-		<div className="flex h-dvh flex-col">
-			<DecorativeBackground />
+		<div className="relative isolate flex h-dvh flex-col">
+			<PageBand />
 			<QuizHeader
 				questionIndex={currentIndex}
 				totalQuestions={quiz.questions.length}

@@ -15,10 +15,6 @@ export const Route = createFileRoute("/_app/admin")({
 function AdminLayout() {
 	return (
 		<div className="relative min-h-screen">
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="from-muted/20 absolute inset-0 bg-gradient-to-b to-transparent" />
-			</div>
-
 			<div className="container flex gap-6 py-6">
 				<aside className="hidden w-72 shrink-0 lg:block">
 					<div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto">

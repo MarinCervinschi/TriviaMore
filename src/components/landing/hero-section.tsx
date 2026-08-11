@@ -23,40 +23,6 @@ export function HeroSection({
 	return (
 		<section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden">
 			{/* Mesh gradient background */}
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				{/* Base warm tone */}
-				<div className="via-background to-background dark:via-background dark:to-background absolute inset-0 bg-gradient-to-b from-orange-50/80 dark:from-orange-950/20" />
-				{/* Animated orbs */}
-				<motion.div
-					className="bg-primary/10 absolute top-1/4 -left-32 h-[500px] w-[500px] rounded-full blur-[100px]"
-					animate={prefersReduced ? undefined : { x: [0, 20, 0], y: [0, -15, 0] }}
-					transition={
-						prefersReduced
-							? undefined
-							: { duration: 10, repeat: Infinity, ease: "easeInOut" }
-					}
-				/>
-				<motion.div
-					className="absolute top-1/3 -right-32 h-[400px] w-[400px] rounded-full bg-orange-300/15 blur-[100px] dark:bg-orange-500/10"
-					animate={prefersReduced ? undefined : { x: [0, -18, 0], y: [0, 12, 0] }}
-					transition={
-						prefersReduced
-							? undefined
-							: { duration: 12, repeat: Infinity, ease: "easeInOut" }
-					}
-				/>
-				<motion.div
-					className="absolute bottom-0 left-1/3 h-[300px] w-[300px] rounded-full bg-red-300/10 blur-[80px] dark:bg-red-500/8"
-					animate={prefersReduced ? undefined : { x: [0, 10, 0], y: [0, -8, 0] }}
-					transition={
-						prefersReduced
-							? undefined
-							: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-					}
-				/>
-				{/* Dot grid overlay */}
-				<div className="dot-pattern absolute inset-0" />
-			</div>
 
 			<motion.div
 				className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8"

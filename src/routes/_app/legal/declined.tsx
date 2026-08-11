@@ -22,7 +22,7 @@ const DELETION_REQUEST_MAILTO = `mailto:privacy@trivia-more.it?subject=${encodeU
 
 function DeclinedPage() {
 	return (
-		<div className="container flex max-w-2xl items-center justify-center py-12 sm:py-20">
+		<div className="relative container flex max-w-2xl items-center justify-center py-12 sm:py-20">
 			<div className="bg-card w-full space-y-6 rounded-3xl border p-6 shadow-sm sm:p-10">
 				<div className="space-y-2">
 					<h1 className="text-2xl font-bold">Hai rifiutato i documenti aggiornati</h1>
