@@ -38,6 +38,9 @@ export function BookmarkButton({
 						size="icon"
 						onClick={handleToggle}
 						disabled={toggleBookmark.isPending}
+						aria-label={
+							isBookmarked ? "Rimuovi dai segnalibri" : "Aggiungi ai segnalibri"
+						}
 						className={cn(
 							"h-9 w-9 rounded-xl transition-all",
 							isBookmarked && "text-primary hover:text-primary/80",

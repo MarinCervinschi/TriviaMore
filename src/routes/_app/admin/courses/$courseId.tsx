@@ -91,7 +91,10 @@ function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
 						enableHiding: false,
 						meta: { label: "Azioni", align: "right" as const },
 						cell: ({ row }) => (
-							<AdminRowActions onDelete={() => onDelete(row.original.id)}>
+							<AdminRowActions
+								onDelete={() => onDelete(row.original.id)}
+								label={row.original.name}
+							>
 								<Link
 									to="/admin/classes/$classId"
 									params={{ classId: row.original.id }}

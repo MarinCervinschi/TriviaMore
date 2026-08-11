@@ -288,7 +288,8 @@ function AdminSectionDetailPage() {
 											<Button
 												variant="ghost"
 												size="icon"
-												className="hover:bg-destructive/20 h-4 w-4"
+												className="hover:bg-destructive/20 size-6"
+												aria-label={`Revoca l\u2019accesso a ${u.name ?? u.email ?? u.id}`}
 												onClick={() =>
 													removeAccess.mutate({
 														user_id: u.id,

@@ -40,6 +40,7 @@ export function ReportButton({
 								"text-muted-foreground h-9 w-9 rounded-xl hover:text-red-500",
 								className
 							)}
+							aria-label="Segnala la domanda"
 						>
 							<FlagIcon className="h-4 w-4" />
 						</Button>

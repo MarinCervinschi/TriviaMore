@@ -34,7 +34,13 @@ export function QuestionEditor({
 					Domanda {index + 1}
 				</p>
 				{onRemove && (
-					<Button variant="ghost" size="icon" className="size-7" onClick={onRemove}>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="size-7"
+						onClick={onRemove}
+						aria-label="Rimuovi la domanda"
+					>
 						<TrashBinMinimalisticIcon className="text-destructive size-3.5" />
 					</Button>
 				)}
@@ -130,6 +136,7 @@ export function QuestionEditor({
 										variant="ghost"
 										size="icon"
 										className="size-7 shrink-0"
+										aria-label={`Rimuovi l\u2019opzione ${oi + 1}`}
 										onClick={() => {
 											const newOptions = (question.options ?? []).filter(
 												(_, i) => i !== oi

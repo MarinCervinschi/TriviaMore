@@ -112,6 +112,7 @@ export function NotificationItem({
 						e.stopPropagation();
 						onDelete(notification.id);
 					}}
+					aria-label="Elimina la notifica"
 				>
 					<CloseGlyph className="size-3.5" />
 				</Button>
