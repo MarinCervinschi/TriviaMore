@@ -645,6 +645,60 @@ translucent chrome surface anywhere the band reaches.
 
 ---
 
+## D19 — A colour's surface value is not its ink value
+
+**Decided and implemented 2026-08-11, closing #152.** `--primary` and `--destructive` were each doing
+two jobs: the fill of a button and the colour of text. In light one value can serve both; on the dark
+surface it cannot, and the app was carrying **3.52:1** for `text-primary` across ~143 uses and
+**2.01:1** for `text-destructive` across 35 — the second is unreadable, not marginal.
+
+**Two ink tokens, `--brand` and `--danger`.** In light they are *identical* to `--primary` and
+`--destructive`, so the light theme did not move a pixel; in dark they are lifted and **more
+saturated** than the surfaces they pair with:
+
+| | light | dark | on the page | on `bg-muted` |
+|---|---|---|---|---|
+| `--brand` | `10 76% 42%` | `10 90% 62%` | 6.53:1 | 4.74:1 |
+| `--danger` | `0 84% 47.5%` | `0 90% 68%` | 6.68:1 | 4.84:1 |
+
+`bg-primary` and `bg-destructive` are untouched, so every button is exactly what it was. 178 uses of
+`text-primary` / `text-destructive` moved to `text-brand` / `text-danger`.
+
+**Why not simply lighten `--primary` in dark**, which would have been one token and no call-site
+churn: it was tried and rejected on sight. Lifting the surface makes the primary button a pale orange
+and forces its label from near-white to dark; the same treatment on `--destructive` turned a badge into
+pink pastel. **A lighter hue reads washed out as a large fill and vivid as text on near-black** — which
+is exactly why the two jobs need two values, and why the ink tokens carry higher saturation than the
+surfaces do.
+
+**Rules out:** using `text-primary` or `text-destructive`. They are surface tokens; `bg-*` and
+`border-*` are their jobs.
+
+### Measured, not assumed — and the four failures nobody had counted
+
+#152 filed two failures. Measuring every pair against the real tokens found **twelve**:
+
+- **In light, the status colours all failed as text.** `--warning` at **2.63:1**, `--success` 3.48,
+  `--destructive` 3.78. The comment above them claimed they were "tuned for text/badge use"; they were
+  not tuned at all. Darkening them fixed their *fills* too — a white label on `bg-warning` was 2.63:1.
+- **`--warning` cannot be amber and compliant at once.** At H=38 it needs L=33 to clear 4.5:1, which
+  is ochre. Moving 4° to H=34 buys the headroom while staying gold, and it is still 24° clear of
+  `--primary`'s H=10, so warning cannot be mistaken for brand.
+- **Tune against `bg-muted`, not the page.** Muted is 4% off white and costs ~0.4 of a ratio point, so
+  every token tuned to exactly 4.5:1 on white failed the moment it landed on a tab, the admin sidebar
+  or a stat block. Five tokens were re-cut for this after the first pass looked clean.
+- **Use the real foreground token, not white.** `--destructive-foreground` is `210 40% 98%`, not
+  `#fff`, and the difference was enough to hide a failing button label at 4.33:1 behind a passing
+  measurement of 4.53.
+
+**A pairing test is not a naming test.** `grading.test.ts` asserted that `getGradeColor` and
+`getGradeChartColor` switch band at the same scores — by comparing substrings of the class names,
+which quietly required both to be named alike. They are not, and legitimately: text takes the ink
+token, a chart fill takes the surface one. The test now compares *where each function changes*, which
+is the invariant it always meant.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -702,14 +756,14 @@ a matter of taste.
 - **Every control has an accessible name** (4.1.2) — an icon alone is not a name.
 - Focus is **visible** (2.4.7) and **not obscured** (2.4.11).
 
-### Measured against the app on 2026-08-09
+### Measured against the app on 2026-08-09, fixed on 2026-08-11
 
 Three failures, computed rather than eyeballed — they are tracked as issues, not fixed here:
 
 | | Measured | Required |
 |---|---|---|
-|`text-muted-foreground` on `bg-muted`, light|**4.39:1**|4.5:1|
-|`text-primary` as text on the dark surface|**3.51:1**|4.5:1|
+|`text-muted-foreground` on `bg-muted`, light|~~4.39:1~~ → **4.58:1**|4.5:1|
+|`text-primary` as text on the dark surface|~~3.51:1~~ → **6.53:1** as `text-brand`|4.5:1|
 |Icon-only buttons with an accessible name|~~6 of 26~~ → **26 of 26**|all|
 
 Tracked as #152 (contrast), #153 (accessible names, and target size with it) and #154 (undo).
