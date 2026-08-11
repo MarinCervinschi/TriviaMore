@@ -186,21 +186,23 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Center container and set max-width */
-.container {
+/* The one centred column. Declared as a utility rather than a plain rule, and that is the whole
+   point: a plain `.container` sits *outside* every cascade layer, and unlayered author styles beat
+   layered ones no matter the order — so `container max-w-3xl` silently did not narrow. As a
+   utility it lands in @layer utilities alongside max-w-*, which can then override it as written.
+   The values are Tailwind's own: 80rem is --container-7xl, and 1/1.5/2rem at 640/1024px is
+   px-4 sm:px-6 lg:px-8 exactly. */
+@utility container {
+	width: 100%;
 	margin-inline: auto;
-	padding-inline: 1rem;
 	max-width: 80rem;
-}
+	padding-inline: 1rem;
 
-@media (min-width: 640px) {
-	.container {
+	@media (min-width: 640px) {
 		padding-inline: 1.5rem;
 	}
-}
 
-@media (min-width: 1024px) {
-	.container {
+	@media (min-width: 1024px) {
 		padding-inline: 2rem;
 	}
 }
