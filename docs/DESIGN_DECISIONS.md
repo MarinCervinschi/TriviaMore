@@ -791,6 +791,32 @@ fit a control — resize the label, not the vocabulary.
 
 ---
 
+## D22 — The focus ring is declared once, and a halo uses the token its dot uses
+
+**Decided and implemented 2026-08-11.** `--shadow-focus` replaces seven identical copies of
+`shadow-[0_0_12px_hsl(var(--ring)/0.15)]`, one in each of the `ui/` primitives that can take focus —
+tabs, switch, button, radio-group, checkbox, input, textarea.
+
+This is not tidiness. **2.4.7 asks whether focus is visible everywhere**, and seven copies is seven
+places to check and one place to forget. One token is verified once.
+
+**And a find that was not on the list:** `news.tsx` drew the changelog dots with **raw rgba** —
+`rgba(34,197,94,…)`, `rgba(59,130,246,…)`, `rgba(245,158,11,…)`, which are green-500, blue-500 and
+amber-500 — beside `bg-green-500` and friends. Those dots were **entirely outside the token system**,
+which is why they never received D19's contrast re-tuning: nothing reached them. They are now
+`bg-success` with `shadow-halo-success`, and the halo derives from the same token as the dot, so the
+two cannot drift apart.
+
+**Left alone, with a reason:** the two floating chrome panels keep
+`shadow-[0_8px_32px_rgba(0,0,0,0.06)]` and its upward twin. They are black on near-black in the dark
+theme, so they do nothing there — but both panels are also defined by a border, so it degrades
+rather than breaks. Two sites, one real defect, not worth a token yet.
+
+**`shadow-lg shadow-primary/25`** — the CTA glow, 12 sites — stays as it is. It is a two-class
+Tailwind-native composition, not an untokenised recipe.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -904,10 +930,36 @@ v4 declares the token itself, and the real leak was a second hardcoded Courier N
 **O2 — The badge audit is unfinished.** Roughly 70 badges across 33 files have not been reviewed
 against D6. Most look legitimate; the sweep needs a human pass, not a regex.
 
-**O3 — The rest of the system.** The type scale is answered by D16. Still to decide under #145:
-surfaces and elevation, the radius scale bound to `--radius`, the shadow tokens that would replace the
-duplicated focus ring and CTA glow, and the motion rules. Contrast is a gate on all of them, checked
-in light first per D2.
+**O3 — The rest of the system.** The type scale is answered by D16 and the shadow tokens by D22. Two
+of the four remaining parts turned out not to need work, and one needs a decision:
+
+- **Motion — closed, nothing to do.** 26 files import `motion.ts`; the hand-written `duration-*`
+  values are CSS hover transitions, which `motion.ts` does not cover — it covers Framer variants. The
+  motion *rules* are already in this file: motion is spent on state the user caused, `prefers-reduced-motion`
+  is not optional, and Doherty's ~400ms.
+- **Surfaces — real duplication, no visible problem.** `<Card>` already is
+  `bg-card rounded-2xl border shadow-sm`, and ~30 panels rebuild that recipe by hand — but they differ
+  only in padding and `overflow`, and many are decorative frames rather than semantic cards. Worth
+  doing, not worth doing quietly.
+- **⚠ Radius — measurably broken, and the fix is visible.** `@theme` derives `--radius-sm/md/lg/xl`
+  from `--radius` but leaves `2xl`/`3xl` at Tailwind's defaults, so the ladder is shifted one step:
+
+  | class | renders | `DESIGN_SYSTEM.md` claims |
+  |---|---|---|
+  |`rounded-sm`|8px|4px ✗|
+  |`rounded-md`|10px|undocumented|
+  |`rounded-lg`|12px|8px ✗|
+  |`rounded-xl`|**16px**|12px ✗|
+  |`rounded-2xl`|**16px**|16px ✓|
+
+  **`rounded-xl` and `rounded-2xl` render the same value** — 433 uses, two names, 16px — so a button
+  inside a card is as round as the card, and the control loses its step of hierarchy. `--radius` also
+  governs only half the ladder, which makes "change `--radius` and the app re-rounds" untrue: cards and
+  large containers would not move.
+
+  The fix derives every step from `--radius` (4 / 8 / 12 / 16 / 24, with `rounded-md` retired so one
+  name means one value) and takes buttons and inputs from 16px to 12px — small, but on every control.
+  Compared in `Style Lab/Radius`; **not applied**, awaiting a look.
 
 **O4 — ~~The icon set~~ → resolved by D11 (Solar); both leftovers closed on 2026-08-10.** The mapping
 table is `docs/ICON_MAP.md`, and the CC BY 4.0 credit ships in the landing footer *and* on the about
