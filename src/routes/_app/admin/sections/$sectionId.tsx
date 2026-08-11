@@ -385,8 +385,8 @@ function AdminSectionDetailPage() {
 			<ConfirmationDialog
 				open={!!deleteQuestionId}
 				onOpenChange={open => !open && setDeleteQuestionId(null)}
-				title="Elimina domanda"
-				description="Sei sicuro di voler eliminare questa domanda? L'operazione è irreversibile."
+				title="Eliminare la domanda?"
+				description="La domanda verrà rimossa in modo permanente da questa sezione."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {

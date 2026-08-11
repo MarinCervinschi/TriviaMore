@@ -197,8 +197,8 @@ function AdminUsersPage() {
 			<ConfirmationDialog
 				open={!!deleteId}
 				onOpenChange={open => !open && setDeleteId(null)}
-				title="Elimina utente"
-				description="Sei sicuro di voler eliminare questo utente? Tutti i suoi dati (quiz, progressi, segnalibri) verranno eliminati. L'operazione è irreversibile."
+				title="Eliminare l'utente?"
+				description="L'account verrà rimosso con tutti i suoi dati: quiz, progressi e segnalibri."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {

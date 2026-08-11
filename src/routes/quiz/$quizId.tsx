@@ -216,8 +216,8 @@ function QuizPage() {
 			<ConfirmationDialog
 				open={showExitDialog}
 				onOpenChange={setShowExitDialog}
-				title="Esci dal Quiz"
-				description="Sei sicuro di voler uscire? Il quiz verrà eliminato e i progressi persi."
+				title="Uscire dal quiz?"
+				description="Il quiz verrà eliminato e i progressi andranno persi."
 				confirmText="Esci"
 				cancelText="Continua"
 				variant="destructive"

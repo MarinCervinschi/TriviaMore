@@ -230,8 +230,8 @@ function AdminDepartmentDetailPage() {
 			<ConfirmationDialog
 				open={!!deleteCourseId}
 				onOpenChange={open => !open && setDeleteCourseId(null)}
-				title="Elimina corso"
-				description="Sei sicuro di voler eliminare questo corso? L'operazione è irreversibile."
+				title="Eliminare il corso?"
+				description="Il corso verrà rimosso in modo permanente. Gli insegnamenti restano, ma perdono il collegamento a questo corso."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {
