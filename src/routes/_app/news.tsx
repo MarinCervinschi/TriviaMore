@@ -33,9 +33,9 @@ export const Route = createFileRoute("/_app/news")({
 const formatDate = formatDateLong;
 
 const DOT_COLOR: Record<ChangelogEntry["category"], string> = {
-	new: "bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.15)]",
-	improved: "bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.15)]",
-	fixed: "bg-amber-500 shadow-[0_0_0_4px_rgba(245,158,11,0.15)]",
+	new: "bg-success shadow-halo-success",
+	improved: "bg-info shadow-halo-info",
+	fixed: "bg-warning shadow-halo-warning",
 };
 
 function NewsPage() {
