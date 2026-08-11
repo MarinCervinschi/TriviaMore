@@ -66,14 +66,14 @@ export function AdminSidebar() {
 				<RoleIcon className={cn("h-4 w-4 shrink-0", theme.pillText)} />
 				<span className={cn("eyebrow", theme.pillText)}>{theme.label}</span>
 			</div>
-			<p className="text-primary eyebrow mb-2 px-3">Gestione</p>
+			<p className="text-brand eyebrow mb-2 px-3">Gestione</p>
 			<div className="flex flex-col gap-0.5">
 				{/* Dashboard */}
 				<Link
 					to="/admin"
 					className={cn(
 						"hover:bg-accent/50 flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-						isDashboardActive && "bg-primary/10 text-primary font-semibold"
+						isDashboardActive && "bg-primary/10 text-brand font-semibold"
 					)}
 				>
 					<Widget2Icon className="h-4 w-4" />
@@ -95,7 +95,7 @@ export function AdminSidebar() {
 						to="/admin/users"
 						className={cn(
 							"hover:bg-accent/50 flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-							isUsersActive && "bg-primary/10 text-primary font-semibold"
+							isUsersActive && "bg-primary/10 text-brand font-semibold"
 						)}
 					>
 						<UsersGroupRoundedIcon className="h-4 w-4" />
@@ -108,7 +108,7 @@ export function AdminSidebar() {
 					to="/admin/requests"
 					className={cn(
 						"hover:bg-accent/50 flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-						isRequestsActive && "bg-primary/10 text-primary font-semibold"
+						isRequestsActive && "bg-primary/10 text-brand font-semibold"
 					)}
 				>
 					<InboxIcon className="h-4 w-4" />
@@ -123,7 +123,7 @@ export function AdminSidebar() {
 
 			{/* Stats: Contenuti */}
 			<div className="border-border/50 my-4 border-t pt-4">
-				<p className="text-primary eyebrow mb-2 px-3">Contenuti</p>
+				<p className="text-brand eyebrow mb-2 px-3">Contenuti</p>
 				<div className="flex flex-col gap-0.5">
 					<SidebarStat icon={DiplomaIcon} label="Corsi" count={stats?.courseCount} />
 					<SidebarStat
@@ -143,7 +143,7 @@ export function AdminSidebar() {
 			{/* Stats: Utenti — SUPERADMIN only */}
 			{isSuperadmin && (
 				<div className="border-border/50 border-t pt-4">
-					<p className="text-primary eyebrow mb-2 px-3">Utenti</p>
+					<p className="text-brand eyebrow mb-2 px-3">Utenti</p>
 					<div className="flex flex-col gap-0.5">
 						<SidebarStat
 							icon={UsersGroupRoundedIcon}
@@ -212,7 +212,7 @@ function DepartmentsTreeLink({
 					to="/admin/departments"
 					className={cn(
 						"flex flex-1 items-center gap-2 py-2 pr-3 text-sm font-medium",
-						isActive ? "text-primary font-semibold" : "text-foreground"
+						isActive ? "text-brand font-semibold" : "text-foreground"
 					)}
 				>
 					<LibraryIcon className="h-4 w-4" />
@@ -260,7 +260,7 @@ function DepartmentNode({ department }: { department: ContentTreeDepartment }) {
 				<Link
 					to="/admin/departments/$departmentId"
 					params={{ departmentId: department.id }}
-					className="text-foreground hover:text-primary flex-1 truncate text-left"
+					className="text-foreground hover:text-brand flex-1 truncate text-left"
 					onClick={e => e.stopPropagation()}
 				>
 					{department.name}
@@ -302,7 +302,7 @@ function CourseNode({ course }: { course: ContentTreeCourse }) {
 				<Link
 					to="/admin/courses/$courseId"
 					params={{ courseId: course.id }}
-					className="text-foreground hover:text-primary flex-1 truncate text-left"
+					className="text-foreground hover:text-brand flex-1 truncate text-left"
 					onClick={e => e.stopPropagation()}
 				>
 					{course.name}
@@ -344,7 +344,7 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 				<Link
 					to="/admin/classes/$classId"
 					params={{ classId: cls.id }}
-					className="text-foreground hover:text-primary flex-1 truncate text-left"
+					className="text-foreground hover:text-brand flex-1 truncate text-left"
 					onClick={e => e.stopPropagation()}
 				>
 					{cls.name}
@@ -365,7 +365,7 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 						>
 							<span className="h-3 w-3" />
 							<BookIcon className="h-3.5 w-3.5 shrink-0 text-purple-500" />
-							<span className="text-foreground hover:text-primary flex-1 truncate">
+							<span className="text-foreground hover:text-brand flex-1 truncate">
 								{section.name}
 							</span>
 						</Link>

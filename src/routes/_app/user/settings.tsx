@@ -166,13 +166,13 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 							src={imageUrl || profile.image || undefined}
 							alt={displayName}
 						/>
-						<AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+						<AvatarFallback className="bg-primary/10 text-brand text-xl font-bold">
 							{initials}
 						</AvatarFallback>
 					</Avatar>
 					<div>
 						<h3 className="text-lg font-semibold">{name || displayName}</h3>
-						<Badge className="border-primary/20 bg-primary/5 text-primary rounded-full border px-3 py-1 text-sm font-medium">
+						<Badge className="border-primary/20 bg-primary/5 text-brand rounded-full border px-3 py-1 text-sm font-medium">
 							{getRoleLabel(profile.role)}
 						</Badge>
 					</div>
@@ -259,10 +259,10 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 //       <div className="p-6 sm:p-8">
 //         <div className="flex items-start gap-3">
 //           <div className="rounded-2xl bg-destructive/10 p-3">
-//             <AlertTriangle className="h-6 w-6 text-destructive" strokeWidth={1.5} />
+//             <AlertTriangle className="h-6 w-6 text-danger" strokeWidth={1.5} />
 //           </div>
 //           <div className="flex-1">
-//             <h2 className="text-xl font-bold text-destructive">
+//             <h2 className="text-xl font-bold text-danger">
 //               Elimina Account
 //             </h2>
 //             <p className="mt-1 text-sm text-muted-foreground">
@@ -284,7 +284,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 //             <AlertDialogContent>
 //               <AlertDialogHeader>
 //                 <AlertDialogTitle className="flex items-center gap-2">
-//                   <AlertTriangle className="h-5 w-5 text-destructive" />
+//                   <AlertTriangle className="h-5 w-5 text-danger" />
 //                   Conferma eliminazione account
 //                 </AlertDialogTitle>
 //                 <AlertDialogDescription className="space-y-3">
@@ -306,7 +306,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 //                   </span>
 //                   <span className="block">
 //                     Scrivi{" "}
-//                     <span className="font-mono font-bold text-destructive">
+//                     <span className="font-mono font-bold text-danger">
 //                       ELIMINA
 //                     </span>{" "}
 //                     per confermare:

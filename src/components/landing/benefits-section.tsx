@@ -25,7 +25,7 @@ function BenefitItemComponent({
 }) {
 	return (
 		<div className="flex gap-4">
-			<div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+			<div className="bg-primary/10 text-brand flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold">
 				{index + 1}
 			</div>
 			<div>
@@ -130,7 +130,7 @@ export function BenefitsSection({
 						initial="hidden"
 						animate={headingVisible ? "visible" : "hidden"}
 					>
-						<p className="text-primary eyebrow-lg mb-3">Perché TriviaMore</p>
+						<p className="text-brand eyebrow-lg mb-3">Perché TriviaMore</p>
 						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Scritto da chi l&apos;esame l&apos;ha già dato
 						</h2>

@@ -208,7 +208,7 @@ export function GraphFilters({
 						>
 							<div className="mb-4 flex items-center justify-between gap-2">
 								<div className="flex items-center gap-2">
-									<FilterIcon className="text-primary size-4" aria-hidden />
+									<FilterIcon className="text-brand size-4" aria-hidden />
 									<h2 className="text-sm font-semibold tracking-tight">Filtri</h2>
 								</div>
 								<button
@@ -256,7 +256,7 @@ export function GraphFilters({
 					className="max-h-[85vh] overflow-y-auto rounded-t-2xl border-t"
 				>
 					<div className="mb-4 flex items-center gap-2">
-						<FilterIcon className="text-primary size-4" aria-hidden />
+						<FilterIcon className="text-brand size-4" aria-hidden />
 						<h2 className="text-sm font-semibold tracking-tight">Filtri</h2>
 					</div>
 					{body}

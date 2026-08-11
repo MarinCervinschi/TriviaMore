@@ -37,7 +37,7 @@ export function ErrorPage({ error }: { error: Error }) {
 				<motion.div className="mb-6" variants={item}>
 					<div className="bg-destructive/10 relative inline-flex rounded-3xl p-6">
 						<div className="pointer-events-none absolute inset-0 rounded-3xl shadow-[0_0_30px_hsl(var(--destructive)/0.15)]" />
-						<DangerTriangleIcon className="text-destructive relative h-12 w-12" />
+						<DangerTriangleIcon className="text-danger relative h-12 w-12" />
 					</div>
 				</motion.div>
 

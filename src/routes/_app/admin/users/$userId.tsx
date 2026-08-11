@@ -245,7 +245,7 @@ function AdminUserDetailPage() {
 													})
 												}
 											>
-												<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
+												<TrashBinMinimalisticIcon className="text-danger h-3 w-3" />
 											</Button>
 										</Badge>
 									))}
@@ -326,7 +326,7 @@ function AdminUserDetailPage() {
 													})
 												}
 											>
-												<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
+												<TrashBinMinimalisticIcon className="text-danger h-3 w-3" />
 											</Button>
 										</Badge>
 									))}
@@ -406,7 +406,7 @@ function AdminUserDetailPage() {
 												})
 											}
 										>
-											<TrashBinMinimalisticIcon className="text-destructive h-3 w-3" />
+											<TrashBinMinimalisticIcon className="text-danger h-3 w-3" />
 										</Button>
 									</Badge>
 								))}

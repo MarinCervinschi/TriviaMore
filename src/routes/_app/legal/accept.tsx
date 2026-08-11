@@ -64,7 +64,7 @@ function AcceptPage() {
 			<div className="bg-card w-full space-y-6 rounded-3xl border p-6 shadow-sm sm:p-10">
 				<div className="flex items-start gap-4">
 					<div className="bg-primary/10 rounded-2xl p-3">
-						<ShieldCheckIcon className="text-primary h-6 w-6" />
+						<ShieldCheckIcon className="text-brand h-6 w-6" />
 					</div>
 					<div className="flex-1">
 						<h1 className="text-2xl font-bold">Aggiornamento dei documenti legali</h1>
@@ -77,7 +77,7 @@ function AcceptPage() {
 
 				<div className="border-primary/20 bg-primary/5 rounded-2xl border p-4">
 					<div className="flex items-start gap-3">
-						<StarsIcon className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+						<StarsIcon className="text-brand mt-0.5 h-4 w-4 shrink-0" />
 						<div className="flex-1 space-y-2">
 							<p className="text-foreground text-sm font-semibold">{notes.title}</p>
 							<ul className="text-muted-foreground list-disc space-y-1 pl-4 text-sm">

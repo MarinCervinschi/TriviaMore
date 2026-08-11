@@ -72,7 +72,7 @@ export function FlashcardResults({
 							<p className="text-muted-foreground text-xs">Studiate</p>
 						</div>
 						<div className="bg-muted/50 rounded-2xl p-4">
-							<CheckCircleIcon className="text-primary mx-auto mb-2 h-5 w-5" />
+							<CheckCircleIcon className="text-brand mx-auto mb-2 h-5 w-5" />
 							<p className="text-2xl font-bold">{percentage}%</p>
 							<p className="text-muted-foreground text-xs">Completamento</p>
 						</div>

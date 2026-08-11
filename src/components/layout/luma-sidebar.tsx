@@ -38,7 +38,7 @@ import {
 const ITEM_BASE =
 	"relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const ITEM_IDLE = "text-muted-foreground hover:bg-foreground/5 hover:text-foreground";
-const ITEM_ACTIVE = "text-primary";
+const ITEM_ACTIVE = "text-brand";
 
 function ActiveBar() {
 	return (
@@ -174,7 +174,7 @@ function SidebarProfile({
 									src={user?.image ?? undefined}
 									alt={user?.name ?? "Utente"}
 								/>
-								<AvatarFallback className="bg-primary/10 text-primary text-2xs font-semibold">
+								<AvatarFallback className="bg-primary/10 text-brand text-2xs font-semibold">
 									{initials}
 								</AvatarFallback>
 							</Avatar>
@@ -257,7 +257,7 @@ function SidebarProfile({
 							setOpen(false);
 							onLogout();
 						}}
-						className="text-destructive hover:bg-destructive/10 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
+						className="text-danger hover:bg-destructive/10 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
 					>
 						<Logout3Icon className="h-4 w-4" />
 						Esci

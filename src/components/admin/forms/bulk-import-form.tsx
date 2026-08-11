@@ -92,7 +92,7 @@ export function BulkImportForm({
 					onChange={e => setJson(e.target.value)}
 					className="font-mono text-sm"
 				/>
-				{error && <p className="text-destructive mt-1 text-sm">{error}</p>}
+				{error && <p className="text-danger mt-1 text-sm">{error}</p>}
 			</div>
 
 			<Button onClick={handleSubmit} disabled={isPending || !json.trim()}>

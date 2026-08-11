@@ -46,7 +46,7 @@ export function NotFoundPage({
 					}
 				>
 					<div className="bg-primary/10 inline-flex rounded-3xl p-5">
-						<QuestionCircleIcon className="text-primary h-12 w-12" />
+						<QuestionCircleIcon className="text-brand h-12 w-12" />
 					</div>
 				</motion.div>
 

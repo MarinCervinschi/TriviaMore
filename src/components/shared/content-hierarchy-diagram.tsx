@@ -30,7 +30,7 @@ export const CONTENT_LEVELS: ContentLevel[] = [
 		label: "Dipartimento",
 		example: 'Ingegneria "Enzo Ferrari"',
 		description: "la facoltà di riferimento",
-		color: "text-primary",
+		color: "text-brand",
 		bg: "bg-primary/10",
 		borderColor: "border-primary/30",
 	},

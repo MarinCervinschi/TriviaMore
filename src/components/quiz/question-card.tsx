@@ -69,7 +69,7 @@ export function QuestionCard({
 							onClick={() => handleOptionToggle(option.id)}
 							className={`rounded-2xl border-2 p-5 text-center text-lg font-semibold transition-all duration-200 ${
 								selectedAnswers.includes(option.id)
-									? "border-primary bg-primary/10 text-primary scale-[1.02] shadow-sm"
+									? "border-primary bg-primary/10 text-brand scale-[1.02] shadow-sm"
 									: "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
 							}`}
 						>

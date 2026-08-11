@@ -41,7 +41,7 @@ export function QuestionEditor({
 						onClick={onRemove}
 						aria-label="Rimuovi la domanda"
 					>
-						<TrashBinMinimalisticIcon className="text-destructive size-3.5" />
+						<TrashBinMinimalisticIcon className="text-danger size-3.5" />
 					</Button>
 				)}
 			</div>

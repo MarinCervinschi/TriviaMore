@@ -27,7 +27,7 @@ export function AdminPageHeader({
 		<div className="border-border/50 mb-8 border-b pb-6">
 			{backTo && (
 				<div className="mb-4">
-					{backLabel && <p className="text-primary eyebrow mb-1">{backLabel}</p>}
+					{backLabel && <p className="text-brand eyebrow mb-1">{backLabel}</p>}
 					<Button variant="ghost" size="sm" className="-ml-2 rounded-xl" asChild>
 						<Link to={backTo} params={backParams}>
 							<ArrowLeftIcon className="mr-1 h-4 w-4" />
@@ -40,7 +40,7 @@ export function AdminPageHeader({
 				<div className="flex items-center gap-4">
 					{Icon && (
 						<div className="bg-primary/10 inline-flex rounded-2xl p-3">
-							<Icon className="text-primary h-6 w-6" />
+							<Icon className="text-brand h-6 w-6" />
 						</div>
 					)}
 					<div>

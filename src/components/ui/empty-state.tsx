@@ -50,7 +50,7 @@ export function EmptyState({
 					className="bg-primary/10 mx-auto mb-4 inline-flex rounded-2xl p-4"
 					variants={item}
 				>
-					<Icon className="text-primary h-10 w-10" />
+					<Icon className="text-brand h-10 w-10" />
 				</motion.div>
 
 				<motion.h2 className="mb-2 text-xl font-semibold" variants={item}>

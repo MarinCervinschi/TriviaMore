@@ -50,7 +50,7 @@ export const OnTheBrandColour: Story = {
 	name: "On the brand colour",
 	render: args => (
 		<div className="flex items-center gap-6">
-			<Spinner {...args} className="text-primary size-6" />
+			<Spinner {...args} className="text-brand size-6" />
 			<Spinner {...args} className="text-muted-foreground size-6" />
 			<div className="bg-primary flex items-center rounded-lg p-3">
 				<Spinner {...args} className="text-primary-foreground size-6" />

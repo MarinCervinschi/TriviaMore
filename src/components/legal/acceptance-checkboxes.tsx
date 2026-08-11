@@ -47,12 +47,12 @@ export function AcceptanceCheckboxes({
 							to="/legal/terms"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-primary hover:text-primary/80 font-medium underline underline-offset-2"
+							className="text-brand hover:text-brand/80 font-medium underline underline-offset-2"
 						>
 							Termini e Condizioni
 						</Link>
 					</Label>
-					{termsError && <p className="text-destructive text-xs">{termsError}</p>}
+					{termsError && <p className="text-danger text-xs">{termsError}</p>}
 				</div>
 			</div>
 
@@ -74,12 +74,12 @@ export function AcceptanceCheckboxes({
 							to="/legal/privacy"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-primary hover:text-primary/80 font-medium underline underline-offset-2"
+							className="text-brand hover:text-brand/80 font-medium underline underline-offset-2"
 						>
 							Informativa sulla Privacy
 						</Link>
 					</Label>
-					{privacyError && <p className="text-destructive text-xs">{privacyError}</p>}
+					{privacyError && <p className="text-danger text-xs">{privacyError}</p>}
 				</div>
 			</div>
 		</div>

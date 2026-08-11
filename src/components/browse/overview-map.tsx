@@ -50,7 +50,7 @@ export function OverviewMap({ locations }: { locations: OverviewLocation[] }) {
 		<Card className="flex h-full flex-col overflow-hidden">
 			<CardHeader className="pb-2">
 				<CardTitle className="flex items-center gap-2 text-base">
-					<MapPointIcon className="text-primary h-4 w-4" />
+					<MapPointIcon className="text-brand h-4 w-4" />
 					Le nostre sedi
 				</CardTitle>
 			</CardHeader>
@@ -92,7 +92,7 @@ export function OverviewMap({ locations }: { locations: OverviewLocation[] }) {
 											<Link
 												to="/browse/$department"
 												params={{ department: location.department.code.toLowerCase() }}
-												className="text-primary text-xs font-medium hover:underline"
+												className="text-brand text-xs font-medium hover:underline"
 											>
 												Vai al dipartimento
 											</Link>

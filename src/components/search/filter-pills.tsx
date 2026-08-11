@@ -23,7 +23,7 @@ export function FilterPills({
 				className={cn(
 					"rounded-full px-3 py-1 text-xs font-medium transition-colors",
 					!value
-						? "bg-primary/10 text-primary"
+						? "bg-primary/10 text-brand"
 						: "text-muted-foreground hover:text-foreground hover:bg-muted"
 				)}
 			>
@@ -36,7 +36,7 @@ export function FilterPills({
 					className={cn(
 						"rounded-full px-3 py-1 text-xs font-medium transition-colors",
 						value === opt.value
-							? "bg-primary/10 text-primary"
+							? "bg-primary/10 text-brand"
 							: "text-muted-foreground hover:text-foreground hover:bg-muted"
 					)}
 				>

@@ -23,7 +23,7 @@ const colorMap: Record<string, { orb: string; badge: string; icon: string }> = {
 		badge: "bg-yellow-500/10",
 		icon: "text-yellow-500",
 	},
-	primary: { orb: "bg-primary/10", badge: "bg-primary/10", icon: "text-primary" },
+	primary: { orb: "bg-primary/10", badge: "bg-primary/10", icon: "text-brand" },
 };
 
 // The one stat tile used across the admin dashboard, the user area and progress.

@@ -59,7 +59,7 @@ function BottomNavItem({
 					"relative flex min-h-[48px] flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5",
 					"transition-colors focus-visible:outline-none active:scale-[0.96]",
 					"focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2",
-					isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+					isActive ? "text-brand" : "text-muted-foreground hover:text-foreground"
 				)}
 			>
 				{isActive && (
@@ -105,7 +105,7 @@ function ToolTile({
 				className={cn(
 					"flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
 					external?.variant === "admin"
-						? "bg-primary/15 text-primary"
+						? "bg-primary/15 text-brand"
 						: "bg-muted text-foreground"
 				)}
 			>
@@ -285,7 +285,7 @@ function ProfileSheet({
 						close();
 						onLogout();
 					}}
-					className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/10 flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors"
+					className="border-destructive/30 bg-destructive/5 text-danger hover:bg-destructive/10 flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors"
 				>
 					<Logout3Icon className="size-4" aria-hidden />
 					Esci
@@ -347,7 +347,7 @@ export function MobileBottomNav() {
 									"transition-colors focus-visible:outline-none active:scale-[0.96]",
 									"focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2",
 									profileActive
-										? "text-primary"
+										? "text-brand"
 										: "text-muted-foreground hover:text-foreground"
 								)}
 							>
@@ -364,7 +364,7 @@ export function MobileBottomNav() {
 											src={user?.image ?? undefined}
 											alt={user?.name ?? "Utente"}
 										/>
-										<AvatarFallback className="bg-primary/10 text-primary text-2xs font-semibold">
+										<AvatarFallback className="bg-primary/10 text-brand text-2xs font-semibold">
 											{initials}
 										</AvatarFallback>
 									</Avatar>

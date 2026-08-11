@@ -67,12 +67,12 @@ export function LegalRelatedDocs({ currentSlug }: LegalRelatedDocsProps) {
 						<div className="bg-primary/5 pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full blur-2xl transition-opacity duration-300 group-hover:opacity-70" />
 						<div className="relative flex items-start gap-4">
 							<div className="border-primary/15 bg-primary/5 group-hover:bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200">
-								<doc.icon className="text-primary h-5 w-5" />
+								<doc.icon className="text-brand h-5 w-5" />
 							</div>
 							<div className="min-w-0 flex-1">
 								<div className="flex items-center justify-between gap-2">
 									<h3 className="truncate text-sm font-semibold">{doc.title}</h3>
-									<ArrowRightIcon className="text-muted-foreground group-hover:text-primary h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+									<ArrowRightIcon className="text-muted-foreground group-hover:text-brand h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
 								</div>
 								<p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
 									{doc.description}

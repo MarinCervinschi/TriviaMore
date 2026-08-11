@@ -124,7 +124,7 @@ function buildColumns(deptCode: string, courseCode: string, classCode: string) {
 					params={sectionParams(deptCode, courseCode, classCode, row.original)}
 					className="block"
 				>
-					<span className="text-foreground group-hover:text-primary flex items-center gap-2 font-medium transition-colors">
+					<span className="text-foreground group-hover:text-brand flex items-center gap-2 font-medium transition-colors">
 						{!row.original.isPublic && (
 							<LockKeyholeIcon className="text-muted-foreground h-3.5 w-3.5" />
 						)}
@@ -296,7 +296,7 @@ function ClassPage() {
 								href={classData.courseClass.catalogueUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs transition-colors"
+								className="text-muted-foreground hover:text-brand inline-flex items-center gap-1 text-xs transition-colors"
 							>
 								<SquareArrowRightUpIcon className="h-3 w-3" />
 								Catalogo

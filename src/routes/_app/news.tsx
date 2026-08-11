@@ -74,7 +74,7 @@ function NewsPage() {
 					animate={heroVisible ? "visible" : "hidden"}
 				>
 					<motion.div
-						className="border-primary/20 bg-primary/5 text-primary mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-widest uppercase"
+						className="border-primary/20 bg-primary/5 text-brand mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-widest uppercase"
 						variants={item}
 					>
 						<FeedIcon className="h-3.5 w-3.5" />
@@ -91,7 +91,7 @@ function NewsPage() {
 							className="text-muted-foreground mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm"
 							variants={item}
 						>
-							<span className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs font-semibold">
+							<span className="bg-primary/10 text-brand inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs font-semibold">
 								<StarsIcon className="h-3 w-3" />v{latest.version}
 							</span>
 							<span>
@@ -178,7 +178,7 @@ function NewsPage() {
 												{formatDate(entry.publishedAt)}
 											</time>
 											{isLatest && (
-												<span className="bg-primary/10 text-primary text-2xs rounded-full px-2 py-0.5 font-bold tracking-wider uppercase">
+												<span className="bg-primary/10 text-brand text-2xs rounded-full px-2 py-0.5 font-bold tracking-wider uppercase">
 													Ultima
 												</span>
 											)}

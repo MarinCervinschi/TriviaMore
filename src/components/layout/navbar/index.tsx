@@ -26,7 +26,7 @@ function DesktopNavLink({ item }: { item: Extract<NavItem, { type: "link" }> }) 
 			to={item.to}
 			className="text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
 			activeProps={{
-				className: "bg-primary/10 text-primary font-semibold hover:text-primary",
+				className: "bg-primary/10 text-brand font-semibold hover:text-brand",
 			}}
 		>
 			{item.label}
@@ -66,7 +66,7 @@ function DesktopNavDropdown({
 						open && "text-foreground"
 					)}
 					activeProps={{
-						className: "bg-primary/10 text-primary font-semibold hover:text-primary",
+						className: "bg-primary/10 text-brand font-semibold hover:text-brand",
 					}}
 				>
 					{item.label}
@@ -107,7 +107,7 @@ function DesktopNavDropdown({
 							>
 								{child.icon && (
 									<div className="bg-primary/10 mt-0.5 flex-shrink-0 rounded-lg p-1.5">
-										<child.icon className="text-primary h-4 w-4" />
+										<child.icon className="text-brand h-4 w-4" />
 									</div>
 								)}
 								<div className="min-w-0">

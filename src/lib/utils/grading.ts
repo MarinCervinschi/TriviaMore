@@ -4,7 +4,7 @@ export function formatThirtyScaleGrade(score: number): string {
 }
 
 export function getGradeColor(score: number): string {
-	if (score < 18) return "text-destructive";
+	if (score < 18) return "text-danger";
 	if (score < 24) return "text-warning";
 	if (score < 27) return "text-info";
 	if (score <= 30) return "text-success";

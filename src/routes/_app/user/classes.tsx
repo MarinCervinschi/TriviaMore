@@ -64,7 +64,7 @@ function buildColumns(
 					to="/browse/$department/$course/$class"
 					params={classParams(row.original)}
 				>
-					<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+					<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
 						{row.original.className}
 					</span>
 					<p className="text-muted-foreground mt-0.5 text-xs">
@@ -131,7 +131,7 @@ function buildColumns(
 						onRemove(row.original.classId);
 					}}
 					disabled={isRemoving}
-					className="text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg p-0"
+					className="text-muted-foreground hover:text-danger h-8 w-8 rounded-lg p-0"
 					title="Rimuovi corso"
 				>
 					<CloseGlyph className="h-4 w-4" />

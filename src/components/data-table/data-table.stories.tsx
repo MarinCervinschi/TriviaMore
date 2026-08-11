@@ -184,7 +184,7 @@ function AdminExample() {
 							className="rounded-lg"
 							aria-label="Elimina"
 						>
-							<TrashBinMinimalisticIcon className="text-destructive h-4 w-4" />
+							<TrashBinMinimalisticIcon className="text-danger h-4 w-4" />
 						</Button>
 					</div>
 				),

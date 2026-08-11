@@ -57,7 +57,7 @@ export function QuizHeader({
 					variant="ghost"
 					size="sm"
 					onClick={onExit}
-					className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-xl"
+					className="text-muted-foreground hover:bg-destructive/10 hover:text-danger rounded-xl"
 				>
 					<Logout3Icon className="mr-1.5 h-4 w-4" />
 					Esci

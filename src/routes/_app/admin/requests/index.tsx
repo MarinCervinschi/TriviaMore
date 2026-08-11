@@ -85,7 +85,7 @@ const columns = [
 						).toUpperCase()}
 					</AvatarFallback>
 				</Avatar>
-				<span className="group-hover:text-primary text-sm font-medium transition-colors">
+				<span className="group-hover:text-brand text-sm font-medium transition-colors">
 					{row.original.user.name ?? row.original.user.email ?? "Utente"}
 				</span>
 			</div>
