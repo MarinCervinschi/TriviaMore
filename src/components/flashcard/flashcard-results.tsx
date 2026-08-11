@@ -140,7 +140,7 @@ export function FlashcardResults({
 
 function ResultsHeader() {
 	return (
-		<header className="border-border/50 bg-background/70 flex items-center justify-between border-b px-4 py-3 backdrop-blur-xl">
+		<header className="border-border/50 bg-background flex items-center justify-between border-b px-4 py-3 backdrop-blur-xl">
 			<Logo size="sm" />
 			<ThemeToggle className="h-9 w-9" />
 		</header>

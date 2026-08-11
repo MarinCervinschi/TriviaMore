@@ -288,9 +288,9 @@ export function LumaSidebar() {
 				className={cn(
 					"fixed top-3 bottom-3 left-3 z-50 w-[66px]",
 					"hidden flex-col items-center gap-[7px] py-3 md:flex",
-					// Floating card: subtle translucent bg so the shared app decor
-					// still bleeds through, border + shadow define the container
-					"border-border/60 bg-background/40 rounded-2xl border backdrop-blur-sm",
+					// A floating card *above* the page band, not a window onto it: an opaque
+					// surface is what keeps the light from tinting the chrome.
+					"border-border/60 bg-background rounded-2xl border",
 					"shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
 				)}
 			>
