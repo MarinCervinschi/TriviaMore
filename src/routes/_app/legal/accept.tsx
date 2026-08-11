@@ -60,7 +60,7 @@ function AcceptPage() {
 	};
 
 	return (
-		<div className="container flex max-w-2xl items-center justify-center py-12 sm:py-20">
+		<div className="relative container flex max-w-2xl items-center justify-center py-12 sm:py-20">
 			<div className="bg-card w-full space-y-6 rounded-3xl border p-6 shadow-sm sm:p-10">
 				<div className="flex items-start gap-4">
 					<div className="bg-primary/10 rounded-2xl p-3">

@@ -103,7 +103,7 @@ function BrowsePage() {
 	}, [departments, areaFilter, search]);
 
 	return (
-		<div>
+		<div className="relative">
 			{/* Hero + toolbar — single tight block */}
 			<section
 				ref={deptRef}
@@ -187,10 +187,7 @@ function BrowsePage() {
 
 			{/* Hierarchy diagram — full-bleed band */}
 			<section ref={hierarchyRef} className="relative overflow-hidden py-14 sm:py-20">
-				<div className="pointer-events-none absolute inset-0 -z-10">
-					<div className="bg-muted/40 absolute inset-0" />
-					<div className="dot-pattern absolute inset-0 opacity-40" />
-				</div>
+				<div className="bg-muted/40 pointer-events-none absolute inset-0 -z-10" />
 
 				<div className="container">
 					<motion.div

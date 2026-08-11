@@ -272,7 +272,6 @@ function ContactPage() {
 
 			{/* FAQ — accordion style */}
 			<section className="full-bleed-band bg-muted/20 border-t py-16 sm:py-24">
-				<div className="dot-pattern pointer-events-none absolute inset-0 opacity-30" />
 				<motion.div
 					ref={faqRef}
 					className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8"

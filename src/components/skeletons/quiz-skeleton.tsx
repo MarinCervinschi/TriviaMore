@@ -1,12 +1,15 @@
-import { DecorativeBackground } from "@/components/layout/decorative-background";
+import { PageBand } from "@/components/layout/page-band";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { SkeletonRoot } from "./primitives";
 
 export function QuizPlaySkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento quiz…" className="flex h-screen flex-col">
-			<DecorativeBackground />
+		<SkeletonRoot
+			label="Caricamento quiz…"
+			className="relative isolate flex h-screen flex-col"
+		>
+			<PageBand />
 			{/* Header */}
 			<div className="bg-card flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
 				<div className="flex items-center gap-3">
@@ -69,8 +72,11 @@ export function QuizPlaySkeleton() {
 
 export function FlashcardSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento flashcard…" className="flex h-screen flex-col">
-			<DecorativeBackground />
+		<SkeletonRoot
+			label="Caricamento flashcard…"
+			className="relative isolate flex h-screen flex-col"
+		>
+			<PageBand />
 			{/* Header */}
 			<div className="bg-card flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
 				<div className="flex items-center gap-3">

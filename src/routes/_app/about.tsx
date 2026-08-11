@@ -121,7 +121,6 @@ function AboutPage() {
 
 			{/* Mission — full-width accent band */}
 			<section className="full-bleed-band bg-muted/30 relative border-y">
-				<div className="dot-pattern absolute inset-0 opacity-40" />
 				<motion.div
 					ref={missionRef}
 					className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
@@ -260,11 +259,6 @@ function AboutPage() {
 
 			{/* CTA — gradient card full-width */}
 			<section className="relative py-16 sm:py-24">
-				<div className="pointer-events-none absolute inset-0 -z-10">
-					<div className="bg-primary/8 absolute bottom-0 left-1/4 h-[300px] w-[300px] rounded-full blur-[100px]" />
-					<div className="absolute top-0 right-1/4 h-[250px] w-[250px] rounded-full bg-orange-300/10 blur-[80px] dark:bg-orange-500/8" />
-				</div>
-
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="border-primary/20 from-primary/5 via-card to-card relative overflow-hidden rounded-3xl border bg-gradient-to-br p-8 text-center sm:p-16">
 						<div className="bg-primary/10 pointer-events-none absolute -top-20 -left-20 h-60 w-60 rounded-full blur-[80px]" />

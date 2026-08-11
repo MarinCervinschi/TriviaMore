@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeftIcon } from "@solar-icons/react/linear/arrow-left";
 import { Link } from "@tanstack/react-router";
 
+import { PageBand } from "@/components/layout/page-band";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Logo } from "@/components/ui/logo";
 
@@ -18,13 +19,7 @@ export function AuthCard({
 	return (
 		<div className="relative flex min-h-screen items-center justify-center px-4 py-12">
 			{/* Mesh gradient background */}
-			<div className="pointer-events-none fixed inset-0 -z-10">
-				<div className="from-primary/8 via-background to-background dark:from-primary/15 dark:via-background dark:to-background absolute inset-0 bg-gradient-to-b" />
-				<div className="bg-primary/12 absolute top-1/4 -left-40 h-[500px] w-[500px] animate-pulse rounded-full blur-[120px]" />
-				<div className="absolute top-1/3 -right-32 h-[400px] w-[400px] rounded-full bg-orange-400/15 blur-[100px] dark:bg-orange-500/10" />
-				<div className="absolute bottom-1/4 left-1/3 h-[350px] w-[350px] rounded-full bg-red-300/10 blur-[90px] dark:bg-red-500/8" />
-				<div className="dot-pattern absolute inset-0" />
-			</div>
+			<PageBand level="public" />
 
 			<div className="fixed top-4 right-4 z-10">
 				<ThemeToggle className="bg-card/50 backdrop-blur-sm" />

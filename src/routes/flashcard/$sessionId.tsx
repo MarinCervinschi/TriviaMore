@@ -11,7 +11,7 @@ import {
 	FlashcardSidebar,
 	FlashcardSidebarContent,
 } from "@/components/flashcard/flashcard-sidebar";
-import { DecorativeBackground } from "@/components/layout/decorative-background";
+import { PageBand } from "@/components/layout/page-band";
 import { FlashcardSkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -118,8 +118,8 @@ function FlashcardPage() {
 	if (!session) {
 		return (
 			<>
-				<DecorativeBackground />
-				<div className="flex min-h-screen items-center justify-center">
+				<PageBand />
+				<div className="relative isolate flex min-h-screen items-center justify-center">
 					<p className="text-muted-foreground">Sessione non trovata.</p>
 				</div>
 			</>
@@ -128,8 +128,8 @@ function FlashcardPage() {
 
 	if (showResults) {
 		return (
-			<>
-				<DecorativeBackground />
+			<div className="relative isolate">
+				<PageBand />
 				<FlashcardResults
 					questions={session.questions}
 					studiedCards={studiedCards}
@@ -138,15 +138,15 @@ function FlashcardPage() {
 					onExit={() => navigate({ to: "/" })}
 					onRetry={handleRetry}
 				/>
-			</>
+			</div>
 		);
 	}
 
 	const currentQuestion = session.questions[currentIndex];
 
 	return (
-		<div className="flex h-dvh flex-col">
-			<DecorativeBackground />
+		<div className="relative isolate flex h-dvh flex-col">
+			<PageBand />
 			<FlashcardHeader
 				questionIndex={currentIndex}
 				totalQuestions={session.questions.length}

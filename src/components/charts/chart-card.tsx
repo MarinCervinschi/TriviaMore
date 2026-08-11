@@ -81,5 +81,5 @@ export function ChartEmpty({
  * paper rather than as a second set of gridlines.
  */
 export const CHART_PLOT_CLASS =
-	"chart-plot [&_.recharts-cartesian-axis-tick_text]:tabular-nums " +
+	"[&_.recharts-cartesian-axis-tick_text]:tabular-nums " +
 	"[&_.recharts-cartesian-axis-tick_text]:text-xs";

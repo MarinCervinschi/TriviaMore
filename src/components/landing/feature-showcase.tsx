@@ -256,12 +256,7 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 	return (
 		<section className="relative overflow-hidden py-20 sm:py-28">
 			{/* Background */}
-			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="bg-muted/20 absolute inset-0" />
-				<div className="dot-pattern absolute inset-0 opacity-40" />
-				<div className="bg-primary/5 absolute top-1/4 -left-40 h-[400px] w-[400px] rounded-full blur-[100px]" />
-				<div className="absolute -right-40 bottom-1/4 h-[350px] w-[350px] rounded-full bg-orange-300/8 blur-[80px]" />
-			</div>
+			<div className="bg-muted/20 pointer-events-none absolute inset-0 -z-10" />
 
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				{/* Section heading */}

@@ -1,10 +1,10 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import { LandingFooter, footerSections } from "@/components/landing";
-import { DecorativeBackground } from "@/components/layout/decorative-background";
 import { LumaSidebar } from "@/components/layout/luma-sidebar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Navbar } from "@/components/layout/navbar";
+import { PageBand } from "@/components/layout/page-band";
 import { useAuth } from "@/hooks/useAuth";
 import { getSessionFn } from "@/lib/auth/api";
 import { cn } from "@/lib/utils";
@@ -22,9 +22,8 @@ function AppLayout() {
 	const { isAuthenticated } = useAuth();
 
 	return (
-		<div className="relative flex min-h-screen flex-col">
-			<DecorativeBackground />
-
+		<div className="relative isolate flex min-h-screen flex-col">
+			<PageBand level={isAuthenticated ? "app" : "public"} />
 			{!isAuthenticated && <Navbar />}
 			{isAuthenticated && (
 				<>
