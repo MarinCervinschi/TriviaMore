@@ -141,9 +141,10 @@ export function useUpdateCourseClass(onSuccess?: () => void) {
 
 export function useCreateExamSimulationSentinel(onSuccess?: () => void) {
 	return useMutationWithToast(createExamSimulationSentinelFn, {
-		successMessage: 'Sezione "Exam Simulation" creata con successo',
+		successMessage: 'Sezione "Exam Simulation" creata',
 		invalidateKeys: [["admin", "class"], ["admin", "stats"], ["browse"]],
 		onSuccess,
+		undo: (_input, section) => deleteSectionFn({ data: { id: section.id } }),
 	});
 }
 
@@ -270,6 +271,7 @@ export function useRemoveDepartmentAdmin(onSuccess?: () => void) {
 		successMessage: "Admin dipartimento rimosso",
 		invalidateKeys: USER_INVALIDATE_KEYS,
 		onSuccess,
+		undo: input => addDepartmentAdminFn({ data: input }),
 	});
 }
 
@@ -286,6 +288,7 @@ export function useRemoveCourseMaintainer(onSuccess?: () => void) {
 		successMessage: "Maintainer corso rimosso",
 		invalidateKeys: USER_INVALIDATE_KEYS,
 		onSuccess,
+		undo: input => addCourseMaintainerFn({ data: input }),
 	});
 }
 
@@ -310,5 +313,6 @@ export function useRemoveSectionAccess(onSuccess?: () => void) {
 		successMessage: "Accesso sezione revocato",
 		invalidateKeys: USER_INVALIDATE_KEYS,
 		onSuccess,
+		undo: input => addSectionAccessFn({ data: input }),
 	});
 }

@@ -231,7 +231,7 @@ function ClassPage() {
 
 	const handleToggleSave = () => {
 		if (isSaved) {
-			removeClass.mutate(classData.id);
+			removeClass.mutate({ classId: classData.id, courseId: classData.course.id });
 		} else {
 			addClass.mutate({ classId: classData.id, courseId: classData.course.id });
 		}
