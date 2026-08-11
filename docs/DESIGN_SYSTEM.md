@@ -50,7 +50,9 @@ All colors are HSL-based CSS variables defined in `src/styles/globals.css`.
 
 | Token | Light | Dark | Usage |
 |-------|-------|------|-------|
-| `--primary` | `hsl(10 76% 42%)` / `#d14124` | same | Brand color, CTAs, accents |
+| `--primary` | `hsl(10 76% 42%)` / `#d14124` | same | Brand **surface**: `bg-primary`, `border-primary`. Never `text-primary` — see `--brand` |
+| `--brand` | `hsl(10 76% 42%)` | `hsl(10 90% 62%)` | Brand **ink**: `text-brand`. Identical to `--primary` in light; lifted in dark, where a surface value is 3.52:1 as text — per D19 |
+| `--danger` | `hsl(0 84% 47.5%)` | `hsl(0 90% 68%)` | Destructive **ink**: `text-danger`. `--destructive` stays the surface |
 | `--background` | `hsl(0 0% 100%)` | `hsl(224 71% 4%)` | Page background |
 | `--foreground` | `hsl(224 71% 4%)` | `hsl(210 20% 98%)` | Body text |
 | `--muted` | `hsl(220 14% 96%)` | `hsl(215 28% 17%)` | Subtle backgrounds |
