@@ -53,6 +53,15 @@
 	--color-heat-3: hsl(var(--heat-3));
 	--color-heat-4: hsl(var(--heat-4));
 	--color-heat-5: hsl(var(--heat-5));
+	/* The focus indicator, written once. It was seven identical inline copies across the ui/
+	   primitives — and a focus ring is the one thing that has to be verifiable in one place, since
+	   2.4.7 asks whether it is visible everywhere, not in six of seven controls. */
+	--shadow-focus: 0 0 12px hsl(var(--ring) / 0.15);
+	/* The halo behind a status dot: the status token at the alpha the changelog dots used, which
+	   were the only place in the app still writing raw rgba for a colour that has a token. */
+	--shadow-halo-success: 0 0 0 4px hsl(var(--success) / 0.15);
+	--shadow-halo-info: 0 0 0 4px hsl(var(--info) / 0.15);
+	--shadow-halo-warning: 0 0 0 4px hsl(var(--warning) / 0.15);
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
