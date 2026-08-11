@@ -716,8 +716,8 @@ function ReportEditor({
 				<ConfirmationDialog
 					open={confirmDelete}
 					onOpenChange={setConfirmDelete}
-					title="Elimina segnalazione"
-					description="Sei sicuro di voler eliminare questa segnalazione? L'operazione è irreversibile."
+					title="Eliminare la segnalazione?"
+					description="La segnalazione verrà rimossa in modo permanente."
 					confirmText="Elimina"
 					variant="destructive"
 					onConfirm={() => del.mutate({ id: requestId })}

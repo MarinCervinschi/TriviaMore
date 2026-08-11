@@ -461,8 +461,8 @@ function AdminUserDetailPage() {
 			<ConfirmationDialog
 				open={!!roleConfirm}
 				onOpenChange={open => !open && setRoleConfirm(null)}
-				title="Cambia ruolo"
-				description={`Sei sicuro di voler cambiare il ruolo di ${user.name ?? "questo utente"} a "${roleConfirm ? ROLE_LABELS[roleConfirm] : ""}"?`}
+				title="Cambiare il ruolo?"
+				description={`${user.name ?? "Questo utente"} diventerà ${roleConfirm ? ROLE_LABELS[roleConfirm] : ""}, con i permessi che il ruolo comporta.`}
 				confirmText="Conferma"
 				onConfirm={() => {
 					if (roleConfirm) updateRole.mutate({ id: userId, role: roleConfirm });

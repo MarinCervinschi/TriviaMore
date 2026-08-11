@@ -175,8 +175,8 @@ function AdminDepartmentsPage() {
 			<ConfirmationDialog
 				open={!!deleteId}
 				onOpenChange={open => !open && setDeleteId(null)}
-				title="Elimina dipartimento"
-				description="Sei sicuro di voler eliminare questo dipartimento? L'operazione è irreversibile."
+				title="Eliminare il dipartimento?"
+				description="Il dipartimento e tutti i suoi corsi verranno rimossi in modo permanente."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {

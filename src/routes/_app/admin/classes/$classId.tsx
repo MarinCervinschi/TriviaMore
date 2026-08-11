@@ -134,15 +134,12 @@ function AdminClassDetailPage() {
 	const isMaintainer = user?.role === "MAINTAINER";
 	const [createSectionOpen, setCreateSectionOpen] = useState(false);
 	const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
-	const [createExamSimulationOpen, setCreateExamSimulationOpen] = useState(false);
 
 	const updateClass = useUpdateClass();
 	const updateCourseClass = useUpdateCourseClass();
 	const createSection = useCreateSection(() => setCreateSectionOpen(false));
 	const deleteSection = useDeleteSection(() => setDeleteSectionId(null));
-	const createExamSimulation = useCreateExamSimulationSentinel(() =>
-		setCreateExamSimulationOpen(false)
-	);
+	const createExamSimulation = useCreateExamSimulationSentinel();
 
 	const { sections, courseClass, course, hasExamSimulation, ...cls } = data;
 
@@ -241,7 +238,7 @@ function AdminClassDetailPage() {
 													size="sm"
 													variant="outline"
 													className="rounded-xl"
-													onClick={() => setCreateExamSimulationOpen(true)}
+													onClick={() => createExamSimulation.mutate({ id: cls.id })}
 												>
 													<DiplomaIcon className="mr-1 h-4 w-4" />
 													Crea Exam Simulation
@@ -286,19 +283,10 @@ function AdminClassDetailPage() {
 			</Dialog>
 
 			<ConfirmationDialog
-				open={createExamSimulationOpen}
-				onOpenChange={setCreateExamSimulationOpen}
-				title='Crea sezione "Exam Simulation"'
-				description='Verrà creata la sezione sentinella "Exam Simulation" per questo insegnamento. Confermi?'
-				confirmText="Crea"
-				onConfirm={() => createExamSimulation.mutate({ id: cls.id })}
-			/>
-
-			<ConfirmationDialog
 				open={!!deleteSectionId}
 				onOpenChange={open => !open && setDeleteSectionId(null)}
-				title="Elimina sezione"
-				description="Sei sicuro di voler eliminare questa sezione? L'operazione è irreversibile."
+				title="Eliminare la sezione?"
+				description="La sezione e tutte le sue domande verranno rimosse in modo permanente."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {

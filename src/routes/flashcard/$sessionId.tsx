@@ -201,8 +201,8 @@ function FlashcardPage() {
 			<ConfirmationDialog
 				open={showExitDialog}
 				onOpenChange={setShowExitDialog}
-				title="Esci dalla Sessione"
-				description="Sei sicuro di voler uscire? I progressi della sessione verranno persi."
+				title="Uscire dalla sessione?"
+				description="I progressi di questa sessione andranno persi."
 				confirmText="Esci"
 				cancelText="Continua"
 				variant="destructive"
