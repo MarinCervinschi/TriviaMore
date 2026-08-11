@@ -21,6 +21,8 @@
 	--color-popover: hsl(var(--popover));
 	--color-popover-foreground: hsl(var(--popover-foreground));
 	--color-primary: hsl(var(--primary));
+	--color-brand: hsl(var(--brand));
+	--color-danger: hsl(var(--danger));
 	--color-primary-foreground: hsl(var(--primary-foreground));
 	--color-secondary: hsl(var(--secondary));
 	--color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -67,20 +69,30 @@
 	--popover-foreground: 224 71% 4%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
+	/* The brand and danger hues as *ink*. In light these equal their surface tokens, so nothing
+	   moves; in dark a value tuned for a surface is too dark to read as text, and one token cannot
+	   be both. `bg-primary` is the surface, `text-brand` is the ink. */
+	--brand: 10 76% 42%;
+	--danger: 0 84% 47.5%;
 	--secondary: 220 14% 96%;
 	--secondary-foreground: 224 71% 4%;
 	--muted: 220 14% 96%;
-	--muted-foreground: 220 9% 46%;
+	--muted-foreground: 220 9% 45%;
 	--accent: 220 14% 96%;
 	--accent-foreground: 224 71% 4%;
-	--destructive: 0 84% 60%;
+	--destructive: 0 84% 47.5%;
 	--destructive-foreground: 210 40% 98%;
-	/* Semantic status colours (tuned for text/badge use; auto-adapt in dark) */
-	--success: 142 72% 36%;
+	/* Measured as text rather than assumed — every one of these is read as text far more often
+	   than it is used as a fill — and measured against `bg-muted`, not the page. Muted is only 4%
+	   off white but costs ~0.4 of a ratio point, so a value tuned to exactly 4.5 on white fails the
+	   moment it lands on a tab, the admin sidebar or a stat block.
+	   --warning also moves 4 degrees toward orange: amber cannot reach 4.5:1 while staying amber,
+	   and H=34 buys the headroom while staying gold and 24 degrees clear of --primary's H=10. */
+	--success: 142 72% 29%;
 	--success-foreground: 0 0% 100%;
-	--warning: 38 92% 45%;
+	--warning: 34 92% 33.5%;
 	--warning-foreground: 0 0% 100%;
-	--info: 217 91% 52%;
+	--info: 217 91% 50.5%;
 	--info-foreground: 0 0% 100%;
 	--border: 220 13% 91%;
 	--input: 220 13% 91%;
@@ -121,6 +133,11 @@
 	--popover-foreground: 210 20% 98%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
+	/* Lifted and saturated: 6.53:1 on the page and 4.74:1 on a muted surface, against 3.52 and
+	   2.56 for the surface value. High saturation on purpose — a lighter hue reads washed out as a
+	   large fill, but vivid as text on near-black. */
+	--brand: 10 90% 62%;
+	--danger: 0 90% 68%;
 	--secondary: 215 28% 17%;
 	--secondary-foreground: 210 20% 98%;
 	--muted: 215 28% 17%;
@@ -137,7 +154,7 @@
 	--info-foreground: 224 71% 4%;
 	--border: 215 28% 17%;
 	--input: 215 28% 17%;
-	--ring: 10 76% 42%;
+	--ring: 10 76% 62%;
 	/* Same slot order, re-stepped against the dark surface rather than flipped:
 	   the dark lightness band is narrower, so these are not the light values lifted. */
 	--chart-1: 10 76% 58.5%;
