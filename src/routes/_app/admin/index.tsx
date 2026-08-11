@@ -118,7 +118,7 @@ function AdminDashboard() {
 			/>
 
 			{/* Content stats */}
-			<p className="text-primary eyebrow mb-4">Contenuti</p>
+			<p className="text-brand eyebrow mb-4">Contenuti</p>
 			<div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 				{contentCards.map(card => (
 					<StatCard
@@ -135,7 +135,7 @@ function AdminDashboard() {
 			{/* User stats */}
 			{userStats && (
 				<>
-					<p className="text-primary eyebrow mb-4">Utenti e utilizzo</p>
+					<p className="text-brand eyebrow mb-4">Utenti e utilizzo</p>
 					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 						<StatCard
 							label="Utenti totali"
@@ -181,7 +181,7 @@ function AdminDashboard() {
 			{/* My maintained courses */}
 			{(myCourses ?? []).length > 0 && (
 				<div className="mt-8">
-					<p className="text-primary eyebrow mb-4">I miei corsi mantenuti</p>
+					<p className="text-brand eyebrow mb-4">I miei corsi mantenuti</p>
 					<MaintainedCoursesTable courses={myCourses ?? []} />
 				</div>
 			)}

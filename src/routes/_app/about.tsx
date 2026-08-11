@@ -98,7 +98,7 @@ function AboutPage() {
 					animate={heroVisible ? "visible" : "hidden"}
 				>
 					<div className="mx-auto max-w-3xl text-center">
-						<motion.p className="text-primary eyebrow-lg mb-4" variants={item}>
+						<motion.p className="text-brand eyebrow-lg mb-4" variants={item}>
 							Chi siamo
 						</motion.p>
 						<motion.h1
@@ -154,7 +154,7 @@ function AboutPage() {
 									key={stat.label}
 									className="bg-card rounded-2xl border p-4 text-center sm:p-6"
 								>
-									<p className="text-primary text-2xl font-bold sm:text-3xl">
+									<p className="text-brand text-2xl font-bold sm:text-3xl">
 										{stat.value}
 									</p>
 									<p className="text-muted-foreground mt-1 text-sm">{stat.label}</p>
@@ -169,7 +169,7 @@ function AboutPage() {
 			<section className="py-16 sm:py-24">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center sm:mb-16">
-						<p className="text-primary eyebrow-lg mb-3">I nostri valori</p>
+						<p className="text-brand eyebrow-lg mb-3">I nostri valori</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 							Cosa ci guida
 						</h2>
@@ -225,7 +225,7 @@ function AboutPage() {
 			<section className="full-bleed-band bg-muted/20 border-y py-16 sm:py-24">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mb-10 text-center">
-						<p className="text-primary eyebrow-lg mb-3">Stack tecnologico</p>
+						<p className="text-brand eyebrow-lg mb-3">Stack tecnologico</p>
 						<h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
 							Costruito con tecnologie moderne
 						</h2>

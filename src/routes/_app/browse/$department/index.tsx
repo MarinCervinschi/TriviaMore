@@ -90,7 +90,7 @@ function buildColumns(deptCode: string) {
 					}}
 					className="block"
 				>
-					<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+					<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
 						{row.original.name}
 					</span>
 					{row.original.description && (
@@ -295,7 +295,7 @@ function DepartmentPage() {
 								className={cn(
 									"rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
 									typeFilter === filter.value
-										? "bg-primary/10 text-primary"
+										? "bg-primary/10 text-brand"
 										: "text-muted-foreground hover:text-foreground hover:bg-muted"
 								)}
 							>

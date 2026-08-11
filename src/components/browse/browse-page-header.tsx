@@ -33,7 +33,7 @@ export function BrowsePageHeader({
 					<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 						{Icon ? (
 							<div className="bg-primary/10 inline-flex shrink-0 rounded-2xl p-3">
-								<Icon className="text-primary h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
+								<Icon className="text-brand h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
 							</div>
 						) : (
 							<span aria-hidden />

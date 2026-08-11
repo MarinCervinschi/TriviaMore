@@ -58,7 +58,7 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
 					initial="hidden"
 					animate={headingVisible ? "visible" : "hidden"}
 				>
-					<p className="text-primary eyebrow-lg mb-3">Funzionalità</p>
+					<p className="text-brand eyebrow-lg mb-3">Funzionalità</p>
 					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 						Cosa lo rende diverso
 					</h2>

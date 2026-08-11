@@ -43,7 +43,7 @@ export function BookmarkButton({
 						}
 						className={cn(
 							"h-9 w-9 rounded-xl transition-all",
-							isBookmarked && "text-primary hover:text-primary/80",
+							isBookmarked && "text-brand hover:text-brand/80",
 							className
 						)}
 					>

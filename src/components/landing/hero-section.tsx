@@ -32,7 +32,7 @@ export function HeroSection({
 			>
 				{/* Badge */}
 				<motion.div
-					className="border-primary/20 bg-primary/5 text-primary mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
+					className="border-primary/20 bg-primary/5 text-brand mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
 				>
 					<StarsIcon className="h-4 w-4" />

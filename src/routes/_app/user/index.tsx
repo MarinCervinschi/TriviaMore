@@ -54,7 +54,7 @@ function DashboardPage() {
 				<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
 					<Avatar className="border-background ring-primary/20 h-16 w-16 shrink-0 border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
 						<AvatarImage src={profile.image ?? undefined} alt={displayName} />
-						<AvatarFallback className="bg-primary/10 text-primary text-xl font-bold sm:text-2xl">
+						<AvatarFallback className="bg-primary/10 text-brand text-xl font-bold sm:text-2xl">
 							{initials}
 						</AvatarFallback>
 					</Avatar>
@@ -63,7 +63,7 @@ function DashboardPage() {
 							Ciao, <span className="gradient-text break-words">{displayName}</span>
 						</h1>
 						<div className="mb-3 flex items-center gap-2">
-							<Badge className="border-primary/20 bg-primary/5 text-primary rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
+							<Badge className="border-primary/20 bg-primary/5 text-brand rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
 								{getRoleLabel(profile.role)}
 							</Badge>
 						</div>
@@ -190,7 +190,7 @@ const actionColorMap: Record<
 		gradient: "from-primary/5 via-card to-card",
 		orb: "bg-primary/10",
 		badge: "bg-primary/10",
-		iconColor: "text-primary",
+		iconColor: "text-brand",
 	},
 	purple: {
 		border: "border-purple-500/20",
@@ -232,7 +232,7 @@ function QuickActionCard({
 				</div>
 				<h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
 				<p className="text-muted-foreground mb-4 text-sm">{description}</p>
-				<div className="text-primary flex items-center gap-1 text-sm font-medium">
+				<div className="text-brand flex items-center gap-1 text-sm font-medium">
 					Vai
 					<ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
 				</div>
@@ -246,7 +246,7 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 		<div className="space-y-4">
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<p className="text-primary eyebrow-lg">I tuoi corsi</p>
+					<p className="text-brand eyebrow-lg">I tuoi corsi</p>
 					<h2 className="text-xl font-bold">Corsi visti recentemente</h2>
 				</div>
 				<Button asChild variant="ghost" size="sm" className="group">
@@ -283,7 +283,7 @@ const recentClassColumns = [
 				to="/browse/$department/$course/$class"
 				params={recentClassParams(row.original)}
 			>
-				<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+				<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
 					{row.original.className}
 				</span>
 				<p className="text-muted-foreground mt-0.5 text-xs">
@@ -356,7 +356,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 	return (
 		<div className="space-y-4">
 			<div>
-				<p className="text-primary eyebrow-lg">La tua attivita</p>
+				<p className="text-brand eyebrow-lg">La tua attivita</p>
 				<h2 className="text-xl font-bold">Ultimi {attempts.length} Quiz completati</h2>
 			</div>
 
@@ -374,7 +374,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 					>
 						<div className="flex items-start gap-3">
 							<div className="bg-primary/10 rounded-xl p-2">
-								<CupFirstIcon className="text-primary h-4 w-4" />
+								<CupFirstIcon className="text-brand h-4 w-4" />
 							</div>
 							<div className="min-w-0 flex-1">
 								<p className="font-medium">{attempt.sectionName}</p>

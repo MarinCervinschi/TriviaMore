@@ -15,7 +15,7 @@ function difficultyBadgeClass(difficulty: string): string {
 		case "MEDIUM":
 			return "bg-warning/10 text-warning border-warning/20";
 		case "HARD":
-			return "bg-destructive/10 text-destructive border-destructive/20";
+			return "bg-destructive/10 text-danger border-destructive/20";
 		default:
 			return "";
 	}

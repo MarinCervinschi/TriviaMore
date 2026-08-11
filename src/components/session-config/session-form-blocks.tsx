@@ -181,7 +181,7 @@ export function EvalInfoCard({ mode, className }: EvalInfoCardProps) {
 				className
 			)}
 		>
-			<InfoCircleIcon className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
+			<InfoCircleIcon className="text-brand mt-0.5 h-3.5 w-3.5 shrink-0" />
 			<p className="leading-relaxed">{mode.description}</p>
 		</div>
 	);

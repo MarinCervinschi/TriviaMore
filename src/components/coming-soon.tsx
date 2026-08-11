@@ -32,7 +32,7 @@ export function ComingSoon() {
 
 				{/* Badge */}
 				<motion.div
-					className="border-primary/20 bg-primary/5 text-primary mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
+					className="border-primary/20 bg-primary/5 text-brand mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
 				>
 					<RocketIcon className="h-4 w-4" />
@@ -69,7 +69,7 @@ export function ComingSoon() {
 							key={feature}
 							className="border-border/50 bg-card/50 text-muted-foreground rounded-full border px-3 py-1 text-sm backdrop-blur-sm"
 						>
-							<StarsIcon className="text-primary mr-1 inline h-3 w-3" />
+							<StarsIcon className="text-brand mr-1 inline h-3 w-3" />
 							{feature}
 						</span>
 					))}

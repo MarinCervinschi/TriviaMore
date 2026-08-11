@@ -30,7 +30,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 				onClick={onClose}
 				className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
 				activeProps={{
-					className: "bg-primary/10 text-primary font-semibold",
+					className: "bg-primary/10 text-brand font-semibold",
 				}}
 			>
 				{item.icon && <item.icon className="h-4 w-4" />}
@@ -48,7 +48,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 					onClick={onClose}
 					className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
 					activeProps={{
-						className: "bg-primary/10 text-primary font-semibold",
+						className: "bg-primary/10 text-brand font-semibold",
 					}}
 				>
 					{item.icon && <item.icon className="h-4 w-4" />}
@@ -64,7 +64,7 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 					onClick={onClose}
 					className="hover:bg-accent flex items-center gap-3 rounded-xl px-3 py-2.5 pl-6 text-sm font-medium transition-colors"
 					activeProps={{
-						className: "bg-primary/10 text-primary font-semibold",
+						className: "bg-primary/10 text-brand font-semibold",
 					}}
 				>
 					{child.icon && <child.icon className="h-4 w-4" />}
@@ -159,7 +159,7 @@ export function MobileMenu() {
 								logout.mutate({});
 								close();
 							}}
-							className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors"
+							className="text-danger hover:bg-destructive/10 flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors"
 						>
 							<Logout3Icon className="h-4 w-4" />
 							Esci

@@ -49,7 +49,7 @@ export function FileUploadForm({
 				{file ? (
 					<div className="space-y-2">
 						<div className="bg-primary/10 mx-auto inline-flex rounded-2xl p-3">
-							<CloudUploadIcon className="text-primary size-6" />
+							<CloudUploadIcon className="text-brand size-6" />
 						</div>
 						<p className="text-sm font-medium">{file.name}</p>
 						<p className="text-muted-foreground text-xs">{formatSize(file.size)}</p>
@@ -60,7 +60,7 @@ export function FileUploadForm({
 								onFileChange(null);
 								if (inputRef.current) inputRef.current.value = "";
 							}}
-							className="text-destructive text-xs"
+							className="text-danger text-xs"
 						>
 							Rimuovi
 						</Button>

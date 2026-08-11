@@ -34,7 +34,7 @@ function RegisterPage() {
 					Hai già un account?{" "}
 					<Link
 						to="/auth/login"
-						className="text-primary font-semibold underline-offset-4 hover:underline"
+						className="text-brand font-semibold underline-offset-4 hover:underline"
 					>
 						Accedi
 					</Link>

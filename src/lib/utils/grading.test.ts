@@ -21,7 +21,7 @@ describe("formatThirtyScaleGrade", () => {
 
 describe("getGradeColor", () => {
 	it.each([
-		[17, "text-destructive"],
+		[17, "text-danger"],
 		[18, "text-warning"],
 		[23, "text-warning"],
 		[24, "text-info"],
@@ -49,15 +49,14 @@ describe("getGradeChartColor", () => {
 	});
 
 	it("shares its band edges with getGradeColor", () => {
-		for (const score of [0, 17.9, 18, 23.9, 24, 26.9, 27, 30, 30.1]) {
-			const textBand = getGradeColor(score);
-			const chartBand = getGradeChartColor(score);
-			// Both helpers must switch band at the same scores, never one before the other.
-			expect(textBand.includes("destructive")).toBe(chartBand.includes("destructive"));
-			expect(textBand.includes("warning")).toBe(chartBand.includes("warning"));
-			expect(textBand.includes("info")).toBe(chartBand.includes("info"));
-			expect(textBand.includes("success")).toBe(chartBand.includes("success"));
-		}
+		// The invariant is that the two switch band at the same scores. It used to be checked by
+		// matching substrings, which quietly required both to be named alike — and they are not:
+		// text takes the ink token, a chart fill takes the surface one. Compare where each changes.
+		const scores = [0, 17.9, 18, 23.9, 24, 26.9, 27, 30, 30.1];
+		const edges = (f: (n: number) => string) =>
+			scores.map((score, i) => i > 0 && f(score) !== f(scores[i - 1]));
+
+		expect(edges(getGradeColor)).toEqual(edges(getGradeChartColor));
 	});
 });
 

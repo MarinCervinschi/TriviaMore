@@ -217,7 +217,7 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 				<motion.ul className="space-y-3" variants={item}>
 					{feature.highlights.map(highlight => (
 						<li key={highlight} className="flex items-start gap-3">
-							<CheckCircleIcon className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+							<CheckCircleIcon className="text-brand mt-0.5 h-5 w-5 shrink-0" />
 							<span className="text-muted-foreground">{highlight}</span>
 						</li>
 					))}
@@ -267,7 +267,7 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 					initial="hidden"
 					animate={headingVisible ? "visible" : "hidden"}
 				>
-					<motion.p className="text-primary eyebrow-lg mb-3" variants={headingItem}>
+					<motion.p className="text-brand eyebrow-lg mb-3" variants={headingItem}>
 						Funzionalita'
 					</motion.p>
 					<motion.h2

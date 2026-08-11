@@ -137,7 +137,7 @@ export function DataTable<TData extends RowData>({
 													{cloneElement(
 														link,
 														{ className: "inline-flex" } as never,
-														<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+														<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 transition-transform group-hover:translate-x-1" />
 													)}
 												</TableCell>
 											)}

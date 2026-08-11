@@ -295,7 +295,7 @@ function AdminRequestDetailPage() {
 }
 
 function SectionLabel({ children }: { children: ReactNode }) {
-	return <h3 className="text-primary eyebrow px-1">{children}</h3>;
+	return <h3 className="text-brand eyebrow px-1">{children}</h3>;
 }
 
 // ─── Material preview (the content under review, without the user's words) ───

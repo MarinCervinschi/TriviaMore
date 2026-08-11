@@ -64,7 +64,7 @@ function VerifyEmailPage() {
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
-					<div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-2xl">
+					<div className="bg-primary/10 text-brand flex h-16 w-16 items-center justify-center rounded-2xl">
 						<LetterOpenedIcon className="h-8 w-8" />
 					</div>
 				</div>
@@ -112,7 +112,7 @@ function VerifyEmailPage() {
 				<p className="text-muted-foreground text-center text-sm">
 					<Link
 						to="/auth/login"
-						className="text-primary font-semibold underline-offset-4 hover:underline"
+						className="text-brand font-semibold underline-offset-4 hover:underline"
 					>
 						Torna al login
 					</Link>

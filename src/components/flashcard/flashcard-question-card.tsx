@@ -55,7 +55,7 @@ export function FlashcardQuestionCard({
 				{/* Back */}
 				<div className="border-primary/20 from-primary/5 via-card to-card absolute inset-0 max-h-[80vh] min-h-[400px] [transform:rotateY(180deg)] overflow-y-auto rounded-2xl border bg-gradient-to-br p-6 wrap-anywhere shadow-sm [backface-visibility:hidden] sm:p-8">
 					<div className="flex items-center justify-between pb-6">
-						<span className="text-primary text-sm font-medium">Risposta</span>
+						<span className="text-brand text-sm font-medium">Risposta</span>
 						<div className="flex items-center gap-1">
 							<BookmarkButton questionId={question.id} />
 							<ReportButton

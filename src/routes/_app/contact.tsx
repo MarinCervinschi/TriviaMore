@@ -82,7 +82,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 		<div className="border-border/50 border-b last:border-0">
 			<button
 				onClick={() => setOpen(!open)}
-				className="hover:text-primary flex w-full items-center justify-between py-5 text-left transition-colors"
+				className="hover:text-brand flex w-full items-center justify-between py-5 text-left transition-colors"
 			>
 				<span className="pr-4 font-semibold">{q}</span>
 				<AltArrowDownIcon
@@ -130,7 +130,7 @@ function ContactPage() {
 					animate={heroVisible ? "visible" : "hidden"}
 				>
 					<div className="mx-auto max-w-3xl text-center">
-						<motion.p className="text-primary eyebrow-lg mb-4" variants={item}>
+						<motion.p className="text-brand eyebrow-lg mb-4" variants={item}>
 							Contatti
 						</motion.p>
 						<motion.h1
@@ -203,7 +203,7 @@ function ContactPage() {
 								<div className="relative">
 									<div className="mb-6 flex items-center gap-3">
 										<div className="bg-primary/10 inline-flex rounded-xl p-3">
-											<Plane2Icon className="text-primary h-5 w-5" />
+											<Plane2Icon className="text-brand h-5 w-5" />
 										</div>
 										<div>
 											<h2 className="text-xl font-semibold tracking-tight">
@@ -280,7 +280,7 @@ function ContactPage() {
 					animate={faqVisible ? "visible" : "hidden"}
 				>
 					<div className="mb-12 text-center">
-						<p className="text-primary eyebrow-lg mb-3">FAQ</p>
+						<p className="text-brand eyebrow-lg mb-3">FAQ</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 							Domande frequenti
 						</h2>

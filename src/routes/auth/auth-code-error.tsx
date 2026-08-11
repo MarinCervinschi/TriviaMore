@@ -16,7 +16,7 @@ function AuthCodeErrorPage() {
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
-					<div className="bg-destructive/10 text-destructive flex h-16 w-16 items-center justify-center rounded-2xl">
+					<div className="bg-destructive/10 text-danger flex h-16 w-16 items-center justify-center rounded-2xl">
 						<DangerCircleIcon className="h-8 w-8" />
 					</div>
 				</div>

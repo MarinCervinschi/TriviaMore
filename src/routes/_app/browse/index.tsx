@@ -116,7 +116,7 @@ function BrowsePage() {
 					animate={deptVisible ? "visible" : "hidden"}
 				>
 					<div className="bg-primary/10 mb-4 inline-flex rounded-2xl p-3">
-						<CompassIcon className="text-primary h-7 w-7" />
+						<CompassIcon className="text-brand h-7 w-7" />
 					</div>
 					<h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
 						Esplora UNIMORE
@@ -196,7 +196,7 @@ function BrowsePage() {
 						animate={hierarchyVisible ? "visible" : "hidden"}
 						className="mx-auto mb-10 max-w-2xl text-center"
 					>
-						<p className="text-primary eyebrow mb-2">Come è organizzato</p>
+						<p className="text-brand eyebrow mb-2">Come è organizzato</p>
 						<h2 className="mb-3 text-2xl font-bold tracking-tight sm:text-3xl">
 							Dal dipartimento al singolo argomento
 						</h2>
@@ -218,7 +218,7 @@ function BrowsePage() {
 					animate={dataVisible ? "visible" : "hidden"}
 					className="mb-8"
 				>
-					<p className="text-primary eyebrow mb-2">Dati e statistiche</p>
+					<p className="text-brand eyebrow mb-2">Dati e statistiche</p>
 					<div className="flex flex-wrap items-end justify-between gap-3">
 						<h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
 							Uno sguardo d&apos;insieme
@@ -357,8 +357,8 @@ function TopClassesStrip({
 			<div className="from-primary/5 to-primary/0 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br via-transparent" />
 			<div className="mb-4 flex items-baseline justify-between gap-3">
 				<div className="flex items-center gap-2">
-					<CupFirstIcon className="text-primary h-4 w-4" />
-					<p className="text-primary eyebrow">Insegnamenti più contribuiti</p>
+					<CupFirstIcon className="text-brand h-4 w-4" />
+					<p className="text-brand eyebrow">Insegnamenti più contribuiti</p>
 				</div>
 				<p className="text-muted-foreground text-xs">Per numero di sezioni</p>
 			</div>
@@ -385,7 +385,7 @@ function TopClassesStrip({
 										aria-hidden
 									/>
 								)}
-								<p className="text-foreground group-hover:text-primary min-w-0 flex-1 truncate text-sm font-semibold transition-colors">
+								<p className="text-foreground group-hover:text-brand min-w-0 flex-1 truncate text-sm font-semibold transition-colors">
 									{cls.name}
 								</p>
 								<span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-xs sm:inline-flex">
@@ -402,7 +402,7 @@ function TopClassesStrip({
 									</span>
 									<span className="hidden sm:inline">dom.</span>
 								</span>
-								<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-primary h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" />
+								<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" />
 							</Link>
 						</li>
 					);
@@ -430,7 +430,7 @@ function AreaPill({
 			className={cn(
 				"inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
 				active
-					? "bg-primary/10 text-primary ring-primary/30 ring-1"
+					? "bg-primary/10 text-brand ring-primary/30 ring-1"
 					: "text-muted-foreground hover:text-foreground hover:bg-muted"
 			)}
 		>

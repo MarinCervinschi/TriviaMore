@@ -332,7 +332,7 @@ function NodeCard({
 					)}
 				</Button>
 			) : (
-				<div className="text-primary mt-2 text-xs">Clicca per fissare →</div>
+				<div className="text-brand mt-2 text-xs">Clicca per fissare →</div>
 			)}
 		</div>
 	);

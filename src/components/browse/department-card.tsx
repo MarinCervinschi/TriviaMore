@@ -106,7 +106,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 
 				{/* Body */}
 				<div className="flex flex-1 flex-col gap-2.5 p-5">
-					<h3 className="text-foreground group-hover:text-primary line-clamp-2 text-base leading-tight font-bold tracking-tight transition-colors sm:text-lg">
+					<h3 className="text-foreground group-hover:text-brand line-clamp-2 text-base leading-tight font-bold tracking-tight transition-colors sm:text-lg">
 						{department.name}
 					</h3>
 					{department.description && (

@@ -58,7 +58,7 @@ export function DepartmentMap({ locations }: { locations: DepartmentLocation[] }
 		<Card className="mb-6 overflow-hidden">
 			<CardHeader className="pb-2">
 				<CardTitle className="flex items-center gap-2 text-base">
-					<MapPointIcon className="text-primary h-4 w-4" />
+					<MapPointIcon className="text-brand h-4 w-4" />
 					Sedi
 				</CardTitle>
 			</CardHeader>

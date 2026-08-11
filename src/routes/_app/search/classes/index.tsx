@@ -75,7 +75,7 @@ const columns = [
 				}}
 				className="block"
 			>
-				<span className="text-foreground group-hover:text-primary block font-medium transition-colors">
+				<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
 					{row.original.name}
 				</span>
 				{row.original.description && (
@@ -363,7 +363,7 @@ function SearchClassesPage() {
 				{!hasFilters ? (
 					<div className="bg-card rounded-2xl border p-12 text-center">
 						<div className="bg-primary/10 mx-auto mb-4 inline-flex rounded-2xl p-3">
-							<MagnifierIcon className="text-primary h-6 w-6" />
+							<MagnifierIcon className="text-brand h-6 w-6" />
 						</div>
 						<h3 className="text-lg font-semibold">Inizia a cercare</h3>
 						<p className="text-muted-foreground mt-1 text-sm">

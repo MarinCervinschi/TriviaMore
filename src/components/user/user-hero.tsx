@@ -23,7 +23,7 @@ export function UserHero({
 				) : (
 					<>
 						<div className="bg-primary/10 mb-3 inline-flex rounded-2xl p-3">
-							<Icon className="text-primary h-7 w-7" />
+							<Icon className="text-brand h-7 w-7" />
 						</div>
 						<h1 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
 							{title}

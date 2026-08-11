@@ -139,7 +139,7 @@ function UserContributionsPage() {
 					<InfoCircleIcon className="size-4 shrink-0 text-blue-500" />
 					<p className="text-muted-foreground text-xs">
 						Per segnalare bug o fare richieste particolari, visita la pagina{" "}
-						<Link to="/contact" className="text-primary font-medium hover:underline">
+						<Link to="/contact" className="text-brand font-medium hover:underline">
 							Contatti
 						</Link>
 						.
@@ -532,7 +532,7 @@ function RevisionQuestionEditor({
 						onClick={onRemove}
 						aria-label={`Rimuovi la domanda ${index + 1}`}
 					>
-						<TrashBinMinimalisticIcon className="text-destructive size-3" />
+						<TrashBinMinimalisticIcon className="text-danger size-3" />
 					</Button>
 				)}
 			</div>
@@ -706,7 +706,7 @@ function ReportEditor({
 					<Button
 						size="sm"
 						variant="outline"
-						className="text-destructive hover:text-destructive gap-1.5 rounded-xl"
+						className="text-danger hover:text-danger gap-1.5 rounded-xl"
 						onClick={() => setConfirmDelete(true)}
 					>
 						<TrashBinMinimalisticIcon className="size-3.5" />
@@ -728,7 +728,7 @@ function ReportEditor({
 
 	return (
 		<div className="border-primary/20 bg-primary/5 space-y-4 rounded-2xl border p-5">
-			<p className="text-primary text-xs font-semibold">Modifica la segnalazione</p>
+			<p className="text-brand text-xs font-semibold">Modifica la segnalazione</p>
 
 			<div className="space-y-2">
 				{REPORT_REASON_OPTIONS.map(reason => {

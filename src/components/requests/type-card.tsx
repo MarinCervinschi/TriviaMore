@@ -27,7 +27,7 @@ export function TypeCard({
 		>
 			<div className={cn("rounded-xl p-2", selected ? "bg-primary/10" : "bg-muted")}>
 				<Icon
-					className={cn("size-5", selected ? "text-primary" : "text-muted-foreground")}
+					className={cn("size-5", selected ? "text-brand" : "text-muted-foreground")}
 				/>
 			</div>
 			<div>

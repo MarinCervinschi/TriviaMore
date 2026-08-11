@@ -34,7 +34,7 @@ export function LogoIcon({ className, size = 24 }: LogoIconProps) {
 			width={size}
 			height={size}
 			fill="none"
-			className={cn("text-primary", className)}
+			className={cn("text-brand", className)}
 		>
 			{/* Brain/question paths */}
 			<path

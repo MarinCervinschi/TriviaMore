@@ -26,7 +26,7 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
 					<Button
 						variant="ghost"
 						size="sm"
-						className="text-primary h-auto px-2 py-1 text-xs"
+						className="text-brand h-auto px-2 py-1 text-xs"
 						onClick={() => markAllRead.mutate()}
 						disabled={markAllRead.isPending}
 					>

@@ -26,7 +26,7 @@ export function LegalHero({
 	return (
 		<div className="space-y-4">
 			<div className="bg-primary/10 inline-flex h-12 w-12 items-center justify-center rounded-2xl">
-				<Icon className="text-primary h-6 w-6" />
+				<Icon className="text-brand h-6 w-6" />
 			</div>
 			<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
 			<p className="text-muted-foreground max-w-2xl text-sm leading-relaxed sm:text-base">

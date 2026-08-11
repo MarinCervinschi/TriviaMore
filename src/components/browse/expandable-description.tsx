@@ -66,7 +66,7 @@ export function ExpandableDescription({
 					type="button"
 					onClick={() => setIsExpanded(v => !v)}
 					aria-expanded={isExpanded}
-					className="text-primary hover:text-primary/80 focus-visible:ring-ring focus-visible:ring-offset-background mt-2 inline-flex items-center gap-1 rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+					className="text-brand hover:text-brand/80 focus-visible:ring-ring focus-visible:ring-offset-background mt-2 inline-flex items-center gap-1 rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
 				>
 					{isExpanded ? "Mostra meno" : "Mostra di più"}
 					<AltArrowDownIcon

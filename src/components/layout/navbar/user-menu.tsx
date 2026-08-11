@@ -62,7 +62,7 @@ export function UserMenu() {
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={() => logout.mutate({})}
-					className="text-destructive focus:text-destructive"
+					className="text-danger focus:text-danger"
 				>
 					<Logout3Icon className="mr-2 h-4 w-4" />
 					Esci

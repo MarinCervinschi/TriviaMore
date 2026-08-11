@@ -102,7 +102,7 @@ export const LOcchiello: Story = {
 			</p>
 			<div className="space-y-6">
 				<div>
-					<p className="text-primary eyebrow-lg">I nostri valori</p>
+					<p className="text-brand eyebrow-lg">I nostri valori</p>
 					<h2 className="mt-1 text-3xl font-bold tracking-tight">Cosa ci guida</h2>
 					<code className="text-muted-foreground/60 mt-2 block text-xs">
 						eyebrow-lg — aperture di sezione sulle pagine pubbliche

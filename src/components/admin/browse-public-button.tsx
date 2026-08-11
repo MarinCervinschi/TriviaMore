@@ -12,7 +12,7 @@ export function BrowsePublicButton({ to, params }: BrowsePublicButtonProps) {
 	return (
 		<Button variant="outline" size="sm" className="rounded-xl" asChild>
 			<Link to={to} params={params}>
-				<EyeIcon className="text-primary mr-1.5 h-4 w-4" />
+				<EyeIcon className="text-brand mr-1.5 h-4 w-4" />
 				Vedi pubblica
 			</Link>
 		</Button>

@@ -41,7 +41,7 @@ export const Default: Story = {
 				<DropdownMenuItem>Duplica</DropdownMenuItem>
 				<DropdownMenuItem>Sposta in un'altra classe</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className="text-destructive">
+				<DropdownMenuItem className="text-danger">
 					Elimina
 					<DropdownMenuShortcut>⌫</DropdownMenuShortcut>
 				</DropdownMenuItem>

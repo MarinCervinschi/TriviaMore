@@ -20,9 +20,9 @@ const typeConfig: Record<Notification["type"], { icon: Icon; color: string }> = 
 	NEW_REQUEST_RECEIVED: { icon: InboxIcon, color: "text-blue-500" },
 	REQUEST_NEEDS_REVISION: { icon: PenNewSquareIcon, color: "text-amber-500" },
 	REQUEST_REVISED: { icon: RefreshIcon, color: "text-purple-500" },
-	CONTENT_UPDATED: { icon: StarsIcon, color: "text-primary" },
-	NEW_SECTION_ADDED: { icon: ChatSquareIcon, color: "text-primary" },
-	MAINTAINER_ASSIGNED: { icon: DiplomaIcon, color: "text-primary" },
+	CONTENT_UPDATED: { icon: StarsIcon, color: "text-brand" },
+	NEW_SECTION_ADDED: { icon: ChatSquareIcon, color: "text-brand" },
+	MAINTAINER_ASSIGNED: { icon: DiplomaIcon, color: "text-brand" },
 };
 
 function timeAgo(dateStr: string): string {

@@ -31,7 +31,7 @@ function LoginPage() {
 					Non hai un account?{" "}
 					<Link
 						to="/auth/register"
-						className="text-primary font-semibold underline-offset-4 hover:underline"
+						className="text-brand font-semibold underline-offset-4 hover:underline"
 					>
 						Registrati
 					</Link>

@@ -89,7 +89,7 @@ export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
 
 				<div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
 					<article className="min-w-0">
-						<div className="prose prose-sm prose-headings:scroll-mt-24 prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:text-xl prose-h2:font-bold prose-h2:border-b prose-h2:border-border/60 prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-base prose-h3:font-semibold prose-p:leading-relaxed prose-p:text-base prose-a:text-primary prose-a:underline-offset-2 hover:prose-a:text-primary/80 prose-strong:text-foreground prose-li:marker:text-primary/70 first:prose-p:text-base first:prose-p:text-muted-foreground first:prose-p:leading-relaxed max-w-none">
+						<div className="prose prose-sm prose-headings:scroll-mt-24 prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:text-xl prose-h2:font-bold prose-h2:border-b prose-h2:border-border/60 prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-base prose-h3:font-semibold prose-p:leading-relaxed prose-p:text-base prose-a:text-brand prose-a:underline-offset-2 hover:prose-a:text-brand/80 prose-strong:text-foreground prose-li:marker:text-brand/70 first:prose-p:text-base first:prose-p:text-muted-foreground first:prose-p:leading-relaxed max-w-none">
 							<ReactMarkdown
 								remarkPlugins={[remarkGfm]}
 								components={{
