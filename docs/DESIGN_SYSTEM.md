@@ -38,6 +38,7 @@
 | Display font | DM Serif Display (400) | `--font-display` → `font-display`; L2 display headings only, and never with `font-bold` |
 | Mono font | DM Mono (400) | `--font-mono`; code and identifiers only. Figures use `tabular-nums` — per D17 |
 | Type scale | `text-2xs` … `text-7xl` | `text-2xs` (10/14) is the floor; a `text-[Npx]` anywhere is a leak. The overline is the `eyebrow` / `eyebrow-lg` utility — per D16 |
+| Background | `<PageBand />` | The app's only texture, mounted **once** in the `_app` shell so it spans the sidebar gutter; `level` follows `isAuthenticated`. Dots plus one soft top-left orb, in two layers. `level="public"` is the same band with `--dot-alpha` and `--glow-alpha` turned up — not a second system. Anything sitting over the band must be **opaque** — a translucent surface gets tinted by the light. `level="public"` is the same band with `--beam-alpha` and `--dot-alpha` turned up. Everything below a band is flat — per D12/D13/D18 |
 
 ---
 
