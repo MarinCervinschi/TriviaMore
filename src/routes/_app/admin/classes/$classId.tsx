@@ -15,7 +15,6 @@ import { ClassForm } from "@/components/admin/forms/class-form";
 import { SectionForm } from "@/components/admin/forms/section-form";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableFilterField,
@@ -33,6 +32,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useAuth } from "@/hooks/useAuth";
 import {
 	useCreateExamSimulationSentinel,
@@ -257,11 +257,11 @@ function AdminClassDetailPage() {
 								/>
 							}
 							empty={
-								<DataTableEmpty>
+								<InlineEmpty>
 									{search.q
 										? "Nessuna sezione trovata."
 										: "Nessuna sezione in questo insegnamento."}
-								</DataTableEmpty>
+								</InlineEmpty>
 							}
 						/>
 					</CardContent>

@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
-import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartCard, type ChartCardProps } from "./chart-card";
 import { HEAT_EMPTY, HEAT_LEGEND, heatColor } from "./heat-scale";
 
 export type CalendarDatum = {
@@ -95,7 +96,7 @@ export function CalendarHeatmap({
 	if (!grid) {
 		return (
 			<ChartCard {...card}>
-				<ChartEmpty message={emptyMessage} />
+				<InlineEmpty>{emptyMessage}</InlineEmpty>
 			</ChartCard>
 		);
 	}

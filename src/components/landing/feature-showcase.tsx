@@ -258,7 +258,7 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 			{/* Background */}
 			<div className="bg-muted/20 pointer-events-none absolute inset-0 -z-10" />
 
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="container">
 				{/* Section heading */}
 				<motion.div
 					ref={headingRef}

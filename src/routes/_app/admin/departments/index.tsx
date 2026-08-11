@@ -11,7 +11,6 @@ import { AdminRowActions } from "@/components/admin/admin-row-actions";
 import { DepartmentForm } from "@/components/admin/forms/department-form";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableSearchFields,
@@ -28,6 +27,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useCreateDepartment, useDeleteDepartment } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import type { AdminDepartment } from "@/lib/admin/types";
@@ -150,11 +150,11 @@ function AdminDepartmentsPage() {
 							/>
 						}
 						empty={
-							<DataTableEmpty>
+							<InlineEmpty>
 								{search.q
 									? "Nessun dipartimento trovato."
 									: "Nessun dipartimento. Crea il primo!"}
-							</DataTableEmpty>
+							</InlineEmpty>
 						}
 					/>
 				</CardContent>

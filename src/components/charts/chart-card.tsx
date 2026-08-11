@@ -68,14 +68,6 @@ export function ChartCard({
 	);
 }
 
-export function ChartEmpty({
-	message = "Nessun dato da mostrare.",
-}: {
-	message?: string;
-}) {
-	return <p className="text-muted-foreground py-10 text-center text-sm">{message}</p>;
-}
-
 /**
  * Shared plot chrome: the page's own dot grid, held far back so it reads as
  * paper rather than as a second set of gridlines.

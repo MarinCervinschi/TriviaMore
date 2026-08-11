@@ -50,7 +50,7 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
 			{/* Background */}
 			<div className="bg-muted/30 pointer-events-none absolute inset-0 -z-10" />
 
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="container">
 				<motion.div
 					ref={headingRef}
 					className="mb-16 text-center"

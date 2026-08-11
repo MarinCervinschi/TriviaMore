@@ -121,7 +121,7 @@ export function BenefitsSection({
 
 	return (
 		<section className="relative py-20 sm:py-28">
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="container">
 				{/* Benefits */}
 				<div className="mb-20 grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
 					<motion.div

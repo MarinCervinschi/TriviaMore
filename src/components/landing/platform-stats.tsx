@@ -145,7 +145,7 @@ export function PlatformStatsSection({ stats }: { stats: PlatformStats }) {
 
 	return (
 		<section className="relative overflow-hidden py-20 sm:py-28">
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="container">
 				<motion.div
 					ref={headingRef}
 					className="mb-16 text-center"

@@ -9,7 +9,6 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminRowActions } from "@/components/admin/admin-row-actions";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableFilterField,
@@ -20,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useDeleteUser } from "@/lib/admin/mutations";
 import { adminQueries } from "@/lib/admin/queries";
 import type { AdminUser } from "@/lib/admin/types";
@@ -184,11 +184,11 @@ function AdminUsersPage() {
 							/>
 						}
 						empty={
-							<DataTableEmpty>
+							<InlineEmpty>
 								{search.q || search.role
 									? "Nessun utente trovato."
 									: "Nessun utente registrato."}
-							</DataTableEmpty>
+							</InlineEmpty>
 						}
 					/>
 				</CardContent>
