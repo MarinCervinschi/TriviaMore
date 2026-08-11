@@ -25,7 +25,7 @@ export function QuizHeader({
 	onExit: () => void;
 }) {
 	return (
-		<header className="border-border/50 bg-background/70 flex items-center justify-between border-b px-4 py-4 backdrop-blur-xl">
+		<header className="border-border/50 bg-background flex items-center justify-between border-b px-4 py-4 backdrop-blur-xl">
 			<div className="flex items-center gap-3">
 				<Button
 					variant="ghost"

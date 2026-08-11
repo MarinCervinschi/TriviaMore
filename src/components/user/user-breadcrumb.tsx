@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 
 export function UserBreadcrumb({ current }: { current: string }) {
 	return (
-		<nav className="bg-background/70 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm backdrop-blur-sm">
+		<nav className="bg-background inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm backdrop-blur-sm">
 			<Link
 				to="/user"
 				className="text-muted-foreground hover:text-foreground flex items-center gap-1"

@@ -21,7 +21,7 @@ export function FlashcardNavigation({
 	const isLast = currentIndex === totalQuestions - 1;
 
 	return (
-		<div className="border-border/50 bg-background/70 flex items-center justify-between gap-2 border-t px-3 py-3 backdrop-blur-xl sm:px-4">
+		<div className="border-border/50 bg-background flex items-center justify-between gap-2 border-t px-3 py-3 backdrop-blur-xl sm:px-4">
 			<Button
 				variant="outline"
 				onClick={onPrevious}

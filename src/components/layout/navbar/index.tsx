@@ -136,7 +136,7 @@ export function Navbar() {
 	const navItems = useNavItems();
 
 	return (
-		<header className="border-border/50 bg-background/70 sticky top-0 z-50 w-full border-b backdrop-blur-xl">
+		<header className="border-border/50 bg-background sticky top-0 z-50 w-full border-b backdrop-blur-xl">
 			<div className="container flex h-16 items-center">
 				<NavLogo />
 
