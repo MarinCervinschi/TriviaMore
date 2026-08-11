@@ -1,6 +1,7 @@
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { formatNumber } from "@/lib/utils/format";
 
-import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartCard, type ChartCardProps } from "./chart-card";
 import { HEAT_EMPTY, HEAT_LEGEND, heatColor } from "./heat-scale";
 
 const cellKey = (row: string, column: string) => `${row}\u0000${column}`;
@@ -40,7 +41,7 @@ export function MatrixHeatmap({
 	if (rows.length === 0 || columns.length === 0) {
 		return (
 			<ChartCard {...card}>
-				<ChartEmpty message={emptyMessage} />
+				<InlineEmpty>{emptyMessage}</InlineEmpty>
 			</ChartCard>
 		);
 	}

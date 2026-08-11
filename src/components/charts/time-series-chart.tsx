@@ -17,15 +17,11 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
-import {
-	CHART_PLOT_CLASS,
-	ChartCard,
-	type ChartCardProps,
-	ChartEmpty,
-} from "./chart-card";
+import { CHART_PLOT_CLASS, ChartCard, type ChartCardProps } from "./chart-card";
 import { AreaFadeDefs } from "./chart-defs";
 import { CHART_SURFACE, type ChartSeries, seriesConfig } from "./palette";
 
@@ -109,7 +105,7 @@ export function TimeSeriesChart<TDatum>({
 
 	const body =
 		data.length === 0 ? (
-			<ChartEmpty message={emptyMessage} />
+			<InlineEmpty>{emptyMessage}</InlineEmpty>
 		) : (
 			<ChartContainer
 				config={config}

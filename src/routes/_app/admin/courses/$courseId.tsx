@@ -13,7 +13,6 @@ import { ClassForm } from "@/components/admin/forms/class-form";
 import { CourseForm } from "@/components/admin/forms/course-form";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableSearchFields,
@@ -30,6 +29,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useAuth } from "@/hooks/useAuth";
 import { addClassToCourseFn, createClassFn } from "@/lib/admin/api";
 import { useDeleteClass, useUpdateCourse } from "@/lib/admin/mutations";
@@ -209,11 +209,11 @@ function AdminCourseDetailPage() {
 								/>
 							}
 							empty={
-								<DataTableEmpty>
+								<InlineEmpty>
 									{search.q
 										? "Nessun insegnamento trovato."
 										: "Nessun insegnamento in questo corso."}
-								</DataTableEmpty>
+								</InlineEmpty>
 							}
 						/>
 					</CardContent>

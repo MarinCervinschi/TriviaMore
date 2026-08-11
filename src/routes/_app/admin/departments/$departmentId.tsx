@@ -12,7 +12,6 @@ import { CourseForm } from "@/components/admin/forms/course-form";
 import { DepartmentForm } from "@/components/admin/forms/department-form";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableFilterField,
@@ -30,6 +29,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import {
 	useCreateCourse,
 	useDeleteCourse,
@@ -203,11 +203,11 @@ function AdminDepartmentDetailPage() {
 								/>
 							}
 							empty={
-								<DataTableEmpty>
+								<InlineEmpty>
 									{search.q
 										? "Nessun corso trovato."
 										: "Nessun corso in questo dipartimento."}
-								</DataTableEmpty>
+								</InlineEmpty>
 							}
 						/>
 					</CardContent>

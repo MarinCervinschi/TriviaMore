@@ -8,9 +8,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { formatNumber } from "@/lib/utils/format";
 
-import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartCard, type ChartCardProps } from "./chart-card";
 import { ChartDefs, seriesFill } from "./chart-defs";
 import { CHART_NEUTRAL, chartColor } from "./palette";
 
@@ -64,7 +65,7 @@ export function DonutChart({
 	if (data.length === 0) {
 		return (
 			<ChartCard {...card}>
-				<ChartEmpty message={emptyMessage} />
+				<InlineEmpty>{emptyMessage}</InlineEmpty>
 			</ChartCard>
 		);
 	}

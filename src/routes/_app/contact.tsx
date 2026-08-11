@@ -124,7 +124,7 @@ function ContactPage() {
 			<section className="relative py-16 sm:py-24">
 				<motion.div
 					ref={heroRef}
-					className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+					className="container"
 					variants={container}
 					initial="hidden"
 					animate={heroVisible ? "visible" : "hidden"}
@@ -153,7 +153,7 @@ function ContactPage() {
 			<section className="full-bleed-band bg-muted/20 border-y">
 				<motion.div
 					ref={linksRef}
-					className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+					className="container"
 					variants={container}
 					initial="hidden"
 					animate={linksVisible ? "visible" : "hidden"}
@@ -189,7 +189,7 @@ function ContactPage() {
 			<section className="py-16 sm:py-24">
 				<motion.div
 					ref={formRef}
-					className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+					className="container"
 					variants={container}
 					initial="hidden"
 					animate={formVisible ? "visible" : "hidden"}

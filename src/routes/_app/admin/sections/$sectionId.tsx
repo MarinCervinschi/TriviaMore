@@ -13,7 +13,6 @@ import { BrowsePublicButton } from "@/components/admin/browse-public-button";
 import { SectionForm } from "@/components/admin/forms/section-form";
 import {
 	DataTable,
-	DataTableEmpty,
 	DataTableToolbar,
 	createDataTableColumns,
 	dataTableFilterField,
@@ -25,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import {
 	Select,
 	SelectContent,
@@ -371,11 +371,11 @@ function AdminSectionDetailPage() {
 								/>
 							}
 							empty={
-								<DataTableEmpty>
+								<InlineEmpty>
 									{search.q
 										? "Nessuna domanda trovata."
 										: "Nessuna domanda in questa sezione."}
-								</DataTableEmpty>
+								</InlineEmpty>
 							}
 						/>
 					</CardContent>

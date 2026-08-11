@@ -8,9 +8,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { formatNumber } from "@/lib/utils/format";
 
-import { ChartCard, type ChartCardProps, ChartEmpty } from "./chart-card";
+import { ChartCard, type ChartCardProps } from "./chart-card";
 import { ChartDefs, seriesFill } from "./chart-defs";
 import { chartColor } from "./palette";
 
@@ -50,7 +51,7 @@ export function FunnelChart({
 
 	const body =
 		stages.length === 0 ? (
-			<ChartEmpty message={emptyMessage} />
+			<InlineEmpty>{emptyMessage}</InlineEmpty>
 		) : (
 			<ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
 				<RechartsFunnelChart margin={{ left: 8, right: 8 }}>

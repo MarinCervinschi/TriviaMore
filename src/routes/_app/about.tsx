@@ -92,7 +92,7 @@ function AboutPage() {
 			<section className="relative py-16 sm:py-24">
 				<motion.div
 					ref={heroRef}
-					className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+					className="container"
 					variants={container}
 					initial="hidden"
 					animate={heroVisible ? "visible" : "hidden"}
@@ -123,7 +123,7 @@ function AboutPage() {
 			<section className="full-bleed-band bg-muted/30 relative border-y">
 				<motion.div
 					ref={missionRef}
-					className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
+					className="container py-16 sm:py-24"
 					variants={fadeUp}
 					initial="hidden"
 					animate={missionVisible ? "visible" : "hidden"}
@@ -167,7 +167,7 @@ function AboutPage() {
 
 			{/* Values — Bento grid */}
 			<section className="py-16 sm:py-24">
-				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="container">
 					<div className="mb-12 text-center sm:mb-16">
 						<p className="text-brand eyebrow-lg mb-3">I nostri valori</p>
 						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -223,7 +223,7 @@ function AboutPage() {
 
 			{/* Tech Stack — Orbiting animation */}
 			<section className="full-bleed-band bg-muted/20 border-y py-16 sm:py-24">
-				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="container">
 					<div className="mb-10 text-center">
 						<p className="text-brand eyebrow-lg mb-3">Stack tecnologico</p>
 						<h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -259,7 +259,7 @@ function AboutPage() {
 
 			{/* CTA — gradient card full-width */}
 			<section className="relative py-16 sm:py-24">
-				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="container">
 					<div className="border-primary/20 from-primary/5 via-card to-card relative overflow-hidden rounded-3xl border bg-gradient-to-br p-8 text-center sm:p-16">
 						<div className="bg-primary/10 pointer-events-none absolute -top-20 -left-20 h-60 w-60 rounded-full blur-[80px]" />
 						<div className="pointer-events-none absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-orange-300/10 blur-[80px]" />

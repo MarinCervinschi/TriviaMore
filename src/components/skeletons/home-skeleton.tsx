@@ -11,7 +11,7 @@ export function PlatformStatsSectionSkeleton() {
 		>
 			{/* Decorative orbs — match PlatformStatsSection */}
 
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="container">
 				<div className="mb-16 space-y-3 text-center">
 					<Skeleton className="mx-auto h-4 w-56 rounded-md" />
 					<Skeleton className="mx-auto h-9 w-2/3 max-w-xl sm:h-10" />
