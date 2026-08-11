@@ -699,6 +699,57 @@ is the invariant it always meant.
 
 ---
 
+## D20 — Undo for the reversible, confirmation for the rare
+
+**Decided and implemented 2026-08-11, closing #154.** The app had **no undo anywhere** and eleven
+confirmation dialogs, two of which were guarding reversible actions — which is exactly what wears a
+confirmation out. A dialog's power is its rarity: shown often it becomes background noise and stops
+being read, and then it is useless at the one place it matters.
+
+**Undo is a toast that carries its own reversal.** `toastUndo` in `src/lib/toast.ts`, on Sonner's
+`action` — no new dependency, no undo stack, no state machine. Ten seconds rather than the default
+five, because a reversal has to be noticed, read and reached.
+
+**`useMutationWithToast` takes an `undo` option**, receiving both the input that was sent and the
+result that came back, so a reversal can address whatever the action created. Declaring it turns the
+success toast into an undoable one — one line per hook:
+
+```ts
+undo: input => addDepartmentAdminFn({ data: input }),
+```
+
+The grant/revoke pairs share an input shape, which is what makes this a one-liner rather than a
+refactor.
+
+**Where undo now exists:**
+
+| | Why |
+|---|---|
+| bookmark toggle | the rule's own example, and a toggle is its own inverse |
+| unfollow a class | the rule's other example. The `courseId` rides along purely so the reversal can put it back — a row that has lost it gets a plain toast instead |
+| revoke department admin · course maintainer · section access | these had **neither** a confirmation nor an undo, so a misclick silently took away someone's access |
+| create the Exam Simulation sentinel | was a confirmation on a reversible creation; now it acts, and the undo deletes the row the service returns |
+
+**Two confirmations were removed and one was deliberately kept.** The Exam Simulation dialog asked
+*"Confermi?"* about a section you could delete in two clicks — gone. **The role change stays a
+dialog even though it is reversible**, and the rule bends here for a reason: undoing a promotion ten
+seconds later still leaves ten seconds of granted privilege. Reversibility is not the only axis; the
+harm window matters too.
+
+### The dialogs that stay say what happens, not "are you sure"
+
+Ten dialogs, and every one opened with *"Sei sicuro di voler…"* — the exact phrasing the rules
+already forbid. **`confirmation-dialog.stories.tsx` had the right pattern all along** ("Eliminare la
+domanda?" plus the consequence) and not one call site followed it. They do now.
+
+The descriptions state consequences, and the consequences were **checked against the schema rather
+than assumed**: `questions → sections`, `sections → classes` and `courses → departments` all cascade,
+so deleting a section really does take its questions. But deleting a *course* does not delete its
+classes — only the `course_classes` links cascade, and the classes survive unlinked. That dialog now
+says so, because an admin deciding whether to delete something needs to know what lives through it.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -767,6 +818,7 @@ Three failures, computed rather than eyeballed — they are tracked as issues, n
 |Icon-only buttons with an accessible name|~~6 of 26~~ → **26 of 26**|all|
 
 Tracked as #152 (contrast), #153 (accessible names, and target size with it) and #154 (undo).
+**All three are closed — #153 and #152 on 2026-08-11, #154 the same day. See D19 and D20.**
 **#153 is closed — 2026-08-11.** Four things are worth keeping from it:
 
 - **A tooltip is not an accessible name.** Radix `Tooltip` sets `aria-describedby`, not
