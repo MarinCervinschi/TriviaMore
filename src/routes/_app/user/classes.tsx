@@ -52,7 +52,7 @@ function classParams(userClass: UserClass) {
 function buildColumns(
 	departmentOptions: { value: string; label: string }[],
 	courseTypeOptions: { value: string; label: string }[],
-	onRemove: (classId: string) => void,
+	onRemove: (row: { classId: string; courseId: string | null }) => void,
 	isRemoving: boolean
 ) {
 	return [
@@ -128,7 +128,7 @@ function buildColumns(
 					size="sm"
 					onClick={event => {
 						event.preventDefault();
-						onRemove(row.original.classId);
+						onRemove(row.original);
 					}}
 					disabled={isRemoving}
 					className="text-muted-foreground hover:text-danger h-8 w-8 rounded-lg p-0"
@@ -169,7 +169,7 @@ function ClassesPage() {
 			buildColumns(
 				departmentOptions,
 				courseTypeOptions,
-				classId => removeClass.mutate(classId),
+				({ classId, courseId }) => removeClass.mutate({ classId, courseId }),
 				removeClass.isPending
 			),
 		[departmentOptions, courseTypeOptions, removeClass]
