@@ -870,6 +870,70 @@ press feedback.
 
 ---
 
+## D24 — Radius steps by 4px, and a child in the corner steps down one
+
+**Decided and implemented 2026-08-12.** `@theme` derived `--radius-sm/md/lg/xl` from `--radius` but
+left `2xl` and `3xl` at Tailwind's defaults, which slid the control half of the ladder one step too
+round and collapsed two names onto one value:
+
+| class | rendered | `DESIGN_SYSTEM.md` claimed | now |
+|---|---|---|---|
+|`rounded-sm`|8px|4px ✗|4px|
+|`rounded-md`|10px|undocumented|pinned to `lg`|
+|`rounded-lg`|12px|8px ✗|8px|
+|`rounded-xl`|**16px**|12px ✗|12px|
+|`rounded-2xl`|**16px**|16px ✓|16px|
+|`rounded-3xl`|24px|24px ✓|24px|
+
+**`rounded-xl` and `rounded-2xl` rendered the same 16px** across 433 uses, so a button inside a card
+was as round as the card and the control lost its step of hierarchy. The doc was wrong on three rows
+of six — and it was the doc that had it right, which is why the fix is to move the code to the doc
+rather than the reverse.
+
+**Every step now derives from `--radius`** — `−8` / `−4` / `0` / `+4` / `+12` — so that token is
+finally the one knob it was described as. Before, changing it left cards and large containers where
+they were.
+
+### Why 4px steps, and not tidiness
+
+The steps are 4px because **the app's tight paddings are 4, 6 and 8px** (`p-1`, `p-1.5`, `p-2`). For a
+child inset by padding `P` inside a parent of radius `R`, the concentric radius is `R − P`: the two
+arcs then share a centre and the gap between the borders stays even around the curve. A child at or
+above its parent's radius pushes out of the corner and the gap swells exactly there. With 4px steps,
+`R − P` lands on **another step of the scale** instead of between two — which is the whole reason the
+ladder has the spacing it has.
+
+Measured across every parent carrying both a radius and a tight padding — 6 real pairs — the primitives
+were already concentric: `DropdownMenuContent` `rounded-xl p-1` → `rounded-lg` items is `12 − 4 = 8`
+exactly, and so is `TabsList`. **The only two failures were the two hand-rolled dropdown panels**
+(`luma-sidebar`, `navbar`), and they failed on the *padding*, not the radius: both had invented `p-1.5`
+where the primitive they duplicate uses `p-1`. Fixing the padding made both concentric with the radius
+they already had. A 4px scale is what turned a 2px error into something arithmetic could catch.
+
+### The limit of the rule, which the first audit got wrong
+
+Applied to every parent with any padding, the check flagged **58 of 64 pairs** — which was the rule
+being wrong, not the app. Concentricity only bites while the child's corner sits *inside* the parent's
+corner, in practice **`p-2` and under**. At `p-4` the child is 16px away from the parent's arc; the two
+curves are not adjacent, there is nothing to share a centre with, and the child takes the radius of its
+own role. The audit's own output said so: those rows compute an "ideal" of 0 or negative.
+
+### What the change costs, and the fact that argued for it
+
+Buttons, inputs and selects go from 16px to 12px — small, but on every control. The fact that settled
+it: `Button`'s `sm` size is `h-8`, and 16px is **exactly half of 32px**, so every small button in the
+app was a stadium — the same silhouette as `Badge`, which is `rounded-full`. **84 `size="sm"` buttons
+could not be told from a badge by shape**, leaving colour as the only signal. At 12px a small button is
+37% of its height: a rounded rectangle, unmistakably not a pill.
+
+`rounded-md` is retired from use — 25 sites moved to `rounded-lg` — but the token stays, pinned to
+`lg`, so reaching for it out of shadcn habit cannot land on Tailwind's off-scale 6px.
+
+**Rules out:** a radius that is not a step of the scale; a child in its parent's corner rounder than
+`R − P`; `rounded-md` in new code.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -984,11 +1048,12 @@ to see animation. AutoAnimate is the exception: it checks the media query itself
 **O1 — ~~`--font-mono` is undefined~~ → answered by D17**, which also corrects the premise: Tailwind
 v4 declares the token itself, and the real leak was a second hardcoded Courier New in `markdown.css`.
 
-**O2 — The badge audit is unfinished.** Roughly 70 badges across 33 files have not been reviewed
-against D6. Most look legitimate; the sweep needs a human pass, not a regex.
+**O2 — ~~The badge audit~~ → closed 2026-08-12, nothing to change.** The ~70 badges across 33 files
+got the human pass D6 asked for, and they read as state. This was always a "look at it" item rather
+than a defect, so it closes with no diff — recorded here so the audit is not re-opened.
 
-**O3 — The rest of the system.** The type scale is answered by D16 and the shadow tokens by D22. Two
-of the four remaining parts turned out not to need work, and one needs a decision:
+**O3 — The rest of the system.** The type scale is answered by D16, the shadow tokens by D22 and the
+radius by D24. Of the four parts, two needed no work:
 
 - **Motion — closed, nothing to do.** 26 files import `motion.ts`; the hand-written `duration-*`
   values are CSS hover transitions, which `motion.ts` does not cover — it covers Framer variants. The
@@ -998,25 +1063,7 @@ of the four remaining parts turned out not to need work, and one needs a decisio
   `bg-card rounded-2xl border shadow-sm`, and ~30 panels rebuild that recipe by hand — but they differ
   only in padding and `overflow`, and many are decorative frames rather than semantic cards. Worth
   doing, not worth doing quietly.
-- **⚠ Radius — measurably broken, and the fix is visible.** `@theme` derives `--radius-sm/md/lg/xl`
-  from `--radius` but leaves `2xl`/`3xl` at Tailwind's defaults, so the ladder is shifted one step:
-
-  | class | renders | `DESIGN_SYSTEM.md` claims |
-  |---|---|---|
-  |`rounded-sm`|8px|4px ✗|
-  |`rounded-md`|10px|undocumented|
-  |`rounded-lg`|12px|8px ✗|
-  |`rounded-xl`|**16px**|12px ✗|
-  |`rounded-2xl`|**16px**|16px ✓|
-
-  **`rounded-xl` and `rounded-2xl` render the same value** — 433 uses, two names, 16px — so a button
-  inside a card is as round as the card, and the control loses its step of hierarchy. `--radius` also
-  governs only half the ladder, which makes "change `--radius` and the app re-rounds" untrue: cards and
-  large containers would not move.
-
-  The fix derives every step from `--radius` (4 / 8 / 12 / 16 / 24, with `rounded-md` retired so one
-  name means one value) and takes buttons and inputs from 16px to 12px — small, but on every control.
-  Compared in `Style Lab/Radius`; **not applied**, awaiting a look.
+- **Radius — ~~measurably broken~~ → answered by D24** on 2026-08-12.
 
 **O4 — ~~The icon set~~ → resolved by D11 (Solar); both leftovers closed on 2026-08-10.** The mapping
 table is `docs/ICON_MAP.md`, and the CC BY 4.0 credit ships in the landing footer *and* on the about
