@@ -9,13 +9,6 @@ export function getPerformanceLevel(score: number): {
 	return { level: "poor", label: "Insufficiente", color: "red" };
 }
 
-export function getScoreColor(score: number): string {
-	if (score >= 30) return "text-green-600 dark:text-green-400";
-	if (score >= 25) return "text-blue-600 dark:text-blue-400";
-	if (score >= 20) return "text-yellow-600 dark:text-yellow-400";
-	return "text-red-600 dark:text-red-400";
-}
-
 export function getScoreBadgeVariant(
 	score: number
 ): "default" | "secondary" | "destructive" | "outline" {
