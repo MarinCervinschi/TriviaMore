@@ -1,5 +1,6 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
+import { Card } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -17,7 +18,7 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 	if (data.length === 0) return null;
 
 	return (
-		<div className="bg-card overflow-hidden rounded-2xl border">
+		<Card className="overflow-hidden">
 			<div className="p-6">
 				<h3 className="text-lg font-bold">Performance esami</h3>
 				<p className="text-muted-foreground text-sm">
@@ -82,6 +83,6 @@ export function ExamChart({ data }: { data: ExamChartItem[] }) {
 					</AreaChart>
 				</ChartContainer>
 			</div>
-		</div>
+		</Card>
 	);
 }

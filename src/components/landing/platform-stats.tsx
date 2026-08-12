@@ -7,6 +7,7 @@ import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { motion } from "framer-motion";
 
 import type { Icon } from "@/components/icons";
+import { Card } from "@/components/ui/card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import type { PlatformStats } from "@/lib/browse/types";
@@ -79,7 +80,7 @@ function StatItem({
 	const animatedValue = useAnimatedCounter(value, isVisible, prefersReduced);
 
 	return (
-		<div className="bg-card relative overflow-hidden rounded-2xl border p-6 text-center sm:p-8">
+		<Card className="relative overflow-hidden p-6 text-center sm:p-8">
 			<div className="from-primary/5 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
 			<div className={`mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
@@ -93,7 +94,7 @@ function StatItem({
 			<p className="text-muted-foreground relative mt-2 text-sm font-medium sm:text-base">
 				{label}
 			</p>
-		</div>
+		</Card>
 	);
 }
 

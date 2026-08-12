@@ -4,6 +4,7 @@ import { TargetIcon } from "@solar-icons/react/linear/target";
 import { RadialBar, RadialBarChart } from "recharts";
 
 import { StatCard } from "@/components/shared/stat-card";
+import { Card, CardOrb } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import type { OverallStats, RadialDataItem } from "@/hooks/useProgressData";
 import {
@@ -47,8 +48,8 @@ export function ProgressStats({
 			/>
 
 			{/* Average score card with radial gauge */}
-			<div className="group bg-card relative col-span-2 overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-				<div className="bg-primary/10 pointer-events-none absolute -top-4 -right-4 h-20 w-20 rounded-full blur-[30px]" />
+			<Card className="group relative col-span-2 overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+				<CardOrb />
 				<div className="relative flex items-center gap-4">
 					<div className="shrink-0">
 						<ChartContainer config={gaugeConfig} className="aspect-auto h-24 w-24">
@@ -79,7 +80,7 @@ export function ProgressStats({
 						</p>
 					</div>
 				</div>
-			</div>
+			</Card>
 		</div>
 	);
 }

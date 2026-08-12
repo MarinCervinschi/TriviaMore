@@ -1,4 +1,5 @@
 import { ReportButton } from "@/components/requests/report-button";
+import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { parseOptions } from "@/lib/quiz/options";
@@ -51,14 +52,14 @@ export function QuestionCard({
 			/>
 
 			{/* Question content */}
-			<div className="bg-card mb-8 rounded-2xl border p-6">
+			<Card className="mb-8 p-6">
 				<div className="text-lg leading-relaxed">
 					<MarkdownRenderer
 						content={question.content}
 						className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
 					/>
 				</div>
-			</div>
+			</Card>
 
 			{/* Options */}
 			{question.questionType === "TRUE_FALSE" ? (

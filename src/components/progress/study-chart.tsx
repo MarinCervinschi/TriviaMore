@@ -1,5 +1,6 @@
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
+import { Card } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -17,7 +18,7 @@ export function StudyChart({ data }: { data: StudyChartItem[] }) {
 	if (data.length === 0) return null;
 
 	return (
-		<div className="bg-card overflow-hidden rounded-2xl border">
+		<Card className="overflow-hidden">
 			<div className="p-6">
 				<h3 className="text-lg font-bold">Performance studio</h3>
 				<p className="text-muted-foreground text-sm">
@@ -73,6 +74,6 @@ export function StudyChart({ data }: { data: StudyChartItem[] }) {
 					</BarChart>
 				</ChartContainer>
 			</div>
-		</div>
+		</Card>
 	);
 }
