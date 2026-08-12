@@ -79,7 +79,7 @@ export function SkeletonHero({
 	return (
 		<section className="relative w-full py-12 sm:py-16">
 			<div className="container">
-				{withBreadcrumb && <Skeleton className="mb-4 h-4 w-48 rounded-md" />}
+				{withBreadcrumb && <Skeleton className="mb-4 h-4 w-48 rounded-lg" />}
 				<Skeleton className="mb-3 h-12 w-12 rounded-2xl" />
 				<Skeleton className="mb-3 h-9 w-2/3 sm:h-12" />
 				<Skeleton className="h-5 w-full max-w-2xl" />
@@ -97,8 +97,8 @@ export function SkeletonHero({
 					<div className="mt-6 flex flex-wrap items-center gap-6">
 						{Array.from({ length: withStats }).map((_, i) => (
 							<div key={i} className="flex items-center gap-2">
-								<Skeleton className="h-7 w-12 rounded-md" />
-								<Skeleton className="h-4 w-20 rounded-md" />
+								<Skeleton className="h-7 w-12 rounded-lg" />
+								<Skeleton className="h-4 w-20 rounded-lg" />
 							</div>
 						))}
 					</div>

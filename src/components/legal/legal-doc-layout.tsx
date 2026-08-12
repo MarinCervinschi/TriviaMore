@@ -137,7 +137,7 @@ export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
 									code: ({ children, className }) => (
 										<code
 											className={cn(
-												"bg-muted text-foreground rounded-md px-1.5 py-0.5 text-[0.9em] font-medium",
+												"bg-muted text-foreground rounded-lg px-1.5 py-0.5 text-[0.9em] font-medium",
 												className
 											)}
 										>

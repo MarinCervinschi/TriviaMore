@@ -40,7 +40,7 @@ export function BrowseOverviewSkeleton() {
 				</div>
 
 				<div className="mt-8 space-y-3">
-					<Skeleton className="h-11 w-full rounded-md" />
+					<Skeleton className="h-11 w-full rounded-lg" />
 					<div className="flex flex-wrap gap-2">
 						{Array.from({ length: 6 }).map((_, i) => (
 							<Skeleton key={i} className="h-8 w-20 rounded-full" />

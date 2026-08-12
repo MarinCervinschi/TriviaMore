@@ -123,7 +123,7 @@ export function TimeTickRow({ steps, index, onChange, className }: TimeTickRowPr
 							aria-pressed={active}
 							onClick={() => onChange(t.idx)}
 							className={cn(
-								"flex h-11 items-center justify-center rounded-md border text-xs font-medium tabular-nums transition-colors sm:h-9",
+								"flex h-11 items-center justify-center rounded-lg border text-xs font-medium tabular-nums transition-colors sm:h-9",
 								"focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
 								active
 									? "border-primary bg-primary text-primary-foreground shadow-sm"
