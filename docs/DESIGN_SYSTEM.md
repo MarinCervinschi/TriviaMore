@@ -75,22 +75,44 @@ All colors are HSL-based CSS variables defined in `src/styles/globals.css`.
 | `--background` | `hsl(0 0% 100%)` | `hsl(224 71% 4%)` | Page background |
 | `--foreground` | `hsl(224 71% 4%)` | `hsl(210 20% 98%)` | Body text |
 | `--muted` | `hsl(220 14% 96%)` | `hsl(215 28% 17%)` | Subtle backgrounds |
-| `--muted-foreground` | `hsl(220 9% 46%)` | `hsl(218 11% 65%)` | Secondary text |
-| `--border` | `hsl(220 13% 91%)` | `hsl(215 28% 17%)` | Borders |
-| `--destructive` | `hsl(0 84% 60%)` | `hsl(0 62.8% 30.6%)` | Errors |
-| `--ring` | `hsl(10 76% 42%)` | same | Focus rings (= primary) |
+| `--muted-foreground` | `220 9% 45%` | `218 11% 65%` | Secondary text |
+| `--border` | `220 13% 91%` | `215 28% 17%` | Borders |
+| `--destructive` | `0 84% 47.5%` | `0 62.8% 30.6%` | An error *surface* |
+| `--ring` | `10 76% 42%` | `10 76% 62%` | Focus rings |
 
-### Semantic (use directly, not via tokens)
+### Status — tokens, never raw palette classes
 
-| Color | Value | Usage |
-|-------|-------|-------|
-| Success | `green-500` | Correct answers, success toasts |
-| Warning | `amber-500` | Timer warnings, caution toasts |
-| Info | `blue-500` | Informational badges/toasts |
+D19 split each of these into a surface value and an ink value, because a colour tuned as a fill is
+too dark to read as text on a near-black page and one token cannot be both. **`bg-*` takes the
+surface, `text-*` takes the ink.**
 
-### Chart palette
+| Token | Light | Dark | Usage |
+|-------|-------|------|-------|
+| `--success` | `142 72% 29%` | `142 60% 55%` | A correct answer, a success toast |
+| `--warning` | `34 92% 33.5%` | `38 92% 60%` | Caution. Light sits 4° toward orange: amber cannot clear 4.5:1 and stay amber |
+| `--info` | `217 91% 50.5%` | `217 91% 65%` | Informational, and "needs your action" |
 
-5 chart tokens (`--chart-1` to `--chart-5`) with different palettes per theme. Keep as-is.
+`--brand` and `--danger` in the Core table above are the same split applied to the brand and to error.
+
+### Categorical — `--chart-*`, and its ink half
+
+Five slots for **data identity**: a chart series, and equally a category pill (course type,
+department area, role, changelog kind, request type). Assigned in slot order and never cycled.
+Green sits between blue and violet on purpose — adjacent slots have to stay apart under
+colour-vision deficiency, and **blue↔violet is the pair that collapses** (ΔE 3.0 under deuteranopia),
+so slots 2 and 4 are kept non-adjacent.
+
+`--chart-N` is the **fill**; `--chart-N-ink` is the same hue re-tuned to clear 4.5:1 as text (D26).
+A pill is `bg-chart-N/10 text-chart-N-ink border-chart-N/30`. Reaching for a fill as text ships a
+contrast failure — every slot measures 3.35–3.99 in light.
+
+**A set that needs all five slots at once cannot rely on hue alone**, since it necessarily includes
+the collapsing pair. Department areas do exactly that, and hold because each one also renders an
+icon — 1.4.1 is satisfied by the icon and the label, not by the colour.
+
+### Sequential — `--heat-*`
+
+One hue, monotone lightness. **Magnitude, never identity.**
 
 ---
 
