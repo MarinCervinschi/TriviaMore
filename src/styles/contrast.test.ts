@@ -79,9 +79,14 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["destructive-foreground", "destructive", 4.5, "the destructive button's label"],
 	["success-foreground", "success", 4.5, "a success fill's label"],
 	["warning-foreground", "warning", 4.5, "a warning fill's label"],
+	// Since the dark surfaces became a ladder (background → card → popover), a floating panel is its
+	// own surface and the text on it needs its own row.
+	["foreground", "popover", 4.5, "a dropdown item"],
+	["muted-foreground", "popover", 4.5, "a dropdown's secondary text"],
 	// UI components and focus indicators clear a lower bar (1.4.11).
 	["ring", "background", 3, "the focus ring against the page"],
 	["border", "background", 1.2, "a card border — visible, not readable"],
+	["border", "card", 1.2, "a card's own border, now that card is not the page colour"],
 ];
 
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
