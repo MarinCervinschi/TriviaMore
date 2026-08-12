@@ -7,6 +7,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardOrb } from "@/components/ui/card";
 import type { OverallStats } from "@/hooks/useProgressData";
 import type { UserProgress } from "@/lib/user/types";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
@@ -83,8 +84,8 @@ export function ProgressDetails({
 		<div className="space-y-6">
 			{/* Summary cards — study vs exam side by side */}
 			<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-				<div className="bg-card relative overflow-hidden rounded-2xl border p-6">
-					<div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-blue-500/10 blur-[30px]" />
+				<Card className="relative overflow-hidden p-6">
+					<CardOrb tint="bg-blue-500/10" />
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-blue-500/10 p-2">
@@ -117,10 +118,10 @@ export function ProgressDetails({
 							</div>
 						</div>
 					</div>
-				</div>
+				</Card>
 
-				<div className="bg-card relative overflow-hidden rounded-2xl border p-6">
-					<div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-yellow-500/10 blur-[30px]" />
+				<Card className="relative overflow-hidden p-6">
+					<CardOrb tint="bg-yellow-500/10" />
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-yellow-500/10 p-2">
@@ -153,7 +154,7 @@ export function ProgressDetails({
 							</div>
 						</div>
 					</div>
-				</div>
+				</Card>
 			</div>
 
 			<div>

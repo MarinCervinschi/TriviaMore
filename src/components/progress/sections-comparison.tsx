@@ -3,6 +3,7 @@ import { ArrowRightUpIcon } from "@solar-icons/react/linear/arrow-right-up";
 import { DangerTriangleIcon } from "@solar-icons/react/linear/danger-triangle";
 import { MedalStarIcon } from "@solar-icons/react/linear/medal-star";
 
+import { Card } from "@/components/ui/card";
 import type { UserProgress } from "@/lib/user/types";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
 
@@ -21,7 +22,7 @@ export function SectionsComparison({
 	return (
 		<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 			{sectionsWithIssues.length > 0 && (
-				<div className="bg-card overflow-hidden rounded-2xl border">
+				<Card className="overflow-hidden">
 					<div className="flex items-center gap-3 border-b p-5">
 						<div className="rounded-xl bg-orange-500/10 p-2">
 							<DangerTriangleIcon className="h-5 w-5 text-orange-600" />
@@ -56,11 +57,11 @@ export function SectionsComparison({
 							</div>
 						))}
 					</div>
-				</div>
+				</Card>
 			)}
 
 			{excellentSections.length > 0 && (
-				<div className="bg-card overflow-hidden rounded-2xl border">
+				<Card className="overflow-hidden">
 					<div className="flex items-center gap-3 border-b p-5">
 						<div className="rounded-xl bg-green-500/10 p-2">
 							<MedalStarIcon className="h-5 w-5 text-green-600" />
@@ -93,7 +94,7 @@ export function SectionsComparison({
 							</div>
 						))}
 					</div>
-				</div>
+				</Card>
 			)}
 		</div>
 	);

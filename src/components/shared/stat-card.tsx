@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
+import { Card, CardOrb } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const colorMap: Record<string, { orb: string; badge: string; icon: string }> = {
@@ -47,12 +48,10 @@ export function StatCard({
 	const colors = colorMap[color] ?? colorMap.primary;
 
 	const content = (
-		<div className="group bg-card relative overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
-			<div
-				className={cn(
-					"pointer-events-none absolute -top-4 -right-4 h-20 w-20 rounded-full blur-[30px] transition-opacity duration-300 group-hover:opacity-70",
-					colors.orb
-				)}
+		<Card className="group relative overflow-hidden p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
+			<CardOrb
+				tint={colors.orb}
+				className="transition-opacity duration-300 group-hover:opacity-70"
 			/>
 			<div className="relative flex flex-col gap-3">
 				<div className={cn("inline-flex w-fit rounded-xl p-2 sm:p-2.5", colors.badge)}>
@@ -70,7 +69,7 @@ export function StatCard({
 					)}
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 
 	if (href) {

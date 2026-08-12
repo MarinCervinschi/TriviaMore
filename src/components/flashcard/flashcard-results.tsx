@@ -5,6 +5,7 @@ import { EyeIcon } from "@solar-icons/react/linear/eye";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardOrb } from "@/components/ui/card";
 import { Logo } from "@/components/ui/logo";
 import type { FlashcardQuestion } from "@/lib/flashcard/types";
 
@@ -48,9 +49,12 @@ export function FlashcardResults({
 			<ResultsHeader />
 			<div className="mx-auto max-w-4xl space-y-8 p-6">
 				{/* Score Hero */}
-				<div className="bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12">
-					<div className="pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full bg-green-500/10 blur-[60px]" />
-					<div className="pointer-events-none absolute -right-20 -bottom-20 h-48 w-48 rounded-full bg-emerald-300/10 blur-[60px]" />
+				<Card
+					level="panel"
+					className="relative overflow-hidden p-8 text-center sm:p-12"
+				>
+					<CardOrb size="lg" corner="tl" tint="bg-green-500/10" />
+					<CardOrb size="lg" corner="br" tint="bg-emerald-300/10" />
 
 					<p className="text-muted-foreground relative mb-2 text-sm font-medium">
 						{sectionName}
@@ -82,7 +86,7 @@ export function FlashcardResults({
 							<p className="text-muted-foreground text-xs">Tempo</p>
 						</div>
 					</div>
-				</div>
+				</Card>
 
 				{/* Card Review */}
 				<div>
@@ -91,10 +95,7 @@ export function FlashcardResults({
 						{questions.map((question, index) => {
 							const wasStudied = studiedCards.has(index);
 							return (
-								<div
-									key={`${question.id}-${index}`}
-									className="bg-card overflow-hidden rounded-2xl border p-4"
-								>
+								<Card key={`${question.id}-${index}`} className="overflow-hidden p-4">
 									<div className="flex items-center justify-between">
 										<div className="flex items-center gap-3">
 											<span className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold">
@@ -116,7 +117,7 @@ export function FlashcardResults({
 											{wasStudied ? "Studiata" : "Non vista"}
 										</Badge>
 									</div>
-								</div>
+								</Card>
 							);
 						})}
 					</div>
