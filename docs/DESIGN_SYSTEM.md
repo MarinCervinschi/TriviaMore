@@ -105,9 +105,10 @@ are used both ways. `--primary` is theme-constant on purpose; `--brand` is what 
   sidebar or a stat block.
 - **Measure against the real foreground token, not white.** `--destructive-foreground` is not `#fff`,
   and that difference once hid a failing 4.33 behind a passing 4.53.
-- **Never propose lifting a dark accent *surface*.** It has been reversed twice: a lighter hue reads
-  washed out as a large fill and vivid as text. That asymmetry is why the ink split exists — and it
-  does **not** apply to a neutral grey (see Surfaces).
+- **Never propose lifting a dark *surface*, accent or neutral.** Reversed three times now: twice on
+  `--primary` and `--destructive`, where a lighter hue reads washed out as a large fill and vivid as
+  text — that asymmetry is why the ink split exists — and once on the neutrals, where the mechanics
+  were sound and the look still lost (D25).
 
 ### The categorical ramp has an ordering constraint
 
@@ -181,8 +182,9 @@ first audit's mistake, 58 of 64 pairs.
 
 ## Surfaces and elevation
 
-**A card is elevated** (D25). `<Card>` carries `shadow-sm`; a hand-rolled flat `bg-card border
-rounded-2xl` is a deviation, not a variant.
+**A card is elevated in light** (D25). `<Card>` carries `shadow-sm`; a hand-rolled flat `bg-card border
+rounded-2xl` is a deviation there, not a variant. In dark the shadow does little and the border carries
+it — see below.
 
 `<Card>` also owns three things worth not re-inventing:
 
@@ -193,22 +195,22 @@ rounded-2xl` is a deviation, not a variant.
 - **`transition-shadow`, not `transition-all`.** At rest the shadow is the only property that changes,
   and `transition-all` animates layout properties on every card in the app.
 
-### In dark, elevation is lightness
+### In dark the surfaces are flat, and the border does the separating
 
-A shadow on a near-black page has nothing to fall on. So the dark neutrals are a **ladder** — page →
-card → popover → muted, each lighter than the last — and that is what carries elevation. The shadow
-classes still apply in both themes; in dark they simply do very little.
+`--card`, `--popover` and `--background` are **the same value** in dark, on purpose. A shadow on a
+near-black page has nothing to fall on either, so what separates a surface from the page is its
+**border** — nothing else.
 
-**Use `bg-popover` for anything that floats**, never `bg-background`. In light the two tokens are the
-same value, so the choice only shows up in dark — which is exactly why `dialog`, `alert-dialog` and
-`sheet` were wrong for months and a modal was the colour of the page it covered.
+**Do not re-propose lifting them.** A lightness ladder was built and measured (ΔL* 3.5, contrast holding
+with room) and **rejected on the look** — the third time a lifted dark surface has been. The mechanics
+were never the objection; the flat dark theme is a taste of this app. See D25.
 
-`--border` needs no compensation: it keeps a wide ΔL* from a lifted card.
+**Still use `bg-popover` for anything that floats**, not `bg-background`. The two render identically, so
+this buys nothing today — but it names the role, which is one value to move if the question ever reopens.
 
-**Read surface adjacency in ΔL\*, not as a contrast ratio.** A lifted dark card measures 1.07 against
-the page, which looks like nothing and would have killed the change; in ΔL* it is a clear 3.5. A
-luminance ratio answers *"can text be read on this"*, never *"can two large adjacent surfaces be told
-apart"*.
+**Read surface adjacency in ΔL\*, not as a contrast ratio**, whenever it does come up. A lifted dark card
+measures 1.07 as a ratio — nothing — and 3.5 in ΔL*. A luminance ratio answers *"can text be read on
+this"*, never *"can two large adjacent surfaces be told apart"*.
 
 ### Elevation vocabulary
 

@@ -160,15 +160,14 @@
 .dark {
 	--background: 224 71% 4%;
 	--foreground: 210 20% 98%;
-	/* On a near-black page a shadow has nothing to fall on, so elevation here is lightness: the
-	   higher a surface sits, the lighter it is. The ladder is background 4% → card 9% → popover 12%
-	   → muted 17%. All three were 4% before, which made a card the page with a border round it and a
-	   dropdown the same colour as what it floated over — its shadow-lg did nothing.
-	   This is a neutral surface, not an accent: lifting --primary or --destructive reads washed out
-	   as a large fill and was rejected twice. That asymmetry does not apply to a grey. */
-	--card: 224 55% 9%;
+	/* Deliberately identical to --background. A lightness ladder was tried here — card 9%, popover
+	   12% — on the reasoning that a shadow has nothing to fall on over near-black, and it was
+	   rejected on the look. So in dark a surface is separated by its **border**, not by its fill and
+	   not by a shadow. Do not re-propose lifting these: the measurement was fine and the answer was
+	   still no, which makes it a taste of this app rather than an oversight. See D25. */
+	--card: 224 71% 4%;
 	--card-foreground: 210 20% 98%;
-	--popover: 224 50% 12%;
+	--popover: 224 71% 4%;
 	--popover-foreground: 210 20% 98%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
