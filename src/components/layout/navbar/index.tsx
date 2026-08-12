@@ -97,7 +97,7 @@ function DesktopNavDropdown({
 			{/* Dropdown panel */}
 			{open && (
 				<div className="absolute top-full left-0 z-50 pt-2">
-					<div className="bg-popover animate-in fade-in-0 zoom-in-95 min-w-[240px] overflow-hidden rounded-xl border p-1.5 shadow-lg duration-150">
+					<div className="bg-popover animate-in fade-in-0 zoom-in-95 min-w-[240px] overflow-hidden rounded-xl border p-1 shadow-lg duration-150">
 						{item.children.map(child => (
 							<Link
 								key={child.to}
