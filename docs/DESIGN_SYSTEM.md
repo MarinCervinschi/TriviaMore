@@ -156,9 +156,26 @@ This only applies while the child's corner is *in* the parent's corner — rough
 | Hover | `shadow-md` | Cards on hover |
 | Elevated | `shadow-lg` | Modals, dropdowns, floating elements |
 | CTA glow | `shadow-lg shadow-primary/25` | Primary buttons, important CTAs |
-| Focus glow | `shadow-[0_0_12px_hsl(var(--ring)/0.15)]` | Focus-visible state |
+| Focus glow | `shadow-focus` | Focus-visible state |
 
 **Card hover pattern**: `hover:shadow-xl hover:-translate-y-1 transition-all duration-300`
+
+**In dark, elevation is lightness, not shadow.** A shadow on a near-black page has nothing to fall
+on, so the dark surfaces are a ladder and a higher surface is a lighter one:
+
+| | dark | ΔL* from the page |
+|---|---|---|
+| `--background` | `224 71% 4%` | — |
+| `--card` | `224 55% 9%` | 3.5 |
+| `--popover` — dropdowns, dialogs, sheets | `224 50% 12%` | 6.5 |
+| `--muted` — a panel inside a card | `215 28% 17%` | 14.5 |
+
+The shadow classes above still apply in both themes; in dark they just do very little, and the ladder
+is what carries the elevation. `--border` stays where it is: at `215 28% 17%` it keeps ΔL* 11 from a
+card, so a lifted card is still clearly outlined.
+
+**Use `bg-popover` for anything that floats**, not `bg-background`. In light the two are the same
+value, so the choice only shows up in dark — which is exactly why it was wrong in three primitives.
 
 ---
 

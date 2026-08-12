@@ -289,9 +289,9 @@ Everything marked ⚠, ranked by how much of the app sees it:
 16. **`CircleDot` → `record-circle`** (1)
 17. **`MailCheck` → `letter-opened`** (1) · **`UserCog` → `user-id`** (1) · **`SearchX` → `magnifier`** (1)
 
-The sweep is applied with the choices above, and the alternatives sit side by side at 16/20/28px in
-`Style Lab/Sostituzioni icone` — one story, no hunting through the app. Swapping any of them is a
-one-line import change. **Delete that lab once the answers are recorded here.**
+The sweep is applied with the choices above. All seventeen were reviewed in the browser and stand as
+listed, bar the one corrected in the table — so the lab that held them side by side has been deleted.
+Swapping any of them is still a one-line import change.
 
 ---
 
