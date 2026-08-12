@@ -2,6 +2,7 @@ import { ConfettiIcon } from "@solar-icons/react/linear/confetti";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
+import { RAIL_ICON, RAIL_ITEM, RAIL_ITEM_IDLE } from "@/components/layout/nav-items";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { changelogQueries } from "@/lib/changelogs/queries";
 import { cn } from "@/lib/utils";
@@ -16,9 +17,9 @@ export function SidebarChangelogMegaphone() {
 				<Link
 					to="/news"
 					aria-label={`Novità${unreadCount > 0 ? ` (${unreadCount} non lette)` : ""}`}
-					className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground focus-visible:ring-ring relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:ring-2 focus-visible:outline-none"
+					className={cn(RAIL_ITEM, RAIL_ITEM_IDLE)}
 				>
-					<ConfettiIcon className="size-[18px]" />
+					<ConfettiIcon className={RAIL_ICON} />
 					{unreadCount > 0 && (
 						<span
 							className={cn(

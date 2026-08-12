@@ -31,13 +31,15 @@ import {
 	GRAPH_ITEM,
 	NAV_ITEMS,
 	type NavItem,
+	RAIL_FOCUS,
+	RAIL_ICON,
+	RAIL_ITEM,
+	RAIL_ITEM_IDLE,
+	RAIL_SLOT,
 	getInitials,
 	useIsAdmin,
 } from "./nav-items";
 
-const ITEM_BASE =
-	"relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-const ITEM_IDLE = "text-muted-foreground hover:bg-foreground/5 hover:text-foreground";
 const ITEM_ACTIVE = "text-brand";
 
 function ActiveBar() {
@@ -54,10 +56,10 @@ function SidebarNavIcon({ item, isActive }: { item: NavItem; isActive: boolean }
 				<Link
 					to={item.to}
 					aria-current={isActive ? "page" : undefined}
-					className={cn(ITEM_BASE, isActive ? ITEM_ACTIVE : ITEM_IDLE)}
+					className={cn(RAIL_ITEM, isActive ? ITEM_ACTIVE : RAIL_ITEM_IDLE)}
 				>
 					{isActive && <ActiveBar />}
-					<Icon className="size-[18px]" />
+					<Icon className={RAIL_ICON} />
 				</Link>
 			</TooltipTrigger>
 			<TooltipContent side="right" sideOffset={14}>
@@ -77,9 +79,9 @@ function SidebarThemeToggle() {
 					onClick={event => toggleTheme(event.nativeEvent)}
 					disabled={!mounted}
 					aria-label="Cambia tema"
-					className={cn(ITEM_BASE, ITEM_IDLE)}
+					className={cn(RAIL_ITEM, RAIL_ITEM_IDLE)}
 				>
-					<ThemeIcons className="size-[18px] [&_svg]:size-[18px]" />
+					<ThemeIcons className={cn(RAIL_ICON, "[&_svg]:size-[18px]")} />
 				</button>
 			</TooltipTrigger>
 			<TooltipContent side="right" sideOffset={14}>
@@ -109,8 +111,8 @@ function SidebarSearchHover() {
 		<div onMouseEnter={handleEnter} onMouseLeave={handleLeave} className="relative">
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<button aria-label="Cerca" className={cn(ITEM_BASE, ITEM_IDLE)}>
-						<MagnifierIcon className="size-[18px]" />
+					<button aria-label="Cerca" className={cn(RAIL_ITEM, RAIL_ITEM_IDLE)}>
+						<MagnifierIcon className={RAIL_ICON} />
 					</button>
 				</TooltipTrigger>
 				{!open && (
@@ -167,7 +169,11 @@ function SidebarProfile({
 					<PopoverTrigger asChild>
 						<button
 							aria-label="Menu profilo"
-							className="focus-visible:ring-ring flex h-[42px] w-[42px] items-center justify-center rounded-full transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
+							className={cn(
+								RAIL_SLOT,
+								RAIL_FOCUS,
+								"rounded-full transition-opacity hover:opacity-80"
+							)}
 						>
 							<Avatar className="h-8 w-8">
 								<AvatarImage
@@ -286,19 +292,25 @@ export function LumaSidebar() {
 				role="navigation"
 				aria-label="Navigazione principale"
 				className={cn(
-					"fixed top-3 bottom-3 left-3 z-50 w-[66px]",
+					"top-rail-inset bottom-rail-inset left-rail-inset w-rail fixed z-50",
 					"hidden flex-col items-center gap-[7px] py-3 md:flex",
 					// A floating card *above* the page band, not a window onto it: an opaque
-					// surface is what keeps the light from tinting the chrome.
-					"border-border/60 bg-background rounded-2xl border",
-					"shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
+					// surface is what keeps the light from tinting the chrome. --popover is the token
+					// for a thing that floats; it equals --background in both themes, so the border
+					// is what separates the rail from the page.
+					"border-border/60 bg-popover rounded-2xl border",
+					"shadow-rail"
 				)}
 			>
 				{/* Brand */}
 				<Link
 					to="/user"
 					aria-label="TriviaMore home"
-					className="focus-visible:ring-ring flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
+					className={cn(
+						RAIL_SLOT,
+						RAIL_FOCUS,
+						"rounded-xl transition-opacity hover:opacity-80"
+					)}
 				>
 					<LogoIcon size={26} />
 				</Link>

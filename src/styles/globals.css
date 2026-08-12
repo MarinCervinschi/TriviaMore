@@ -67,6 +67,19 @@
 	--shadow-halo-success: 0 0 0 4px hsl(var(--success) / 0.15);
 	--shadow-halo-info: 0 0 0 4px hsl(var(--info) / 0.15);
 	--shadow-halo-warning: 0 0 0 4px hsl(var(--warning) / 0.15);
+	/* The two pieces of floating chrome: the desktop rail casts downward, the mobile dock upward.
+	   Black rather than a token, because a shadow is an absence of light — pointing it at --foreground
+	   would turn it into a glow in dark. It therefore does very little in dark, where the border is
+	   what separates the bar from the page. */
+	/* The rail's geometry, and the page gutter derived from it. This was four literals — three in
+	   .full-bleed-band and one in _app.tsx, the latter carrying a comment that did the sum by hand.
+	   A comment doing arithmetic is the tell that a derivation is real and unenforced. Move the rail
+	   now and the gutter follows. */
+	--spacing-rail: 66px;
+	--spacing-rail-inset: 12px;
+	--spacing-rail-gutter: calc(var(--spacing-rail) + var(--spacing-rail-inset) * 2);
+	--shadow-rail: 0 8px 32px rgb(0 0 0 / 0.06);
+	--shadow-dock: 0 -4px 24px rgb(0 0 0 / 0.06);
 	/* Steps of 4px, every one derived from --radius, because the app's small paddings are 4/6/8px
 	   (p-1, p-1.5, p-2) — so "parent radius minus its padding", the concentric move, always lands on
 	   another step of this scale instead of between two. --radius is the control radius; cards are one
@@ -285,9 +298,9 @@ body {
    Only active on md+, where the sidebar is rendered. */
 @media (min-width: 768px) {
 	.full-bleed-band {
-		margin-left: -90px;
-		width: calc(100% + 90px);
-		padding-left: 90px;
+		margin-left: calc(var(--spacing-rail-gutter) * -1);
+		width: calc(100% + var(--spacing-rail-gutter));
+		padding-left: var(--spacing-rail-gutter);
 	}
 }
 

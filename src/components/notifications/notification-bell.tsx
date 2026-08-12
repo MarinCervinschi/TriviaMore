@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BellIcon } from "@solar-icons/react/linear/bell";
 import { useQuery } from "@tanstack/react-query";
 
+import { RAIL_ICON, RAIL_ITEM, RAIL_ITEM_IDLE } from "@/components/layout/nav-items";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { notificationQueries } from "@/lib/notifications/queries";
@@ -21,9 +22,9 @@ export function SidebarNotificationBell() {
 					<PopoverTrigger asChild>
 						<button
 							aria-label={`Notifiche${unreadCount > 0 ? ` (${unreadCount} non lette)` : ""}`}
-							className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground focus-visible:ring-ring relative flex h-[42px] w-[42px] items-center justify-center rounded-xl transition-colors focus-visible:ring-2 focus-visible:outline-none"
+							className={cn(RAIL_ITEM, RAIL_ITEM_IDLE)}
 						>
-							<BellIcon className="size-[18px]" />
+							<BellIcon className={RAIL_ICON} />
 							{unreadCount > 0 && (
 								<span
 									className={cn(
