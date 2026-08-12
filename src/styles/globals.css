@@ -310,25 +310,6 @@ body {
 	background-clip: text;
 }
 
-/* Quiz interface */
-.quiz-progress {
-	background: linear-gradient(
-		90deg,
-		hsl(var(--gradient-from)) 0%,
-		hsl(var(--gradient-to)) 100%
-	);
-}
-
-.quiz-timer {
-	color: #d14124;
-	font-weight: 600;
-}
-
-.quiz-timer.warning {
-	color: #dc2626;
-	animation: pulse 1s infinite;
-}
-
 /* Flashcard */
 .flashcard {
 	perspective: 1000px;
@@ -352,59 +333,28 @@ body {
 	transform: rotateY(180deg);
 }
 
-/* Auth glass effect */
-.auth-glass-effect {
-	backdrop-filter: blur(16px) saturate(180%);
-	background: rgba(255, 255, 255, 0.75);
-	border: 1px solid rgba(255, 255, 255, 0.125);
-}
-
-.dark .auth-glass-effect {
-	background: rgba(17, 24, 39, 0.75);
-	border: 1px solid rgba(255, 255, 255, 0.125);
-}
-
 /* Scrollbar */
 ::-webkit-scrollbar {
 	width: 8px;
 }
 
+/* The signature survives, the shouting does not: a solid brand thumb was the loudest element on a
+   long page while being pure chrome. Both themes take the same rule now — the tokens do the
+   switching, which is why the three .dark overrides are gone. */
 ::-webkit-scrollbar-track {
-	background: #f1f5f9;
+	background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #d14124;
-	border-radius: 4px;
+	background: hsl(var(--primary) / 0.4);
+	border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #b8371f;
-}
-
-.dark ::-webkit-scrollbar-track {
-	background: #374151;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-	background: #6b7280;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-	background: #9ca3af;
+	background: hsl(var(--primary));
 }
 
 /* Animations */
-@keyframes pulse {
-	0%,
-	100% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.5;
-	}
-}
-
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -470,21 +420,6 @@ body {
 	to {
 		transform: rotate(-360deg);
 	}
-}
-
-/* Social auth buttons */
-.social-auth-btn {
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.social-auth-btn:hover:not(:disabled) {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.social-auth-btn:disabled {
-	cursor: not-allowed;
-	opacity: 0.6;
 }
 
 /* ===== Tailwind Typography: map prose variables to theme tokens =====
