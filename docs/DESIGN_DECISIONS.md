@@ -934,7 +934,82 @@ could not be told from a badge by shape**, leaving colour as the only signal. At
 
 ---
 
-## The rules these decisions serve
+## D25 — A card is elevated, and in dark that means lighter rather than shadowed
+
+**Decided and implemented 2026-08-12.** The premise of the open question was wrong twice over. It was
+not ~30 hand-rolled recipes but **69 surfaces**, and it was not invisible: `<Card>` carries `shadow-sm`
+while **59 of the hand-rolled surfaces carry no shadow at all**, so the app had two card looks and which
+one a surface got depended on the spelling its author reached for. `<Card>` is used 25 times, and 11 of
+its 13 files are admin routes — the primitive had effectively become the admin card while the rest of the
+app wrote a flat one by hand. `DESIGN_SYSTEM.md` declared `shadow-sm` the base, i.e. it described the
+minority.
+
+**The elevated card wins.** I argued the other way — reserve elevation for what actually floats, since a
+panel in the page flow is a region and a region is separated by a border — and the user rejected it on
+the look, which is theirs to judge: the shadow earns its keep in light. So the doc was right here too,
+and the flat spelling was the deviation.
+
+### The half that was actually broken
+
+Their observation was that the elevated card adds nothing *in dark*, and that is not taste — it is
+`--card`, `--popover` and `--background` all being `224 71% 4%`. A shadow on a near-black page has
+nothing to fall on, so a card was the page with a border round it. **On a dark surface elevation is
+lightness, not shadow**, so the neutrals are now a ladder:
+
+| | dark | ΔL* from the page |
+|---|---|---|
+| `--background` | `224 71% 4%` | — |
+| `--card` | `224 55% 9%` | 3.5 |
+| `--popover` | `224 50% 12%` | 6.5 |
+| `--muted` | `215 28% 17%` | 14.5 |
+
+The worst case was not the card. **`dialog`, `alert-dialog` and `sheet` were `bg-background`**, so a
+modal in dark was the same colour as the page it covered and its `shadow-lg` did nothing. They are
+`bg-popover` now. In light the two tokens are the same value, which is precisely why the mistake
+survived: it is invisible in the theme people design in.
+
+**This is not the lift that was rejected twice.** Those were `--primary` and `--destructive` — saturated
+accent *fills*, where a lighter hue reads washed out. A neutral grey has no such asymmetry.
+
+**Measured, and one metric was the wrong one.** The contrast *ratio* of a lifted card against the page
+is 1.07, which looks like nothing, and the card's own border drops from 1.38 to 1.28 — both readings that
+would argue against the change. Both are the wrong metric: a luminance ratio answers "can text be read
+on this", not "can two large adjacent surfaces be told apart". In **ΔL\***, the lift is 3.5 (clearly
+perceptible, where +3 would be 1.9 and barely so) and the border keeps **ΔL\* 11** from the card, so it
+needs no adjustment. The gate gained four rows — text on `popover`, and `border` on `card` — because a
+new surface the app renders has to be checked, not assumed.
+
+### What was and was not swept
+
+Many of these cards will be deleted outright as the feature issues land, so a 69-site sweep would be
+throwaway work. Converted: the **12 surfaces in shared components** that survive that rework. Left
+alone: **25 in routes** (they go with the page rewrites, #146–#148) and **15 in skeletons**, which have
+to mirror their page and would break the mirror if they moved first. Two more stayed because `Card` has
+no `asChild`: a `<Link>` in `legal-related-docs` and a `motion.li` in `notification-list`. The token
+change reaches every `bg-card` regardless of spelling, so the part that carries the value did not wait
+for the sweep.
+
+`<Card>` also lost `transition-all duration-300` in favour of `transition-shadow`: the only property
+that changes at rest is the shadow, and `transition-all` animates layout properties on every card in the
+app. No call site depended on it — the six that animate a transform declare their own transition.
+
+### The two tiers that had no name
+
+- **`level="panel"`** — the page-level surface at `rounded-3xl` (10 sites: quiz and flashcard results,
+  the legal gate, the three settings blocks). Radius only; **padding stays with the caller**, because
+  those ten sites use three different paddings and baking one in would be wrong for half of them.
+- **`CardOrb`** — D4's blurred decoration, which ~10 surfaces rebuilt by hand at three sizes. Size and
+  corner are separate axes and every class is written out, since Tailwind scans source text and never
+  generates a class name assembled at runtime. **The tint stays a prop**: the decorative colour is D4's
+  and is not up for revision here.
+
+**Found, not fixed:** that decorative colour is two independent maps of raw Tailwind families
+(`stat-card.tsx` and `user/index.tsx` — `blue-500`, `yellow-500`, `emerald-300`, `orange-300`), outside
+the token system and unable to respond to the theme. Recorded for whoever decides D4's palette; touching
+it here would have been a colour change smuggled into a structural one.
+
+**Rules out:** a flat card in the page flow; `bg-background` on anything that floats; expressing dark
+elevation with a shadow; reading surface adjacency off a contrast ratio.
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
 satisfy. Where a decision and a rule collide, the rule wins — a rule is why a choice is right, not
@@ -1059,10 +1134,9 @@ radius by D24. Of the four parts, two needed no work:
   values are CSS hover transitions, which `motion.ts` does not cover — it covers Framer variants. The
   motion *rules* are already in this file: motion is spent on state the user caused, `prefers-reduced-motion`
   is not optional, and Doherty's ~400ms.
-- **Surfaces — real duplication, no visible problem.** `<Card>` already is
-  `bg-card rounded-2xl border shadow-sm`, and ~30 panels rebuild that recipe by hand — but they differ
-  only in padding and `overflow`, and many are decorative frames rather than semantic cards. Worth
-  doing, not worth doing quietly.
+- **Surfaces — ~~real duplication, no visible problem~~ → answered by D25** on 2026-08-12, which
+  corrects both halves of that claim: it was 69 surfaces rather than ~30, and it *was* visible — two
+  card looks, picked by spelling rather than by meaning.
 - **Radius — ~~measurably broken~~ → answered by D24** on 2026-08-12.
 
 **O4 — ~~The icon set~~ → resolved by D11 (Solar); both leftovers closed on 2026-08-10.** The mapping
