@@ -150,7 +150,7 @@ function ProfileSheet({
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<SheetContent
 				side="bottom"
-				className="bg-background/95 max-h-[85vh] overflow-y-auto rounded-t-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-xl"
+				className="max-h-[85vh] overflow-y-auto rounded-t-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
 			>
 				{/* Grab handle */}
 				<div
@@ -320,8 +320,8 @@ export function MobileBottomNav() {
 			animate="visible"
 			className={cn(
 				"fixed inset-x-0 bottom-0 z-50 md:hidden",
-				"border-border/60 bg-background/95 border-t backdrop-blur-xl",
-				"shadow-[0_-4px_24px_rgba(0,0,0,0.06)]",
+				"border-border/60 bg-popover border-t",
+				"shadow-dock",
 				"pb-[env(safe-area-inset-bottom)]"
 			)}
 		>

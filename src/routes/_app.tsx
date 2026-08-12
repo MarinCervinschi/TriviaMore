@@ -35,8 +35,7 @@ function AppLayout() {
 			<div
 				className={cn(
 					"flex min-h-screen flex-1 flex-col",
-					// Floating sidebar width (66) + left gap (12) + right gap (12) = 90px
-					isAuthenticated && "md:pl-[90px]"
+					isAuthenticated && "md:pl-rail-gutter"
 				)}
 			>
 				<main
