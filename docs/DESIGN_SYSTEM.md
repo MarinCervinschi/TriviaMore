@@ -30,7 +30,7 @@
 | Components | Radix UI (shadcn/ui) | Headless primitives in `src/components/ui/` |
 | Variants | class-variance-authority (CVA) | Used by Button, Badge |
 | Class merging | `cn()` from `src/lib/utils` | `clsx` + `tailwind-merge` — use everywhere |
-| Animation | Framer Motion v12 | Variants in `src/lib/motion.ts` |
+| Animation | Framer Motion v12 | Variants in `src/lib/motion.ts`. The **only** motion dependency — per the reversal on D9. Icon motion is a CSS transition, not Framer — per D23 |
 | Icons | Solar, Linear style | `@solar-icons/react/linear/<icon>`; `strokeWidth` 1.5 is the package default, never passed. Glyphs, the GitHub mark and the spinner live in `src/components/icons/` — see `ICON_MAP.md` |
 | Toasts | Sonner | Configured in `src/components/ui/sonner.tsx` |
 | Forms | React Hook Form + Zod | Schema-driven validation |

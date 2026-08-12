@@ -155,7 +155,7 @@ now closed, on three grounds:
 
 ---
 
-## D9 — AutoAnimate for list transitions
+## D9 — ~~AutoAnimate for list transitions~~ → reversed, not adopted
 
 **Decided 2026-08-09.** Adopt [`@formkit/auto-animate`](https://auto-animate.formkit.com/) for
 lists whose contents actually change: notifications, bookmarks, user requests, the option rows in
@@ -171,7 +171,25 @@ parent; and it fights `flex-grow: 1` children. On the `DataTable` it would anima
 on sort, which is desirable, but a paginated table replaces every row at once — try that surface
 last, not first.
 
-**Status: decided, not yet implemented.**
+**Status: reversed on 2026-08-12, before it was ever installed.** Framer Motion stays the app's only
+motion dependency.
+
+The cost was never the objection — 3.2 KB gzipped, zero dependencies, and it is the one motion library
+here that reads `prefers-reduced-motion` itself and disables itself, verified in its source rather than
+its README. Three constraints also checked in the source, all real: only **immediate** children animate
+(a `childList` observer with no `subtree`, so a wrapper div between container and items switches it
+off); it assigns `position: relative` to a `static` parent, which silently **moves the containing block
+for absolutely-positioned descendants** — and this app puts badges, counters and orbs in absolute
+position inside cards; and it fights `flex-grow: 1` children.
+
+**What actually killed it is a collision this entry did not anticipate.** Three of the five surfaces it
+named already animate with Framer: `notification-list` wraps every item in a `motion.div` with stagger
+variants, and `user/requests` and `user/bookmarks` do the same. AutoAnimate and Framer would both be
+writing transforms onto the same elements. Only two surfaces were clean — the faceted filter chips and
+the question editor's option rows — and two surfaces do not earn a second motion engine.
+
+**Rules out:** a second motion dependency. List add/remove/reorder, if it is wanted, is Framer's job
+through the existing `withReducedMotion` helpers.
 
 ---
 
@@ -817,6 +835,41 @@ Tailwind-native composition, not an untokenised recipe.
 
 ---
 
+## D23 — Icon motion is a CSS transition on state the user caused
+
+**Decided and implemented 2026-08-12, closing O5.** No animated icon set, and no Framer Motion for
+icons. The question O5 posed was "animate a handful of Solar icons with Framer, or drop the idea"; the
+answer is neither quite — **the app already animates icons, in CSS**, and that is the right mechanism.
+
+`theme-toggle` crossfades sun and moon with `transition-transform` plus `scale`/`rotate` and already
+carries `motion-reduce:transition-none`. Five `ArrowRightIcon`s translate on hover. The spinner spins.
+The capability was never missing.
+
+**Why CSS and not Framer, given Framer is already a dependency:** CSS transitions are covered by the
+`prefers-reduced-motion` block in `globals.css` and by `motion-reduce:` — for free. Framer writes inline
+styles from JavaScript and is untouched by that block, which is why `useReducedMotion` exists and why 28
+files have to remember it. Choosing Framer for icons would take on the app's most repeated hazard in
+exchange for more elaborate icons that no rule asks for.
+
+**Which icons earn it.** The rule is that motion is spent on state the user caused, so the candidates
+are the icons that *are* a state the user just toggled. There are four two-state swaps in the app, and
+only two qualify:
+
+| | swap | verdict |
+|---|---|---|
+| `bookmark-button` | `BookmarkIcon` ↔ `bold/bookmark` | **yes** — D11's style axis already supplies two drawings of one icon, so the crossfade is half-built by the icon system |
+| `password-input` | `EyeIcon` ↔ `EyeClosedIcon` | **yes** — the two drawings differ legibly |
+| `quiz-header`, `flashcard-header` | `SidebarIcon` ↔ `SidebarMinimalisticIcon` | **no** — and this is the useful one: the two Solar drawings differ only in weight of detail, which `ICON_MAP.md` already flags. **Animating a swap between near-identical drawings advertises that they are near-identical.** The problem there is the icon, not the motion |
+| `department-card` | `AreaIcon ?? BuildingsIcon` | no — a fallback, not a state |
+
+**The price, for the record:** about six lines per site, no dependency, and no guard to remember. The
+duration is 200ms because `motion.ts` already calls ~200ms the speed of press feedback, and a toggle is
+press feedback.
+
+**Rules out:** Framer Motion for an icon; animating a swap whose two drawings do not read as different.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -978,10 +1031,8 @@ glow and a card orb work at very different scales.
 
 **O8 — ~~The brand ramp's edges~~ → settled inside D14 and D15** on 2026-08-09.
 
-**O5 — Animated icons.** Parked in D10 and unblocked by D11: Animate UI's animated icons are
-Lucide-based, so they are now off the table as a source. Either animate a handful of Solar icons
-ourselves with Framer Motion — going through `useReducedMotion`, per the trap above — or drop the
-idea. Decide only after the D3 + D11 sweep has landed.
+**O5 — ~~Animated icons~~ → answered by D23** on 2026-08-12: no Framer-animated icon set. Icon motion
+is a CSS transition on state the user caused, and exactly two places earn it.
 
 ---
 
@@ -1001,3 +1052,6 @@ idea. Decide only after the D3 + D11 sweep has landed.
 | 2026-08-10 | D12–D13 implemented as one band per page instead of a page-height falloff; O7 answered (top left); `DecorativeBackground` and 21 page orbs deleted |
 | 2026-08-11 | D13 corrected after the browser pass: one band in the shell, the sidebar made a real window, 16 dead `--sidebar-*` tokens deleted |
 | 2026-08-11 | D18: L2 takes a diagonal beam on `--primary`, L1 keeps the anchored glow — one device per level |
+| 2026-08-11 | D19–D20 close #152 and #154: ink tokens split from surfaces, undo for the reversible |
+| 2026-08-11 | D21–D22: one Italian word per catalog level; the focus ring declared once |
+| 2026-08-12 | D23 closes O5 — icon motion is CSS on user-caused state. **D9 reversed**: AutoAnimate not adopted, Framer stays the only motion dependency |
