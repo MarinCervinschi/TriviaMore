@@ -77,18 +77,14 @@ function buildColumns(onDelete: (id: string) => void) {
 		column.accessor("code", {
 			header: "Codice",
 			meta: { label: "Codice" },
-			cell: ({ row }) => (
-				<Badge variant="secondary" className="rounded-full">
-					{row.original.code}
-				</Badge>
-			),
+			cell: ({ row }) => <Badge variant="secondary">{row.original.code}</Badge>,
 		}),
 		column.accessor("courseType", {
 			header: "Tipo",
 			filterFn: "arrHas",
 			meta: { label: "Tipo", facet: { options: COURSE_TYPE_OPTIONS } },
 			cell: ({ row }) => (
-				<Badge variant="outline" className="rounded-full">
+				<Badge variant="outline">
 					{COURSE_TYPE_CONFIG[row.original.courseType]?.label ??
 						row.original.courseType}
 				</Badge>
@@ -162,7 +158,7 @@ function AdminDepartmentDetailPage() {
 			/>
 
 			<div className="grid gap-6">
-				<Card className="rounded-2xl">
+				<Card>
 					<CardHeader className="pb-4">
 						<CardTitle>Modifica dipartimento</CardTitle>
 					</CardHeader>
@@ -177,41 +173,32 @@ function AdminDepartmentDetailPage() {
 					</CardContent>
 				</Card>
 
-				<Card className="rounded-2xl">
-					<CardHeader>
-						<CardTitle>Corsi ({courses.length})</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<DataTable
-							table={table}
-							density="compact"
-							bordered={false}
-							toolbar={
-								<DataTableToolbar
-									table={table}
-									searchPlaceholder="Cerca corsi..."
-									actions={
-										<Button
-											size="sm"
-											className="rounded-xl"
-											onClick={() => setCreateCourseOpen(true)}
-										>
-											<PlusGlyph className="mr-1 h-4 w-4" />
-											Nuovo
-										</Button>
-									}
-								/>
-							}
-							empty={
-								<InlineEmpty>
-									{search.q
-										? "Nessun corso trovato."
-										: "Nessun corso in questo dipartimento."}
-								</InlineEmpty>
-							}
-						/>
-					</CardContent>
-				</Card>
+				<section className="space-y-4">
+					<h2 className="text-xl font-semibold">Corsi ({courses.length})</h2>
+					<DataTable
+						table={table}
+						density="compact"
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca corsi..."
+								actions={
+									<Button size="sm" onClick={() => setCreateCourseOpen(true)}>
+										<PlusGlyph className="mr-1 h-4 w-4" />
+										Nuovo
+									</Button>
+								}
+							/>
+						}
+						empty={
+							<InlineEmpty>
+								{search.q
+									? "Nessun corso trovato."
+									: "Nessun corso in questo dipartimento."}
+							</InlineEmpty>
+						}
+					/>
+				</section>
 			</div>
 
 			<Dialog open={createCourseOpen} onOpenChange={setCreateCourseOpen}>

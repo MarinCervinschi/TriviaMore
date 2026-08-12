@@ -17,7 +17,6 @@ import {
 } from "@/components/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { useDeleteUser } from "@/lib/admin/mutations";
@@ -104,7 +103,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			filterFn: "arrHas",
 			meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS } },
 			cell: ({ row }) => (
-				<Badge variant={ROLE_VARIANTS[row.original.role]} className="rounded-full">
+				<Badge variant={ROLE_VARIANTS[row.original.role]}>
 					{ROLE_LABELS[row.original.role] ?? row.original.role}
 				</Badge>
 			),
@@ -168,31 +167,23 @@ function AdminUsersPage() {
 				backLabel="Dashboard"
 			/>
 
-			<Card className="rounded-2xl">
-				<CardHeader>
-					<CardTitle>Lista utenti</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<DataTable
+			<DataTable
+				table={table}
+				density="compact"
+				toolbar={
+					<DataTableToolbar
 						table={table}
-						density="compact"
-						bordered={false}
-						toolbar={
-							<DataTableToolbar
-								table={table}
-								searchPlaceholder="Cerca per nome o email..."
-							/>
-						}
-						empty={
-							<InlineEmpty>
-								{search.q || search.role
-									? "Nessun utente trovato."
-									: "Nessun utente registrato."}
-							</InlineEmpty>
-						}
+						searchPlaceholder="Cerca per nome o email..."
 					/>
-				</CardContent>
-			</Card>
+				}
+				empty={
+					<InlineEmpty>
+						{search.q || search.role
+							? "Nessun utente trovato."
+							: "Nessun utente registrato."}
+					</InlineEmpty>
+				}
+			/>
 
 			<ConfirmationDialog
 				open={!!deleteId}

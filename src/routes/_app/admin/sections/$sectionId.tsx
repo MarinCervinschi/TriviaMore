@@ -96,7 +96,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			filterFn: "arrHas",
 			meta: { label: "Tipo", facet: { options: toOptions(TYPE_LABELS) } },
 			cell: ({ row }) => (
-				<Badge variant="outline" className="rounded-full">
+				<Badge variant="outline">
 					{TYPE_LABELS[row.original.questionType] ?? row.original.questionType}
 				</Badge>
 			),
@@ -107,7 +107,6 @@ function buildColumns(onDelete: (id: string) => void) {
 			meta: { label: "Difficoltà", facet: { options: toOptions(DIFFICULTY_LABELS) } },
 			cell: ({ row }) => (
 				<Badge
-					className="rounded-full"
 					variant={
 						row.original.difficulty === "HARD"
 							? "destructive"
@@ -211,7 +210,7 @@ function AdminSectionDetailPage() {
 
 			<div className="grid gap-6">
 				<div className="grid gap-6 md:grid-cols-2">
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader className="pb-4">
 							<CardTitle>Modifica sezione</CardTitle>
 						</CardHeader>
@@ -228,7 +227,7 @@ function AdminSectionDetailPage() {
 						</CardContent>
 					</Card>
 
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader>
 							<CardTitle>Statistiche</CardTitle>
 						</CardHeader>
@@ -265,7 +264,7 @@ function AdminSectionDetailPage() {
 
 				{/* Section access management (private sections, SUPERADMIN only) */}
 				{!section.isPublic && isSuperadmin && (
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<UsersGroupRoundedIcon className="h-5 w-5" />
@@ -279,11 +278,7 @@ function AdminSectionDetailPage() {
 							{(accessUsers?.length ?? 0) > 0 && (
 								<div className="mb-4 flex flex-wrap gap-2">
 									{accessUsers?.map(u => (
-										<Badge
-											key={u.id}
-											variant="secondary"
-											className="gap-1 rounded-full pr-1"
-										>
+										<Badge key={u.id} variant="secondary" className="gap-1 pr-1">
 											{u.name ?? u.email ?? u.id}
 											<Button
 												variant="ghost"
@@ -310,7 +305,7 @@ function AdminSectionDetailPage() {
 								return availableUsers.length > 0 ? (
 									<div className="flex items-center gap-2">
 										<Select value={addUserId} onValueChange={setAddUserId}>
-											<SelectTrigger className="w-64 rounded-xl">
+											<SelectTrigger className="w-64">
 												<SelectValue placeholder="Seleziona utente..." />
 											</SelectTrigger>
 											<SelectContent>
@@ -344,42 +339,37 @@ function AdminSectionDetailPage() {
 					</Card>
 				)}
 
-				<Card className="rounded-2xl">
-					<CardHeader>
-						<CardTitle>Domande ({questions.length})</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<DataTable
-							table={table}
-							density="compact"
-							bordered={false}
-							toolbar={
-								<DataTableToolbar
-									table={table}
-									searchPlaceholder="Cerca domande..."
-									actions={
-										<Button size="sm" asChild>
-											<Link
-												to="/admin/questions/$questionId"
-												params={{ questionId: "new" }}
-												search={{ sectionId: section.id } as never}
-											>
-												Nuova domanda
-											</Link>
-										</Button>
-									}
-								/>
-							}
-							empty={
-								<InlineEmpty>
-									{search.q
-										? "Nessuna domanda trovata."
-										: "Nessuna domanda in questa sezione."}
-								</InlineEmpty>
-							}
-						/>
-					</CardContent>
-				</Card>
+				<section className="space-y-4">
+					<h2 className="text-xl font-semibold">Domande ({questions.length})</h2>
+					<DataTable
+						table={table}
+						density="compact"
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca domande..."
+								actions={
+									<Button size="sm" asChild>
+										<Link
+											to="/admin/questions/$questionId"
+											params={{ questionId: "new" }}
+											search={{ sectionId: section.id } as never}
+										>
+											Nuova domanda
+										</Link>
+									</Button>
+								}
+							/>
+						}
+						empty={
+							<InlineEmpty>
+								{search.q
+									? "Nessuna domanda trovata."
+									: "Nessuna domanda in questa sezione."}
+							</InlineEmpty>
+						}
+					/>
+				</section>
 			</div>
 
 			<ConfirmationDialog
