@@ -28,7 +28,7 @@ describe("getGradeColor", () => {
 		[26, "text-info"],
 		[27, "text-success"],
 		[30, "text-success"],
-		[31, "text-purple-600 dark:text-purple-400"],
+		[31, "text-chart-4-ink"],
 	])("maps %d to %s", (score, expected) => {
 		expect(getGradeColor(score)).toBe(expected);
 	});

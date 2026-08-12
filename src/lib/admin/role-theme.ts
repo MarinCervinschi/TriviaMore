@@ -19,23 +19,23 @@ const THEMES = {
 	SUPERADMIN: {
 		label: "Super Admin",
 		icon: ShieldStarIcon,
-		pillBg: "bg-violet-500/10",
-		pillText: "text-violet-600 dark:text-violet-400",
-		pillBorder: "border-violet-500/30",
+		pillBg: "bg-chart-4/10",
+		pillText: "text-chart-4-ink",
+		pillBorder: "border-chart-4/30",
 	},
 	ADMIN: {
 		label: "Admin",
 		icon: ShieldCheckIcon,
-		pillBg: "bg-blue-500/10",
-		pillText: "text-blue-600 dark:text-blue-400",
-		pillBorder: "border-blue-500/30",
+		pillBg: "bg-chart-2/10",
+		pillText: "text-chart-2-ink",
+		pillBorder: "border-chart-2/30",
 	},
 	MAINTAINER: {
 		label: "Maintainer",
 		icon: ShieldUserIcon,
-		pillBg: "bg-emerald-500/10",
-		pillText: "text-emerald-600 dark:text-emerald-400",
-		pillBorder: "border-emerald-500/30",
+		pillBg: "bg-chart-3/10",
+		pillText: "text-chart-3-ink",
+		pillBorder: "border-chart-3/30",
 	},
 } satisfies Record<string, RoleTheme>;
 
