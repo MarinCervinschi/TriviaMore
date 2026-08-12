@@ -376,7 +376,7 @@ function RevisionForm({
 				<Button
 					size="sm"
 					variant="outline"
-					className="gap-1.5 rounded-xl"
+					className="gap-1.5"
 					onClick={() => setEditing(true)}
 				>
 					<Pen2Icon className="size-3.5" />
@@ -402,7 +402,6 @@ function RevisionForm({
 				<Button
 					size="sm"
 					variant="ghost"
-					className="rounded-xl"
 					onClick={() => {
 						setContent(submitted);
 						setEditing(false);
@@ -412,7 +411,7 @@ function RevisionForm({
 				</Button>
 				<Button
 					size="sm"
-					className="gap-1.5 rounded-xl"
+					className="gap-1.5"
 					onClick={() => revise.mutate({ id: requestId, submitted_content: content })}
 					disabled={revise.isPending}
 				>
@@ -558,7 +557,7 @@ function RevisionQuestionEditor({
 						});
 					}}
 				>
-					<SelectTrigger className="rounded-xl text-sm">
+					<SelectTrigger className="text-sm">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -574,7 +573,7 @@ function RevisionQuestionEditor({
 						onChange({ ...question, difficulty: v as SubmittedQuestion["difficulty"] })
 					}
 				>
-					<SelectTrigger className="rounded-xl text-sm">
+					<SelectTrigger className="text-sm">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -697,7 +696,7 @@ function ReportEditor({
 					<Button
 						size="sm"
 						variant="outline"
-						className="gap-1.5 rounded-xl"
+						className="gap-1.5"
 						onClick={() => setEditing(true)}
 					>
 						<Pen2Icon className="size-3.5" />
@@ -706,7 +705,7 @@ function ReportEditor({
 					<Button
 						size="sm"
 						variant="outline"
-						className="text-danger hover:text-danger gap-1.5 rounded-xl"
+						className="text-danger hover:text-danger gap-1.5"
 						onClick={() => setConfirmDelete(true)}
 					>
 						<TrashBinMinimalisticIcon className="size-3.5" />
@@ -777,7 +776,6 @@ function ReportEditor({
 				<Button
 					size="sm"
 					variant="ghost"
-					className="rounded-xl"
 					onClick={() => {
 						setReasons(report.reasons as ReportReason[]);
 						setComment(report.comment ?? "");
@@ -788,7 +786,7 @@ function ReportEditor({
 				</Button>
 				<Button
 					size="sm"
-					className="gap-1.5 rounded-xl"
+					className="gap-1.5"
 					onClick={() =>
 						update.mutate({ id: requestId, reasons, comment: comment.trim() || null })
 					}
@@ -812,7 +810,7 @@ function ReportPreview({ report }: { report: SubmittedReport }) {
 						<Badge
 							key={r}
 							variant="outline"
-							className="rounded-full border-red-500/30 bg-red-500/10 text-xs text-red-600 dark:text-red-400"
+							className="border-red-500/30 bg-red-500/10 text-xs text-red-600 dark:text-red-400"
 						>
 							{REASON_LABELS[r] ?? r}
 						</Badge>
@@ -867,7 +865,7 @@ function QuestionPreview({
 								key={oi}
 								variant="outline"
 								className={cn(
-									"rounded-full text-xs",
+									"text-xs",
 									isCorrect &&
 										"border-green-500/40 bg-green-500/10 text-green-600 dark:text-green-400"
 								)}

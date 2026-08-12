@@ -42,7 +42,7 @@ export function BookmarkButton({
 							isBookmarked ? "Rimuovi dai segnalibri" : "Aggiungi ai segnalibri"
 						}
 						className={cn(
-							"h-9 w-9 rounded-xl transition-all",
+							"h-9 w-9 transition-all",
 							isBookmarked && "text-brand hover:text-brand/80",
 							className
 						)}

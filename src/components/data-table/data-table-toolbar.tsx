@@ -88,7 +88,7 @@ export function DataTableToolbar<TData extends RowData>({
 					<Button
 						variant="ghost"
 						size="sm"
-						className="h-9 rounded-xl px-2"
+						className="h-9 px-2"
 						onClick={() => table.options.meta?.resetFilters()}
 					>
 						Pulisci

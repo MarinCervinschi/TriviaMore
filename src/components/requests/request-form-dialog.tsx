@@ -28,7 +28,7 @@ export function RequestFormDialog({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				{trigger ?? (
-					<Button className="shadow-primary/25 gap-2 rounded-xl shadow-lg">
+					<Button className="shadow-primary/25 gap-2 shadow-lg">
 						<PlusGlyph className="size-4" />
 						Proponi contenuto
 					</Button>

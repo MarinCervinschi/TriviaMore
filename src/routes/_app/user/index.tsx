@@ -63,7 +63,7 @@ function DashboardPage() {
 							Ciao, <span className="gradient-text break-words">{displayName}</span>
 						</h1>
 						<div className="mb-3 flex items-center gap-2">
-							<Badge className="border-primary/20 bg-primary/5 text-brand rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
+							<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
 								{getRoleLabel(profile.role)}
 							</Badge>
 						</div>
@@ -308,7 +308,7 @@ const recentClassColumns = [
 		meta: { label: "Tipo", align: "center" },
 		cell: ({ row }) => (
 			<Badge
-				className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
+				className={`text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
 			>
 				{COURSE_TYPE_CONFIG[row.original.courseType]?.label ?? row.original.courseType}
 			</Badge>
@@ -392,7 +392,7 @@ function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) 
 									{formatDate(attempt.completedAt)}
 								</p>
 							</div>
-							<Button asChild variant="outline" size="sm" className="rounded-xl">
+							<Button asChild variant="outline" size="sm">
 								<Link
 									to="/quiz/results/$attemptId"
 									params={{ attemptId: attempt.id }}

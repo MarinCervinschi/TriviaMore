@@ -67,7 +67,7 @@ export function QuestionEditor({
 						});
 					}}
 				>
-					<SelectTrigger className="rounded-xl text-sm">
+					<SelectTrigger className="text-sm">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -83,7 +83,7 @@ export function QuestionEditor({
 						onChange({ ...question, difficulty: v as SubmittedQuestion["difficulty"] })
 					}
 				>
-					<SelectTrigger className="rounded-xl text-sm">
+					<SelectTrigger className="text-sm">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>

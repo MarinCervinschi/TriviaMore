@@ -32,10 +32,7 @@ const columns = [
 		header: "Modalità",
 		meta: { label: "Modalità", align: "center" },
 		cell: ({ row }) => (
-			<Badge
-				variant={row.original.quizMode === "STUDY" ? "default" : "secondary"}
-				className="rounded-full"
-			>
+			<Badge variant={row.original.quizMode === "STUDY" ? "default" : "secondary"}>
 				{row.original.quizMode === "STUDY" ? "Studio" : "Esame"}
 			</Badge>
 		),

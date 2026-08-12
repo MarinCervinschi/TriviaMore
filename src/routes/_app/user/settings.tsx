@@ -172,7 +172,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 					</Avatar>
 					<div>
 						<h3 className="text-lg font-semibold">{name || displayName}</h3>
-						<Badge className="border-primary/20 bg-primary/5 text-brand rounded-full border px-3 py-1 text-sm font-medium">
+						<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-sm font-medium">
 							{getRoleLabel(profile.role)}
 						</Badge>
 					</div>
@@ -196,7 +196,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 							id="email"
 							value={profile.email ?? ""}
 							disabled
-							className="bg-muted/30 rounded-xl"
+							className="bg-muted/30"
 						/>
 						<p className="text-muted-foreground text-xs">
 							L'email non può essere modificata
@@ -276,7 +276,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 //         <div className="mt-6">
 //           <AlertDialog>
 //             <AlertDialogTrigger asChild>
-//               <Button variant="destructive" className="rounded-xl">
+//               <Button variant="destructive" >
 //                 <Trash2 className="mr-2 h-4 w-4" />
 //                 Elimina il mio account
 //               </Button>

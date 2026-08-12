@@ -353,7 +353,7 @@ export function RequestForm({
 			<Button
 				onClick={handleSubmit}
 				disabled={!canSubmit || isPending}
-				className="w-full rounded-xl"
+				className="w-full"
 			>
 				{isPending ? "Invio in corso..." : "Invia proposta"}
 			</Button>

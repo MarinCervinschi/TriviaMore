@@ -29,7 +29,7 @@ export function FlashcardHeader({
 					variant="ghost"
 					size="icon"
 					onClick={onToggleSidebar}
-					className="h-9 w-9 rounded-xl"
+					className="h-9 w-9"
 					aria-label={
 						sidebarOpen
 							? "Chiudi l\u2019elenco delle domande"
@@ -58,7 +58,7 @@ export function FlashcardHeader({
 					variant="ghost"
 					size="sm"
 					onClick={onExit}
-					className="text-muted-foreground hover:bg-destructive/10 hover:text-danger rounded-xl"
+					className="text-muted-foreground hover:bg-destructive/10 hover:text-danger"
 				>
 					<Logout3Icon className="mr-1.5 h-4 w-4" />
 					Esci

@@ -82,7 +82,7 @@ export function MaintainerInviteDialog({
 			}}
 		>
 			<DialogTrigger asChild>
-				<Button size="sm" variant="outline" className="gap-1.5 rounded-xl">
+				<Button size="sm" variant="outline" className="gap-1.5">
 					<LetterIcon className="h-4 w-4" />
 					Invita come maintainer
 				</Button>
@@ -101,7 +101,7 @@ export function MaintainerInviteDialog({
 					<div className="space-y-1.5">
 						<Label>Corso</Label>
 						<Select value={courseId} onValueChange={handleCourseChange}>
-							<SelectTrigger className="rounded-xl">
+							<SelectTrigger>
 								<SelectValue placeholder="Seleziona il corso..." />
 							</SelectTrigger>
 							<SelectContent>
@@ -151,12 +151,10 @@ export function MaintainerInviteDialog({
 
 				<DialogFooter>
 					<DialogClose asChild>
-						<Button variant="ghost" className="rounded-xl">
-							Annulla
-						</Button>
+						<Button variant="ghost">Annulla</Button>
 					</DialogClose>
 					<Button
-						className="gap-1.5 rounded-xl"
+						className="gap-1.5"
 						disabled={!canSend || send.isPending}
 						onClick={() =>
 							send.mutate({ user_id: userId, course_id: courseId, subject, body })

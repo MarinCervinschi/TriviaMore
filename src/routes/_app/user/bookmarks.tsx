@@ -112,12 +112,10 @@ function BookmarkCard({
 					</span>
 				</div>
 				<div className="flex shrink-0 items-center gap-2">
-					<Badge className={`rounded-full ${getDifficultyColor(bookmark.difficulty)}`}>
+					<Badge className={getDifficultyColor(bookmark.difficulty)}>
 						{getDifficultyLabel(bookmark.difficulty)}
 					</Badge>
-					<Badge variant="outline" className="rounded-full">
-						{getQuestionTypeLabel(bookmark.questionType)}
-					</Badge>
+					<Badge variant="outline">{getQuestionTypeLabel(bookmark.questionType)}</Badge>
 					<AltArrowDownIcon
 						className={`text-muted-foreground h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
 					/>

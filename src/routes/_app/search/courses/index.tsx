@@ -267,7 +267,7 @@ function SearchCoursesPage() {
 							value={dept ?? ""}
 							onValueChange={v => updateSearch({ dept: v === "all" ? undefined : v })}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[180px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[180px] text-xs">
 								<SelectValue placeholder="Tutti i dipartimenti" />
 							</SelectTrigger>
 							<SelectContent>
@@ -284,7 +284,7 @@ function SearchCoursesPage() {
 							value={type ?? ""}
 							onValueChange={v => updateSearch({ type: v === "all" ? undefined : v })}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[140px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[140px] text-xs">
 								<SelectValue placeholder="Tutti i tipi" />
 							</SelectTrigger>
 							<SelectContent>
@@ -301,7 +301,7 @@ function SearchCoursesPage() {
 							value={campus ?? ""}
 							onValueChange={v => updateSearch({ campus: v === "all" ? undefined : v })}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[140px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[140px] text-xs">
 								<SelectValue placeholder="Tutti i campus" />
 							</SelectTrigger>
 							<SelectContent>
@@ -335,12 +335,7 @@ function SearchCoursesPage() {
 						<p className="text-muted-foreground mt-1 text-sm">
 							Prova a modificare i filtri o il termine di ricerca
 						</p>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={clearFilters}
-							className="mt-4 rounded-xl"
-						>
+						<Button variant="outline" size="sm" onClick={clearFilters} className="mt-4">
 							Pulisci filtri
 						</Button>
 					</div>

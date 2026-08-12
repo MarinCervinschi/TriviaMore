@@ -139,7 +139,7 @@ export function ReportQuestionDialog({
 					<Button
 						onClick={handleSubmit}
 						disabled={!canSubmit || createRequest.isPending}
-						className="w-full rounded-xl"
+						className="w-full"
 					>
 						{createRequest.isPending ? "Invio..." : "Invia segnalazione"}
 					</Button>

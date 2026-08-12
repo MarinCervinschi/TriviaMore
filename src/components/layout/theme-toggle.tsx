@@ -36,7 +36,7 @@ export function ThemeToggle({
 		<Button
 			variant={variant}
 			size={size}
-			className={cn("rounded-xl", className)}
+			className={className}
 			onClick={event => toggleTheme(event.nativeEvent)}
 			disabled={disabled || !mounted}
 			aria-label="Cambia tema"
