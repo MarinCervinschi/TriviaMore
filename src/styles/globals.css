@@ -46,6 +46,11 @@
 	--color-chart-3: hsl(var(--chart-3));
 	--color-chart-4: hsl(var(--chart-4));
 	--color-chart-5: hsl(var(--chart-5));
+	--color-chart-1-ink: hsl(var(--chart-1-ink));
+	--color-chart-2-ink: hsl(var(--chart-2-ink));
+	--color-chart-3-ink: hsl(var(--chart-3-ink));
+	--color-chart-4-ink: hsl(var(--chart-4-ink));
+	--color-chart-5-ink: hsl(var(--chart-5-ink));
 	--color-gradient-from: hsl(var(--gradient-from));
 	--color-gradient-to: hsl(var(--gradient-to));
 	--color-heat-1: hsl(var(--heat-1));
@@ -129,6 +134,16 @@
 	--chart-3: 142 71% 37%;
 	--chart-4: 262 83% 66.5%;
 	--chart-5: 43 96% 34.5%;
+	/* The ink half of the same ramp — D19's rule a third time: a colour's surface
+	   value is not its ink value. Every slot above is a fill on a plot and lands
+	   between 3.05 and 3.99 as text, so a category pill cannot borrow it. Same hue
+	   and saturation, lightness re-tuned to clear 4.5 on bg-muted, which is the
+	   binding surface. Categories reuse these; they are not a second ramp. */
+	--chart-1-ink: 10 76% 44%;
+	--chart-2-ink: 217 91% 49%;
+	--chart-3-ink: 142 71% 28%;
+	--chart-4-ink: 262 83% 60%;
+	--chart-5-ink: 43 96% 28%;
 	/* Sequential ramp for heatmaps: one hue, monotone lightness, and a pale end
 	   that still clears the surface. Magnitude, never identity. */
 	--heat-1: 10 38% 74%;
@@ -186,6 +201,11 @@
 	--chart-3: 142 71% 39.5%;
 	--chart-4: 262 83% 69.5%;
 	--chart-5: 43 96% 37%;
+	--chart-1-ink: 10 76% 63%;
+	--chart-2-ink: 217 91% 65%;
+	--chart-3-ink: 142 71% 39%;
+	--chart-4-ink: 262 83% 72%;
+	--chart-5-ink: 43 96% 38%;
 	/* The ramp runs the other way here: its dim end must still clear the dark
 	   surface, so these are not the light steps inverted. */
 	--heat-1: 10 38% 30%;
