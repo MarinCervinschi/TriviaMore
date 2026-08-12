@@ -67,11 +67,7 @@ function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
 		column.accessor("code", {
 			header: "Codice",
 			meta: { label: "Codice" },
-			cell: ({ row }) => (
-				<Badge variant="secondary" className="rounded-full">
-					{row.original.code}
-				</Badge>
-			),
+			cell: ({ row }) => <Badge variant="secondary">{row.original.code}</Badge>,
 		}),
 		column.accessor("classYear", {
 			header: "Anno",
@@ -164,7 +160,7 @@ function AdminCourseDetailPage() {
 
 			<div className="grid gap-6">
 				{!isMaintainer && (
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader className="pb-4">
 							<CardTitle>Modifica corso</CardTitle>
 						</CardHeader>
@@ -181,43 +177,34 @@ function AdminCourseDetailPage() {
 					</Card>
 				)}
 
-				<Card className="rounded-2xl">
-					<CardHeader>
-						<CardTitle>Insegnamenti ({classes.length})</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<DataTable
-							table={table}
-							density="compact"
-							bordered={false}
-							toolbar={
-								<DataTableToolbar
-									table={table}
-									searchPlaceholder="Cerca insegnamenti..."
-									actions={
-										!isMaintainer && (
-											<Button
-												size="sm"
-												className="rounded-xl"
-												onClick={() => setCreateClassOpen(true)}
-											>
-												<PlusGlyph className="mr-1 h-4 w-4" />
-												Nuova
-											</Button>
-										)
-									}
-								/>
-							}
-							empty={
-								<InlineEmpty>
-									{search.q
-										? "Nessun insegnamento trovato."
-										: "Nessun insegnamento in questo corso."}
-								</InlineEmpty>
-							}
-						/>
-					</CardContent>
-				</Card>
+				<section className="space-y-4">
+					<h2 className="text-xl font-semibold">Insegnamenti ({classes.length})</h2>
+					<DataTable
+						table={table}
+						density="compact"
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca insegnamenti..."
+								actions={
+									!isMaintainer && (
+										<Button size="sm" onClick={() => setCreateClassOpen(true)}>
+											<PlusGlyph className="mr-1 h-4 w-4" />
+											Nuova
+										</Button>
+									)
+								}
+							/>
+						}
+						empty={
+							<InlineEmpty>
+								{search.q
+									? "Nessun insegnamento trovato."
+									: "Nessun insegnamento in questo corso."}
+							</InlineEmpty>
+						}
+					/>
+				</section>
 			</div>
 
 			<Dialog open={createClassOpen} onOpenChange={setCreateClassOpen}>

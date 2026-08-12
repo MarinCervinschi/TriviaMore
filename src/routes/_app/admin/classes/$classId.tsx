@@ -91,12 +91,12 @@ function buildColumns(onDelete: (id: string) => void) {
 			},
 			cell: ({ row }) =>
 				row.original.isPublic ? (
-					<Badge variant="default" className="gap-1 rounded-full">
+					<Badge variant="default" className="gap-1">
 						<EyeIcon className="h-3 w-3" />
 						Pubblica
 					</Badge>
 				) : (
-					<Badge variant="secondary" className="gap-1 rounded-full">
+					<Badge variant="secondary" className="gap-1">
 						<EyeClosedIcon className="h-3 w-3" />
 						Privata
 					</Badge>
@@ -180,7 +180,7 @@ function AdminClassDetailPage() {
 
 			<div className="grid gap-6">
 				{!isMaintainer && (
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader className="pb-4">
 							<CardTitle>Modifica insegnamento</CardTitle>
 						</CardHeader>
@@ -218,54 +218,44 @@ function AdminClassDetailPage() {
 					</Card>
 				)}
 
-				<Card className="rounded-2xl">
-					<CardHeader>
-						<CardTitle>Sezioni ({sections.length})</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<DataTable
-							table={table}
-							density="compact"
-							bordered={false}
-							toolbar={
-								<DataTableToolbar
-									table={table}
-									searchPlaceholder="Cerca sezioni..."
-									actions={
-										<>
-											{!isMaintainer && !hasExamSimulation && (
-												<Button
-													size="sm"
-													variant="outline"
-													className="rounded-xl"
-													onClick={() => createExamSimulation.mutate({ id: cls.id })}
-												>
-													<DiplomaIcon className="mr-1 h-4 w-4" />
-													Crea Exam Simulation
-												</Button>
-											)}
+				<section className="space-y-4">
+					<h2 className="text-xl font-semibold">Sezioni ({sections.length})</h2>
+					<DataTable
+						table={table}
+						density="compact"
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca sezioni..."
+								actions={
+									<>
+										{!isMaintainer && !hasExamSimulation && (
 											<Button
 												size="sm"
-												className="rounded-xl"
-												onClick={() => setCreateSectionOpen(true)}
+												variant="outline"
+												onClick={() => createExamSimulation.mutate({ id: cls.id })}
 											>
-												<PlusGlyph className="mr-1 h-4 w-4" />
-												Nuova
+												<DiplomaIcon className="mr-1 h-4 w-4" />
+												Crea Exam Simulation
 											</Button>
-										</>
-									}
-								/>
-							}
-							empty={
-								<InlineEmpty>
-									{search.q
-										? "Nessuna sezione trovata."
-										: "Nessuna sezione in questo insegnamento."}
-								</InlineEmpty>
-							}
-						/>
-					</CardContent>
-				</Card>
+										)}
+										<Button size="sm" onClick={() => setCreateSectionOpen(true)}>
+											<PlusGlyph className="mr-1 h-4 w-4" />
+											Nuova
+										</Button>
+									</>
+								}
+							/>
+						}
+						empty={
+							<InlineEmpty>
+								{search.q
+									? "Nessuna sezione trovata."
+									: "Nessuna sezione in questo insegnamento."}
+							</InlineEmpty>
+						}
+					/>
+				</section>
 			</div>
 
 			<Dialog open={createSectionOpen} onOpenChange={setCreateSectionOpen}>

@@ -19,7 +19,6 @@ import {
 import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
 	Dialog,
@@ -61,11 +60,7 @@ function buildColumns(onDelete: (id: string) => void) {
 		column.accessor("code", {
 			header: "Codice",
 			meta: { label: "Codice" },
-			cell: ({ row }) => (
-				<Badge variant="secondary" className="rounded-full">
-					{row.original.code}
-				</Badge>
-			),
+			cell: ({ row }) => <Badge variant="secondary">{row.original.code}</Badge>,
 		}),
 		column.accessor("courseCount", {
 			header: "Corsi",
@@ -127,38 +122,27 @@ function AdminDepartmentsPage() {
 				backTo="/admin"
 				backLabel="Dashboard"
 				actions={
-					<Button className="rounded-xl" onClick={() => setCreateOpen(true)}>
+					<Button onClick={() => setCreateOpen(true)}>
 						<PlusGlyph className="mr-2 h-4 w-4" />
 						Nuovo dipartimento
 					</Button>
 				}
 			/>
 
-			<Card className="rounded-2xl">
-				<CardHeader>
-					<CardTitle>Lista dipartimenti</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<DataTable
-						table={table}
-						density="compact"
-						bordered={false}
-						toolbar={
-							<DataTableToolbar
-								table={table}
-								searchPlaceholder="Cerca dipartimenti..."
-							/>
-						}
-						empty={
-							<InlineEmpty>
-								{search.q
-									? "Nessun dipartimento trovato."
-									: "Nessun dipartimento. Crea il primo!"}
-							</InlineEmpty>
-						}
-					/>
-				</CardContent>
-			</Card>
+			<DataTable
+				table={table}
+				density="compact"
+				toolbar={
+					<DataTableToolbar table={table} searchPlaceholder="Cerca dipartimenti..." />
+				}
+				empty={
+					<InlineEmpty>
+						{search.q
+							? "Nessun dipartimento trovato."
+							: "Nessun dipartimento. Crea il primo!"}
+					</InlineEmpty>
+				}
+			/>
 
 			<Dialog open={createOpen} onOpenChange={setCreateOpen}>
 				<DialogContent>
