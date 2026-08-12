@@ -132,7 +132,19 @@ All colors are HSL-based CSS variables defined in `src/styles/globals.css`.
 | Badges, avatars, pills | `rounded-full` | — |
 | Checkboxes | `rounded-sm` | 4px |
 
-Base radius token: `--radius: 0.75rem` with computed variants (`--radius-sm` to `--radius-xl`).
+Every step derives from `--radius: 0.75rem`, in increments of 4px: `sm` is `−8px`, `lg` is `−4px`,
+`xl` is the token, `2xl` is `+4px`, `3xl` is `+12px`. So `--radius` is the one knob, and moving it
+moves the whole scale. **`rounded-md` is not a step** — it is pinned to `lg` only so that reaching
+for it out of shadcn habit cannot land on Tailwind's off-scale 6px. Use `rounded-lg`.
+
+**A child in its parent's corner steps down one.** For a child inset by padding `P` inside a parent
+of radius `R`, the child wants `R − P`, so the two arcs share a centre and the gap between the borders
+stays even around the curve. The 4px steps exist so that `R − P` lands on another step, since the
+app's tight paddings are `p-1`/`p-1.5`/`p-2` (4/6/8px): a `rounded-2xl p-1` panel takes `rounded-xl`
+items, a `rounded-xl p-1` panel takes `rounded-lg` items.
+
+This only applies while the child's corner is *in* the parent's corner — roughly `p-2` and under. At
+`p-4` and beyond the child is a separate shape and takes the radius of its own role, not a derived one.
 
 ---
 
