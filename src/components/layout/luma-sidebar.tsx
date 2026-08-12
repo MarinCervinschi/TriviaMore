@@ -126,7 +126,7 @@ function SidebarSearchHover() {
 					onMouseEnter={handleEnter}
 					onMouseLeave={handleLeave}
 				>
-					<div className="border-border/60 bg-popover text-popover-foreground animate-in fade-in-0 slide-in-from-left-2 flex flex-col gap-1 rounded-2xl border p-1.5 shadow-xl duration-150">
+					<div className="border-border/60 bg-popover text-popover-foreground animate-in fade-in-0 slide-in-from-left-2 flex flex-col gap-1 rounded-2xl border p-1 shadow-xl duration-150">
 						<Link
 							to="/search/courses"
 							onClick={() => setOpen(false)}
