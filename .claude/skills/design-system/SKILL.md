@@ -66,8 +66,9 @@ Rules that decide a colour question:
 - **Tune against `bg-muted`, not the page** — 4% off white, ~0.4 of a ratio point, and five tokens were
   re-cut after a pass that looked clean.
 - **Measure against the real foreground token, not white.**
-- **Never propose lifting a dark accent *surface*.** Reversed twice. A lighter hue reads washed out as
-  a fill and vivid as text — which is why the ink split exists. Does **not** apply to a neutral grey.
+- **Never propose lifting a dark *surface*, accent or neutral.** Reversed three times. On accents a
+  lighter hue reads washed out as a fill and vivid as text, which is why the ink split exists; on the
+  neutrals the measurement was fine and the look still lost (D25).
 - **Contrast is a gate**: `src/styles/contrast.test.ts`. Adding a colour means adding its row. A pair
   needing less than 4.5:1 gets the floor it needs **and a reason**; a row is never deleted to pass.
 - **`--chart-*` slots 2 and 4 collapse under CVD** and are kept non-adjacent. Anything needing all five
@@ -85,14 +86,18 @@ the child is a separate shape; applying the rule there flags almost everything.
 
 ## Surfaces
 
-**A card is elevated.** A hand-rolled flat `bg-card border rounded-2xl` is a deviation, not a variant.
+**A card is elevated in light.** A hand-rolled flat `bg-card border rounded-2xl` is a deviation there,
+not a variant.
 `<Card>` owns `level="panel"` (page-level tier, radius only — padding stays with the caller) and
 `CardOrb` (D4's decoration; **its parent needs `relative overflow-hidden`**).
 
-**In dark, elevation is lightness, not shadow** — a shadow on near-black has nothing to fall on, so the
-neutrals are a ladder. **Use `bg-popover` for anything that floats**, never `bg-background`: in light
-the two are the same value, so a mistake here is invisible in the theme you design in. That is exactly
-how `dialog`, `alert-dialog` and `sheet` shipped as the colour of the page they covered.
+**In dark the surfaces are flat.** `--card`, `--popover` and `--background` are the same value, and a
+surface is separated by its **border**. A lightness ladder was built, measured and **rejected on the
+look** — the third time a lifted dark surface has been. **Never re-propose it**, neutral or not: the
+numbers were fine and the answer was still no (D25).
+
+**Still use `bg-popover` for anything that floats**, not `bg-background`. It renders identically today
+and names the role, so the question has one value to move if it reopens.
 
 **Read surface adjacency in ΔL\*, not as a contrast ratio.** A ratio answers *"can text be read on
 this"*. A lifted dark card measures 1.07 as a ratio — nothing — and 3.5 in ΔL* — clear.

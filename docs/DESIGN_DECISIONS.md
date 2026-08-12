@@ -945,7 +945,7 @@ could not be told from a badge by shape**, leaving colour as the only signal. At
 
 ---
 
-## D25 — A card is elevated, and in dark that means lighter rather than shadowed
+## D25 — A card is elevated in light; in dark a surface is separated by its border
 
 **Decided and implemented 2026-08-12.** The premise of the open question was wrong twice over. It was
 not ~30 hand-rolled recipes but **69 surfaces**, and it was not invisible: `<Card>` carries `shadow-sm`
@@ -960,12 +960,14 @@ panel in the page flow is a region and a region is separated by a border — and
 the look, which is theirs to judge: the shadow earns its keep in light. So the doc was right here too,
 and the flat spelling was the deviation.
 
-### The half that was actually broken
+### ~~The half that was actually broken~~ → reversed on 2026-08-12, and this is the part to read
 
-Their observation was that the elevated card adds nothing *in dark*, and that is not taste — it is
-`--card`, `--popover` and `--background` all being `224 71% 4%`. A shadow on a near-black page has
-nothing to fall on, so a card was the page with a border round it. **On a dark surface elevation is
-lightness, not shadow**, so the neutrals are now a ladder:
+The dark half of this decision **was reverted the same day it shipped.** What follows is what was
+tried, why it looked right, and why it still lost — because the measurement was never the problem.
+
+The observation that started it was the user's: the elevated card adds nothing *in dark*. That much is
+mechanical — `--card`, `--popover` and `--background` were all `224 71% 4%`, so a shadow had nothing to
+fall on and a card was the page with a border round it. The proposed fix made the neutrals a ladder:
 
 | | dark | ΔL* from the page |
 |---|---|---|
@@ -974,21 +976,33 @@ lightness, not shadow**, so the neutrals are now a ladder:
 | `--popover` | `224 50% 12%` | 6.5 |
 | `--muted` | `215 28% 17%` | 14.5 |
 
-The worst case was not the card. **`dialog`, `alert-dialog` and `sheet` were `bg-background`**, so a
-modal in dark was the same colour as the page it covered and its `shadow-lg` did nothing. They are
-`bg-popover` now. In light the two tokens are the same value, which is precisely why the mistake
-survived: it is invisible in the theme people design in.
+**Rejected on the look**, at +5 as shipped and with +3 and +7 alongside it: *"questo colore non mi
+convince per nulla, nemmeno sulle card, torniamo a come eravamo prima."* So `--card` and `--popover` are
+identical to `--background` again, and **in dark a surface is separated by its border** — not by its
+fill, and not by a shadow, which does little there anyway.
 
-**This is not the lift that was rejected twice.** Those were `--primary` and `--destructive` — saturated
-accent *fills*, where a lighter hue reads washed out. A neutral grey has no such asymmetry.
+**The lesson is not "the numbers were wrong."** They were right: ΔL* 3.5 is a perceptible step, the
+contrast held with room, and the reasoning about shadows on near-black is sound. The lesson is that
+**this app's dark theme is deliberately flat, and that is a taste, not an oversight.** It had already
+been said twice about accent surfaces (`--primary`, `--destructive`); I argued a neutral grey was a
+different case, and it is different *mechanically* — but not to the eye that has to live with it. Do not
+re-derive this a fourth time.
 
-**Measured, and one metric was the wrong one.** The contrast *ratio* of a lifted card against the page
-is 1.07, which looks like nothing, and the card's own border drops from 1.38 to 1.28 — both readings that
-would argue against the change. Both are the wrong metric: a luminance ratio answers "can text be read
-on this", not "can two large adjacent surfaces be told apart". In **ΔL\***, the lift is 3.5 (clearly
-perceptible, where +3 would be 1.9 and barely so) and the border keeps **ΔL\* 11** from the card, so it
-needs no adjustment. The gate gained four rows — text on `popover`, and `border` on `card` — because a
-new surface the app renders has to be checked, not assumed.
+What survives of the reasoning, because it is still true and cost nothing: **`bg-popover` is the token
+for a thing that floats**, and `dialog`, `alert-dialog` and `sheet` were on `bg-background`. With the
+two tokens equal again the change renders identically, but the roles are now named correctly, so if the
+ladder is ever revisited there is one value to move rather than a hunt.
+
+**Read surface adjacency in ΔL\*, not as a contrast ratio** — that stands on its own, and is the piece
+of this decision most likely to matter again.
+
+**One metric was the wrong one, and that part is worth keeping.** The contrast *ratio* of a lifted card
+against the page is 1.07, which looks like nothing, and the card's own border drops from 1.38 to 1.28 —
+both readings that would argue against the change. Both are the wrong metric: a luminance ratio answers
+"can text be read on this", not "can two large adjacent surfaces be told apart". In **ΔL\***, the lift
+was 3.5 (clearly perceptible, where +3 would be 1.9 and barely so) and the border kept **ΔL\* 11**. The
+gate gained four rows — text on `popover`, and `border` on `card` — which are now duplicates of their
+`background` equivalents and are kept anyway, since they are what would catch a future divergence.
 
 ### What was and was not swept
 
@@ -1019,8 +1033,9 @@ app. No call site depended on it — the six that animate a transform declare th
 the token system and unable to respond to the theme. Recorded for whoever decides D4's palette; touching
 it here would have been a colour change smuggled into a structural one.
 
-**Rules out:** a flat card in the page flow; `bg-background` on anything that floats; expressing dark
-elevation with a shadow; reading surface adjacency off a contrast ratio.
+**Rules out:** a flat card in the page flow **in light**; `bg-background` on anything that floats;
+reading surface adjacency off a contrast ratio; **and re-proposing a lifted dark surface, neutral or
+not.**
 
 ---
 
