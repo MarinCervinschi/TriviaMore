@@ -11,20 +11,20 @@ export interface ChangelogEntry {
 export const CATEGORY_CONFIG = {
 	new: {
 		label: "Novità",
-		color: "text-green-600 dark:text-green-400",
-		bg: "bg-green-500/10",
-		border: "border-green-500/30",
+		color: "text-chart-3-ink",
+		bg: "bg-chart-3/10",
+		border: "border-chart-3/30",
 	},
 	improved: {
 		label: "Miglioramento",
-		color: "text-blue-600 dark:text-blue-400",
-		bg: "bg-blue-500/10",
-		border: "border-blue-500/30",
+		color: "text-chart-2-ink",
+		bg: "bg-chart-2/10",
+		border: "border-chart-2/30",
 	},
 	fixed: {
 		label: "Correzione",
-		color: "text-amber-600 dark:text-amber-400",
-		bg: "bg-amber-500/10",
-		border: "border-amber-500/30",
+		color: "text-chart-5-ink",
+		bg: "bg-chart-5/10",
+		border: "border-chart-5/30",
 	},
 } as const;

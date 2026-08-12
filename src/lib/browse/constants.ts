@@ -2,15 +2,15 @@ export const COURSE_TYPE_CONFIG: Record<string, { label: string; className: stri
 	{
 		BACHELOR: {
 			label: "Triennale",
-			className: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+			className: "bg-chart-2/10 text-chart-2-ink border-chart-2/20",
 		},
 		MASTER: {
 			label: "Magistrale",
-			className: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+			className: "bg-chart-4/10 text-chart-4-ink border-chart-4/20",
 		},
 		SINGLE_CYCLE: {
 			label: "Ciclo Unico",
-			className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+			className: "bg-chart-3/10 text-chart-3-ink border-chart-3/20",
 		},
 	};
 
@@ -22,34 +22,39 @@ export const CAMPUS_LOCATION_CONFIG: Record<string, { label: string; short: stri
 		MANTOVA: { label: "Mantova", short: "MN" },
 	};
 
+// Areas need all five categorical slots, which necessarily includes chart-2 and
+// chart-4 — the blue/violet pair that collapses under colour-vision deficiency.
+// The chart palette avoids this by keeping them non-adjacent in slot order, and
+// that mitigation does not apply to an unordered set. Every area also renders its
+// own icon, so colour is reinforcement here rather than the only channel.
 export const AREA_CONFIG: Record<
 	string,
 	{ label: string; gradient: string; accent: string }
 > = {
 	SCIENZE: {
 		label: "Scienze",
-		gradient: "from-blue-500/15 to-cyan-500/5",
-		accent: "bg-blue-500",
+		gradient: "from-chart-2/15 to-chart-2/5",
+		accent: "bg-chart-2",
 	},
 	TECNOLOGIA: {
 		label: "Tecnologia",
-		gradient: "from-indigo-500/15 to-violet-500/5",
-		accent: "bg-indigo-500",
+		gradient: "from-chart-4/15 to-chart-4/5",
+		accent: "bg-chart-4",
 	},
 	SALUTE: {
 		label: "Salute",
-		gradient: "from-rose-500/15 to-pink-500/5",
-		accent: "bg-rose-500",
+		gradient: "from-chart-1/15 to-chart-1/5",
+		accent: "bg-chart-1",
 	},
 	VITA: {
 		label: "Vita",
-		gradient: "from-emerald-500/15 to-teal-500/5",
-		accent: "bg-emerald-500",
+		gradient: "from-chart-3/15 to-chart-3/5",
+		accent: "bg-chart-3",
 	},
 	SOCIETA_CULTURA: {
 		label: "Società e cultura",
-		gradient: "from-amber-500/15 to-orange-500/5",
-		accent: "bg-amber-500",
+		gradient: "from-chart-5/15 to-chart-5/5",
+		accent: "bg-chart-5",
 	},
 };
 

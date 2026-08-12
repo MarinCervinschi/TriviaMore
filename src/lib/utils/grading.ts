@@ -8,7 +8,7 @@ export function getGradeColor(score: number): string {
 	if (score < 24) return "text-warning";
 	if (score < 27) return "text-info";
 	if (score <= 30) return "text-success";
-	return "text-purple-600 dark:text-purple-400";
+	return "text-chart-4-ink";
 }
 
 /**

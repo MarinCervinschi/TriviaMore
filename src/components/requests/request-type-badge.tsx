@@ -15,24 +15,22 @@ const typeConfig: Record<
 	NEW_SECTION: {
 		label: "Nuova sezione",
 		icon: AddFolderIcon,
-		className: "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
+		className: "border-chart-2/30 bg-chart-2/10 text-chart-2-ink",
 	},
 	NEW_QUESTIONS: {
 		label: "Nuove domande",
 		icon: ChatRoundDotsIcon,
-		className:
-			"border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400",
+		className: "border-chart-4/30 bg-chart-4/10 text-chart-4-ink",
 	},
 	REPORT: {
 		label: "Segnalazione",
 		icon: FlagIcon,
-		className: "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400",
+		className: "border-chart-1/30 bg-chart-1/10 text-chart-1-ink",
 	},
 	FILE_UPLOAD: {
 		label: "File caricato",
 		icon: CloudUploadIcon,
-		className:
-			"border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+		className: "border-chart-3/30 bg-chart-3/10 text-chart-3-ink",
 	},
 };
 
