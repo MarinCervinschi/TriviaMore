@@ -940,6 +940,24 @@ could not be told from a badge by shape**, leaving colour as the only signal. At
 `rounded-md` is retired from use — 25 sites moved to `rounded-lg` — but the token stays, pinned to
 `lg`, so reaching for it out of shadcn habit cannot land on Tailwind's off-scale 6px.
 
+### Addendum, 2026-08-12 — `--radius` moved to `1rem`, and this is what that costs
+
+The **ladder** above is the decision and it stands. The **value of `--radius`** is not part of it, and it
+moved from `0.75rem` to `1rem` the same day, because the drop was visible in the app: three of the five
+steps had lost 4px, and on a small component 4px is a large fraction. `rounded-lg` going 12 → 8 across 73
+sites is where "everything got rectangular" actually came from — I had reported the button change and not
+that one, which was the bigger share of what a person notices.
+
+At `1rem` the small end lands **exactly on its pre-D24 values** — `sm` 8, `lg` 12, `xl` 16 — while cards
+and page containers gain 4px. Concentricity re-measured across the app: still 0 violations. And the docs
+needed **no edit at all**, which is the first return on not copying values into them.
+
+**What comes back with it, and was the fact that justified D24 in the first place:** `Button` size `sm` is
+`h-8`, so a 16px radius is exactly half its height and every small button is a stadium again — the same
+silhouette as a `rounded-full` badge, across 84 sites. That was accepted knowingly this time, on the look.
+The cheap mitigation, if it ever grates: `h-8` → `h-9` puts the radius at 44% of the height and is still
+on the 4px scale.
+
 **Rules out:** a radius that is not a step of the scale; a child in its parent's corner rounder than
 `R − P`; `rounded-md` in new code.
 
