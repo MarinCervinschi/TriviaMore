@@ -236,7 +236,7 @@ export function UserRequestsSkeleton() {
 		<SkeletonRoot label="Caricamento contributi…" className="space-y-8 pb-8">
 			<SkeletonHero />
 
-			<div className="container max-w-3xl space-y-4">
+			<div className="container space-y-4">
 				<Skeleton className="h-12 w-full rounded-2xl" />
 
 				<div className="flex items-center justify-between">

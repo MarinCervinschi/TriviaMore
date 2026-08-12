@@ -131,7 +131,7 @@ function UserContributionsPage() {
 				description="Proponi nuovi contenuti per la piattaforma."
 			/>
 
-			<div className="container max-w-3xl space-y-6">
+			<div className="container space-y-6">
 				<UserBreadcrumb current="Contributi" />
 
 				{/* Info banner */}
