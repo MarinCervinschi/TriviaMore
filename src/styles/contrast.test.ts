@@ -79,6 +79,13 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["destructive-foreground", "destructive", 4.5, "the destructive button's label"],
 	["success-foreground", "success", 4.5, "a success fill's label"],
 	["warning-foreground", "warning", 4.5, "a warning fill's label"],
+	// The categorical ink ramp, on `muted` only: it is the binding surface in both themes, and every
+	// slot clears the page and a card by another half point. A category pill lands on all three.
+	["chart-1-ink", "muted", 4.5, "a category pill's label"],
+	["chart-2-ink", "muted", 4.5, "a category pill's label"],
+	["chart-3-ink", "muted", 4.5, "a category pill's label"],
+	["chart-4-ink", "muted", 4.5, "a category pill's label"],
+	["chart-5-ink", "muted", 4.5, "a category pill's label"],
 	// Since the dark surfaces became a ladder (background → card → popover), a floating panel is its
 	// own surface and the text on it needs its own row.
 	["foreground", "popover", 4.5, "a dropdown item"],
