@@ -262,14 +262,22 @@ Defined in `src/styles/globals.css`:
 
 | Class | Purpose |
 |-------|---------|
-| `.dot-pattern` | Radial gradient dot grid (24px spacing, foreground at 6% opacity) |
-| `.gradient-bg` | Linear gradient 135deg `#d14124` → `#f56565` |
-| `.gradient-text` | Gradient applied as text fill via `background-clip: text` |
+| `container` | The page gutter. An `@utility`, not a plain class — see the note below |
+| `band-dots` / `band-glow` | The two layers of the page band (D12, D13). Used only by `PageBand` |
+| `eyebrow` / `eyebrow-lg` | The overline: 12px or 14px, 600, `0.1em`, uppercase (D16) |
+| `.gradient-bg` | Linear gradient 135deg, `--gradient-from` → `--gradient-to` |
+| `.gradient-text` | The same ramp applied as text fill via `background-clip: text` |
 | `.shimmer` | Animated shimmer gradient for skeleton loaders |
 | `.fade-in` | Simple 0.5s fade-in with translateY |
-| `.auth-glass-effect` | Glassmorphism: `backdrop-filter: blur(16px) saturate(180%)` |
-| `.flashcard` / `.flashcard-inner` | 3D flip with perspective 1000px |
-| `.quiz-progress` | Gradient progress bar |
+| `.flashcard` / `.flashcard-inner` / `.flashcard-back` | 3D flip with perspective 1000px |
+
+**`container` has to be an `@utility`, not a plain `.container` rule.** A plain rule is *unlayered*,
+and unlayered author styles beat layered ones regardless of order — so `container max-w-3xl` silently
+failed to narrow at five call sites until it was moved.
+
+`.dot-pattern`, `.chart-plot`, `.auth-glass-effect`, `.social-auth-btn`, `.quiz-progress` and
+`.quiz-timer` are **gone** (D15). `globals.css` holds no hardcoded hex at all now, including the
+scrollbar.
 
 ---
 

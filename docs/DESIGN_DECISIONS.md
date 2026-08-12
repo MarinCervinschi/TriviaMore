@@ -442,20 +442,31 @@ change, not a styling one — out of scope here, worth considering separately.
 
 ## D15 — Dead CSS removed
 
-**Decided 2026-08-09.** Four classes in `globals.css` have **zero usages** in the app:
-`.quiz-progress`, `.quiz-timer`, `.auth-glass-effect`, `.social-auth-btn`. Verified against `src/`,
-`public/` and `docs/` — the only external mentions are in `DESIGN_SYSTEM.md`, which D1 already
-flags for a rewrite.
+**Decided 2026-08-09, and only fully implemented on 2026-08-12** — worth recording, because the earlier
+half was easy to mistake for the whole. The dot fields, `.chart-plot` and the 16 dead `--sidebar-*`
+tokens went with D12/D13, so this decision read as done while **four class blocks and six hardcoded
+hexes were still in the file**. A decision is not implemented until the grep comes back empty.
+
+Four classes in `globals.css` had **zero usages** in the app: `.quiz-progress`, `.quiz-timer`,
+`.auth-glass-effect`, `.social-auth-btn`. Verified against `src/`, `public/` and `docs/` — the only
+external mentions were in `DESIGN_SYSTEM.md`, now corrected. The custom `@keyframes pulse` went with
+them: `.quiz-timer.warning` was its only user, and it was byte-for-byte Tailwind's own, so the three
+`animate-pulse` sites in `map.tsx` were unaffected either way — **a custom keyframe named like a
+Tailwind one silently shadows it**, which is worth knowing before adding another.
 
 Two of them (`.quiz-timer`, and the scrollbar block that stays) are the last places holding
 hardcoded brand hexes — `#d14124`, `#dc2626`, plus six in the scrollbar. **The remaining #118
 "brand hex" item is therefore resolved by deletion, not by conversion**, except for the scrollbar,
 which stays and goes onto tokens.
 
-**The scrollbar keeps the brand, quietly** — settled 2026-08-09. The thumb is solid `#d14124`
-today, which makes it the loudest brand element on a long page, competing with the primary CTA
-for attention while being pure chrome. It goes to `hsl(var(--primary) / 0.4)` at rest and full
+**The scrollbar keeps the brand, quietly** — settled 2026-08-09, applied 2026-08-12. The thumb was
+solid `#d14124`, which made it the loudest brand element on a long page, competing with the primary CTA
+for attention while being pure chrome. It is now `hsl(var(--primary) / 0.4)` at rest and full
 `--primary` on hover, with the track on `--muted`. The signature survives; the shouting does not.
+
+**The three `.dark` scrollbar overrides went too**, and that is the point rather than a side effect:
+they existed because the light rule was a hex, so dark needed its own hex — and they had drifted to a
+grey thumb, meaning the brand signature only existed in one theme. One tokenised rule serves both.
 Both themes come from the same tokens, so the separate `.dark` scrollbar block disappears too.
 
 ---
