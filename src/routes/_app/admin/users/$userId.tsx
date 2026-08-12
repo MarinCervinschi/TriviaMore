@@ -112,7 +112,7 @@ function AdminUserDetailPage() {
 			<div className="grid gap-6">
 				{/* Profile + Stats */}
 				<div className="grid gap-6 md:grid-cols-2">
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader>
 							<CardTitle>Profilo</CardTitle>
 						</CardHeader>
@@ -138,7 +138,7 @@ function AdminUserDetailPage() {
 										value={user.role}
 										onValueChange={v => setRoleConfirm(v as UserRole)}
 									>
-										<SelectTrigger className="rounded-xl">
+										<SelectTrigger>
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
@@ -152,7 +152,7 @@ function AdminUserDetailPage() {
 										</SelectContent>
 									</Select>
 								) : (
-									<Badge variant="outline" className="rounded-full text-sm">
+									<Badge variant="outline" className="text-sm">
 										{ROLE_LABELS[user.role]}
 									</Badge>
 								)}
@@ -175,7 +175,7 @@ function AdminUserDetailPage() {
 						</CardContent>
 					</Card>
 
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader>
 							<CardTitle>Statistiche</CardTitle>
 						</CardHeader>
@@ -211,7 +211,7 @@ function AdminUserDetailPage() {
 
 				{/* Department Admin assignments — ADMIN+ only */}
 				{canManageDepartments && (
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader className="flex flex-row items-center justify-between">
 							<div>
 								<CardTitle className="flex items-center gap-2">
@@ -254,7 +254,7 @@ function AdminUserDetailPage() {
 							{availableDepts.length > 0 && (
 								<div className="flex items-center gap-2">
 									<Select value={addDeptId} onValueChange={setAddDeptId}>
-										<SelectTrigger className="w-64 rounded-xl">
+										<SelectTrigger className="w-64">
 											<SelectValue placeholder="Seleziona dipartimento..." />
 										</SelectTrigger>
 										<SelectContent>
@@ -294,7 +294,7 @@ function AdminUserDetailPage() {
 
 				{/* Course Maintainer assignments — MAINTAINER+ only */}
 				{canMaintainCourses && (
-					<Card className="rounded-2xl">
+					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<DiplomaIcon className="h-5 w-5" />
@@ -335,7 +335,7 @@ function AdminUserDetailPage() {
 							{availableCourses.length > 0 && (
 								<div className="flex items-center gap-2">
 									<Select value={addCourseId} onValueChange={setAddCourseId}>
-										<SelectTrigger className="w-64 rounded-xl">
+										<SelectTrigger className="w-64">
 											<SelectValue placeholder="Seleziona corso..." />
 										</SelectTrigger>
 										<SelectContent>
@@ -374,7 +374,7 @@ function AdminUserDetailPage() {
 				)}
 
 				{/* Section Access */}
-				<Card className="rounded-2xl">
+				<Card>
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<BookIcon className="h-5 w-5" />
@@ -419,7 +419,7 @@ function AdminUserDetailPage() {
 							return availableSections.length > 0 ? (
 								<div className="flex items-center gap-2">
 									<Select value={addSectionId} onValueChange={setAddSectionId}>
-										<SelectTrigger className="w-64 rounded-xl">
+										<SelectTrigger className="w-64">
 											<SelectValue placeholder="Seleziona sezione..." />
 										</SelectTrigger>
 										<SelectContent>

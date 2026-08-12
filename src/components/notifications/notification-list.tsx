@@ -44,7 +44,6 @@ export function NotificationList() {
 					<Button
 						variant="outline"
 						size="sm"
-						className="rounded-xl"
 						onClick={() => markAllRead.mutate()}
 						disabled={markAllRead.isPending}
 					>

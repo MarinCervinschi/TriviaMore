@@ -288,7 +288,7 @@ function SearchClassesPage() {
 								})
 							}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[180px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[180px] text-xs">
 								<SelectValue placeholder="Tutti i dipartimenti" />
 							</SelectTrigger>
 							<SelectContent>
@@ -308,7 +308,7 @@ function SearchClassesPage() {
 									updateSearch({ course: v === "all" ? undefined : v, year: undefined })
 								}
 							>
-								<SelectTrigger className="h-9 w-auto min-w-[180px] rounded-xl text-xs">
+								<SelectTrigger className="h-9 w-auto min-w-[180px] text-xs">
 									<SelectValue placeholder="Tutti i corsi" />
 								</SelectTrigger>
 								<SelectContent>
@@ -328,7 +328,7 @@ function SearchClassesPage() {
 								updateSearch({ year: v === "all" ? undefined : Number(v) })
 							}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[130px] text-xs">
 								<SelectValue placeholder="Tutti gli anni" />
 							</SelectTrigger>
 							<SelectContent>
@@ -347,7 +347,7 @@ function SearchClassesPage() {
 								updateSearch({ mandatory: v === "all" ? undefined : v })
 							}
 						>
-							<SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl text-xs">
+							<SelectTrigger className="h-9 w-auto min-w-[130px] text-xs">
 								<SelectValue placeholder="Tutti i tipi" />
 							</SelectTrigger>
 							<SelectContent>
@@ -378,12 +378,7 @@ function SearchClassesPage() {
 						<p className="text-muted-foreground mt-1 text-sm">
 							Prova a modificare i filtri o il termine di ricerca
 						</p>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={clearFilters}
-							className="mt-4 rounded-xl"
-						>
+						<Button variant="outline" size="sm" onClick={clearFilters} className="mt-4">
 							Pulisci filtri
 						</Button>
 					</div>

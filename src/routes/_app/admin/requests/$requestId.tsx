@@ -112,7 +112,7 @@ function AdminRequestDetailPage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="gap-1.5 rounded-xl"
+								className="gap-1.5"
 								onClick={() => setHandleOpen(true)}
 							>
 								<SettingsMinimalisticIcon className="size-4" />
@@ -120,7 +120,7 @@ function AdminRequestDetailPage() {
 							</Button>
 							<Button
 								size="sm"
-								className="gap-1.5 rounded-xl bg-green-600 hover:bg-green-700"
+								className="gap-1.5 bg-green-600 hover:bg-green-700"
 								onClick={() => approve.mutate({ id: request.id })}
 								disabled={approve.isPending}
 							>
@@ -183,12 +183,7 @@ function AdminRequestDetailPage() {
 							</div>
 						</div>
 						{!isMaintainer && (
-							<Button
-								asChild
-								variant="outline"
-								size="sm"
-								className="shrink-0 gap-1.5 rounded-xl"
-							>
+							<Button asChild variant="outline" size="sm" className="shrink-0 gap-1.5">
 								<Link to="/admin/users/$userId" params={{ userId: request.user.id }}>
 									<UserIdIcon className="size-4" />
 									Scheda utente
@@ -219,7 +214,7 @@ function AdminRequestDetailPage() {
 									<Badge
 										key={r}
 										variant="outline"
-										className="rounded-full border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+										className="border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
 									>
 										{REASON_LABELS[r] ?? r}
 									</Badge>
@@ -236,7 +231,7 @@ function AdminRequestDetailPage() {
 				<div className="flex items-center justify-between gap-2">
 					<SectionLabel>{materialLabel}</SectionLabel>
 					{reportedQuestionId && (
-						<Button asChild variant="outline" size="sm" className="gap-1.5 rounded-xl">
+						<Button asChild variant="outline" size="sm" className="gap-1.5">
 							<Link
 								to="/admin/questions/$questionId"
 								params={{ questionId: reportedQuestionId }}
@@ -271,7 +266,7 @@ function AdminRequestDetailPage() {
 						/>
 						<div className="flex justify-end">
 							<Button
-								className="gap-1.5 rounded-xl"
+								className="gap-1.5"
 								onClick={() =>
 									acknowledge.mutate({ id: request.id, admin_note: reportNote })
 								}
@@ -485,7 +480,7 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 					<Button
 						variant="outline"
 						size="sm"
-						className="w-full justify-between gap-1.5 rounded-xl"
+						className="w-full justify-between gap-1.5"
 					>
 						{open ? "Nascondi opzioni e risposta" : "Mostra opzioni e risposta"}
 						<AltArrowDownIcon
@@ -579,7 +574,7 @@ function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
 			<Button
 				variant="outline"
 				size="sm"
-				className="gap-1.5 rounded-xl"
+				className="gap-1.5"
 				onClick={handleDownload}
 				disabled={downloading}
 			>

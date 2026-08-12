@@ -93,7 +93,7 @@ function buildColumns(
 			meta: { label: "Tipo", align: "center", facet: { options: courseTypeOptions } },
 			cell: ({ row }) => (
 				<Badge
-					className={`rounded-full text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
+					className={`text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
 				>
 					{COURSE_TYPE_CONFIG[row.original.courseType]?.label ??
 						row.original.courseType}

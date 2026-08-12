@@ -33,12 +33,7 @@ export function ChartCard({
 	children,
 }: ChartCardProps) {
 	return (
-		<Card
-			className={cn(
-				"relative flex h-full flex-col overflow-hidden rounded-2xl",
-				className
-			)}
-		>
+		<Card className={cn("relative flex h-full flex-col overflow-hidden", className)}>
 			{accent && (
 				<div
 					aria-hidden

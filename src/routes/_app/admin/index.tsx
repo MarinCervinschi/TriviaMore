@@ -45,11 +45,7 @@ const maintainedCourseColumns = [
 		header: "Codice",
 		enableSorting: false,
 		meta: { label: "Codice" },
-		cell: ({ row }) => (
-			<Badge variant="secondary" className="rounded-full">
-				{row.original.code}
-			</Badge>
-		),
+		cell: ({ row }) => <Badge variant="secondary">{row.original.code}</Badge>,
 	}),
 ];
 

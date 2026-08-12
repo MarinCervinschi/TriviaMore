@@ -104,7 +104,7 @@ function AdminQuestionPage() {
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="single">
-						<Card className="rounded-2xl">
+						<Card>
 							<CardHeader>
 								<CardTitle>Crea domanda</CardTitle>
 							</CardHeader>
@@ -118,7 +118,7 @@ function AdminQuestionPage() {
 						</Card>
 					</TabsContent>
 					<TabsContent value="bulk">
-						<Card className="rounded-2xl">
+						<Card>
 							<CardHeader>
 								<CardTitle>Importa domande da JSON</CardTitle>
 							</CardHeader>
@@ -133,7 +133,7 @@ function AdminQuestionPage() {
 					</TabsContent>
 				</Tabs>
 			) : (
-				<Card className="rounded-2xl">
+				<Card>
 					<CardHeader>
 						<CardTitle>Modifica domanda</CardTitle>
 					</CardHeader>

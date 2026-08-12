@@ -33,7 +33,7 @@ export function BrowseAdminButton({ to, params, courseId }: BrowseAdminButtonPro
 	}
 
 	return (
-		<Button variant="outline" size="sm" className="rounded-xl" asChild>
+		<Button variant="outline" size="sm" asChild>
 			<Link to={to} params={params}>
 				<SettingsIcon className="text-brand mr-1.5 h-4 w-4" />
 				Gestisci

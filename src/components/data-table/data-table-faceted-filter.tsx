@@ -42,7 +42,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<Button variant="outline" size="sm" className="h-9 rounded-xl border-dashed">
+				<Button variant="outline" size="sm" className="h-9 border-dashed">
 					<AddCircleIcon className="h-4 w-4" />
 					{title}
 					{selected.size > 0 && (
@@ -50,10 +50,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 							<Separator orientation="vertical" className="mx-1 h-4" />
 							<div className="flex gap-1">
 								{selected.size > 2 ? (
-									<Badge
-										variant="secondary"
-										className="rounded-full px-1.5 font-normal"
-									>
+									<Badge variant="secondary" className="px-1.5 font-normal">
 										{selected.size} selezionati
 									</Badge>
 								) : (
@@ -63,7 +60,7 @@ export function DataTableFacetedFilter<TData extends RowData>({
 											<Badge
 												key={option.value}
 												variant="secondary"
-												className="rounded-full px-1.5 font-normal"
+												className="px-1.5 font-normal"
 											>
 												{option.label}
 											</Badge>

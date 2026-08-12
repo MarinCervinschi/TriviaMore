@@ -163,7 +163,7 @@ function NewsPage() {
 											<Badge
 												variant="outline"
 												className={cn(
-													"rounded-full border text-xs font-semibold tracking-wider uppercase",
+													"border text-xs font-semibold tracking-wider uppercase",
 													catConfig.bg,
 													catConfig.color,
 													catConfig.border

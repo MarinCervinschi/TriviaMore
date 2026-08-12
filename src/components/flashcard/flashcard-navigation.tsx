@@ -26,7 +26,7 @@ export function FlashcardNavigation({
 				variant="outline"
 				onClick={onPrevious}
 				disabled={isFirst}
-				className="rounded-xl text-sm sm:text-base"
+				className="text-sm sm:text-base"
 			>
 				<AltArrowLeftIcon className="h-4 w-4 sm:mr-1.5" />
 				<span className="hidden sm:inline">Precedente</span>
@@ -35,7 +35,7 @@ export function FlashcardNavigation({
 			<Button
 				onClick={onComplete}
 				variant="default"
-				className="rounded-xl text-sm shadow-sm sm:text-base"
+				className="text-sm shadow-sm sm:text-base"
 			>
 				<CheckCircleIcon className="mr-1.5 h-4 w-4" />
 				Termina
@@ -45,7 +45,7 @@ export function FlashcardNavigation({
 				variant="outline"
 				onClick={onNext}
 				disabled={isLast}
-				className="rounded-xl text-sm sm:text-base"
+				className="text-sm sm:text-base"
 			>
 				<span className="hidden sm:inline">Successiva</span>
 				<AltArrowRightIcon className="h-4 w-4 sm:ml-1.5" />

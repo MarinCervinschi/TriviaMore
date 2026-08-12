@@ -29,7 +29,7 @@ export function QuizNavigation({
 				variant="outline"
 				onClick={onPrevious}
 				disabled={isFirst || isCompleting}
-				className="rounded-xl text-sm sm:text-base"
+				className="text-sm sm:text-base"
 			>
 				<AltArrowLeftIcon className="h-4 w-4 sm:mr-1.5" />
 				<span className="hidden sm:inline">Precedente</span>
@@ -40,7 +40,7 @@ export function QuizNavigation({
 				variant="default"
 				disabled={isCompleting}
 				aria-busy={isCompleting}
-				className="rounded-xl text-sm shadow-sm transition-all sm:text-base"
+				className="text-sm shadow-sm transition-all sm:text-base"
 			>
 				{isCompleting ? (
 					<>
@@ -61,7 +61,7 @@ export function QuizNavigation({
 				variant="outline"
 				onClick={onNext}
 				disabled={isLast || isCompleting}
-				className="rounded-xl text-sm sm:text-base"
+				className="text-sm sm:text-base"
 			>
 				<span className="hidden sm:inline">Successiva</span>
 				<AltArrowRightIcon className="h-4 w-4 sm:ml-1.5" />

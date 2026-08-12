@@ -16,10 +16,7 @@ export function ConfigBadge({
 	return (
 		<Badge
 			variant="outline"
-			className={cn(
-				"inline-flex items-center gap-1 rounded-full text-xs font-medium",
-				className
-			)}
+			className={cn("inline-flex items-center gap-1 text-xs font-medium", className)}
 		>
 			{Icon && <Icon className="size-3" />}
 			{label}
