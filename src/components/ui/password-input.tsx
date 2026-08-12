@@ -28,7 +28,20 @@ const PasswordInput = React.forwardRef<
 				className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
 				tabIndex={-1}
 			>
-				{show ? <EyeClosedIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+				<span aria-hidden className="relative inline-flex size-4">
+					<EyeIcon
+						className={cn(
+							"absolute inset-0 size-4 transition-transform duration-200 motion-reduce:transition-none",
+							show ? "scale-0" : "scale-100"
+						)}
+					/>
+					<EyeClosedIcon
+						className={cn(
+							"absolute inset-0 size-4 transition-transform duration-200 motion-reduce:transition-none",
+							show ? "scale-100" : "scale-0"
+						)}
+					/>
+				</span>
 				<span className="sr-only">
 					{show ? "Nascondi password" : "Mostra password"}
 				</span>

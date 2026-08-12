@@ -47,11 +47,20 @@ export function BookmarkButton({
 							className
 						)}
 					>
-						{isBookmarked ? (
-							<BookmarkFilledIcon className="h-4 w-4" />
-						) : (
-							<BookmarkIcon className="h-4 w-4" />
-						)}
+						<span aria-hidden className="relative inline-flex size-4">
+							<BookmarkIcon
+								className={cn(
+									"absolute inset-0 size-4 transition-transform duration-200 motion-reduce:transition-none",
+									isBookmarked ? "scale-0" : "scale-100"
+								)}
+							/>
+							<BookmarkFilledIcon
+								className={cn(
+									"absolute inset-0 size-4 transition-transform duration-200 motion-reduce:transition-none",
+									isBookmarked ? "scale-100" : "scale-0"
+								)}
+							/>
+						</span>
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>
