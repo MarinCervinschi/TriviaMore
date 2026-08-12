@@ -1,51 +1,49 @@
-# TriviaMore — Design System Reference
+# TriviaMore — Design System
 
-> Reference for developers and LLMs working on the TriviaMore UI.
-> This file describes the system **as it is today**.
->
-> ⚠️ **It is no longer the source of truth for decisions.** Choices taken during the restyle live
-> in [`DESIGN_DECISIONS.md`](./DESIGN_DECISIONS.md) — where the two disagree, that file is newer
-> and wins. This one gets rewritten from it once the restyle lands.
+The system as it stands, for whoever is about to write UI here.
 
----
+**Where truth lives.** [`DESIGN_DECISIONS.md`](./DESIGN_DECISIONS.md) holds the decisions and the
+reasoning — D1–D26, each ending in a *Rules out* line. This file says what the system **is**; that one
+says **why**, and wins wherever the two disagree. `src/styles/globals.css` holds the **values**.
 
-## Philosophy
-
-> ⚠️ **Superseded by D1.** The paragraph below is the opposite of the current brief: the app keeps
-> its visual identity, and the work happens at the level of typography and detail. Three wholesale
-> redesigns were prototyped and rejected. Do not follow this section.
-
-**Bold, not incremental.** Every page and component should feel intentional, polished, and branded. When modifying UI, don't preserve existing structure for its own sake — rebuild with the design system in mind.
-
-**For LLMs:** Before writing any UI code, use the `ui-ux-pro-max` skill for design intelligence (styles, color palettes, font pairings, UX guidelines). Browse [21st.dev/community/components](https://21st.dev/community/components/) for component inspiration — search by component type (e.g. "404", "empty state", "toast") and adapt patterns to our design tokens.
+**This file does not restate a number that lives in `globals.css`.** That is deliberate, and it is the
+lesson of the version this replaced: it copied token values, the values moved, and the copy stayed. It
+ended up asserting a radius ladder that was wrong on three rows of six, a card elevation that described
+the minority of surfaces, six utility classes of which four had been deleted, and — worst — a section
+headed *"Semantic (use directly, not via tokens)"* over raw palette classes, which is the exact thing
+D26 removes. A doc that is out of date gets ignored; one that instructs confidently and wrongly gets
+followed. So: this file names the token and says what it is **for**. Read the value from the CSS.
 
 ---
 
-## Tech Stack
+## The brief
 
-| Layer | Tool | Notes |
-|-------|------|-------|
-| Framework | React 19 + TanStack Start | SSR-enabled, file-based routing |
-| Styling | Tailwind CSS 4 | Config via `@theme` in `globals.css`, no `tailwind.config.ts` |
-| Components | Radix UI (shadcn/ui) | Headless primitives in `src/components/ui/` |
-| Variants | class-variance-authority (CVA) | Used by Button, Badge |
-| Class merging | `cn()` from `src/lib/utils` | `clsx` + `tailwind-merge` — use everywhere |
-| Animation | Framer Motion v12 | Variants in `src/lib/motion.ts`. The **only** motion dependency — per the reversal on D9. Icon motion is a CSS transition, not Framer — per D23 |
-| Icons | Solar, Linear style | `@solar-icons/react/linear/<icon>`; `strokeWidth` 1.5 is the package default, never passed. Glyphs, the GitHub mark and the spinner live in `src/components/icons/` — see `ICON_MAP.md` |
-| Toasts | Sonner | Configured in `src/components/ui/sonner.tsx` |
-| Forms | React Hook Form + Zod | Schema-driven validation |
-| Font | DM Sans (400, 500, 600, 700) | `--font-sans`; per D3 |
-| Display font | DM Serif Display (400) | `--font-display` → `font-display`; L2 display headings only, and never with `font-bold` |
-| Mono font | DM Mono (400) | `--font-mono`; code and identifiers only. Figures use `tabular-nums` — per D17 |
-| Type scale | `text-2xs` … `text-7xl` | `text-2xs` (10/14) is the floor; a `text-[Npx]` anywhere is a leak. The overline is the `eyebrow` / `eyebrow-lg` utility — per D16 |
-| Background | `<PageBand />` | The app's only texture, mounted **once** in the `_app` shell so it spans the sidebar gutter; `level` follows `isAuthenticated`. Dots plus one soft top-left orb, in two layers. `level="public"` is the same band with `--dot-alpha` and `--glow-alpha` turned up — not a second system. Anything sitting over the band must be **opaque** — a translucent surface gets tinted by the light. `level="public"` is the same band with `--beam-alpha` and `--dot-alpha` turned up. Everything below a band is flat — per D12/D13/D18 |
+**Refine the existing language; do not replace it** (D1). The app keeps its visual identity, and the
+work happens at the level of typography, colour discipline, spacing and surface consistency. Three
+wholesale redesigns were prototyped and rejected as unjudgeable — moving paper, typeface and structure
+at once leaves nothing to compare.
+
+Two working rules came out of that and still hold:
+
+- **Change one variable at a time**, shown on the app's real components, in both themes.
+- **Prototype in Storybook → the user looks → decide → delete the lab.** Nothing visible reaches the
+  app before someone has looked at it. Six labs were built and deleted this way.
+
+**Light first** (D2). A colour or contrast choice that only works in dark is not a choice, because
+light is the harsher case and the one most people use.
+
+**Neumorphism is rejected, not deferred** (D8). Its form comes from a light and a dark shadow on a
+mid-lightness surface — that is, from contrast — so the contrast problem is the mechanism, not a side
+effect to design around. There is no hybrid to fall back to.
+
+The product this has to serve is a study CRM: dense pages, long text, a lot of numbers. That is a
+constraint on style, not a detail — anything that only survives on a marketing page is wrong here.
 
 ---
 
 ## Vocabulary
 
-One Italian word per level of the catalog, per D21. The data model is English; the interface is
-Italian, and each level has exactly one name in it.
+One Italian word per level of the catalog (D21). The data model is English; the interface is Italian.
 
 | Entity | Interface | Never |
 |--------|-----------|-------|
@@ -55,405 +53,341 @@ Italian, and each level has exactly one name in it.
 | `sections` | sezione | |
 | `questions` | domanda | |
 
-`corso` naming a `class` is the mistake to watch for: it collides with the level directly above it,
-and it took ~26 call sites to undo. Never abbreviate an entity to fit a control either — resize the
-label.
+`corso` naming a `class` is the mistake to watch for: it collides with the level directly above it and
+took ~26 call sites to undo. Never abbreviate an entity to fit a control — resize the label.
+
+Copy is specific and spelled properly (D7): accents included, sentence case, and a dialog title names
+the object and the act rather than asking "Sei sicuro?".
 
 ---
 
-## Color Palette
+## Colour
 
-All colors are HSL-based CSS variables defined in `src/styles/globals.css`.
+Four families, four jobs. Mixing them is the failure mode — a colour that means two things means
+neither.
 
-### Core
+| Family | Job |
+|---|---|
+| `--primary` / `--brand` | the brand, and the primary action — **one** ramp, used as an accent (D14) |
+| `--success` `--warning` `--info` `--destructive` / `--danger` | **status** — an outcome |
+| `--chart-1…5` + `--chart-N-ink` | **identity** — a chart series, a category |
+| `--heat-1…5` | **magnitude** — one hue, monotone lightness |
 
-| Token | Light | Dark | Usage |
-|-------|-------|------|-------|
-| `--primary` | `hsl(10 76% 42%)` / `#d14124` | same | Brand **surface**: `bg-primary`, `border-primary`. Never `text-primary` — see `--brand` |
-| `--brand` | `hsl(10 76% 42%)` | `hsl(10 90% 62%)` | Brand **ink**: `text-brand`. Identical to `--primary` in light; lifted in dark, where a surface value is 3.52:1 as text — per D19 |
-| `--danger` | `hsl(0 84% 47.5%)` | `hsl(0 90% 68%)` | Destructive **ink**: `text-danger`. `--destructive` stays the surface |
-| `--background` | `hsl(0 0% 100%)` | `hsl(224 71% 4%)` | Page background |
-| `--foreground` | `hsl(224 71% 4%)` | `hsl(210 20% 98%)` | Body text |
-| `--muted` | `hsl(220 14% 96%)` | `hsl(215 28% 17%)` | Subtle backgrounds |
-| `--muted-foreground` | `220 9% 45%` | `218 11% 65%` | Secondary text |
-| `--border` | `220 13% 91%` | `215 28% 17%` | Borders |
-| `--destructive` | `0 84% 47.5%` | `0 62.8% 30.6%` | An error *surface* |
-| `--ring` | `10 76% 42%` | `10 76% 62%` | Focus rings |
+Plus the decorative card tint of D4, which sits deliberately outside that list and **must never be
+readable as meaning**.
 
-### Status — tokens, never raw palette classes
+### Surface and ink are two values, not one
 
-D19 split each of these into a surface value and an ink value, because a colour tuned as a fill is
-too dark to read as text on a near-black page and one token cannot be both. **`bg-*` takes the
-surface, `text-*` takes the ink.**
+**A colour's surface value is not its ink value** (D19). A value tuned as a fill is too dark to read as
+text on a near-black page, and one token cannot be both. So the split is systematic:
 
-| Token | Light | Dark | Usage |
-|-------|-------|------|-------|
-| `--success` | `142 72% 29%` | `142 60% 55%` | A correct answer, a success toast |
-| `--warning` | `34 92% 33.5%` | `38 92% 60%` | Caution. Light sits 4° toward orange: amber cannot clear 4.5:1 and stay amber |
-| `--info` | `217 91% 50.5%` | `217 91% 65%` | Informational, and "needs your action" |
-
-`--brand` and `--danger` in the Core table above are the same split applied to the brand and to error.
-
-### Categorical — `--chart-*`, and its ink half
-
-Five slots for **data identity**: a chart series, and equally a category pill (course type,
-department area, role, changelog kind, request type). Assigned in slot order and never cycled.
-Green sits between blue and violet on purpose — adjacent slots have to stay apart under
-colour-vision deficiency, and **blue↔violet is the pair that collapses** (ΔE 3.0 under deuteranopia),
-so slots 2 and 4 are kept non-adjacent.
-
-`--chart-N` is the **fill**; `--chart-N-ink` is the same hue re-tuned to clear 4.5:1 as text (D26).
-A pill is `bg-chart-N/10 text-chart-N-ink border-chart-N/30`. Reaching for a fill as text ships a
-contrast failure — every slot measures 3.35–3.99 in light.
-
-**A set that needs all five slots at once cannot rely on hue alone**, since it necessarily includes
-the collapsing pair. Department areas do exactly that, and hold because each one also renders an
-icon — 1.4.1 is satisfied by the icon and the label, not by the colour.
-
-### Sequential — `--heat-*`
-
-One hue, monotone lightness. **Magnitude, never identity.**
-
----
-
-## Typography
-
-| Level | Classes | Responsive |
-|-------|---------|------------|
-| Hero | `text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight` | Yes |
-| Page title | `text-3xl font-bold tracking-tight sm:text-4xl` | Yes |
-| Section title | `text-xl font-semibold` | — |
-| Card title | `text-lg font-semibold tracking-tight` | — |
-| Body | `text-base leading-relaxed` | — |
-| Small | `text-sm text-muted-foreground` | — |
-| Micro | `text-xs text-muted-foreground` | — |
-| Gradient text | Add `gradient-text` class | — |
-
----
-
-## Spacing & Layout
-
-- **Max content width**: `max-w-7xl` (1280px)
-- **Page padding**: `px-4 sm:px-6 lg:px-8`
-- **Section spacing**: `py-16 sm:py-24` (large), `py-8 sm:py-12` (small)
-- **Card grid gap**: `gap-4 sm:gap-6`
-- **Card inner padding**: `p-6` or `p-6 sm:p-8`
-- **Component spacing**: `space-y-4`
-- **Container**: `.container` class (auto margins, responsive padding, 80rem max)
-
----
-
-## Border Radius
-
-| Element | Class | Size |
-|---------|-------|------|
-| Large containers, empty states | `rounded-3xl` | 24px |
-| Cards, dialogs, toasts | `rounded-2xl` | 16px |
-| Buttons, inputs, selects | `rounded-xl` | 12px |
-| Tabs, small elements | `rounded-lg` | 8px |
-| Badges, avatars, pills | `rounded-full` | — |
-| Checkboxes | `rounded-sm` | 4px |
-
-Every step derives from `--radius: 0.75rem`, in increments of 4px: `sm` is `−8px`, `lg` is `−4px`,
-`xl` is the token, `2xl` is `+4px`, `3xl` is `+12px`. So `--radius` is the one knob, and moving it
-moves the whole scale. **`rounded-md` is not a step** — it is pinned to `lg` only so that reaching
-for it out of shadcn habit cannot land on Tailwind's off-scale 6px. Use `rounded-lg`.
-
-**A child in its parent's corner steps down one.** For a child inset by padding `P` inside a parent
-of radius `R`, the child wants `R − P`, so the two arcs share a centre and the gap between the borders
-stays even around the curve. The 4px steps exist so that `R − P` lands on another step, since the
-app's tight paddings are `p-1`/`p-1.5`/`p-2` (4/6/8px): a `rounded-2xl p-1` panel takes `rounded-xl`
-items, a `rounded-xl p-1` panel takes `rounded-lg` items.
-
-This only applies while the child's corner is *in* the parent's corner — roughly `p-2` and under. At
-`p-4` and beyond the child is a separate shape and takes the radius of its own role, not a derived one.
-
----
-
-## Shadows & Elevation
-
-| Level | Class | Usage |
-|-------|-------|-------|
-| Base | `shadow-sm` | Cards at rest, inputs |
-| Hover | `shadow-md` | Cards on hover |
-| Elevated | `shadow-lg` | Modals, dropdowns, floating elements |
-| CTA glow | `shadow-lg shadow-primary/25` | Primary buttons, important CTAs |
-| Focus glow | `shadow-focus` | Focus-visible state |
-
-**Card hover pattern**: `hover:shadow-xl hover:-translate-y-1 transition-all duration-300`
-
-**In dark, elevation is lightness, not shadow.** A shadow on a near-black page has nothing to fall
-on, so the dark surfaces are a ladder and a higher surface is a lighter one:
-
-| | dark | ΔL* from the page |
+| | surface (`bg-*`) | ink (`text-*`) |
 |---|---|---|
-| `--background` | `224 71% 4%` | — |
-| `--card` | `224 55% 9%` | 3.5 |
-| `--popover` — dropdowns, dialogs, sheets | `224 50% 12%` | 6.5 |
-| `--muted` — a panel inside a card | `215 28% 17%` | 14.5 |
+| brand | `--primary` | `--brand` |
+| error | `--destructive` | `--danger` |
+| identity | `--chart-N` | `--chart-N-ink` |
 
-The shadow classes above still apply in both themes; in dark they just do very little, and the ladder
-is what carries the elevation. `--border` stays where it is: at `215 28% 17%` it keeps ΔL* 11 from a
-card, so a lifted card is still clearly outlined.
+The status tokens carry the split inside themselves — their dark values are lifted for text, and they
+are used both ways. `--primary` is theme-constant on purpose; `--brand` is what changes.
 
-**Use `bg-popover` for anything that floats**, not `bg-background`. In light the two are the same
-value, so the choice only shows up in dark — which is exactly why it was wrong in three primitives.
+**Never `text-primary`.** It measures 3.52:1 on the dark surface. Use `text-brand`.
 
----
+### The rules
 
-## Animation System
+- **Colour never carries meaning on its own** (WCAG 1.4.1): always with text, shape or position.
+- **Status is an outcome; category is an identity.** A course type is not a success. Painting one
+  green says it went well (D26).
+- **Never a raw Tailwind palette class** — `text-green-600`, `bg-blue-500/10`. Every one of them is a
+  value outside the system that cannot respond to the theme. 433 of them were counted in August; the
+  ones that remain are tracked on #118 and owned by the issue that will rewrite their page.
+- **Tune against `bg-muted`, not the page.** Muted is only 4% off white but costs ~0.4 of a ratio
+  point, so a colour tuned to exactly 4.5 on white fails the moment it lands on a tab, the admin
+  sidebar or a stat block.
+- **Measure against the real foreground token, not white.** `--destructive-foreground` is not `#fff`,
+  and that difference once hid a failing 4.33 behind a passing 4.53.
+- **Never propose lifting a dark accent *surface*.** It has been reversed twice: a lighter hue reads
+  washed out as a large fill and vivid as text. That asymmetry is why the ink split exists — and it
+  does **not** apply to a neutral grey (see Surfaces).
 
-All motion utilities live in `src/lib/motion.ts`. Use framer-motion's `motion.*` components with these variants.
+### The categorical ramp has an ordering constraint
 
-### Transition presets
+Five slots, assigned in slot order and never cycled. Green sits between blue and violet because
+**blue↔violet is the pair that collapses under colour-vision deficiency** (ΔE 3.0 under deuteranopia),
+so slots 2 and 4 are kept non-adjacent — a chart legend never puts them side by side.
 
-| Name | Type | Duration | Usage |
-|------|------|----------|-------|
-| `springGentle` | spring | ~400ms | Default for entrances |
-| `springSnappy` | spring | ~200ms | Hover/press feedback |
-| `easeFade` | easeOut | 300ms | Opacity-only transitions |
+That mitigation does not transfer to an unordered set. **Anything needing all five slots at once
+necessarily includes the collapsing pair**, and then colour cannot be the only channel. Department
+areas do exactly that, and hold because each renders its own icon.
 
-### Variant collections
+### Contrast is a gate, not a review step
 
-| Name | Effect | Usage |
-|------|--------|-------|
-| `fadeInUp` | opacity 0→1, y: 20→0 | General entrance |
-| `fadeIn` | opacity 0→1 | Subtle reveals |
-| `scaleIn` | opacity 0→1, scale 0.9→1 | Modals, hero elements |
-| `slideInLeft` / `slideInRight` | x: ±30→0 with fade | Directional entrances |
-| `staggerContainer` | orchestrator (stagger: 80ms, delay: 100ms) | Parent wrapper |
-| `staggerItem` | fadeInUp child | Children inside stagger |
-
-### Usage pattern
-
-```tsx
-import { motion } from "framer-motion"
-import { useReducedMotion } from "@/hooks/useReducedMotion"
-import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion"
-
-function MyComponent() {
-  const prefersReduced = useReducedMotion()
-  const container = withReducedMotion(staggerContainer, prefersReduced)
-  const item = withReducedMotion(staggerItem, prefersReduced)
-
-  return (
-    <motion.div variants={container} initial="hidden" animate="visible">
-      <motion.h1 variants={item}>Title</motion.h1>
-      <motion.p variants={item}>Description</motion.p>
-    </motion.div>
-  )
-}
-```
-
-### Scroll-triggered reveals
-
-```tsx
-import { useScrollReveal } from "@/hooks/useScrollReveal"
-import { fadeInUp, withReducedMotion } from "@/lib/motion"
-
-function Section() {
-  const prefersReduced = useReducedMotion()
-  const { ref, isVisible } = useScrollReveal()
-  const variants = withReducedMotion(fadeInUp, prefersReduced)
-
-  return (
-    <motion.div ref={ref} variants={variants} initial="hidden" animate={isVisible ? "visible" : "hidden"}>
-      ...
-    </motion.div>
-  )
-}
-```
-
-### Decorative orb drift
-
-For background blurred orbs, use infinite drift:
-
-```tsx
-<motion.div
-  className="pointer-events-none absolute ... rounded-full bg-primary/10 blur-[80px]"
-  animate={prefersReduced ? undefined : { x: [0, 15, 0], y: [0, -10, 0] }}
-  transition={prefersReduced ? undefined : { duration: 10, repeat: Infinity, ease: "easeInOut" }}
-/>
-```
+`src/styles/contrast.test.ts` parses the tokens out of `globals.css` and asserts every pair the app
+renders, in both themes. `pnpm test` fails on a regression. Adding a colour to the system means adding
+its row. A pair that genuinely needs less than 4.5:1 is added with the floor it does need **and a
+reason**; a row is never deleted to make the suite pass.
 
 ---
 
-## Global CSS Classes
+## Type
 
-Defined in `src/styles/globals.css`:
+DM Sans for the interface, DM Serif Display for display, DM Mono for code (D3, D16, D17).
 
-| Class | Purpose |
-|-------|---------|
-| `container` | The page gutter. An `@utility`, not a plain class — see the note below |
-| `band-dots` / `band-glow` | The two layers of the page band (D12, D13). Used only by `PageBand` |
-| `eyebrow` / `eyebrow-lg` | The overline: 12px or 14px, 600, `0.1em`, uppercase (D16) |
-| `.gradient-bg` | Linear gradient 135deg, `--gradient-from` → `--gradient-to` |
-| `.gradient-text` | The same ramp applied as text fill via `background-clip: text` |
-| `.shimmer` | Animated shimmer gradient for skeleton loaders |
-| `.fade-in` | Simple 0.5s fade-in with translateY |
-| `.flashcard` / `.flashcard-inner` / `.flashcard-back` | 3D flip with perspective 1000px |
-
-**`container` has to be an `@utility`, not a plain `.container` rule.** A plain rule is *unlayered*,
-and unlayered author styles beat layered ones regardless of order — so `container max-w-3xl` silently
-failed to narrow at five call sites until it was moved.
-
-`.dot-pattern`, `.chart-plot`, `.auth-glass-effect`, `.social-auth-btn`, `.quiz-progress` and
-`.quiz-timer` are **gone** (D15). `globals.css` holds no hardcoded hex at all now, including the
-scrollbar.
+- **`font-display`** is L2 display headings only — the landing hero and section opener, the about and
+  contact heroes. It ships at one weight, so it can never combine with `font-bold`.
+- **`font-mono` is for code and identifiers, not figures.** A proportional face with `tabular-nums`
+  already aligns columns, and the mono face made numbers a different voice from the text around them.
+- **`text-2xs` is the floor** — one step below `text-xs`. Below that a label is past legibility, so
+  there is nothing left to spend.
+- **A `text-[Npx]` anywhere is a leak.** There are none in `src`; 61 were collapsed to get there.
+- **The overline is the `eyebrow` / `eyebrow-lg` utility**, never a hand-rolled
+  `text-xs uppercase tracking-…` string. ~50 spellings collapsed onto two.
+- **A pill is not an overline.** A class string carrying a background or a border is `Badge`'s job.
 
 ---
 
-## Background System
+## Radius
 
-**Never use plain mono-color backgrounds.** Every page/section uses layered backgrounds:
+Five steps, 4px apart, **all derived from `--radius`** — so that token is the one knob, and moving it
+moves the whole scale (D24).
 
-1. **Base**: warm gradient or `bg-background`
-2. **Dot pattern**: `.dot-pattern` overlay at 40-50% opacity
-3. **Decorative orbs**: Absolute-positioned blurred circles (`bg-primary/8-10 blur-[60-100px]`)
-4. **All behind content**: `pointer-events-none absolute inset-0 -z-10`
+| Step | Role |
+|---|---|
+| `rounded-sm` | checkbox, chart cell |
+| `rounded-lg` | a control inside a control; a menu item |
+| `rounded-xl` | button, input, select — `--radius` itself |
+| `rounded-2xl` | card, dialog, toast |
+| `rounded-3xl` | page-level panel — `<Card level="panel">` |
+| `rounded-full` | badge, avatar, pill |
 
-Example:
-```tsx
-<div className="pointer-events-none absolute inset-0 -z-10">
-  <div className="absolute inset-0 dot-pattern opacity-40" />
-  <div className="absolute -left-32 top-1/4 h-[400px] w-[400px] rounded-full bg-primary/8 blur-[100px]" />
-</div>
-```
+**`rounded-md` is not a step.** It is pinned to `lg` only so that reaching for it out of shadcn habit
+cannot land on Tailwind's off-scale default. Use `rounded-lg`.
 
----
+### A child in its parent's corner steps down one
 
-## Component Patterns
+For a child inset by padding `P` inside a parent of radius `R`, the child wants `R − P`: the arcs then
+share a centre and the gap stays even around the curve. A child at or above its parent's radius pushes
+out of the corner and the gap swells exactly there.
 
-### Cards
+**The steps are 4px apart because the app's tight paddings are 4/6/8px** (`p-1`, `p-1.5`, `p-2`), so
+`R − P` lands on another step instead of between two. A `rounded-2xl p-1` panel takes `rounded-xl`
+items; a `rounded-xl p-1` panel takes `rounded-lg` items.
 
-```
-rounded-2xl border bg-card p-6 transition-all duration-300
-hover:-translate-y-1 hover:shadow-xl  (when interactive)
-```
-
-### Empty states
-
-Use the unified `EmptyState` component from `src/components/ui/empty-state.tsx`:
-
-```tsx
-import { EmptyState } from "@/components/ui/empty-state"
-import { SearchX } from "lucide-react"
-
-<EmptyState
-  icon={SearchX}
-  title="Nessun risultato"
-  description="Prova a cercare qualcos'altro"
-  actionLabel="Esplora"
-  actionHref="/browse"
-/>
-```
-
-### Toast notifications
-
-Sonner is pre-configured in `src/components/ui/sonner.tsx` with:
-- `rounded-2xl`, `backdrop-blur-sm`
-- 5s duration (WCAG minimum), close button
-- Type-specific left accent border (green/red/amber/blue)
-
-### Loading states
-
-- **Page loading**: `LoadingPage` component (branded spinner + orbs)
-- **Inline loading**: `LoadingSpinner` with `size="sm" | "default" | "lg"`
-- **Skeleton placeholders**: `Skeleton` component uses shimmer animation
+**This applies only while the child's corner is in the parent's corner — roughly `p-2` and under.** At
+`p-4` the child is 16px from the parent's arc, the curves are not adjacent, and the child takes the
+radius of its own role. Applied without that bound, the check flags almost everything: that was the
+first audit's mistake, 58 of 64 pairs.
 
 ---
 
-## Accessibility Rules
+## Surfaces and elevation
 
-1. **Reduced motion**: Always wrap animations with `useReducedMotion()` + `withReducedMotion()`. CSS animations are globally suppressed via `@media (prefers-reduced-motion: reduce)` in globals.css.
-2. **Focus states**: All interactive elements have `focus-visible:ring-2 focus-visible:ring-ring` + glow shadow. Never remove focus outlines.
-3. **Touch targets**: Minimum 44px on touch devices (enforced via `@media (pointer: coarse)` in globals.css).
-4. **Contrast**: WCAG AA minimum (4.5:1 for text). Primary color stays the same in both themes.
-5. **Language**: UI text is in Italian. Code comments must be in English.
-6. **Screen readers**: Use `aria-hidden` on decorative elements, proper `role` attributes on skeletons.
+**A card is elevated** (D25). `<Card>` carries `shadow-sm`; a hand-rolled flat `bg-card border
+rounded-2xl` is a deviation, not a variant.
+
+`<Card>` also owns three things worth not re-inventing:
+
+- **`level="panel"`** — the page-level surface, one radius step up. Radius only: **padding stays with
+  the caller**, because the sites that want this tier use three different paddings.
+- **`CardOrb`** — D4's blurred decoration, with size and corner as separate axes. Its **parent needs
+  `relative overflow-hidden`**. The tint is a prop, because the decorative palette is D4's.
+- **`transition-shadow`, not `transition-all`.** At rest the shadow is the only property that changes,
+  and `transition-all` animates layout properties on every card in the app.
+
+### In dark, elevation is lightness
+
+A shadow on a near-black page has nothing to fall on. So the dark neutrals are a **ladder** — page →
+card → popover → muted, each lighter than the last — and that is what carries elevation. The shadow
+classes still apply in both themes; in dark they simply do very little.
+
+**Use `bg-popover` for anything that floats**, never `bg-background`. In light the two tokens are the
+same value, so the choice only shows up in dark — which is exactly why `dialog`, `alert-dialog` and
+`sheet` were wrong for months and a modal was the colour of the page it covered.
+
+`--border` needs no compensation: it keeps a wide ΔL* from a lifted card.
+
+**Read surface adjacency in ΔL\*, not as a contrast ratio.** A lifted dark card measures 1.07 against
+the page, which looks like nothing and would have killed the change; in ΔL* it is a clear 3.5. A
+luminance ratio answers *"can text be read on this"*, never *"can two large adjacent surfaces be told
+apart"*.
+
+### Elevation vocabulary
+
+| | |
+|---|---|
+| at rest | `shadow-sm` |
+| hover, when the thing is interactive | `shadow-md` |
+| floating — dialog, dropdown, popover, toast | `shadow-lg` |
+| focus | `shadow-focus`, the token — never an inline value (D22) |
+| a status halo | `shadow-halo-success` / `-info` / `-warning` |
+
+A hover shadow is an affordance: **a hover affordance means the thing is interactive** (D5), so it
+never appears on something inert.
 
 ---
 
-## Dark Mode Rules
+## Background
 
-- Never use pure black (`#000`) — use the deep navy `--background`
-- Cards: slightly lighter than background + subtle border
-- Primary color is the same in both themes
-- Reduce shadow intensity, increase border visibility
-- Decorative orbs: lower opacity in dark mode (`/8` instead of `/10`)
-- Scrollbar: custom styled per theme in globals.css
-- All `.dark` variants are defined alongside `:root` in globals.css
+One texture, `<PageBand />`, mounted **once** in the `_app` shell so it spans the sidebar gutter
+(D12, D13). Dots plus one soft orb, both fading vertically, anchored **top left**.
+
+- **`level` follows `isAuthenticated`.** `"public"` is the same band with its two alphas turned up —
+  not a second system.
+- **Everything below the band is flat by construction.** No per-surface opt-out, no measuring.
+- **Anything sitting over the band must be opaque.** A translucent surface is tinted by whatever
+  passes behind it — invisible on a flat page, obvious over decoration. This is the bug to remember
+  when a control looks wrong: `Input`, `Textarea` and `SelectTrigger` shipped `bg-transparent` from
+  shadcn, and nine chrome bars sat at 70%.
+- **The six surfaces genuinely outside `_app`** — auth, quiz, flashcard, the quiz skeleton, error and
+  not-found — mount their own band.
+- Card-level orbs (D4) stay, and their light comes from the same direction as the page's so the two
+  never fight.
+
+The diagonal beams are **parked, not rejected** (D18). If they come back, read D18 first: one angle
+cannot serve both the band axis and the travel axis, and a vertical mask over a diagonal eats the part
+that makes it a beam.
+
+---
+
+## Motion
+
+Framer Motion is the **only** motion dependency. AutoAnimate was decided and then reversed (D9): the
+list transitions it would serve are few, and a second animation library for them is not worth the
+dependency. Animate UI was rejected as a component system for the same reason (D10) — its patterns are
+worth reading, its components are not worth adopting wholesale.
+
+Variants live in `src/lib/motion.ts` — `springGentle`, `springSnappy`, `easeFade`; `fadeInUp`,
+`fadeIn`, `scaleIn`, `slideInLeft`, `slideInRight`, `staggerContainer`, `staggerItem`. Use them; do not
+write inline variants.
+
+### The reduced-motion trap
+
+The `prefers-reduced-motion` block in `globals.css` zeroes CSS `animation-duration` and
+`transition-duration` — **CSS only**. Framer Motion animates by writing inline styles and does not
+honour the query at all. So:
+
+- **Framer** needs `useReducedMotion()` + `withReducedMotion()`, every time.
+- **A CSS transition** needs `motion-reduce:transition-none`.
+
+### What earns motion
+
+Motion is spent on **state the user caused**, and it is the first thing the eye catches — before
+contrast, before colour, before shape. Doherty's threshold, ~400ms, is the ceiling for a response that
+should feel immediate; press feedback is ~200ms.
+
+**Icon motion is a CSS crossfade, not Framer** (D23) — two overlaid icons, `transition-transform` plus
+`scale-0`/`scale-100`, with `motion-reduce:transition-none`. Six lines, no dependency, no guard to
+remember. And it only earns its place when the two drawings **read as different**: animating a swap
+between near-identical drawings advertises that they are near-identical.
 
 ---
 
 ## Icons
 
-- **Library**: Lucide React
-- **Inline**: `size-4` (16px) or `h-4 w-4`
-- **Buttons**: `size-5` (20px) or `h-5 w-5`
-- **Decorative/hero**: `size-8`+ (32px+)
-- **Stroke**: `strokeWidth={1.5}` for a lighter, modern feel
-- **Badge icons**: Icon inside `rounded-2xl bg-primary/10 p-3-4` container
+**Solar, Linear style** (D11), imported per icon by path: `@solar-icons/react/linear/<icon>`. The
+mapping from the old Lucide names, and the reasoning for the re-cut substitutions, is in
+[`ICON_MAP.md`](./ICON_MAP.md).
+
+- **Never pass `strokeWidth` to a Solar icon.** 1.5 is the package default; the 82 that existed were
+  all fighting Lucide's 2. It stays legitimate on a hand-drawn SVG — the logo, the clock face, the
+  third-party tech logos — and as a Recharts prop.
+- Sizes: `size-4` inline, `size-5` in a button, `size-8`+ decorative.
+- **`src/components/icons/`** holds only what Solar does not carry: the glyphs (✕ ＋ − ✓ ●, built on
+  Solar's own `IconBase`), the GitHub mark, and the spinner. `Icon` is the shared type.
+- **Verify the drawing, not the name.** Solar's `filters` is three overlapping circles — the
+  *photographic* filter. Decode the base64 preview in the icon's `.d.mts` when a name is not
+  conclusive.
+- CC BY 4.0 attribution ships with the icons: the landing footer **and** the about page, because the
+  footer only renders for unauthenticated users.
 
 ---
 
-## File Organization
+## Components
+
+Reach for the primitive before writing the recipe.
+
+| Job | Component | Note |
+|---|---|---|
+| any table | `src/components/data-table/` | The one table. TanStack Table **v9** — v8 snippets do not transfer. Use the `data-tables` skill |
+| a surface | `Card`, `Card level="panel"`, `CardOrb` | see Surfaces |
+| nothing to show | `EmptyState` | `InlineEmpty` for the one-line case inside a table or chart |
+| state on a row | `Badge` | **state, not attributes** (D6). `size="sm"` for the dense case |
+| an action | `Button` | `asChild` to wrap a `<Link>`; the parent's `aria-label` reaches the child through Radix `Slot` |
+| a message | `toast` via `src/lib/toast.ts` | `toastUndo` for anything reversible |
+| a mutation | `useMutationWithToast` | takes an `undo` option; declaring it makes the success toast undoable |
+| loading | `Spinner` from `@/components/icons` | inline, 11 call sites. It carries `role="status"` and an sr-only label |
+| a whole page loading | `LoadingPage` | the only consumer of `ui/loading-spinner` — do not reach for that one directly |
+| a placeholder | `Skeleton` | uses `shimmer`, never `animate-pulse` |
+| a row's actions | `AdminRowActions` | takes `label` so a table reads "Modifica Analisi matematica I", not twenty identical "Modifica" |
+
+### Confirmation or undo, decided by reversibility
+
+**Undo for the frequent and reversible; confirmation for the rare and irreversible** (D20). A dialog
+shown often becomes background noise and stops being read — its power is its rarity. The role change
+deliberately keeps its dialog despite being reversible, because undoing a promotion still leaves a
+window of granted privilege.
+
+No dialog says "Sei sicuro?". It names the object and the act.
+
+### Skeletons mirror their page
+
+When a route has a `pendingComponent`, its skeleton in `src/components/skeletons/` changes with the
+page. A skeleton that drifts is worse than none: it makes the swap jump.
+
+### The `container` trap
+
+`container` is an `@utility`, not a plain `.container` rule — and it has to be. **A plain rule is
+unlayered, and unlayered author styles beat layered ones regardless of order**, so `container max-w-3xl`
+silently failed to narrow at five call sites. Anything that must be overridable by a Tailwind utility
+belongs in a layer.
+
+### What `globals.css` still owns
+
+After D15 removed what nothing referenced:
+
+`gradient-bg` / `gradient-text` (the brand ramp, as background and as text fill), `shimmer`, `fade-in`,
+the `flashcard` 3D flip trio, `band-dots` / `band-glow` (used only by `PageBand`), `eyebrow` /
+`eyebrow-lg`, and `container`. **It holds no hardcoded hex** — the scrollbar was the last one.
+
+---
+
+## The accessibility floor — WCAG 2.2 AA
+
+- Text **4.5:1**; large text and UI components **3:1**. Checked in light first, and by the gate.
+- **Every control has an accessible name** (4.1.2) — an icon alone is not a name, and **a tooltip is
+  not a name**: Radix `Tooltip` sets `aria-describedby`. A description supplements a name; it does not
+  supply one.
+- **Name the object, not the action.**
+- Every target at least **24×24** with spacing (2.5.8). The `@media (pointer: coarse)` 44px rule in
+  `globals.css` is an enhancement and **does not discharge this**, which applies to every pointer.
+- Focus is **visible** (2.4.7) and **not obscured** (2.4.11).
+- Decorative elements get `aria-hidden` and `pointer-events-none`.
+- UI text is Italian; code comments are English.
+
+---
+
+## Where things live
 
 ```
-src/
-├── components/
-│   ├── ui/           # Primitives (button, card, input, empty-state, skeleton...)
-│   ├── layout/       # Navbar, footer, sidebar
-│   ├── landing/      # Landing page sections
-│   ├── auth/         # Auth forms
-│   ├── browse/       # Browse hierarchy
-│   ├── quiz/         # Quiz session
-│   ├── flashcard/    # Flashcard session
-│   ├── user/         # User section wrappers
-│   ├── admin/        # Admin section
-│   ├── error/        # Error/404 pages
-│   └── loading/      # Loading page
-├── hooks/            # useReducedMotion, useScrollReveal, useTheme, useAuth
-├── lib/              # motion.ts, utils.ts, and domain logic
-├── styles/           # globals.css, markdown.css
-└── routes/           # TanStack Router file-based routes
+src/components/ui/           the primitives — every one has a story
+src/components/data-table/   the one table
+src/components/icons/        only what Solar does not carry
+src/components/layout/       navbar, sidebar, footer, PageBand
+src/components/skeletons/    one per route with a pendingComponent
+src/components/shared/       cross-area components
+src/components/charts/       Recharts 3 — cannot be verified in jsdom
+src/hooks/                   useReducedMotion, useScrollReveal, useTheme, useAuth…
+src/lib/motion.ts            the Framer variants
+src/lib/toast.ts             toast + toastUndo
+src/styles/globals.css       every token, and the contrast gate beside it
 ```
 
 ---
 
-## LLM-Specific Guidance
+## Verification
 
-### Before writing any UI code
+`pnpm exec tsc --noEmit`, `pnpm test`, and the build. A UI change also has to pass
+`pnpm build-storybook`, which proves a story **compiles** — not that it renders.
 
-1. **Read this file** for design tokens, patterns, and conventions
-2. **Use the `ui-ux-pro-max` skill** for design intelligence — it has 50+ styles, 161 color palettes, UX guidelines, and component patterns for shadcn/ui + Tailwind
-3. **Browse [21st.dev](https://21st.dev/community/components/)** for component inspiration — search by type ("modal", "card", "navigation") and adapt to our tokens
-4. **Use the `find-docs` skill** for up-to-date Tailwind CSS 4, Framer Motion, or Radix UI documentation
-
-### When creating new components
-
-- Use `cn()` for all class merging
-- Follow CVA pattern for components with variants (see `button.tsx`)
-- Always support `className` prop for composition
-- Wrap animations with `useReducedMotion()` guard
-- Support both light and dark themes
-- Use existing motion variants from `src/lib/motion.ts` — don't create inline variants
-- Use `EmptyState` for empty/no-data states — don't create ad-hoc ones
-
-### When modifying existing components
-
-- Read the component first — understand its props and usage
-- Preserve the public API (props interface) unless changing it is the goal
-- Check all consumers with grep before changing props
-- Test both themes
-- Don't add complexity beyond what's needed
-
-### Common mistakes to avoid
-
-- Using `animate-pulse` instead of `shimmer` for skeletons
-- Forgetting `pointer-events-none` on decorative elements
-- Using plain backgrounds without dot-pattern/orbs
-- Hardcoding colors instead of using CSS variable tokens
-- Skipping `useReducedMotion` for new animations
-- Adding `rounded-md` (the old default) instead of `rounded-xl`/`rounded-2xl`
-- Using generic Loader2 spinner instead of `LoadingSpinner` component
+**Browser verification is the user's.** A green build never proves appearance. And **look at both
+themes**: dark is where token mistakes surface, which is how the grade colours, the chart palette and
+an entire missing elevation ladder all survived review.
