@@ -1037,7 +1037,7 @@ a matter of taste.
 - **Contrast is a gate, not a review step**, and it is checked in light first (D2). Since 2026-08-12
   that is literal: `src/styles/contrast.test.ts` parses the HSL tokens out of `globals.css` and asserts
   every pair the app renders, in both themes, so `pnpm test` fails on a regression instead of someone
-  remembering to measure. 21 pairs × 2 themes. A pair that legitimately needs less than 4.5:1 is added
+  remembering to measure. 24 pairs × 2 themes. A pair that legitimately needs less than 4.5:1 is added
   with the floor it does need and a reason; a row is never deleted to make the suite pass.
 
 ### Order and position
