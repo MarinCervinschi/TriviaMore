@@ -23,7 +23,7 @@ function ScreenshotPlaceholder({ feature }: { feature: ShowcaseFeature }) {
 				<div className="h-2.5 w-2.5 rounded-full bg-red-400/60" />
 				<div className="h-2.5 w-2.5 rounded-full bg-yellow-400/60" />
 				<div className="h-2.5 w-2.5 rounded-full bg-green-400/60" />
-				<div className="bg-muted ml-2 h-4 w-32 rounded-md" />
+				<div className="bg-muted ml-2 h-4 w-32 rounded-lg" />
 			</div>
 
 			{/* Content based on feature type */}

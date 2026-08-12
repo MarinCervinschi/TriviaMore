@@ -62,10 +62,19 @@
 	--shadow-halo-success: 0 0 0 4px hsl(var(--success) / 0.15);
 	--shadow-halo-info: 0 0 0 4px hsl(var(--info) / 0.15);
 	--shadow-halo-warning: 0 0 0 4px hsl(var(--warning) / 0.15);
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
+	/* Steps of 4px, every one derived from --radius, because the app's small paddings are 4/6/8px
+	   (p-1, p-1.5, p-2) — so "parent radius minus its padding", the concentric move, always lands on
+	   another step of this scale instead of between two. --radius is the control radius; cards are one
+	   step up. Before this, 2xl and 3xl were left at Tailwind's defaults, which slid the control half
+	   of the scale one step too round and made xl and 2xl the same 16px. */
+	--radius-sm: calc(var(--radius) - 8px); /* 4px — checkbox, chart cell */
+	--radius-lg: calc(var(--radius) - 4px); /* 8px — a control inside a control */
+	--radius-xl: var(--radius); /* 12px — button, input, select */
+	--radius-2xl: calc(var(--radius) + 4px); /* 16px — card, dialog, toast */
+	--radius-3xl: calc(var(--radius) + 12px); /* 24px — page-level container */
+	/* md is not a step. It is pinned to lg so that reaching for it out of shadcn habit cannot land on
+	   Tailwind's off-scale 6px. */
+	--radius-md: calc(var(--radius) - 4px);
 }
 
 /* ===== Light theme variables ===== */

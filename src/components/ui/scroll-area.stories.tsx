@@ -27,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	render: () => (
-		<ScrollArea className="h-56 w-64 rounded-md border">
+		<ScrollArea className="h-56 w-64 rounded-lg border">
 			<div className="p-4">
 				<h4 className="mb-3 text-sm font-medium">Sezioni del corso</h4>
 				{sezioni.map(sezione => (
@@ -43,7 +43,7 @@ export const Default: Story = {
 
 export const LongText: Story = {
 	render: () => (
-		<ScrollArea className="h-48 w-80 rounded-md border p-4 text-sm leading-relaxed">
+		<ScrollArea className="h-48 w-80 rounded-lg border p-4 text-sm leading-relaxed">
 			<p>
 				Il teorema di De l'Hôpital permette di calcolare il limite del rapporto tra due
 				funzioni quando questo si presenta nella forma indeterminata 0/0 oppure ∞/∞.

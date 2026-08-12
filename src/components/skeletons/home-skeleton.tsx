@@ -13,7 +13,7 @@ export function PlatformStatsSectionSkeleton() {
 
 			<div className="container">
 				<div className="mb-16 space-y-3 text-center">
-					<Skeleton className="mx-auto h-4 w-56 rounded-md" />
+					<Skeleton className="mx-auto h-4 w-56 rounded-lg" />
 					<Skeleton className="mx-auto h-9 w-2/3 max-w-xl sm:h-10" />
 					<Skeleton className="mx-auto h-5 w-full max-w-2xl" />
 					<Skeleton className="mx-auto h-5 w-3/4 max-w-xl" />

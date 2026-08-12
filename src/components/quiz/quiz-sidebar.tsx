@@ -36,11 +36,11 @@ export function QuizSidebarContent({
 			</div>
 			<div className="text-muted-foreground mt-4 space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<div className="bg-primary h-3 w-3 rounded-md" />
+					<div className="bg-primary h-3 w-3 rounded-lg" />
 					<span>Risposta data</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<div className="border-border bg-card h-3 w-3 rounded-md border" />
+					<div className="border-border bg-card h-3 w-3 rounded-lg border" />
 					<span>Senza risposta</span>
 				</div>
 			</div>

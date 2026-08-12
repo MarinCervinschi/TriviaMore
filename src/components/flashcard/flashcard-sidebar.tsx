@@ -36,11 +36,11 @@ export function FlashcardSidebarContent({
 			</div>
 			<div className="text-muted-foreground mt-4 space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<div className="h-3 w-3 rounded-md bg-green-600 dark:bg-green-700" />
+					<div className="h-3 w-3 rounded-lg bg-green-600 dark:bg-green-700" />
 					<span>Studiata</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<div className="border-border bg-card h-3 w-3 rounded-md border" />
+					<div className="border-border bg-card h-3 w-3 rounded-lg border" />
 					<span>Da studiare</span>
 				</div>
 			</div>

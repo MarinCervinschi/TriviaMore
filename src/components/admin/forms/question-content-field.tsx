@@ -43,7 +43,7 @@ export function QuestionContentField({
 						</Button>
 					</div>
 					{showPreview ? (
-						<div className="rounded-md border p-3">
+						<div className="rounded-lg border p-3">
 							{watchedContent ? (
 								<MarkdownRenderer content={watchedContent} />
 							) : (
