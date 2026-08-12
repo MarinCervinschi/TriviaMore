@@ -133,6 +133,11 @@ Two rules that are not negotiable:
 
 ## Conventions
 
+- **For any UI work — a component, a colour, a radius, a shadow, a background, an animation — use the
+  `design-system` skill.** It holds the rules and the traps `tsc` cannot catch. The decisions are in
+  `docs/DESIGN_DECISIONS.md` (D1–D26) and the system as it stands in `docs/DESIGN_SYSTEM.md`; **token
+  values live in `src/styles/globals.css` and nowhere else.** A colour change must clear
+  `src/styles/contrast.test.ts`, which fails `pnpm test` on a regression.
 - **Comments are forbidden by default.** Code must read on its own. Two exceptions only, both used
   with maximum caution: a doc comment where one is genuinely needed, and a *strictly necessary* `why`
   — a non-obvious constraint, security rule or workaround whose absence would mislead. Both in
