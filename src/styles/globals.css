@@ -145,9 +145,15 @@
 .dark {
 	--background: 224 71% 4%;
 	--foreground: 210 20% 98%;
-	--card: 224 71% 4%;
+	/* On a near-black page a shadow has nothing to fall on, so elevation here is lightness: the
+	   higher a surface sits, the lighter it is. The ladder is background 4% → card 9% → popover 12%
+	   → muted 17%. All three were 4% before, which made a card the page with a border round it and a
+	   dropdown the same colour as what it floated over — its shadow-lg did nothing.
+	   This is a neutral surface, not an accent: lifting --primary or --destructive reads washed out
+	   as a large fill and was rejected twice. That asymmetry does not apply to a grey. */
+	--card: 224 55% 9%;
 	--card-foreground: 210 20% 98%;
-	--popover: 224 71% 4%;
+	--popover: 224 50% 12%;
 	--popover-foreground: 210 20% 98%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
