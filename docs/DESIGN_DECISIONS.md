@@ -1022,6 +1022,80 @@ it here would have been a colour change smuggled into a structural one.
 **Rules out:** a flat card in the page flow; `bg-background` on anything that floats; expressing dark
 elevation with a shadow; reading surface adjacency off a contrast ratio.
 
+---
+
+## D26 — Category is not status, and the categorical ramp needs an ink half
+
+**Decided and implemented 2026-08-12.** #118 framed its largest section as *"migrate the scattered
+colour maps onto the status tokens"*. That instruction is wrong, and the reason comes before anything
+else: **those maps encode category, not status.** A course type, a department area, a role, a changelog
+kind and a request type are *identities*; `--success` / `--warning` / `--info` mean an outcome. Painting
+BACHELOR green would state that being a bachelor's degree went well.
+
+The rules already name the right home — *`--chart-*` for data identity* — so this needed no new concept,
+only the ink half of a ramp that already existed.
+
+### Why the ramp could not simply be borrowed
+
+Measured before writing anything: **every `--chart-*` slot fails as text**, at 3.35–3.99 in light against
+the 4.5 floor, and three of five fail in dark on `bg-muted`. They are fills on a plot. This is **D19 for
+the third time** — a colour's surface value is not its ink value — so `--chart-N-ink` inherits the hue and
+saturation and re-tunes only the lightness, clearing 4.7 on `bg-muted`, the binding surface. A pill is
+then `bg-chart-N/10 text-chart-N-ink border-chart-N/30`: one slot, both renderings, and a chart series now
+shares its hue with the category pill beside it.
+
+### Two wrong turns, both caught by measuring
+
+**A new five-hue ramp was the wrong answer, and the search proved it.** Optimising five hues for
+separation under deuteranopia and protanopia — Viénot projection, ΔE in Lab — reached a best worst-case of
+only ΔE 18.9, and kept landing on hues adjacent to `--warning` (34) and `--success` (142). The status
+palette already occupies four useful hue positions, so a further categorical ramp that avoids them, clears
+4.5 and survives CVD is over-constrained. Reusing `--chart-*` sidesteps the whole problem.
+
+**The first optimiser run measured the wrong thing** and returned `(45, 135, 150, 180, 210)` — two greens
+15° apart. It maximised the CVD minimum while ignoring normal vision, so it produced a set more legible to
+a colourblind reader than to everyone else. An accessibility objective that does not also hold the
+ordinary case is not one.
+
+### What the chart palette's own comment already knew
+
+`--chart-*` carries a note that blue↔violet is the pair that collapses under CVD, and that slots 2 and 4
+are kept **non-adjacent** for exactly that reason: a chart assigns series in slot order, so the collapsing
+pair is never neighbours in a legend. Measured today they are ΔE 3.0 apart under deuteranopia — **known
+and mitigated, not a regression.** I nearly filed it as a defect before reading the comment.
+
+That mitigation does not transfer. Department areas need all five slots at once, unordered, so they *do*
+put chart-2 beside chart-4. It holds anyway because **every area also renders its own icon** — 1.4.1 is
+satisfied by the icon and the label, not by the hue. Recorded in `constants.ts`, where the risk lives.
+
+### The status half, which needed no decision at all
+
+`grading.ts` had already settled the convention and was already on tokens: `danger → warning → info →
+success` for bands of merit. So the status-shaped maps just follow it — `getDifficultyColor` and
+`RequestStatusBadge`, 32 classes — with `NEEDS_REVISION` moving from orange to `--info`, because orange
+against amber was a distinction nobody could see and the two states now differ visibly.
+
+**`getScoreColor` was deleted rather than migrated.** Zero callers, no test, and it graded on *different
+band edges* than `getGradeColor` (30/25/20 against 18/24/27): two functions disagreeing about what a score
+means, one of them dead.
+
+`getGradeColor`'s top band was the last raw colour in that file, a bare `purple-600`. It is now
+`text-chart-4-ink`, which finally pairs it with the `var(--color-chart-4)` its own chart twin was already
+returning for the same band.
+
+### Where this leaves #118
+
+433 raw palette classes → **325**. The remainder is not one job: ~283 are scattered through pages that
+#146–#148 will rewrite, and 38 are D4's decorative tint, which needs D4's palette decided rather than a
+blind migration. The five gate rows added here mean a category can no longer be introduced below the floor.
+
+**Rules out:** a category on a status token; borrowing a `--chart-*` fill as text; a further categorical
+ramp alongside this one; optimising an accessibility metric without holding the ordinary case.
+
+---
+
+## The rules these decisions serve
+
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
 satisfy. Where a decision and a rule collide, the rule wins — a rule is why a choice is right, not
 a matter of taste.
@@ -1042,13 +1116,13 @@ a matter of taste.
 
 - **Colour never carries meaning on its own** (WCAG 1.4.1): always with text, shape or position.
 - Each colour has exactly one job: brand orange for brand and the primary action; red for
-  destruction and error; the status tokens for status; `--chart-*` for data identity; `--heat-*`
-  for magnitude. The decorative card colour of D4 sits deliberately outside that list and must
+  destruction and error; the status tokens for status; `--chart-*` for data identity, with
+  `--chart-N-ink` as its text half (D26); `--heat-*` for magnitude. The decorative card colour of D4 sits deliberately outside that list and must
   never be readable as meaning.
 - **Contrast is a gate, not a review step**, and it is checked in light first (D2). Since 2026-08-12
   that is literal: `src/styles/contrast.test.ts` parses the HSL tokens out of `globals.css` and asserts
   every pair the app renders, in both themes, so `pnpm test` fails on a regression instead of someone
-  remembering to measure. 24 pairs × 2 themes. A pair that legitimately needs less than 4.5:1 is added
+  remembering to measure. 29 pairs × 2 themes. A pair that legitimately needs less than 4.5:1 is added
   with the floor it does need and a reason; a row is never deleted to make the suite pass.
 
 ### Order and position
