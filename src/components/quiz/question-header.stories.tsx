@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 
 import { QuestionHeader } from "./question-header";
 
-// Stand-in for the real report/bookmark actions (which are server-fn-coupled and
-// live in the card bodies). The header itself is presentational.
+// Stand-in for the real report and bookmark actions, which live in the card bodies — see
+// Question Cards/QuestionCard for those. The header itself is presentational.
 const actions = (
 	<>
 		<Button variant="ghost" size="icon" aria-label="Segnala">
