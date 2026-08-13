@@ -16,6 +16,7 @@ import { CloseGlyph } from "@/components/icons";
 import { SearchResultsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -319,9 +320,9 @@ function SearchCoursesPage() {
 				{/* Results */}
 				{!hasFilters ? (
 					<div className="bg-card rounded-2xl border p-12 text-center">
-						<div className="bg-primary/10 mx-auto mb-4 inline-flex rounded-2xl p-3">
-							<MagnifierIcon className="text-brand h-6 w-6" />
-						</div>
+						<IconStack className="**:data-[slot=icon-stack-layer]:fill-card mx-auto mb-4">
+							<MagnifierIcon className="text-brand h-8 w-8" />
+						</IconStack>
 						<h3 className="text-lg font-semibold">Inizia a cercare</h3>
 						<p className="text-muted-foreground mt-1 text-sm">
 							Cerca un corso per nome o codice, oppure seleziona un filtro

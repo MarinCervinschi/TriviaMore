@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -48,11 +49,10 @@ export function EmptyState({
 			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
 
 			<div className="relative text-center">
-				<motion.div
-					className="bg-primary/10 mx-auto mb-4 inline-flex rounded-2xl p-4"
-					variants={item}
-				>
-					<Icon className="text-brand h-10 w-10" />
+				<motion.div className="mx-auto mb-4 inline-flex" variants={item}>
+					<IconStack className="**:data-[slot=icon-stack-layer]:fill-card">
+						<Icon className="text-brand h-8 w-8" />
+					</IconStack>
 				</motion.div>
 
 				<motion.h2 className="mb-2 text-xl font-semibold" variants={item}>

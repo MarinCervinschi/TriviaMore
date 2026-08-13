@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { AuthCard } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 
 export const Route = createFileRoute("/auth/auth-code-error")({
 	component: AuthCodeErrorPage,
@@ -16,9 +17,9 @@ function AuthCodeErrorPage() {
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
-					<div className="bg-destructive/10 text-danger flex h-16 w-16 items-center justify-center rounded-2xl">
-						<DangerCircleIcon className="h-8 w-8" />
-					</div>
+					<IconStack className="**:data-[slot=icon-stack-layer]:fill-card">
+						<DangerCircleIcon className="text-danger h-8 w-8" />
+					</IconStack>
 				</div>
 
 				<p className="text-muted-foreground text-center text-sm">

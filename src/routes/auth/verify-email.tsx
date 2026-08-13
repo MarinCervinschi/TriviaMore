@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AuthCard } from "@/components/auth/auth-card";
 import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 import { requireGuestFn } from "@/lib/auth/api";
 import { resendConfirmationFn } from "@/lib/auth/api";
 
@@ -64,9 +65,9 @@ function VerifyEmailPage() {
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
-					<div className="bg-primary/10 text-brand flex h-16 w-16 items-center justify-center rounded-2xl">
-						<LetterOpenedIcon className="h-8 w-8" />
-					</div>
+					<IconStack className="**:data-[slot=icon-stack-layer]:fill-card">
+						<LetterOpenedIcon className="text-brand h-8 w-8" />
+					</IconStack>
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
