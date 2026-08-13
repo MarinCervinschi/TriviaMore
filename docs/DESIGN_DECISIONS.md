@@ -153,6 +153,21 @@ now closed, on three grounds:
 3. **It denies borders**, which are what deep nesting (five catalog levels, nested replies) needs
    in order to stay legible.
 
+### The one deliberate exception, 2026-08-13
+
+The dissolving numeral on the error pages (`gradient-text-fade`, used by `ErrorNumeral`) carries a
+hairline of page colour one pixel below the glyph. That is this decision's mechanism exactly: a light
+and a shadow used to fake relief.
+
+It is allowed there, and the reason matters more than the exception. **D8's objection is about
+contrast** — a control whose *form* is carried by two shadows cannot guarantee that its shape reads,
+and a control has to read. The numeral is `aria-hidden` decoration: it carries no information, it is
+not operable, and the heading beside it says what happened. Nothing depends on the illusion working.
+
+So the boundary is not "no light-and-shadow anywhere" but **"nothing whose meaning or operability
+depends on it"**. Do not carry the trick to a button, a card, an input, or anything a screen reader
+should reach.
+
 ---
 
 ## D9 — ~~AutoAnimate for list transitions~~ → reversed, not adopted

@@ -91,7 +91,11 @@ export const Route = createFileRoute("/_app/browse/$department/$course/$class/")
 	pendingComponent: ClassDetailSkeleton,
 	component: ClassPage,
 	notFoundComponent: () => (
-		<NotFoundPage message="L'insegnamento che stai cercando non esiste." />
+		<NotFoundPage
+			title="Insegnamento non trovato"
+			message="L'insegnamento che stai cercando non esiste."
+			withBand={false}
+		/>
 	),
 });
 

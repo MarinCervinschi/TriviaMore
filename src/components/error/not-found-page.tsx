@@ -4,6 +4,7 @@ import { QuestionCircleIcon } from "@solar-icons/react/linear/question-circle";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
+import { ErrorNumeral } from "@/components/error/error-numeral";
 import { PageBand } from "@/components/layout/page-band";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -15,9 +16,13 @@ import {
 } from "@/lib/motion";
 
 export function NotFoundPage({
+	title = "Pagina non trovata",
 	message = "La pagina che stai cercando non esiste o è stata spostata.",
+	withBand = true,
 }: {
+	title?: string;
 	message?: string;
+	withBand?: boolean;
 }) {
 	const prefersReduced = useReducedMotion();
 	const container = withReducedMotion(staggerContainer, prefersReduced);
@@ -26,8 +31,7 @@ export function NotFoundPage({
 
 	return (
 		<div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 text-center">
-			{/* Background */}
-			<PageBand />
+			{withBand && <PageBand />}
 
 			<motion.div
 				className="relative flex flex-col items-center"
@@ -50,18 +54,15 @@ export function NotFoundPage({
 					</div>
 				</motion.div>
 
-				{/* 404 */}
+				<motion.div variants={scale}>
+					<ErrorNumeral>404</ErrorNumeral>
+				</motion.div>
 				<motion.h1
-					className="gradient-text text-8xl font-bold tracking-tighter sm:text-9xl"
-					variants={scale}
+					className="-mt-2 text-xl font-semibold sm:-mt-4 sm:text-2xl"
+					variants={item}
 				>
-					404
+					{title}
 				</motion.h1>
-
-				{/* Playful subheading */}
-				<motion.h2 className="mt-4 text-xl font-semibold sm:text-2xl" variants={item}>
-					Questa domanda non era nel quiz!
-				</motion.h2>
 
 				<motion.p className="text-muted-foreground mt-3 max-w-md" variants={item}>
 					{message}
