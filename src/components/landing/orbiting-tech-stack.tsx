@@ -187,7 +187,7 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 						className="border-primary/20 from-primary/10 to-card relative flex items-center justify-center rounded-full border-2 bg-gradient-to-br shadow-lg"
 						style={{ width: dims.hubWrapper, height: dims.hubWrapper }}
 					>
-						<div className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_30px_hsl(var(--primary)/0.2)]" />
+						<div className="shadow-glow-brand pointer-events-none absolute inset-0 rounded-full" />
 						<LogoIcon size={dims.hubInner} />
 					</div>
 				</div>

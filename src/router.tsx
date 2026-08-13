@@ -2,6 +2,7 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
+import { ErrorPage } from "@/components/error/error-page";
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { LoadingPage } from "@/components/loading/loading-page";
 import { installBrowserErrorHandlers, reportBrowserError } from "@/lib/logging/browser";
@@ -53,6 +54,10 @@ export function getRouter() {
 		defaultPendingMinMs: 500,
 		defaultPendingComponent: LoadingPage,
 		defaultNotFoundComponent: () => <NotFoundPage withBand={false} />,
+		// Same resolution as notFound: a route's errorComponent, then this, then TanStack's own
+		// inline-styled "Something went wrong!". It never walks up, so __root's covered only errors
+		// thrown by root itself.
+		defaultErrorComponent: ({ error }) => <ErrorPage error={error} withBand={false} />,
 	});
 
 	setupRouterSsrQueryIntegration({ router, queryClient });
