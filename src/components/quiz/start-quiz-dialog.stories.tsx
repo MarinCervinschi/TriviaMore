@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { StartQuizDialog } from "./start-quiz-dialog";
 
 const meta = {
-	title: "Session Dialogs/StartQuizDialog",
+	title: "Session Dialogs/Quiz",
 	parameters: { layout: "centered", queryData: EVAL_MODES_SEED },
 } satisfies Meta;
 

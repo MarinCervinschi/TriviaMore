@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StartFlashcardDialog } from "./start-flashcard-dialog";
 
 const meta = {
-	title: "Session Dialogs/StartFlashcardDialog",
+	title: "Session Dialogs/Flashcard",
 	parameters: { layout: "centered" },
 } satisfies Meta;
 
