@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FlashcardHeader } from "./flashcard-header";
 import { FlashcardNavigation } from "./flashcard-navigation";
 import { FlashcardProgress } from "./flashcard-progress";
-import { FlashcardSidebarContent } from "./flashcard-sidebar";
+import { FlashcardSidebar, FlashcardSidebarContent } from "./flashcard-sidebar";
 
 // The frame around a flashcard session. Unlike the quiz there is no timer and no answer: progress is
 // how many cards you have turned.
@@ -90,4 +90,23 @@ function Sidebar() {
 export const Sidebar_: Story = {
 	name: "Elenco delle carte",
 	render: () => <Sidebar />,
+};
+
+/** The same list inside its aside, which is what the play route mounts from `lg` up. */
+export const SidebarAside: Story = {
+	name: "La colonna laterale",
+	parameters: { layout: "fullscreen" },
+	render: () => (
+		<div className="flex h-96">
+			<FlashcardSidebar
+				totalQuestions={18}
+				currentIndex={5}
+				studiedCards={new Set([0, 1, 2, 3, 4, 5, 6])}
+				onJump={() => {}}
+			/>
+			<div className="text-muted-foreground flex flex-1 items-center justify-center text-sm">
+				la carta sta qui
+			</div>
+		</div>
+	),
 };

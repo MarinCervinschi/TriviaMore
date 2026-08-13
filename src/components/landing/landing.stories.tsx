@@ -16,6 +16,14 @@ import { HeroSection } from "./hero-section";
 import { LandingFooter } from "./landing-footer";
 import { OrbitingTechStack } from "./orbiting-tech-stack";
 import { PlatformStatsSection } from "./platform-stats";
+import {
+	PostgreSQLIcon,
+	ReactIcon,
+	SupabaseIcon,
+	TailwindIcon,
+	TanStackIcon,
+	TypeScriptIcon,
+} from "./tech-icons";
 
 // The public page, section by section, with the app's real copy from data.ts rather than invented
 // strings — the point is to catch a layout that only works with the text it happens to have.
@@ -76,4 +84,29 @@ export const TechStack: Story = {
 
 export const Footer: Story = {
 	render: () => <LandingFooter sections={footerSections} />,
+};
+
+/** The stack badges, drawn as inline SVG so they follow the text colour instead of shipping six PNGs. */
+export const TechIcons: Story = {
+	name: "Le icone dello stack",
+	parameters: { layout: "padded" },
+	render: () => (
+		<div className="flex flex-wrap items-center gap-8">
+			{(
+				[
+					["React", ReactIcon],
+					["TypeScript", TypeScriptIcon],
+					["Tailwind", TailwindIcon],
+					["Supabase", SupabaseIcon],
+					["PostgreSQL", PostgreSQLIcon],
+					["TanStack", TanStackIcon],
+				] as const
+			).map(([label, Icon]) => (
+				<div key={label} className="flex flex-col items-center gap-2">
+					<Icon size={40} />
+					<span className="text-muted-foreground text-xs">{label}</span>
+				</div>
+			))}
+		</div>
+	),
 };
