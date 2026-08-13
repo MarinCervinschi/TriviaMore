@@ -22,11 +22,8 @@ export const CAMPUS_LOCATION_CONFIG: Record<string, { label: string; short: stri
 		MANTOVA: { label: "Mantova", short: "MN" },
 	};
 
-// Areas need all five categorical slots, which necessarily includes chart-2 and
-// chart-4 — the blue/violet pair that collapses under colour-vision deficiency.
-// The chart palette avoids this by keeping them non-adjacent in slot order, and
-// that mitigation does not apply to an unordered set. Every area also renders its
-// own icon, so colour is reinforcement here rather than the only channel.
+// All five slots at once, so chart-2 and chart-4 sit together and collapse under CVD.
+// The icon each area renders is what keeps colour from being the only channel.
 export const AREA_CONFIG: Record<
 	string,
 	{ label: string; gradient: string; accent: string }

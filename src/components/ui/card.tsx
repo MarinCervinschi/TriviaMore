@@ -3,11 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-	/**
-	 * `panel` is the page-level surface — a result summary, a settings block, a legal gate. It is one
-	 * radius step up and nothing else; padding stays with the caller, because the ten sites that want
-	 * this tier use three different paddings and baking one in would be wrong for half of them.
-	 */
+	/** `panel` is the page-level surface: one radius step up, padding left to the caller. */
 	level?: "card" | "panel";
 }
 
@@ -16,8 +12,6 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 		<div
 			ref={ref}
 			className={cn(
-				// transition-shadow, not transition-all: the only property that changes at rest is the
-				// shadow, and transition-all also animates layout properties on every card in the app.
 				"bg-card text-card-foreground border shadow-sm transition-shadow duration-300",
 				level === "panel" ? "rounded-3xl" : "rounded-2xl",
 				className
@@ -80,10 +74,7 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-/**
- * Size and corner are separate axes, but every class has to be written out: Tailwind scans source
- * text, so a class name assembled at runtime is never generated.
- */
+/* Every class written out: Tailwind never generates a name assembled at runtime. */
 const ORB = {
 	sm: {
 		size: "h-24 w-24 blur-[30px]",
@@ -109,18 +100,14 @@ const ORB = {
 } as const;
 
 interface CardOrbProps {
-	/** A `bg-*` class. The decorative tints of D4 stay with their callers; this only fixes the shape. */
+	/** A `bg-*` class — D4's tints stay with their callers. */
 	tint?: string;
 	size?: keyof typeof ORB;
 	corner?: "tr" | "tl" | "br" | "bl";
 	className?: string;
 }
 
-/**
- * The blurred decorative orb of D4, which ~10 surfaces were rebuilding by hand at three sizes.
- * **Its parent needs `relative overflow-hidden`** — an orb is positioned off the corner on purpose and
- * has to be clipped by the surface it decorates.
- */
+/** D4's decorative orb. **Its parent needs `relative overflow-hidden`** to clip it. */
 function CardOrb({
 	tint = "bg-primary/10",
 	size = "sm",

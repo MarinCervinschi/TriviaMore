@@ -16,15 +16,7 @@ export interface NavItem {
 	fuzzy: boolean;
 }
 
-/**
- * The sidebar rail's slot geometry and its item recipe. These live here rather than in
- * `luma-sidebar.tsx` because the notification bell and the changelog megaphone sit in the same rail
- * and had each copied the class string by hand — three spellings of one recipe, three chances to
- * drift.
- *
- * `RAIL_SLOT` is the 42px square alone: the brand mark and the avatar line up in the rail but carry
- * their own radius and hover, so they compose the size and the focus ring and nothing else.
- */
+/** Shared with the notification bell and the changelog megaphone, which sit in the same rail. */
 export const RAIL_SLOT = "flex h-[42px] w-[42px] items-center justify-center";
 export const RAIL_FOCUS =
 	"focus-visible:shadow-focus focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";

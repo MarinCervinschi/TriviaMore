@@ -1,8 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Hook the `dark:` variant to the .dark class (toggled by ThemeProvider),
-   instead of Tailwind v4's default prefers-color-scheme media query. */
+/* The `dark:` variant is hooked to the .dark class, not prefers-color-scheme. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ===== Theme: map CSS variables to Tailwind utilities ===== */
@@ -10,8 +9,6 @@
 	--font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 	--font-display: "DM Serif Display", ui-serif, Georgia, serif;
 	--font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-	/* The only step below --text-xs. Figures and prose never go smaller: at 10px a
-	   label is already at the edge of legibility, so there is nothing left to spend. */
 	--text-2xs: 0.625rem;
 	--text-2xs--line-height: 0.875rem;
 	--color-background: hsl(var(--background));
@@ -58,40 +55,21 @@
 	--color-heat-3: hsl(var(--heat-3));
 	--color-heat-4: hsl(var(--heat-4));
 	--color-heat-5: hsl(var(--heat-5));
-	/* The focus indicator, written once. It was seven identical inline copies across the ui/
-	   primitives — and a focus ring is the one thing that has to be verifiable in one place, since
-	   2.4.7 asks whether it is visible everywhere, not in six of seven controls. */
 	--shadow-focus: 0 0 12px hsl(var(--ring) / 0.15);
-	/* The halo behind a status dot: the status token at the alpha the changelog dots used, which
-	   were the only place in the app still writing raw rgba for a colour that has a token. */
 	--shadow-halo-success: 0 0 0 4px hsl(var(--success) / 0.15);
 	--shadow-halo-info: 0 0 0 4px hsl(var(--info) / 0.15);
 	--shadow-halo-warning: 0 0 0 4px hsl(var(--warning) / 0.15);
-	/* The rail's geometry, and the page gutter derived from it. This was four literals — three in
-	   .full-bleed-band and one in _app.tsx, the latter carrying a comment that did the sum by hand.
-	   A comment doing arithmetic is the tell that a derivation is real and unenforced. Move the rail
-	   now and the gutter follows. */
 	--spacing-rail: 66px;
 	--spacing-rail-inset: 12px;
 	--spacing-rail-gutter: calc(var(--spacing-rail) + var(--spacing-rail-inset) * 2);
-	/* The two pieces of floating chrome: the desktop rail casts downward, the mobile dock upward.
-	   Black rather than a token, because a shadow is an absence of light — pointing it at --foreground
-	   would turn it into a glow in dark. It therefore does very little in dark, where the border is
-	   what separates the bar from the page. */
 	--shadow-rail: 0 8px 32px rgb(0 0 0 / 0.06);
 	--shadow-dock: 0 -4px 24px rgb(0 0 0 / 0.06);
-	/* Steps of 4px, every one derived from --radius, because the app's small paddings are 4/6/8px
-	   (p-1, p-1.5, p-2) — so "parent radius minus its padding", the concentric move, always lands on
-	   another step of this scale instead of between two. --radius is the control radius; cards are one
-	   step up. Before this, 2xl and 3xl were left at Tailwind's defaults, which slid the control half
-	   of the scale one step too round and made xl and 2xl the same 16px. */
-	--radius-sm: calc(var(--radius) - 8px); /* checkbox, chart cell */
-	--radius-lg: calc(var(--radius) - 4px); /* a control inside a control */
-	--radius-xl: var(--radius); /* button, input, select */
-	--radius-2xl: calc(var(--radius) + 4px); /* card, dialog, toast */
-	--radius-3xl: calc(var(--radius) + 12px); /* page-level container */
-	/* md is not a step. It is pinned to lg so that reaching for it out of shadcn habit cannot land on
-	   Tailwind's off-scale 6px. */
+	--radius-sm: calc(var(--radius) - 8px);
+	--radius-lg: calc(var(--radius) - 4px);
+	--radius-xl: var(--radius);
+	--radius-2xl: calc(var(--radius) + 4px);
+	--radius-3xl: calc(var(--radius) + 12px);
+	/* Not a step: pinned to lg so shadcn habit cannot land on Tailwind's off-scale default. */
 	--radius-md: calc(var(--radius) - 4px);
 }
 
@@ -105,9 +83,6 @@
 	--popover-foreground: 224 71% 4%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
-	/* The brand and danger hues as *ink*. In light these equal their surface tokens, so nothing
-	   moves; in dark a value tuned for a surface is too dark to read as text, and one token cannot
-	   be both. `bg-primary` is the surface, `text-brand` is the ink. */
 	--brand: 10 76% 42%;
 	--danger: 0 84% 47.5%;
 	--secondary: 220 14% 96%;
@@ -118,12 +93,6 @@
 	--accent-foreground: 224 71% 4%;
 	--destructive: 0 84% 47.5%;
 	--destructive-foreground: 210 40% 98%;
-	/* Measured as text rather than assumed — every one of these is read as text far more often
-	   than it is used as a fill — and measured against `bg-muted`, not the page. Muted is only 4%
-	   off white but costs ~0.4 of a ratio point, so a value tuned to exactly 4.5 on white fails the
-	   moment it lands on a tab, the admin sidebar or a stat block.
-	   --warning also moves 4 degrees toward orange: amber cannot reach 4.5:1 while staying amber,
-	   and H=34 buys the headroom while staying gold and 24 degrees clear of --primary's H=10. */
 	--success: 142 72% 29%;
 	--success-foreground: 0 0% 100%;
 	--warning: 34 92% 33.5%;
@@ -133,32 +102,19 @@
 	--border: 220 13% 91%;
 	--input: 220 13% 91%;
 	--ring: 10 76% 42%;
-	/* The brand gradient stops, shared by the CTAs, the quiz bar and the charts.
-	   Theme-constant on purpose: the gradient is brand, not surface. */
 	--gradient-from: 10 70% 48%;
 	--gradient-to: 0 88% 68%;
-	/* Categorical chart palette, assigned in slot order and never cycled.
-	   chart-1 is the brand orange. Green sits between blue and violet on
-	   purpose: adjacent slots must stay apart under colour-vision deficiency,
-	   and blue↔violet is the pair that collapses. Lightness is tuned so every
-	   slot clears 3:1 on the surface — validated, not eyeballed. */
+	/* Slot order is load-bearing: blue and violet collapse under CVD, so they must not be adjacent. */
 	--chart-1: 10 76% 53%;
 	--chart-2: 217 91% 59%;
 	--chart-3: 142 71% 37%;
 	--chart-4: 262 83% 66.5%;
 	--chart-5: 43 96% 34.5%;
-	/* The ink half of the same ramp — D19's rule a third time: a colour's surface
-	   value is not its ink value. Every slot above is a fill on a plot and lands
-	   between 3.05 and 3.99 as text, so a category pill cannot borrow it. Same hue
-	   and saturation, lightness re-tuned to clear 4.5 on bg-muted, which is the
-	   binding surface. Categories reuse these; they are not a second ramp. */
 	--chart-1-ink: 10 76% 44%;
 	--chart-2-ink: 217 91% 49%;
 	--chart-3-ink: 142 71% 28%;
 	--chart-4-ink: 262 83% 60%;
 	--chart-5-ink: 43 96% 28%;
-	/* Sequential ramp for heatmaps: one hue, monotone lightness, and a pale end
-	   that still clears the surface. Magnitude, never identity. */
 	--heat-1: 10 38% 74%;
 	--heat-2: 10 48% 64%;
 	--heat-3: 10 58% 54%;
@@ -173,20 +129,13 @@
 .dark {
 	--background: 224 71% 4%;
 	--foreground: 210 20% 98%;
-	/* Deliberately identical to --background. A lightness ladder was tried here — card 9%, popover
-	   12% — on the reasoning that a shadow has nothing to fall on over near-black, and it was
-	   rejected on the look. So in dark a surface is separated by its **border**, not by its fill and
-	   not by a shadow. Do not re-propose lifting these: the measurement was fine and the answer was
-	   still no, which makes it a taste of this app rather than an oversight. See D25. */
+	/* Identical to --background on purpose. A lightness ladder was tried and rejected — see D25. */
 	--card: 224 71% 4%;
 	--card-foreground: 210 20% 98%;
 	--popover: 224 71% 4%;
 	--popover-foreground: 210 20% 98%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
-	/* Lifted and saturated: 6.53:1 on the page and 4.74:1 on a muted surface, against 3.52 and
-	   2.56 for the surface value. High saturation on purpose — a lighter hue reads washed out as a
-	   large fill, but vivid as text on near-black. */
 	--brand: 10 90% 62%;
 	--danger: 0 90% 68%;
 	--secondary: 215 28% 17%;
@@ -206,8 +155,6 @@
 	--border: 215 28% 17%;
 	--input: 215 28% 17%;
 	--ring: 10 76% 62%;
-	/* Same slot order, re-stepped against the dark surface rather than flipped:
-	   the dark lightness band is narrower, so these are not the light values lifted. */
 	--chart-1: 10 76% 58.5%;
 	--chart-2: 217 91% 63.5%;
 	--chart-3: 142 71% 39.5%;
@@ -218,8 +165,6 @@
 	--chart-3-ink: 142 71% 39%;
 	--chart-4-ink: 262 83% 72%;
 	--chart-5-ink: 43 96% 38%;
-	/* The ramp runs the other way here: its dim end must still clear the dark
-	   surface, so these are not the light steps inverted. */
 	--heat-1: 10 38% 30%;
 	--heat-2: 10 48% 40%;
 	--heat-3: 10 58% 50%;
@@ -242,12 +187,8 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* The one centred column. Declared as a utility rather than a plain rule, and that is the whole
-   point: a plain `.container` sits *outside* every cascade layer, and unlayered author styles beat
-   layered ones no matter the order — so `container max-w-3xl` silently did not narrow. As a
-   utility it lands in @layer utilities alongside max-w-*, which can then override it as written.
-   The values are Tailwind's own: 80rem is --container-7xl, and 1/1.5/2rem at 640/1024px is
-   px-4 sm:px-6 lg:px-8 exactly. */
+/* An @utility, not a plain rule: an unlayered rule beats every layered one, so `container
+max-w-3xl` would silently fail to narrow. */
 @utility container {
 	width: 100%;
 	margin-inline: auto;
@@ -265,9 +206,6 @@ body {
 
 /* ===== Custom TriviaMore styles ===== */
 
-/* The dots: a vertical falloff, so every dense surface below the band is flat by construction
-   with no per-surface opt-out. Intensity is a token because it has to differ per theme — the same
-   value reads far weaker as white-on-dark than as near-black-on-white. */
 @utility band-dots {
 	background-image: radial-gradient(
 		circle,
@@ -279,9 +217,6 @@ body {
 	mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
 }
 
-/* The light: one soft orb in the top-left corner, fading vertically with the dots — the two devices
-   say the same thing ("the page starts here") and have to move together. L2 is the same orb turned
-   up, not a different shape. */
 @utility band-glow {
 	background-image: radial-gradient(
 		1000px 380px at 0% 0%,
@@ -292,10 +227,6 @@ body {
 	mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
 }
 
-/* Full-bleed band: extends bg + horizontal borders across the floating
-   sidebar gutter so dividers feel continuous. Inner content is pushed back
-   into the padded column via padding-left, keeping alignment with the hero.
-   Only active on md+, where the sidebar is rendered. */
 @media (min-width: 768px) {
 	.full-bleed-band {
 		margin-left: calc(var(--spacing-rail-gutter) * -1);
@@ -312,9 +243,6 @@ body {
 	);
 }
 
-/* The overline. One voice, two sizes: `eyebrow` inside cards and panels, `eyebrow-lg` for the
-   section openers on the public pages. Colour stays at the call site — it is the one part that
-   legitimately varies. Named `eyebrow` because Tailwind already owns the class `overline`. */
 @utility eyebrow {
 	font-size: var(--text-xs);
 	line-height: var(--text-xs--line-height);
@@ -342,24 +270,9 @@ body {
 	background-clip: text;
 }
 
-/* The big numeral on an error page: it should read as sunk into the page rather than parked on it.
-   Three things stacked, and each does a different job.
-   1. The fill fades downward — in the *fill*, because an opacity on the element would take the whole
-      glyph down evenly instead of only its foot.
-   2. A mask fades the element too, so the two alphas multiply and the foot dissolves rather than
-      stopping. Both stops are deliberately late: carried earlier they eat the bottom half of the
-      digits, which is the first thing that reads as broken.
-   3. A hairline of page colour one pixel below. Light catches the lower lip of a hollow, not the
-      upper one, so this is what tips the glyph from raised to recessed. drop-shadow rather than
-      text-shadow because it works on the rendered result and therefore respects the fade — the
-      highlight disappears together with the digits.
-   Note that 3 is the mechanism D8 rejects for neumorphism. That rejection was about *contrast*: a
-   control whose form depends on two shadows cannot guarantee legibility. This numeral is aria-hidden
-   decoration carrying no information, so the objection does not reach it — but do not carry the trick
-   over to anything clickable. */
-/* An @utility, not a plain class: a plain rule is unlayered, and unlayered author styles beat layered
-   ones regardless of order — so a call site could never override any part of this with a Tailwind
-   utility. The same trap that made `container max-w-3xl` silently fail to narrow. */
+/* The light below the glyph is the mechanism D8 rejects for neumorphism; allowed here only because
+this numeral is aria-hidden decoration nothing depends on. See D8. */
+/* An @utility for the same reason as `container` above. */
 @utility gradient-text-fade {
 	background: linear-gradient(
 		to bottom,
@@ -374,7 +287,6 @@ body {
 	filter: drop-shadow(0 1px 0 hsl(var(--background)));
 }
 
-/* Flashcard */
 .flashcard {
 	perspective: 1000px;
 }
@@ -397,14 +309,10 @@ body {
 	transform: rotateY(180deg);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
 	width: 8px;
 }
 
-/* The signature survives, the shouting does not: a solid brand thumb was the loudest element on a
-   long page while being pure chrome. Both themes take the same rule now — the tokens do the
-   switching, which is why the three .dark overrides are gone. */
 ::-webkit-scrollbar-track {
 	background: hsl(var(--muted));
 }
@@ -418,7 +326,6 @@ body {
 	background: hsl(var(--primary));
 }
 
-/* Animations */
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -454,7 +361,6 @@ body {
 	animation: shimmer 2.4s ease-in-out infinite;
 }
 
-/* Reduced motion: suppress all animations/transitions */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -466,7 +372,6 @@ body {
 	}
 }
 
-/* Touch target enforcement for mobile */
 @media (pointer: coarse) {
 	button:not([role="checkbox"]):not([role="radio"]):not([role="switch"]),
 	[role="button"] {
@@ -474,7 +379,6 @@ body {
 	}
 }
 
-/* Orbit animations for tech stack */
 @keyframes orbit {
 	to {
 		transform: rotate(360deg);
@@ -486,9 +390,6 @@ body {
 	}
 }
 
-/* ===== Tailwind Typography: map prose variables to theme tokens =====
-   Keeps legal pages (and any other .prose content) consistent with the
-   app's light/dark palette instead of using the plugin's default grays. */
 .prose {
 	--tw-prose-body: hsl(var(--foreground));
 	--tw-prose-headings: hsl(var(--foreground));
@@ -524,14 +425,12 @@ body {
 	--tw-prose-invert-td-borders: hsl(var(--border));
 }
 
-/* Remove the default backtick quotation around inline code; keep the
-   styling (background, padding) which is what actually helps reading. */
+/* The typography plugin quotes inline code; the background and padding are what help reading. */
 .prose :where(code):not(:where([class~="not-prose"] *))::before,
 .prose :where(code):not(:where([class~="not-prose"] *))::after {
 	content: none;
 }
 
-/* Softer inline-code styling that works in light and dark modes. */
 .prose :where(code):not(:where([class~="not-prose"] *)) {
 	padding: 0.15em 0.4em;
 	border-radius: 0.375rem;
@@ -541,7 +440,6 @@ body {
 	font-size: 0.9em;
 }
 
-/* KaTeX containers should wrap when they would overflow their parent. */
 .katex,
 .katex-html,
 .katex-error {
@@ -561,8 +459,7 @@ body {
 		@apply hidden!;
 	}
 
-	/* Restore pointer cursor on interactive elements (Tailwind v4 preflight
-     removes it on buttons by default). */
+	/* Tailwind v4 preflight drops the pointer cursor on buttons. */
 	button:not(:disabled),
 	[role="button"]:not([aria-disabled="true"]) {
 		cursor: pointer;

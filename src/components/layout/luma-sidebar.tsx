@@ -294,10 +294,7 @@ export function LumaSidebar() {
 				className={cn(
 					"top-rail-inset bottom-rail-inset left-rail-inset w-rail fixed z-50",
 					"hidden flex-col items-center gap-[7px] py-3 md:flex",
-					// A floating card *above* the page band, not a window onto it: an opaque
-					// surface is what keeps the light from tinting the chrome. --popover is the token
-					// for a thing that floats; it equals --background in both themes, so the border
-					// is what separates the rail from the page.
+					// Opaque, or the page band tints the chrome.
 					"border-border/60 bg-popover rounded-2xl border",
 					"shadow-rail"
 				)}
