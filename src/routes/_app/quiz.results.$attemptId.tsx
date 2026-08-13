@@ -43,7 +43,11 @@ export const Route = createFileRoute("/_app/quiz/results/$attemptId")({
 	pendingComponent: QuizResultsSkeleton,
 	component: ResultsPage,
 	notFoundComponent: () => (
-		<NotFoundPage message="Il risultato del quiz non è stato trovato." />
+		<NotFoundPage
+			title="Risultato non disponibile"
+			message="Il risultato del quiz non è stato trovato."
+			withBand={false}
+		/>
 	),
 });
 

@@ -342,6 +342,38 @@ body {
 	background-clip: text;
 }
 
+/* The big numeral on an error page: it should read as sunk into the page rather than parked on it.
+   Three things stacked, and each does a different job.
+   1. The fill fades downward — in the *fill*, because an opacity on the element would take the whole
+      glyph down evenly instead of only its foot.
+   2. A mask fades the element too, so the two alphas multiply and the foot dissolves rather than
+      stopping. Both stops are deliberately late: carried earlier they eat the bottom half of the
+      digits, which is the first thing that reads as broken.
+   3. A hairline of page colour one pixel below. Light catches the lower lip of a hollow, not the
+      upper one, so this is what tips the glyph from raised to recessed. drop-shadow rather than
+      text-shadow because it works on the rendered result and therefore respects the fade — the
+      highlight disappears together with the digits.
+   Note that 3 is the mechanism D8 rejects for neumorphism. That rejection was about *contrast*: a
+   control whose form depends on two shadows cannot guarantee legibility. This numeral is aria-hidden
+   decoration carrying no information, so the objection does not reach it — but do not carry the trick
+   over to anything clickable. */
+/* An @utility, not a plain class: a plain rule is unlayered, and unlayered author styles beat layered
+   ones regardless of order — so a call site could never override any part of this with a Tailwind
+   utility. The same trap that made `container max-w-3xl` silently fail to narrow. */
+@utility gradient-text-fade {
+	background: linear-gradient(
+		to bottom,
+		hsl(var(--brand)) 0%,
+		hsl(var(--brand) / 0.3) 90%
+	);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	-webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+	mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+	filter: drop-shadow(0 1px 0 hsl(var(--background)));
+}
+
 /* Flashcard */
 .flashcard {
 	perspective: 1000px;

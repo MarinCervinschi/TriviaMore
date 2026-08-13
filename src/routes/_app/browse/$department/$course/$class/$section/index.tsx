@@ -70,7 +70,11 @@ export const Route = createFileRoute(
 	pendingComponent: SectionDetailSkeleton,
 	component: SectionPage,
 	notFoundComponent: () => (
-		<NotFoundPage message="La sezione che stai cercando non esiste." />
+		<NotFoundPage
+			title="Sezione non trovata"
+			message="La sezione che stai cercando non esiste."
+			withBand={false}
+		/>
 	),
 });
 

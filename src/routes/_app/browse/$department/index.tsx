@@ -70,7 +70,11 @@ export const Route = createFileRoute("/_app/browse/$department/")({
 	pendingComponent: DepartmentDetailSkeleton,
 	component: DepartmentPage,
 	notFoundComponent: () => (
-		<NotFoundPage message="Il dipartimento che stai cercando non esiste." />
+		<NotFoundPage
+			title="Dipartimento non trovato"
+			message="Il dipartimento che stai cercando non esiste."
+			withBand={false}
+		/>
 	),
 });
 

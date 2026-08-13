@@ -77,7 +77,11 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
 	pendingComponent: CourseDetailSkeleton,
 	component: CoursePage,
 	notFoundComponent: () => (
-		<NotFoundPage message="Il corso che stai cercando non esiste." />
+		<NotFoundPage
+			title="Corso non trovato"
+			message="Il corso che stai cercando non esiste."
+			withBand={false}
+		/>
 	),
 });
 
