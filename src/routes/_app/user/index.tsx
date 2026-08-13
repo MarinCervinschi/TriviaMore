@@ -16,6 +16,7 @@ import {
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
+import { decorativeTint } from "@/components/shared/decorative-tints";
 import { StatCard } from "@/components/shared/stat-card";
 import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -160,47 +161,6 @@ function DashboardPage() {
 	);
 }
 
-const actionColorMap: Record<
-	string,
-	{ border: string; gradient: string; orb: string; badge: string; iconColor: string }
-> = {
-	amber: {
-		border: "border-amber-500/20",
-		gradient: "from-amber-500/5 via-card to-card",
-		orb: "bg-amber-500/10",
-		badge: "bg-amber-500/10",
-		iconColor: "text-amber-500",
-	},
-	green: {
-		border: "border-green-500/20",
-		gradient: "from-green-500/5 via-card to-card",
-		orb: "bg-green-500/10",
-		badge: "bg-green-500/10",
-		iconColor: "text-green-500",
-	},
-	blue: {
-		border: "border-blue-500/20",
-		gradient: "from-blue-500/5 via-card to-card",
-		orb: "bg-blue-500/10",
-		badge: "bg-blue-500/10",
-		iconColor: "text-blue-500",
-	},
-	primary: {
-		border: "border-primary/20",
-		gradient: "from-primary/5 via-card to-card",
-		orb: "bg-primary/10",
-		badge: "bg-primary/10",
-		iconColor: "text-brand",
-	},
-	purple: {
-		border: "border-purple-500/20",
-		gradient: "from-purple-500/5 via-card to-card",
-		orb: "bg-purple-500/10",
-		badge: "bg-purple-500/10",
-		iconColor: "text-purple-500",
-	},
-};
-
 function QuickActionCard({
 	icon: Icon,
 	color,
@@ -214,7 +174,7 @@ function QuickActionCard({
 	description: string;
 	href: string;
 }) {
-	const colors = actionColorMap[color] ?? actionColorMap.primary;
+	const colors = decorativeTint(color);
 
 	return (
 		<Link
@@ -228,7 +188,7 @@ function QuickActionCard({
 
 			<div className="relative">
 				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
-					<Icon className={`h-6 w-6 ${colors.iconColor}`} />
+					<Icon className={`h-6 w-6 ${colors.icon}`} />
 				</div>
 				<h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
 				<p className="text-muted-foreground mb-4 text-sm">{description}</p>

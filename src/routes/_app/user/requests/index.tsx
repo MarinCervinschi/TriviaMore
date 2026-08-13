@@ -218,11 +218,12 @@ function ContributionRow({
 		REPORT: FlagIcon,
 		FILE_UPLOAD: CloudUploadIcon,
 	};
+	// The same slots RequestTypeBadge uses, so a request type has one colour across the app.
 	const colorMap = {
-		NEW_SECTION: { bg: "bg-blue-500/10", text: "text-blue-500" },
-		NEW_QUESTIONS: { bg: "bg-purple-500/10", text: "text-purple-500" },
-		REPORT: { bg: "bg-red-500/10", text: "text-red-500" },
-		FILE_UPLOAD: { bg: "bg-emerald-500/10", text: "text-emerald-500" },
+		NEW_SECTION: { bg: "bg-chart-2/10", text: "text-chart-2-ink" },
+		NEW_QUESTIONS: { bg: "bg-chart-4/10", text: "text-chart-4-ink" },
+		REPORT: { bg: "bg-chart-1/10", text: "text-chart-1-ink" },
+		FILE_UPLOAD: { bg: "bg-chart-3/10", text: "text-chart-3-ink" },
 	};
 	const Icon = iconMap[request.requestType];
 	const colors = colorMap[request.requestType];

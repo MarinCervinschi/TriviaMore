@@ -101,6 +101,25 @@ those must never be treated as decoration, and never swapped for each other.
 
 ---
 
+### The tint stays on the raw palette, 2026-08-13
+
+`#118` wanted these on the token system, and the categorical ramp was the obvious home — a stat tile's
+tint is keyed to a section, always beside a label and an icon, which is the same case as a department
+area. Built, compared side by side in both themes, and **rejected on the look**: at 10% the washes are
+near-identical but the icon is not, and `chart-5` is an ochre where `yellow-500` is bright.
+
+So the tints keep their raw values, deliberately. **The price, accepted:** they are theme-constant and
+outside the contrast gate. Do not file it again as an oversight.
+
+**No `--decor-*` ramp either**, tempting as it was — Tailwind exposes its palette as variables, so the
+current values could have been tokenised without moving a pixel. D26 rules out "a further categorical
+ramp alongside this one", and that is exactly what it would be.
+
+What did change is structural and invisible: the two maps became one
+(`components/shared/decorative-tints.ts`), and `orange` and `red` went, having never been passed.
+`yellow` and `amber` both stay — they are 16° apart and both in use, so the divergence I first read as a
+key mistake was two deliberate tints.
+
 ## D5 — A hover affordance means the thing is interactive
 
 **Decided 2026-08-09, implemented in `4e23b0f`.** Lift and shadow on hover belong to elements you
