@@ -16,7 +16,9 @@ interface ThemeContextValue {
 	setTheme: (theme: Theme) => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null);
+/** Exported for the Storybook decorator: the real provider writes `.dark` on <html>, which is what
+ * the theme toolbar owns, so a story supplies the context without the DOM side effect. */
+export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "theme";
 
