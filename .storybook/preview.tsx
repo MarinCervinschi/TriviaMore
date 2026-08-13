@@ -12,6 +12,7 @@ import "../src/styles/globals.css";
 import "../src/styles/markdown.css";
 import { withRouter } from "./router-decorator";
 import { SeededQueries } from "./seed-decorator";
+import { withTheme } from "./theme-decorator";
 
 // Provided globally so any component using TanStack Query renders. Retries off, because the
 // server-function stub throws rather than reaching a backend: a story feeds data through props or by
@@ -44,6 +45,7 @@ const preview: Preview = {
 				</SeededQueries>
 			</QueryClientProvider>
 		),
+		withTheme,
 		withRouter,
 		Story => (
 			<div className="bg-background text-foreground w-full min-w-64 rounded-xl p-8">
