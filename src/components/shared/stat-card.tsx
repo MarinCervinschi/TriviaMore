@@ -2,30 +2,9 @@ import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
+import { decorativeTint } from "@/components/shared/decorative-tints";
 import { Card, CardOrb } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-const colorMap: Record<string, { orb: string; badge: string; icon: string }> = {
-	blue: { orb: "bg-blue-500/10", badge: "bg-blue-500/10", icon: "text-blue-500" },
-	green: { orb: "bg-green-500/10", badge: "bg-green-500/10", icon: "text-green-500" },
-	orange: {
-		orb: "bg-orange-500/10",
-		badge: "bg-orange-500/10",
-		icon: "text-orange-500",
-	},
-	purple: {
-		orb: "bg-purple-500/10",
-		badge: "bg-purple-500/10",
-		icon: "text-purple-500",
-	},
-	red: { orb: "bg-red-500/10", badge: "bg-red-500/10", icon: "text-red-500" },
-	yellow: {
-		orb: "bg-yellow-500/10",
-		badge: "bg-yellow-500/10",
-		icon: "text-yellow-500",
-	},
-	primary: { orb: "bg-primary/10", badge: "bg-primary/10", icon: "text-brand" },
-};
 
 // The one stat tile used across the admin dashboard, the user area and progress.
 // `color` drives the orb, icon badge and icon tint together; an optional `href`
@@ -45,7 +24,7 @@ export function StatCard({
 	href?: string;
 	subtitle?: string;
 }) {
-	const colors = colorMap[color] ?? colorMap.primary;
+	const colors = decorativeTint(color);
 
 	const content = (
 		<Card className="group relative overflow-hidden p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
