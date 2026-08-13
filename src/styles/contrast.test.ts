@@ -1,13 +1,6 @@
 /**
- * The contrast gate.
- *
- * `DESIGN_DECISIONS.md` says contrast is a gate, not a review step — so it has to be something that
- * fails, not something someone remembers to look at. This reads the HSL tokens straight out of
- * `globals.css` and checks every pair the app actually renders, in both themes, against the WCAG 2.2
- * AA floor.
- *
- * When a pair legitimately does not need 4.5:1 — a large-text-only token, a decorative fill — add it
- * with the floor it does need and say why. Do not delete a row to make this pass.
+ * The contrast gate. A pair needing less than 4.5:1 is added with the floor it does need and a
+ * reason; a row is never deleted to make this pass.
  */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -72,45 +65,41 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["warning", "muted", 4.5, "text-warning on muted"],
 	["info", "background", 4.5, "text-info"],
 	["info", "muted", 4.5, "text-info on muted"],
-	// A label on its own fill, measured against the real foreground token rather than white —
-	// --destructive-foreground is 210 40% 98%, and that difference once hid a failing 4.33 behind a
-	// passing 4.53.
+	// Against the real foreground token, not white: that difference once hid a failing 4.33.
 	["primary-foreground", "primary", 4.5, "the primary button's label"],
 	["destructive-foreground", "destructive", 4.5, "the destructive button's label"],
 	["success-foreground", "success", 4.5, "a success fill's label"],
 	["warning-foreground", "warning", 4.5, "a warning fill's label"],
-	// The categorical ink ramp, on `muted` only: it is the binding surface in both themes, and every
-	// slot clears the page and a card by another half point. A category pill lands on all three.
+	// `muted` only: it is the binding surface, and every slot clears the page and a card by more.
 	["chart-1-ink", "muted", 4.5, "a category pill's label"],
 	["chart-2-ink", "muted", 4.5, "a category pill's label"],
 	["chart-3-ink", "muted", 4.5, "a category pill's label"],
 	["chart-4-ink", "muted", 4.5, "a category pill's label"],
 	["chart-5-ink", "muted", 4.5, "a category pill's label"],
-	// Since the dark surfaces became a ladder (background → card → popover), a floating panel is its
-	// own surface and the text on it needs its own row.
 	["foreground", "popover", 4.5, "a dropdown item"],
 	["muted-foreground", "popover", 4.5, "a dropdown's secondary text"],
-	// UI components and focus indicators clear a lower bar (1.4.11).
+	// A lower bar for UI components and focus indicators (1.4.11).
 	["ring", "background", 3, "the focus ring against the page"],
 	["border", "background", 1.2, "a card border — visible, not readable"],
-	["border", "card", 1.2, "a card's own border, now that card is not the page colour"],
+	["border", "card", 1.2, "a card's own border"],
 ];
 
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
 const rootAt = css.indexOf(":root {");
 const darkAt = css.indexOf(".dark {");
-const baseAt = css.indexOf("/* ===== Base styles");
+// The closing brace at the start of a line, so this does not hinge on a comment staying put.
+const darkEnd = css.indexOf("\n}", darkAt);
 
 const themes = {
 	light: css.slice(rootAt, darkAt),
-	dark: css.slice(darkAt, baseAt),
+	dark: css.slice(darkAt, darkEnd),
 };
 
 describe("colour tokens clear WCAG 2.2 AA", () => {
 	it("finds both theme blocks in globals.css", () => {
 		expect(rootAt, ":root block").toBeGreaterThan(-1);
 		expect(darkAt, ".dark block").toBeGreaterThan(-1);
-		expect(baseAt, "the marker that ends .dark").toBeGreaterThan(darkAt);
+		expect(darkEnd, "the end of the .dark block").toBeGreaterThan(darkAt);
 	});
 
 	for (const [theme, block] of Object.entries(themes)) {

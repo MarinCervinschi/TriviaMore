@@ -68,10 +68,6 @@ export const InContext: Story = {
 	),
 };
 
-/**
- * The three layers, built by *subtracting* from the real utility with an inline style rather than
- * restating its gradients — a copied value is a value that drifts.
- */
 const LAYERS: [label: string, style: React.CSSProperties, note: string][] = [
 	[
 		"1 · solo riempimento",
