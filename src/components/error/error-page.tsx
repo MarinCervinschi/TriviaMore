@@ -12,7 +12,14 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { reportBrowserError } from "@/lib/logging/browser";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 
-export function ErrorPage({ error }: { error: Error }) {
+export function ErrorPage({
+	error,
+	withBand = true,
+}: {
+	error: Error;
+	/** Off inside the `_app` shell, which paints the band already — two stack their alphas. */
+	withBand?: boolean;
+}) {
 	const router = useRouter();
 	const prefersReduced = useReducedMotion();
 
@@ -24,8 +31,7 @@ export function ErrorPage({ error }: { error: Error }) {
 
 	return (
 		<div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 text-center">
-			{/* Background */}
-			<PageBand />
+			{withBand && <PageBand />}
 
 			<motion.div
 				className="relative flex flex-col items-center"
@@ -36,7 +42,7 @@ export function ErrorPage({ error }: { error: Error }) {
 				{/* Icon with glow */}
 				<motion.div className="mb-6" variants={item}>
 					<div className="bg-destructive/10 relative inline-flex rounded-3xl p-6">
-						<div className="pointer-events-none absolute inset-0 rounded-3xl shadow-[0_0_30px_hsl(var(--destructive)/0.15)]" />
+						<div className="shadow-glow-danger pointer-events-none absolute inset-0 rounded-3xl" />
 						<DangerTriangleIcon className="text-danger relative h-12 w-12" />
 					</div>
 				</motion.div>

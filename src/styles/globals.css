@@ -62,6 +62,8 @@
 	--spacing-rail: 66px;
 	--spacing-rail-inset: 12px;
 	--spacing-rail-gutter: calc(var(--spacing-rail) + var(--spacing-rail-inset) * 2);
+	--shadow-glow-brand: 0 0 30px hsl(var(--primary) / 0.2);
+	--shadow-glow-danger: 0 0 30px hsl(var(--destructive) / 0.15);
 	--shadow-rail: 0 8px 32px rgb(0 0 0 / 0.06);
 	--shadow-dock: 0 -4px 24px rgb(0 0 0 / 0.06);
 	--radius-sm: calc(var(--radius) - 8px);
