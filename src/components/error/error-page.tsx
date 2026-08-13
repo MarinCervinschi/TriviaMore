@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import { PageBand } from "@/components/layout/page-band";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { reportBrowserError } from "@/lib/logging/browser";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
@@ -41,10 +42,9 @@ export function ErrorPage({
 			>
 				{/* Icon with glow */}
 				<motion.div className="mb-6" variants={item}>
-					<div className="bg-destructive/10 relative inline-flex rounded-3xl p-6">
-						<div className="shadow-glow-danger pointer-events-none absolute inset-0 rounded-3xl" />
-						<DangerTriangleIcon className="text-danger relative h-12 w-12" />
-					</div>
+					<IconStack>
+						<DangerTriangleIcon className="text-danger h-8 w-8" />
+					</IconStack>
 				</motion.div>
 
 				<motion.h1 className="text-2xl font-bold sm:text-3xl" variants={item}>

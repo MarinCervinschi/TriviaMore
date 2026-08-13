@@ -14,6 +14,7 @@ import { DepartmentCard } from "@/components/browse/department-card";
 import { SearchFilter } from "@/components/browse/search-filter";
 import { ContentHierarchyDiagram } from "@/components/shared/content-hierarchy-diagram";
 import { BrowseOverviewSkeleton } from "@/components/skeletons";
+import { IconStack } from "@/components/ui/icon-stack";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -115,9 +116,9 @@ function BrowsePage() {
 					initial="hidden"
 					animate={deptVisible ? "visible" : "hidden"}
 				>
-					<div className="bg-primary/10 mb-4 inline-flex rounded-2xl p-3">
-						<CompassIcon className="text-brand h-7 w-7" />
-					</div>
+					<IconStack className="mb-4">
+						<CompassIcon className="text-brand h-8 w-8" />
+					</IconStack>
 					<h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
 						Esplora UNIMORE
 					</h1>

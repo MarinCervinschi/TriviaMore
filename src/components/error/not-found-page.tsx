@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ErrorNumeral } from "@/components/error/error-numeral";
 import { PageBand } from "@/components/layout/page-band";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import {
 	scaleIn,
@@ -49,9 +50,9 @@ export function NotFoundPage({
 							: { duration: 3, repeat: Infinity, ease: "easeInOut" }
 					}
 				>
-					<div className="bg-primary/10 inline-flex rounded-3xl p-5">
-						<QuestionCircleIcon className="text-brand h-12 w-12" />
-					</div>
+					<IconStack>
+						<QuestionCircleIcon className="text-brand h-8 w-8" />
+					</IconStack>
 				</motion.div>
 
 				<motion.div variants={scale}>
