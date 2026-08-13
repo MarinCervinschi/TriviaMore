@@ -2,6 +2,7 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
+import { NotFoundPage } from "@/components/error/not-found-page";
 import { LoadingPage } from "@/components/loading/loading-page";
 import { installBrowserErrorHandlers, reportBrowserError } from "@/lib/logging/browser";
 
@@ -51,6 +52,7 @@ export function getRouter() {
 		defaultPendingMs: 200,
 		defaultPendingMinMs: 500,
 		defaultPendingComponent: LoadingPage,
+		defaultNotFoundComponent: () => <NotFoundPage withBand={false} />,
 	});
 
 	setupRouterSsrQueryIntegration({ router, queryClient });
