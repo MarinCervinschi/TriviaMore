@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { StartExamDialog } from "./start-exam-dialog";
 
 const meta = {
-	title: "Session Dialogs/StartExamDialog",
+	title: "Session Dialogs/Esame",
 	parameters: { layout: "centered", queryData: EVAL_MODES_SEED },
 } satisfies Meta;
 
