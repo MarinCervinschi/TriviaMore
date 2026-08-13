@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+import { stubServerApi } from "./stub-server-api";
+
 const stubEmpty = fileURLToPath(new URL("./stub-empty.ts", import.meta.url));
 const stubAsyncHooks = fileURLToPath(new URL("./stub-async-hooks.ts", import.meta.url));
 const stubReactStart = fileURLToPath(new URL("./stub-react-start.ts", import.meta.url));
@@ -37,8 +39,15 @@ function stubTanstackStartEntries() {
 // the app config is never auto-detected.
 export default defineConfig({
 	plugins: [
+		stubServerApi(),
 		stubTanstackStartEntries(),
 		tailwindcss(),
 		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 	],
+	optimizeDeps: {
+		// The dep scanner walks the source before the stub above can replace anything, so it finds the
+		// database driver through the guards and pre-bundles it — and `pg` dies on `Buffer is not
+		// defined` the moment that chunk is required. Nothing in a story imports these at runtime.
+		exclude: ["pg", "pg-types", "postgres-bytea", "drizzle-orm"],
+	},
 });

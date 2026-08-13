@@ -46,31 +46,47 @@ export function SliderWithInput({
 		onChange(Math.min(max, Math.max(min, n)));
 	};
 
+	// A range of one is not a choice: a section with a single question would otherwise render a slider
+	// and a number field that can only ever hold the value they already show.
+	const fixed = min >= max;
+
 	return (
 		<div className={cn("flex flex-col gap-3", className)}>
 			<div className="flex items-center justify-between gap-2">
 				<Label htmlFor={id} className="text-sm font-medium">
 					{label}
 				</Label>
-				<Input
-					id={id}
-					type="number"
+				{fixed ? (
+					<span
+						id={id}
+						className="text-sm font-semibold tabular-nums"
+						aria-label={`${label}: ${value}`}
+					>
+						{value}
+					</span>
+				) : (
+					<Input
+						id={id}
+						type="number"
+						min={min}
+						max={max}
+						step={step}
+						value={value}
+						onChange={handleInput}
+						className="h-8 w-20 text-right tabular-nums"
+					/>
+				)}
+			</div>
+			{!fixed && (
+				<Slider
+					value={[value]}
+					onValueChange={([v]) => onChange(v)}
 					min={min}
 					max={max}
 					step={step}
-					value={value}
-					onChange={handleInput}
-					className="h-8 w-20 text-right tabular-nums"
+					aria-label={label}
 				/>
-			</div>
-			<Slider
-				value={[value]}
-				onValueChange={([v]) => onChange(v)}
-				min={min}
-				max={max}
-				step={step}
-				aria-label={label}
-			/>
+			)}
 			{hint && <div className="text-muted-foreground text-xs tabular-nums">{hint}</div>}
 		</div>
 	);

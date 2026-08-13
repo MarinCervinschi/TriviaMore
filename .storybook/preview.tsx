@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "../src/styles/globals.css";
 import "../src/styles/markdown.css";
 import { withRouter } from "./router-decorator";
-import { withSeededQueries } from "./seed-decorator";
+import { SeededQueries } from "./seed-decorator";
 
 // Provided globally so any component using TanStack Query renders. Retries off, because the
 // server-function stub throws rather than reaching a backend: a story feeds data through props or by
@@ -35,12 +35,15 @@ const preview: Preview = {
 			themes: { light: "", dark: "dark" },
 			defaultTheme: "light",
 		}),
-		Story => (
+		// The provider and the seeding are one decorator on purpose: seeding calls useQueryClient, so
+		// splitting them makes the story depend on Storybook's decorator ordering.
+		(Story, context) => (
 			<QueryClientProvider client={queryClient}>
-				<Story />
+				<SeededQueries context={context}>
+					<Story />
+				</SeededQueries>
 			</QueryClientProvider>
 		),
-		withSeededQueries,
 		withRouter,
 		Story => (
 			<div className="bg-background text-foreground w-full min-w-64 rounded-xl p-8">
