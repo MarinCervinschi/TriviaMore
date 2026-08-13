@@ -16,11 +16,15 @@ import {
 // TanStack Start's server entries, the same wall that keeps server-function
 // components out of Storybook. Links therefore render as plain hrefs and
 // navigate nowhere, which is what a component story wants anyway.
-export const withRouter: Decorator = Story => {
+export const withRouter: Decorator = (Story, context) => {
 	// The router is built once per mount, so it must reach the *current* Story
 	// rather than the one captured when it was created.
 	const storyRef = useRef(Story);
 	storyRef.current = Story;
+
+	// `parameters: { path: "/user/classes" }` puts the router at that location, which is what the
+	// sidebar and the navbar read to mark their active item.
+	const path = (context.parameters.path as string | undefined) ?? "/";
 
 	const router = useMemo(
 		() =>
@@ -31,9 +35,9 @@ export const withRouter: Decorator = Story => {
 						return <CurrentStory />;
 					},
 				}),
-				history: createMemoryHistory({ initialEntries: ["/"] }),
+				history: createMemoryHistory({ initialEntries: [path] }),
 			}),
-		[]
+		[path]
 	);
 
 	return <RouterProvider router={router as never} />;
