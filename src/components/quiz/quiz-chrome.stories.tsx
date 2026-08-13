@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { QuizHeader } from "./quiz-header";
 import { QuizNavigation } from "./quiz-navigation";
 import { QuizProgress } from "./quiz-progress";
-import { QuizSidebarContent } from "./quiz-sidebar";
+import { QuizSidebar, QuizSidebarContent } from "./quiz-sidebar";
 import { QuizTimer } from "./quiz-timer";
 
 // The frame around a quiz question: where you are, how long is left, and how to move. The timer runs
@@ -115,6 +115,25 @@ function Sidebar() {
 export const Sidebar_: Story = {
 	name: "Elenco delle domande",
 	render: () => <Sidebar />,
+};
+
+/** The same list inside its aside, which is what the play route mounts from `lg` up. */
+export const SidebarAside: Story = {
+	name: "La colonna laterale",
+	parameters: { layout: "fullscreen" },
+	render: () => (
+		<div className="flex h-96">
+			<QuizSidebar
+				totalQuestions={24}
+				currentIndex={7}
+				answeredQuestions={Array.from({ length: 24 }, (_, i) => i < 9)}
+				onJump={() => {}}
+			/>
+			<div className="text-muted-foreground flex flex-1 items-center justify-center text-sm">
+				la domanda sta qui
+			</div>
+		</div>
+	),
 };
 
 export const Timer: Story = {

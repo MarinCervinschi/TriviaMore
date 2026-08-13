@@ -1,5 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { FieldValues } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
+
+import { Form } from "@/components/ui/form";
 import type { AdminQuestion } from "@/lib/admin/types";
 
 import { BulkImportForm } from "./bulk-import-form";
@@ -7,6 +12,8 @@ import { ClassForm } from "./class-form";
 import { CourseForm } from "./course-form";
 import { DepartmentForm } from "./department-form";
 import { FormSubmitButton } from "./form-submit-button";
+import { MultipleChoiceOptions } from "./multiple-choice-options";
+import { QuestionContentField } from "./question-content-field";
 import { QuestionForm } from "./question-form";
 import { SectionForm } from "./section-form";
 
@@ -155,6 +162,90 @@ export const SubmitButton: Story = {
 			<FormSubmitButton isPending={false} isEdit entityLabel="dipartimento" />
 			<FormSubmitButton isPending isEdit={false} entityLabel="dipartimento" />
 			<FormSubmitButton isPending isEdit entityLabel="dipartimento" />
+		</div>
+	),
+};
+
+/**
+ * The two fields the question form is built from, driven by a real `useForm` so the preview toggle and
+ * the option array behave as they do inside the form.
+ */
+function ContentFieldHarness({ initial }: { initial: string }) {
+	const form = useForm<FieldValues>({ defaultValues: { content: initial } });
+	const [showPreview, setShowPreview] = useState(false);
+	const watched = form.watch("content") as string;
+
+	return (
+		<Form {...form}>
+			<QuestionContentField
+				control={form.control}
+				showPreview={showPreview}
+				setShowPreview={setShowPreview}
+				watchedContent={watched}
+			/>
+		</Form>
+	);
+}
+
+export const ContentField: Story = {
+	name: "Il campo della domanda",
+	render: () => (
+		<div className="max-w-2xl space-y-10">
+			<ContentFieldHarness initial="" />
+			<ContentFieldHarness
+				initial={
+					"Qual è la complessità di **merge sort**?\n\n$$T(n) = 2T(n/2) + O(n)$$"
+				}
+			/>
+		</div>
+	),
+};
+
+function OptionsHarness({ showPreview }: { showPreview: boolean }) {
+	const form = useForm<FieldValues>({
+		defaultValues: {
+			options: [
+				{ id: "o1", text: "O(n log n)" },
+				{ id: "o2", text: "O(n²)" },
+				{ id: "o3", text: "O(log n)" },
+			],
+		},
+	});
+	const { fields, append, remove } = useFieldArray({
+		control: form.control,
+		name: "options",
+	});
+	const [correct, setCorrect] = useState<string[]>(["o1"]);
+	const options = form.watch("options") as { id: string; text: string }[];
+
+	return (
+		<Form {...form}>
+			<MultipleChoiceOptions
+				control={form.control}
+				fields={fields}
+				options={options}
+				correctAnswer={correct}
+				showPreview={showPreview}
+				register={form.register}
+				append={append}
+				remove={remove}
+				toggleCorrectAnswer={id =>
+					setCorrect(prev =>
+						prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+					)
+				}
+			/>
+		</Form>
+	);
+}
+
+/** Adding, removing and marking correct all mutate the same array — more than one correct is allowed. */
+export const Options: Story = {
+	name: "Le opzioni a scelta multipla",
+	render: () => (
+		<div className="max-w-2xl space-y-10">
+			<OptionsHarness showPreview={false} />
+			<OptionsHarness showPreview />
 		</div>
 	),
 };

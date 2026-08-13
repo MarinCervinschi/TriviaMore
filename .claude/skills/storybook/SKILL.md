@@ -10,16 +10,25 @@ Storybook 10.5.7 on `@storybook/react-vite`, addons `a11y`, `docs`, `themes`.
 part of the verification gate for any UI change.
 
 Stories are **co-located** with the component: `button.tsx` → `button.stories.tsx`.
-There are 53 of them; every `ui/` primitive has one.
+There are 370 across 93 sidebar entries: every `ui/` primitive, and every shared
+component that is not on the short list at the bottom of this file.
 
 ## The setup, and why it is separate
 
-`.storybook/vite.config.ts` is a **dedicated, minimal Vite config** (only
-`@tailwindcss/vite` + `vite-tsconfig-paths`), wired in through
+`.storybook/vite.config.ts` is a **dedicated, minimal Vite config**, wired in through
 `framework.options.builder.viteConfigPath`. Storybook must never load the app's
 TanStack Start + Nitro pipeline — the same reasoning as the separate
-`vitest.config.ts`. It also carries a `resolveId` plugin that stubs every
-`#tanstack-*` / `tanstack-start-*` specifier to `.storybook/stub-empty.ts`.
+`vitest.config.ts`. It carries three things that matter:
+
+- a `resolveId` plugin mapping `@tanstack/react-start*` → `stub-react-start.ts`,
+  `node:async_hooks` → `stub-async-hooks.ts`, and `#tanstack-*` /
+  `tanstack-start-*` → `stub-empty.ts`;
+- `stubServerApi()`, which replaces the *body* of every `src/lib/*/api/*` module
+  with same-named throwing exports — see below;
+- `optimizeDeps.exclude` for `pg`, `pg-types`, `postgres-bytea`, `drizzle-orm`.
+  **Without it the dev server pre-bundles `pg` and every story dies on
+  `Buffer is not defined`,** while `build-storybook` stays green because Rollup
+  tree-shakes the handler bodies. That asymmetry is the trap.
 
 `.storybook/preview.tsx` gives every story, for free:
 
@@ -27,7 +36,8 @@ TanStack Start + Nitro pipeline — the same reasoning as the separate
 |---|---|
 | `globals.css` + DM Sans / DM Serif Display | the real tokens, so a story is not "close to" the app |
 | `withThemeByClassName` | light/dark from the toolbar, toggling the app's own `.dark` class |
-| `QueryClientProvider` | retries off, so a component using TanStack Query renders |
+| `QueryClientProvider` + `SeededQueries` | retries off, and `parameters.session` / `parameters.queryData` seeded — see below |
+| `withTheme` | the `ThemeContext`, so `useTheme` works — see below |
 | `withRouter` | a memory-history router, so `<Link>` works — see below |
 | a padded `bg-background` wrapper | stories sit on the app surface, not on white |
 
@@ -81,29 +91,56 @@ Hooks cannot run in a `render` arrow directly — wrap them in a component, as a
 
 `UI/<Primitive>` for `components/ui/`. Everything else is `<Area>/<Name>`:
 `Charts/*`, `Data Table/*`, `Requests/*`, `Stat Cards/*`, `Question Cards/*`,
-`Launch Cards/*`.
+`Launch Cards/*`, `Admin/*`, `Browse/*`, `Quiz/*`, `Flashcard/*`, `Layout/*`,
+`Skeletons/*`, `Notifications/*`.
+
+**Keep the granularity coarse.** One entry per area, several stories inside it — not
+one entry per file. A story file covering five small components under one title is the
+shape asked for; nine sibling entries in the sidebar is not. `Admin/Chrome`,
+`Shared/Blocchi` and `Skeletons/Pagine` are the pattern.
 
 **Group siblings under one title prefix on purpose.** `Stat Cards/*` and
 `Question Cards/*` exist because two near-duplicate components were being compared
 before being merged — the sidebar puts them next to each other. Reach for that
-whenever you suspect duplication.
+whenever you suspect duplication. `Page Headers/Confronto` renders the same content
+through all four page headers for exactly this reason.
 
-## The hard limit: server-function coupling
+Story names are in Italian, like the UI: `name: "La pagina vuota"`.
 
-**A component that transitively imports a `createServerFn` API cannot be storied.**
-Importing it — usually through `queries.ts` / `mutations.ts` — drags TanStack Start's
-*server* runtime into the client bundle, and the build dies on `node:async_hooks`
-(`AsyncLocalStorage`) and the `tanstack-start-manifest:v` virtual, because Storybook
-deliberately does not run the Start plugin.
+## Components that fetch
 
-**The fix is not a mock, it is a split: extract the presentational core.** A
-props-only component renders in a story, and the extraction is usually the right
-refactor anyway. That is how the question cards, launch cards and session dialogs
-became story-able — the split *was* the de-duplication.
+**This used to be a hard wall and is not any more.** Importing a `createServerFn`
+API — usually through `queries.ts` / `mutations.ts` — dragged Start's *server*
+runtime into the bundle, and the build died on `node:async_hooks` and the
+`tanstack-start-manifest:v` virtual.
 
-The `#tanstack-*` stub already unblocks the lighter cases (`@tanstack/react-router`
-`<Link>`, hence `empty-state` and `admin-stat-card`). It is the server runtime that
-is the wall.
+`stubServerApi()` in `.storybook/vite.config.ts` replaces every module under
+`src/lib/*/api/` with same-named exports that **throw when called**. Imports resolve,
+`queries.ts` and `mutations.ts` load, nothing server-side is bundled. So a story
+supplies the data instead:
+
+```tsx
+const meta = {
+  title: "Notifications/Notifiche",
+  parameters: {
+    session: { role: "SUPERADMIN" },                    // signs the story in
+    queryData: [[["notifications"], NOTIFICATIONS]],    // the exact query key
+  },
+} satisfies Meta;
+```
+
+`session` seeds `["auth", "session"]`, which is what `useAuth` reads; `queryData` is a
+list of `[queryKey, data]` pairs. **Read the key off `queries.ts` — a near-miss key
+silently leaves the component in its loading state**, and `useSuspenseQuery` will hang
+on a suspense boundary rather than error.
+
+A mutation still throws if you click it, and that is deliberate: the story is honest
+about what it does not have. Say so in the story's doc comment where it matters
+(the auth forms, the request form).
+
+Extracting a presentational core is still often the right call — it is what made the
+question cards, launch cards and session dialogs comparable — but it is now a design
+decision, not a workaround.
 
 ## `<Link>` and the router
 
@@ -114,6 +151,33 @@ The app's real route tree is deliberately **not** loaded — importing it pulls 
 server entries. So links render as plain hrefs and navigate nowhere, which is what a
 component story wants. Note this only works with a **bare** `createRouter` from
 `@tanstack/react-router`; reusing the app's own router factory reintroduces the wall.
+
+`parameters.path` sets the memory history's entry, which is what a component calling
+`useMatchRoute` needs to show an active state — `path: "/admin"` for the admin
+sidebar, `path: "/browse"` for the navbar.
+
+## The theme, and `useTheme`
+
+`useTheme` → `useThemeContext` **throws** without a provider, so anything containing a
+`ThemeToggle` (the navbar, the sidebar, the mobile nav, `AuthCard`) crashed at render
+while `build-storybook` stayed green.
+
+`.storybook/theme-decorator.tsx` supplies the context from the theme toolbar instead of
+mounting the app's `ThemeProvider`. **Do not mount the real one:** it writes `.dark` on
+`<html>`, which is exactly what `withThemeByClassName` owns, and the two fight on load.
+`ThemeContext` is exported from `src/providers/theme-provider.tsx` for this decorator
+and nothing else.
+
+## Viewport
+
+Storybook 10 reads the viewport from **globals, not parameters**. The Storybook 7
+`parameters.viewport.defaultViewport` is silently inert:
+
+```tsx
+export const Mobile: Story = {
+  globals: { viewport: { value: "iphone6" } },
+};
+```
 
 ## Fixtures must be deterministic
 
@@ -149,6 +213,22 @@ components like the heatmaps *do* verify properly — assert on the cell count.
 
 Delete the harness afterwards: component tests are deliberately out of scope (#109),
 and a half-kept one rots.
+
+## What still has no story, and why
+
+Five exports, all of them for a reason — do not "fix" these:
+
+| | |
+|---|---|
+| `analytics/umami-analytics.tsx` | injects a `<script>`, renders nothing |
+| `charts/chart-defs.tsx` — `ChartDefs`, `AreaFadeDefs` | SVG `<defs>`; invisible outside a plot, covered through `Charts/Fills` |
+| `charts/chart-card.tsx` — `CHART_PLOT_CLASS` | a class-name string |
+| `shared/content-hierarchy-diagram.tsx` — `CONTENT_LEVELS` | the data behind the diagram |
+| `data-table/fixtures.tsx` — `DIFFICULTY_LABELS` | a fixture constant |
+
+Two more compile but **cannot be judged from a green build**: `NetworkGraph` draws on
+WebGL through reagraph, and the two campus maps draw on Leaflet tiles. Their stories
+exist; only the browser tells you whether they paint.
 
 ## Before calling it done
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { BookmarkButton } from "./bookmark-button";
 import { QUIZ_QUESTIONS } from "./fixtures";
 import { QuestionCard } from "./question-card";
 
@@ -56,6 +57,22 @@ export const SignedOut: Story = {
 	render: () => (
 		<div className="max-w-3xl">
 			<Card index={0} />
+		</div>
+	),
+};
+
+/** The bookmark toggle on its own, in both states: the filled icon is the whole feedback. */
+export const Bookmark: Story = {
+	name: "Il segnalibro",
+	parameters: {
+		layout: "padded",
+		session: { role: "STUDENT" },
+		queryData: [[["user", "bookmarked-ids"], ["q-1"]]],
+	},
+	render: () => (
+		<div className="flex items-center gap-6">
+			<BookmarkButton questionId="q-1" />
+			<BookmarkButton questionId="q-2" />
 		</div>
 	),
 };
