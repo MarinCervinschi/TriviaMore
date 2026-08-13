@@ -10,11 +10,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "../src/styles/globals.css";
 import "../src/styles/markdown.css";
+import { withSession } from "./auth-decorator";
 import { withRouter } from "./router-decorator";
 
-// Provided globally so any component using TanStack Query renders. Retries off
-// so server-function calls that cannot reach a backend fail fast instead of
-// spinning — stories drive display through props; fetched data is simply absent.
+// Provided globally so any component using TanStack Query renders. Retries off, because the
+// server-function stub throws rather than reaching a backend: a story feeds data through props or by
+// seeding this cache (see auth-decorator).
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
 });
@@ -39,6 +40,7 @@ const preview: Preview = {
 				<Story />
 			</QueryClientProvider>
 		),
+		withSession,
 		withRouter,
 		Story => (
 			<div className="bg-background text-foreground w-full min-w-64 rounded-xl p-8">
