@@ -121,8 +121,9 @@ The **per-card orb** — the blurred `CardOrb`, one of D4's decorations — is *
 D27's `CardTexture`: a card-scale decoration now reads as a faded corner dot field, not a coloured glow.
 `CardOrb` is removed from `card.tsx` and its ~8 uses migrated (`StatCard`, the two progress panels, the
 flashcard result hero). **The rest of D4 stands** — the tint maps (`decorativeTint`: the icon tile, the
-icon, and the hand-rolled orb still on `user/index.tsx`) are untouched, so decorative colour was not
-stripped, only its glow form.
+icon, the border and the gradient) are untouched, so decorative colour was not stripped, only its glow
+form. The `orb` slot went with it: the last hand-rolled orb (the `user/index.tsx` quick-links) also
+moved to `CardTexture`, keeping its colour gradient, so the `orb` field is deleted from `decorativeTint`.
 
 What did change is structural and invisible: the two maps became one
 (`components/shared/decorative-tints.ts`), and `orange` and `red` went, having never been passed.
