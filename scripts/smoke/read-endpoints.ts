@@ -18,7 +18,6 @@ import {
 	getDepartmentWithCourses,
 	getDepartments,
 } from "../../src/lib/browse/service/departments.ts";
-import { getGraphData } from "../../src/lib/browse/service/graph.ts";
 import {
 	getBrowseOverview,
 	getPlatformStats,
@@ -119,7 +118,6 @@ await check("browse.getDepartments", async () => {
 	}
 	return rows;
 });
-await check("browse.getGraphData", () => getGraphData());
 await check("browse.getPlatformStats", () => getPlatformStats());
 await check("browse.getBrowseOverview", () => getBrowseOverview());
 await check("browse.getDepartmentWithCourses", () =>

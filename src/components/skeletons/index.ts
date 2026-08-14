@@ -5,4 +5,3 @@ export * from "./browse-skeleton";
 export * from "./user-skeleton";
 export * from "./quiz-skeleton";
 export * from "./search-skeleton";
-export * from "./graph-skeleton";

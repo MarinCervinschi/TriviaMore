@@ -7,7 +7,6 @@ import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
-import { StructureIcon } from "@solar-icons/react/linear/structure";
 import { UserIcon } from "@solar-icons/react/linear/user";
 
 import type { Icon } from "@/components/icons";
@@ -53,14 +52,12 @@ export const GUEST_NAV_ITEMS: NavItem[] = [
 	EXPLORE_DROPDOWN,
 	{ type: "link", to: "/about", label: "Chi siamo", icon: InfoCircleIcon },
 	{ type: "link", to: "/contact", label: "Contatti", icon: LetterIcon },
-	{ type: "link", to: "/graph", label: "Grafo", icon: StructureIcon },
 	{ type: "link", to: "/news", label: "Novità", icon: FeedIcon },
 ];
 
 export const AUTH_NAV_ITEMS: NavItem[] = [
 	{ type: "link", to: "/user", label: "Il mio profilo", icon: HomeIcon },
 	EXPLORE_DROPDOWN,
-	{ type: "link", to: "/graph", label: "Grafo", icon: StructureIcon },
 	{
 		type: "link",
 		to: "/user/classes",
