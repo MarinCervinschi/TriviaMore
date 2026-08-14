@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+import { Card, CardTexture } from "@/components/ui/card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
@@ -21,18 +22,16 @@ function FeatureCardComponent({
 }) {
 	const Icon = feature.icon;
 	return (
-		<div
-			className={cn(
-				"bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8",
-				className
-			)}
-		>
-			<div className={`mb-4 inline-flex rounded-2xl p-3 ${feature.iconBg}`}>
-				<Icon className={`h-7 w-7 ${feature.iconColor}`} aria-hidden />
+		<Card className={cn("relative overflow-hidden p-6 sm:p-8", className)}>
+			<CardTexture corner="br" />
+			<div className="relative">
+				<div className={`mb-4 inline-flex rounded-2xl p-3 ${feature.iconBg}`}>
+					<Icon className={`h-7 w-7 ${feature.iconColor}`} aria-hidden />
+				</div>
+				<h3 className="mb-2 text-lg font-semibold tracking-tight">{feature.title}</h3>
+				<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
 			</div>
-			<h3 className="mb-2 text-lg font-semibold tracking-tight">{feature.title}</h3>
-			<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-		</div>
+		</Card>
 	);
 }
 
