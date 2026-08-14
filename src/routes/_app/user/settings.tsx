@@ -17,6 +17,7 @@ import { SettingsSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardTexture } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
@@ -90,8 +91,9 @@ function SettingsPage() {
 				</div>
 
 				{/* Account Details */}
-				<div className="bg-card relative overflow-hidden rounded-3xl border">
-					<div className="p-6 sm:p-8">
+				<Card level="panel" className="relative overflow-hidden">
+					<CardTexture corner="br" />
+					<div className="relative p-6 sm:p-8">
 						<h2 className="mb-1 text-xl font-bold">Dettagli account</h2>
 						<p className="text-muted-foreground mb-6 text-sm">
 							Informazioni tecniche sul tuo account
@@ -116,7 +118,7 @@ function SettingsPage() {
 							</div>
 						</div>
 					</div>
-				</div>
+				</Card>
 
 				{/* TODO: implement account deletion with proper RLS policies */}
 				{/* <DeleteAccountSection /> */}
