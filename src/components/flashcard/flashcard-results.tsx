@@ -5,7 +5,7 @@ import { EyeIcon } from "@solar-icons/react/linear/eye";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardOrb } from "@/components/ui/card";
+import { Card, CardTexture } from "@/components/ui/card";
 import { Logo } from "@/components/ui/logo";
 import type { FlashcardQuestion } from "@/lib/flashcard/types";
 
@@ -53,8 +53,7 @@ export function FlashcardResults({
 					level="panel"
 					className="relative overflow-hidden p-8 text-center sm:p-12"
 				>
-					<CardOrb size="lg" corner="tl" tint="bg-green-500/10" />
-					<CardOrb size="lg" corner="br" tint="bg-emerald-300/10" />
+					<CardTexture corner="tl" />
 
 					<p className="text-muted-foreground relative mb-2 text-sm font-medium">
 						{sectionName}

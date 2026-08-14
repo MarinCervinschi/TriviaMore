@@ -7,7 +7,7 @@ import {
 	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardOrb,
+	CardTexture,
 	CardTitle,
 } from "./card";
 
@@ -52,26 +52,44 @@ export const Panel: Story = {
 	),
 };
 
-export const Orb: Story = {
-	name: "CardOrb",
+/**
+ * D27's surface texture. The rule the story shows: the dots sit in the *empty* corner, opposite the
+ * content, so they never sit under text; the glow stays off and is turned on only for large or wide
+ * cards. Its parent needs `relative overflow-hidden`. Look in both themes.
+ */
+export const Texture: Story = {
+	name: "CardTexture",
 	render: () => (
-		<div className="grid max-w-3xl gap-4 sm:grid-cols-3">
-			{(["sm", "md", "lg"] as const).map(size => (
-				<Card key={size} className="relative overflow-hidden p-5">
-					<CardOrb size={size} />
-					<p className="font-semibold">{size}</p>
+		<div className="grid max-w-3xl gap-4 sm:grid-cols-2">
+			<Card className="relative overflow-hidden">
+				<CardTexture corner="br" />
+				<CardHeader>
+					<CardTitle>Contenuto a sinistra</CardTitle>
+					<CardDescription>
+						I dot nell&apos;angolo opposto, mai sotto il testo.
+					</CardDescription>
+				</CardHeader>
+			</Card>
+
+			<Card className="relative overflow-hidden">
+				<CardTexture corner="tr" glow />
+				<CardHeader>
+					<CardTitle>Con glow</CardTitle>
+					<CardDescription>
+						Il glow si accende solo per le card grandi o larghe.
+					</CardDescription>
+				</CardHeader>
+			</Card>
+
+			{(["tl", "tr", "bl", "br"] as const).map(corner => (
+				<Card key={corner} className="relative overflow-hidden p-5">
+					<CardTexture corner={corner} />
+					<p className="font-semibold">corner={corner}</p>
 					<p className="text-muted-foreground text-sm">
-						Il genitore ha bisogno di <code>relative overflow-hidden</code>.
+						L&apos;angolo del dettaglio è una prop.
 					</p>
 				</Card>
 			))}
-			<Card className="relative overflow-hidden p-5">
-				<CardOrb corner="bl" tint="bg-success/10" />
-				<p className="font-semibold">corner=bl</p>
-				<p className="text-muted-foreground text-sm">
-					Angolo e tinta sono indipendenti.
-				</p>
-			</Card>
 		</div>
 	),
 };

@@ -125,6 +125,9 @@
 	--radius: 1rem;
 	--dot-alpha: 0.18;
 	--glow-alpha: 0.18;
+	/* CardTexture (D27). One value for both themes until dark needs its own — see D27. */
+	--card-dot-alpha: 0.16;
+	--card-glow-alpha: 0.14;
 }
 
 /* ===== Dark theme variables ===== */
