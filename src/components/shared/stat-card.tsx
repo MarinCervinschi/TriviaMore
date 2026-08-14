@@ -3,11 +3,11 @@ import type { LinkProps } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import { decorativeTint } from "@/components/shared/decorative-tints";
-import { Card, CardOrb } from "@/components/ui/card";
+import { Card, CardTexture } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 // The one stat tile used across the admin dashboard, the user area and progress.
-// `color` drives the orb, icon badge and icon tint together; an optional `href`
+// `color` drives the icon badge and icon tint together; an optional `href`
 // turns the whole card into a link.
 export function StatCard({
 	label,
@@ -28,10 +28,7 @@ export function StatCard({
 
 	const content = (
 		<Card className="group relative overflow-hidden p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
-			<CardOrb
-				tint={colors.orb}
-				className="transition-opacity duration-300 group-hover:opacity-70"
-			/>
+			<CardTexture corner="tr" />
 			<div className="relative flex flex-col gap-3">
 				<div className={cn("inline-flex w-fit rounded-xl p-2 sm:p-2.5", colors.badge)}>
 					<Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", colors.icon)} />

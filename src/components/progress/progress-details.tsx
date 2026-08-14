@@ -7,7 +7,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardOrb } from "@/components/ui/card";
+import { Card, CardTexture } from "@/components/ui/card";
 import type { OverallStats } from "@/hooks/useProgressData";
 import type { UserProgress } from "@/lib/user/types";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
@@ -82,7 +82,7 @@ export function ProgressDetails({
 			{/* Summary cards — study vs exam side by side */}
 			<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 				<Card className="relative overflow-hidden p-6">
-					<CardOrb tint="bg-blue-500/10" />
+					<CardTexture corner="tr" />
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-blue-500/10 p-2">
@@ -118,7 +118,7 @@ export function ProgressDetails({
 				</Card>
 
 				<Card className="relative overflow-hidden p-6">
-					<CardOrb tint="bg-yellow-500/10" />
+					<CardTexture corner="tr" />
 					<div className="relative space-y-4">
 						<div className="flex items-center gap-2">
 							<div className="rounded-xl bg-yellow-500/10 p-2">
