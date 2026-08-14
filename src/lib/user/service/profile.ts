@@ -3,7 +3,10 @@ import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { profiles } from "@/db/schema";
 import { findProfile } from "@/lib/auth/db/profiles";
-import { findRecentCompletedAttempts } from "@/lib/quiz/db/attempts";
+import {
+	findDailyAttemptCounts,
+	findRecentCompletedAttempts,
+} from "@/lib/quiz/db/attempts";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import type { UserProfile, UserStats } from "../types";
@@ -49,10 +52,11 @@ export async function getUserProfile(
 	const profile = await findProfile(db, userId);
 	if (!profile) return null;
 
-	const [stats, recentClasses, recentAttempts] = await Promise.all([
+	const [stats, recentClasses, recentAttempts, activityDays] = await Promise.all([
 		getStats(userId),
 		getRecentClasses(db, userId),
 		findRecentCompletedAttempts(db, userId, RECENT_ATTEMPTS_LIMIT),
+		findDailyAttemptCounts(db, userId),
 	]);
 
 	return {
@@ -64,6 +68,7 @@ export async function getUserProfile(
 			...attempt,
 			completedAt: attempt.completedAt!,
 		})),
+		activity: { days: activityDays, endDate: new Date().toISOString().slice(0, 10) },
 	};
 }
 

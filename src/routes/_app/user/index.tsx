@@ -11,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
+import { CalendarHeatmap } from "@/components/charts";
 import {
 	DataTable,
 	createDataTableColumns,
@@ -147,6 +148,14 @@ function DashboardPage() {
 						href="/user/bookmarks"
 					/>
 				</div>
+
+				{/* Activity heatmap */}
+				<CalendarHeatmap
+					title="La tua attività"
+					data={profile.activity.days}
+					endDate={profile.activity.endDate}
+					emptyMessage="Completa il tuo primo quiz per iniziare a tracciare la tua attività."
+				/>
 
 				{/* Recent Classes */}
 				{profile.recentClasses.length > 0 && (

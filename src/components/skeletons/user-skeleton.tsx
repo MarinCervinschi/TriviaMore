@@ -59,6 +59,22 @@ export function UserDashboardSkeleton() {
 					))}
 				</div>
 
+				{/* Activity heatmap */}
+				<div>
+					<Skeleton className="h-6 w-32" />
+					<Skeleton className="mt-1 mb-3 h-4 w-48" />
+					<div className="flex gap-4">
+						<div className="bg-card flex-1 rounded-2xl border p-6 shadow-sm">
+							<SkeletonChart height={120} />
+						</div>
+						<div className="hidden shrink-0 flex-col gap-1 lg:flex">
+							{Array.from({ length: 3 }).map((_, i) => (
+								<Skeleton key={i} className="h-7 w-14 rounded-md" />
+							))}
+						</div>
+					</div>
+				</div>
+
 				{/* Recent classes */}
 				<div className="space-y-4">
 					<Skeleton className="h-3 w-24" />
