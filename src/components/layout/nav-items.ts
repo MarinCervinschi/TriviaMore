@@ -4,7 +4,6 @@ import { HomeIcon } from "@solar-icons/react/linear/home";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
-import { StructureIcon } from "@solar-icons/react/linear/structure";
 
 import type { Icon } from "@/components/icons";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,13 +35,6 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{ to: "/user/requests", icon: InboxIcon, label: "Contributi", fuzzy: true },
 ];
-
-export const GRAPH_ITEM: NavItem = {
-	to: "/graph",
-	icon: StructureIcon,
-	label: "Grafo",
-	fuzzy: false,
-};
 
 export const ABOUT_ITEM: NavItem = {
 	to: "/about",
