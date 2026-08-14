@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { CalendarHeatmap } from "./calendar-heatmap";
-import { studyYear } from "./fixtures";
+import { studyActivity } from "./fixtures";
 
 const meta = {
 	title: "Charts/CalendarHeatmap",
@@ -11,51 +11,25 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const year = studyYear();
+const activity = studyActivity();
 
 /**
- * Magnitude on a sequential ramp — one hue, light to dark. It must never borrow
- * the categorical slots: the colour here means more-or-less, not which-one.
+ * Default is the rolling last-12-months window; the year picker (only years with
+ * activity) shows a full Jan–Dec calendar. Magnitude on a sequential ramp — it
+ * never borrows the categorical slots. Click a year, hover a cell, both themes.
  */
-export const Year: Story = {
+export const Default: Story = {
 	render: () => (
-		<CalendarHeatmap
-			title="Costanza di studio"
-			description="Quiz completati per giorno, ultimo anno"
-			data={year}
-		/>
-	),
-};
-
-export const LastTwelveWeeks: Story = {
-	render: () => (
-		<CalendarHeatmap
-			title="Ultime dodici settimane"
-			data={year}
-			weeks={12}
-			unitLabel="quiz"
-		/>
-	),
-};
-
-/** A fixed ceiling keeps two students' calendars comparable. */
-export const FixedScale: Story = {
-	render: () => (
-		<CalendarHeatmap
-			title="Costanza di studio"
-			description="Scala fissata a 10 quiz al giorno"
-			data={year}
-			max={10}
-		/>
+		<CalendarHeatmap title="La tua attività" data={activity} endDate="2026-08-08" />
 	),
 };
 
 export const Empty: Story = {
 	render: () => (
 		<CalendarHeatmap
-			title="Costanza di studio"
+			title="La tua attività"
 			data={[]}
-			emptyMessage="Nessun quiz registrato quest'anno."
+			emptyMessage="Nessun quiz registrato: completa il primo per iniziare a tracciare l'attività."
 		/>
 	),
 };
