@@ -28,7 +28,6 @@ import { cn } from "@/lib/utils";
 import {
 	ABOUT_ITEM,
 	ADMIN_ITEM,
-	GRAPH_ITEM,
 	NAV_ITEMS,
 	type NavItem,
 	RAIL_FOCUS,
@@ -327,10 +326,6 @@ export function LumaSidebar() {
 
 				{/* Tools */}
 				<SidebarSearchHover />
-				<SidebarNavIcon
-					item={GRAPH_ITEM}
-					isActive={!!matchRoute({ to: GRAPH_ITEM.to, fuzzy: GRAPH_ITEM.fuzzy })}
-				/>
 				<SidebarNavIcon
 					item={ABOUT_ITEM}
 					isActive={!!matchRoute({ to: ABOUT_ITEM.to, fuzzy: ABOUT_ITEM.fuzzy })}

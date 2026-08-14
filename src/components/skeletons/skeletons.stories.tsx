@@ -7,7 +7,6 @@ import {
 	DepartmentDetailSkeleton,
 	SectionDetailSkeleton,
 } from "./departments-skeleton";
-import { GraphPageSkeleton } from "./graph-skeleton";
 import { PlatformStatsSectionSkeleton } from "./home-skeleton";
 import {
 	SkeletonAvatar,
@@ -138,14 +137,11 @@ export const User: Story = {
 };
 
 export const Others: Story = {
-	name: "Home, grafo, ricerca",
+	name: "Home, ricerca",
 	render: () => (
 		<Group>
 			<Labelled label="PlatformStatsSectionSkeleton">
 				<PlatformStatsSectionSkeleton />
-			</Labelled>
-			<Labelled label="GraphPageSkeleton">
-				<GraphPageSkeleton />
 			</Labelled>
 			<Labelled label="SearchResultsSkeleton">
 				<div className="container">

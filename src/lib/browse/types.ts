@@ -184,17 +184,3 @@ export interface PaginatedResult<T> {
 
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>;
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>;
-
-// Graph showcase
-
-export type GraphDepartmentNode = Pick<Department, "id" | "code" | "name" | "area">;
-
-export type GraphCourseNode = Pick<
-	Course,
-	"id" | "code" | "name" | "departmentId" | "courseType" | "location"
->;
-
-export interface GraphData {
-	departments: GraphDepartmentNode[];
-	courses: GraphCourseNode[];
-}

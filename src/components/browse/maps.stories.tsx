@@ -6,9 +6,8 @@ import { DepartmentMap } from "./department-map";
 import { OverviewMap } from "./overview-map";
 
 /**
- * The two campus maps. They draw through Leaflet on real tiles, so like the network graph they can only
- * be judged in the browser — and the tiles follow the theme, which is the thing worth checking when a
- * colour moves.
+ * The two campus maps. They draw through Leaflet on real tiles, so they can only be judged in the
+ * browser — and the tiles follow the theme, which is the thing worth checking when a colour moves.
  */
 const meta = {
 	title: "Browse/Mappe",

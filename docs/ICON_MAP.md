@@ -173,7 +173,7 @@ enough to need a look** before the sweep is committed; ✎ marks one that is our
 | `Send` | 3 | `plane-2` | ⚠ Lucide's `Send` is a paper plane. Solar's `plane` family needs checking — one of the three is the paper one |
 | `Bookmark` + `BookmarkIcon` | 3 + 3 | `bookmark` | **one** import, not two |
 | `BookmarkCheck` | 1 | `bold/bookmark` | the saved state, expressed through the style axis rather than a second drawing — D11's import-path style selection earning its keep |
-| `SlidersHorizontal` | 2 | `tuning-2` (colonne) · `filter` (filtri grafo) | ⚠ **Corrected after the browser pass.** `filters` was the first choice and it is the wrong drawing: in Solar it is three overlapping circles — the *photographic* filter, a colour mix. The two call sites also turned out to be two jobs: the table's "Colonne" button toggles column visibility, so it takes `tuning-2`, Solar's actual equivalent of horizontal sliders; the graph panel is literally labelled *Filtri*, so it takes `filter`, the funnel. No clash — the faceted filter uses `add-circle` and search uses `magnifier` |
+| `SlidersHorizontal` | 1 | `tuning-2` (colonne) | ⚠ **Corrected after the browser pass.** `filters` was the first choice and it is the wrong drawing: in Solar it is three overlapping circles — the *photographic* filter, a colour mix. The table's "Colonne" button toggles column visibility, so it takes `tuning-2`, Solar's actual equivalent of horizontal sliders. No clash — the faceted filter uses `add-circle` and search uses `magnifier` |
 | `Save` | 1 | `diskette` | |
 | `RefreshCw` | 1 | `refresh` | |
 | `RotateCcw` | 1 | `restart` | retry a quiz |
