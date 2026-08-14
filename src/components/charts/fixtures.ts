@@ -77,6 +77,26 @@ export const difficultyBySection = {
 	],
 };
 
+/** Several study years, so the heatmap's year picker has something to filter. */
+export function studyActivity(startIso = "2022-01-01", endIso = "2026-08-08") {
+	const start = new Date(`${startIso}T00:00:00Z`);
+	const end = new Date(`${endIso}T00:00:00Z`);
+	const days: { date: string; value: number }[] = [];
+	let seed = 20220101;
+	for (let t = start.getTime(); t <= end.getTime(); t += 86_400_000) {
+		const day = new Date(t);
+		seed = (seed * 1103515245 + 12345) % 2147483648;
+		const roll = seed % 100;
+		const weekend = day.getUTCDay() === 0 || day.getUTCDay() === 6;
+		const month = day.getUTCMonth();
+		const inTerm = month <= 5 || month >= 8;
+		const chance = inTerm ? (weekend ? 35 : 70) : weekend ? 8 : 20;
+		const value = roll < chance ? 1 + (seed % (inTerm ? 8 : 3)) : 0;
+		days.push({ date: day.toISOString().slice(0, 10), value });
+	}
+	return days;
+}
+
 /** A year of study days, generated from a fixed seed so the grid never moves. */
 export function studyYear(endDate = "2026-08-08") {
 	const end = new Date(`${endDate}T00:00:00Z`);
