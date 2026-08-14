@@ -3,10 +3,13 @@ import type { profiles, progress, questions } from "@/db/schema";
 type Profile = typeof profiles.$inferSelect;
 type QuestionRow = typeof questions.$inferSelect;
 
+export type ActivityDay = { date: string; value: number };
+
 export type UserProfile = Profile & {
 	stats: UserStats;
 	recentClasses: RecentClass[];
 	recentQuizAttempts: RecentQuizAttempt[];
+	activity: { days: ActivityDay[]; endDate: string };
 };
 
 export type UserStats = {
