@@ -115,6 +115,15 @@ outside the contrast gate. Do not file it again as an oversight.
 current values could have been tokenised without moving a pixel. D26 rules out "a further categorical
 ramp alongside this one", and that is exactly what it would be.
 
+### The blurred orb is retired for CardTexture, 2026-08-14
+
+The **per-card orb** — the blurred `CardOrb`, one of D4's decorations — is **retired** in favour of
+D27's `CardTexture`: a card-scale decoration now reads as a faded corner dot field, not a coloured glow.
+`CardOrb` is removed from `card.tsx` and its ~8 uses migrated (`StatCard`, the two progress panels, the
+flashcard result hero). **The rest of D4 stands** — the tint maps (`decorativeTint`: the icon tile, the
+icon, and the hand-rolled orb still on `user/index.tsx`) are untouched, so decorative colour was not
+stripped, only its glow form.
+
 What did change is structural and invisible: the two maps became one
 (`components/shared/decorative-tints.ts`), and `orange` and `red` went, having never been passed.
 `yellow` and `amber` both stay — they are 16° apart and both in use, so the divergence I first read as a
@@ -358,6 +367,11 @@ is D18's beam; this entry's radial glow is retired.
 **A texture repeated per section is decoration, so one band per page.** The mid-page dot fields on
 the landing sections, about, contact and browse all went; their surface tints stayed, because a tint
 is a surface and not a texture.
+
+**Amended by D27 (2026-08-14):** a single card may opt into a *bounded* dot accent in its **empty**
+corner — faded out before it reaches content — which keeps this entry's governing principle (texture
+gone before density) rather than breaking it. The removal of per-*surface* dot fields stands; a sparse
+card is the one opt-in, and dense surfaces (L0) stay flat.
 
 ---
 
@@ -1158,6 +1172,43 @@ blind migration. The five gate rows added here mean a category can no longer be 
 
 **Rules out:** a category on a status token; borrowing a `--chart-*` fill as text; a further categorical
 ramp alongside this one; optimising an accessibility metric without holding the ordinary case.
+
+---
+
+## D27 — A card may carry a bounded corner texture
+
+**Decided 2026-08-14.** Taken from a ReUI pro block we could see but not read, and reproduced with our
+own dots and tokens rather than adopted. A `CardTexture` in `card.tsx` lays a corner-anchored dot
+field, faded out radially, with an optional primary glow. Its parent needs `relative overflow-hidden`.
+
+This is an exception to D12, drawn narrowly so it does not become one. D12 removed every per-surface dot
+field and put the texture in one band, on the principle that **the texture has to be gone before the
+content gets dense.** D27 keeps that principle and adds a single opt-in: one card may carry the texture
+**in its empty corner**, where no content sits, faded before it reaches the text. It is a corner detail,
+not a field behind content — dots never go behind a table, a chart, a form or a list, which stay D12's
+flat L0.
+
+The rules, which are what make it safe:
+
+- **The dots sit in the empty corner, opposite the content**, never under text. A text card keeps its
+  content top-left, so the detail goes bottom-right; the radial mask fades it out before the words. This
+  is D12's "gone before density," applied inside one card.
+- **Off by default, opt-in per card.** `CardTexture` is mounted deliberately, not baked into `Card`.
+  Most cards stay flat.
+- **The glow is off by default, and card-scale.** On only for large or wide cards — a stat tile, a flow
+  block. Being tens of pixels in a corner it is card-scale, so it lives under D4/D13's
+  card-decoration carve-out; it is not a second page light source.
+- **A category's colour stays on the icon, never on the dots.** The dots are `--foreground`; a category
+  is carried by the icon, in the chart tint (D26). Colouring the dots
+  would make texture read as meaning.
+- **The alphas are tokens** — `--card-dot-alpha` (0.16) and `--card-glow-alpha` (0.14), one value for
+  both themes to start. Dark gets its own the moment it needs one, by an override in `.dark`, never a raw
+  alpha at a call site. The geometry (12px pitch, the corner-anchored radial mask) stays in the component
+  as the effect's shape; only the theme-varying alphas are tokens.
+
+**Rules out:** a dot field behind dense content (still D12's L0); a texture baked into every `Card`; the
+glow as an ambient page light; a category colour on the dots; a raw alpha at a call site instead of the
+token.
 
 ---
 
