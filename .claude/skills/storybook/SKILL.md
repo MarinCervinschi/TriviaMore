@@ -226,9 +226,8 @@ Five exports, all of them for a reason — do not "fix" these:
 | `shared/content-hierarchy-diagram.tsx` — `CONTENT_LEVELS` | the data behind the diagram |
 | `data-table/fixtures.tsx` — `DIFFICULTY_LABELS` | a fixture constant |
 
-Two more compile but **cannot be judged from a green build**: `NetworkGraph` draws on
-WebGL through reagraph, and the two campus maps draw on Leaflet tiles. Their stories
-exist; only the browser tells you whether they paint.
+One more compiles but **cannot be judged from a green build**: the two campus maps draw
+on Leaflet tiles. Their stories exist; only the browser tells you whether they paint.
 
 ## Before calling it done
 

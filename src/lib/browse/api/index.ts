@@ -5,7 +5,6 @@ export { getCourseWithClassesFn } from "./get-course-with-classes";
 export { getDepartmentCourseListFn } from "./get-department-course-list";
 export { getDepartmentWithCoursesFn } from "./get-department-with-courses";
 export { getDepartmentsFn } from "./get-departments";
-export { getGraphDataFn } from "./get-graph-data";
 export { getPlatformStatsFn } from "./get-platform-stats";
 export { getSectionDetailFn } from "./get-section-detail";
 export { searchClassesFn } from "./search-classes";
