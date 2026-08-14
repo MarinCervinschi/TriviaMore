@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { GithubIcon } from "@/components/icons";
 import { OrbitingTechStack } from "@/components/landing";
 import { Button } from "@/components/ui/button";
+import { CardTexture } from "@/components/ui/card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
@@ -187,9 +188,10 @@ function AboutPage() {
 							return (
 								<motion.div
 									key={value.title}
-									className={`bg-card relative overflow-hidden rounded-2xl border ${value.span}`}
+									className={`bg-card relative overflow-hidden rounded-2xl border shadow-sm ${value.span}`}
 									variants={item}
 								>
+									<CardTexture corner="br" />
 									<div
 										className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}
 									>

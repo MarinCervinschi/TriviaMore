@@ -248,11 +248,12 @@ function ContactPage() {
 							</div>
 
 							{/* Guidelines */}
-							<div className="bg-card rounded-2xl border p-6 sm:p-8">
-								<h3 className="mb-4 text-lg font-semibold tracking-tight">
+							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
+								<CardTexture corner="br" />
+								<h3 className="relative mb-4 text-lg font-semibold tracking-tight">
 									Linee guida
 								</h3>
-								<div className="space-y-3">
+								<div className="relative space-y-3">
 									{[
 										"Sii rispettoso e costruttivo",
 										"Fornisci dettagli chiari nei report",
