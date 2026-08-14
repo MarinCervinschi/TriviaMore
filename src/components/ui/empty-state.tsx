@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { CardTexture } from "@/components/ui/card";
 import { IconStack } from "@/components/ui/icon-stack";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
@@ -47,6 +48,7 @@ export function EmptyState({
 		>
 			{/* Decorative orb */}
 			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
+			<CardTexture corner="bl" />
 
 			<div className="relative text-center">
 				<motion.div className="mx-auto mb-4 inline-flex" variants={item}>
