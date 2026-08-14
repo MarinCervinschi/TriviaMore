@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { ContactForm } from "@/components/contact/contact-form";
 import { GithubIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { CardTexture } from "@/components/ui/card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
@@ -223,7 +224,7 @@ function ContactPage() {
 						<motion.div className="space-y-6 lg:col-span-2" variants={item}>
 							{/* GitHub card */}
 							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<div className="bg-muted/50 pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full blur-[40px]" />
+								<CardTexture corner="br" />
 								<div className="relative">
 									<GithubIcon className="mb-4 h-10 w-10" />
 									<h3 className="mb-2 text-lg font-semibold tracking-tight">
