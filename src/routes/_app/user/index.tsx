@@ -22,6 +22,7 @@ import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CardTexture } from "@/components/ui/card";
 import { UserHero } from "@/components/user/user-hero";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -181,10 +182,7 @@ function QuickActionCard({
 			to={href}
 			className={`group relative overflow-hidden rounded-2xl border ${colors.border} bg-gradient-to-br ${colors.gradient} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
 		>
-			{/* Decorative orb */}
-			<div
-				className={`pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full ${colors.orb} blur-[30px]`}
-			/>
+			<CardTexture corner="br" />
 
 			<div className="relative">
 				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
