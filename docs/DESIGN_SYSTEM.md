@@ -190,8 +190,9 @@ it — see below.
 
 - **`level="panel"`** — the page-level surface, one radius step up. Radius only: **padding stays with
   the caller**, because the sites that want this tier use three different paddings.
-- **`CardOrb`** — D4's blurred decoration, with size and corner as separate axes. Its **parent needs
-  `relative overflow-hidden`**. The tint is a prop, because the decorative palette is D4's.
+- **`CardTexture`** — D27's opt-in corner texture: a faded dot field in the *empty* corner, off the
+  content, plus an optional card-scale glow. Its **parent needs `relative overflow-hidden`**; the alphas
+  are the `--card-dot-alpha` / `--card-glow-alpha` tokens. Off by default, and never behind dense content.
 - **`transition-shadow`, not `transition-all`.** At rest the shadow is the only property that changes,
   and `transition-all` animates layout properties on every card in the app.
 
@@ -234,15 +235,17 @@ One texture, `<PageBand />`, mounted **once** in the `_app` shell so it spans th
 
 - **`level` follows `isAuthenticated`.** `"public"` is the same band with its two alphas turned up —
   not a second system.
-- **Everything below the band is flat by construction.** No per-surface opt-out, no measuring.
+- **Everything below the band is flat by construction.** No per-surface opt-out, no measuring — with
+  one bounded exception: a card may opt into `CardTexture`'s corner detail (D27), a decoration on a
+  sparse card, never a field behind dense content.
 - **Anything sitting over the band must be opaque.** A translucent surface is tinted by whatever
   passes behind it — invisible on a flat page, obvious over decoration. This is the bug to remember
   when a control looks wrong: `Input`, `Textarea` and `SelectTrigger` shipped `bg-transparent` from
   shadcn, and nine chrome bars sat at 70%.
 - **The six surfaces genuinely outside `_app`** — auth, quiz, flashcard, the quiz skeleton, error and
   not-found — mount their own band.
-- Card-level orbs (D4) stay, and their light comes from the same direction as the page's so the two
-  never fight.
+- Card-level decoration (D4) is card-scale and never fights the page's single light — the blurred
+  `CardOrb` is retired for `CardTexture` (D27); the tints stay.
 
 The diagonal beams are **parked, not rejected** (D18). If they come back, read D18 first: one angle
 cannot serve both the band axis and the travel axis, and a vertical mask over a diagonal eats the part
@@ -310,7 +313,7 @@ Reach for the primitive before writing the recipe.
 | Job | Component | Note |
 |---|---|---|
 | any table | `src/components/data-table/` | The one table. TanStack Table **v9** — v8 snippets do not transfer. Use the `data-tables` skill |
-| a surface | `Card`, `Card level="panel"`, `CardOrb` | see Surfaces |
+| a surface | `Card`, `Card level="panel"`, `CardTexture` | see Surfaces |
 | nothing to show | `EmptyState` | `InlineEmpty` for the one-line case inside a table or chart |
 | state on a row | `Badge` | **state, not attributes** (D6). `size="sm"` for the dense case |
 | an action | `Button` | `asChild` to wrap a `<Link>`; the parent's `aria-label` reaches the child through Radix `Slot` |
