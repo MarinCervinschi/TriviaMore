@@ -1213,6 +1213,49 @@ token.
 
 ---
 
+## D28 — The canvas and the surfaces are two tones; the light neutrals go cool
+
+**Decided 2026-08-15.** D25 left the page and the surfaces on one value — a card was separated from the
+page by its shadow (light) or its border (dark), nothing else. Revisited: that flat sameness read as
+*basic*, and light was pure `#FFFFFF` everywhere with no identity of its own, where dark at least had a
+colour.
+
+The fix is the **inverse of the ladder D25 rejected.** D25 tried to *lift the card* — recolour the
+surface the user liked — and lost on the look ("non mi convince nemmeno sulle card"). Here the card is
+**kept** and the **canvas** moves: `--card` / `--popover` hold their value, `--background` shifts to
+another tone, so a surface separates by tone as well as by shadow/border. What D25 rejected — touching
+the card — is not done.
+
+Both themes now run **canvas ≠ surface**:
+
+| | light | dark |
+|---|---|---|
+| `--background` (canvas) | `220 20% 97%` (was white) | `222 22% 7%` (was `224 71% 4%`) |
+| `--card` / `--popover` (surface) | `214 65% 98%` (was white) | `224 71% 4%` (kept) |
+
+In **light** the surfaces take a cool tint — a whisper of hue, because grey-only read as *faded* — and
+the whole neutral family was re-cut cool and cohesive so it holds together and `bg-muted` reads on the
+tinted card: `--muted`/`--secondary`/`--accent` `216 16% 94%`, `--muted-foreground` `216 13% 44%`,
+`--border`/`--input` `216 20% 88%`. In **dark** the surfaces already had identity, so only the off-hue
+neutrals were aligned from `215` to the card's `224` (`224 28% 17%`, `--muted-foreground` `220 13% 66%`),
+the canvas lifted to `222 22% 7%`, and `--dot-alpha` raised to `0.28`.
+
+**`--muted`'s lightness is pinned by the gate.** `bg-muted` is the surface the contrast test measures the
+status inks and the `chart-N-ink` pills on, so it cannot be darkened for visibility without dropping them
+below AA. Bringing muted down to read on the tinted light card (`96% → 94%`) put four status inks at
+~4.3:1, so they were nudged a step deeper — `--danger` `45%`, `--success` `28%`, `--warning` `31%`,
+`--info` `48%` — back over 4.5:1 on muted. No floor was lowered; the gate stays green.
+
+Tables followed: the one `DataTable` wrapper was transparent, so on the tinted canvas a table read as the
+page. Its `bordered` surface is now `bg-card` + `shadow-sm` — a card like any other.
+
+**Rules out:** a pure-white light surface, or a light neutral family left grey against a tinted canvas;
+the dark canvas and the dark card sharing one value; a transparent `DataTable` surface; darkening
+`--muted` past the point where a status ink or a `chart-N-ink` clears 4.5:1 on it. Still forbidden, per
+D25: **lifting or recolouring the card itself** — D28 moved the canvas, never the surface.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
