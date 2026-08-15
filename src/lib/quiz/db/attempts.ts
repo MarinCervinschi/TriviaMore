@@ -45,21 +45,17 @@ export async function findAttempt(db: DbOrTx, attemptId: string) {
 	return attempt;
 }
 
-// Atomic claim: `completed_at IS NULL` is the idempotency key, so only the
-// first of several concurrent submissions gets a row back.
 export async function claimAttempt(
 	db: DbOrTx,
 	params: {
 		attemptId: string;
 		userId: string;
-		score: number;
 		timeSpent: number;
 	}
 ) {
 	const [claimed] = await db
 		.update(quizAttempts)
 		.set({
-			score: params.score,
 			timeSpent: params.timeSpent,
 			completedAt: sql`now()`,
 		})
@@ -73,6 +69,25 @@ export async function claimAttempt(
 		.returning({ id: quizAttempts.id, quizId: quizAttempts.quizId });
 
 	return claimed;
+}
+
+export async function applyAttemptGrade(
+	db: DbOrTx,
+	params: {
+		attemptId: string;
+		score: number;
+		sectionId: string;
+		quizMode: (typeof quizAttempts.$inferInsert)["quizMode"];
+	}
+) {
+	await db
+		.update(quizAttempts)
+		.set({
+			score: params.score,
+			sectionId: params.sectionId,
+			quizMode: params.quizMode,
+		})
+		.where(eq(quizAttempts.id, params.attemptId));
 }
 
 export async function deleteAttempt(db: DbOrTx, attemptId: string) {
@@ -90,7 +105,14 @@ export async function countAttempts(db: DbOrTx, quizId: string) {
 export async function insertAnswers(
 	db: DbOrTx,
 	attemptId: string,
-	answers: { questionId: string; userAnswer: string[]; score: number }[]
+	answers: {
+		questionId: string;
+		userAnswer: string[];
+		score: number;
+		sectionId: string;
+		difficulty: NonNullable<(typeof answerAttempts.$inferInsert)["difficulty"]>;
+		questionType: NonNullable<(typeof answerAttempts.$inferInsert)["questionType"]>;
+	}[]
 ) {
 	if (answers.length === 0) return;
 	await db.insert(answerAttempts).values(
@@ -99,6 +121,9 @@ export async function insertAnswers(
 			questionId: answer.questionId,
 			userAnswer: answer.userAnswer,
 			score: answer.score,
+			sectionId: answer.sectionId,
+			difficulty: answer.difficulty,
+			questionType: answer.questionType,
 		}))
 	);
 }

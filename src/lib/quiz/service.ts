@@ -11,6 +11,7 @@ import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
 import {
+	applyAttemptGrade,
 	claimAttempt,
 	countAttempts,
 	deleteAttempt,
@@ -32,7 +33,8 @@ import {
 } from "./db/quizzes";
 import { selectRandomItems, shuffleArray } from "./randomization";
 import type { CompleteQuizInput, StartQuizInput } from "./schemas";
-import type { Quiz, QuizAttemptResult, QuizQuestion } from "./types";
+import { calculateAnswerScore, THIRTY_SCALE_MAX } from "./scoring";
+import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
@@ -202,6 +204,37 @@ export async function getQuiz(
 	};
 }
 
+function gradeAttempt(
+	questionRows: (typeof questions.$inferSelect)[],
+	submitted: CompleteQuizInput["answers"],
+	evaluationMode: EvaluationMode
+) {
+	const byQuestion = new Map(submitted.map(a => [a.questionId, a.userAnswer]));
+
+	let rawTotal = 0;
+	const answers = questionRows.map(question => {
+		const userAnswer = byQuestion.get(question.id) ?? [];
+		const { score } = calculateAnswerScore(
+			userAnswer,
+			question.correctAnswer,
+			evaluationMode
+		);
+		rawTotal += score;
+		return {
+			questionId: question.id,
+			userAnswer,
+			score,
+			sectionId: question.sectionId,
+			difficulty: question.difficulty,
+			questionType: question.questionType,
+		};
+	});
+
+	const maxScore = questionRows.length * evaluationMode.correctAnswerPoints;
+	const score = maxScore > 0 ? Math.round((rawTotal / maxScore) * THIRTY_SCALE_MAX) : 0;
+	return { answers, score };
+}
+
 export async function completeQuiz(
 	userId: string,
 	input: CompleteQuizInput
@@ -210,7 +243,6 @@ export async function completeQuiz(
 		const claimed = await claimAttempt(tx, {
 			attemptId: input.quizAttemptId,
 			userId,
-			score: input.totalScore,
 			timeSpent: input.timeSpent,
 		});
 
@@ -225,20 +257,37 @@ export async function completeQuiz(
 			return { attemptId: input.quizAttemptId };
 		}
 
-		await insertAnswers(tx, input.quizAttemptId, input.answers);
+		if (!claimed.quizId) return { attemptId: input.quizAttemptId };
 
-		const quiz = claimed.quizId
-			? await findQuizSectionAndMode(tx, claimed.quizId)
-			: null;
-		if (quiz) {
-			await recordAttemptInProgress(tx, {
-				userId,
-				sectionId: quiz.sectionId,
-				quizMode: quiz.quizMode,
-				score: input.totalScore,
-				timeSpent: input.timeSpent,
-			});
-		}
+		const quiz = await findQuizSectionAndMode(tx, claimed.quizId);
+		if (!quiz) return { attemptId: input.quizAttemptId };
+
+		const [evaluationMode, order] = await Promise.all([
+			findEvaluationMode(tx, quiz.evaluationModeId),
+			findQuizQuestionOrder(tx, claimed.quizId),
+		]);
+		if (!evaluationMode) return { attemptId: input.quizAttemptId };
+
+		const questionRows = await findQuestionsByIds(
+			tx,
+			order.map(entry => entry.questionId)
+		);
+		const graded = gradeAttempt(questionRows, input.answers, evaluationMode);
+
+		await insertAnswers(tx, input.quizAttemptId, graded.answers);
+		await applyAttemptGrade(tx, {
+			attemptId: input.quizAttemptId,
+			score: graded.score,
+			sectionId: quiz.sectionId,
+			quizMode: quiz.quizMode,
+		});
+		await recordAttemptInProgress(tx, {
+			userId,
+			sectionId: quiz.sectionId,
+			quizMode: quiz.quizMode,
+			score: graded.score,
+			timeSpent: input.timeSpent,
+		});
 
 		return { attemptId: input.quizAttemptId };
 	});

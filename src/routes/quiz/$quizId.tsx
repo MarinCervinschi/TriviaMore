@@ -14,7 +14,6 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cancelQuizFn, completeQuizFn } from "@/lib/quiz/api";
 import { quizQueries } from "@/lib/quiz/queries";
-import { calculateQuizResults } from "@/lib/quiz/scoring";
 import type { Quiz, UserAnswer } from "@/lib/quiz/types";
 
 export const Route = createFileRoute("/quiz/$quizId")({
@@ -63,26 +62,15 @@ function QuizPage() {
 		isCompletingRef.current = true;
 		setIsCompleting(true);
 
-		const quizResults = calculateQuizResults({
-			userAnswers,
-			questions: quiz.questions,
-			evaluationMode: quiz.evaluationMode,
-			startTime,
-			quizId: quiz.id,
-			quizTitle: `Quiz: ${quiz.section.name}`,
-		});
-
 		try {
 			const { attemptId } = await completeQuizFn({
 				data: {
 					quizAttemptId: quiz.attemptId,
-					answers: quizResults.answers.map(a => ({
-						questionId: a.questionId,
-						userAnswer: a.answer,
-						score: a.score,
+					answers: userAnswers.map(ua => ({
+						questionId: ua.questionId,
+						userAnswer: ua.answer,
 					})),
-					totalScore: quizResults.totalScore,
-					timeSpent: quizResults.timeSpent,
+					timeSpent: Date.now() - startTime,
 				},
 			});
 			// Invalidate user data caches so dashboard shows updated stats

@@ -12,11 +12,13 @@ import {
 	evaluationModes,
 	progress,
 	questions,
+	quizAttempts,
 	quizQuestions,
 	quizzes,
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
 import {
+	applyAttemptGrade,
 	claimAttempt,
 	countAttempts,
 	deleteAttempt,
@@ -71,7 +73,11 @@ try {
 		if (!mode) throw new Error("no evaluation mode configured");
 
 		const picked = await tx
-			.select({ id: questions.id })
+			.select({
+				id: questions.id,
+				difficulty: questions.difficulty,
+				questionType: questions.questionType,
+			})
 			.from(questions)
 			.where(
 				and(
@@ -107,7 +113,6 @@ try {
 		const claimed = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: seed.user_id,
-			score: 21,
 			timeSpent: 60_000,
 		});
 		expect("complete: first claim wins", Boolean(claimed));
@@ -115,7 +120,6 @@ try {
 		const replay = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: seed.user_id,
-			score: 30,
 			timeSpent: 1,
 		});
 		expect("complete: second claim is refused", replay === undefined);
@@ -123,7 +127,6 @@ try {
 		const foreign = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: "00000000-0000-0000-0000-000000000000",
-			score: 30,
 			timeSpent: 1,
 		});
 		expect("complete: another user cannot claim", foreign === undefined);
@@ -135,10 +138,34 @@ try {
 				questionId: question.id,
 				userAnswer: ["x"],
 				score: 0.5,
+				sectionId: seed.section_id,
+				difficulty: question.difficulty,
+				questionType: question.questionType,
 			}))
 		);
 		const answers = await findAnswers(tx, attempt.id);
 		expect("complete: answers stored", answers.length === picked.length);
+
+		await applyAttemptGrade(tx, {
+			attemptId: attempt.id,
+			score: 21,
+			sectionId: seed.section_id,
+			quizMode: "STUDY",
+		});
+		const [graded] = await tx
+			.select({
+				score: quizAttempts.score,
+				sectionId: quizAttempts.sectionId,
+				quizMode: quizAttempts.quizMode,
+			})
+			.from(quizAttempts)
+			.where(eq(quizAttempts.id, attempt.id));
+		expect(
+			"complete: server grade + snapshot applied",
+			graded?.score === 21 &&
+				graded?.sectionId === seed.section_id &&
+				graded?.quizMode === "STUDY"
+		);
 
 		// progress upsert, twice: the second run must average instead of overwrite
 		const before = await tx
