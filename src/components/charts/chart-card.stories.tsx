@@ -9,8 +9,7 @@ import { TimeSeriesChart } from "./time-series-chart";
 
 /**
  * The shell every chart shares. The plots have their own stories — this one is about the frame: the
- * heading, the actions, the footer, and `accent`, which goes off for a chart nested inside another card
- * so two orbs do not stack.
+ * heading, the actions and the footer.
  */
 const meta = {
 	title: "Charts/ChartCard",
@@ -91,12 +90,6 @@ export const WithFooter: Story = {
 export const Bare: Story = {
 	name: "Senza intestazione",
 	args: { children: <Plot /> },
-};
-
-/** `accent={false}` — the frame without the brand orb, for a chart already inside a card. */
-export const NoAccent: Story = {
-	name: "Senza orb",
-	args: { title: "Attività", accent: false, children: <Plot /> },
 };
 
 export const InAGrid: Story = {

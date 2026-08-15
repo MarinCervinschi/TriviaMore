@@ -81,7 +81,7 @@ function StatItem({
 
 	return (
 		<Card className="relative overflow-hidden p-6 text-center sm:p-8">
-			<CardTexture corner="tr" />
+			<CardTexture placement="top" alpha={0.12} />
 
 			<div className={`relative mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
 				<Icon className={`h-6 w-6 ${color}`} />

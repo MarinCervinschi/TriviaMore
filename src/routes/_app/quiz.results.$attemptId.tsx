@@ -87,9 +87,6 @@ function ResultsPage() {
 			<div className="mx-auto max-w-4xl space-y-8">
 				{/* Score Hero */}
 				<div className="bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12">
-					<div className="bg-primary/10 pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full blur-[60px]" />
-					<div className="pointer-events-none absolute -right-20 -bottom-20 h-48 w-48 rounded-full bg-orange-300/10 blur-[60px]" />
-
 					<p className="text-muted-foreground relative mb-1 text-sm">
 						{result.quiz.section.name} &bull; {result.quiz.section.courseName}
 					</p>

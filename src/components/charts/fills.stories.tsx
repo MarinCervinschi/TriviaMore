@@ -78,7 +78,6 @@ export const Solid: Story = {
 			title="Quiz per mese"
 			data={monthlyActivity}
 			categoryKey="mese"
-			accent={false}
 			series={[{ key: "quiz", label: "Quiz", fill: "solid" }]}
 		/>
 	),

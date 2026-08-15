@@ -191,7 +191,7 @@ function AboutPage() {
 									className={`bg-card relative overflow-hidden rounded-2xl border shadow-sm ${value.span}`}
 									variants={item}
 								>
-									<CardTexture corner="br" />
+									<CardTexture placement="tr" />
 									<div
 										className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}
 									>
@@ -262,10 +262,7 @@ function AboutPage() {
 			{/* CTA — gradient card full-width */}
 			<section className="relative py-16 sm:py-24">
 				<div className="container">
-					<div className="border-primary/20 from-primary/5 via-card to-card relative overflow-hidden rounded-3xl border bg-gradient-to-br p-8 text-center sm:p-16">
-						<div className="bg-primary/10 pointer-events-none absolute -top-20 -left-20 h-60 w-60 rounded-full blur-[80px]" />
-						<div className="pointer-events-none absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-orange-300/10 blur-[80px]" />
-
+					<div className="border-primary/20 bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-16">
 						<h2 className="relative mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Unisciti alla community
 						</h2>

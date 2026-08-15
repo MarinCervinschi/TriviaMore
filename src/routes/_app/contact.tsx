@@ -199,8 +199,6 @@ function ContactPage() {
 						{/* Form — takes 3 cols */}
 						<motion.div className="lg:col-span-3" variants={item}>
 							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<div className="from-primary/3 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent" />
-
 								<div className="relative">
 									<div className="mb-6 flex items-center gap-3">
 										<div className="bg-primary/10 inline-flex rounded-xl p-3">
@@ -224,7 +222,7 @@ function ContactPage() {
 						<motion.div className="space-y-6 lg:col-span-2" variants={item}>
 							{/* GitHub card */}
 							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<CardTexture corner="br" />
+								<CardTexture placement="tr" />
 								<div className="relative">
 									<GithubIcon className="mb-4 h-10 w-10" />
 									<h3 className="mb-2 text-lg font-semibold tracking-tight">
@@ -249,7 +247,7 @@ function ContactPage() {
 
 							{/* Guidelines */}
 							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<CardTexture corner="br" />
+								<CardTexture placement="tr" />
 								<h3 className="relative mb-4 text-lg font-semibold tracking-tight">
 									Linee guida
 								</h3>

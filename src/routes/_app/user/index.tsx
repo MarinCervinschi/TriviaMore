@@ -177,9 +177,9 @@ function QuickActionCard({
 	return (
 		<Link
 			to={href}
-			className={`group relative overflow-hidden rounded-2xl border ${colors.border} bg-gradient-to-br ${colors.gradient} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+			className={`group relative overflow-hidden rounded-2xl border ${colors.border} bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
 		>
-			<CardTexture corner="br" />
+			<CardTexture placement="tl" alpha={0.12} />
 
 			<div className="relative">
 				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>

@@ -92,7 +92,7 @@ function SettingsPage() {
 
 				{/* Account Details */}
 				<Card level="panel" className="relative overflow-hidden">
-					<CardTexture corner="br" />
+					<CardTexture placement="top" alpha={0.12} />
 					<div className="relative p-6 sm:p-8">
 						<h2 className="mb-1 text-xl font-bold">Dettagli account</h2>
 						<p className="text-muted-foreground mb-6 text-sm">
@@ -154,9 +154,8 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 
 	return (
 		<div className="bg-card relative overflow-hidden rounded-3xl border">
-			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
-
 			<form onSubmit={handleSubmit} className="relative p-6 sm:p-8">
+				<CardTexture placement="top" alpha={0.12} />
 				<h2 className="mb-1 text-xl font-bold">Informazioni profilo</h2>
 				<p className="text-muted-foreground mb-6 text-sm">
 					Modifica le tue informazioni personali

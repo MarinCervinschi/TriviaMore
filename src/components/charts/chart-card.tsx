@@ -10,11 +10,6 @@ export type ChartCardProps = {
 	actions?: ReactNode;
 	/** Rendered under the plot — a legend list, a total, a caveat. */
 	footer?: ReactNode;
-	/**
-	 * The blurred brand orb behind the plot, the same device the hero and the
-	 * empty states use. Off for a chart that sits inside another card.
-	 */
-	accent?: boolean;
 	className?: string;
 	children: ReactNode;
 };
@@ -28,18 +23,11 @@ export function ChartCard({
 	description,
 	actions,
 	footer,
-	accent = true,
 	className,
 	children,
 }: ChartCardProps) {
 	return (
 		<Card className={cn("relative flex h-full flex-col overflow-hidden", className)}>
-			{accent && (
-				<div
-					aria-hidden
-					className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[80px]"
-				/>
-			)}
 			{(title || actions) && (
 				<CardHeader className="relative pb-2">
 					<div className="flex items-start justify-between gap-4">

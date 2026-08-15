@@ -49,7 +49,7 @@ export function ProgressStats({
 
 			{/* Average score card with radial gauge */}
 			<Card className="group relative col-span-2 overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-				<CardTexture corner="tr" />
+				<CardTexture placement="tr" />
 				<div className="relative flex items-center gap-4">
 					<div className="shrink-0">
 						<ChartContainer config={gaugeConfig} className="aspect-auto h-24 w-24">

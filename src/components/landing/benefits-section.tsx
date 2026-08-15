@@ -59,17 +59,6 @@ function CTACard({
 			initial="hidden"
 			animate={isVisible ? "visible" : "hidden"}
 		>
-			{/* Decorative orb with drift */}
-			<motion.div
-				className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]"
-				animate={prefersReduced ? undefined : { x: [0, 10, 0], y: [0, -8, 0] }}
-				transition={
-					prefersReduced
-						? undefined
-						: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-				}
-			/>
-
 			<h3 className="mb-3 text-2xl font-bold tracking-tight">{title}</h3>
 			<p className="text-muted-foreground mb-8">{description}</p>
 

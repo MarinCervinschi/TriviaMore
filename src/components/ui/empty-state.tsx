@@ -46,9 +46,7 @@ export function EmptyState({
 			initial="hidden"
 			animate="visible"
 		>
-			{/* Decorative orb */}
-			<div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-[60px]" />
-			<CardTexture corner="bl" />
+			<CardTexture placement="top" alpha={0.12} />
 
 			<div className="relative text-center">
 				<motion.div className="mx-auto mb-4 inline-flex" variants={item}>
