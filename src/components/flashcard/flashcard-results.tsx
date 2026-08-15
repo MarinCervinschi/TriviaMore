@@ -53,7 +53,7 @@ export function FlashcardResults({
 					level="panel"
 					className="relative overflow-hidden p-8 text-center sm:p-12"
 				>
-					<CardTexture corner="tl" />
+					<CardTexture placement="tl" />
 
 					<p className="text-muted-foreground relative mb-2 text-sm font-medium">
 						{sectionName}

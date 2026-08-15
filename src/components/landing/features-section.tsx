@@ -23,7 +23,7 @@ function FeatureCardComponent({
 	const Icon = feature.icon;
 	return (
 		<Card className={cn("relative overflow-hidden p-6 sm:p-8", className)}>
-			<CardTexture corner="br" />
+			<CardTexture placement="tl" alpha={0.12} />
 			<div className="relative">
 				<div className={`mb-4 inline-flex rounded-2xl p-3 ${feature.iconBg}`}>
 					<Icon className={`h-7 w-7 ${feature.iconColor}`} aria-hidden />

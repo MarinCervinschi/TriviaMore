@@ -25,7 +25,7 @@ function DeclinedPage() {
 	return (
 		<div className="relative container flex max-w-2xl items-center justify-center py-12 sm:py-20">
 			<Card level="panel" className="relative w-full overflow-hidden p-6 sm:p-10">
-				<CardTexture corner="br" />
+				<CardTexture placement="tl" />
 				<div className="relative space-y-6">
 					<div className="space-y-2">
 						<h1 className="text-2xl font-bold">Hai rifiutato i documenti aggiornati</h1>
