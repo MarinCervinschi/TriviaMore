@@ -104,14 +104,20 @@ export async function insertAnswers(
 }
 
 export async function findAnswers(db: DbOrTx, attemptId: string) {
-	return db
+	const rows = await db
 		.select({
 			questionId: answerAttempts.questionId,
 			userAnswer: answerAttempts.userAnswer,
 			score: answerAttempts.score,
 		})
 		.from(answerAttempts)
-		.where(eq(answerAttempts.quizAttemptId, attemptId));
+		.where(
+			and(
+				eq(answerAttempts.quizAttemptId, attemptId),
+				isNotNull(answerAttempts.questionId)
+			)
+		);
+	return rows.map(row => ({ ...row, questionId: row.questionId! }));
 }
 
 // The user dashboard's "recent activity". Lives here because it reads quiz

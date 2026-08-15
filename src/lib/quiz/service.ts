@@ -227,7 +227,9 @@ export async function completeQuiz(
 
 		await insertAnswers(tx, input.quizAttemptId, input.answers);
 
-		const quiz = await findQuizSectionAndMode(tx, claimed.quizId);
+		const quiz = claimed.quizId
+			? await findQuizSectionAndMode(tx, claimed.quizId)
+			: null;
 		if (quiz) {
 			await recordAttemptInProgress(tx, {
 				userId,
@@ -250,7 +252,7 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 		await deleteAttempt(tx, attemptId);
 
 		// A quiz nobody attempted is dead weight: it only exists to be resumed.
-		if ((await countAttempts(tx, attempt.quizId)) === 0) {
+		if (attempt.quizId && (await countAttempts(tx, attempt.quizId)) === 0) {
 			await deleteQuiz(tx, attempt.quizId);
 		}
 	});

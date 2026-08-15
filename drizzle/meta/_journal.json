@@ -71,6 +71,20 @@
       "when": 1786039589394,
       "tag": "0009_drop_protect_profile_role",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786814025313,
+      "tag": "0010_immutable_analytics_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1786814037113,
+      "tag": "0011_backfill_attempt_snapshots",
+      "breakpoints": true
     }
   ]
 }
