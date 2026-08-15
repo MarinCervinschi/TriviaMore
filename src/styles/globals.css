@@ -144,11 +144,11 @@
 	--primary-foreground: 210 40% 98%;
 	--brand: 10 90% 62%;
 	--danger: 0 90% 68%;
-	--secondary: 215 28% 17%;
+	--secondary: 224 28% 17%;
 	--secondary-foreground: 210 20% 98%;
-	--muted: 215 28% 17%;
-	--muted-foreground: 218 11% 65%;
-	--accent: 215 28% 17%;
+	--muted: 224 28% 17%;
+	--muted-foreground: 220 13% 66%;
+	--accent: 224 28% 17%;
 	--accent-foreground: 210 20% 98%;
 	--destructive: 0 62.8% 30.6%;
 	--destructive-foreground: 210 40% 98%;
@@ -158,8 +158,8 @@
 	--warning-foreground: 224 71% 4%;
 	--info: 217 91% 65%;
 	--info-foreground: 224 71% 4%;
-	--border: 215 28% 17%;
-	--input: 215 28% 17%;
+	--border: 224 28% 17%;
+	--input: 224 28% 17%;
 	--ring: 10 76% 62%;
 	--chart-1: 10 76% 58.5%;
 	--chart-2: 217 91% 63.5%;
