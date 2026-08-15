@@ -79,6 +79,9 @@ export type RecentQuizAttempt = SectionLocation & {
 	id: string;
 	score: number;
 	completedAt: string;
+	classCode: string | null;
+	courseCode: string | null;
+	departmentCode: string | null;
 };
 
 export type UserProgress = SectionLocation &

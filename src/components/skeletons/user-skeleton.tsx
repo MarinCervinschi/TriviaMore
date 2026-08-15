@@ -59,22 +59,6 @@ export function UserDashboardSkeleton() {
 					))}
 				</div>
 
-				{/* Activity heatmap */}
-				<div>
-					<Skeleton className="h-6 w-32" />
-					<Skeleton className="mt-1 mb-3 h-4 w-48" />
-					<div className="flex gap-4">
-						<div className="bg-card flex-1 rounded-2xl border p-6 shadow-sm">
-							<SkeletonChart height={120} />
-						</div>
-						<div className="hidden shrink-0 flex-col gap-1 lg:flex">
-							{Array.from({ length: 3 }).map((_, i) => (
-								<Skeleton key={i} className="h-7 w-14 rounded-md" />
-							))}
-						</div>
-					</div>
-				</div>
-
 				{/* Recent classes */}
 				<div className="space-y-4">
 					<Skeleton className="h-3 w-24" />
@@ -82,33 +66,37 @@ export function UserDashboardSkeleton() {
 					<SkeletonTable rows={3} columns={4} />
 				</div>
 
-				{/* Recent activity */}
+				{/* Activity: heatmap + recent quizzes */}
 				<div className="space-y-4">
-					<Skeleton className="h-3 w-24" />
-					<Skeleton className="h-7 w-72" />
-					<div className="space-y-3">
-						{Array.from({ length: 3 }).map((_, i) => (
-							<div
-								key={i}
-								className="bg-card flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between"
-							>
-								<div className="flex items-start gap-3">
-									<Skeleton className="h-9 w-9 shrink-0 rounded-xl" />
-									<div className="space-y-2">
-										<Skeleton className="h-4 w-48" />
-										<Skeleton className="h-3 w-64" />
-										<Skeleton className="h-3 w-40" />
-									</div>
-								</div>
-								<div className="flex items-center gap-3">
-									<div className="space-y-2 text-right">
-										<Skeleton className="ml-auto h-5 w-12 rounded-full" />
-										<Skeleton className="ml-auto h-3 w-16" />
-									</div>
-									<Skeleton className="h-9 w-16 rounded-xl" />
-								</div>
+					<div>
+						<Skeleton className="h-4 w-24" />
+						<Skeleton className="mt-1 h-6 w-40" />
+					</div>
+					<div className="flex flex-col gap-6 lg:flex-row">
+						<div className="flex flex-col gap-3">
+							<Skeleton className="h-8 w-24 rounded-md" />
+							<div className="bg-card rounded-2xl border p-6 shadow-sm">
+								<SkeletonChart height={120} />
 							</div>
-						))}
+						</div>
+						<div className="flex flex-1 flex-col gap-3">
+							<div className="flex h-8 items-center justify-between">
+								<Skeleton className="h-4 w-20" />
+								<Skeleton className="h-8 w-24 rounded-lg" />
+							</div>
+							<div className="bg-card flex-1 space-y-4 rounded-2xl border p-4 shadow-sm">
+								{Array.from({ length: 3 }).map((_, i) => (
+									<div key={i} className="flex items-center gap-3">
+										<Skeleton className="h-8 w-8 rounded-lg" />
+										<div className="flex-1 space-y-1.5">
+											<Skeleton className="h-4 w-2/3" />
+											<Skeleton className="h-3 w-1/2" />
+										</div>
+										<Skeleton className="h-6 w-12 rounded-full" />
+									</div>
+								))}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
