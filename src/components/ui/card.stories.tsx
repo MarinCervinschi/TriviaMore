@@ -53,41 +53,36 @@ export const Panel: Story = {
 };
 
 /**
- * D27's surface texture. The rule the story shows: the dots sit in the *empty* corner, opposite the
- * content, so they never sit under text; the glow stays off and is turned on only for large or wide
- * cards. Its parent needs `relative overflow-hidden`. Look in both themes.
+ * D27/D28's surface texture: a pixel field placed by `placement`. The page already carries the dot
+ * band, so the card wears this instead — sitting on the content, not the empty corner; on content-rich
+ * cards drop `alpha` to keep it light but present. Its parent needs `relative overflow-hidden`. Look in
+ * both themes.
  */
 export const Texture: Story = {
 	name: "CardTexture",
 	render: () => (
 		<div className="grid max-w-3xl gap-4 sm:grid-cols-2">
 			<Card className="relative overflow-hidden">
-				<CardTexture corner="br" />
+				<CardTexture placement="tl" />
 				<CardHeader>
-					<CardTitle>Contenuto a sinistra</CardTitle>
-					<CardDescription>
-						I dot nell&apos;angolo opposto, mai sotto il testo.
-					</CardDescription>
+					<CardTitle>Sul contenuto</CardTitle>
+					<CardDescription>La texture va dove sta l&apos;icona (D28).</CardDescription>
 				</CardHeader>
 			</Card>
 
 			<Card className="relative overflow-hidden">
-				<CardTexture corner="tr" glow />
+				<CardTexture placement="center" alpha={0.12} />
 				<CardHeader>
-					<CardTitle>Con glow</CardTitle>
-					<CardDescription>
-						Il glow si accende solo per le card grandi o larghe.
-					</CardDescription>
+					<CardTitle>Card ricca → alpha bassa</CardTitle>
+					<CardDescription>Più leggera ma comunque presente.</CardDescription>
 				</CardHeader>
 			</Card>
 
-			{(["tl", "tr", "bl", "br"] as const).map(corner => (
-				<Card key={corner} className="relative overflow-hidden p-5">
-					<CardTexture corner={corner} />
-					<p className="font-semibold">corner={corner}</p>
-					<p className="text-muted-foreground text-sm">
-						L&apos;angolo del dettaglio è una prop.
-					</p>
+			{(["tl", "tr", "center", "full"] as const).map(placement => (
+				<Card key={placement} className="relative overflow-hidden p-5">
+					<CardTexture placement={placement} />
+					<p className="font-semibold">placement={placement}</p>
+					<p className="text-muted-foreground text-sm">La posizione è una prop.</p>
 				</Card>
 			))}
 		</div>

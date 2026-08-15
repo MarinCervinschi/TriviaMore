@@ -29,17 +29,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const CHART = {
-	1: { tile: "bg-chart-1/10", ink: "text-chart-1-ink" },
-	2: { tile: "bg-chart-2/10", ink: "text-chart-2-ink" },
-	3: { tile: "bg-chart-3/10", ink: "text-chart-3-ink" },
-	4: { tile: "bg-chart-4/10", ink: "text-chart-4-ink" },
+	1: { tile: "bg-chart-1/20", ink: "text-chart-1-ink" },
+	2: { tile: "bg-chart-2/20", ink: "text-chart-2-ink" },
+	3: { tile: "bg-chart-3/20", ink: "text-chart-3-ink" },
+	4: { tile: "bg-chart-4/20", ink: "text-chart-4-ink" },
 } as const;
 type ChartKey = keyof typeof CHART;
 
 function MonoTile({ icon: I, className }: { icon: Icon; className?: string }) {
 	return (
 		<div
-			className={cn("bg-muted text-foreground inline-flex rounded-xl p-2.5", className)}
+			className={cn(
+				"bg-muted text-foreground border-border/70 inline-flex rounded-xl border p-2.5",
+				className
+			)}
 		>
 			<I className="size-5" />
 		</div>
@@ -49,7 +52,7 @@ function MonoTile({ icon: I, className }: { icon: Icon; className?: string }) {
 function ColorTile({ icon: I, chart }: { icon: Icon; chart: ChartKey }) {
 	const c = CHART[chart];
 	return (
-		<div className={cn("inline-flex rounded-xl p-2.5", c.tile)}>
+		<div className={cn("border-border/70 inline-flex rounded-xl border p-2.5", c.tile)}>
 			<I className={cn("size-5", c.ink)} />
 		</div>
 	);
@@ -66,7 +69,7 @@ function FeatureCard({
 }) {
 	return (
 		<Card className="relative overflow-hidden">
-			<CardTexture corner="br" />
+			<CardTexture placement="tl" />
 			<div className="relative p-6">
 				<MonoTile icon={icon} className="mb-4" />
 				<h3 className="mb-1 font-semibold tracking-tight">{title}</h3>
@@ -89,7 +92,7 @@ function StatCard({
 }) {
 	return (
 		<Card className="relative overflow-hidden">
-			<CardTexture corner="tr" />
+			<CardTexture placement="tl" />
 			<div className="relative p-5">
 				<ColorTile icon={icon} chart={chart} />
 				<p className="text-muted-foreground mt-3 text-sm">{label}</p>
@@ -120,7 +123,7 @@ function StatusCard({
 	const s = STATUS[status];
 	return (
 		<Card className="relative overflow-hidden">
-			<CardTexture corner="tr" />
+			<CardTexture placement="tr" />
 			<div className="relative flex items-center gap-3 p-4">
 				<MonoTile icon={icon} className="shrink-0" />
 				<div className="min-w-0">
@@ -140,13 +143,13 @@ function FlowTile({ icon: I, chart }: { icon: Icon; chart?: ChartKey }) {
 	if (chart) {
 		const c = CHART[chart];
 		return (
-			<div className={cn("inline-flex rounded-lg p-2", c.tile)}>
+			<div className={cn("border-border/70 inline-flex rounded-lg border p-2", c.tile)}>
 				<I className={cn("size-5", c.ink)} />
 			</div>
 		);
 	}
 	return (
-		<div className="bg-muted text-muted-foreground inline-flex rounded-lg p-2">
+		<div className="bg-muted text-muted-foreground border-border/70 inline-flex rounded-lg border p-2">
 			<I className="size-5" />
 		</div>
 	);
@@ -169,7 +172,7 @@ function FlowCard({
 		<Card className="relative overflow-hidden">
 			<div className="p-4">
 				<div className="relative flex h-24 items-center overflow-hidden rounded-xl border px-6">
-					<CardTexture corner="tl" glow />
+					<CardTexture placement="center" />
 					<div className="relative flex w-full items-center gap-2">
 						<FlowTile icon={DocumentTextIcon} />
 						<span className="border-border h-px flex-1 border-t border-dashed" />
@@ -195,11 +198,11 @@ function FlowCard({
 function IconOnlyCard({ icon: I, chart }: { icon: Icon; chart?: ChartKey }) {
 	return (
 		<Card className="relative overflow-hidden">
-			<CardTexture corner="br" />
+			<CardTexture placement="center" />
 			<div className="relative flex items-center justify-center p-10">
 				<div
 					className={cn(
-						"inline-flex rounded-2xl p-4",
+						"border-border/70 inline-flex rounded-2xl border p-4",
 						chart ? CHART[chart].tile : "bg-muted"
 					)}
 				>
@@ -279,7 +282,7 @@ export const Stato: Story = {
 	),
 };
 
-/** Flow di icone + badge: card larga, glow acceso nel box del flow. */
+/** Flow di icone + badge: card larga, texture al centro del box del flow. */
 export const Flow: Story = {
 	render: () => (
 		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
