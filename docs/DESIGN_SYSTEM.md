@@ -184,17 +184,19 @@ first audit's mistake, 58 of 64 pairs.
 
 ## Surfaces and elevation
 
-**A card is elevated in light** (D25). `<Card>` carries `shadow-sm`; a hand-rolled flat `bg-card border
-rounded-2xl` is a deviation there, not a variant. In dark the shadow does little and the border carries
+**A card is elevated in light** (D25). `<Card>` carries `shadow-xs` + `border-border/50` — softened for
+D28, since the canvas now separates it by tone and the shadow only confirms it; a hand-rolled flat
+`bg-card border rounded-2xl` is still a deviation. In dark the shadow does little and the border carries
 it — see below.
 
 `<Card>` also owns three things worth not re-inventing:
 
 - **`level="panel"`** — the page-level surface, one radius step up. Radius only: **padding stays with
   the caller**, because the sites that want this tier use three different paddings.
-- **`CardTexture`** — D27's opt-in corner texture: a faded dot field in the *empty* corner, off the
-  content, plus an optional card-scale glow. Its **parent needs `relative overflow-hidden`**; the alphas
-  are the `--card-dot-alpha` / `--card-glow-alpha` tokens. Off by default, and never behind dense content.
+- **`CardTexture`** — D27/D28's opt-in pixel field: a tiled grid of tiny squares, monochrome on
+  `--foreground`, placed *on* the content by `placement` (the page already wears the dot band, so the
+  card takes a different mark). Its **parent needs `relative overflow-hidden`**; opacity is the
+  `--card-pixel-alpha` token, lowered per-card via `alpha` on a rich card. The orb is retired.
 - **`transition-shadow`, not `transition-all`.** At rest the shadow is the only property that changes,
   and `transition-all` animates layout properties on every card in the app.
 
@@ -220,7 +222,7 @@ this"*, never *"can two large adjacent surfaces be told apart"*.
 
 | | |
 |---|---|
-| at rest | `shadow-sm` |
+| at rest | `shadow-xs` (Card, softened for D28) |
 | hover, when the thing is interactive | `shadow-md` |
 | floating — dialog, dropdown, popover, toast | `shadow-lg` |
 | focus | `shadow-focus`, the token — never an inline value (D22) |
@@ -239,8 +241,8 @@ One texture, `<PageBand />`, mounted **once** in the `_app` shell so it spans th
 - **`level` follows `isAuthenticated`.** `"public"` is the same band with its two alphas turned up —
   not a second system.
 - **Everything below the band is flat by construction.** No per-surface opt-out, no measuring — with
-  one bounded exception: a card may opt into `CardTexture`'s corner detail (D27), a decoration on a
-  sparse card, never a field behind dense content.
+  one bounded exception: a card may opt into `CardTexture` (D27/D28), a pixel field *on* its content,
+  faded by placement; a content-rich card lowers its `alpha` rather than dropping it.
 - **Anything sitting over the band must be opaque.** A translucent surface is tinted by whatever
   passes behind it — invisible on a flat page, obvious over decoration. This is the bug to remember
   when a control looks wrong: `Input`, `Textarea` and `SelectTrigger` shipped `bg-transparent` from

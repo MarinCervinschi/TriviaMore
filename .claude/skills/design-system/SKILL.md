@@ -88,10 +88,11 @@ the child is a separate shape; applying the rule there flags almost everything.
 
 ## Surfaces
 
-**A card is elevated in light.** A hand-rolled flat `bg-card border rounded-2xl` is a deviation there,
-not a variant.
+**A card is elevated in light** — softened for D28 to `shadow-xs` + `border-border/50`, since the canvas
+now separates it by tone. A hand-rolled flat `bg-card border rounded-2xl` is still a deviation.
 `<Card>` owns `level="panel"` (page-level tier, radius only — padding stays with the caller) and
-`CardOrb` (D4's decoration; **its parent needs `relative overflow-hidden`**).
+`CardTexture` (D27/D28's pixel field, placed *on* the content by `placement`; **its parent needs
+`relative overflow-hidden`**; the orb is retired).
 
 **The canvas is a tone below the surfaces (D28).** `--card`/`--popover` and `--background` are no longer
 one value — in both themes the card keeps its tone and `--background` is another, so a surface separates
