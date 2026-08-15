@@ -1211,6 +1211,23 @@ The rules, which are what make it safe:
 glow as an ambient page light; a category colour on the dots; a raw alpha at a call site instead of the
 token.
 
+### Reworked to a pixel field on the content, 2026-08-15
+
+The dot grid is replaced by a **pixel field** — a static reproduction of a "pixel card": a tiled grid of
+tiny squares at variable size and tone, monochrome on `--foreground`, faded by a `placement`. The page
+already wears the dot band (D12), so a card echoing it added nothing — so **two rules above are
+reversed**: the texture now sits *on* the content (a feature/stat card under its top-left icon → `tl`,
+the flow box → `center`), and a content-rich card **lowers `alpha`** (a prop) rather than dropping the
+texture. `placement` (full / top / bottom / left / right / the four corners / center / ellipse / edges)
+supersedes `corner`, kept as a back-compat alias. The **orb is retired** — `glow` and `--card-glow-alpha`
+are gone — and the alpha token is `--card-dot-alpha` → `--card-pixel-alpha` (0.3). Every call site moved
+to `placement` per content, with a lower per-card `alpha` on the colour-icon cards so the mark stays a
+detail; the launch cards also drop their D4 gradient wash.
+
+**Rules out (updated):** the empty-corner rule (the mark goes on the content now); the dot grid; the orb.
+Still standing: no full-strength texture over genuinely dense content — lower `alpha` instead — and a
+category colour stays on the icon, never on the pixels.
+
 ---
 
 ## D28 — The canvas and the surfaces are two tones; the light neutrals go cool
@@ -1247,7 +1264,11 @@ below AA. Bringing muted down to read on the tinted light card (`96% → 94%`) p
 `--info` `48%` — back over 4.5:1 on muted. No floor was lowered; the gate stays green.
 
 Tables followed: the one `DataTable` wrapper was transparent, so on the tinted canvas a table read as the
-page. Its `bordered` surface is now `bg-card` + `shadow-sm` — a card like any other.
+page. Its `bordered` surface is now a card like any other.
+
+With the canvas separating a card by tone, the elevation was **softened**: `<Card>` (and the table
+surface) moved from `shadow-sm` + a full border to **`shadow-xs` + `border-border/50`** — the tone does
+the separating, the shadow and border only confirm it.
 
 **Rules out:** a pure-white light surface, or a light neutral family left grey against a tinted canvas;
 the dark canvas and the dark card sharing one value; a transparent `DataTable` surface; darkening
