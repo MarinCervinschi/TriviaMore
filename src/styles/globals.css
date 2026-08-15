@@ -125,9 +125,8 @@
 	--radius: 1rem;
 	--dot-alpha: 0.22;
 	--glow-alpha: 0.18;
-	/* CardTexture (D27). One value for both themes until dark needs its own — see D27. */
-	--card-dot-alpha: 0.16;
-	--card-glow-alpha: 0.14;
+	/* CardTexture pixel field (D27/D28): base opacity. One value both themes until dark needs its own. */
+	--card-pixel-alpha: 0.3;
 }
 
 /* ===== Dark theme variables ===== */

@@ -82,7 +82,7 @@ export function DataTable<TData extends RowData>({
 					<div
 						className={cn(
 							"overflow-hidden",
-							bordered && "bg-card rounded-2xl border shadow-sm"
+							bordered && "bg-card border-border/50 rounded-2xl border shadow-xs"
 						)}
 					>
 						<Table>

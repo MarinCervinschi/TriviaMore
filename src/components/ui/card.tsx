@@ -12,7 +12,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 		<div
 			ref={ref}
 			className={cn(
-				"bg-card text-card-foreground border shadow-sm transition-shadow duration-300",
+				"bg-card text-card-foreground border-border/50 border shadow-xs transition-shadow duration-300",
 				level === "panel" ? "rounded-3xl" : "rounded-2xl",
 				className
 			)}
@@ -76,56 +76,115 @@ CardFooter.displayName = "CardFooter";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
-const CORNER_ORIGIN: Record<Corner, string> = {
-	tl: "0% 0%",
-	tr: "100% 0%",
-	bl: "0% 100%",
-	br: "100% 100%",
+type TexturePlacement =
+	| "full"
+	| "top"
+	| "bottom"
+	| "left"
+	| "right"
+	| Corner
+	| "center"
+	| "ellipse"
+	| "edges";
+
+const TEXTURE_FADE: Record<TexturePlacement, string | undefined> = {
+	full: undefined,
+	top: "linear-gradient(to bottom, #000 0%, #000 10%, transparent 72%)",
+	bottom: "linear-gradient(to top, #000 0%, #000 10%, transparent 72%)",
+	left: "linear-gradient(to right, #000 0%, #000 10%, transparent 72%)",
+	right: "linear-gradient(to left, #000 0%, #000 10%, transparent 72%)",
+	tl: "radial-gradient(125% 125% at 0% 0%, #000 0%, transparent 60%)",
+	tr: "radial-gradient(125% 125% at 100% 0%, #000 0%, transparent 60%)",
+	bl: "radial-gradient(125% 125% at 0% 100%, #000 0%, transparent 60%)",
+	br: "radial-gradient(125% 125% at 100% 100%, #000 0%, transparent 60%)",
+	center: "radial-gradient(70% 70% at 50% 50%, #000 0%, transparent 78%)",
+	ellipse: "radial-gradient(95% 55% at 50% 50%, #000 0%, transparent 80%)",
+	edges: "radial-gradient(75% 75% at 50% 50%, transparent 28%, #000 92%)",
 };
 
+// Deterministic [0,1) hash — no Math.random, so the field never reshuffles between renders.
+function textureHash(i: number, seed: number): number {
+	const x = Math.sin(i * 127.1 + seed) * 43758.5453;
+	return x - Math.floor(x);
+}
+
+const TEXTURE_MIN_SIZE = 0.5;
+const TEXTURE_N = 12;
+
 interface CardTextureProps {
-	/** Which corner the detail sits in — D27: it goes in the *empty* corner, never under content. */
+	/** Where the texture sits and how it fades. */
+	placement?: TexturePlacement;
+	/** Back-compat alias for a corner placement (the shape every call site uses today). */
 	corner?: Corner;
-	/** A soft primary glow in the same corner. D27: off by default, on only for large/wide cards. */
-	glow?: boolean;
-	/** Dot spacing in px. */
-	pitch?: number;
-	/** How far the detail reaches across the card, in % of the side. */
-	reach?: number;
+	/** Grid spacing in px. */
+	gap?: number;
+	/** Largest pixel edge in px; each pixel is sized 0.5–`maxSize`. */
+	maxSize?: number;
+	/** Base opacity; defaults to the `--card-pixel-alpha` token. */
+	alpha?: number;
 	className?: string;
 }
 
 /**
- * D27's surface texture: a corner-anchored dot field, faded out radially, with an optional glow.
- * The alphas are theme tokens (`--card-dot-alpha` / `--card-glow-alpha`); colour of a category stays
- * on the icon, never on the dots. **Its parent needs `relative overflow-hidden`** to clip it.
+ * D27's surface texture, reworked for D28: a static "pixel field" instead of a dot grid — a tiled grid
+ * of tiny squares at variable size and tone, monochrome on `--foreground` so it reads in both themes,
+ * faded by `placement`. The page already wears the dot band, so the card takes a different mark. A
+ * category's colour stays on the icon, never on the pixels. **Its parent needs
+ * `relative overflow-hidden`** to clip it.
  */
 function CardTexture({
-	corner = "br",
-	glow = false,
-	pitch = 12,
-	reach = 100,
+	placement,
+	corner,
+	gap = 4,
+	maxSize = 2,
+	alpha,
 	className,
 }: CardTextureProps) {
-	const origin = CORNER_ORIGIN[corner];
-	const mask = `radial-gradient(${reach}% ${reach}% at ${origin}, black 0%, black 30%, transparent 82%)`;
-
-	const dots = {
-		backgroundImage:
-			"radial-gradient(circle, hsl(var(--foreground) / var(--card-dot-alpha)) 1px, transparent 1px)",
-		backgroundSize: `${pitch}px ${pitch}px`,
-		WebkitMaskImage: mask,
-		maskImage: mask,
-	} as React.CSSProperties;
-
-	const glowStyle = {
-		backgroundImage: `radial-gradient(${reach}% ${reach}% at ${origin}, hsl(var(--primary) / var(--card-glow-alpha)), transparent 70%)`,
-	} as React.CSSProperties;
+	const id = React.useId().replace(/:/g, "");
+	const where = placement ?? corner ?? "tl";
+	const fade = TEXTURE_FADE[where];
+	const opacity = alpha != null ? String(alpha) : "var(--card-pixel-alpha)";
+	const tile = TEXTURE_N * gap;
+	const cells = Array.from({ length: TEXTURE_N * TEXTURE_N }, (_, i) => {
+		const size =
+			TEXTURE_MIN_SIZE + textureHash(i, 311.7) * (maxSize - TEXTURE_MIN_SIZE);
+		const inset = (maxSize - size) / 2;
+		return {
+			x: (i % TEXTURE_N) * gap + inset,
+			y: Math.floor(i / TEXTURE_N) * gap + inset,
+			size,
+			opacity: 0.45 + textureHash(i, 74.7) * 0.55,
+		};
+	});
 
 	return (
 		<div aria-hidden className={cn("pointer-events-none absolute inset-0", className)}>
-			{glow && <div className="absolute inset-0" style={glowStyle} />}
-			<div className="absolute inset-0" style={dots} />
+			<div
+				className="absolute inset-0"
+				style={fade ? { maskImage: fade, WebkitMaskImage: fade } : undefined}
+			>
+				<svg
+					className="block h-full w-full"
+					style={{ color: `hsl(var(--foreground) / ${opacity})` }}
+				>
+					<defs>
+						<pattern id={id} width={tile} height={tile} patternUnits="userSpaceOnUse">
+							{cells.map((c, i) => (
+								<rect
+									key={i}
+									x={c.x}
+									y={c.y}
+									width={c.size}
+									height={c.size}
+									fill="currentColor"
+									fillOpacity={c.opacity}
+								/>
+							))}
+						</pattern>
+					</defs>
+					<rect width="100%" height="100%" fill={`url(#${id})`} />
+				</svg>
+			</div>
 		</div>
 	);
 }
