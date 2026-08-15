@@ -6,12 +6,9 @@ import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
-import { SquareArrowRightUpIcon } from "@solar-icons/react/linear/square-arrow-right-up";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 
-import { CalendarHeatmap } from "@/components/charts";
 import {
 	DataTable,
 	createDataTableColumns,
@@ -24,16 +21,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardTexture } from "@/components/ui/card";
+import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
-import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
-import type { RecentClass, RecentQuizAttempt } from "@/lib/user/types";
+import type { RecentClass } from "@/lib/user/types";
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
 import { formatDate } from "@/lib/utils/format";
-import { getScoreBadgeVariant } from "@/lib/utils/quiz-results";
 
 export const Route = createFileRoute("/_app/user/")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.profile()),
@@ -149,23 +144,16 @@ function DashboardPage() {
 					/>
 				</div>
 
-				{/* Activity heatmap */}
-				<CalendarHeatmap
-					title="La tua attività"
-					data={profile.activity.days}
-					endDate={profile.activity.endDate}
-					emptyMessage="Completa il tuo primo quiz per iniziare a tracciare la tua attività."
-				/>
-
 				{/* Recent Classes */}
 				{profile.recentClasses.length > 0 && (
 					<RecentClassesSection classes={profile.recentClasses} />
 				)}
 
-				{/* Recent Activity */}
-				{profile.recentQuizAttempts.length > 0 && (
-					<RecentActivitySection attempts={profile.recentQuizAttempts} />
-				)}
+				<ActivitySection
+					data={profile.activity.days}
+					endDate={profile.activity.endDate}
+					attempts={profile.recentQuizAttempts}
+				/>
 			</div>
 		</div>
 	);
@@ -312,67 +300,5 @@ function RecentClassesTable({ classes }: { classes: RecentClass[] }) {
 				/>
 			)}
 		/>
-	);
-}
-
-function RecentActivitySection({ attempts }: { attempts: RecentQuizAttempt[] }) {
-	const prefersReduced = useReducedMotion();
-	const container = withReducedMotion(staggerContainer, prefersReduced);
-	const item = withReducedMotion(staggerItem, prefersReduced);
-
-	return (
-		<div className="space-y-4">
-			<div>
-				<p className="text-brand eyebrow-lg">La tua attivita</p>
-				<h2 className="text-xl font-bold">Ultimi {attempts.length} Quiz completati</h2>
-			</div>
-
-			<motion.div
-				className="space-y-3"
-				variants={container}
-				initial="hidden"
-				animate="visible"
-			>
-				{attempts.map(attempt => (
-					<motion.div
-						key={attempt.id}
-						variants={item}
-						className="bg-card flex flex-col gap-3 rounded-2xl border p-4 transition-all duration-300 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
-					>
-						<div className="flex items-start gap-3">
-							<div className="bg-primary/10 rounded-xl p-2">
-								<CupFirstIcon className="text-brand h-4 w-4" />
-							</div>
-							<div className="min-w-0 flex-1">
-								<p className="font-medium">{attempt.sectionName}</p>
-								<p className="text-muted-foreground mt-1 text-sm">
-									Insegnamento: {attempt.className}
-								</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-3">
-							<div className="text-right">
-								<Badge variant={getScoreBadgeVariant(attempt.score)}>
-									{attempt.score}/33
-								</Badge>
-								<p className="text-muted-foreground mt-1 text-xs">
-									{formatDate(attempt.completedAt)}
-								</p>
-							</div>
-							<Button asChild variant="outline" size="sm">
-								<Link
-									to="/quiz/results/$attemptId"
-									params={{ attemptId: attempt.id }}
-									className="flex items-center gap-1"
-								>
-									<SquareArrowRightUpIcon className="h-3 w-3" />
-									Vedi
-								</Link>
-							</Button>
-						</div>
-					</motion.div>
-				))}
-			</motion.div>
-		</div>
 	);
 }

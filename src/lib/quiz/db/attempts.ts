@@ -126,6 +126,9 @@ export async function findRecentCompletedAttempts(
 	return db
 		.select({
 			...columns,
+			classCode: primaryCourse.classCode,
+			courseCode: primaryCourse.courseCode,
+			departmentCode: primaryCourse.departmentCode,
 			id: quizAttempts.id,
 			score: quizAttempts.score,
 			completedAt: quizAttempts.completedAt,
