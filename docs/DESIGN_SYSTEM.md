@@ -100,15 +100,17 @@ are used both ways. `--primary` is theme-constant on purpose; `--brand` is what 
 - **Never a raw Tailwind palette class** — `text-green-600`, `bg-blue-500/10`. Every one of them is a
   value outside the system that cannot respond to the theme. 433 of them were counted in August; the
   ones that remain are tracked on #118 and owned by the issue that will rewrite their page.
-- **Tune against `bg-muted`, not the page.** Muted is only 4% off white but costs ~0.4 of a ratio
-  point, so a colour tuned to exactly 4.5 on white fails the moment it lands on a tab, the admin
+- **Tune against `bg-muted`, not the page.** Muted is the binding surface — the gate measures the status
+  and category inks on it, and its own lightness is pinned there (D28) — and it is harsher than the
+  tinted canvas, so a colour tuned to 4.5 on the page fails the moment it lands on a tab, the admin
   sidebar or a stat block.
 - **Measure against the real foreground token, not white.** `--destructive-foreground` is not `#fff`,
   and that difference once hid a failing 4.33 behind a passing 4.53.
-- **Never propose lifting a dark *surface*, accent or neutral.** Reversed three times now: twice on
-  `--primary` and `--destructive`, where a lighter hue reads washed out as a large fill and vivid as
-  text — that asymmetry is why the ink split exists — and once on the neutrals, where the mechanics
-  were sound and the look still lost (D25).
+- **Never propose lifting or recolouring a *surface* (`--card`/`--popover`), accent or neutral-as-fill.**
+  Reversed three times (D25): twice on `--primary` and `--destructive`, where a lighter hue reads washed
+  out as a large fill and vivid as text — that asymmetry is why the ink split exists — and once on the
+  neutrals. D28 later revisited the flat look by moving the **canvas** (`--background`) instead, keeping
+  the card; canvas ≠ surface is the system now, but the bar on touching the card stands.
 
 ### The categorical ramp has an ordering constraint
 
@@ -196,18 +198,19 @@ it — see below.
 - **`transition-shadow`, not `transition-all`.** At rest the shadow is the only property that changes,
   and `transition-all` animates layout properties on every card in the app.
 
-### In dark the surfaces are flat, and the border does the separating
+### The canvas is a tone below the surfaces (D28)
 
-`--card`, `--popover` and `--background` are **the same value** in dark, on purpose. A shadow on a
-near-black page has nothing to fall on either, so what separates a surface from the page is its
-**border** — nothing else.
+`--card` / `--popover` and `--background` are **no longer one value** — in both themes the card keeps its
+tone and the canvas is nudged to another, so a surface separates by tone as well as by its shadow (light)
+and border (dark). In dark the card stays the saturated blue-black and the canvas is lifted a step; in
+light the surfaces carry a cool tint and the canvas a cooler grey.
 
-**Do not re-propose lifting them.** A lightness ladder was built and measured (ΔL* 3.5, contrast holding
-with room) and **rejected on the look** — the third time a lifted dark surface has been. The mechanics
-were never the objection; the flat dark theme is a taste of this app. See D25.
+**What D25 still forbids is lifting or recolouring the *card*.** D28 moved the *canvas*, which was never
+the objection — the card the user chose is untouched. A lightness ladder *on the surfaces* was built,
+measured (ΔL* 3.5, contrast holding) and rejected three times on the look; do not re-propose that.
 
-**Still use `bg-popover` for anything that floats**, not `bg-background`. The two render identically, so
-this buys nothing today — but it names the role, which is one value to move if the question ever reopens.
+**Still use `bg-popover` for anything that floats**, not `bg-background` — now that they differ this is
+load-bearing, not just a name.
 
 **Read surface adjacency in ΔL\*, not as a contrast ratio**, whenever it does come up. A lifted dark card
 measures 1.07 as a ratio — nothing — and 3.5 in ΔL*. A luminance ratio answers *"can text be read on

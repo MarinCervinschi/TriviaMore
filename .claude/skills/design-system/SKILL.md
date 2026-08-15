@@ -9,7 +9,7 @@ Two files hold this system and neither is this one:
 
 | | |
 |---|---|
-| `docs/DESIGN_DECISIONS.md` | the decisions, D1–D26, each ending in a **Rules out** line. **The source of truth.** Read the relevant `D*` before proposing a change to what it settled |
+| `docs/DESIGN_DECISIONS.md` | the decisions, D1–D28, each ending in a **Rules out** line. **The source of truth.** Read the relevant `D*` before proposing a change to what it settled |
 | `docs/DESIGN_SYSTEM.md` | the system as it stands: which token, for what |
 | `src/styles/globals.css` | the values. Read them here, never from a doc |
 
@@ -63,12 +63,14 @@ Rules that decide a colour question:
 
 - **Status is an outcome; category is an identity.** A course type is not a success (D26).
 - **Never a raw Tailwind palette class.** It cannot respond to the theme.
-- **Tune against `bg-muted`, not the page** — 4% off white, ~0.4 of a ratio point, and five tokens were
-  re-cut after a pass that looked clean.
+- **Tune against `bg-muted`, not the page** — it is the binding surface the gate measures the status and
+  category inks on, so its own lightness is pinned there (D28); five tokens were re-cut after a pass that
+  looked clean on the page.
 - **Measure against the real foreground token, not white.**
-- **Never propose lifting a dark *surface*, accent or neutral.** Reversed three times. On accents a
-  lighter hue reads washed out as a fill and vivid as text, which is why the ink split exists; on the
-  neutrals the measurement was fine and the look still lost (D25).
+- **Never propose lifting or recolouring a *surface* (`--card`/`--popover`), accent or neutral-as-fill.**
+  Reversed three times (D25). On accents a lighter hue reads washed out as a fill and vivid as text, which
+  is why the ink split exists. D28 revisited the flat look by moving the **canvas** (`--background`)
+  instead — the card was kept — so canvas ≠ surface is the system now; the bar on touching the card stands.
 - **Contrast is a gate**: `src/styles/contrast.test.ts`. Adding a colour means adding its row. A pair
   needing less than 4.5:1 gets the floor it needs **and a reason**; a row is never deleted to pass.
 - **`--chart-*` slots 2 and 4 collapse under CVD** and are kept non-adjacent. Anything needing all five
@@ -91,13 +93,14 @@ not a variant.
 `<Card>` owns `level="panel"` (page-level tier, radius only — padding stays with the caller) and
 `CardOrb` (D4's decoration; **its parent needs `relative overflow-hidden`**).
 
-**In dark the surfaces are flat.** `--card`, `--popover` and `--background` are the same value, and a
-surface is separated by its **border**. A lightness ladder was built, measured and **rejected on the
-look** — the third time a lifted dark surface has been. **Never re-propose it**, neutral or not: the
-numbers were fine and the answer was still no (D25).
+**The canvas is a tone below the surfaces (D28).** `--card`/`--popover` and `--background` are no longer
+one value — in both themes the card keeps its tone and `--background` is another, so a surface separates
+by tone as well as by shadow (light) / border (dark). What D25 still forbids is lifting or **recolouring
+the card itself** — D28 moved the *canvas*, never the surface the user chose; a lightness ladder on the
+surfaces was rejected three times, so do not re-propose that.
 
-**Still use `bg-popover` for anything that floats**, not `bg-background`. It renders identically today
-and names the role, so the question has one value to move if it reopens.
+**`bg-popover` and `bg-background` now differ** — use `bg-popover` for anything that floats. It is
+load-bearing, not just a name.
 
 **Read surface adjacency in ΔL\*, not as a contrast ratio.** A ratio answers *"can text be read on
 this"*. A lifted dark card measures 1.07 as a ratio — nothing — and 3.5 in ΔL* — clear.
