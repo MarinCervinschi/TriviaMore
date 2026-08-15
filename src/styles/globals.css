@@ -77,32 +77,32 @@
 
 /* ===== Light theme variables ===== */
 :root {
-	--background: 0 0% 100%;
+	--background: 220 20% 97%;
 	--foreground: 224 71% 4%;
-	--card: 0 0% 100%;
+	--card: 214 65% 98%;
 	--card-foreground: 224 71% 4%;
-	--popover: 0 0% 100%;
+	--popover: 214 65% 98%;
 	--popover-foreground: 224 71% 4%;
 	--primary: 10 76% 42%;
 	--primary-foreground: 210 40% 98%;
 	--brand: 10 76% 42%;
-	--danger: 0 84% 47.5%;
-	--secondary: 220 14% 96%;
+	--danger: 0 84% 45%;
+	--secondary: 216 16% 94%;
 	--secondary-foreground: 224 71% 4%;
-	--muted: 220 14% 96%;
-	--muted-foreground: 220 9% 45%;
-	--accent: 220 14% 96%;
+	--muted: 216 16% 94%;
+	--muted-foreground: 216 13% 44%;
+	--accent: 216 16% 94%;
 	--accent-foreground: 224 71% 4%;
 	--destructive: 0 84% 47.5%;
 	--destructive-foreground: 210 40% 98%;
-	--success: 142 72% 29%;
+	--success: 142 72% 28%;
 	--success-foreground: 0 0% 100%;
-	--warning: 34 92% 33.5%;
+	--warning: 34 92% 31%;
 	--warning-foreground: 0 0% 100%;
-	--info: 217 91% 50.5%;
+	--info: 217 91% 48%;
 	--info-foreground: 0 0% 100%;
-	--border: 220 13% 91%;
-	--input: 220 13% 91%;
+	--border: 216 20% 88%;
+	--input: 216 20% 88%;
 	--ring: 10 76% 42%;
 	--gradient-from: 10 70% 48%;
 	--gradient-to: 0 88% 68%;
@@ -123,7 +123,7 @@
 	--heat-4: 10 68% 44%;
 	--heat-5: 10 78% 34%;
 	--radius: 1rem;
-	--dot-alpha: 0.18;
+	--dot-alpha: 0.22;
 	--glow-alpha: 0.18;
 	/* CardTexture (D27). One value for both themes until dark needs its own — see D27. */
 	--card-dot-alpha: 0.16;
@@ -132,9 +132,10 @@
 
 /* ===== Dark theme variables ===== */
 .dark {
-	--background: 224 71% 4%;
+	--background: 222 22% 7%;
 	--foreground: 210 20% 98%;
-	/* Identical to --background on purpose. A lightness ladder was tried and rejected — see D25. */
+	/* --card keeps the deep value; the canvas (--background) is nudged a touch lighter instead, so a
+	   surface separates without lifting the card itself — the inverse of the ladder D25 rejected. */
 	--card: 224 71% 4%;
 	--card-foreground: 210 20% 98%;
 	--popover: 224 71% 4%;
@@ -175,7 +176,7 @@
 	--heat-3: 10 58% 50%;
 	--heat-4: 10 68% 60%;
 	--heat-5: 10 78% 70%;
-	--dot-alpha: 0.22;
+	--dot-alpha: 0.28;
 	--glow-alpha: 0.28;
 }
 

@@ -79,7 +79,12 @@ export function DataTable<TData extends RowData>({
 				empty
 			) : (
 				<>
-					<div className={cn("overflow-hidden", bordered && "rounded-2xl border")}>
+					<div
+						className={cn(
+							"overflow-hidden",
+							bordered && "bg-card rounded-2xl border shadow-sm"
+						)}
+					>
 						<Table>
 							<TableHeader>
 								{table.getHeaderGroups().map(headerGroup => (
