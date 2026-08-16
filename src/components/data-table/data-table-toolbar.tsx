@@ -20,6 +20,7 @@ export function DataTableToolbar<TData extends RowData>({
 	searchable = true,
 	showViewOptions = true,
 	filters,
+	filtered = false,
 	actions,
 	className,
 }: {
@@ -29,6 +30,7 @@ export function DataTableToolbar<TData extends RowData>({
 	showViewOptions?: boolean;
 	/** Extra filter controls, for state the table itself does not own. */
 	filters?: ReactNode;
+	filtered?: boolean;
 	/** Page-level buttons rendered at the end of the toolbar. */
 	actions?: ReactNode;
 	className?: string;
@@ -37,7 +39,8 @@ export function DataTableToolbar<TData extends RowData>({
 	const filterColumns = table
 		.getAllColumns()
 		.filter(column => column.columnDef.meta?.facet);
-	const isFiltered = globalFilter !== "" || table.state.columnFilters.length > 0;
+	const isFiltered =
+		globalFilter !== "" || table.state.columnFilters.length > 0 || filtered;
 
 	// Local state keeps typing snappy: the table (and the URL) only update once
 	// the debounce settles, instead of on every keystroke.

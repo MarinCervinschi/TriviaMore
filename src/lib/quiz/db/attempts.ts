@@ -174,6 +174,29 @@ export async function findRecentCompletedAttempts(
 		.limit(limit);
 }
 
+export async function findCompletedAttemptHistory(db: DbOrTx, userId: string) {
+	const { primaryCourse, columns } = sectionLocation(db);
+
+	return db
+		.select({
+			...columns,
+			classCode: primaryCourse.classCode,
+			courseCode: primaryCourse.courseCode,
+			departmentCode: primaryCourse.departmentCode,
+			id: quizAttempts.id,
+			score: quizAttempts.score,
+			timeSpent: quizAttempts.timeSpent,
+			quizMode: quizAttempts.quizMode,
+			completedAt: quizAttempts.completedAt,
+		})
+		.from(quizAttempts)
+		.leftJoin(sections, eq(sections.id, quizAttempts.sectionId))
+		.leftJoin(classes, eq(classes.id, sections.classId))
+		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
+		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
+		.orderBy(desc(quizAttempts.completedAt));
+}
+
 export async function countCompletedAttempts(db: DbOrTx, userId: string) {
 	const [row] = await db
 		.select({ value: count() })

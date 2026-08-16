@@ -1,4 +1,5 @@
 export { addUserClassFn } from "./add-user-class";
+export { getAttemptHistoryFn } from "./get-attempt-history";
 export { getBookmarkedQuestionIdsFn } from "./get-bookmarked-question-ids";
 export { getRecentClassesFn } from "./get-recent-classes";
 export { getUserBookmarksFn } from "./get-user-bookmarks";
