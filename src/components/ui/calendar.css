@@ -1,0 +1,25 @@
+/* react-day-picker sizes its caption, weekdays and selected days with absolute
+   keywords (`large`, `smaller`) that render larger than the app's type scale.
+   Its stylesheet is unlayered, so these overrides raise specificity
+   (`.rdp-root .x`) to win regardless of import order. */
+.rdp-root {
+	font-size: 0.875rem;
+}
+.rdp-root .rdp-month_caption {
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+.rdp-root .rdp-weekday {
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+.rdp-root .rdp-selected {
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+.rdp-root .rdp-day_button {
+	font-size: 0.875rem;
+}
+.rdp-root .rdp-dropdown_root {
+	font-size: 0.875rem;
+}

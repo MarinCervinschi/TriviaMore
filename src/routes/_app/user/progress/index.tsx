@@ -20,7 +20,7 @@ import { userQueries } from "@/lib/user/queries";
 import { formatThirtyScaleGrade } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
-export const Route = createFileRoute("/_app/user/progress")({
+export const Route = createFileRoute("/_app/user/progress/")({
 	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.progress()),
 	head: () => seoHead({ title: "Progressi", noindex: true }),
 	pendingComponent: ProgressSkeleton,

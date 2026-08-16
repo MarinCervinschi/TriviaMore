@@ -37,6 +37,7 @@ import { getQuiz, getQuizResults } from "../../src/lib/quiz/service.ts";
 import { getContentTree } from "../../src/lib/requests/service/content-tree.ts";
 import { getUserRequests } from "../../src/lib/requests/service/user-requests.ts";
 import { buildSitemap } from "../../src/lib/sitemap/service.ts";
+import { getAttemptHistory } from "../../src/lib/user/service/attempt-history.ts";
 import {
 	getBookmarkedQuestionIds,
 	getUserBookmarks,
@@ -206,6 +207,7 @@ if (userId) {
 	await check("user.getUserBookmarks", () => getUserBookmarks(userId));
 	await check("user.getBookmarkedQuestionIds", () => getBookmarkedQuestionIds(userId));
 	await check("user.getUserProgress", () => getUserProgress(userId));
+	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
 	await check("user.isClassSaved", () =>
 		isClassSaved(userId, "00000000-0000-0000-0000-000000000000")
 	);

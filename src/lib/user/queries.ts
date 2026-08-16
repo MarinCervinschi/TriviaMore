@@ -3,6 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { STALE_TIME } from "@/lib/shared/cache";
 
 import {
+	getAttemptHistoryFn,
 	getBookmarkedQuestionIdsFn,
 	getRecentClassesFn,
 	getUserBookmarksFn,
@@ -45,6 +46,13 @@ export const userQueries = {
 		queryOptions({
 			queryKey: ["user", "progress"],
 			queryFn: () => getUserProgressFn(),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	attemptHistory: () =>
+		queryOptions({
+			queryKey: ["user", "attempt-history"],
+			queryFn: () => getAttemptHistoryFn(),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
