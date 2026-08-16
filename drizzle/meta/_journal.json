@@ -85,6 +85,13 @@
       "when": 1786814037113,
       "tag": "0011_backfill_attempt_snapshots",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1786816170477,
+      "tag": "0012_add_flashcard_attempts",
+      "breakpoints": true
     }
   ]
 }

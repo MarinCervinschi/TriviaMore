@@ -10,6 +10,7 @@ import { TransactionRollbackError } from "drizzle-orm/errors";
 import { closeDb, getDb } from "../../src/db/index.ts";
 import {
 	evaluationModes,
+	flashcardAttempts,
 	progress,
 	questions,
 	quizAttempts,
@@ -17,6 +18,7 @@ import {
 	quizzes,
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
+import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
 import {
 	applyAttemptGrade,
 	claimAttempt,
@@ -229,6 +231,26 @@ try {
 				`avg = ${after.averageScore}`
 			);
 		}
+
+		// flashcard: a finished session records one row, no scoring model.
+		await insertFlashcardAttempt(tx, {
+			userId: seed.user_id,
+			sectionId: seed.section_id,
+			cardsReviewed: 5,
+		});
+		const flashRows = await tx
+			.select({ cardsReviewed: flashcardAttempts.cardsReviewed })
+			.from(flashcardAttempts)
+			.where(
+				and(
+					eq(flashcardAttempts.userId, seed.user_id),
+					eq(flashcardAttempts.sectionId, seed.section_id)
+				)
+			);
+		expect(
+			"flashcard: session recorded",
+			flashRows.length === 1 && flashRows[0]?.cardsReviewed === 5
+		);
 
 		await deleteAttempt(tx, attempt.id);
 		expect("cancel: attempt gone", (await countAttempts(tx, quiz.id)) === 0);

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { FlashcardHeader } from "@/components/flashcard/flashcard-header";
@@ -15,7 +16,7 @@ import { PageBand } from "@/components/layout/page-band";
 import { FlashcardSkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { getFlashcardSessionFn } from "@/lib/flashcard/api";
+import { completeFlashcardFn, getFlashcardSessionFn } from "@/lib/flashcard/api";
 import type { FlashcardSession } from "@/lib/flashcard/types";
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/flashcard/$sessionId")({
 
 function FlashcardPage() {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const session = Route.useLoaderData() as FlashcardSession | null;
 
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,6 +40,7 @@ function FlashcardPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 	const [showExitDialog, setShowExitDialog] = useState(false);
+	const recordedRef = useRef(false);
 
 	const handleFlip = useCallback(() => {
 		setIsFlipped(prev => {
@@ -81,7 +84,16 @@ function FlashcardPage() {
 
 	const handleComplete = useCallback(() => {
 		setShowResults(true);
-	}, []);
+		if (!session || recordedRef.current) return;
+		recordedRef.current = true;
+		completeFlashcardFn({
+			data: { sessionId: session.id, cardsReviewed: studiedCards.size },
+		})
+			.then(() => queryClient.invalidateQueries({ queryKey: ["user"] }))
+			.catch(error => {
+				console.error("Failed to record flashcard session:", error);
+			});
+	}, [session, studiedCards, queryClient]);
 
 	const confirmExit = useCallback(() => {
 		navigate({ to: "/" });
