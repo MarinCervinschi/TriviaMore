@@ -18,6 +18,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { DataTableFacetOption } from "@/components/data-table";
+import { AccuracyTrend } from "@/components/progress/accuracy-trend";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -294,41 +295,44 @@ function AttemptHistoryPage() {
 						actionHref="/browse"
 					/>
 				) : (
-					<DataTable
-						table={table}
-						rowLink={row => (
-							<Link
-								to="/quiz/results/$attemptId"
-								params={{ attemptId: row.id }}
-								aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
-							/>
-						)}
-						toolbar={
-							<DataTableToolbar
-								table={table}
-								searchPlaceholder="Cerca per sezione, insegnamento..."
-								filtered={!!search.da || !!search.a}
-								filters={
-									<DateRangeFilter
-										from={search.da}
-										to={search.a}
-										onChange={range =>
-											navigate({
-												search: prev => ({ ...prev, ...range, page: undefined }),
-											})
-										}
-									/>
-								}
-							/>
-						}
-						empty={
-							<InlineEmpty>
-								{isFiltered
-									? "Nessun tentativo corrisponde ai filtri."
-									: "Nessun tentativo."}
-							</InlineEmpty>
-						}
-					/>
+					<>
+						<AccuracyTrend attempts={attempts} />
+						<DataTable
+							table={table}
+							rowLink={row => (
+								<Link
+									to="/quiz/results/$attemptId"
+									params={{ attemptId: row.id }}
+									aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
+								/>
+							)}
+							toolbar={
+								<DataTableToolbar
+									table={table}
+									searchPlaceholder="Cerca per sezione, insegnamento..."
+									filtered={!!search.da || !!search.a}
+									filters={
+										<DateRangeFilter
+											from={search.da}
+											to={search.a}
+											onChange={range =>
+												navigate({
+													search: prev => ({ ...prev, ...range, page: undefined }),
+												})
+											}
+										/>
+									}
+								/>
+							}
+							empty={
+								<InlineEmpty>
+									{isFiltered
+										? "Nessun tentativo corrisponde ai filtri."
+										: "Nessun tentativo."}
+								</InlineEmpty>
+							}
+						/>
+					</>
 				)}
 			</div>
 		</div>
