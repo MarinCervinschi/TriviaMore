@@ -33,7 +33,7 @@ import {
 } from "./db/quizzes";
 import { selectRandomItems, shuffleArray } from "./randomization";
 import type { CompleteQuizInput, StartQuizInput } from "./schemas";
-import { calculateAnswerScore, THIRTY_SCALE_MAX } from "./scoring";
+import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
