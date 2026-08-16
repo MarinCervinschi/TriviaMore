@@ -7,4 +7,10 @@ export const startFlashcardSchema = z.object({
 
 export const sessionIdSchema = z.object({ sessionId: z.string() });
 
+export const completeFlashcardSchema = z.object({
+	sessionId: z.string(),
+	cardsReviewed: z.number().int().min(0),
+});
+
 export type StartFlashcardInput = z.infer<typeof startFlashcardSchema>;
+export type CompleteFlashcardInput = z.infer<typeof completeFlashcardSchema>;

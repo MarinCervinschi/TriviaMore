@@ -182,17 +182,23 @@ export async function countCompletedAttempts(db: DbOrTx, userId: string) {
 	return row?.value ?? 0;
 }
 
-// Per-day completed-attempt counts for the dashboard activity heatmap, grouped
-// in UTC to match the calendar grid. All years — the heatmap's year picker
-// slices them client-side; one row per active day keeps this small.
 export async function findDailyAttemptCounts(db: DbOrTx, userId: string) {
-	const day = sql<string>`to_char(${quizAttempts.completedAt} at time zone 'utc', 'YYYY-MM-DD')`;
-	return db
-		.select({ date: day, value: count() })
-		.from(quizAttempts)
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
-		.groupBy(day)
-		.orderBy(day);
+	const result = await db.execute<{ date: string; value: number }>(sql`
+		select to_char(completed_at at time zone 'utc', 'YYYY-MM-DD') as date,
+		       count(*)::int as value
+		  from (
+		    select completed_at
+		      from quiz.quiz_attempts
+		     where user_id = ${userId} and completed_at is not null
+		    union all
+		    select completed_at
+		      from quiz.flashcard_attempts
+		     where user_id = ${userId} and completed_at is not null
+		  ) as days
+		 group by date
+		 order by date
+	`);
+	return result.rows;
 }
 
 // Replaces the quiz.quiz_attempts_detail view, and carries the codes the

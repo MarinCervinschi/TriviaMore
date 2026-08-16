@@ -26,6 +26,7 @@ export * from "./entities/quiz/quizzes";
 export * from "./entities/quiz/quiz-questions";
 export * from "./entities/quiz/quiz-attempts";
 export * from "./entities/quiz/answer-attempts";
+export * from "./entities/quiz/flashcard-attempts";
 export * from "./entities/quiz/relations";
 
 export * from "./entities/internal/department-admins";
