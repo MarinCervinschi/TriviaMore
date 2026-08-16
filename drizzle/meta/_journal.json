@@ -92,6 +92,20 @@
       "when": 1786816170477,
       "tag": "0012_add_flashcard_attempts",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1786885635852,
+      "tag": "0013_add_answer_is_correct",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1786885651355,
+      "tag": "0014_backfill_answer_is_correct",
+      "breakpoints": true
     }
   ]
 }

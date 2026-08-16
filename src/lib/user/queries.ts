@@ -5,6 +5,7 @@ import { STALE_TIME } from "@/lib/shared/cache";
 import {
 	getAttemptHistoryFn,
 	getBookmarkedQuestionIdsFn,
+	getMasteryFn,
 	getRecentClassesFn,
 	getUserBookmarksFn,
 	getUserClassesFn,
@@ -53,6 +54,13 @@ export const userQueries = {
 		queryOptions({
 			queryKey: ["user", "attempt-history"],
 			queryFn: () => getAttemptHistoryFn(),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	mastery: () =>
+		queryOptions({
+			queryKey: ["user", "mastery"],
+			queryFn: () => getMasteryFn(),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 

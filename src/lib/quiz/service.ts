@@ -214,7 +214,7 @@ function gradeAttempt(
 	let rawTotal = 0;
 	const answers = questionRows.map(question => {
 		const userAnswer = byQuestion.get(question.id) ?? [];
-		const { score } = calculateAnswerScore(
+		const { score, isCorrect } = calculateAnswerScore(
 			userAnswer,
 			question.correctAnswer,
 			evaluationMode
@@ -224,6 +224,7 @@ function gradeAttempt(
 			questionId: question.id,
 			userAnswer,
 			score,
+			isCorrect,
 			sectionId: question.sectionId,
 			difficulty: question.difficulty,
 			questionType: question.questionType,

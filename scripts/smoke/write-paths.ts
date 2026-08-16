@@ -140,6 +140,7 @@ try {
 				questionId: question.id,
 				userAnswer: ["x"],
 				score: 0.5,
+				isCorrect: false,
 				sectionId: seed.section_id,
 				difficulty: question.difficulty,
 				questionType: question.questionType,

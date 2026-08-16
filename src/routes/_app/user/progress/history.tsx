@@ -19,6 +19,7 @@ import {
 } from "@/components/data-table";
 import type { DataTableFacetOption } from "@/components/data-table";
 import { AccuracyTrend } from "@/components/progress/accuracy-trend";
+import { MasteryPanel } from "@/components/progress/mastery-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -57,7 +58,10 @@ export const Route = createFileRoute("/_app/user/progress/history")({
 		modalita: dataTableFilterField,
 	}),
 	loader: ({ context }) =>
-		context.queryClient.ensureQueryData(userQueries.attemptHistory()),
+		Promise.all([
+			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
+			context.queryClient.ensureQueryData(userQueries.mastery()),
+		]),
 	head: () => seoHead({ title: "Cronologia tentativi", noindex: true }),
 	component: AttemptHistoryPage,
 });
@@ -238,6 +242,7 @@ function AttemptHistoryPage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const search = Route.useSearch();
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
+	const { data: mastery } = useSuspenseQuery(userQueries.mastery());
 
 	const facets = useMemo(() => deriveFacetOptions(attempts), [attempts]);
 	const columns = useMemo(() => buildColumns(facets), [facets]);
@@ -332,6 +337,7 @@ function AttemptHistoryPage() {
 								</InlineEmpty>
 							}
 						/>
+						<MasteryPanel mastery={mastery} />
 					</>
 				)}
 			</div>

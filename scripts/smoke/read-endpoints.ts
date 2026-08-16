@@ -47,6 +47,7 @@ import {
 	getUserClasses,
 	isClassSaved,
 } from "../../src/lib/user/service/classes.ts";
+import { getMastery } from "../../src/lib/user/service/mastery.ts";
 import { getUserProfile } from "../../src/lib/user/service/profile.ts";
 import { getUserProgress } from "../../src/lib/user/service/progress.ts";
 
@@ -208,6 +209,7 @@ if (userId) {
 	await check("user.getBookmarkedQuestionIds", () => getBookmarkedQuestionIds(userId));
 	await check("user.getUserProgress", () => getUserProgress(userId));
 	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
+	await check("user.getMastery", () => getMastery(userId));
 	await check("user.isClassSaved", () =>
 		isClassSaved(userId, "00000000-0000-0000-0000-000000000000")
 	);

@@ -1,4 +1,5 @@
 import {
+	boolean,
 	doublePrecision,
 	foreignKey,
 	index,
@@ -26,6 +27,7 @@ export const answerAttempts = quizSchema
 			questionType: questionTypeEnum("question_type"),
 			userAnswer: text("user_answer").array().notNull(),
 			score: doublePrecision().notNull(),
+			isCorrect: boolean("is_correct"),
 			timeSpent: integer("time_spent"),
 		},
 		table => [
