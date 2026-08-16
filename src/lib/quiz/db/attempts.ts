@@ -109,6 +109,7 @@ export async function insertAnswers(
 		questionId: string;
 		userAnswer: string[];
 		score: number;
+		isCorrect: boolean;
 		sectionId: string;
 		difficulty: NonNullable<(typeof answerAttempts.$inferInsert)["difficulty"]>;
 		questionType: NonNullable<(typeof answerAttempts.$inferInsert)["questionType"]>;
@@ -121,6 +122,7 @@ export async function insertAnswers(
 			questionId: answer.questionId,
 			userAnswer: answer.userAnswer,
 			score: answer.score,
+			isCorrect: answer.isCorrect,
 			sectionId: answer.sectionId,
 			difficulty: answer.difficulty,
 			questionType: answer.questionType,

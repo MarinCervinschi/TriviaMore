@@ -85,6 +85,25 @@ export type RecentQuizAttempt = SectionLocation & {
 	departmentCode: string | null;
 };
 
+// Per-question mastery, aggregated from the frozen `answer_attempts` verdicts.
+export type MasteryBreakdown = { key: string; total: number; correct: number };
+
+export type SectionAccuracy = {
+	sectionId: string;
+	sectionName: string | null;
+	courseName: string | null;
+	path: string | null;
+	total: number;
+	correct: number;
+};
+
+export type UserMastery = {
+	totalAnswers: number;
+	byDifficulty: MasteryBreakdown[];
+	weakSections: SectionAccuracy[];
+	strongSections: SectionAccuracy[];
+};
+
 export type AttemptHistoryEntry = {
 	id: string;
 	score: number;
