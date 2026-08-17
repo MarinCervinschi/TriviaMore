@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardTexture } from "@/components/ui/card";
+import { IconTile } from "@/components/ui/icon-tile";
 import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -190,9 +191,9 @@ function QuickActionCard({
 			<CardTexture placement="tl" alpha={0.12} />
 
 			<div className="relative">
-				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
-					<Icon className={`h-6 w-6 ${colors.icon}`} />
-				</div>
+				<IconTile variant="soft" size="lg" className={`mb-4 ${colors.icon}`}>
+					<Icon />
+				</IconTile>
 				<h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
 				<p className="text-muted-foreground mb-4 text-sm">{description}</p>
 				<div className="text-brand flex items-center gap-1 text-sm font-medium">
