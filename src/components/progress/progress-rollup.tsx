@@ -29,7 +29,21 @@ const ROUTE: Record<Level, DetailRoute> = {
 
 const DEPTH: Record<Level, number> = { course: 0, class: 1, section: 2 };
 
-type Row = { node: RollupNode; level: Level; expandable: boolean; open: boolean };
+// course = group header, class = sub-group, section = leaf (plain, hover-lit
+// from its own indent so the highlight doesn't reach into the connector gutter).
+const BAND: Record<Level, string> = {
+	course: "bg-muted font-semibold",
+	class: "bg-muted/50 font-medium",
+	section: "hover:bg-muted/40 transition-colors",
+};
+
+type Row = {
+	node: RollupNode;
+	level: Level;
+	expandable: boolean;
+	open: boolean;
+	guides: boolean[];
+};
 
 function Stats({
 	labels,
@@ -86,7 +100,10 @@ function Stats({
 }
 
 export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
-	const [open, setOpen] = useState<Set<string>>(() => new Set());
+	// Open the first level (courses) by default, so classes are visible.
+	const [open, setOpen] = useState<Set<string>>(
+		() => new Set(courses.map(course => course.id))
+	);
 
 	const toggle = (id: string) =>
 		setOpen(prev => {
@@ -96,18 +113,41 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 			return next;
 		});
 
-	// Flatten to the rows currently visible, respecting the expanded set.
+	// Flatten to the visible rows, computing per-level "line continues below me"
+	// guides so the tree draws proper `└` / `├` elbows.
 	const rows: Row[] = [];
 	for (const course of courses) {
 		const courseOpen = open.has(course.id);
-		rows.push({ node: course, level: "course", expandable: true, open: courseOpen });
+		rows.push({
+			node: course,
+			level: "course",
+			expandable: true,
+			open: courseOpen,
+			guides: [],
+		});
 		if (!courseOpen) continue;
-		for (const klass of course.classes) {
+		const classes = course.classes;
+		for (let ci = 0; ci < classes.length; ci++) {
+			const klass = classes[ci]!;
+			const classContinues = ci < classes.length - 1;
 			const classOpen = open.has(klass.id);
-			rows.push({ node: klass, level: "class", expandable: true, open: classOpen });
+			rows.push({
+				node: klass,
+				level: "class",
+				expandable: true,
+				open: classOpen,
+				guides: [classContinues],
+			});
 			if (!classOpen) continue;
-			for (const section of klass.sections) {
-				rows.push({ node: section, level: "section", expandable: false, open: false });
+			const sections = klass.sections;
+			for (let si = 0; si < sections.length; si++) {
+				rows.push({
+					node: sections[si]!,
+					level: "section",
+					expandable: false,
+					open: false,
+					guides: [classContinues, si < sections.length - 1],
+				});
 			}
 		}
 	}
@@ -125,16 +165,21 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 						<div className="flex items-center pe-1 pb-1 text-xs">
 							<Stats labels />
 						</div>
-						<Tree indent={20} className="text-sm">
-							{rows.map(({ node, level, expandable, open: isOpen }) => (
-								<TreeItem key={node.id} level={DEPTH[level]}>
-									<div className="bg-card flex items-center gap-1 rounded-md py-1.5 pe-1">
+						<Tree indent={20} lines className="text-sm">
+							{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
+								<TreeItem key={node.id} level={DEPTH[level]} guides={guides}>
+									<div
+										className={cn(
+											"flex items-center gap-1 rounded-md py-1.5 pe-1",
+											BAND[level]
+										)}
+									>
 										{expandable ? (
 											<button
 												type="button"
 												onClick={() => toggle(node.id)}
 												aria-label={isOpen ? "Comprimi" : "Espandi"}
-												className="hover:bg-muted/60 rounded-md p-1"
+												className="hover:bg-background/60 rounded-md p-1"
 											>
 												<AltArrowDownIcon
 													className={cn(
@@ -144,15 +189,12 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 												/>
 											</button>
 										) : (
-											<span className="w-6 shrink-0" />
+											<span className="w-1.5 shrink-0" />
 										)}
 										<Link
 											to={ROUTE[level]}
 											params={{ id: node.id }}
-											className={cn(
-												"truncate hover:underline",
-												level === "course" ? "font-semibold" : "font-medium"
-											)}
+											className="truncate hover:underline"
 										>
 											{node.name}
 										</Link>

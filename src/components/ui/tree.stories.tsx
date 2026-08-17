@@ -16,8 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 type Node = { level: number; name: string; state?: "open" | "closed" };
 
-// A fixed expansion, mirroring ReUI's reference (Leads/Accounts open, the rest
-// collapsed) — only the visible rows are listed.
+// A fixed expansion mirroring ReUI's reference — only the visible rows.
 const NODES: Node[] = [
 	{ level: 0, name: "Leads", state: "open" },
 	{ level: 1, name: "New Lead" },
@@ -32,10 +31,29 @@ const NODES: Node[] = [
 	{ level: 0, name: "Support", state: "closed" },
 ];
 
-function Row({ node }: { node: Node }) {
+// For each ancestor level: does that ancestor have a later sibling below? (→ the
+// vertical continues). The deepest level decides `└` (last child) vs `├`.
+function guidesFor(nodes: Node[], i: number): boolean[] {
+	const level = nodes[i]!.level;
+	const out: boolean[] = [];
+	for (let a = 0; a < level; a++) {
+		let continues = false;
+		for (let j = i + 1; j < nodes.length; j++) {
+			if (nodes[j]!.level < a) break;
+			if (nodes[j]!.level === a) {
+				continues = true;
+				break;
+			}
+		}
+		out.push(continues);
+	}
+	return out;
+}
+
+function Row({ node, guides }: { node: Node; guides: boolean[] }) {
 	return (
-		<TreeItem level={node.level}>
-			<div className="bg-background flex items-center gap-1 rounded-md px-2 py-1.5 text-sm">
+		<TreeItem level={node.level} guides={guides}>
+			<div className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm">
 				{node.state ? (
 					<AltArrowDownIcon
 						className={cn(
@@ -55,12 +73,12 @@ function Row({ node }: { node: Node }) {
 }
 
 export const Default: Story = {
-	name: "Indented lines",
+	name: "Elbow connectors",
 	render: () => (
 		<Card className="max-w-md p-2">
-			<Tree indent={20}>
+			<Tree indent={20} lines>
 				{NODES.map((node, i) => (
-					<Row key={i} node={node} />
+					<Row key={i} node={node} guides={guidesFor(NODES, i)} />
 				))}
 			</Tree>
 		</Card>
@@ -73,7 +91,7 @@ export const SenzaLinee: Story = {
 		<Card className="max-w-md p-2">
 			<Tree indent={20} lines={false}>
 				{NODES.map((node, i) => (
-					<Row key={i} node={node} />
+					<Row key={i} node={node} guides={guidesFor(NODES, i)} />
 				))}
 			</Tree>
 		</Card>
