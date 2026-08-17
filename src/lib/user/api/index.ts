@@ -2,6 +2,7 @@ export { addUserClassFn } from "./add-user-class";
 export { getAttemptHistoryFn } from "./get-attempt-history";
 export { getBookmarkedQuestionIdsFn } from "./get-bookmarked-question-ids";
 export { getMasteryFn } from "./get-mastery";
+export { getStudyStatsFn } from "./get-study-stats";
 export { getRecentClassesFn } from "./get-recent-classes";
 export { getUserBookmarksFn } from "./get-user-bookmarks";
 export { getUserClassesFn } from "./get-user-classes";

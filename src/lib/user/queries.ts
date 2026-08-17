@@ -7,6 +7,7 @@ import {
 	getBookmarkedQuestionIdsFn,
 	getMasteryFn,
 	getRecentClassesFn,
+	getStudyStatsFn,
 	getUserBookmarksFn,
 	getUserClassesFn,
 	getUserProfileFn,
@@ -61,6 +62,13 @@ export const userQueries = {
 		queryOptions({
 			queryKey: ["user", "mastery"],
 			queryFn: () => getMasteryFn(),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	studyStats: () =>
+		queryOptions({
+			queryKey: ["user", "study-stats"],
+			queryFn: () => getStudyStatsFn(),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 

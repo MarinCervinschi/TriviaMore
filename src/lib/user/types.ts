@@ -85,6 +85,18 @@ export type RecentQuizAttempt = SectionLocation & {
 	departmentCode: string | null;
 };
 
+// One UTC day of study, for the dashboard summary card. The client windows and
+// sub-buckets these into week/month/year metrics.
+export type DailyStudyStat = {
+	date: string;
+	quizzes: number;
+	/** Sum of attempt grades (0–33), for a weighted average. */
+	gradeSum: number;
+	timeSpent: number;
+	answersTotal: number;
+	answersCorrect: number;
+};
+
 // Per-question mastery, aggregated from the frozen `answer_attempts` verdicts.
 export type MasteryBreakdown = { key: string; total: number; correct: number };
 
