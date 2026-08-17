@@ -109,10 +109,12 @@ function Tile({ metric }: { metric: SummaryMetric }) {
 					<Sparkline points={metric.spark} />
 				</span>
 			</div>
-			<div className="flex items-center gap-2">
-				<DeltaBadge delta={metric.delta} />
-				<span className="text-muted-foreground text-xs">{note(metric.delta)}</span>
-			</div>
+			{metric.delta !== null && (
+				<div className="flex items-center gap-2">
+					<DeltaBadge delta={metric.delta} />
+					<span className="text-muted-foreground text-xs">{note(metric.delta)}</span>
+				</div>
+			)}
 		</div>
 	);
 }

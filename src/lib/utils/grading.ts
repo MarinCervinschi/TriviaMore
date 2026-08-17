@@ -3,6 +3,14 @@ export function formatThirtyScaleGrade(score: number): string {
 	return "30L";
 }
 
+/**
+ * An average/aggregate grade against the 33-point max: "26/33", "26.4/33". The
+ * raw score, not the 18–30L exam convention, so the denominator makes sense.
+ */
+export function formatGradeOutOf33(score: number): string {
+	return `${Math.round(score * 10) / 10}/33`;
+}
+
 export function getGradeColor(score: number): string {
 	if (score < 18) return "text-danger";
 	if (score < 24) return "text-warning";

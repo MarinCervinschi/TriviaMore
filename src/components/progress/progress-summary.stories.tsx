@@ -20,6 +20,7 @@ const DAILY: DailyStudyStat[] = [
 	const answersCorrect = Math.round(answersTotal * (0.6 + (i % 5) * 0.06));
 	return {
 		date: daysAgo(n),
+		quizMode: "STUDY" as const,
 		quizzes,
 		gradeSum: quizzes * grade,
 		timeSpent: quizzes * 300_000,

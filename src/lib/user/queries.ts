@@ -14,6 +14,7 @@ import {
 	getUserProgressFn,
 	isClassSavedFn,
 } from "./api";
+import type { MasteryScope } from "./schemas";
 
 export const userQueries = {
 	profile: () =>
@@ -58,17 +59,17 @@ export const userQueries = {
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
-	mastery: () =>
+	mastery: (scope?: MasteryScope) =>
 		queryOptions({
-			queryKey: ["user", "mastery"],
-			queryFn: () => getMasteryFn(),
+			queryKey: ["user", "mastery", scope ?? null],
+			queryFn: () => getMasteryFn(scope ? { data: scope } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
-	studyStats: () =>
+	studyStats: (scope?: MasteryScope) =>
 		queryOptions({
-			queryKey: ["user", "study-stats"],
-			queryFn: () => getStudyStatsFn(),
+			queryKey: ["user", "study-stats", scope ?? null],
+			queryFn: () => getStudyStatsFn(scope ? { data: scope } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 

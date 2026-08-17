@@ -5,6 +5,7 @@ import type { DailyStudyStat } from "./types";
 
 function day(over: Partial<DailyStudyStat> & { date: string }): DailyStudyStat {
 	return {
+		quizMode: "STUDY",
 		quizzes: 0,
 		gradeSum: 0,
 		timeSpent: 0,
@@ -32,7 +33,7 @@ describe("buildStudySummary", () => {
 			"time",
 		]);
 		expect(metric([], "quizzes").spark).toHaveLength(7);
-		expect(metric([], "quizzes").delta).toBe(0);
+		expect(metric([], "quizzes").delta).toBeNull();
 	});
 
 	const WEEK: DailyStudyStat[] = [
@@ -73,8 +74,8 @@ describe("buildStudySummary", () => {
 
 	it("weights the average grade and reads its trend", () => {
 		const g = metric(WEEK, "grade");
-		// (50 + 30) / 3 = 26.67 → 27; previous week averaged 20.
-		expect(g.value).toBe("27");
+		// (50 + 30) / 3 = 26.67 → 26.7/33; previous week averaged 20.
+		expect(g.value).toBe("26.7/33");
 		expect(g.delta).toBe(33);
 	});
 
