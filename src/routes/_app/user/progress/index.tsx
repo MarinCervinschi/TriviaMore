@@ -84,8 +84,8 @@ function ProgressPage() {
 				<UserBreadcrumb current="Progressi" />
 
 				<MetricExplorer daily={daily} />
-				<MasteryPanel mastery={mastery} />
 				<ProgressRollup courses={rollup} />
+				<MasteryPanel mastery={mastery} />
 
 				<div className="flex justify-center">
 					<Button asChild variant="outline">
