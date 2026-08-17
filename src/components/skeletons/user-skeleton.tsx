@@ -39,6 +39,23 @@ export function UserDashboardSkeleton() {
 			</section>
 
 			<div className="container space-y-8">
+				{/* Progress summary */}
+				<div className="bg-card rounded-2xl border p-6 shadow-sm">
+					<div className="mb-6 flex items-center justify-between">
+						<Skeleton className="h-5 w-40" />
+						<Skeleton className="h-7 w-40 rounded-lg" />
+					</div>
+					<div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<div key={i} className="space-y-2">
+								<Skeleton className="h-4 w-24" />
+								<Skeleton className="h-8 w-16" />
+								<Skeleton className="h-4 w-16" />
+							</div>
+						))}
+					</div>
+				</div>
+
 				{/* Stats */}
 				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 					{Array.from({ length: 4 }).map((_, i) => (
@@ -109,48 +126,70 @@ export function ProgressSkeleton() {
 		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
 			<SkeletonHero withStats={3} />
 
-			<div className="container space-y-8">
+			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />
 
-				{/* Progress stats grid */}
-				<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-					{Array.from({ length: 3 }).map((_, i) => (
-						<div key={i} className="bg-card rounded-2xl border p-6 shadow-sm">
-							<Skeleton className="mb-4 h-4 w-1/2" />
-							<Skeleton className="mx-auto h-32 w-32 rounded-full" />
-							<Skeleton className="mx-auto mt-4 h-5 w-24" />
+				{/* Metric explorer */}
+				<div className="space-y-3">
+					<div className="flex flex-wrap items-center gap-2">
+						<Skeleton className="h-8 w-44 rounded-lg" />
+						<Skeleton className="h-8 w-48 rounded-lg" />
+						<Skeleton className="ml-auto h-8 w-20 rounded-lg" />
+					</div>
+					<div className="bg-muted/30 rounded-2xl border p-1">
+						<div className="bg-card overflow-hidden rounded-xl border">
+							<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
+								{Array.from({ length: 4 }).map((_, i) => (
+									<div key={i} className="space-y-2 p-4">
+										<Skeleton className="h-4 w-20" />
+										<Skeleton className="h-7 w-16" />
+									</div>
+								))}
+							</div>
+							<div className="border-t p-4 pt-6">
+								<SkeletonChart height={280} />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{/* Accuracy gauges */}
+				<div className="bg-card rounded-2xl border p-6">
+					<Skeleton className="mb-4 h-5 w-32" />
+					<div className="flex flex-wrap justify-around gap-4">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<div key={i} className="flex flex-col items-center gap-2">
+								<Skeleton className="size-[104px] rounded-full" />
+								<Skeleton className="h-3 w-16" />
+							</div>
+						))}
+					</div>
+				</div>
+
+				{/* Weak / strong sections */}
+				<div className="grid gap-4 lg:grid-cols-2">
+					{Array.from({ length: 2 }).map((_, i) => (
+						<div key={i} className="bg-card space-y-3 rounded-2xl border p-6">
+							<Skeleton className="h-5 w-1/3" />
+							{Array.from({ length: 3 }).map((_, j) => (
+								<div key={j} className="flex items-center justify-between gap-3">
+									<Skeleton className="h-4 w-1/2" />
+									<Skeleton className="h-4 w-10" />
+								</div>
+							))}
 						</div>
 					))}
 				</div>
 
-				{/* Tabs */}
-				<div className="bg-muted/50 flex gap-2 rounded-2xl p-1">
-					<Skeleton className="h-10 flex-1 rounded-xl" />
-					<Skeleton className="h-10 flex-1 rounded-xl" />
-				</div>
-
-				{/* Charts */}
-				<div className="space-y-6">
-					<div className="bg-card rounded-2xl border p-6">
-						<Skeleton className="mb-4 h-6 w-1/3" />
-						<SkeletonChart height={280} />
-					</div>
-					<div className="bg-card rounded-2xl border p-6">
-						<Skeleton className="mb-4 h-6 w-1/3" />
-						<SkeletonChart height={280} />
-					</div>
-					<div className="bg-card rounded-2xl border p-6">
-						<Skeleton className="mb-4 h-6 w-1/3" />
-						<div className="space-y-3">
-							{Array.from({ length: 5 }).map((_, i) => (
-								<div key={i} className="flex items-center gap-3">
-									<Skeleton className="h-4 w-1/4" />
-									<Skeleton className="h-3 flex-1 rounded-full" />
-									<Skeleton className="h-4 w-12" />
-								</div>
-							))}
+				{/* Rollup */}
+				<div className="bg-card space-y-3 rounded-2xl border p-6">
+					<Skeleton className="h-5 w-24" />
+					{Array.from({ length: 4 }).map((_, i) => (
+						<div key={i} className="flex items-center justify-between gap-3">
+							<Skeleton className="h-4 w-1/3" />
+							<Skeleton className="h-4 w-24" />
 						</div>
-					</div>
+					))}
 				</div>
 			</div>
 		</SkeletonRoot>
