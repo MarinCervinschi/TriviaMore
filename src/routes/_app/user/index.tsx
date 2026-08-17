@@ -14,6 +14,7 @@ import {
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
+import { ProgressSummary } from "@/components/progress/progress-summary";
 import { decorativeTint } from "@/components/shared/decorative-tints";
 import { StatCard } from "@/components/shared/stat-card";
 import { UserDashboardSkeleton } from "@/components/skeletons";
@@ -31,7 +32,11 @@ import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
 import { formatDate } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/")({
-	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.profile()),
+	loader: ({ context }) =>
+		Promise.all([
+			context.queryClient.ensureQueryData(userQueries.profile()),
+			context.queryClient.ensureQueryData(userQueries.studyStats()),
+		]),
 	head: () => seoHead({ title: "Dashboard", noindex: true }),
 	pendingComponent: UserDashboardSkeleton,
 	component: DashboardPage,
@@ -39,6 +44,7 @@ export const Route = createFileRoute("/_app/user/")({
 
 function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
+	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
 
 	if (!profile) return null;
 
@@ -84,6 +90,8 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
+				{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
+
 				{/* Stats */}
 				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 					<StatCard
