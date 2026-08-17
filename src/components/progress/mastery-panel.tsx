@@ -141,25 +141,35 @@ function SectionCard({
 	);
 }
 
-export function MasteryPanel({ mastery }: { mastery: UserMastery }) {
+export function MasteryPanel({
+	mastery,
+	sections = true,
+}: {
+	mastery: UserMastery;
+	/** Show the weak/strong section lists. Off on a single-section page, where
+	 * there are no sub-sections to rank. */
+	sections?: boolean;
+}) {
 	if (mastery.totalAnswers === 0) return null;
 
 	return (
 		<div className="space-y-4">
 			<h2 className="text-lg font-semibold">Padronanza</h2>
 			<AccuracyCard byDifficulty={mastery.byDifficulty} />
-			<div className="grid gap-4 lg:grid-cols-2">
-				<SectionCard
-					title="Aree deboli"
-					sections={mastery.weakSections}
-					emptyLabel="Nessuna area sotto la soglia. Ottimo lavoro."
-				/>
-				<SectionCard
-					title="Aree forti"
-					sections={mastery.strongSections}
-					emptyLabel="Continua ad allenarti per costruire le tue aree forti."
-				/>
-			</div>
+			{sections && (
+				<div className="grid gap-4 lg:grid-cols-2">
+					<SectionCard
+						title="Aree deboli"
+						sections={mastery.weakSections}
+						emptyLabel="Nessuna area sotto la soglia. Ottimo lavoro."
+					/>
+					<SectionCard
+						title="Aree forti"
+						sections={mastery.strongSections}
+						emptyLabel="Continua ad allenarti per costruire le tue aree forti."
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -61,6 +61,9 @@ import { Route as AppAdminCoursesCourseIdRouteImport } from './routes/_app/admin
 import { Route as AppAdminClassesClassIdRouteImport } from './routes/_app/admin/classes/$classId'
 import { Route as AppDepartmentsDepartmentCourseIndexRouteImport } from './routes/_app/departments/$department/$course/index'
 import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
+import { Route as AppUserProgressSectionIdRouteImport } from './routes/_app/user/progress/section.$id'
+import { Route as AppUserProgressCourseIdRouteImport } from './routes/_app/user/progress/course.$id'
+import { Route as AppUserProgressClassIdRouteImport } from './routes/_app/user/progress/class.$id'
 import { Route as AppDepartmentsDepartmentCourseClassIndexRouteImport } from './routes/_app/departments/$department/$course/$class/index'
 import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './routes/_app/browse/$department/$course/$class/index'
 import { Route as AppDepartmentsDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/departments/$department/$course/$class/$section/index'
@@ -334,6 +337,22 @@ const AppBrowseDepartmentCourseIndexRoute =
     path: '/browse/$department/$course/',
     getParentRoute: () => AppRoute,
   } as any)
+const AppUserProgressSectionIdRoute =
+  AppUserProgressSectionIdRouteImport.update({
+    id: '/progress/section/$id',
+    path: '/progress/section/$id',
+    getParentRoute: () => AppUserRouteRoute,
+  } as any)
+const AppUserProgressCourseIdRoute = AppUserProgressCourseIdRouteImport.update({
+  id: '/progress/course/$id',
+  path: '/progress/course/$id',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserProgressClassIdRoute = AppUserProgressClassIdRouteImport.update({
+  id: '/progress/class/$id',
+  path: '/progress/class/$id',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
 const AppDepartmentsDepartmentCourseClassIndexRoute =
   AppDepartmentsDepartmentCourseClassIndexRouteImport.update({
     id: '/departments/$department/$course/$class/',
@@ -409,6 +428,9 @@ export interface FileRoutesByFullPath {
   '/search/courses/': typeof AppSearchCoursesIndexRoute
   '/user/progress/': typeof AppUserProgressIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
+  '/user/progress/class/$id': typeof AppUserProgressClassIdRoute
+  '/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
+  '/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -464,6 +486,9 @@ export interface FileRoutesByTo {
   '/search/courses': typeof AppSearchCoursesIndexRoute
   '/user/progress': typeof AppUserProgressIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
+  '/user/progress/class/$id': typeof AppUserProgressClassIdRoute
+  '/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
+  '/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
   '/departments/$department/$course': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -523,6 +548,9 @@ export interface FileRoutesById {
   '/_app/search/courses/': typeof AppSearchCoursesIndexRoute
   '/_app/user/progress/': typeof AppUserProgressIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
+  '/_app/user/progress/class/$id': typeof AppUserProgressClassIdRoute
+  '/_app/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
+  '/_app/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/_app/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -582,6 +610,9 @@ export interface FileRouteTypes {
     | '/search/courses/'
     | '/user/progress/'
     | '/user/requests/'
+    | '/user/progress/class/$id'
+    | '/user/progress/course/$id'
+    | '/user/progress/section/$id'
     | '/browse/$department/$course/'
     | '/departments/$department/$course/'
     | '/browse/$department/$course/$class/'
@@ -637,6 +668,9 @@ export interface FileRouteTypes {
     | '/search/courses'
     | '/user/progress'
     | '/user/requests'
+    | '/user/progress/class/$id'
+    | '/user/progress/course/$id'
+    | '/user/progress/section/$id'
     | '/browse/$department/$course'
     | '/departments/$department/$course'
     | '/browse/$department/$course/$class'
@@ -695,6 +729,9 @@ export interface FileRouteTypes {
     | '/_app/search/courses/'
     | '/_app/user/progress/'
     | '/_app/user/requests/'
+    | '/_app/user/progress/class/$id'
+    | '/_app/user/progress/course/$id'
+    | '/_app/user/progress/section/$id'
     | '/_app/browse/$department/$course/'
     | '/_app/departments/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
@@ -1084,6 +1121,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrowseDepartmentCourseIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/user/progress/section/$id': {
+      id: '/_app/user/progress/section/$id'
+      path: '/progress/section/$id'
+      fullPath: '/user/progress/section/$id'
+      preLoaderRoute: typeof AppUserProgressSectionIdRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/progress/course/$id': {
+      id: '/_app/user/progress/course/$id'
+      path: '/progress/course/$id'
+      fullPath: '/user/progress/course/$id'
+      preLoaderRoute: typeof AppUserProgressCourseIdRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/progress/class/$id': {
+      id: '/_app/user/progress/class/$id'
+      path: '/progress/class/$id'
+      fullPath: '/user/progress/class/$id'
+      preLoaderRoute: typeof AppUserProgressClassIdRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
     '/_app/departments/$department/$course/$class/': {
       id: '/_app/departments/$department/$course/$class/'
       path: '/departments/$department/$course/$class'
@@ -1176,6 +1234,9 @@ interface AppUserRouteRouteChildren {
   AppUserProgressHistoryRoute: typeof AppUserProgressHistoryRoute
   AppUserProgressIndexRoute: typeof AppUserProgressIndexRoute
   AppUserRequestsIndexRoute: typeof AppUserRequestsIndexRoute
+  AppUserProgressClassIdRoute: typeof AppUserProgressClassIdRoute
+  AppUserProgressCourseIdRoute: typeof AppUserProgressCourseIdRoute
+  AppUserProgressSectionIdRoute: typeof AppUserProgressSectionIdRoute
 }
 
 const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
@@ -1187,6 +1248,9 @@ const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserProgressHistoryRoute: AppUserProgressHistoryRoute,
   AppUserProgressIndexRoute: AppUserProgressIndexRoute,
   AppUserRequestsIndexRoute: AppUserRequestsIndexRoute,
+  AppUserProgressClassIdRoute: AppUserProgressClassIdRoute,
+  AppUserProgressCourseIdRoute: AppUserProgressCourseIdRoute,
+  AppUserProgressSectionIdRoute: AppUserProgressSectionIdRoute,
 }
 
 const AppUserRouteRouteWithChildren = AppUserRouteRoute._addFileChildren(
