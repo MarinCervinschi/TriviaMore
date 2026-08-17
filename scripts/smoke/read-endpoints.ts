@@ -211,7 +211,13 @@ if (userId) {
 	await check("user.getUserProgress", () => getUserProgress(userId));
 	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
 	await check("user.getMastery", () => getMastery(userId));
+	await check("user.getMastery (scoped)", () =>
+		getMastery(userId, { level: "section", id: sample.section_id })
+	);
 	await check("user.getDailyStudyStats", () => getDailyStudyStats(userId));
+	await check("user.getDailyStudyStats (scoped)", () =>
+		getDailyStudyStats(userId, { level: "section", id: sample.section_id })
+	);
 	await check("user.isClassSaved", () =>
 		isClassSaved(userId, "00000000-0000-0000-0000-000000000000")
 	);

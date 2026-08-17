@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { optionalAuthMiddleware } from "@/lib/server/middleware/auth";
 
+import { masteryScopeSchema } from "../schemas";
 import { getMastery } from "../service/mastery";
 import type { UserMastery } from "../types";
 
@@ -14,7 +15,8 @@ const EMPTY: UserMastery = {
 
 export const getMasteryFn = createServerFn({ method: "GET" })
 	.middleware([optionalAuthMiddleware])
+	.inputValidator(masteryScopeSchema)
 	.handler(
-		({ context }): Promise<UserMastery> =>
-			context.user ? getMastery(context.user.id) : Promise.resolve(EMPTY)
+		({ data, context }): Promise<UserMastery> =>
+			context.user ? getMastery(context.user.id, data) : Promise.resolve(EMPTY)
 	);

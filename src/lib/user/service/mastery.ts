@@ -3,7 +3,9 @@ import { sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { sectionBrowsePath } from "@/lib/catalog/service";
 
+import type { MasteryScope } from "../schemas";
 import type { MasteryBreakdown, SectionAccuracy, UserMastery } from "../types";
+import { sectionScopeSql } from "./scope";
 
 // Don't rank a section on a handful of answers; weak/strong are the tails.
 const MIN_ANSWERS = 5;
@@ -28,8 +30,12 @@ const PRIMARY_COURSE = sql`
 	 order by cc.class_id, cc.position
 `;
 
-export async function getMastery(userId: string): Promise<UserMastery> {
+export async function getMastery(
+	userId: string,
+	scope?: MasteryScope
+): Promise<UserMastery> {
 	const db = getDb();
+	const scoped = sectionScopeSql(scope, sql`aa.section_id`);
 
 	const [difficulty, sections] = await Promise.all([
 		db.execute<{ key: string; total: number; correct: number }>(sql`
@@ -38,7 +44,7 @@ export async function getMastery(userId: string): Promise<UserMastery> {
 			       count(*) filter (where aa.is_correct)::int as correct
 			  from quiz.answer_attempts aa
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
-			 where qa.user_id = ${userId} and aa.difficulty is not null
+			 where qa.user_id = ${userId} and aa.difficulty is not null${scoped}
 			 group by aa.difficulty
 		`),
 		// Every section the user has answered in, with enough answers to rank; the
@@ -64,7 +70,7 @@ export async function getMastery(userId: string): Promise<UserMastery> {
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
 			  join catalog.sections s on s.id = aa.section_id
 			  left join pc on pc.class_id = s.class_id
-			 where qa.user_id = ${userId} and aa.section_id is not null
+			 where qa.user_id = ${userId} and aa.section_id is not null${scoped}
 			 group by aa.section_id, s.name, s.slug,
 			          pc.course_name, pc.class_code, pc.course_code, pc.dept_code
 			having count(*) filter (where aa.is_correct is not null) >= ${MIN_ANSWERS}

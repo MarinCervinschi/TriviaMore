@@ -1,4 +1,4 @@
-import { formatThirtyScaleGrade } from "@/lib/utils/grading";
+import { formatGradeOutOf33 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 import type { DailyStudyStat } from "./types";
@@ -9,8 +9,8 @@ export type SummaryMetric = {
 	key: "quizzes" | "grade" | "accuracy" | "time";
 	/** Display-ready value for the window. */
 	value: string;
-	/** Percent change vs the previous window of equal length (0 if none before). */
-	delta: number;
+	/** Percent change vs the previous window; null when there is no baseline. */
+	delta: number | null;
 	/** One value per sub-bucket of the window, for the sparkline. */
 	spark: number[];
 };
@@ -48,7 +48,7 @@ const zero = (): Bucket => ({
 	answersCorrect: 0,
 });
 
-function add(target: Bucket, stat: DailyStudyStat) {
+function add(target: Bucket, stat: Bucket) {
 	target.quizzes += stat.quizzes;
 	target.gradeSum += stat.gradeSum;
 	target.timeSpent += stat.timeSpent;
@@ -56,8 +56,10 @@ function add(target: Bucket, stat: DailyStudyStat) {
 	target.answersCorrect += stat.answersCorrect;
 }
 
-function pctChange(current: number, previous: number): number {
-	return previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100);
+// null, not 0, when there is nothing before to compare against — the badge is
+// hidden rather than reading a real "no change".
+function pctChange(current: number, previous: number): number | null {
+	return previous === 0 ? null : Math.round(((current - previous) / previous) * 100);
 }
 
 /**
@@ -90,14 +92,7 @@ export function buildStudySummary(
 	}
 
 	const total = current.reduce<Bucket>((acc, bucket) => {
-		add(acc, {
-			date: "",
-			quizzes: bucket.quizzes,
-			gradeSum: bucket.gradeSum,
-			timeSpent: bucket.timeSpent,
-			answersTotal: bucket.answersTotal,
-			answersCorrect: bucket.answersCorrect,
-		});
+		add(acc, bucket);
 		return acc;
 	}, zero());
 
@@ -119,7 +114,7 @@ export function buildStudySummary(
 		},
 		{
 			key: "grade",
-			value: formatThirtyScaleGrade(avgGrade),
+			value: formatGradeOutOf33(avgGrade),
 			delta: pctChange(avgGrade, prevAvgGrade),
 			spark: current.map(b => (b.quizzes ? b.gradeSum / b.quizzes : 0)),
 		},

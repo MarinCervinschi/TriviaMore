@@ -85,10 +85,11 @@ export type RecentQuizAttempt = SectionLocation & {
 	departmentCode: string | null;
 };
 
-// One UTC day of study, for the dashboard summary card. The client windows and
-// sub-buckets these into week/month/year metrics.
+// One UTC day of study for one quiz mode. The client windows and sub-buckets
+// these into week/month/year metrics, and splits STUDY vs EXAM_SIMULATION.
 export type DailyStudyStat = {
 	date: string;
+	quizMode: QuizMode;
 	quizzes: number;
 	/** Sum of attempt grades (0–33), for a weighted average. */
 	gradeSum: number;
