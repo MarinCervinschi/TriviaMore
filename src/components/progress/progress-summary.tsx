@@ -102,9 +102,7 @@ function Tile({ metric }: { metric: SummaryMetric }) {
 				{label}
 			</div>
 			<div className="flex items-center justify-between gap-2">
-				<span className="text-2xl font-bold tabular-nums sm:text-3xl">
-					{metric.value}
-				</span>
+				<span className="text-xl font-bold tabular-nums">{metric.value}</span>
 				<span className="hidden sm:block">
 					<Sparkline points={metric.spark} />
 				</span>
@@ -137,10 +135,10 @@ export function ProgressSummary({
 				<div className="pointer-events-none absolute inset-x-0 top-0 h-36">
 					<CardTexture placement="top" alpha={0.2} />
 				</div>
-				<CardHeader className="relative pb-2">
+				<CardHeader className="relative pb-6">
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
 						<div>
-							<CardTitle className="text-base">I miei progressi</CardTitle>
+							<CardTitle className="text-sm">I miei progressi</CardTitle>
 							<p className="text-muted-foreground mt-0.5 text-sm">
 								Colpo d'occhio su quiz, voto e costanza.
 							</p>
@@ -172,16 +170,16 @@ export function ProgressSummary({
 					</div>
 				</CardContent>
 			</div>
-			<Link
-				to="/user/progress"
-				className="group hover:bg-muted/60 text-muted-foreground flex flex-col items-start gap-1 px-4 py-2.5 text-sm transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-2"
-			>
+			<div className="text-muted-foreground flex flex-col items-start gap-1 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2">
 				<span>{summary.footer}</span>
-				<span className="text-foreground inline-flex items-center gap-1 font-medium group-hover:underline">
+				<Link
+					to="/user/progress"
+					className="group text-foreground inline-flex items-center gap-1 font-medium hover:underline"
+				>
 					Analisi complete
 					<AltArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-				</span>
-			</Link>
+				</Link>
+			</div>
 		</Card>
 	);
 }
