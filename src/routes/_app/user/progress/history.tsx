@@ -18,8 +18,6 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { DataTableFacetOption } from "@/components/data-table";
-import { AccuracyTrend } from "@/components/progress/accuracy-trend";
-import { MasteryPanel } from "@/components/progress/mastery-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -58,10 +56,7 @@ export const Route = createFileRoute("/_app/user/progress/history")({
 		modalita: dataTableFilterField,
 	}),
 	loader: ({ context }) =>
-		Promise.all([
-			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
-			context.queryClient.ensureQueryData(userQueries.mastery()),
-		]),
+		context.queryClient.ensureQueryData(userQueries.attemptHistory()),
 	head: () => seoHead({ title: "Cronologia tentativi", noindex: true }),
 	component: AttemptHistoryPage,
 });
@@ -242,7 +237,6 @@ function AttemptHistoryPage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const search = Route.useSearch();
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
-	const { data: mastery } = useSuspenseQuery(userQueries.mastery());
 
 	const facets = useMemo(() => deriveFacetOptions(attempts), [attempts]);
 	const columns = useMemo(() => buildColumns(facets), [facets]);
@@ -261,6 +255,7 @@ function AttemptHistoryPage() {
 		data: rows,
 		columns,
 		getRowId: row => row.id,
+		pageSize: 50,
 		initialSorting: INITIAL_SORTING,
 		initialColumnVisibility: INITIAL_COLUMN_VISIBILITY,
 		extraResetKeys: DATE_RESET_KEYS,
@@ -300,45 +295,41 @@ function AttemptHistoryPage() {
 						actionHref="/browse"
 					/>
 				) : (
-					<>
-						<AccuracyTrend attempts={attempts} />
-						<DataTable
-							table={table}
-							rowLink={row => (
-								<Link
-									to="/quiz/results/$attemptId"
-									params={{ attemptId: row.id }}
-									aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
-								/>
-							)}
-							toolbar={
-								<DataTableToolbar
-									table={table}
-									searchPlaceholder="Cerca per sezione, insegnamento..."
-									filtered={!!search.da || !!search.a}
-									filters={
-										<DateRangeFilter
-											from={search.da}
-											to={search.a}
-											onChange={range =>
-												navigate({
-													search: prev => ({ ...prev, ...range, page: undefined }),
-												})
-											}
-										/>
-									}
-								/>
-							}
-							empty={
-								<InlineEmpty>
-									{isFiltered
-										? "Nessun tentativo corrisponde ai filtri."
-										: "Nessun tentativo."}
-								</InlineEmpty>
-							}
-						/>
-						<MasteryPanel mastery={mastery} />
-					</>
+					<DataTable
+						table={table}
+						rowLink={row => (
+							<Link
+								to="/quiz/results/$attemptId"
+								params={{ attemptId: row.id }}
+								aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
+							/>
+						)}
+						toolbar={
+							<DataTableToolbar
+								table={table}
+								searchPlaceholder="Cerca per sezione, insegnamento..."
+								filtered={!!search.da || !!search.a}
+								filters={
+									<DateRangeFilter
+										from={search.da}
+										to={search.a}
+										onChange={range =>
+											navigate({
+												search: prev => ({ ...prev, ...range, page: undefined }),
+											})
+										}
+									/>
+								}
+							/>
+						}
+						empty={
+							<InlineEmpty>
+								{isFiltered
+									? "Nessun tentativo corrisponde ai filtri."
+									: "Nessun tentativo."}
+							</InlineEmpty>
+						}
+					/>
 				)}
 			</div>
 		</div>
