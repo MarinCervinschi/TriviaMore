@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { ShieldUserIcon } from "@solar-icons/react/linear/shield-user";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
@@ -100,8 +101,8 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("role", {
 			header: "Ruolo",
-			filterFn: "arrHas",
-			meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS } },
+			filterFn: "facet",
+			meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS, icon: ShieldUserIcon } },
 			cell: ({ row }) => (
 				<Badge variant={ROLE_VARIANTS[row.original.role]}>
 					{ROLE_LABELS[row.original.role] ?? row.original.role}
@@ -173,6 +174,7 @@ function AdminUsersPage() {
 				toolbar={
 					<DataTableToolbar
 						table={table}
+						filterVariant="inline"
 						searchPlaceholder="Cerca per nome o email..."
 					/>
 				}

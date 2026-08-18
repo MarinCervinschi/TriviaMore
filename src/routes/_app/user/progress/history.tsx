@@ -1,11 +1,14 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { NotebookIcon } from "@solar-icons/react/linear/notebook";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { format } from "date-fns";
+import { format, startOfMonth, startOfYear, subDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { z } from "zod";
 
@@ -17,18 +20,17 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
-import type { DataTableFacetOption } from "@/components/data-table";
+import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { AttemptHistoryEntry } from "@/lib/user/types";
+import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
@@ -109,10 +111,10 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			id: "insegnamento",
 			header: "Insegnamento",
 			enableSorting: false,
-			filterFn: "arrHas",
+			filterFn: "facet",
 			meta: {
 				label: "Insegnamento",
-				facet: { options: facets.insegnamento },
+				facet: { options: facets.insegnamento, icon: DiplomaIcon },
 				cellClassName: "text-muted-foreground text-sm",
 			},
 			cell: ({ row }) => row.original.courseName ?? "—",
@@ -122,16 +124,23 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			id: "dipartimento",
 			header: "Dipartimento",
 			enableSorting: false,
-			filterFn: "arrHas",
-			meta: { label: "Dipartimento", facet: { options: facets.dipartimento } },
+			filterFn: "facet",
+			meta: {
+				label: "Dipartimento",
+				facet: { options: facets.dipartimento, icon: BuildingsIcon },
+			},
 			cell: ({ row }) => row.original.departmentName ?? "—",
 		}),
 		column.accessor("quizMode", {
 			id: "modalita",
 			header: "Modalità",
 			enableSorting: false,
-			filterFn: "arrHas",
-			meta: { label: "Modalità", facet: { options: MODE_OPTIONS }, align: "center" },
+			filterFn: "facet",
+			meta: {
+				label: "Modalità",
+				facet: { options: MODE_OPTIONS, icon: NotebookIcon },
+				align: "center",
+			},
 			cell: ({ row }) =>
 				row.original.quizMode ? (
 					<Badge variant="secondary">{MODE_LABELS[row.original.quizMode]}</Badge>
@@ -168,69 +177,104 @@ function parseDay(value: string) {
 	return new Date(year, month - 1, day);
 }
 
-function DateRangeFilter({
+const isoDay = (day: Date) => format(day, "yyyy-MM-dd");
+
+function buildDatePresets() {
+	const today = new Date();
+	return [
+		{ label: "Oggi", da: isoDay(today), a: isoDay(today) },
+		{ label: "Ieri", da: isoDay(subDays(today, 1)), a: isoDay(subDays(today, 1)) },
+		{ label: "Ultimi 7 giorni", da: isoDay(subDays(today, 6)), a: isoDay(today) },
+		{ label: "Ultimi 30 giorni", da: isoDay(subDays(today, 29)), a: isoDay(today) },
+		{ label: "Questo mese", da: isoDay(startOfMonth(today)), a: isoDay(today) },
+		{ label: "Quest'anno", da: isoDay(startOfYear(today)), a: isoDay(today) },
+	];
+}
+
+// Presets sidebar + a two-month range calendar, then Annulla/Applica — the
+// date range with presets after ReUI's data-grid date filter.
+function DateRangePanel({
 	from,
 	to,
-	onChange,
+	onApply,
+	onCancel,
 }: {
 	from?: string;
 	to?: string;
-	onChange: (range: { da?: string; a?: string }) => void;
+	onApply: (range: { da?: string; a?: string }) => void;
+	onCancel: () => void;
 }) {
-	const active = !!from || !!to;
-	const selected: DateRange | undefined = active
-		? { from: from ? parseDay(from) : undefined, to: to ? parseDay(to) : undefined }
-		: undefined;
+	const [draft, setDraft] = useState<DateRange | undefined>(() =>
+		from || to
+			? { from: from ? parseDay(from) : undefined, to: to ? parseDay(to) : undefined }
+			: undefined
+	);
 
 	const bounds = useMemo(() => {
 		const year = new Date().getFullYear();
 		return { start: new Date(year - 6, 0), end: new Date(year + 1, 11) };
 	}, []);
+
+	const matches = (preset: { da: string; a: string }) =>
+		!!draft?.from &&
+		!!draft?.to &&
+		isoDay(draft.from) === preset.da &&
+		isoDay(draft.to) === preset.a;
+
 	return (
-		<Popover>
-			<PopoverTrigger asChild>
-				<Button variant="outline" size="sm" className="h-9 border-dashed">
-					<CalendarMinimalisticIcon className="h-4 w-4" />
-					Data
-					{active && (
-						<>
-							<Separator orientation="vertical" className="mx-1 h-4" />
-							<span className="text-xs font-normal">
-								{from ? formatDate(from) : "…"} – {to ? formatDate(to) : "…"}
-							</span>
-						</>
-					)}
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent align="start" className="w-auto p-0">
+		<div>
+			<div className="flex max-sm:flex-col">
+				<div className="border-border flex flex-col gap-0.5 p-2 max-sm:border-b sm:w-36 sm:border-e">
+					{buildDatePresets().map(preset => (
+						<Button
+							key={preset.label}
+							type="button"
+							variant="ghost"
+							size="sm"
+							className={cn(
+								"h-8 w-full justify-start font-normal",
+								matches(preset) && "bg-accent"
+							)}
+							onClick={() =>
+								setDraft({ from: parseDay(preset.da), to: parseDay(preset.a) })
+							}
+						>
+							{preset.label}
+						</Button>
+					))}
+				</div>
 				<Calendar
 					mode="range"
+					numberOfMonths={2}
 					captionLayout="dropdown"
 					startMonth={bounds.start}
 					endMonth={bounds.end}
-					selected={selected}
-					defaultMonth={selected?.from ?? selected?.to}
-					onSelect={range =>
-						onChange({
-							da: range?.from ? format(range.from, "yyyy-MM-dd") : undefined,
-							a: range?.to ? format(range.to, "yyyy-MM-dd") : undefined,
+					selected={draft}
+					defaultMonth={draft?.from ?? draft?.to}
+					onSelect={setDraft}
+				/>
+			</div>
+			<div className="border-border flex items-center justify-end gap-2 border-t p-2">
+				<Button variant="outline" size="sm" onClick={onCancel}>
+					Annulla
+				</Button>
+				<Button
+					size="sm"
+					onClick={() =>
+						onApply({
+							da: draft?.from ? isoDay(draft.from) : undefined,
+							a: draft?.to
+								? isoDay(draft.to)
+								: draft?.from
+									? isoDay(draft.from)
+									: undefined,
 						})
 					}
-				/>
-				{active && (
-					<div className="border-border/50 border-t p-2">
-						<Button
-							variant="ghost"
-							size="sm"
-							className="w-full"
-							onClick={() => onChange({ da: undefined, a: undefined })}
-						>
-							Azzera
-						</Button>
-					</div>
-				)}
-			</PopoverContent>
-		</Popover>
+				>
+					Applica
+				</Button>
+			</div>
+		</div>
 	);
 }
 
@@ -278,6 +322,35 @@ function AttemptHistoryPage() {
 		!!search.insegnamento ||
 		!!search.modalita;
 
+	const setDateRange = useCallback(
+		(range: { da?: string; a?: string }) =>
+			navigate({ search: prev => ({ ...prev, ...range, page: undefined }) }),
+		[navigate]
+	);
+
+	const dateFilter: CustomInlineFilter = {
+		id: "data",
+		label: "Data",
+		icon: CalendarMinimalisticIcon,
+		active: !!search.da || !!search.a,
+		summary: `${search.da ? formatDate(search.da) : "…"} – ${
+			search.a ? formatDate(search.a) : "…"
+		}`,
+		placeholder: "Qualsiasi periodo",
+		clear: () => setDateRange({ da: undefined, a: undefined }),
+		popover: close => (
+			<DateRangePanel
+				from={search.da}
+				to={search.a}
+				onApply={range => {
+					setDateRange(range);
+					close();
+				}}
+				onCancel={close}
+			/>
+		),
+	};
+
 	return (
 		<div className="space-y-8 pb-8">
 			<UserHero
@@ -313,19 +386,9 @@ function AttemptHistoryPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
+								filterVariant="inline"
+								inlineFilters={[dateFilter]}
 								searchPlaceholder="Cerca per sezione, insegnamento..."
-								filtered={!!search.da || !!search.a}
-								filters={
-									<DateRangeFilter
-										from={search.da}
-										to={search.a}
-										onChange={range =>
-											navigate({
-												search: prev => ({ ...prev, ...range, page: undefined }),
-											})
-										}
-									/>
-								}
 							/>
 						}
 						empty={

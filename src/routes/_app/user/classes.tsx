@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -75,11 +77,11 @@ function buildColumns(
 		}),
 		column.accessor("departmentCode", {
 			header: "Dipartimento",
-			filterFn: "arrHas",
+			filterFn: "facet",
 			meta: {
 				label: "Dipartimento",
 				align: "center",
-				facet: { options: departmentOptions },
+				facet: { options: departmentOptions, icon: BuildingsIcon },
 			},
 			cell: ({ row }) => (
 				<Badge variant="outline" className="text-xs">
@@ -89,8 +91,12 @@ function buildColumns(
 		}),
 		column.accessor("courseType", {
 			header: "Tipo",
-			filterFn: "arrHas",
-			meta: { label: "Tipo", align: "center", facet: { options: courseTypeOptions } },
+			filterFn: "facet",
+			meta: {
+				label: "Tipo",
+				align: "center",
+				facet: { options: courseTypeOptions, icon: BookmarkIcon },
+			},
 			cell: ({ row }) => (
 				<Badge
 					className={`text-xs ${COURSE_TYPE_CONFIG[row.original.courseType]?.className ?? ""}`}
@@ -222,6 +228,7 @@ function ClassesPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
+								filterVariant="inline"
 								searchPlaceholder="Cerca insegnamento, dipartimento..."
 							/>
 						}
