@@ -231,14 +231,15 @@ export function UserClassesSkeleton() {
 			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />
 
-				{/* Data table toolbar: search, faceted filters, column visibility */}
+				{/* Data table toolbar: search, then the inline filter add + column visibility */}
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-1 flex-wrap items-center gap-2">
 						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
-						<Skeleton className="h-9 w-36 rounded-xl" />
-						<Skeleton className="h-9 w-24 rounded-xl" />
 					</div>
-					<Skeleton className="h-9 w-28 rounded-xl" />
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-9 w-9 rounded-xl" />
+						<Skeleton className="h-9 w-28 rounded-xl" />
+					</div>
 				</div>
 
 				<SkeletonTable rows={6} columns={6} />
