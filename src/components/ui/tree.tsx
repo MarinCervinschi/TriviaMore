@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
  * deepest cell draws the rounded elbow into the row (`└` when the row is the last
  * child, `├` otherwise). The caller passes `guides` — one boolean per level,
  * "does the line at this depth continue below me" — and owns the expand state.
+ * `reach` widens the deepest cell so the elbow reaches a row whose content is
+ * indented further (e.g. a leaf that stands in for a missing toggle).
  */
 const TreeContext = React.createContext<{ indent: number; lines: boolean }>({
 	indent: 20,
@@ -35,19 +37,31 @@ function Guide({
 	indent,
 	continues,
 	elbow,
+	reach,
 }: {
 	indent: number;
 	continues: boolean;
 	elbow: boolean;
+	reach: number;
 }) {
 	const left = Math.round(indent / 2);
 	return (
-		<div className="relative shrink-0" style={{ width: indent }} aria-hidden>
+		<div
+			className="relative shrink-0"
+			style={{ width: elbow ? indent + reach : indent }}
+			aria-hidden
+		>
 			{elbow ? (
 				<>
+					{/* solid vertical + rounded corner + a short solid start */}
 					<span
-						className="border-border absolute top-0 right-0 h-1/2 rounded-bl-[6px] border-b border-l"
-						style={{ left }}
+						className="border-border absolute top-0 h-1/2 rounded-bl-[6px] border-b border-l"
+						style={{ left, width: 10 }}
+					/>
+					{/* dashed continuation, fading out before the row */}
+					<span
+						className="border-border/70 absolute top-0 h-1/2 border-b border-dashed"
+						style={{ left: left + 8, right: 8 }}
 					/>
 					{continues && (
 						<span
@@ -73,11 +87,14 @@ interface TreeItemProps extends React.HTMLAttributes<HTMLDivElement> {
 	level: number;
 	/** Per ancestor level: does the guide line continue below this row? */
 	guides?: boolean[];
+	/** Extra width on the deepest cell, so the elbow reaches an indented row. */
+	reach?: number;
 }
 
 function TreeItem({
 	level,
 	guides = [],
+	reach = 0,
 	className,
 	children,
 	...props
@@ -93,6 +110,7 @@ function TreeItem({
 							indent={indent}
 							continues={guides[i] ?? false}
 							elbow={i === level - 1}
+							reach={i === level - 1 ? reach : 0}
 						/>
 					))
 				) : (

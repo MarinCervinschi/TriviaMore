@@ -1,11 +1,15 @@
 import { useState } from "react";
 
 import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { BookIcon } from "@solar-icons/react/linear/book";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { Link } from "@tanstack/react-router";
 
+import type { Icon } from "@/components/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { Tree, TreeItem } from "@/components/ui/tree";
@@ -37,6 +41,14 @@ const BAND: Record<Level, string> = {
 	section: "hover:bg-muted/40 transition-colors",
 };
 
+// The entity type, not the specific course — same mapping as the content
+// hierarchy diagram.
+const ENTITY_ICON: Record<Level, Icon> = {
+	course: DiplomaIcon,
+	class: BookIcon,
+	section: DocumentTextIcon,
+};
+
 type Row = {
 	node: RollupNode;
 	level: Level;
@@ -44,6 +56,11 @@ type Row = {
 	open: boolean;
 	guides: boolean[];
 };
+
+function LevelIcon({ level }: { level: Level }) {
+	const Icon = ENTITY_ICON[level];
+	return <Icon className="text-muted-foreground size-4 shrink-0" />;
+}
 
 function Stats({
 	labels,
@@ -167,19 +184,24 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 						</div>
 						<Tree indent={20} lines className="text-sm">
 							{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
-								<TreeItem key={node.id} level={DEPTH[level]} guides={guides}>
+								<TreeItem
+									key={node.id}
+									level={DEPTH[level]}
+									guides={guides}
+									reach={level === "section" ? 24 : 0}
+								>
 									<div
 										className={cn(
-											"flex items-center gap-1 rounded-md py-1.5 pe-1",
+											"flex items-center gap-1.5 rounded-md py-2 pe-1",
 											BAND[level]
 										)}
 									>
-										{expandable ? (
+										{expandable && (
 											<button
 												type="button"
 												onClick={() => toggle(node.id)}
 												aria-label={isOpen ? "Comprimi" : "Espandi"}
-												className="hover:bg-background/60 rounded-md p-1"
+												className="hover:bg-background/60 -my-.5 rounded-md p-1"
 											>
 												<AltArrowDownIcon
 													className={cn(
@@ -188,9 +210,8 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 													)}
 												/>
 											</button>
-										) : (
-											<span className="w-1.5 shrink-0" />
 										)}
+										<LevelIcon level={level} />
 										<Link
 											to={ROUTE[level]}
 											params={{ id: node.id }}
