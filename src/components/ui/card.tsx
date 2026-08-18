@@ -102,10 +102,15 @@ const TEXTURE_FADE: Record<TexturePlacement, string | undefined> = {
 	edges: "radial-gradient(75% 75% at 50% 50%, transparent 28%, #000 92%)",
 };
 
-// Deterministic [0,1) hash — no Math.random, so the field never reshuffles between renders.
+// Deterministic [0,1) hash — integer math only, so it is bit-identical on the
+// server and the client. Math.sin (and Math.random) are not: a float hash here
+// diverged by ~1e-12 between Node and the browser and tripped hydration on the
+// pixel field. Everything downstream is basic IEEE arithmetic, which is exact.
 function textureHash(i: number, seed: number): number {
-	const x = Math.sin(i * 127.1 + seed) * 43758.5453;
-	return x - Math.floor(x);
+	let h = Math.imul(i + 1, 374761393) ^ Math.imul(seed + 1, 2654435761);
+	h = Math.imul(h ^ (h >>> 13), 1274126177);
+	h ^= h >>> 16;
+	return (h >>> 0) / 4294967296;
 }
 
 const TEXTURE_MIN_SIZE = 0.5;
@@ -146,14 +151,13 @@ function CardTexture({
 	const opacity = alpha != null ? String(alpha) : "var(--card-pixel-alpha)";
 	const tile = TEXTURE_N * gap;
 	const cells = Array.from({ length: TEXTURE_N * TEXTURE_N }, (_, i) => {
-		const size =
-			TEXTURE_MIN_SIZE + textureHash(i, 311.7) * (maxSize - TEXTURE_MIN_SIZE);
+		const size = TEXTURE_MIN_SIZE + textureHash(i, 1) * (maxSize - TEXTURE_MIN_SIZE);
 		const inset = (maxSize - size) / 2;
 		return {
 			x: (i % TEXTURE_N) * gap + inset,
 			y: Math.floor(i / TEXTURE_N) * gap + inset,
 			size,
-			opacity: 0.45 + textureHash(i, 74.7) * 0.55,
+			opacity: 0.45 + textureHash(i, 2) * 0.55,
 		};
 	});
 
