@@ -24,6 +24,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
@@ -255,7 +256,7 @@ function AttemptHistoryPage() {
 		data: rows,
 		columns,
 		getRowId: row => row.id,
-		pageSize: 50,
+		pageSize: 10,
 		initialSorting: INITIAL_SORTING,
 		initialColumnVisibility: INITIAL_COLUMN_VISIBILITY,
 		extraResetKeys: DATE_RESET_KEYS,
@@ -286,6 +287,11 @@ function AttemptHistoryPage() {
 			/>
 
 			<div className="container space-y-6">
+				<UserBreadcrumb
+					current="Storico"
+					trail={[{ label: "Progressi", to: "/user/progress" }]}
+				/>
+
 				{attempts.length === 0 ? (
 					<EmptyState
 						icon={CupFirstIcon}
