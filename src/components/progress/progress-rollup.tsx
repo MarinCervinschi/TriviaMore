@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
+import { ArrowDownIcon } from "@solar-icons/react/linear/arrow-down";
+import { ArrowUpIcon } from "@solar-icons/react/linear/arrow-up";
 import { BookIcon } from "@solar-icons/react/linear/book";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
+import { SortVerticalIcon } from "@solar-icons/react/linear/sort-vertical";
 import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { Tree, TreeItem } from "@/components/ui/tree";
+import { EXAM_SIMULATION_SECTION, sectionDisplayName } from "@/lib/catalog/constants";
 import type { RollupCourse, RollupNode } from "@/lib/user/rollup";
 import { cn } from "@/lib/utils";
-import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
+import { formatGradeOutOf33, getGradeColor } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 type Level = "course" | "class" | "section";
@@ -49,6 +53,25 @@ const ENTITY_ICON: Record<Level, Icon> = {
 	section: DocumentTextIcon,
 };
 
+type SortKey = "name" | "grade" | "quizzes" | "time";
+type SortDir = "asc" | "desc";
+type Sort = { key: SortKey; dir: SortDir };
+
+function metricOf(node: RollupNode, key: Exclude<SortKey, "name">): number {
+	if (key === "grade") return node.avgGrade;
+	if (key === "quizzes") return node.quizzes;
+	return node.timeSpent;
+}
+
+function sortNodes<T extends RollupNode>(nodes: T[], { key, dir }: Sort): T[] {
+	const factor = dir === "asc" ? 1 : -1;
+	return [...nodes].sort((a, b) =>
+		key === "name"
+			? a.name.localeCompare(b.name) * factor
+			: (metricOf(a, key) - metricOf(b, key)) * factor
+	);
+}
+
 type Row = {
 	node: RollupNode;
 	level: Level;
@@ -62,55 +85,70 @@ function LevelIcon({ level }: { level: Level }) {
 	return <Icon className="text-muted-foreground size-4 shrink-0" />;
 }
 
+// A clickable column header that toggles the sort, like the DataTable's.
+function SortHeader({
+	label,
+	icon: LeadIcon,
+	sortKey,
+	sort,
+	onSort,
+	className,
+}: {
+	label: string;
+	icon?: Icon;
+	sortKey: SortKey;
+	sort: Sort;
+	onSort: (key: SortKey) => void;
+	className?: string;
+}) {
+	const dir = sort.key === sortKey ? sort.dir : null;
+	return (
+		<button
+			type="button"
+			onClick={() => onSort(sortKey)}
+			className={cn(
+				"hover:text-foreground flex items-center gap-1 transition-colors",
+				dir ? "text-foreground" : "text-muted-foreground",
+				className
+			)}
+		>
+			{LeadIcon && <LeadIcon className="size-3.5" />}
+			{label}
+			{dir === "asc" ? (
+				<ArrowUpIcon className="size-3.5" />
+			) : dir === "desc" ? (
+				<ArrowDownIcon className="size-3.5" />
+			) : (
+				<SortVerticalIcon className="size-3.5 opacity-40" />
+			)}
+		</button>
+	);
+}
+
 function Stats({
-	labels,
 	grade,
 	quizzes,
 	time,
 }: {
-	labels?: boolean;
-	grade?: number;
-	quizzes?: number;
-	time?: number;
+	grade: number;
+	quizzes: number;
+	time: number;
 }) {
 	return (
 		<span className="ml-auto flex items-center gap-4 ps-3 tabular-nums sm:gap-6">
 			<span
 				className={cn(
-					"flex w-14 items-center justify-end gap-1",
-					labels
-						? "text-muted-foreground"
-						: cn("font-semibold", getGradeColor(grade ?? 0))
+					"flex w-20 items-center justify-end font-semibold",
+					getGradeColor(grade)
 				)}
 			>
-				{labels ? (
-					<>
-						<GraphUpIcon className="size-3.5" />
-						Voto
-					</>
-				) : (
-					formatThirtyScaleGrade(grade ?? 0)
-				)}
+				{formatGradeOutOf33(grade)}
 			</span>
-			<span className="text-muted-foreground flex w-14 items-center justify-end gap-1">
-				{labels ? (
-					<>
-						<CupFirstIcon className="size-3.5" />
-						Quiz
-					</>
-				) : (
-					quizzes
-				)}
+			<span className="text-muted-foreground flex w-16 items-center justify-end">
+				{quizzes}
 			</span>
-			<span className="text-muted-foreground hidden w-28 items-center justify-end gap-1 sm:flex">
-				{labels ? (
-					<>
-						<ClockCircleIcon className="size-3.5" />
-						Tempo
-					</>
-				) : (
-					formatTimeSpent(time ?? 0)
-				)}
+			<span className="text-muted-foreground hidden w-28 items-center justify-end sm:flex">
+				{formatTimeSpent(time)}
 			</span>
 		</span>
 	);
@@ -121,6 +159,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 	const [open, setOpen] = useState<Set<string>>(
 		() => new Set(courses.map(course => course.id))
 	);
+	const [sort, setSort] = useState<Sort>({ key: "name", dir: "asc" });
 
 	const toggle = (id: string) =>
 		setOpen(prev => {
@@ -130,107 +169,153 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 			return next;
 		});
 
-	// Flatten to the visible rows, computing per-level "line continues below me"
-	// guides so the tree draws proper `└` / `├` elbows.
-	const rows: Row[] = [];
-	for (const course of courses) {
-		const courseOpen = open.has(course.id);
-		rows.push({
-			node: course,
-			level: "course",
-			expandable: true,
-			open: courseOpen,
-			guides: [],
-		});
-		if (!courseOpen) continue;
-		const classes = course.classes;
-		for (let ci = 0; ci < classes.length; ci++) {
-			const klass = classes[ci]!;
-			const classContinues = ci < classes.length - 1;
-			const classOpen = open.has(klass.id);
-			rows.push({
-				node: klass,
-				level: "class",
+	// A header click sorts ascending, then toggles direction on repeat — the same
+	// asc → desc → asc cycle the DataTable uses (no "unsorted" state).
+	const onSort = (key: SortKey) =>
+		setSort(prev =>
+			prev.key === key
+				? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+				: { key, dir: "asc" }
+		);
+
+	// Flatten to the visible rows — sorting each level by the chosen column — and
+	// compute per-level "line continues below me" guides so the tree draws proper
+	// `└` / `├` elbows.
+	const rows = useMemo(() => {
+		const result: Row[] = [];
+		for (const course of sortNodes(courses, sort)) {
+			const courseOpen = open.has(course.id);
+			result.push({
+				node: course,
+				level: "course",
 				expandable: true,
-				open: classOpen,
-				guides: [classContinues],
+				open: courseOpen,
+				guides: [],
 			});
-			if (!classOpen) continue;
-			const sections = klass.sections;
-			for (let si = 0; si < sections.length; si++) {
-				rows.push({
-					node: sections[si]!,
-					level: "section",
-					expandable: false,
-					open: false,
-					guides: [classContinues, si < sections.length - 1],
+			if (!courseOpen) continue;
+			const classes = sortNodes(course.classes, sort);
+			for (let ci = 0; ci < classes.length; ci++) {
+				const klass = classes[ci]!;
+				const classContinues = ci < classes.length - 1;
+				const classOpen = open.has(klass.id);
+				result.push({
+					node: klass,
+					level: "class",
+					expandable: true,
+					open: classOpen,
+					guides: [classContinues],
 				});
+				if (!classOpen) continue;
+				const sections = sortNodes(klass.sections, sort);
+				for (let si = 0; si < sections.length; si++) {
+					result.push({
+						node: sections[si]!,
+						level: "section",
+						expandable: false,
+						open: false,
+						guides: [classContinues, si < sections.length - 1],
+					});
+				}
 			}
 		}
-	}
+		return result;
+	}, [courses, open, sort]);
 
 	return (
-		<Card className="overflow-hidden">
-			<CardHeader className="pb-2">
-				<CardTitle className="text-base">Per corso</CardTitle>
-			</CardHeader>
-			<CardContent className="px-3 pb-3">
-				{courses.length === 0 ? (
-					<InlineEmpty>Nessun quiz ancora legato a un corso.</InlineEmpty>
-				) : (
-					<>
-						<div className="flex items-center pe-1 pb-1 text-xs">
-							<Stats labels />
-						</div>
-						<Tree indent={20} lines className="text-sm">
-							{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
-								<TreeItem
-									key={node.id}
-									level={DEPTH[level]}
-									guides={guides}
-									reach={level === "section" ? 24 : 0}
-								>
-									<div
-										className={cn(
-											"flex items-center gap-1.5 rounded-md py-2 pe-1",
-											BAND[level]
-										)}
+		<div className="space-y-2">
+			<h3 className="text-base font-semibold">Per corso</h3>
+			<Card className="overflow-hidden">
+				<CardContent className="px-3 py-3">
+					{courses.length === 0 ? (
+						<InlineEmpty>Nessun quiz ancora legato a un corso.</InlineEmpty>
+					) : (
+						<>
+							<div className="flex items-center gap-1.5 pe-1 pb-2.5 text-xs">
+								<SortHeader label="Nome" sortKey="name" sort={sort} onSort={onSort} />
+								<span className="ml-auto flex items-center gap-4 ps-3 sm:gap-6">
+									<SortHeader
+										label="Voto"
+										icon={GraphUpIcon}
+										sortKey="grade"
+										sort={sort}
+										onSort={onSort}
+										className="w-20 justify-end"
+									/>
+									<SortHeader
+										label="Quiz"
+										icon={CupFirstIcon}
+										sortKey="quizzes"
+										sort={sort}
+										onSort={onSort}
+										className="w-16 justify-end"
+									/>
+									<SortHeader
+										label="Tempo"
+										icon={ClockCircleIcon}
+										sortKey="time"
+										sort={sort}
+										onSort={onSort}
+										className="hidden w-28 justify-end sm:flex"
+									/>
+								</span>
+							</div>
+							<Tree indent={20} lines className="text-sm">
+								{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
+									<TreeItem
+										key={node.id}
+										level={DEPTH[level]}
+										guides={guides}
+										reach={level === "section" ? 24 : 0}
 									>
-										{expandable && (
-											<button
-												type="button"
-												onClick={() => toggle(node.id)}
-												aria-label={isOpen ? "Comprimi" : "Espandi"}
-												className="hover:bg-background/60 -my-.5 rounded-md p-1"
-											>
-												<AltArrowDownIcon
-													className={cn(
-														"text-muted-foreground size-4 transition-transform",
-														!isOpen && "-rotate-90"
-													)}
-												/>
-											</button>
-										)}
-										<LevelIcon level={level} />
-										<Link
-											to={ROUTE[level]}
-											params={{ id: node.id }}
-											className="truncate hover:underline"
+										<div
+											className={cn(
+												"flex items-center gap-1.5 rounded-md py-2 pe-1",
+												BAND[level]
+											)}
 										>
-											{node.name}
-										</Link>
-										<Stats
-											grade={node.avgGrade}
-											quizzes={node.quizzes}
-											time={node.timeSpent}
-										/>
-									</div>
-								</TreeItem>
-							))}
-						</Tree>
-					</>
-				)}
-			</CardContent>
-		</Card>
+											{expandable && (
+												<button
+													type="button"
+													onClick={() => toggle(node.id)}
+													aria-label={isOpen ? "Comprimi" : "Espandi"}
+													className="hover:bg-background/60 -my-.5 rounded-md p-1"
+												>
+													<AltArrowDownIcon
+														className={cn(
+															"text-muted-foreground size-4 transition-transform",
+															!isOpen && "-rotate-90"
+														)}
+													/>
+												</button>
+											)}
+											<LevelIcon level={level} />
+											{node.name === EXAM_SIMULATION_SECTION ? (
+												// The exam sentinel isn't a real page — plain text, no link.
+												<span className="text-muted-foreground truncate">
+													{sectionDisplayName(node.name)}
+												</span>
+											) : (
+												<Link
+													to={ROUTE[level]}
+													params={{ id: node.id }}
+													className="truncate hover:underline"
+												>
+													{node.name}
+												</Link>
+											)}
+											<Stats
+												grade={node.avgGrade}
+												quizzes={node.quizzes}
+												time={node.timeSpent}
+											/>
+										</div>
+									</TreeItem>
+								))}
+							</Tree>
+						</>
+					)}
+				</CardContent>
+			</Card>
+		</div>
 	);
 }

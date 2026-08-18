@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import type { RollupCourse } from "@/lib/user/rollup";
 
 import { ProgressRollup } from "./progress-rollup";
@@ -21,6 +22,14 @@ const COURSES: RollupCourse[] = [
 				sections: [
 					{ id: "s1", name: "Limiti", quizzes: 5, avgGrade: 28, timeSpent: 1_500_000 },
 					{ id: "s2", name: "Integrali", quizzes: 3, avgGrade: 25, timeSpent: 900_000 },
+					// The exam sentinel: rendered as a non-clickable, translated row.
+					{
+						id: "sx",
+						name: EXAM_SIMULATION_SECTION,
+						quizzes: 2,
+						avgGrade: 24,
+						timeSpent: 600_000,
+					},
 				],
 			},
 			{
