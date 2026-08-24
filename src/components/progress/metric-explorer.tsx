@@ -1,5 +1,6 @@
 import { type ReactNode, useId, useMemo, useState } from "react";
 
+import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
 import { BookIcon } from "@solar-icons/react/linear/book";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
@@ -21,6 +22,14 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import {
@@ -79,42 +88,64 @@ function pctChange(current: number, previous: number): number {
 
 // ── controls ─────────────────────────────────────────────────────────────────
 
-/** A segmented switch with an optional leading marker and per-option icons. */
-function Control<T extends string>({
+type ChipOption<T extends string> = {
+	value: T;
+	label: string;
+	icon?: Icon;
+	glyph?: ReactNode;
+};
+
+// A single-select "filter chip": shows the current choice and opens a radio
+// menu to change it — the same read as the data-table filter chips, applied to
+// the explorer's mode / period / chart type.
+function SelectChip<T extends string>({
+	label,
 	value,
 	onChange,
 	options,
 	lead: Lead,
 }: {
+	label: string;
 	value: T;
 	onChange: (value: T) => void;
-	options: { value: T; label: string; icon?: Icon }[];
+	options: ChipOption<T>[];
 	lead?: Icon;
 }) {
+	const current = options.find(option => option.value === value);
+	const CurrentIcon = current?.icon;
 	return (
-		<div className="bg-muted/50 flex items-center gap-0.5 rounded-lg p-0.5">
-			{Lead && <Lead className="text-muted-foreground mr-0.5 ml-1.5 h-3.5 w-3.5" />}
-			{options.map(option => {
-				const OptionIcon = option.icon;
-				const active = value === option.value;
-				return (
-					<button
-						key={option.value}
-						type="button"
-						onClick={() => onChange(option.value)}
-						className={cn(
-							"flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-							active
-								? "bg-background text-foreground shadow-sm"
-								: "text-muted-foreground hover:text-foreground"
-						)}
-					>
-						{OptionIcon && <OptionIcon className="h-3.5 w-3.5" />}
-						{option.label}
-					</button>
-				);
-			})}
-		</div>
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<button
+					type="button"
+					aria-label={label}
+					className="border-border bg-background hover:bg-muted/50 inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs transition-colors"
+				>
+					{Lead ? (
+						<Lead className="text-muted-foreground size-3.5" />
+					) : CurrentIcon ? (
+						<CurrentIcon className="text-muted-foreground size-3.5" />
+					) : (
+						current?.glyph
+					)}
+					<span className="font-medium">{current?.label ?? label}</span>
+					<AltArrowDownIcon className="text-muted-foreground size-3.5" />
+				</button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="start" className="min-w-40">
+				<DropdownMenuLabel>{label}</DropdownMenuLabel>
+				<DropdownMenuRadioGroup
+					value={value}
+					onValueChange={next => onChange(next as T)}
+				>
+					{options.map(option => (
+						<DropdownMenuRadioItem key={option.value} value={option.value}>
+							{option.label}
+						</DropdownMenuRadioItem>
+					))}
+				</DropdownMenuRadioGroup>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }
 
@@ -379,7 +410,7 @@ export function MetricExplorer({
 	daily: DailyStudyStat[];
 	today?: Date;
 }) {
-	const [metric, setMetric] = useState<MetricKey>("quizzes");
+	const [metric, setMetric] = useState<MetricKey>("grade");
 	const [period, setPeriod] = useState<ExplorerPeriod>("month");
 	const [mode, setMode] = useState<ExplorerMode>("STUDY");
 	const [chartType, setChartType] = useState<ChartType>("dots");
@@ -440,32 +471,28 @@ export function MetricExplorer({
 
 	return (
 		<div className="space-y-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Control value={mode} onChange={setMode} options={MODE_OPTIONS} />
-				<Control
-					value={period}
-					onChange={setPeriod}
-					options={PERIOD_OPTIONS}
-					lead={CalendarMinimalisticIcon}
-				/>
-				<div className="bg-muted/50 ml-auto flex items-center gap-0.5 rounded-lg p-0.5">
-					{TYPE_OPTIONS.map(type => (
-						<button
-							key={type.value}
-							type="button"
-							aria-label={type.label}
-							title={type.label}
-							onClick={() => setChartType(type.value)}
-							className={cn(
-								"flex items-center rounded-md px-2.5 py-1.5 transition-colors",
-								chartType === type.value
-									? "bg-background text-foreground shadow-sm"
-									: "text-muted-foreground hover:text-foreground"
-							)}
-						>
-							{type.glyph}
-						</button>
-					))}
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<h2 className="text-lg font-semibold">Andamento</h2>
+				<div className="flex flex-wrap items-center gap-2">
+					<SelectChip
+						label="Modalità"
+						value={mode}
+						onChange={setMode}
+						options={MODE_OPTIONS}
+					/>
+					<SelectChip
+						label="Periodo"
+						value={period}
+						onChange={setPeriod}
+						options={PERIOD_OPTIONS}
+						lead={CalendarMinimalisticIcon}
+					/>
+					<SelectChip
+						label="Tipo grafico"
+						value={chartType}
+						onChange={setChartType}
+						options={TYPE_OPTIONS}
+					/>
 				</div>
 			</div>
 
