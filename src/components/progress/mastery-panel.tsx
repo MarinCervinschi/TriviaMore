@@ -76,13 +76,16 @@ function TickGauge({
 					const a = ((180 - (180 * i) / (ticks - 1)) * Math.PI) / 180;
 					const dx = Math.cos(a);
 					const dy = -Math.sin(a);
+					// Round the trig output: Math.cos/sin differ in the last ULP between
+					// Node and the browser, which trips React's hydration check.
+					const round = (n: number) => Math.round(n * 1000) / 1000;
 					return (
 						<line
 							key={i}
-							x1={cx + innerR * dx}
-							y1={cy + innerR * dy}
-							x2={cx + outerR * dx}
-							y2={cy + outerR * dy}
+							x1={round(cx + innerR * dx)}
+							y1={round(cy + innerR * dy)}
+							x2={round(cx + outerR * dx)}
+							y2={round(cy + outerR * dy)}
 							stroke={i < filled ? color : "hsl(var(--muted))"}
 							strokeWidth={stroke}
 							strokeLinecap="round"
