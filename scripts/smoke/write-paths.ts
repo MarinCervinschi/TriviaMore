@@ -11,7 +11,6 @@ import { closeDb, getDb } from "../../src/db/index.ts";
 import {
 	evaluationModes,
 	flashcardAttempts,
-	progress,
 	questions,
 	quizAttempts,
 	quizQuestions,
@@ -28,7 +27,6 @@ import {
 	insertAnswers,
 	insertAttempt,
 } from "../../src/lib/quiz/db/attempts.ts";
-import { recordAttemptInProgress } from "../../src/lib/quiz/db/progress.ts";
 import {
 	deleteQuiz,
 	findQuizQuestionOrder,
@@ -169,69 +167,6 @@ try {
 				graded?.sectionId === seed.section_id &&
 				graded?.quizMode === "STUDY"
 		);
-
-		// progress upsert, twice: the second run must average instead of overwrite
-		const before = await tx
-			.select()
-			.from(progress)
-			.where(
-				and(
-					eq(progress.userId, seed.user_id),
-					eq(progress.sectionId, seed.section_id),
-					eq(progress.quizMode, "STUDY")
-				)
-			)
-			.then(rows => rows[0]);
-
-		await recordAttemptInProgress(tx, {
-			userId: seed.user_id,
-			sectionId: seed.section_id,
-			quizMode: "STUDY",
-			score: 20,
-			timeSpent: 1000,
-		});
-		await recordAttemptInProgress(tx, {
-			userId: seed.user_id,
-			sectionId: seed.section_id,
-			quizMode: "STUDY",
-			score: 30,
-			timeSpent: 1000,
-		});
-
-		const after = await tx
-			.select()
-			.from(progress)
-			.where(
-				and(
-					eq(progress.userId, seed.user_id),
-					eq(progress.sectionId, seed.section_id),
-					eq(progress.quizMode, "STUDY")
-				)
-			)
-			.then(rows => rows[0]);
-
-		expect(
-			"progress: counter incremented twice",
-			after.quizzesTaken === (before?.quizzesTaken ?? 0) + 2,
-			`${before?.quizzesTaken ?? 0} → ${after.quizzesTaken}`
-		);
-		expect(
-			"progress: best score kept",
-			(after.bestScore ?? 0) >= Math.max(30, before?.bestScore ?? 0),
-			`best = ${after.bestScore}`
-		);
-		expect(
-			"progress: time accumulated",
-			after.totalTimeSpent === (before?.totalTimeSpent ?? 0) + 2000
-		);
-		if (!before) {
-			// 20 then 30 on a fresh row averages to 25.
-			expect(
-				"progress: running average",
-				after.averageScore === 25,
-				`avg = ${after.averageScore}`
-			);
-		}
 
 		// flashcard: a finished session records one row, no scoring model.
 		await insertFlashcardAttempt(tx, {

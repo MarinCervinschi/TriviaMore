@@ -31,11 +31,13 @@ async function getStats(userId: string): Promise<UserStats> {
         select count(*) from bookmarks where user_id = ${userId}
       )`.mapWith(Number),
 			totalQuizzes: sql<number>`(
-        select coalesce(sum(quizzes_taken), 0) from progress where user_id = ${userId}
+        select count(*) from quiz.quiz_attempts
+         where user_id = ${userId} and completed_at is not null
       )`.mapWith(Number),
 			averageScore: sql<number>`(
-        select coalesce(round(avg(average_score) filter (where average_score > 0)::numeric, 2), 0)
-          from progress where user_id = ${userId}
+        select coalesce(round(avg(score)::numeric, 2), 0)
+          from quiz.quiz_attempts
+         where user_id = ${userId} and completed_at is not null
       )`.mapWith(Number),
 		})
 		.from(sql`(select 1) as one`);

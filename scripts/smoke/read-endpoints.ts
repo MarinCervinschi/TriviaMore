@@ -49,7 +49,6 @@ import {
 } from "../../src/lib/user/service/classes.ts";
 import { getMastery } from "../../src/lib/user/service/mastery.ts";
 import { getUserProfile } from "../../src/lib/user/service/profile.ts";
-import { getUserProgress } from "../../src/lib/user/service/progress.ts";
 import { getDailyStudyStats } from "../../src/lib/user/service/study-stats.ts";
 
 let failures = 0;
@@ -208,7 +207,6 @@ if (userId) {
 	await check("user.getRecentClasses", () => getRecentClasses(db, userId));
 	await check("user.getUserBookmarks", () => getUserBookmarks(userId));
 	await check("user.getBookmarkedQuestionIds", () => getBookmarkedQuestionIds(userId));
-	await check("user.getUserProgress", () => getUserProgress(userId));
 	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
 	await check("user.getMastery", () => getMastery(userId));
 	await check("user.getMastery (scoped)", () =>

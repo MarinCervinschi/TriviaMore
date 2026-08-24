@@ -4,7 +4,6 @@ export * from "./entities/public/enums";
 export * from "./entities/public/profiles";
 export * from "./entities/public/notifications";
 export * from "./entities/public/bookmarks";
-export * from "./entities/public/progress";
 export * from "./entities/public/user-classes";
 export * from "./entities/public/user-recent-classes";
 export * from "./entities/public/user-changelog-reads";
