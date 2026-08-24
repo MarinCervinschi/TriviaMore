@@ -36,8 +36,20 @@ export async function getMastery(
 ): Promise<UserMastery> {
 	const db = getDb();
 	const scoped = sectionScopeSql(scope, sql`aa.section_id`);
+	const scopedTime = sectionScopeSql(scope, sql`qa.section_id`);
 
-	const [difficulty, sections] = await Promise.all([
+	// Time lives on the attempt (one row), answers on `answer_attempts` (many
+	// rows) — joining the two would multiply the time by the answer count. So the
+	// per-section time is summed over the distinct attempts here and joined in.
+	const ATTEMPT_TIME = sql`
+		select qa.section_id,
+		       round(sum(qa.time_spent) / 1000.0)::int as time_sec
+		  from quiz.quiz_attempts qa
+		 where qa.user_id = ${userId} and qa.time_spent is not null
+		 group by qa.section_id
+	`;
+
+	const [difficulty, sections, timeTotal] = await Promise.all([
 		db.execute<{ key: string; total: number; correct: number }>(sql`
 			select aa.difficulty as key,
 			       count(*) filter (where aa.is_correct is not null)::int as total,
@@ -59,21 +71,29 @@ export async function getMastery(
 			dept_code: string | null;
 			total: number;
 			correct: number;
+			time_sec: number | null;
 		}>(sql`
-			with pc as (${PRIMARY_COURSE})
+			with pc as (${PRIMARY_COURSE}), at as (${ATTEMPT_TIME})
 			select aa.section_id,
 			       s.name as section_name, s.slug as section_slug,
 			       pc.course_name, pc.class_code, pc.course_code, pc.dept_code,
 			       count(*) filter (where aa.is_correct is not null)::int as total,
-			       count(*) filter (where aa.is_correct)::int as correct
+			       count(*) filter (where aa.is_correct)::int as correct,
+			       at.time_sec
 			  from quiz.answer_attempts aa
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
 			  join catalog.sections s on s.id = aa.section_id
 			  left join pc on pc.class_id = s.class_id
+			  left join at on at.section_id = aa.section_id
 			 where qa.user_id = ${userId} and aa.section_id is not null${scoped}
 			 group by aa.section_id, s.name, s.slug,
-			          pc.course_name, pc.class_code, pc.course_code, pc.dept_code
+			          pc.course_name, pc.class_code, pc.course_code, pc.dept_code, at.time_sec
 			having count(*) filter (where aa.is_correct is not null) >= ${MIN_ANSWERS}
+		`),
+		db.execute<{ time_sec: number | null }>(sql`
+			select round(sum(qa.time_spent) / 1000.0)::int as time_sec
+			  from quiz.quiz_attempts qa
+			 where qa.user_id = ${userId} and qa.time_spent is not null${scopedTime}
 		`),
 	]);
 
@@ -94,6 +114,10 @@ export async function getMastery(
 			}),
 			total: row.total,
 			correct: row.correct,
+			avgSeconds:
+				row.time_sec != null && row.total > 0
+					? Math.round(row.time_sec / row.total)
+					: null,
 		} satisfies SectionAccuracy,
 		accuracy: row.total === 0 ? 0 : row.correct / row.total,
 	}));
@@ -111,6 +135,15 @@ export async function getMastery(
 		.map(row => row.section);
 
 	const totalAnswers = byDifficulty.reduce((sum, row) => sum + row.total, 0);
+	const timeSec = timeTotal.rows[0]?.time_sec ?? 0;
+	const avgSecondsPerQuestion =
+		totalAnswers > 0 && timeSec > 0 ? Math.round(timeSec / totalAnswers) : null;
 
-	return { totalAnswers, byDifficulty, weakSections, strongSections };
+	return {
+		totalAnswers,
+		avgSecondsPerQuestion,
+		byDifficulty,
+		weakSections,
+		strongSections,
+	};
 }

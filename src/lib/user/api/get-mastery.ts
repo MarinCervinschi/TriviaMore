@@ -8,6 +8,7 @@ import type { UserMastery } from "../types";
 
 const EMPTY: UserMastery = {
 	totalAnswers: 0,
+	avgSecondsPerQuestion: null,
 	byDifficulty: [],
 	weakSections: [],
 	strongSections: [],
