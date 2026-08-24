@@ -29,7 +29,6 @@ function pctOf(correct: number, total: number) {
 	return total === 0 ? 0 : Math.round((correct / total) * 100);
 }
 
-// Seconds per question read compactly: "34s", "1m 20s".
 function perQuestion(seconds: number) {
 	if (seconds < 60) return `${seconds}s`;
 	const m = Math.floor(seconds / 60);
@@ -63,8 +62,6 @@ function Shell({
 	);
 }
 
-// A small info affordance next to a label: an outline icon that reveals a short
-// explanation of what the figure beside it means.
 function InfoDot({ children }: { children: React.ReactNode }) {
 	return (
 		<Tooltip>
@@ -164,8 +161,6 @@ function DifficultyBar({ row }: { row: MasteryBreakdown }) {
 	);
 }
 
-// The overall accuracy as a segmented semicircle gauge with the difficulties as
-// bars beside it. Titleless: it is the headline of the "Padronanza" section.
 function AccuracyCard({ byDifficulty }: { byDifficulty: MasteryBreakdown[] }) {
 	const total = byDifficulty.reduce((sum, row) => sum + row.total, 0);
 	const correct = byDifficulty.reduce((sum, row) => sum + row.correct, 0);
@@ -192,8 +187,6 @@ function AccuracyCard({ byDifficulty }: { byDifficulty: MasteryBreakdown[] }) {
 	);
 }
 
-// A section as a labelled accuracy bar: name + course, the percentage tinted by
-// band, an inline bar, and the mean time per question when it is known.
 function SectionRow({ section }: { section: SectionAccuracy }) {
 	const pct = pctOf(section.correct, section.total);
 	const tone = accuracyTone(pct);

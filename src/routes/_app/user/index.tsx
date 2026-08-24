@@ -90,7 +90,7 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
-				{/* Quick actions — icon + state, the page's entry points */}
+				{/* Quick actions */}
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard
 						icon={InboxIcon}
@@ -132,8 +132,6 @@ function DashboardPage() {
 	);
 }
 
-// Icon + state entry card (the "Icona + stato" variant): an icon tile on the
-// left, a title and a one-line state, a chevron that nudges on hover.
 function ActionCard({
 	icon: Icon,
 	color,

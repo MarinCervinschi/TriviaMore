@@ -6,8 +6,6 @@ import type { MasteryScope } from "../schemas";
 import type { DailyStudyStat } from "../types";
 import { sectionScopeSql } from "./scope";
 
-// Per-UTC-day, per-mode study aggregates: attempt counts/grades/time from
-// quiz_attempts, answer verdicts from answer_attempts, merged by day and mode.
 // Rows without a mode snapshot are dropped so the split stays clean (the #159
 // backfill covers every historical attempt). Optionally scoped to a section /
 // class / course. Callers window these client-side.
