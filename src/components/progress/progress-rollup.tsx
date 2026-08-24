@@ -85,7 +85,6 @@ function LevelIcon({ level }: { level: Level }) {
 	return <Icon className="text-muted-foreground size-4 shrink-0" />;
 }
 
-// A clickable column header that toggles the sort, like the DataTable's.
 function SortHeader({
 	label,
 	icon: LeadIcon,
@@ -155,7 +154,6 @@ function Stats({
 }
 
 export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
-	// Open the first level (courses) by default, so classes are visible.
 	const [open, setOpen] = useState<Set<string>>(
 		() => new Set(courses.map(course => course.id))
 	);
@@ -178,9 +176,6 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 				: { key, dir: "asc" }
 		);
 
-	// Flatten to the visible rows — sorting each level by the chosen column — and
-	// compute per-level "line continues below me" guides so the tree draws proper
-	// `└` / `├` elbows.
 	const rows = useMemo(() => {
 		const result: Row[] = [];
 		for (const course of sortNodes(courses, sort)) {
@@ -270,7 +265,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 										>
 											<div
 												className={cn(
-													"flex items-center gap-1.5 rounded-md py-2 pe-1",
+													"flex items-center gap-1.5 rounded-lg py-2 pe-1",
 													BAND[level]
 												)}
 											>
@@ -279,7 +274,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 														type="button"
 														onClick={() => toggle(node.id)}
 														aria-label={isOpen ? "Comprimi" : "Espandi"}
-														className="hover:bg-background/60 -my-.5 rounded-md p-1"
+														className="hover:bg-background/60 -my-0.5 rounded-lg p-1"
 													>
 														<AltArrowDownIcon
 															className={cn(

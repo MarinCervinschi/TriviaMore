@@ -86,8 +86,6 @@ function pctChange(current: number, previous: number): number {
 	return previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100);
 }
 
-// ── controls ─────────────────────────────────────────────────────────────────
-
 type ChipOption<T extends string> = {
 	value: T;
 	label: string;
@@ -196,7 +194,7 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 	return (
 		<span
 			className={cn(
-				"rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+				"rounded-lg px-1.5 py-0.5 text-xs font-semibold tabular-nums",
 				tone
 			)}
 		>
@@ -205,8 +203,6 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 		</span>
 	);
 }
-
-// ── chart ────────────────────────────────────────────────────────────────────
 
 /** A point marker with an expanding halo — gated by reduced motion. */
 function PulseDot({
@@ -369,8 +365,6 @@ function MetricChart({
 		</ChartContainer>
 	);
 }
-
-// ── the card ─────────────────────────────────────────────────────────────────
 
 const PERIOD_OPTIONS: { value: ExplorerPeriod; label: string }[] = [
 	{ value: "week", label: "Sett" },

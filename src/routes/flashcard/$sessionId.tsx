@@ -18,6 +18,7 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { completeFlashcardFn, getFlashcardSessionFn } from "@/lib/flashcard/api";
 import type { FlashcardSession } from "@/lib/flashcard/types";
+import { reportBrowserError } from "@/lib/logging/browser";
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
 	loader: async ({ params }) => {
@@ -91,7 +92,7 @@ function FlashcardPage() {
 		})
 			.then(() => queryClient.invalidateQueries({ queryKey: ["user"] }))
 			.catch(error => {
-				console.error("Failed to record flashcard session:", error);
+				reportBrowserError("Failed to record flashcard session", error);
 			});
 	}, [session, studiedCards, queryClient]);
 

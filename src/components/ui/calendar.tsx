@@ -25,7 +25,7 @@ const CALENDAR_TOKENS = {
 	"--rdp-day-height": "2.25rem",
 	"--rdp-day_button-width": "2.25rem",
 	"--rdp-day_button-height": "2.25rem",
-	"--rdp-day_button-border-radius": "calc(var(--radius) - 2px)",
+	"--rdp-day_button-border-radius": "var(--radius-lg)",
 } as CSSProperties;
 
 function Calendar({ className, showOutsideDays = true, ...props }: CalendarProps) {
