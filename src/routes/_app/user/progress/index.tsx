@@ -17,8 +17,6 @@ import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import { buildProgressRollup } from "@/lib/user/rollup";
-import { formatGradeOutOf33 } from "@/lib/utils/grading";
-import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 export const Route = createFileRoute("/_app/user/progress/")({
 	loader: ({ context }) =>
@@ -38,12 +36,6 @@ function ProgressPage() {
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
 
 	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
-	const summary = useMemo(() => {
-		const count = attempts.length;
-		const avg = count ? attempts.reduce((s, a) => s + a.score, 0) / count : 0;
-		const time = attempts.reduce((s, a) => s + (a.timeSpent ?? 0), 0);
-		return { count, avg, time };
-	}, [attempts]);
 
 	if (attempts.length === 0) {
 		return (
@@ -73,11 +65,6 @@ function ProgressPage() {
 				icon={GraphUpIcon}
 				title="I miei progressi"
 				description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
-				stats={[
-					{ label: "quiz totali", value: summary.count },
-					{ label: "media voto", value: formatGradeOutOf33(summary.avg) },
-					{ label: "tempo totale", value: formatTimeSpent(summary.time) },
-				]}
 			/>
 
 			<div className="container space-y-6">
