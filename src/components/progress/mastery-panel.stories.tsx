@@ -16,7 +16,8 @@ const RICH: UserMastery = {
 		{
 			sectionId: "s1",
 			sectionName: "Integrali impropri",
-			courseName: "Analisi Matematica I",
+			courseCode: "II",
+			className: "Analisi Matematica I",
 			path: null,
 			total: 22,
 			correct: 8,
@@ -25,7 +26,8 @@ const RICH: UserMastery = {
 		{
 			sectionId: "s2",
 			sectionName: "Diagonalizzazione",
-			courseName: "Geometria e Algebra",
+			courseCode: "II",
+			className: "Geometria e Algebra",
 			path: null,
 			total: 15,
 			correct: 7,
@@ -36,7 +38,8 @@ const RICH: UserMastery = {
 		{
 			sectionId: "s3",
 			sectionName: "Limiti notevoli",
-			courseName: "Analisi Matematica I",
+			courseCode: "II",
+			className: "Analisi Matematica I",
 			path: null,
 			total: 30,
 			correct: 29,
@@ -45,7 +48,8 @@ const RICH: UserMastery = {
 		{
 			sectionId: "s4",
 			sectionName: "Prodotto scalare",
-			courseName: "Geometria e Algebra",
+			courseCode: "II",
+			className: "Geometria e Algebra",
 			path: null,
 			total: 18,
 			correct: 16,
