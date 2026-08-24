@@ -46,7 +46,6 @@ function Stat({
 	);
 }
 
-// The hour-of-day histogram: 24 bars, the busiest hour lit in the brand colour.
 function WhenYouStudy({
 	byHour,
 	peakHour,
