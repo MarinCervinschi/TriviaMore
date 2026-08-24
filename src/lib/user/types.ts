@@ -108,10 +108,14 @@ export type SectionAccuracy = {
 	path: string | null;
 	total: number;
 	correct: number;
+	/** Mean seconds per answered question in this section (null when untimed). */
+	avgSeconds: number | null;
 };
 
 export type UserMastery = {
 	totalAnswers: number;
+	/** Mean seconds per answered question across the scope (null when untimed). */
+	avgSecondsPerQuestion: number | null;
 	byDifficulty: MasteryBreakdown[];
 	weakSections: SectionAccuracy[];
 	strongSections: SectionAccuracy[];
