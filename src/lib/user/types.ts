@@ -124,6 +124,8 @@ export type UserMastery = {
 
 export type AttemptHistoryEntry = {
 	id: string;
+	/** Null when the quiz was deleted: the attempt survives, its result page does not. */
+	quizId: string | null;
 	score: number;
 	timeSpent: number | null;
 	completedAt: string;

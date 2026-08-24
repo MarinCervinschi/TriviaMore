@@ -379,13 +379,15 @@ function AttemptHistoryPage() {
 				) : (
 					<DataTable
 						table={table}
-						rowLink={row => (
-							<Link
-								to="/quiz/results/$attemptId"
-								params={{ attemptId: row.id }}
-								aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
-							/>
-						)}
+						rowLink={row =>
+							row.quizId ? (
+								<Link
+									to="/quiz/results/$attemptId"
+									params={{ attemptId: row.id }}
+									aria-label={`Apri il risultato del ${formatDate(row.completedAt)}`}
+								/>
+							) : null
+						}
 						toolbar={
 							<DataTableToolbar
 								table={table}

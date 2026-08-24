@@ -186,6 +186,9 @@ export async function findCompletedAttemptHistory(db: DbOrTx, userId: string) {
 			courseCode: primaryCourse.courseCode,
 			departmentCode: primaryCourse.departmentCode,
 			id: quizAttempts.id,
+			// Null once the quiz is gone, which is what makes the result page
+			// unreachable — the row survives, its result does not.
+			quizId: quizAttempts.quizId,
 			score: quizAttempts.score,
 			timeSpent: quizAttempts.timeSpent,
 			quizMode: quizAttempts.quizMode,

@@ -6,6 +6,7 @@ import type { AttemptHistoryEntry } from "./types";
 function entry(over: Partial<AttemptHistoryEntry>): AttemptHistoryEntry {
 	return {
 		id: "a",
+		quizId: "q1",
 		score: 24,
 		timeSpent: 60_000,
 		completedAt: "2026-08-01T10:00:00Z",
