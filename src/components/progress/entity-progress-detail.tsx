@@ -10,7 +10,7 @@ import type {
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
-import { formatThirtyScaleGrade } from "@/lib/utils/grading";
+import { formatGradeOutOf33 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 import { MasteryPanel } from "./mastery-panel";
@@ -52,7 +52,7 @@ export function EntityProgressDetail({
 					count
 						? [
 								{ label: "quiz", value: count },
-								{ label: "media voto", value: formatThirtyScaleGrade(avg) },
+								{ label: "media voto", value: formatGradeOutOf33(avg) },
 								{ label: "tempo", value: formatTimeSpent(time) },
 							]
 						: undefined
