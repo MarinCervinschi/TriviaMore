@@ -35,8 +35,10 @@ export async function getMastery(
 	scope?: MasteryScope
 ): Promise<UserMastery> {
 	const db = getDb();
-	const scoped = sectionScopeSql(scope, sql`aa.section_id`);
-	const scopedTime = sectionScopeSql(scope, sql`qa.section_id`);
+	// Areas, difficulty and time are all read by the ATTEMPT's section, so an exam
+	// simulation counts as its own section ("Simulazione d'esame") instead of
+	// splintering its answers across the sections its questions were drawn from.
+	const scoped = sectionScopeSql(scope, sql`qa.section_id`);
 
 	// Time lives on the attempt (one row), answers on `answer_attempts` (many
 	// rows) — joining the two would multiply the time by the answer count. So the
@@ -65,7 +67,7 @@ export async function getMastery(
 			section_id: string;
 			section_name: string | null;
 			section_slug: string | null;
-			course_name: string | null;
+			class_name: string | null;
 			class_code: string | null;
 			course_code: string | null;
 			dept_code: string | null;
@@ -74,26 +76,28 @@ export async function getMastery(
 			time_sec: number | null;
 		}>(sql`
 			with pc as (${PRIMARY_COURSE}), at as (${ATTEMPT_TIME})
-			select aa.section_id,
+			select qa.section_id,
 			       s.name as section_name, s.slug as section_slug,
-			       pc.course_name, pc.class_code, pc.course_code, pc.dept_code,
+			       k.name as class_name,
+			       pc.class_code, pc.course_code, pc.dept_code,
 			       count(*) filter (where aa.is_correct is not null)::int as total,
 			       count(*) filter (where aa.is_correct)::int as correct,
 			       at.time_sec
 			  from quiz.answer_attempts aa
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
-			  join catalog.sections s on s.id = aa.section_id
+			  join catalog.sections s on s.id = qa.section_id
+			  left join catalog.classes k on k.id = s.class_id
 			  left join pc on pc.class_id = s.class_id
-			  left join at on at.section_id = aa.section_id
-			 where qa.user_id = ${userId} and aa.section_id is not null${scoped}
-			 group by aa.section_id, s.name, s.slug,
-			          pc.course_name, pc.class_code, pc.course_code, pc.dept_code, at.time_sec
+			  left join at on at.section_id = qa.section_id
+			 where qa.user_id = ${userId} and qa.section_id is not null${scoped}
+			 group by qa.section_id, s.name, s.slug, k.name,
+			          pc.class_code, pc.course_code, pc.dept_code, at.time_sec
 			having count(*) filter (where aa.is_correct is not null) >= ${MIN_ANSWERS}
 		`),
 		db.execute<{ time_sec: number | null }>(sql`
 			select round(sum(qa.time_spent) / 1000.0)::int as time_sec
 			  from quiz.quiz_attempts qa
-			 where qa.user_id = ${userId} and qa.time_spent is not null${scopedTime}
+			 where qa.user_id = ${userId} and qa.time_spent is not null${scoped}
 		`),
 	]);
 
@@ -105,7 +109,8 @@ export async function getMastery(
 		section: {
 			sectionId: row.section_id,
 			sectionName: row.section_name,
-			courseName: row.course_name,
+			courseCode: row.course_code,
+			className: row.class_name,
 			path: sectionBrowsePath({
 				departmentCode: row.dept_code,
 				courseCode: row.course_code,
@@ -122,15 +127,26 @@ export async function getMastery(
 		accuracy: row.total === 0 ? 0 : row.correct / row.total,
 	}));
 
+	// Ties on accuracy (e.g. a wall of 0%) are broken by the sample size — more
+	// answers is a firmer signal — then by name, so the order is deterministic.
+	const byName = (a: (typeof ranked)[number], b: (typeof ranked)[number]) =>
+		(a.section.sectionName ?? "").localeCompare(b.section.sectionName ?? "");
+
 	const weakSections = ranked
 		.filter(row => row.accuracy < WEAK_ACCURACY)
-		.sort((a, b) => a.accuracy - b.accuracy)
+		.sort(
+			(a, b) =>
+				a.accuracy - b.accuracy || b.section.total - a.section.total || byName(a, b)
+		)
 		.slice(0, SECTION_LIMIT)
 		.map(row => row.section);
 
 	const strongSections = ranked
 		.filter(row => row.accuracy >= STRONG_ACCURACY)
-		.sort((a, b) => b.accuracy - a.accuracy)
+		.sort(
+			(a, b) =>
+				b.accuracy - a.accuracy || b.section.total - a.section.total || byName(a, b)
+		)
 		.slice(0, SECTION_LIMIT)
 		.map(row => row.section);
 

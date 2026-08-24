@@ -104,7 +104,8 @@ export type MasteryBreakdown = { key: string; total: number; correct: number };
 export type SectionAccuracy = {
 	sectionId: string;
 	sectionName: string | null;
-	courseName: string | null;
+	courseCode: string | null;
+	className: string | null;
 	path: string | null;
 	total: number;
 	correct: number;

@@ -1,3 +1,4 @@
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { MedalStarIcon } from "@solar-icons/react/linear/medal-star";
 import { TargetIcon } from "@solar-icons/react/linear/target";
 import { Link } from "@tanstack/react-router";
@@ -5,6 +6,13 @@ import { Link } from "@tanstack/react-router";
 import type { Icon } from "@/components/icons";
 import { Card, CardContent, CardTexture } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { sectionDisplayName } from "@/lib/catalog/constants";
 import type { MasteryBreakdown, SectionAccuracy, UserMastery } from "@/lib/user/types";
 import { getDifficultyLabel } from "@/lib/user/utils";
 import { cn } from "@/lib/utils";
@@ -33,18 +41,46 @@ function perQuestion(seconds: number) {
 // optional faded texture on the hero card only.
 function Shell({
 	texture,
+	fill,
 	children,
 }: {
 	texture?: boolean;
+	fill?: boolean;
 	children: React.ReactNode;
 }) {
 	return (
-		<Card className="bg-muted/30 relative overflow-hidden p-1">
-			<div className="bg-card relative overflow-hidden rounded-xl border">
+		<Card className={cn("bg-muted/30 relative overflow-hidden p-1", fill && "flex-1")}>
+			<div
+				className={cn(
+					"bg-card relative overflow-hidden rounded-xl border",
+					fill && "h-full"
+				)}
+			>
 				{texture && <CardTexture placement="top" alpha={0.2} />}
 				{children}
 			</div>
 		</Card>
+	);
+}
+
+// A small info affordance next to a label: an outline icon that reveals a short
+// explanation of what the figure beside it means.
+function InfoDot({ children }: { children: React.ReactNode }) {
+	return (
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<button
+					type="button"
+					aria-label="Informazioni"
+					className="text-muted-foreground/50 hover:text-muted-foreground inline-flex align-middle transition-colors"
+				>
+					<InfoCircleIcon className="size-3.5" />
+				</button>
+			</TooltipTrigger>
+			<TooltipContent className="max-w-64 text-xs font-normal">
+				{children}
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 
@@ -167,11 +203,13 @@ function SectionRow({ section }: { section: SectionAccuracy }) {
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<p className="truncate text-sm font-medium">
-						{section.sectionName ?? "Sezione eliminata"}
+						{section.sectionName
+							? sectionDisplayName(section.sectionName)
+							: "Sezione eliminata"}
 					</p>
-					{section.courseName && (
+					{(section.courseCode || section.className) && (
 						<p className="text-muted-foreground truncate text-xs">
-							{section.courseName}
+							{[section.courseCode, section.className].filter(Boolean).join(" · ")}
 						</p>
 					)}
 				</div>
@@ -186,11 +224,10 @@ function SectionRow({ section }: { section: SectionAccuracy }) {
 						style={{ width: `${pct}%`, backgroundColor: tone.fill }}
 					/>
 				</div>
-				{section.avgSeconds != null && (
-					<span className="text-muted-foreground text-2xs shrink-0 tabular-nums">
-						~{perQuestion(section.avgSeconds)}
-					</span>
-				)}
+				{/* Reserve the slot even when untimed, so the bars stay aligned across rows. */}
+				<span className="text-muted-foreground text-2xs w-10 shrink-0 text-right tabular-nums">
+					{section.avgSeconds != null ? `~${perQuestion(section.avgSeconds)}` : ""}
+				</span>
 			</div>
 		</div>
 	);
@@ -216,20 +253,23 @@ function SectionBlock({
 	iconClass,
 	sections,
 	emptyLabel,
+	info,
 }: {
 	title: string;
 	icon: Icon;
 	iconClass: string;
 	sections: SectionAccuracy[];
 	emptyLabel: string;
+	info?: React.ReactNode;
 }) {
 	return (
-		<div className="space-y-2">
+		<div className="flex h-full flex-col gap-2">
 			<h3 className="flex items-center gap-1.5 text-sm font-semibold">
 				<LeadIcon className={cn("size-4", iconClass)} />
 				{title}
+				{info && <InfoDot>{info}</InfoDot>}
 			</h3>
-			<Shell>
+			<Shell fill>
 				<CardContent className="p-4">
 					{sections.length === 0 ? (
 						<InlineEmpty>{emptyLabel}</InlineEmpty>
@@ -260,34 +300,49 @@ export function MasteryPanel({
 	if (mastery.totalAnswers === 0) return null;
 
 	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between gap-2">
-				<h2 className="text-lg font-semibold">Padronanza</h2>
-				{mastery.avgSecondsPerQuestion != null && (
-					<span className="text-muted-foreground text-xs tabular-nums">
-						~{perQuestion(mastery.avgSecondsPerQuestion)} / domanda
-					</span>
+		<TooltipProvider delayDuration={100}>
+			<div className="space-y-4">
+				<div className="flex items-center justify-between gap-2">
+					<h2 className="flex items-center gap-1.5 text-lg font-semibold">
+						Padronanza
+						<InfoDot>
+							Quanto padroneggi gli argomenti, dalle risposte corrette per singola
+							domanda (non dal voto dei quiz). «Generale» è l&apos;accuratezza
+							complessiva; sotto, la stessa suddivisa per difficoltà.
+						</InfoDot>
+					</h2>
+					{mastery.avgSecondsPerQuestion != null && (
+						<span className="text-muted-foreground flex items-center gap-1.5 text-xs tabular-nums">
+							~{perQuestion(mastery.avgSecondsPerQuestion)} / domanda
+							<InfoDot>
+								Tempo medio impiegato per rispondere a una domanda, sui quiz
+								cronometrati.
+							</InfoDot>
+						</span>
+					)}
+				</div>
+				<AccuracyCard byDifficulty={mastery.byDifficulty} />
+				{sections && (
+					<div className="grid gap-4 lg:grid-cols-2">
+						<SectionBlock
+							title="Aree deboli"
+							icon={TargetIcon}
+							iconClass="text-warning"
+							sections={mastery.weakSections}
+							emptyLabel="Nessuna area sotto la soglia. Ottimo lavoro."
+							info="Sezioni con accuratezza sotto il 60% (almeno 5 risposte)."
+						/>
+						<SectionBlock
+							title="Aree forti"
+							icon={MedalStarIcon}
+							iconClass="text-success"
+							sections={mastery.strongSections}
+							emptyLabel="Continua ad allenarti per costruire le tue aree forti."
+							info="Sezioni con accuratezza almeno del 75% (almeno 5 risposte)."
+						/>
+					</div>
 				)}
 			</div>
-			<AccuracyCard byDifficulty={mastery.byDifficulty} />
-			{sections && (
-				<div className="grid gap-4 lg:grid-cols-2">
-					<SectionBlock
-						title="Aree deboli"
-						icon={TargetIcon}
-						iconClass="text-warning"
-						sections={mastery.weakSections}
-						emptyLabel="Nessuna area sotto la soglia. Ottimo lavoro."
-					/>
-					<SectionBlock
-						title="Aree forti"
-						icon={MedalStarIcon}
-						iconClass="text-success"
-						sections={mastery.strongSections}
-						emptyLabel="Continua ad allenarti per costruire le tue aree forti."
-					/>
-				</div>
-			)}
-		</div>
+		</TooltipProvider>
 	);
 }
