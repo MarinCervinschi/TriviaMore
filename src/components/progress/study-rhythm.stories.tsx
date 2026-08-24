@@ -20,6 +20,7 @@ function mk(
 ): AttemptHistoryEntry {
 	return {
 		id: `${section}-${day}-${hour}`,
+		quizId: "q1",
 		score,
 		timeSpent: 600_000,
 		completedAt: new Date(2026, 7, day, hour).toISOString(),
