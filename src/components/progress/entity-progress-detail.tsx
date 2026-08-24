@@ -10,8 +10,6 @@ import type {
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
-import { formatGradeOutOf33 } from "@/lib/utils/grading";
-import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 import { MasteryPanel } from "./mastery-panel";
 import { MetricExplorer } from "./metric-explorer";
@@ -39,8 +37,6 @@ export function EntityProgressDetail({
 	showSections: boolean;
 }) {
 	const count = attempts.length;
-	const time = attempts.reduce((sum, a) => sum + (a.timeSpent ?? 0), 0);
-	const avg = count ? attempts.reduce((sum, a) => sum + a.score, 0) / count : 0;
 
 	return (
 		<div className="space-y-8 pb-8">
@@ -48,15 +44,6 @@ export function EntityProgressDetail({
 				icon={GraphUpIcon}
 				title={name}
 				description={context ? `${kindLabel} · ${context}` : kindLabel}
-				stats={
-					count
-						? [
-								{ label: "quiz", value: count },
-								{ label: "media voto", value: formatGradeOutOf33(avg) },
-								{ label: "tempo", value: formatTimeSpent(time) },
-							]
-						: undefined
-				}
 			/>
 
 			<div className="container space-y-6">

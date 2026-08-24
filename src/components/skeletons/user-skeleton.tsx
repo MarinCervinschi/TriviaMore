@@ -120,7 +120,7 @@ export function UserDashboardSkeleton() {
 export function ProgressSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
-			<SkeletonHero withStats={3} />
+			<SkeletonHero />
 
 			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />

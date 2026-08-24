@@ -411,8 +411,8 @@ export function MetricExplorer({
 	today?: Date;
 }) {
 	const [metric, setMetric] = useState<MetricKey>("grade");
-	const [period, setPeriod] = useState<ExplorerPeriod>("month");
-	const [mode, setMode] = useState<ExplorerMode>("STUDY");
+	const [period, setPeriod] = useState<ExplorerPeriod>("all");
+	const [mode, setMode] = useState<ExplorerMode>("both");
 	const [chartType, setChartType] = useState<ChartType>("dots");
 
 	const now = useMemo(() => today ?? new Date(), [today]);
