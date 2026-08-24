@@ -39,6 +39,22 @@ export function UserDashboardSkeleton() {
 			</section>
 
 			<div className="container space-y-8">
+				{/* Quick actions — icon + state */}
+				<div className="grid gap-4 sm:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div
+							key={i}
+							className="bg-card flex items-center gap-3 rounded-2xl border p-4 shadow-sm"
+						>
+							<Skeleton className="h-12 w-12 shrink-0 rounded-2xl" />
+							<div className="flex-1 space-y-2">
+								<Skeleton className="h-5 w-2/3" />
+								<Skeleton className="h-3.5 w-1/2" />
+							</div>
+						</div>
+					))}
+				</div>
+
 				{/* Progress summary */}
 				<div className="bg-card rounded-2xl border p-6 shadow-sm">
 					<div className="mb-6 flex items-center justify-between">
@@ -54,26 +70,6 @@ export function UserDashboardSkeleton() {
 							</div>
 						))}
 					</div>
-				</div>
-
-				{/* Stats */}
-				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<SkeletonStatBlock key={i} />
-					))}
-				</div>
-
-				{/* Quick actions */}
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<div key={i} className="bg-card rounded-2xl border p-6 shadow-sm">
-							<Skeleton className="mb-4 h-12 w-12 rounded-2xl" />
-							<Skeleton className="mb-2 h-5 w-2/3" />
-							<Skeleton className="mb-1 h-3.5 w-full" />
-							<Skeleton className="mb-4 h-3.5 w-5/6" />
-							<Skeleton className="h-4 w-12" />
-						</div>
-					))}
 				</div>
 
 				{/* Recent classes */}
