@@ -17,7 +17,7 @@ import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import { buildProgressRollup } from "@/lib/user/rollup";
-import { formatThirtyScaleGrade } from "@/lib/utils/grading";
+import { formatGradeOutOf33 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 export const Route = createFileRoute("/_app/user/progress/")({
@@ -75,7 +75,7 @@ function ProgressPage() {
 				description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
 				stats={[
 					{ label: "quiz totali", value: summary.count },
-					{ label: "media voto", value: formatThirtyScaleGrade(summary.avg) },
+					{ label: "media voto", value: formatGradeOutOf33(summary.avg) },
 					{ label: "tempo totale", value: formatTimeSpent(summary.time) },
 				]}
 			/>

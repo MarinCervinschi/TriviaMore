@@ -223,98 +223,100 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 
 	return (
 		<div className="space-y-2">
-			<h3 className="text-base font-semibold">Per corso</h3>
-			<Card className="overflow-hidden">
-				<CardContent className="px-3 py-3">
-					{courses.length === 0 ? (
-						<InlineEmpty>Nessun quiz ancora legato a un corso.</InlineEmpty>
-					) : (
-						<>
-							<div className="flex items-center gap-1.5 pe-1 pb-2.5 text-xs">
-								<SortHeader label="Nome" sortKey="name" sort={sort} onSort={onSort} />
-								<span className="ml-auto flex items-center gap-4 ps-3 sm:gap-6">
-									<SortHeader
-										label="Voto"
-										icon={GraphUpIcon}
-										sortKey="grade"
-										sort={sort}
-										onSort={onSort}
-										className="w-20 justify-end"
-									/>
-									<SortHeader
-										label="Quiz"
-										icon={CupFirstIcon}
-										sortKey="quizzes"
-										sort={sort}
-										onSort={onSort}
-										className="w-16 justify-end"
-									/>
-									<SortHeader
-										label="Tempo"
-										icon={ClockCircleIcon}
-										sortKey="time"
-										sort={sort}
-										onSort={onSort}
-										className="hidden w-28 justify-end sm:flex"
-									/>
-								</span>
-							</div>
-							<Tree indent={20} lines className="text-sm">
-								{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
-									<TreeItem
-										key={node.id}
-										level={DEPTH[level]}
-										guides={guides}
-										reach={level === "section" ? 24 : 0}
-									>
-										<div
-											className={cn(
-												"flex items-center gap-1.5 rounded-md py-2 pe-1",
-												BAND[level]
-											)}
+			<h2 className="text-lg font-semibold">Per corso</h2>
+			<Card className="bg-muted/30 overflow-hidden p-1">
+				<div className="bg-card overflow-hidden rounded-xl border">
+					<CardContent className="px-3 py-3">
+						{courses.length === 0 ? (
+							<InlineEmpty>Nessun quiz ancora legato a un corso.</InlineEmpty>
+						) : (
+							<>
+								<div className="flex items-center gap-1.5 pe-1 pb-2.5 text-xs">
+									<SortHeader label="Nome" sortKey="name" sort={sort} onSort={onSort} />
+									<span className="ml-auto flex items-center gap-4 ps-3 sm:gap-6">
+										<SortHeader
+											label="Voto"
+											icon={GraphUpIcon}
+											sortKey="grade"
+											sort={sort}
+											onSort={onSort}
+											className="w-20 justify-end"
+										/>
+										<SortHeader
+											label="Quiz"
+											icon={CupFirstIcon}
+											sortKey="quizzes"
+											sort={sort}
+											onSort={onSort}
+											className="w-16 justify-end"
+										/>
+										<SortHeader
+											label="Tempo"
+											icon={ClockCircleIcon}
+											sortKey="time"
+											sort={sort}
+											onSort={onSort}
+											className="hidden w-28 justify-end sm:flex"
+										/>
+									</span>
+								</div>
+								<Tree indent={20} lines className="text-sm">
+									{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
+										<TreeItem
+											key={node.id}
+											level={DEPTH[level]}
+											guides={guides}
+											reach={level === "section" ? 24 : 0}
 										>
-											{expandable && (
-												<button
-													type="button"
-													onClick={() => toggle(node.id)}
-													aria-label={isOpen ? "Comprimi" : "Espandi"}
-													className="hover:bg-background/60 -my-.5 rounded-md p-1"
-												>
-													<AltArrowDownIcon
-														className={cn(
-															"text-muted-foreground size-4 transition-transform",
-															!isOpen && "-rotate-90"
-														)}
-													/>
-												</button>
-											)}
-											<LevelIcon level={level} />
-											{node.name === EXAM_SIMULATION_SECTION ? (
-												// The exam sentinel isn't a real page — plain text, no link.
-												<span className="text-muted-foreground truncate">
-													{sectionDisplayName(node.name)}
-												</span>
-											) : (
-												<Link
-													to={ROUTE[level]}
-													params={{ id: node.id }}
-													className="truncate hover:underline"
-												>
-													{node.name}
-												</Link>
-											)}
-											<Stats
-												grade={node.avgGrade}
-												quizzes={node.quizzes}
-												time={node.timeSpent}
-											/>
-										</div>
-									</TreeItem>
-								))}
-							</Tree>
-						</>
-					)}
-				</CardContent>
+											<div
+												className={cn(
+													"flex items-center gap-1.5 rounded-md py-2 pe-1",
+													BAND[level]
+												)}
+											>
+												{expandable && (
+													<button
+														type="button"
+														onClick={() => toggle(node.id)}
+														aria-label={isOpen ? "Comprimi" : "Espandi"}
+														className="hover:bg-background/60 -my-.5 rounded-md p-1"
+													>
+														<AltArrowDownIcon
+															className={cn(
+																"text-muted-foreground size-4 transition-transform",
+																!isOpen && "-rotate-90"
+															)}
+														/>
+													</button>
+												)}
+												<LevelIcon level={level} />
+												{node.name === EXAM_SIMULATION_SECTION ? (
+													// The exam sentinel isn't a real page — plain text, no link.
+													<span className="text-muted-foreground truncate">
+														{sectionDisplayName(node.name)}
+													</span>
+												) : (
+													<Link
+														to={ROUTE[level]}
+														params={{ id: node.id }}
+														className="truncate hover:underline"
+													>
+														{node.name}
+													</Link>
+												)}
+												<Stats
+													grade={node.avgGrade}
+													quizzes={node.quizzes}
+													time={node.timeSpent}
+												/>
+											</div>
+										</TreeItem>
+									))}
+								</Tree>
+							</>
+						)}
+					</CardContent>
+				</div>
 			</Card>
 		</div>
 	);
