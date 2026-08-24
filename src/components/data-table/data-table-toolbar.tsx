@@ -27,7 +27,6 @@ export function DataTableToolbar<TData extends RowData>({
 	filterVariant = "buttons",
 	inlineFilters = [],
 	filters,
-	filtered = false,
 	actions,
 	className,
 }: {
@@ -45,7 +44,6 @@ export function DataTableToolbar<TData extends RowData>({
 	inlineFilters?: CustomInlineFilter[];
 	/** Extra filter controls, for state the table itself does not own. */
 	filters?: ReactNode;
-	filtered?: boolean;
 	/** Page-level buttons rendered at the end of the toolbar. */
 	actions?: ReactNode;
 	className?: string;
@@ -57,8 +55,7 @@ export function DataTableToolbar<TData extends RowData>({
 	const isFiltered =
 		globalFilter !== "" ||
 		table.state.columnFilters.length > 0 ||
-		inlineFilters.some(filter => filter.active) ||
-		filtered;
+		inlineFilters.some(filter => filter.active);
 
 	// Local state keeps typing snappy: the table (and the URL) only update once
 	// the debounce settles, instead of on every keystroke.

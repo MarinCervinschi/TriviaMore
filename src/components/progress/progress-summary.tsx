@@ -83,7 +83,7 @@ function DeltaBadge({ delta }: { delta: number }) {
 	return (
 		<span
 			className={cn(
-				"rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+				"rounded-lg px-1.5 py-0.5 text-xs font-semibold tabular-nums",
 				tone
 			)}
 		>
@@ -130,7 +130,6 @@ export function ProgressSummary({
 
 	return (
 		<Card className="bg-muted/30 relative overflow-hidden p-1">
-			{/* Everything above the muted footer lives in one framed, textured panel. */}
 			<div className="bg-card relative overflow-hidden rounded-xl border">
 				<div className="pointer-events-none absolute inset-x-0 top-0 h-36">
 					<CardTexture placement="top" alpha={0.2} />
@@ -150,7 +149,7 @@ export function ProgressSummary({
 									type="button"
 									onClick={() => setPeriod(p.value)}
 									className={cn(
-										"rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+										"rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
 										period === p.value
 											? "bg-background shadow-sm"
 											: "text-muted-foreground hover:text-foreground"
