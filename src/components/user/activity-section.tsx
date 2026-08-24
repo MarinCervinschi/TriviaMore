@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { sectionDisplayName } from "@/lib/catalog/constants";
 import type { RecentQuizAttempt } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
@@ -99,7 +100,7 @@ export function ActivitySection({
 										</div>
 										<div className="min-w-0 flex-1">
 											<p className="truncate text-sm font-medium">
-												{attempt.sectionName}
+												{sectionDisplayName(attempt.sectionName)}
 											</p>
 											<p className="text-muted-foreground truncate text-xs">
 												{[attempt.departmentCode, attempt.courseCode]

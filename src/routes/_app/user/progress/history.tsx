@@ -27,6 +27,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
+import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { AttemptHistoryEntry } from "@/lib/user/types";
@@ -103,7 +104,9 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			enableSorting: false,
 			meta: { label: "Sezione", cellClassName: "font-medium" },
 			cell: ({ row }) =>
-				row.original.sectionName ?? (
+				row.original.sectionName ? (
+					sectionDisplayName(row.original.sectionName)
+				) : (
 					<span className="text-muted-foreground italic">Sezione eliminata</span>
 				),
 		}),
