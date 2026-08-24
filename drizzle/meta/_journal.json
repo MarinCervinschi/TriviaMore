@@ -106,6 +106,13 @@
       "when": 1786885651355,
       "tag": "0014_backfill_answer_is_correct",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1787589501336,
+      "tag": "0015_drop_progress_table",
+      "breakpoints": true
     }
   ]
 }

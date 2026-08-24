@@ -4,7 +4,6 @@ import { courseMaintainers } from "../internal/course-maintainers";
 import { departmentAdmins } from "../internal/department-admins";
 import { sectionAccess } from "../internal/section-access";
 import { bookmarks } from "../public/bookmarks";
-import { progress } from "../public/progress";
 import { userClasses } from "../public/user-classes";
 import { userRecentClasses } from "../public/user-recent-classes";
 import { answerAttempts } from "../quiz/answer-attempts";
@@ -71,7 +70,6 @@ export const sectionsRelations = relations(sections, ({ one, many }) => ({
 	questions: many(questions),
 	access: many(sectionAccess),
 	quizzes: many(quizzes),
-	progress: many(progress),
 }));
 
 export const questionsRelations = relations(questions, ({ one, many }) => ({

@@ -22,7 +22,6 @@ import {
 	insertAnswers,
 	insertAttempt,
 } from "./db/attempts";
-import { recordAttemptInProgress } from "./db/progress";
 import {
 	deleteQuiz,
 	findQuizQuestionOrder,
@@ -281,13 +280,6 @@ export async function completeQuiz(
 			score: graded.score,
 			sectionId: quiz.sectionId,
 			quizMode: quiz.quizMode,
-		});
-		await recordAttemptInProgress(tx, {
-			userId,
-			sectionId: quiz.sectionId,
-			quizMode: quiz.quizMode,
-			score: graded.score,
-			timeSpent: input.timeSpent,
 		});
 
 		return { attemptId: input.quizAttemptId };

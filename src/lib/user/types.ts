@@ -1,4 +1,4 @@
-import type { profiles, progress, questions } from "@/db/schema";
+import type { profiles, questions } from "@/db/schema";
 import type { QuizMode } from "@/lib/quiz/types";
 
 type Profile = typeof profiles.$inferSelect;
@@ -139,15 +139,3 @@ export type AttemptHistoryEntry = {
 	departmentName: string | null;
 	departmentCode: string | null;
 };
-
-export type UserProgress = SectionLocation &
-	Pick<
-		typeof progress.$inferSelect,
-		| "id"
-		| "quizMode"
-		| "quizzesTaken"
-		| "averageScore"
-		| "bestScore"
-		| "totalTimeSpent"
-		| "lastAccessedAt"
-	>;

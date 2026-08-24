@@ -11,7 +11,6 @@ import {
 	getUserBookmarksFn,
 	getUserClassesFn,
 	getUserProfileFn,
-	getUserProgressFn,
 	isClassSavedFn,
 } from "./api";
 import type { MasteryScope } from "./schemas";
@@ -42,13 +41,6 @@ export const userQueries = {
 		queryOptions({
 			queryKey: ["user", "bookmarked-ids"],
 			queryFn: () => getBookmarkedQuestionIdsFn(),
-			staleTime: STALE_TIME.STANDARD,
-		}),
-
-	progress: () =>
-		queryOptions({
-			queryKey: ["user", "progress"],
-			queryFn: () => getUserProgressFn(),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
