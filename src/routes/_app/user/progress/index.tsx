@@ -9,6 +9,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { MasteryPanel } from "@/components/progress/mastery-panel";
 import { MetricExplorer } from "@/components/progress/metric-explorer";
 import { ProgressRollup } from "@/components/progress/progress-rollup";
+import { StudyRhythm } from "@/components/progress/study-rhythm";
 import { ProgressSkeleton } from "@/components/skeletons";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -71,6 +72,7 @@ function ProgressPage() {
 				<UserBreadcrumb current="Progressi" />
 
 				<MetricExplorer daily={daily} />
+				<StudyRhythm attempts={attempts} />
 				<ProgressRollup courses={rollup} />
 				<MasteryPanel mastery={mastery} />
 

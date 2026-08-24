@@ -13,6 +13,7 @@ import type {
 
 import { MasteryPanel } from "./mastery-panel";
 import { MetricExplorer } from "./metric-explorer";
+import { StudyRhythm } from "./study-rhythm";
 
 /**
  * One entity's progress (a section, insegnamento or course), reusing the trend
@@ -65,6 +66,7 @@ export function EntityProgressDetail({
 				) : (
 					<>
 						<MetricExplorer daily={daily} />
+						<StudyRhythm attempts={attempts} />
 						<MasteryPanel mastery={mastery} sections={showSections} />
 					</>
 				)}

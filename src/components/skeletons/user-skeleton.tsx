@@ -149,6 +149,28 @@ export function ProgressSkeleton() {
 					</div>
 				</div>
 
+				{/* Study rhythm */}
+				<div className="space-y-3">
+					<Skeleton className="h-6 w-40" />
+					<div className="bg-muted/30 rounded-2xl border p-1">
+						<div className="bg-card overflow-hidden rounded-xl border">
+							<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
+								{Array.from({ length: 4 }).map((_, i) => (
+									<div key={i} className="space-y-2 p-4">
+										<Skeleton className="h-4 w-24" />
+										<Skeleton className="h-7 w-12" />
+										<Skeleton className="h-3 w-20" />
+									</div>
+								))}
+							</div>
+							<div className="space-y-2 border-t p-4">
+								<Skeleton className="h-4 w-24" />
+								<Skeleton className="h-12 w-full" />
+							</div>
+						</div>
+					</div>
+				</div>
+
 				{/* Accuracy gauges */}
 				<div className="bg-card rounded-2xl border p-6">
 					<Skeleton className="mb-4 h-5 w-32" />
