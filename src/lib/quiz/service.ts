@@ -365,6 +365,9 @@ export async function getQuizResults(
 				];
 			}),
 		},
-		answers,
+		answers: answers.map(answer => ({
+			...answer,
+			isCorrect: answer.isCorrect ?? false,
+		})),
 	};
 }
