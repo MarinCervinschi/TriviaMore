@@ -35,6 +35,9 @@ import type { CompleteQuizInput, StartQuizInput } from "./schemas";
 import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
 import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types";
 
+const QUIZ_GONE =
+	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
+
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
 		.select(evaluationModeColumns)
@@ -257,16 +260,20 @@ export async function completeQuiz(
 			return { attemptId: input.quizAttemptId };
 		}
 
-		if (!claimed.quizId) return { attemptId: input.quizAttemptId };
+		// Grading needs the quiz. Deleting a section cascades its quizzes and nulls
+		// this attempt's quiz_id, so returning early here would commit the claim —
+		// completed, score 0, no answers — and freeze that into the user's history.
+		// Throwing rolls the claim back and leaves the attempt open instead.
+		if (!claimed.quizId) throw new Conflict(QUIZ_GONE);
 
 		const quiz = await findQuizSectionAndMode(tx, claimed.quizId);
-		if (!quiz) return { attemptId: input.quizAttemptId };
+		if (!quiz) throw new Conflict(QUIZ_GONE);
 
 		const [evaluationMode, order] = await Promise.all([
 			findEvaluationMode(tx, quiz.evaluationModeId),
 			findQuizQuestionOrder(tx, claimed.quizId),
 		]);
-		if (!evaluationMode) return { attemptId: input.quizAttemptId };
+		if (!evaluationMode) throw new Conflict(QUIZ_GONE);
 
 		const questionRows = await findQuestionsByIds(
 			tx,
