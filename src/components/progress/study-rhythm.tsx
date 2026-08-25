@@ -13,9 +13,21 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { type StudyRhythm as Rhythm, computeStudyRhythm } from "@/lib/user/rhythm";
 import type { AttemptHistoryEntry } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
+
+/** Shape only, for the render before hydration — every figure reads as a dash. */
+const PENDING: Rhythm = {
+	currentStreak: 0,
+	longestStreak: 0,
+	activeDays: 0,
+	windowDays: 30,
+	byHour: new Array<number>(24).fill(0),
+	peakHour: null,
+	consistency: { mean: 0, stdev: 0, count: 0, thin: true },
+};
 
 function plural(n: number, one: string, many: string): string {
 	return n === 1 ? one : many;
@@ -100,8 +112,10 @@ function WhenYouStudy({
 	);
 }
 
-function RhythmPanel({ rhythm }: { rhythm: Rhythm }) {
-	const { currentStreak, longestStreak, activeDays, windowDays, consistency } = rhythm;
+function RhythmPanel({ rhythm }: { rhythm: Rhythm | null }) {
+	const shown = rhythm ?? PENDING;
+	const { currentStreak, longestStreak, activeDays, windowDays, consistency } = shown;
+	const dash = (value: string) => (rhythm ? value : "—");
 	return (
 		<Card className="bg-muted/30 h-full overflow-hidden p-1">
 			<div className="bg-card relative flex h-full flex-col overflow-hidden rounded-xl border">
@@ -109,20 +123,20 @@ function RhythmPanel({ rhythm }: { rhythm: Rhythm }) {
 				<div className="relative grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
 					<Stat
 						icon={FireMinimalisticIcon}
-						value={String(currentStreak)}
+						value={dash(String(currentStreak))}
 						label="Serie attuale"
 						hint={`${plural(currentStreak, "giorno", "giorni")} di fila`}
-						tone={currentStreak > 0 ? "text-warning" : undefined}
+						tone={rhythm && currentStreak > 0 ? "text-warning" : undefined}
 					/>
 					<Stat
 						icon={CalendarMinimalisticIcon}
-						value={String(activeDays)}
+						value={dash(String(activeDays))}
 						label="Giorni attivi"
 						hint={`ultimi ${windowDays} giorni`}
 					/>
 					<Stat
 						icon={GraphUpIcon}
-						value={String(longestStreak)}
+						value={dash(String(longestStreak))}
 						label="Serie record"
 						hint={`${plural(longestStreak, "giorno", "giorni")} di fila`}
 					/>
@@ -134,7 +148,7 @@ function RhythmPanel({ rhythm }: { rhythm: Rhythm }) {
 					/>
 				</div>
 				<div className="relative flex flex-1 flex-col justify-end border-t">
-					<WhenYouStudy byHour={rhythm.byHour} peakHour={rhythm.peakHour} />
+					<WhenYouStudy byHour={shown.byHour} peakHour={shown.peakHour} />
 				</div>
 			</div>
 		</Card>
@@ -142,8 +156,12 @@ function RhythmPanel({ rhythm }: { rhythm: Rhythm }) {
 }
 
 /**
- * Study rhythm, derived client-side from the attempt history already loaded by
- * the hub. `today` is injected in stories for determinism.
+ * Study rhythm, derived from the attempt history the page already loaded.
+ *
+ * Streaks and the hour histogram are read in the **viewer's** timezone, which
+ * the server does not share, so the figures only appear once hydrated — until
+ * then the panel renders its own shape with dashes. `today` is injected in
+ * stories for determinism.
  */
 export function StudyRhythm({
 	attempts,
@@ -152,8 +170,12 @@ export function StudyRhythm({
 	attempts: AttemptHistoryEntry[];
 	today?: Date;
 }) {
+	const hydrated = useIsHydrated();
 	const now = useMemo(() => today ?? new Date(), [today]);
-	const rhythm = useMemo(() => computeStudyRhythm(attempts, now), [attempts, now]);
+	const rhythm = useMemo(
+		() => (hydrated ? computeStudyRhythm(attempts, now) : null),
+		[hydrated, attempts, now]
+	);
 
 	return (
 		<div className="space-y-3">
