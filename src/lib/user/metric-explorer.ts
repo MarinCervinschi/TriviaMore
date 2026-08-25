@@ -69,8 +69,14 @@ function epochDay(iso: string): number {
 	return Math.floor(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000);
 }
 
+// Buckets are keyed in UTC, like the `date` the query groups by. `format` reads
+// the host timezone, so it is handed the same calendar day as a *local* Date —
+// otherwise the server and a browser west of UTC label the same bucket
+// differently and React reports a hydration mismatch on the axis.
 function dayLabel(day: number): string {
-	return format(new Date(day * 86_400_000), "d MMM", { locale: it });
+	const utc = new Date(day * 86_400_000);
+	const local = new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate());
+	return format(local, "d MMM", { locale: it });
 }
 
 function monthsBack(today: Date, n: number): { key: string; label: string }[] {
@@ -78,8 +84,8 @@ function monthsBack(today: Date, n: number): { key: string; label: string }[] {
 	const m = today.getUTCMonth();
 	const out: { key: string; label: string }[] = [];
 	for (let i = n - 1; i >= 0; i--) {
-		const d = new Date(Date.UTC(y, m - i, 1));
-		const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+		const d = new Date(y, m - i, 1);
+		const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 		out.push({ key, label: format(d, "LLL yy", { locale: it }) });
 	}
 	return out;
