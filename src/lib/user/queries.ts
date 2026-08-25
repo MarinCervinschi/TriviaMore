@@ -44,10 +44,10 @@ export const userQueries = {
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
-	attemptHistory: () =>
+	attemptHistory: (scope?: MasteryScope) =>
 		queryOptions({
-			queryKey: ["user", "attempt-history"],
-			queryFn: () => getAttemptHistoryFn(),
+			queryKey: ["user", "attempt-history", scope ?? null],
+			queryFn: () => getAttemptHistoryFn(scope ? { data: scope } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
