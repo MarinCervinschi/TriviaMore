@@ -5,7 +5,6 @@ export const EXAM_SIMULATION_SECTION = "Exam Simulation";
 // Its user-facing Italian label (the stored name stays an internal sentinel).
 export const EXAM_SIMULATION_LABEL = "Simulazione d'esame";
 
-/** The name to show a user for a section: the exam sentinel gets translated. */
 export function sectionDisplayName(name: string): string {
 	return name === EXAM_SIMULATION_SECTION ? EXAM_SIMULATION_LABEL : name;
 }

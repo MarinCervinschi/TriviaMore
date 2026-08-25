@@ -93,9 +93,7 @@ type ChipOption<T extends string> = {
 	glyph?: ReactNode;
 };
 
-// A single-select "filter chip": shows the current choice and opens a radio
-// menu to change it — the same read as the data-table filter chips, applied to
-// the explorer's mode / period / chart type.
+// A single-select chip, reading like the data-table filter chips.
 function SelectChip<T extends string>({
 	label,
 	value,
@@ -204,7 +202,6 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 	);
 }
 
-/** A point marker with an expanding halo — gated by reduced motion. */
 function PulseDot({
 	cx,
 	cy,
@@ -392,10 +389,9 @@ function cornerClass(index: number, count: number): string {
 }
 
 /**
- * The drill-down analytics card: the four study metrics as tabs that swap the
- * chart, with out-of-card chips for mode / period / plot style. Reused as-is for
- * the whole account and for a single section, class or course — only `daily`
- * changes. `today` is injected in stories for determinism.
+ * The drill-down analytics card, reused as-is for the whole account and for a
+ * single section, class or course — only `daily` changes. `today` is injected in
+ * stories for determinism.
  */
 export function MetricExplorer({
 	daily,

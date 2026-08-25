@@ -169,7 +169,6 @@ function StudyRhythmSkeleton() {
 	);
 }
 
-/** The gauge and difficulty bars, plus the weak / strong lists when shown. */
 function MasteryPanelSkeleton({ withSections = true }: { withSections?: boolean }) {
 	return (
 		<div className="space-y-4">
@@ -246,10 +245,7 @@ export function ProgressSkeleton() {
 	);
 }
 
-/**
- * One entity's progress: no breadcrumb and no rollup — a back link, then the
- * same three panels the detail page renders.
- */
+/** No breadcrumb and no rollup, unlike `ProgressSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
@@ -274,8 +270,6 @@ export function AttemptHistorySkeleton() {
 			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />
 
-				{/* Data table toolbar: search + date chip, then the inline filter add
-				    and column visibility */}
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-1 flex-wrap items-center gap-2">
 						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />

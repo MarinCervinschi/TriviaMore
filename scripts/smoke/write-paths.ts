@@ -168,8 +168,7 @@ try {
 				graded?.quizMode === "STUDY"
 		);
 
-		// flashcard: a finished session records one row, no scoring model — and
-		// replaying the same session id records nothing more.
+		// flashcard: one row per session, and replaying its id records nothing more.
 		const flashcardSession = `smoke-${seed.section_id}`;
 		for (let i = 0; i < 2; i++) {
 			await insertFlashcardAttempt(tx, {

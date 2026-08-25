@@ -37,16 +37,12 @@ const ROUTE: Record<Level, DetailRoute> = {
 
 const DEPTH: Record<Level, number> = { course: 0, class: 1, section: 2 };
 
-// course = group header, class = sub-group, section = leaf (plain, hover-lit
-// from its own indent so the highlight doesn't reach into the connector gutter).
 const BAND: Record<Level, string> = {
 	course: "bg-muted font-semibold",
 	class: "bg-muted/50 font-medium",
 	section: "hover:bg-muted/40 transition-colors",
 };
 
-// The entity type, not the specific course — same mapping as the content
-// hierarchy diagram.
 const ENTITY_ICON: Record<Level, Icon> = {
 	course: DiplomaIcon,
 	class: BookIcon,
@@ -154,10 +150,9 @@ function Stats({
 }
 
 export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
-	// Courses start expanded, classes collapsed. What is tracked is which nodes
-	// the user has flipped, not which are open: seeding a set from `courses`
-	// would leave a course that only appears after a refetch collapsed on its
-	// own, with nothing to explain why.
+	// Which nodes the user has flipped, not which are open: a set seeded from
+	// `courses` would leave a course that arrives on a later refetch collapsed
+	// alone, with nothing to explain why.
 	const [flipped, setFlipped] = useState<Set<string>>(() => new Set());
 	const [sort, setSort] = useState<Sort>({ key: "name", dir: "asc" });
 

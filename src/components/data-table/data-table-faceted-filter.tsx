@@ -23,11 +23,10 @@ import type { DataTableFacetOption, DataTableFeatures } from "./features";
 type FacetColumn<TData extends RowData> = Column<DataTableFeatures, TData, any>;
 
 /**
- * The checkable option rows behind a facet: one line per option with its count,
- * plus a "clear" footer. Marker-aware, so it preserves the include/exclude
- * operator when values are toggled (see `facet-filter`). Rendered inside a
- * `Command` — by the dashed toolbar button, the inline chip, and the «＋ Filtro»
- * menu — so every selection surface stays identical.
+ * The checkable option rows behind a facet. Marker-aware, so toggling a value
+ * preserves the include/exclude operator (see `facet-filter`). Shared by every
+ * selection surface — the dashed button, the chip, the «＋ Filtro» menu — so
+ * they stay identical.
  */
 export function FacetOptionsBody<TData extends RowData>({
 	column,
@@ -93,11 +92,6 @@ export function FacetOptionsBody<TData extends RowData>({
 	);
 }
 
-/**
- * A facet's searchable option list: `FacetOptionsBody` wrapped in its own
- * `Command` with a search input. Used by the dashed button and the chip's value
- * popover.
- */
 export function DataTableFacetCommand<TData extends RowData>({
 	column,
 	title,

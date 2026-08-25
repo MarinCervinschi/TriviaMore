@@ -64,9 +64,8 @@ function ResultsPage() {
 		totalQuestions
 	);
 
-	// The verdict is the one frozen at submission, not a re-grade against the
-	// question as it stands now — an edited correct answer must not rewrite a
-	// past result, and mastery reads the same column.
+	// The verdict frozen at submission, not a re-grade against the question as it
+	// stands now: an edited correct answer must not rewrite a past result.
 	const questionIds = new Set(result.quiz.questions.map(q => q.id));
 	const counts = result.answers.reduce(
 		(acc, a) => {

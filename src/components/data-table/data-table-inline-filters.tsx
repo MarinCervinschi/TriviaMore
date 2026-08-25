@@ -32,26 +32,15 @@ import type {
 type FacetColumn<TData extends RowData> = Column<DataTableFeatures, TData, any>;
 type InlineSize = "sm" | "default";
 
-/**
- * A filter that is not backed by a facet column — a date range, say. It is shown
- * as an always-present chip (not in the «＋ Filtro» menu): its value segment
- * opens `popover`, and it reads as set/unset via `active`. Its state lives with
- * the host (e.g. `?da`/`?a` search params).
- */
+/** A filter with no facet column behind it — a date range, say; its state lives with the host. */
 export type CustomInlineFilter = {
 	id: string;
 	label: string;
 	icon?: Icon;
-	/** Whether a value is set — drives the «×» and the set/unset styling. */
 	active: boolean;
-	/** The value shown on the chip when set. */
 	summary?: string;
-	/** The value shown on the chip when not set. */
 	placeholder?: string;
-	/**
-	 * The editor opened from the chip. A render function receives `close`, so an
-	 * «Applica» button can commit and dismiss; a plain node stays open.
-	 */
+	/** A render function receives `close`, so an «Applica» button can dismiss the chip. */
 	popover?: ReactNode | ((close: () => void) => ReactNode);
 	clear: () => void;
 };
@@ -98,7 +87,6 @@ function summarise(values: string[], options: DataTableFacetOption[]) {
 	return values.map(v => options.find(o => o.value === v)?.label ?? v).join(", ");
 }
 
-/** The operator segment: switches «è uno di» / «non è uno di», keeping the values. */
 function FilterOperatorSegment<TData extends RowData>({
 	column,
 	size,
@@ -140,11 +128,6 @@ function FilterOperatorSegment<TData extends RowData>({
 	);
 }
 
-/**
- * One active facet as a segmented pill: `icona campo · campo │ operatore ▾ │
- * valori ▾ │ ×`. The value segment reuses the same searchable option list as
- * the dashed button.
- */
 function InlineFilterChip<TData extends RowData>({
 	column,
 	size,
@@ -202,7 +185,6 @@ function InlineFilterChip<TData extends RowData>({
 	);
 }
 
-/** A non-facet filter (e.g. date) as a chip: `icona campo · campo │ valore ▾ │ ×`. */
 function CustomFilterChip({
 	filter,
 	size,
@@ -280,7 +262,6 @@ function CustomFilterChip({
 	);
 }
 
-/** The checkable options of a facet, as native menu items — for the hover submenu. */
 function FacetSubmenuItems<TData extends RowData>({
 	column,
 }: {
@@ -336,10 +317,6 @@ function isActive<TData extends RowData>(column: FacetColumn<TData>) {
 	return readFacet(column.getFilterValue()).values.length > 0;
 }
 
-/**
- * The filters on the left of the toolbar: a removable chip per active facet,
- * then the custom (non-facet) filters, which are always shown.
- */
 export function DataTableInlineFilterChips<TData extends RowData>({
 	table,
 	size = "default",
@@ -369,11 +346,7 @@ export function DataTableInlineFilterChips<TData extends RowData>({
 	);
 }
 
-/**
- * The «＋ Filtro» control, icon-only, for the top-right of the toolbar. Each
- * facet is a submenu that expands laterally on hover, showing its checkable
- * options with counts.
- */
+/** The «＋ Filtro» control: one hover submenu per facet, with counts. */
 export function DataTableInlineFilterAdd<TData extends RowData>({
 	table,
 	size = "default",

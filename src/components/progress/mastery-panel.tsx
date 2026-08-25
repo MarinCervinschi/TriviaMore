@@ -17,8 +17,6 @@ import type { MasteryBreakdown, SectionAccuracy, UserMastery } from "@/lib/user/
 import { getDifficultyLabel } from "@/lib/user/utils";
 import { cn } from "@/lib/utils";
 
-// Fill via the chart status colours, ink via the status text tokens — the
-// surface/ink split the design system requires.
 function accuracyTone(pct: number) {
 	if (pct >= 75) return { fill: "var(--color-success)", ink: "text-success" };
 	if (pct >= 50) return { fill: "var(--color-warning)", ink: "text-warning" };
@@ -36,8 +34,6 @@ function perQuestion(seconds: number) {
 	return s ? `${m}m ${s}s` : `${m}m`;
 }
 
-// The summary card's shell: a muted band around a thin-bordered surface, with an
-// optional faded texture on the hero card only.
 function Shell({
 	texture,
 	fill,
@@ -81,8 +77,7 @@ function InfoDot({ children }: { children: React.ReactNode }) {
 	);
 }
 
-// A top semicircle gauge drawn as discrete ticks, filled left → over the top by
-// the value. Pure SVG, so it renders identically on the server and the client.
+// Pure SVG: the gauge has to render identically on the server and the client.
 function TickGauge({
 	pct,
 	color,
@@ -237,9 +232,6 @@ function SectionRow({ section }: { section: SectionAccuracy }) {
 	);
 }
 
-// Weak/strong: the title sits outside the card (with a toned icon), the card
-// itself is a plain bordered surface — the same title-outside rhythm as the
-// rollup and the accuracy block.
 function SectionBlock({
 	title,
 	icon: LeadIcon,
@@ -286,8 +278,7 @@ export function MasteryPanel({
 	sections = true,
 }: {
 	mastery: UserMastery;
-	/** Show the weak/strong section lists. Off on a single-section page, where
-	 * there are no sub-sections to rank. */
+	/** Off on a single-section page, where there are no sub-sections to rank. */
 	sections?: boolean;
 }) {
 	if (mastery.totalAnswers === 0) return null;
