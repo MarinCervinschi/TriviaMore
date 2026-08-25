@@ -37,6 +37,7 @@ import { getQuiz, getQuizResults } from "../../src/lib/quiz/service.ts";
 import { getContentTree } from "../../src/lib/requests/service/content-tree.ts";
 import { getUserRequests } from "../../src/lib/requests/service/user-requests.ts";
 import { buildSitemap } from "../../src/lib/sitemap/service.ts";
+import { getAttemptHistory } from "../../src/lib/user/service/attempt-history.ts";
 import {
 	getBookmarkedQuestionIds,
 	getUserBookmarks,
@@ -46,8 +47,9 @@ import {
 	getUserClasses,
 	isClassSaved,
 } from "../../src/lib/user/service/classes.ts";
+import { getMastery } from "../../src/lib/user/service/mastery.ts";
 import { getUserProfile } from "../../src/lib/user/service/profile.ts";
-import { getUserProgress } from "../../src/lib/user/service/progress.ts";
+import { getDailyStudyStats } from "../../src/lib/user/service/study-stats.ts";
 
 let failures = 0;
 
@@ -205,7 +207,15 @@ if (userId) {
 	await check("user.getRecentClasses", () => getRecentClasses(db, userId));
 	await check("user.getUserBookmarks", () => getUserBookmarks(userId));
 	await check("user.getBookmarkedQuestionIds", () => getBookmarkedQuestionIds(userId));
-	await check("user.getUserProgress", () => getUserProgress(userId));
+	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
+	await check("user.getMastery", () => getMastery(userId));
+	await check("user.getMastery (scoped)", () =>
+		getMastery(userId, { level: "section", id: sample.section_id })
+	);
+	await check("user.getDailyStudyStats", () => getDailyStudyStats(userId));
+	await check("user.getDailyStudyStats (scoped)", () =>
+		getDailyStudyStats(userId, { level: "section", id: sample.section_id })
+	);
 	await check("user.isClassSaved", () =>
 		isClassSaved(userId, "00000000-0000-0000-0000-000000000000")
 	);

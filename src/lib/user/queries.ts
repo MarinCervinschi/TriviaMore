@@ -3,14 +3,17 @@ import { queryOptions } from "@tanstack/react-query";
 import { STALE_TIME } from "@/lib/shared/cache";
 
 import {
+	getAttemptHistoryFn,
 	getBookmarkedQuestionIdsFn,
+	getMasteryFn,
 	getRecentClassesFn,
+	getStudyStatsFn,
 	getUserBookmarksFn,
 	getUserClassesFn,
 	getUserProfileFn,
-	getUserProgressFn,
 	isClassSavedFn,
 } from "./api";
+import type { MasteryScope } from "./schemas";
 
 export const userQueries = {
 	profile: () =>
@@ -41,10 +44,24 @@ export const userQueries = {
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
-	progress: () =>
+	attemptHistory: (scope?: MasteryScope) =>
 		queryOptions({
-			queryKey: ["user", "progress"],
-			queryFn: () => getUserProgressFn(),
+			queryKey: ["user", "attempt-history", scope ?? null],
+			queryFn: () => getAttemptHistoryFn(scope ? { data: scope } : undefined),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	mastery: (scope?: MasteryScope) =>
+		queryOptions({
+			queryKey: ["user", "mastery", scope ?? null],
+			queryFn: () => getMasteryFn(scope ? { data: scope } : undefined),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	studyStats: (scope?: MasteryScope) =>
+		queryOptions({
+			queryKey: ["user", "study-stats", scope ?? null],
+			queryFn: () => getStudyStatsFn(scope ? { data: scope } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 

@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { sectionDisplayName } from "@/lib/catalog/constants";
 import type { RecentQuizAttempt } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
@@ -22,7 +23,7 @@ import { getScoreBadgeVariant } from "@/lib/utils/quiz-results";
 /**
  * The dashboard's activity block: the study-activity heatmap and the most recent
  * quizzes, side by side under one heading. The year filter sits over the heatmap
- * card; "Vedi tutti" leads to the progress page, where the full history lives.
+ * card; "Vedi tutti" leads to the full attempt history.
  */
 export function ActivitySection({
 	data,
@@ -75,7 +76,7 @@ export function ActivitySection({
 					<div className="flex h-9 items-center justify-between">
 						<p className="text-muted-foreground text-sm font-medium">Ultimi quiz</p>
 						<Button asChild variant="ghost" size="sm" className="group">
-							<Link to="/user/progress" className="flex items-center gap-1">
+							<Link to="/user/progress/history" className="flex items-center gap-1">
 								Vedi tutti
 								<ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
 							</Link>
@@ -99,7 +100,7 @@ export function ActivitySection({
 										</div>
 										<div className="min-w-0 flex-1">
 											<p className="truncate text-sm font-medium">
-												{attempt.sectionName}
+												{sectionDisplayName(attempt.sectionName)}
 											</p>
 											<p className="text-muted-foreground truncate text-xs">
 												{[attempt.departmentCode, attempt.courseCode]

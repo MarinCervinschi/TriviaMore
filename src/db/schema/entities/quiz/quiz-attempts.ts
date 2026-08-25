@@ -8,7 +8,9 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { quizSchema } from "../../common";
+import { sections } from "../catalog/sections";
 import { profiles } from "../public/profiles";
+import { quizModeEnum } from "./enums";
 import { quizzes } from "./quizzes";
 
 export const quizAttempts = quizSchema
@@ -17,7 +19,9 @@ export const quizAttempts = quizSchema
 		{
 			id: uuid().defaultRandom().primaryKey().notNull(),
 			userId: uuid("user_id").notNull(),
-			quizId: uuid("quiz_id").notNull(),
+			quizId: uuid("quiz_id"),
+			sectionId: uuid("section_id"),
+			quizMode: quizModeEnum("quiz_mode"),
 			score: doublePrecision().notNull(),
 			timeSpent: integer("time_spent"),
 			completedAt: timestamp("completed_at", {
@@ -34,6 +38,10 @@ export const quizAttempts = quizSchema
 				"btree",
 				table.quizId.asc().nullsLast().op("uuid_ops")
 			),
+			index("idx_quiz_attempts_section_id").using(
+				"btree",
+				table.sectionId.asc().nullsLast().op("uuid_ops")
+			),
 			index("idx_quiz_attempts_user_id").using(
 				"btree",
 				table.userId.asc().nullsLast().op("uuid_ops")
@@ -42,7 +50,12 @@ export const quizAttempts = quizSchema
 				columns: [table.quizId],
 				foreignColumns: [quizzes.id],
 				name: "quiz_attempts_quiz_id_fkey",
-			}).onDelete("cascade"),
+			}).onDelete("set null"),
+			foreignKey({
+				columns: [table.sectionId],
+				foreignColumns: [sections.id],
+				name: "quiz_attempts_section_id_fkey",
+			}).onDelete("set null"),
 			foreignKey({
 				columns: [table.userId],
 				foreignColumns: [profiles.id],

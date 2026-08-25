@@ -11,6 +11,11 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import {
+	DataTableInlineFilterAdd,
+	DataTableInlineFilterChips,
+} from "./data-table-inline-filters";
+import type { CustomInlineFilter } from "./data-table-inline-filters";
 import { DataTableViewOptions } from "./data-table-view-options";
 import type { DataTableInstance } from "./features";
 
@@ -19,6 +24,8 @@ export function DataTableToolbar<TData extends RowData>({
 	searchPlaceholder = "Cerca...",
 	searchable = true,
 	showViewOptions = true,
+	filterVariant = "buttons",
+	inlineFilters = [],
 	filters,
 	actions,
 	className,
@@ -27,6 +34,14 @@ export function DataTableToolbar<TData extends RowData>({
 	searchPlaceholder?: string;
 	searchable?: boolean;
 	showViewOptions?: boolean;
+	/**
+	 * How the faceted filters read: `buttons` shows one dashed button per facet
+	 * (always visible); `inline` shows an «＋ Filtro» menu and a removable chip
+	 * per active facet. Both drive the same column filter state.
+	 */
+	filterVariant?: "buttons" | "inline";
+	/** Non-facet filters (e.g. a date range) folded into the `inline` variant. */
+	inlineFilters?: CustomInlineFilter[];
 	/** Extra filter controls, for state the table itself does not own. */
 	filters?: ReactNode;
 	/** Page-level buttons rendered at the end of the toolbar. */
@@ -37,7 +52,10 @@ export function DataTableToolbar<TData extends RowData>({
 	const filterColumns = table
 		.getAllColumns()
 		.filter(column => column.columnDef.meta?.facet);
-	const isFiltered = globalFilter !== "" || table.state.columnFilters.length > 0;
+	const isFiltered =
+		globalFilter !== "" ||
+		table.state.columnFilters.length > 0 ||
+		inlineFilters.some(filter => filter.active);
 
 	// Local state keeps typing snappy: the table (and the URL) only update once
 	// the debounce settles, instead of on every keystroke.
@@ -75,14 +93,18 @@ export function DataTableToolbar<TData extends RowData>({
 
 				{filters}
 
-				{filterColumns.map(column => (
-					<DataTableFacetedFilter
-						key={column.id}
-						column={column}
-						title={column.columnDef.meta?.label ?? column.id}
-						options={column.columnDef.meta?.facet?.options ?? []}
-					/>
-				))}
+				{filterVariant === "inline" ? (
+					<DataTableInlineFilterChips table={table} size="sm" custom={inlineFilters} />
+				) : (
+					filterColumns.map(column => (
+						<DataTableFacetedFilter
+							key={column.id}
+							column={column}
+							title={column.columnDef.meta?.label ?? column.id}
+							options={column.columnDef.meta?.facet?.options ?? []}
+						/>
+					))
+				)}
 
 				{isFiltered && (
 					<Button
@@ -98,6 +120,7 @@ export function DataTableToolbar<TData extends RowData>({
 			</div>
 
 			<div className="flex items-center gap-2">
+				{filterVariant === "inline" && <DataTableInlineFilterAdd table={table} />}
 				{showViewOptions && <DataTableViewOptions table={table} />}
 				{actions}
 			</div>

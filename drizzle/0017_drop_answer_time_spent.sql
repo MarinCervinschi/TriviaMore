@@ -1,0 +1,1 @@
+ALTER TABLE "quiz"."answer_attempts" DROP COLUMN "time_spent";

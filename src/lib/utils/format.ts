@@ -5,6 +5,8 @@
  * in four recurring shapes — and one of them had lost its locale entirely, so
  * the same figure rendered as `1.240` or `1,240` depending on the reader's
  * browser. The locale is a product decision, not a per-call-site one.
+ *
+ * Turning instants into days, hours or spans is `./datetime` instead.
  */
 
 const LOCALE = "it-IT";

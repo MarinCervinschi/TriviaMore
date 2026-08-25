@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
+import { NotFoundPage } from "@/components/error/not-found-page";
 import { FlashcardHeader } from "@/components/flashcard/flashcard-header";
 import { FlashcardNavigation } from "@/components/flashcard/flashcard-navigation";
 import { FlashcardProgress } from "@/components/flashcard/flashcard-progress";
@@ -15,20 +17,34 @@ import { PageBand } from "@/components/layout/page-band";
 import { FlashcardSkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { getFlashcardSessionFn } from "@/lib/flashcard/api";
+import { completeFlashcardFn, getFlashcardSessionFn } from "@/lib/flashcard/api";
 import type { FlashcardSession } from "@/lib/flashcard/types";
+import { reportBrowserError } from "@/lib/logging/browser";
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
 	loader: async ({ params }) => {
-		return getFlashcardSessionFn({ data: { sessionId: params.sessionId } });
+		const session = await getFlashcardSessionFn({
+			data: { sessionId: params.sessionId },
+		});
+		if (!session) throw notFound();
+		return session;
 	},
 	pendingComponent: FlashcardSkeleton,
 	component: FlashcardPage,
+	// This route lives outside the app shell, so the not-found page brings its
+	// own band.
+	notFoundComponent: () => (
+		<NotFoundPage
+			title="Sessione non disponibile"
+			message="Questa sessione di flashcard non è più valida."
+		/>
+	),
 });
 
 function FlashcardPage() {
 	const navigate = useNavigate();
-	const session = Route.useLoaderData() as FlashcardSession | null;
+	const queryClient = useQueryClient();
+	const session = Route.useLoaderData() as FlashcardSession;
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
@@ -38,6 +54,7 @@ function FlashcardPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 	const [showExitDialog, setShowExitDialog] = useState(false);
+	const recordedRef = useRef(false);
 
 	const handleFlip = useCallback(() => {
 		setIsFlipped(prev => {
@@ -81,7 +98,16 @@ function FlashcardPage() {
 
 	const handleComplete = useCallback(() => {
 		setShowResults(true);
-	}, []);
+		if (!session || recordedRef.current) return;
+		recordedRef.current = true;
+		completeFlashcardFn({
+			data: { sessionId: session.id, cardsReviewed: studiedCards.size },
+		})
+			.then(() => queryClient.invalidateQueries({ queryKey: ["user"] }))
+			.catch(error => {
+				reportBrowserError("Failed to record flashcard session", error);
+			});
+	}, [session, studiedCards, queryClient]);
 
 	const confirmExit = useCallback(() => {
 		navigate({ to: "/" });
@@ -114,17 +140,6 @@ function FlashcardPage() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [showResults, handleNext, handlePrevious, handleFlip]);
-
-	if (!session) {
-		return (
-			<>
-				<PageBand />
-				<div className="relative isolate flex min-h-screen items-center justify-center">
-					<p className="text-muted-foreground">Sessione non trovata.</p>
-				</div>
-			</>
-		);
-	}
 
 	if (showResults) {
 		return (

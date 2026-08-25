@@ -11,6 +11,7 @@ import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
 import {
+	applyAttemptGrade,
 	claimAttempt,
 	countAttempts,
 	deleteAttempt,
@@ -21,7 +22,6 @@ import {
 	insertAnswers,
 	insertAttempt,
 } from "./db/attempts";
-import { recordAttemptInProgress } from "./db/progress";
 import {
 	deleteQuiz,
 	findQuizQuestionOrder,
@@ -32,7 +32,11 @@ import {
 } from "./db/quizzes";
 import { selectRandomItems, shuffleArray } from "./randomization";
 import type { CompleteQuizInput, StartQuizInput } from "./schemas";
-import type { Quiz, QuizAttemptResult, QuizQuestion } from "./types";
+import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
+import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types";
+
+const QUIZ_GONE =
+	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
@@ -202,6 +206,38 @@ export async function getQuiz(
 	};
 }
 
+function gradeAttempt(
+	questionRows: (typeof questions.$inferSelect)[],
+	submitted: CompleteQuizInput["answers"],
+	evaluationMode: EvaluationMode
+) {
+	const byQuestion = new Map(submitted.map(a => [a.questionId, a.userAnswer]));
+
+	let rawTotal = 0;
+	const answers = questionRows.map(question => {
+		const userAnswer = byQuestion.get(question.id) ?? [];
+		const { score, isCorrect } = calculateAnswerScore(
+			userAnswer,
+			question.correctAnswer,
+			evaluationMode
+		);
+		rawTotal += score;
+		return {
+			questionId: question.id,
+			userAnswer,
+			score,
+			isCorrect,
+			sectionId: question.sectionId,
+			difficulty: question.difficulty,
+			questionType: question.questionType,
+		};
+	});
+
+	const maxScore = questionRows.length * evaluationMode.correctAnswerPoints;
+	const score = maxScore > 0 ? Math.round((rawTotal / maxScore) * THIRTY_SCALE_MAX) : 0;
+	return { answers, score };
+}
+
 export async function completeQuiz(
 	userId: string,
 	input: CompleteQuizInput
@@ -210,7 +246,6 @@ export async function completeQuiz(
 		const claimed = await claimAttempt(tx, {
 			attemptId: input.quizAttemptId,
 			userId,
-			score: input.totalScore,
 			timeSpent: input.timeSpent,
 		});
 
@@ -225,18 +260,34 @@ export async function completeQuiz(
 			return { attemptId: input.quizAttemptId };
 		}
 
-		await insertAnswers(tx, input.quizAttemptId, input.answers);
+		// Grading needs the quiz. Deleting a section cascades its quizzes and nulls
+		// this attempt's quiz_id, so returning early here would commit the claim —
+		// completed, score 0, no answers — and freeze that into the user's history.
+		// Throwing rolls the claim back and leaves the attempt open instead.
+		if (!claimed.quizId) throw new Conflict(QUIZ_GONE);
 
 		const quiz = await findQuizSectionAndMode(tx, claimed.quizId);
-		if (quiz) {
-			await recordAttemptInProgress(tx, {
-				userId,
-				sectionId: quiz.sectionId,
-				quizMode: quiz.quizMode,
-				score: input.totalScore,
-				timeSpent: input.timeSpent,
-			});
-		}
+		if (!quiz) throw new Conflict(QUIZ_GONE);
+
+		const [evaluationMode, order] = await Promise.all([
+			findEvaluationMode(tx, quiz.evaluationModeId),
+			findQuizQuestionOrder(tx, claimed.quizId),
+		]);
+		if (!evaluationMode) throw new Conflict(QUIZ_GONE);
+
+		const questionRows = await findQuestionsByIds(
+			tx,
+			order.map(entry => entry.questionId)
+		);
+		const graded = gradeAttempt(questionRows, input.answers, evaluationMode);
+
+		await insertAnswers(tx, input.quizAttemptId, graded.answers);
+		await applyAttemptGrade(tx, {
+			attemptId: input.quizAttemptId,
+			score: graded.score,
+			sectionId: quiz.sectionId,
+			quizMode: quiz.quizMode,
+		});
 
 		return { attemptId: input.quizAttemptId };
 	});
@@ -250,7 +301,7 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 		await deleteAttempt(tx, attemptId);
 
 		// A quiz nobody attempted is dead weight: it only exists to be resumed.
-		if ((await countAttempts(tx, attempt.quizId)) === 0) {
+		if (attempt.quizId && (await countAttempts(tx, attempt.quizId)) === 0) {
 			await deleteQuiz(tx, attempt.quizId);
 		}
 	});
@@ -314,6 +365,9 @@ export async function getQuizResults(
 				];
 			}),
 		},
-		answers,
+		answers: answers.map(answer => ({
+			...answer,
+			isCorrect: answer.isCorrect ?? false,
+		})),
 	};
 }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -81,8 +82,11 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("courseType", {
 			header: "Tipo",
-			filterFn: "arrHas",
-			meta: { label: "Tipo", facet: { options: COURSE_TYPE_OPTIONS } },
+			filterFn: "facet",
+			meta: {
+				label: "Tipo",
+				facet: { options: COURSE_TYPE_OPTIONS, icon: BookmarkIcon },
+			},
 			cell: ({ row }) => (
 				<Badge variant="outline">
 					{COURSE_TYPE_CONFIG[row.original.courseType]?.label ??
@@ -181,6 +185,7 @@ function AdminDepartmentDetailPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
+								filterVariant="inline"
 								searchPlaceholder="Cerca corsi..."
 								actions={
 									<Button size="sm" onClick={() => setCreateCourseOpen(true)}>

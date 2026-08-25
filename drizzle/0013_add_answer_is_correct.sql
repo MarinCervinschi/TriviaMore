@@ -1,0 +1,1 @@
+ALTER TABLE "quiz"."answer_attempts" ADD COLUMN "is_correct" boolean;

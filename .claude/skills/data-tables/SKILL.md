@@ -40,8 +40,8 @@ function buildColumns(onDelete: (id: string) => void) {
     }),
     column.accessor("role", {
       header: "Ruolo",
-      filterFn: "arrHas",
-      meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS } },
+      filterFn: "facet",
+      meta: { label: "Ruolo", facet: { options: ROLE_OPTIONS, icon: UserIcon } },
       cell: ({ row }) => <Badge>{ROLE_LABELS[row.original.role]}</Badge>,
     }),
     column.display({
@@ -76,9 +76,22 @@ const table = useDataTable({
 | `hideBelow` | `sm`/`md`/`lg`/`xl`; hides header and cells together, so they can never drift apart |
 | `headerClassName` / `cellClassName` | escape hatches, e.g. `w-[40%]`, `min-w-[16rem]` |
 | `facet.options` | turns the column into a multi-select filter in the toolbar |
+| `facet.icon` | the glyph the inline chip leads with — give every facet one |
 
 `hideBelow` maps to four literal class strings in `data-table.tsx`. Adding a breakpoint means adding
 a literal there — Tailwind's scanner cannot see an interpolated class name.
+
+### Filters: two variants
+
+`DataTableToolbar` takes `filterVariant`. `buttons` (the default) shows one dashed button per facet,
+always visible. **`inline` is what the app uses**: a single filter icon on the right, and a removable
+chip on the left per active facet, each carrying an operator — *è uno di* / *non è uno di*. Both drive
+the same column filter state, so a column def does not change between them.
+
+A filter the table cannot own — a date range, say — is a `CustomInlineFilter` passed through
+`inlineFilters`: it renders its own panel and writes its own search params, and it reports `active` so
+the reset button appears. Because those params are not column ids, list them in `extraResetKeys` on
+`useDataTable` or Reset will leave them behind (`/user/progress/history` does this with `da`/`a`).
 
 ### `DataTable` props
 
@@ -87,7 +100,9 @@ true — pass `false` inside a `Card`), `showPagination`.
 
 `rowLink` takes a **bare** `<Link>`: `row => <Link to="…" params={…} aria-label={`Apri ${row.name}`} />`.
 The arrow cell, its column and the hover animation are added for you. Do not render your own trailing
-arrow column — that implicit column is exactly what made the old `BrowseTable` unsafe.
+arrow column — that implicit column is exactly what made the old `BrowseTable` unsafe. Return **null**
+for a row that has nowhere to go — a deleted target, say — and its arrow cell stays empty while the
+column keeps its shape.
 
 ## State: URL or local
 
@@ -146,14 +161,15 @@ of the table.
 
 ## Traps
 
-**`filterFn: "arrHas"` on every faceted column — not `arrIncludesSome`.** Despite the name,
-`arrIncludesSome` starts with `if (!Array.isArray(dataValue)) return false`: it is for columns whose
-*row value* is an array. Our facets hold scalars, so it silently matches nothing. `arrHas` is the one
-documented as *"scalar column value equals at least one filter value"*. `arrIncludes` is also wrong —
-it does a substring match, so filtering `ADMIN` would also return `SUPERADMIN`.
-
-Leaving `filterFn` off is equally broken: auto-resolution inspects the **row** value, sees a string,
-and picks `includesString`, which can never match an array of selected values.
+**`filterFn: "facet"` on every faceted column.** It is ours (`facet-filter.ts`), registered in
+`features.ts`, and it is a superset of the built-in `arrHas`: a bare value list means "row value is one
+of the selected", and a leading `!` on the first token negates the whole selection. Anything else is
+wrong. `arrIncludesSome` starts with `if (!Array.isArray(dataValue)) return false` — it is for columns
+whose *row value* is an array, so against our scalar facets it silently matches nothing. `arrIncludes`
+does a substring match, so filtering `ADMIN` would also return `SUPERADMIN`. And leaving `filterFn` off
+is equally broken: auto-resolution sees a string row value and picks `includesString`, which can never
+match an array of selected values. `arrHas` still works but loses the exclude operator — do not reach
+for it in new code.
 
 **Facet values must be strings.** A boolean column filtered from the URL receives `["true"]` and
 never matches. Project it instead:

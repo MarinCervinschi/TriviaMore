@@ -1,0 +1,2 @@
+ALTER TABLE "quiz"."flashcard_attempts" ADD COLUMN "session_id" text;--> statement-breakpoint
+ALTER TABLE "quiz"."flashcard_attempts" ADD CONSTRAINT "flashcard_attempts_user_id_session_id_key" UNIQUE("user_id","session_id");

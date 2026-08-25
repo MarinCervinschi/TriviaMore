@@ -49,9 +49,10 @@ export type DataTableProps<TData extends RowData> = {
 	empty?: ReactNode;
 	/**
 	 * Makes each row navigable. Return a bare `<Link>` — the arrow column, its
-	 * label and the hover styling are added here.
+	 * label and the hover styling are added here. Return null for a row with
+	 * nowhere to go: its arrow cell stays empty so the column keeps its shape.
 	 */
-	rowLink?: (row: TData) => ReactElement;
+	rowLink?: (row: TData) => ReactElement | null;
 	density?: keyof typeof DENSITY_CLASS;
 	bordered?: boolean;
 	showPagination?: boolean;
@@ -137,13 +138,14 @@ export function DataTable<TData extends RowData>({
 													</TableCell>
 												);
 											})}
-											{link && (
+											{rowLink && (
 												<TableCell className="py-4 pr-6">
-													{cloneElement(
-														link,
-														{ className: "inline-flex" } as never,
-														<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 transition-transform group-hover:translate-x-1" />
-													)}
+													{link &&
+														cloneElement(
+															link,
+															{ className: "inline-flex" } as never,
+															<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 transition-transform group-hover:translate-x-1" />
+														)}
 												</TableCell>
 											)}
 										</TableRow>

@@ -93,5 +93,6 @@ export type QuizAttemptResult = {
 		questionId: string;
 		userAnswer: string[];
 		score: number;
+		isCorrect: boolean;
 	}[];
 };

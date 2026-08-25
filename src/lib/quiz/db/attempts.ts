@@ -45,21 +45,17 @@ export async function findAttempt(db: DbOrTx, attemptId: string) {
 	return attempt;
 }
 
-// Atomic claim: `completed_at IS NULL` is the idempotency key, so only the
-// first of several concurrent submissions gets a row back.
 export async function claimAttempt(
 	db: DbOrTx,
 	params: {
 		attemptId: string;
 		userId: string;
-		score: number;
 		timeSpent: number;
 	}
 ) {
 	const [claimed] = await db
 		.update(quizAttempts)
 		.set({
-			score: params.score,
 			timeSpent: params.timeSpent,
 			completedAt: sql`now()`,
 		})
@@ -73,6 +69,25 @@ export async function claimAttempt(
 		.returning({ id: quizAttempts.id, quizId: quizAttempts.quizId });
 
 	return claimed;
+}
+
+export async function applyAttemptGrade(
+	db: DbOrTx,
+	params: {
+		attemptId: string;
+		score: number;
+		sectionId: string;
+		quizMode: (typeof quizAttempts.$inferInsert)["quizMode"];
+	}
+) {
+	await db
+		.update(quizAttempts)
+		.set({
+			score: params.score,
+			sectionId: params.sectionId,
+			quizMode: params.quizMode,
+		})
+		.where(eq(quizAttempts.id, params.attemptId));
 }
 
 export async function deleteAttempt(db: DbOrTx, attemptId: string) {
@@ -90,7 +105,15 @@ export async function countAttempts(db: DbOrTx, quizId: string) {
 export async function insertAnswers(
 	db: DbOrTx,
 	attemptId: string,
-	answers: { questionId: string; userAnswer: string[]; score: number }[]
+	answers: {
+		questionId: string;
+		userAnswer: string[];
+		score: number;
+		isCorrect: boolean;
+		sectionId: string;
+		difficulty: NonNullable<(typeof answerAttempts.$inferInsert)["difficulty"]>;
+		questionType: NonNullable<(typeof answerAttempts.$inferInsert)["questionType"]>;
+	}[]
 ) {
 	if (answers.length === 0) return;
 	await db.insert(answerAttempts).values(
@@ -99,19 +122,30 @@ export async function insertAnswers(
 			questionId: answer.questionId,
 			userAnswer: answer.userAnswer,
 			score: answer.score,
+			isCorrect: answer.isCorrect,
+			sectionId: answer.sectionId,
+			difficulty: answer.difficulty,
+			questionType: answer.questionType,
 		}))
 	);
 }
 
 export async function findAnswers(db: DbOrTx, attemptId: string) {
-	return db
+	const rows = await db
 		.select({
 			questionId: answerAttempts.questionId,
 			userAnswer: answerAttempts.userAnswer,
 			score: answerAttempts.score,
+			isCorrect: answerAttempts.isCorrect,
 		})
 		.from(answerAttempts)
-		.where(eq(answerAttempts.quizAttemptId, attemptId));
+		.where(
+			and(
+				eq(answerAttempts.quizAttemptId, attemptId),
+				isNotNull(answerAttempts.questionId)
+			)
+		);
+	return rows.map(row => ({ ...row, questionId: row.questionId! }));
 }
 
 // The user dashboard's "recent activity". Lives here because it reads quiz
@@ -143,6 +177,47 @@ export async function findRecentCompletedAttempts(
 		.limit(limit);
 }
 
+export async function findCompletedAttemptHistory(
+	db: DbOrTx,
+	userId: string,
+	scope?: { level: "section" | "class" | "course"; id: string }
+) {
+	const { primaryCourse, columns } = sectionLocation(db);
+
+	const scoped =
+		scope?.level === "section"
+			? eq(quizAttempts.sectionId, scope.id)
+			: scope?.level === "class"
+				? eq(sections.classId, scope.id)
+				: scope?.level === "course"
+					? eq(primaryCourse.courseId, scope.id)
+					: undefined;
+
+	return db
+		.select({
+			...columns,
+			classCode: primaryCourse.classCode,
+			courseCode: primaryCourse.courseCode,
+			departmentCode: primaryCourse.departmentCode,
+			id: quizAttempts.id,
+			// Null once the quiz is gone, which is what makes the result page
+			// unreachable — the row survives, its result does not.
+			quizId: quizAttempts.quizId,
+			score: quizAttempts.score,
+			timeSpent: quizAttempts.timeSpent,
+			quizMode: quizAttempts.quizMode,
+			completedAt: quizAttempts.completedAt,
+		})
+		.from(quizAttempts)
+		.leftJoin(sections, eq(sections.id, quizAttempts.sectionId))
+		.leftJoin(classes, eq(classes.id, sections.classId))
+		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
+		.where(
+			and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt), scoped)
+		)
+		.orderBy(desc(quizAttempts.completedAt));
+}
+
 export async function countCompletedAttempts(db: DbOrTx, userId: string) {
 	const [row] = await db
 		.select({ value: count() })
@@ -151,17 +226,23 @@ export async function countCompletedAttempts(db: DbOrTx, userId: string) {
 	return row?.value ?? 0;
 }
 
-// Per-day completed-attempt counts for the dashboard activity heatmap, grouped
-// in UTC to match the calendar grid. All years — the heatmap's year picker
-// slices them client-side; one row per active day keeps this small.
 export async function findDailyAttemptCounts(db: DbOrTx, userId: string) {
-	const day = sql<string>`to_char(${quizAttempts.completedAt} at time zone 'utc', 'YYYY-MM-DD')`;
-	return db
-		.select({ date: day, value: count() })
-		.from(quizAttempts)
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
-		.groupBy(day)
-		.orderBy(day);
+	const result = await db.execute<{ date: string; value: number }>(sql`
+		select to_char(completed_at at time zone 'utc', 'YYYY-MM-DD') as date,
+		       count(*)::int as value
+		  from (
+		    select completed_at
+		      from quiz.quiz_attempts
+		     where user_id = ${userId} and completed_at is not null
+		    union all
+		    select completed_at
+		      from quiz.flashcard_attempts
+		     where user_id = ${userId} and completed_at is not null
+		  ) as days
+		 group by date
+		 order by date
+	`);
+	return result.rows;
 }
 
 // Replaces the quiz.quiz_attempts_detail view, and carries the codes the

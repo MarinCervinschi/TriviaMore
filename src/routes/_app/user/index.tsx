@@ -3,7 +3,6 @@ import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
-import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -14,13 +13,14 @@ import {
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
+import { ProgressSummary } from "@/components/progress/progress-summary";
 import { decorativeTint } from "@/components/shared/decorative-tints";
-import { StatCard } from "@/components/shared/stat-card";
 import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardTexture } from "@/components/ui/card";
+import { IconTile } from "@/components/ui/icon-tile";
 import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -28,10 +28,15 @@ import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { RecentClass } from "@/lib/user/types";
 import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
+import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 
 export const Route = createFileRoute("/_app/user/")({
-	loader: ({ context }) => context.queryClient.ensureQueryData(userQueries.profile()),
+	loader: ({ context }) =>
+		Promise.all([
+			context.queryClient.ensureQueryData(userQueries.profile()),
+			context.queryClient.ensureQueryData(userQueries.studyStats()),
+		]),
 	head: () => seoHead({ title: "Dashboard", noindex: true }),
 	pendingComponent: UserDashboardSkeleton,
 	component: DashboardPage,
@@ -39,6 +44,7 @@ export const Route = createFileRoute("/_app/user/")({
 
 function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
+	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
 
 	if (!profile) return null;
 
@@ -84,65 +90,31 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
-				{/* Stats */}
-				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-					<StatCard
-						label="Quiz completati"
-						value={profile.stats.totalQuizzes}
-						icon={CupFirstIcon}
-						color="yellow"
-					/>
-					<StatCard
-						label="Punteggio medio"
-						value={`${profile.stats.averageScore}/33`}
-						icon={GraphUpIcon}
-						color="green"
-					/>
-					<StatCard
-						label="Insegnamenti seguiti"
-						value={profile.stats.userClassesCount}
-						icon={DiplomaIcon}
-						color="blue"
-					/>
-					<StatCard
-						label="Segnalibri"
-						value={profile.stats.bookmarksCount}
-						icon={BookmarkIcon}
-						color="purple"
-					/>
-				</div>
-
-				{/* Quick Actions */}
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-					<QuickActionCard
+				<div className="grid gap-4 sm:grid-cols-3">
+					<ActionCard
 						icon={InboxIcon}
 						color="amber"
 						title="I miei contributi"
-						description="Proponi nuovi contenuti per la piattaforma"
+						state="Proponi materiale"
 						href="/user/requests"
 					/>
-					<QuickActionCard
-						icon={GraphUpIcon}
-						color="green"
-						title="I miei progressi"
-						description="Visualizza i tuoi progressi dettagliati per ogni materia"
-						href="/user/progress"
-					/>
-					<QuickActionCard
+					<ActionCard
 						icon={DiplomaIcon}
 						color="blue"
 						title="I miei insegnamenti"
-						description="Gestisci gli insegnamenti che stai seguendo"
+						state={`${profile.stats.userClassesCount} seguiti`}
 						href="/user/classes"
 					/>
-					<QuickActionCard
+					<ActionCard
 						icon={BookmarkIcon}
 						color="purple"
 						title="I miei segnalibri"
-						description="Accedi alle domande che hai salvato per dopo"
+						state={`${profile.stats.bookmarksCount} salvati`}
 						href="/user/bookmarks"
 					/>
 				</div>
+
+				{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
 
 				{/* Recent Classes */}
 				{profile.recentClasses.length > 0 && (
@@ -159,17 +131,17 @@ function DashboardPage() {
 	);
 }
 
-function QuickActionCard({
+function ActionCard({
 	icon: Icon,
 	color,
 	title,
-	description,
+	state,
 	href,
 }: {
 	icon: typeof CupFirstIcon;
 	color: string;
 	title: string;
-	description: string;
+	state: string;
 	href: string;
 }) {
 	const colors = decorativeTint(color);
@@ -177,21 +149,24 @@ function QuickActionCard({
 	return (
 		<Link
 			to={href}
-			className={`group relative overflow-hidden rounded-2xl border ${colors.border} bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+			className={cn(
+				"group bg-card relative flex items-center gap-3 overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
+				colors.border
+			)}
 		>
-			<CardTexture placement="tl" alpha={0.12} />
-
-			<div className="relative">
-				<div className={`mb-4 inline-flex rounded-2xl ${colors.badge} p-3`}>
-					<Icon className={`h-6 w-6 ${colors.icon}`} />
-				</div>
-				<h3 className="mb-1 text-lg font-semibold tracking-tight">{title}</h3>
-				<p className="text-muted-foreground mb-4 text-sm">{description}</p>
-				<div className="text-brand flex items-center gap-1 text-sm font-medium">
-					Vai
-					<ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-				</div>
+			<CardTexture placement="tr" alpha={0.2} />
+			<IconTile
+				variant="soft"
+				size="lg"
+				className={cn("relative shrink-0", colors.icon)}
+			>
+				<Icon />
+			</IconTile>
+			<div className="relative min-w-0 flex-1">
+				<h3 className="font-semibold tracking-tight">{title}</h3>
+				<p className="text-muted-foreground truncate text-sm">{state}</p>
 			</div>
+			<ArrowRightIcon className="text-muted-foreground relative size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
 		</Link>
 	);
 }

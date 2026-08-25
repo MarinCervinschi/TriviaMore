@@ -10,13 +10,16 @@ import { TransactionRollbackError } from "drizzle-orm/errors";
 import { closeDb, getDb } from "../../src/db/index.ts";
 import {
 	evaluationModes,
-	progress,
+	flashcardAttempts,
 	questions,
+	quizAttempts,
 	quizQuestions,
 	quizzes,
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
+import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
 import {
+	applyAttemptGrade,
 	claimAttempt,
 	countAttempts,
 	deleteAttempt,
@@ -24,7 +27,6 @@ import {
 	insertAnswers,
 	insertAttempt,
 } from "../../src/lib/quiz/db/attempts.ts";
-import { recordAttemptInProgress } from "../../src/lib/quiz/db/progress.ts";
 import {
 	deleteQuiz,
 	findQuizQuestionOrder,
@@ -71,7 +73,11 @@ try {
 		if (!mode) throw new Error("no evaluation mode configured");
 
 		const picked = await tx
-			.select({ id: questions.id })
+			.select({
+				id: questions.id,
+				difficulty: questions.difficulty,
+				questionType: questions.questionType,
+			})
 			.from(questions)
 			.where(
 				and(
@@ -107,7 +113,6 @@ try {
 		const claimed = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: seed.user_id,
-			score: 21,
 			timeSpent: 60_000,
 		});
 		expect("complete: first claim wins", Boolean(claimed));
@@ -115,7 +120,6 @@ try {
 		const replay = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: seed.user_id,
-			score: 30,
 			timeSpent: 1,
 		});
 		expect("complete: second claim is refused", replay === undefined);
@@ -123,7 +127,6 @@ try {
 		const foreign = await claimAttempt(tx, {
 			attemptId: attempt.id,
 			userId: "00000000-0000-0000-0000-000000000000",
-			score: 30,
 			timeSpent: 1,
 		});
 		expect("complete: another user cannot claim", foreign === undefined);
@@ -135,73 +138,59 @@ try {
 				questionId: question.id,
 				userAnswer: ["x"],
 				score: 0.5,
+				isCorrect: false,
+				sectionId: seed.section_id,
+				difficulty: question.difficulty,
+				questionType: question.questionType,
 			}))
 		);
 		const answers = await findAnswers(tx, attempt.id);
 		expect("complete: answers stored", answers.length === picked.length);
 
-		// progress upsert, twice: the second run must average instead of overwrite
-		const before = await tx
-			.select()
-			.from(progress)
-			.where(
-				and(
-					eq(progress.userId, seed.user_id),
-					eq(progress.sectionId, seed.section_id),
-					eq(progress.quizMode, "STUDY")
-				)
-			)
-			.then(rows => rows[0]);
-
-		await recordAttemptInProgress(tx, {
-			userId: seed.user_id,
+		await applyAttemptGrade(tx, {
+			attemptId: attempt.id,
+			score: 21,
 			sectionId: seed.section_id,
 			quizMode: "STUDY",
-			score: 20,
-			timeSpent: 1000,
 		});
-		await recordAttemptInProgress(tx, {
-			userId: seed.user_id,
-			sectionId: seed.section_id,
-			quizMode: "STUDY",
-			score: 30,
-			timeSpent: 1000,
-		});
+		const [graded] = await tx
+			.select({
+				score: quizAttempts.score,
+				sectionId: quizAttempts.sectionId,
+				quizMode: quizAttempts.quizMode,
+			})
+			.from(quizAttempts)
+			.where(eq(quizAttempts.id, attempt.id));
+		expect(
+			"complete: server grade + snapshot applied",
+			graded?.score === 21 &&
+				graded?.sectionId === seed.section_id &&
+				graded?.quizMode === "STUDY"
+		);
 
-		const after = await tx
-			.select()
-			.from(progress)
-			.where(
-				and(
-					eq(progress.userId, seed.user_id),
-					eq(progress.sectionId, seed.section_id),
-					eq(progress.quizMode, "STUDY")
-				)
-			)
-			.then(rows => rows[0]);
-
-		expect(
-			"progress: counter incremented twice",
-			after.quizzesTaken === (before?.quizzesTaken ?? 0) + 2,
-			`${before?.quizzesTaken ?? 0} → ${after.quizzesTaken}`
-		);
-		expect(
-			"progress: best score kept",
-			(after.bestScore ?? 0) >= Math.max(30, before?.bestScore ?? 0),
-			`best = ${after.bestScore}`
-		);
-		expect(
-			"progress: time accumulated",
-			after.totalTimeSpent === (before?.totalTimeSpent ?? 0) + 2000
-		);
-		if (!before) {
-			// 20 then 30 on a fresh row averages to 25.
-			expect(
-				"progress: running average",
-				after.averageScore === 25,
-				`avg = ${after.averageScore}`
-			);
+		// flashcard: one row per session, and replaying its id records nothing more.
+		const flashcardSession = `smoke-${seed.section_id}`;
+		for (let i = 0; i < 2; i++) {
+			await insertFlashcardAttempt(tx, {
+				userId: seed.user_id,
+				sessionId: flashcardSession,
+				sectionId: seed.section_id,
+				cardsReviewed: 5,
+			});
 		}
+		const flashRows = await tx
+			.select({ cardsReviewed: flashcardAttempts.cardsReviewed })
+			.from(flashcardAttempts)
+			.where(
+				and(
+					eq(flashcardAttempts.userId, seed.user_id),
+					eq(flashcardAttempts.sectionId, seed.section_id)
+				)
+			);
+		expect(
+			"flashcard: session recorded once",
+			flashRows.length === 1 && flashRows[0]?.cardsReviewed === 5
+		);
 
 		await deleteAttempt(tx, attempt.id);
 		expect("cancel: attempt gone", (await countAttempts(tx, quiz.id)) === 0);

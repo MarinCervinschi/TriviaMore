@@ -78,11 +78,12 @@ function buildColumns(onDelete: (id: string) => void) {
 		column.accessor(section => (section.isPublic ? "public" : "private"), {
 			id: "visibility",
 			header: "Visibilità",
-			filterFn: "arrHas",
+			filterFn: "facet",
 			meta: {
 				label: "Visibilità",
 				align: "center",
 				facet: {
+					icon: EyeIcon,
 					options: [
 						{ value: "public", label: "Pubblica", icon: EyeIcon },
 						{ value: "private", label: "Privata", icon: EyeClosedIcon },
@@ -226,6 +227,7 @@ function AdminClassDetailPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
+								filterVariant="inline"
 								searchPlaceholder="Cerca sezioni..."
 								actions={
 									<>
