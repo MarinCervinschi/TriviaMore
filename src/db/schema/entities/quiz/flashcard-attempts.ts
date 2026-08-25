@@ -1,4 +1,12 @@
-import { foreignKey, index, integer, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	foreignKey,
+	index,
+	integer,
+	text,
+	timestamp,
+	unique,
+	uuid,
+} from "drizzle-orm/pg-core";
 
 import { quizSchema } from "../../common";
 import { sections } from "../catalog/sections";
@@ -11,6 +19,9 @@ export const flashcardAttempts = quizSchema
 			id: uuid().defaultRandom().primaryKey().notNull(),
 			userId: uuid("user_id").notNull(),
 			sectionId: uuid("section_id"),
+			// The encoded session the run came from. Its URL is replayable, so this
+			// is what keeps a reload from recording the same session twice.
+			sessionId: text("session_id"),
 			cardsReviewed: integer("cards_reviewed"),
 			completedAt: timestamp("completed_at", {
 				withTimezone: true,
@@ -42,6 +53,10 @@ export const flashcardAttempts = quizSchema
 				foreignColumns: [profiles.id],
 				name: "flashcard_attempts_user_id_fkey",
 			}).onDelete("cascade"),
+			unique("flashcard_attempts_user_id_session_id_key").on(
+				table.userId,
+				table.sessionId
+			),
 		]
 	)
 	.enableRLS();

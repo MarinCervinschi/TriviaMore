@@ -107,8 +107,12 @@ export async function completeFlashcard(
 	const db = getDb();
 	await assertSectionAccess(db, userId, session.sectionId);
 
+	// The session id is the idempotency key: its URL is stable, so replaying it
+	// must not record a second run — the same reason `claimAttempt` matches on
+	// `completed_at is null` for a quiz.
 	await insertFlashcardAttempt(db, {
 		userId,
+		sessionId: input.sessionId,
 		sectionId: session.sectionId,
 		cardsReviewed: input.cardsReviewed,
 	});
