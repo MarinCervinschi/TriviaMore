@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
+import { NotFoundPage } from "@/components/error/not-found-page";
 import { FlashcardHeader } from "@/components/flashcard/flashcard-header";
 import { FlashcardNavigation } from "@/components/flashcard/flashcard-navigation";
 import { FlashcardProgress } from "@/components/flashcard/flashcard-progress";
@@ -22,16 +23,28 @@ import { reportBrowserError } from "@/lib/logging/browser";
 
 export const Route = createFileRoute("/flashcard/$sessionId")({
 	loader: async ({ params }) => {
-		return getFlashcardSessionFn({ data: { sessionId: params.sessionId } });
+		const session = await getFlashcardSessionFn({
+			data: { sessionId: params.sessionId },
+		});
+		if (!session) throw notFound();
+		return session;
 	},
 	pendingComponent: FlashcardSkeleton,
 	component: FlashcardPage,
+	// This route lives outside the app shell, so the not-found page brings its
+	// own band.
+	notFoundComponent: () => (
+		<NotFoundPage
+			title="Sessione non disponibile"
+			message="Questa sessione di flashcard non è più valida."
+		/>
+	),
 });
 
 function FlashcardPage() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const session = Route.useLoaderData() as FlashcardSession | null;
+	const session = Route.useLoaderData() as FlashcardSession;
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [studiedCards, setStudiedCards] = useState<Set<number>>(new Set());
@@ -127,17 +140,6 @@ function FlashcardPage() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [showResults, handleNext, handlePrevious, handleFlip]);
-
-	if (!session) {
-		return (
-			<>
-				<PageBand />
-				<div className="relative isolate flex min-h-screen items-center justify-center">
-					<p className="text-muted-foreground">Sessione non trovata.</p>
-				</div>
-			</>
-		);
-	}
 
 	if (showResults) {
 		return (
