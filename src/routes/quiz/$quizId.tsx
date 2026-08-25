@@ -7,6 +7,7 @@ import {
 	useBlocker,
 	useNavigate,
 } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { PageBand } from "@/components/layout/page-band";
@@ -115,7 +116,11 @@ function QuizPage() {
 				params: { attemptId },
 			});
 		} catch (error) {
-			console.error("Failed to complete quiz:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Non è stato possibile completare il quiz."
+			);
 			isCompletingRef.current = false;
 			setIsCompleting(false);
 		}
