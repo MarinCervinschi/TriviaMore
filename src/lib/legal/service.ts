@@ -36,7 +36,13 @@ export async function insertLegalAcceptances(
 	let userAgent: string | null = null;
 	try {
 		userAgent = getRequestHeader("user-agent") ?? null;
-		ipAddress = getRequestIP({ xForwardedFor: true }) ?? null;
+		// Cloudflare's own header first: it appends the true IP to the END of
+		// X-Forwarded-For, so the first entry — what `getRequestIP` returns — is
+		// whatever the client chose to send.
+		ipAddress =
+			getRequestHeader("cf-connecting-ip") ??
+			getRequestIP({ xForwardedFor: true }) ??
+			null;
 	} catch {
 		// Request helpers throw outside a request context; leave both null.
 	}
