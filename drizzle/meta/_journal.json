@@ -120,6 +120,13 @@
       "when": 1787675501891,
       "tag": "0016_flashcard_session_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1787675521633,
+      "tag": "0017_drop_answer_time_spent",
+      "breakpoints": true
     }
   ]
 }
