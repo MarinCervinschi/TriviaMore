@@ -32,7 +32,9 @@ import {
 } from "./quiz-skeleton";
 import { SearchResultsSkeleton } from "./search-skeleton";
 import {
+	AttemptHistorySkeleton,
 	BookmarksSkeleton,
+	EntityProgressSkeleton,
 	NotificationsSkeleton,
 	ProgressSkeleton,
 	SettingsSkeleton,
@@ -116,6 +118,12 @@ export const User: Story = {
 			</Labelled>
 			<Labelled label="ProgressSkeleton">
 				<ProgressSkeleton />
+			</Labelled>
+			<Labelled label="EntityProgressSkeleton">
+				<EntityProgressSkeleton />
+			</Labelled>
+			<Labelled label="AttemptHistorySkeleton">
+				<AttemptHistorySkeleton />
 			</Labelled>
 			<Labelled label="BookmarksSkeleton">
 				<BookmarksSkeleton />
