@@ -14,8 +14,10 @@ export async function getDailyStudyStats(
 	scope?: MasteryScope
 ): Promise<DailyStudyStat[]> {
 	const db = getDb();
-	const scopeQa = sectionScopeSql(scope, sql`qa.section_id`);
-	const scopeAa = sectionScopeSql(scope, sql`aa.section_id`);
+	// Scoped by the ATTEMPT's section on both sides, the same rule `getMastery`
+	// follows: an exam simulation's answers carry the section each question came
+	// from, so scoping them by `aa.section_id` would drop every one of them.
+	const scoped = sectionScopeSql(scope, sql`qa.section_id`);
 
 	const result = await db.execute<{
 		date: string;
@@ -42,7 +44,7 @@ export async function getDailyStudyStats(
 		      from quiz.quiz_attempts qa
 		     where qa.user_id = ${userId}
 		       and qa.completed_at is not null
-		       and qa.quiz_mode is not null${scopeQa}
+		       and qa.quiz_mode is not null${scoped}
 		     group by date, qa.quiz_mode
 		  ) d
 		  left join (
@@ -53,7 +55,7 @@ export async function getDailyStudyStats(
 		      from quiz.answer_attempts aa
 		      join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
 		     where qa.user_id = ${userId}
-		       and qa.quiz_mode is not null${scopeAa}
+		       and qa.quiz_mode is not null${scoped}
 		     group by date, qa.quiz_mode
 		  ) a on a.date = d.date and a.quiz_mode = d.quiz_mode
 		 order by d.date
