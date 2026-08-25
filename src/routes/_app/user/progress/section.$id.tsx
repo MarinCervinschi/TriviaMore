@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { EntityProgressDetail } from "@/components/progress/entity-progress-detail";
 import { ProgressSkeleton } from "@/components/skeletons";
+import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 
@@ -38,7 +39,7 @@ function SectionProgress() {
 	return (
 		<EntityProgressDetail
 			kindLabel="Sezione"
-			name={first?.sectionName ?? "Sezione"}
+			name={first?.sectionName ? sectionDisplayName(first.sectionName) : "Sezione"}
 			context={
 				[first?.className, first?.courseName].filter(Boolean).join(" · ") || undefined
 			}
