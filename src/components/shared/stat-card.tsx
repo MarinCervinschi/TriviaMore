@@ -4,7 +4,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import type { Icon } from "@/components/icons";
 import { decorativeTint } from "@/components/shared/decorative-tints";
 import { Card, CardTexture } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { IconTile } from "@/components/ui/icon-tile";
 
 // The one stat tile used across the admin dashboard, the user area and progress.
 // `color` drives the icon badge and icon tint together; an optional `href`
@@ -30,9 +30,9 @@ export function StatCard({
 		<Card className="group relative overflow-hidden p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
 			<CardTexture placement="tl" alpha={0.12} />
 			<div className="relative flex flex-col gap-3">
-				<div className={cn("inline-flex w-fit rounded-xl p-2 sm:p-2.5", colors.badge)}>
-					<Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", colors.icon)} />
-				</div>
+				<IconTile variant="soft" className={colors.icon}>
+					<Icon />
+				</IconTile>
 				<div className="min-w-0">
 					<p className="text-muted-foreground truncate text-xs font-medium sm:text-sm">
 						{label}

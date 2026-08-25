@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 import { Badge } from "./badge";
 import { Card, CardTexture } from "./card";
+import { IconTile } from "./icon-tile";
 
 const meta = {
 	title: "Card/Varianti",
@@ -28,33 +29,28 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const CHART = {
-	1: { tile: "bg-chart-1/20", ink: "text-chart-1-ink" },
-	2: { tile: "bg-chart-2/20", ink: "text-chart-2-ink" },
-	3: { tile: "bg-chart-3/20", ink: "text-chart-3-ink" },
-	4: { tile: "bg-chart-4/20", ink: "text-chart-4-ink" },
+// A category = a chart ink; the soft IconTile derives the whole tint from it.
+const CHART_INK = {
+	1: "text-chart-1-ink",
+	2: "text-chart-2-ink",
+	3: "text-chart-3-ink",
+	4: "text-chart-4-ink",
 } as const;
-type ChartKey = keyof typeof CHART;
+type ChartKey = keyof typeof CHART_INK;
 
 function MonoTile({ icon: I, className }: { icon: Icon; className?: string }) {
 	return (
-		<div
-			className={cn(
-				"bg-muted text-foreground border-border/70 inline-flex rounded-xl border p-2.5",
-				className
-			)}
-		>
-			<I className="size-5" />
-		</div>
+		<IconTile variant="outline" className={cn("text-foreground", className)}>
+			<I />
+		</IconTile>
 	);
 }
 
 function ColorTile({ icon: I, chart }: { icon: Icon; chart: ChartKey }) {
-	const c = CHART[chart];
 	return (
-		<div className={cn("border-border/70 inline-flex rounded-xl border p-2.5", c.tile)}>
-			<I className={cn("size-5", c.ink)} />
-		</div>
+		<IconTile variant="soft" className={CHART_INK[chart]}>
+			<I />
+		</IconTile>
 	);
 }
 
@@ -140,18 +136,14 @@ function StatusCard({
 }
 
 function FlowTile({ icon: I, chart }: { icon: Icon; chart?: ChartKey }) {
-	if (chart) {
-		const c = CHART[chart];
-		return (
-			<div className={cn("border-border/70 inline-flex rounded-lg border p-2", c.tile)}>
-				<I className={cn("size-5", c.ink)} />
-			</div>
-		);
-	}
-	return (
-		<div className="bg-muted text-muted-foreground border-border/70 inline-flex rounded-lg border p-2">
-			<I className="size-5" />
-		</div>
+	return chart ? (
+		<IconTile variant="soft" size="sm" className={CHART_INK[chart]}>
+			<I />
+		</IconTile>
+	) : (
+		<IconTile variant="outline" size="sm" className="text-muted-foreground">
+			<I />
+		</IconTile>
 	);
 }
 
@@ -200,14 +192,13 @@ function IconOnlyCard({ icon: I, chart }: { icon: Icon; chart?: ChartKey }) {
 		<Card className="relative overflow-hidden">
 			<CardTexture placement="center" />
 			<div className="relative flex items-center justify-center p-10">
-				<div
-					className={cn(
-						"border-border/70 inline-flex rounded-2xl border p-4",
-						chart ? CHART[chart].tile : "bg-muted"
-					)}
+				<IconTile
+					variant={chart ? "soft" : "outline"}
+					size="xl"
+					className={chart ? CHART_INK[chart] : "text-foreground"}
 				>
-					<I className={cn("size-8", chart ? CHART[chart].ink : "text-foreground")} />
-				</div>
+					<I />
+				</IconTile>
 			</div>
 		</Card>
 	);

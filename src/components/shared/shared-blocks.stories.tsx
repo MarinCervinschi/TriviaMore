@@ -68,6 +68,10 @@ export const Breadcrumb: Story = {
 		<div className="flex flex-col items-start gap-4">
 			<UserBreadcrumb current="Progressi" />
 			<UserBreadcrumb current="Analisi matematica I" />
+			<UserBreadcrumb
+				current="Storico"
+				trail={[{ label: "Progressi", to: "/user/progress" }]}
+			/>
 		</div>
 	),
 };

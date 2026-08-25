@@ -23,6 +23,8 @@ import type { ColumnDef, ReactTable, RowData } from "@tanstack/react-table";
 
 import type { Icon } from "@/components/icons";
 
+import { facetFilterFn } from "./facet-filter";
+
 export type DataTableAlign = "left" | "center" | "right";
 export type DataTableBreakpoint = "sm" | "md" | "lg" | "xl";
 
@@ -40,8 +42,11 @@ export type DataTableColumnMeta = {
 	hideBelow?: DataTableBreakpoint;
 	headerClassName?: string;
 	cellClassName?: string;
-	/** Turns the column into a multi-select filter in the toolbar. */
-	facet?: { options: DataTableFacetOption[] };
+	/**
+	 * Turns the column into a multi-select filter in the toolbar. `icon` labels
+	 * the field in the inline filter chip and the «＋ Filtro» menu.
+	 */
+	facet?: { options: DataTableFacetOption[]; icon?: Icon };
 };
 
 export type DataTableMeta = {
@@ -67,6 +72,7 @@ export const dataTableFeatures = tableFeatures({
 	sortedRowModel: createSortedRowModel(),
 	filterFns: {
 		arrHas: filterFn_arrHas,
+		facet: facetFilterFn,
 		includesString: filterFn_includesString,
 	},
 	sortFns: {

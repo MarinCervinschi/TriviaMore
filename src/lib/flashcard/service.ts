@@ -7,10 +7,11 @@ import { assertSectionAccess } from "@/lib/auth/checks";
 import { FLASHCARD_QUESTION_TYPE } from "@/lib/catalog/db/questions";
 import { findSectionChain } from "@/lib/catalog/db/sections";
 import { accessibleSectionIdsInClass } from "@/lib/catalog/service";
-import { Conflict } from "@/lib/server/errors";
+import { Conflict, NotFound } from "@/lib/server/errors";
 
+import { insertFlashcardAttempt } from "./db/flashcard-attempts";
 import { selectRandomItemsWithSeed } from "./randomization";
-import type { StartFlashcardInput } from "./schemas";
+import type { CompleteFlashcardInput, StartFlashcardInput } from "./schemas";
 import { decodeSessionId, encodeSessionId } from "./session-id";
 import type { FlashcardMode } from "./session-id";
 import type { FlashcardSession } from "./types";
@@ -94,6 +95,26 @@ export async function startFlashcard(userId: string, input: StartFlashcardInput)
 
 export async function startExamFlashcard(userId: string, input: StartFlashcardInput) {
 	return startSession(userId, input, "exam");
+}
+
+export async function completeFlashcard(
+	userId: string,
+	input: CompleteFlashcardInput
+): Promise<{ ok: true }> {
+	const session = decodeSessionId(input.sessionId);
+	if (!session) throw new NotFound("Sessione non trovata");
+
+	const db = getDb();
+	await assertSectionAccess(db, userId, session.sectionId);
+
+	await insertFlashcardAttempt(db, {
+		userId,
+		sessionId: input.sessionId,
+		sectionId: session.sectionId,
+		cardsReviewed: input.cardsReviewed,
+	});
+
+	return { ok: true };
 }
 
 export async function getFlashcardSession(

@@ -79,7 +79,11 @@ export async function findQuizWithChain(db: DbOrTx, quizId: string) {
 
 export async function findQuizSectionAndMode(db: DbOrTx, quizId: string) {
 	const [quiz] = await db
-		.select({ sectionId: quizzes.sectionId, quizMode: quizzes.quizMode })
+		.select({
+			sectionId: quizzes.sectionId,
+			quizMode: quizzes.quizMode,
+			evaluationModeId: quizzes.evaluationModeId,
+		})
 		.from(quizzes)
 		.where(eq(quizzes.id, quizId))
 		.limit(1);

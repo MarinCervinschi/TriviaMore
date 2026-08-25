@@ -4,7 +4,6 @@ export * from "./entities/public/enums";
 export * from "./entities/public/profiles";
 export * from "./entities/public/notifications";
 export * from "./entities/public/bookmarks";
-export * from "./entities/public/progress";
 export * from "./entities/public/user-classes";
 export * from "./entities/public/user-recent-classes";
 export * from "./entities/public/user-changelog-reads";
@@ -26,6 +25,7 @@ export * from "./entities/quiz/quizzes";
 export * from "./entities/quiz/quiz-questions";
 export * from "./entities/quiz/quiz-attempts";
 export * from "./entities/quiz/answer-attempts";
+export * from "./entities/quiz/flashcard-attempts";
 export * from "./entities/quiz/relations";
 
 export * from "./entities/internal/department-admins";

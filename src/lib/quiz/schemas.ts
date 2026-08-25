@@ -14,10 +14,8 @@ export const completeQuizSchema = z.object({
 		z.object({
 			questionId: z.string().uuid(),
 			userAnswer: z.array(z.string()),
-			score: z.number(),
 		})
 	),
-	totalScore: z.number(),
 	timeSpent: z.number(),
 });
 

@@ -45,12 +45,10 @@ export type UseDataTableOptions<
 	getRowId?: (row: TData, index: number) => string;
 	initialSorting?: SortingState;
 	initialColumnVisibility?: ColumnVisibilityState;
-	/** Row-level search predicate, for when one query has to match several fields. */
 	searchFn?: (row: TData, query: string) => boolean;
-	/** Mirrors state into the route's search params instead of component state. */
 	urlState?: DataTableUrlState<TSearch>;
-	/** Server-driven table: the caller pages, sorts and filters, and reports the totals. */
 	manual?: { pageCount: number; rowCount: number };
+	extraResetKeys?: string[];
 };
 
 function columnIdOf(column: DataTableColumn<any>): string | undefined {
@@ -73,6 +71,7 @@ export function useDataTable<
 	searchFn,
 	urlState,
 	manual,
+	extraResetKeys,
 }: UseDataTableOptions<TData, TSearch>): DataTableInstance<TData> {
 	const [localSearch, setLocalSearch] = useState<SearchBag>({});
 	const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>(
@@ -172,10 +171,10 @@ export function useDataTable<
 
 	const resetFilters = useCallback(() => {
 		const cleared: SearchPatch = Object.fromEntries(
-			facetColumnIds.map(id => [id, undefined])
+			[...facetColumnIds, ...(extraResetKeys ?? [])].map(id => [id, undefined])
 		);
 		patch({ ...cleared, q: undefined, page: undefined });
-	}, [patch, facetColumnIds]);
+	}, [patch, facetColumnIds, extraResetKeys]);
 
 	const globalFilterFn = useMemo<FilterFn<DataTableFeatures, TData> | "includesString">(
 		() =>

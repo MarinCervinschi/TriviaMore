@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	notFound,
+	useBlocker,
+	useNavigate,
+} from "@tanstack/react-router";
+import { toast } from "sonner";
 
+import { NotFoundPage } from "@/components/error/not-found-page";
 import { PageBand } from "@/components/layout/page-band";
 import { QuestionCard } from "@/components/quiz/question-card";
 import { QuizHeader } from "@/components/quiz/quiz-header";
@@ -14,21 +21,32 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cancelQuizFn, completeQuizFn } from "@/lib/quiz/api";
 import { quizQueries } from "@/lib/quiz/queries";
-import { calculateQuizResults } from "@/lib/quiz/scoring";
 import type { Quiz, UserAnswer } from "@/lib/quiz/types";
 
 export const Route = createFileRoute("/quiz/$quizId")({
 	loader: async ({ context, params }) => {
-		return context.queryClient.ensureQueryData(quizQueries.quiz(params.quizId));
+		const quiz = await context.queryClient.ensureQueryData(
+			quizQueries.quiz(params.quizId)
+		);
+		if (!quiz) throw notFound();
+		return quiz;
 	},
 	pendingComponent: QuizPlaySkeleton,
 	component: QuizPage,
+	// This route lives outside the app shell, so the not-found page brings its
+	// own band.
+	notFoundComponent: () => (
+		<NotFoundPage
+			title="Quiz non disponibile"
+			message="Questo quiz non esiste più: potresti averlo chiuso o annullato."
+		/>
+	),
 });
 
 function QuizPage() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const quiz = Route.useLoaderData() as Quiz | null;
+	const quiz = Route.useLoaderData() as Quiz;
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
@@ -38,6 +56,23 @@ function QuizPage() {
 	const [showExitDialog, setShowExitDialog] = useState(false);
 	const [isCompleting, setIsCompleting] = useState(false);
 	const isCompletingRef = useRef(false);
+	const isExitingRef = useRef(false);
+
+	// Leaving any other way — the back arrow, a nav link — used to abandon the
+	// attempt: it stayed open forever, holding a quiz nobody could reach. Route it
+	// through the same confirmation the Esci button uses, so the attempt is either
+	// finished or cancelled. `enableBeforeUnload` covers closing the tab, where the
+	// browser only lets us warn.
+	const blocker = useBlocker({
+		shouldBlockFn: () => !isCompletingRef.current && !isExitingRef.current,
+		enableBeforeUnload: () => !isCompletingRef.current && !isExitingRef.current,
+		disabled: !quiz?.attemptId,
+		withResolver: true,
+	});
+
+	useEffect(() => {
+		if (blocker.status === "blocked") setShowExitDialog(true);
+	}, [blocker.status]);
 
 	// Initialize answers when quiz loads
 	useEffect(() => {
@@ -63,26 +98,15 @@ function QuizPage() {
 		isCompletingRef.current = true;
 		setIsCompleting(true);
 
-		const quizResults = calculateQuizResults({
-			userAnswers,
-			questions: quiz.questions,
-			evaluationMode: quiz.evaluationMode,
-			startTime,
-			quizId: quiz.id,
-			quizTitle: `Quiz: ${quiz.section.name}`,
-		});
-
 		try {
 			const { attemptId } = await completeQuizFn({
 				data: {
 					quizAttemptId: quiz.attemptId,
-					answers: quizResults.answers.map(a => ({
-						questionId: a.questionId,
-						userAnswer: a.answer,
-						score: a.score,
+					answers: userAnswers.map(ua => ({
+						questionId: ua.questionId,
+						userAnswer: ua.answer,
 					})),
-					totalScore: quizResults.totalScore,
-					timeSpent: quizResults.timeSpent,
+					timeSpent: Date.now() - startTime,
 				},
 			});
 			// Invalidate user data caches so dashboard shows updated stats
@@ -92,13 +116,18 @@ function QuizPage() {
 				params: { attemptId },
 			});
 		} catch (error) {
-			console.error("Failed to complete quiz:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Non è stato possibile completare il quiz."
+			);
 			isCompletingRef.current = false;
 			setIsCompleting(false);
 		}
 	}, [quiz, userAnswers, startTime, navigate, queryClient]);
 
 	const confirmExit = useCallback(async () => {
+		isExitingRef.current = true;
 		if (quiz?.attemptId) {
 			try {
 				await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } });
@@ -106,8 +135,22 @@ function QuizPage() {
 				// Ignore cancel errors
 			}
 		}
-		navigate({ to: "/" });
-	}, [quiz, navigate]);
+		if (blocker.status === "blocked") blocker.proceed();
+		else navigate({ to: "/" });
+	}, [quiz, navigate, blocker]);
+
+	// Radix closes the dialog on confirm too, so the exit flag is what tells the
+	// two apart: dismissing means staying and releases the blocked navigation,
+	// confirming must leave it alone for `confirmExit` to proceed with.
+	const closeExitDialog = useCallback(
+		(open: boolean) => {
+			setShowExitDialog(open);
+			if (!open && !isExitingRef.current && blocker.status === "blocked") {
+				blocker.reset();
+			}
+		},
+		[blocker]
+	);
 
 	const handleJump = useCallback((index: number) => {
 		setCurrentIndex(index);
@@ -136,17 +179,6 @@ function QuizPage() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [currentIndex, quiz?.questions.length]);
-
-	if (!quiz) {
-		return (
-			<>
-				<PageBand />
-				<div className="relative isolate flex min-h-screen items-center justify-center">
-					<p className="text-muted-foreground">Quiz non trovato.</p>
-				</div>
-			</>
-		);
-	}
 
 	const currentQuestion = quiz.questions[currentIndex];
 	const currentAnswers =
@@ -215,7 +247,7 @@ function QuizPage() {
 			/>
 			<ConfirmationDialog
 				open={showExitDialog}
-				onOpenChange={setShowExitDialog}
+				onOpenChange={closeExitDialog}
 				title="Uscire dal quiz?"
 				description="Il quiz verrà eliminato e i progressi andranno persi."
 				confirmText="Esci"

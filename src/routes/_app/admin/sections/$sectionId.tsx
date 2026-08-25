@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 
+import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
@@ -93,8 +95,11 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("questionType", {
 			header: "Tipo",
-			filterFn: "arrHas",
-			meta: { label: "Tipo", facet: { options: toOptions(TYPE_LABELS) } },
+			filterFn: "facet",
+			meta: {
+				label: "Tipo",
+				facet: { options: toOptions(TYPE_LABELS), icon: BookmarkIcon },
+			},
 			cell: ({ row }) => (
 				<Badge variant="outline">
 					{TYPE_LABELS[row.original.questionType] ?? row.original.questionType}
@@ -103,8 +108,11 @@ function buildColumns(onDelete: (id: string) => void) {
 		}),
 		column.accessor("difficulty", {
 			header: "Difficoltà",
-			filterFn: "arrHas",
-			meta: { label: "Difficoltà", facet: { options: toOptions(DIFFICULTY_LABELS) } },
+			filterFn: "facet",
+			meta: {
+				label: "Difficoltà",
+				facet: { options: toOptions(DIFFICULTY_LABELS), icon: GraphUpIcon },
+			},
 			cell: ({ row }) => (
 				<Badge
 					variant={
@@ -347,6 +355,7 @@ function AdminSectionDetailPage() {
 						toolbar={
 							<DataTableToolbar
 								table={table}
+								filterVariant="inline"
 								searchPlaceholder="Cerca domande..."
 								actions={
 									<Button size="sm" asChild>

@@ -64,16 +64,14 @@ function ResultsPage() {
 		totalQuestions
 	);
 
+	// The verdict frozen at submission, not a re-grade against the question as it
+	// stands now: an edited correct answer must not rewrite a past result.
+	const questionIds = new Set(result.quiz.questions.map(q => q.id));
 	const counts = result.answers.reduce(
 		(acc, a) => {
-			const q = result.quiz.questions.find(q => q.id === a.questionId);
-			if (!q) return acc;
-			const userSet = new Set(a.userAnswer);
-			const correctSet = new Set(q.correctAnswer);
-			const isExact =
-				userSet.size === correctSet.size && [...userSet].every(v => correctSet.has(v));
-			if (isExact) acc.correct++;
-			else if ((a.score ?? 0) > 0) acc.partial++;
+			if (!questionIds.has(a.questionId)) return acc;
+			if (a.isCorrect) acc.correct++;
+			else if (a.score > 0) acc.partial++;
 			return acc;
 		},
 		{ correct: 0, partial: 0 }
@@ -159,17 +157,13 @@ function ResultsPage() {
 							const answer = result.answers.find(a => a.questionId === question.id);
 							const userAnswers = answer?.userAnswer ?? [];
 							const userAnswerSet = new Set(userAnswers);
-							const correctAnswerSet = new Set(question.correctAnswer);
-							const isCorrect =
-								userAnswerSet.size === correctAnswerSet.size &&
-								[...userAnswerSet].every(v => correctAnswerSet.has(v));
 
 							return (
 								<ReviewItem
 									key={question.id}
 									question={question}
 									userAnswerSet={userAnswerSet}
-									isCorrect={isCorrect}
+									isCorrect={answer?.isCorrect ?? false}
 									score={answer?.score ?? 0}
 									scaledScore={scaleAnswerScore(
 										answer?.score ?? 0,

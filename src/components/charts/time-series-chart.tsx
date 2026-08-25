@@ -37,6 +37,8 @@ export type TimeSeriesChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	valueFormatter?: (value: number) => string;
 	xFormatter?: (value: string) => string;
 	emptyMessage?: string;
+	/** Bridge gaps (null values) so a sparse series stays one continuous shape. */
+	connectNulls?: boolean;
 };
 
 const ANIMATION_MS = 420;
@@ -56,6 +58,7 @@ export function TimeSeriesChart<TDatum>({
 	valueFormatter,
 	xFormatter,
 	emptyMessage,
+	connectNulls = false,
 	...card
 }: TimeSeriesChartProps<TDatum>) {
 	const scope = `ts-${useId().replace(/:/g, "")}`;
@@ -133,6 +136,7 @@ export function TimeSeriesChart<TDatum>({
 										: `url(#${scope}-fade-${item.key})`
 								}
 								fillOpacity={stacked ? 0.85 : 1}
+								connectNulls={connectNulls}
 								dot={false}
 								activeDot={activeDot}
 								{...motion(index)}
@@ -150,6 +154,7 @@ export function TimeSeriesChart<TDatum>({
 								stroke={`var(--color-${item.key})`}
 								strokeWidth={2}
 								strokeLinecap="round"
+								connectNulls={connectNulls}
 								dot={false}
 								activeDot={activeDot}
 								{...motion(index)}
