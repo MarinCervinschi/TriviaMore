@@ -154,13 +154,15 @@ function Stats({
 }
 
 export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
-	const [open, setOpen] = useState<Set<string>>(
-		() => new Set(courses.map(course => course.id))
-	);
+	// Courses start expanded, classes collapsed. What is tracked is which nodes
+	// the user has flipped, not which are open: seeding a set from `courses`
+	// would leave a course that only appears after a refetch collapsed on its
+	// own, with nothing to explain why.
+	const [flipped, setFlipped] = useState<Set<string>>(() => new Set());
 	const [sort, setSort] = useState<Sort>({ key: "name", dir: "asc" });
 
 	const toggle = (id: string) =>
-		setOpen(prev => {
+		setFlipped(prev => {
 			const next = new Set(prev);
 			if (next.has(id)) next.delete(id);
 			else next.add(id);
@@ -177,9 +179,10 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 		);
 
 	const rows = useMemo(() => {
+		const expanded = (id: string, byDefault: boolean) => flipped.has(id) !== byDefault;
 		const result: Row[] = [];
 		for (const course of sortNodes(courses, sort)) {
-			const courseOpen = open.has(course.id);
+			const courseOpen = expanded(course.id, true);
 			result.push({
 				node: course,
 				level: "course",
@@ -192,7 +195,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 			for (let ci = 0; ci < classes.length; ci++) {
 				const klass = classes[ci]!;
 				const classContinues = ci < classes.length - 1;
-				const classOpen = open.has(klass.id);
+				const classOpen = expanded(klass.id, false);
 				result.push({
 					node: klass,
 					level: "class",
@@ -214,7 +217,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 			}
 		}
 		return result;
-	}, [courses, open, sort]);
+	}, [courses, flipped, sort]);
 
 	return (
 		<div className="space-y-2">
