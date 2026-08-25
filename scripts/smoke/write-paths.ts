@@ -168,12 +168,17 @@ try {
 				graded?.quizMode === "STUDY"
 		);
 
-		// flashcard: a finished session records one row, no scoring model.
-		await insertFlashcardAttempt(tx, {
-			userId: seed.user_id,
-			sectionId: seed.section_id,
-			cardsReviewed: 5,
-		});
+		// flashcard: a finished session records one row, no scoring model — and
+		// replaying the same session id records nothing more.
+		const flashcardSession = `smoke-${seed.section_id}`;
+		for (let i = 0; i < 2; i++) {
+			await insertFlashcardAttempt(tx, {
+				userId: seed.user_id,
+				sessionId: flashcardSession,
+				sectionId: seed.section_id,
+				cardsReviewed: 5,
+			});
+		}
 		const flashRows = await tx
 			.select({ cardsReviewed: flashcardAttempts.cardsReviewed })
 			.from(flashcardAttempts)
@@ -184,7 +189,7 @@ try {
 				)
 			);
 		expect(
-			"flashcard: session recorded",
+			"flashcard: session recorded once",
 			flashRows.length === 1 && flashRows[0]?.cardsReviewed === 5
 		);
 
