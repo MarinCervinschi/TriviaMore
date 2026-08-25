@@ -136,6 +136,7 @@ export async function findAnswers(db: DbOrTx, attemptId: string) {
 			questionId: answerAttempts.questionId,
 			userAnswer: answerAttempts.userAnswer,
 			score: answerAttempts.score,
+			isCorrect: answerAttempts.isCorrect,
 		})
 		.from(answerAttempts)
 		.where(
