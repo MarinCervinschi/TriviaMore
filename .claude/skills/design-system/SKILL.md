@@ -146,6 +146,13 @@ Use the variants in `src/lib/motion.ts`; do not write inline ones.
   `<Button asChild aria-label>` names the `<Link>` inside. A static audit cannot see that.
 - **`Card` has no `asChild`** — a `<Link>` or a `motion.li` styled as a card cannot be converted.
 - **The 44px `pointer: coarse` rule does not discharge WCAG 2.5.8**, which applies to every pointer.
+- **Anything that renders differently on the server breaks hydration, silently in dev.** Three cases
+  have shipped: a float hash (`Math.sin`), trig coordinates differing in the last ULP (`Math.cos/sin`),
+  and viewer-local time — the container is UTC, the reader is not, so an hour-of-day figure is off by
+  the whole offset. Round derived numbers to a fixed precision, and gate local-time or `window`-derived
+  content on `useIsHydrated()`. **A local dev server hides all of it**, because there the browser and the
+  server share a machine and a timezone. Date arithmetic belongs in `lib/utils/datetime.ts`, which says
+  so.
 - **Recharts cannot be verified in jsdom.** `ResponsiveContainer` measures 0×0 and draws nothing.
 - **`pnpm build-storybook` proves a story compiles, not that it renders.**
 

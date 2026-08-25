@@ -1,13 +1,6 @@
-import type { AttemptHistoryEntry } from "./types";
+import { localDayIndex, localHour } from "@/lib/utils/datetime";
 
-// A calendar day as a stable integer, from the Date's LOCAL components — so
-// consecutive days differ by exactly 1 and DST never shifts a boundary. Study
-// rhythm is read in the user's own time, the way they experience it.
-function localDayIndex(date: Date): number {
-	return Math.floor(
-		Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000
-	);
-}
+import type { AttemptHistoryEntry } from "./types";
 
 export type ScoreConsistency = {
 	mean: number;
@@ -58,9 +51,8 @@ export function computeStudyRhythm(
 	const dayIndices = new Set<number>();
 
 	for (const attempt of attempts) {
-		const at = new Date(attempt.completedAt);
-		dayIndices.add(localDayIndex(at));
-		byHour[at.getHours()]! += 1;
+		dayIndices.add(localDayIndex(attempt.completedAt));
+		byHour[localHour(attempt.completedAt)]! += 1;
 	}
 
 	const todayIndex = localDayIndex(today);
