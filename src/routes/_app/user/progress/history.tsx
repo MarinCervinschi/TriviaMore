@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
+import { BookIcon } from "@solar-icons/react/linear/book";
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
@@ -21,17 +22,20 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
+import { AttemptHistorySkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { AttemptHistoryEntry } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
+import { localDayIndex } from "@/lib/utils/datetime";
 import { formatDate } from "@/lib/utils/format";
 import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
@@ -47,7 +51,7 @@ const MODE_OPTIONS: DataTableFacetOption[] = [
 ];
 
 const INITIAL_SORTING = [{ id: "completedAt", desc: true }];
-const INITIAL_COLUMN_VISIBILITY = { dipartimento: false };
+const INITIAL_COLUMN_VISIBILITY = { corso: false, dipartimento: false };
 const DATE_RESET_KEYS = ["da", "a"];
 
 export const Route = createFileRoute("/_app/user/progress/history")({
@@ -55,6 +59,7 @@ export const Route = createFileRoute("/_app/user/progress/history")({
 		...dataTableSearchFields,
 		da: z.string().optional().catch(undefined),
 		a: z.string().optional().catch(undefined),
+		corso: dataTableFilterField,
 		dipartimento: dataTableFilterField,
 		insegnamento: dataTableFilterField,
 		modalita: dataTableFilterField,
@@ -62,6 +67,7 @@ export const Route = createFileRoute("/_app/user/progress/history")({
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(userQueries.attemptHistory()),
 	head: () => seoHead({ title: "Cronologia tentativi", noindex: true }),
+	pendingComponent: AttemptHistorySkeleton,
 	component: AttemptHistoryPage,
 });
 
@@ -70,6 +76,7 @@ const column = createDataTableColumns<AttemptHistoryEntry>();
 function deriveFacetOptions(attempts: AttemptHistoryEntry[]) {
 	const departments = new Map<string, string>();
 	const courses = new Map<string, string>();
+	const classes = new Map<string, string>();
 	for (const attempt of attempts) {
 		if (attempt.departmentId && attempt.departmentName) {
 			departments.set(attempt.departmentId, attempt.departmentName);
@@ -77,14 +84,18 @@ function deriveFacetOptions(attempts: AttemptHistoryEntry[]) {
 		if (attempt.courseId && attempt.courseName) {
 			courses.set(attempt.courseId, attempt.courseName);
 		}
+		if (attempt.classId && attempt.className) {
+			classes.set(attempt.classId, attempt.className);
+		}
 	}
 	const byLabel = (map: Map<string, string>) =>
 		[...map]
 			.map(([value, label]) => ({ value, label }))
 			.sort((a, b) => a.label.localeCompare(b.label));
 	return {
+		corso: byLabel(courses),
 		dipartimento: byLabel(departments),
-		insegnamento: byLabel(courses),
+		insegnamento: byLabel(classes),
 	};
 }
 
@@ -110,19 +121,31 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 					<span className="text-muted-foreground italic">Sezione eliminata</span>
 				),
 		}),
-		column.accessor(row => row.courseId ?? "", {
+		column.accessor(row => row.classId ?? "", {
 			id: "insegnamento",
 			header: "Insegnamento",
 			enableSorting: false,
 			filterFn: "facet",
 			meta: {
 				label: "Insegnamento",
-				facet: { options: facets.insegnamento, icon: DiplomaIcon },
+				facet: { options: facets.insegnamento, icon: BookIcon },
 				cellClassName: "text-muted-foreground text-sm",
+			},
+			cell: ({ row }) => row.original.className ?? "—",
+		}),
+		// Hidden filter-only columns: course and department are filters, not table
+		// columns.
+		column.accessor(row => row.courseId ?? "", {
+			id: "corso",
+			header: "Corso",
+			enableSorting: false,
+			filterFn: "facet",
+			meta: {
+				label: "Corso",
+				facet: { options: facets.corso, icon: DiplomaIcon },
 			},
 			cell: ({ row }) => row.original.courseName ?? "—",
 		}),
-		// Hidden filter-only column: department is a filter, not a table column.
 		column.accessor(row => row.departmentId ?? "", {
 			id: "dipartimento",
 			header: "Dipartimento",
@@ -285,19 +308,26 @@ function AttemptHistoryPage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const search = Route.useSearch();
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
+	const hydrated = useIsHydrated();
 
 	const facets = useMemo(() => deriveFacetOptions(attempts), [attempts]);
 	const columns = useMemo(() => buildColumns(facets), [facets]);
 
+	// The range is picked on the viewer's calendar, so it has to be compared on
+	// the viewer's calendar too — `completedAt` is stored in UTC, and slicing its
+	// date would push a quiz finished just after midnight into the day before.
+	// Only the browser knows that calendar, hence the gate.
 	const rows = useMemo(() => {
-		if (!search.da && !search.a) return attempts;
+		if (!hydrated || (!search.da && !search.a)) return attempts;
+		const from = search.da ? localDayIndex(parseDay(search.da)) : null;
+		const to = search.a ? localDayIndex(parseDay(search.a)) : null;
 		return attempts.filter(attempt => {
-			const day = attempt.completedAt.slice(0, 10);
-			if (search.da && day < search.da) return false;
-			if (search.a && day > search.a) return false;
+			const day = localDayIndex(attempt.completedAt);
+			if (from !== null && day < from) return false;
+			if (to !== null && day > to) return false;
 			return true;
 		});
-	}, [attempts, search.da, search.a]);
+	}, [attempts, search.da, search.a, hydrated]);
 
 	const table = useDataTable({
 		data: rows,
@@ -309,6 +339,7 @@ function AttemptHistoryPage() {
 		extraResetKeys: DATE_RESET_KEYS,
 		searchFn: (attempt, query) =>
 			(attempt.sectionName?.toLowerCase().includes(query) ?? false) ||
+			(attempt.className?.toLowerCase().includes(query) ?? false) ||
 			(attempt.courseName?.toLowerCase().includes(query) ?? false) ||
 			(attempt.departmentName?.toLowerCase().includes(query) ?? false),
 		urlState: {
@@ -321,6 +352,7 @@ function AttemptHistoryPage() {
 		!!search.q ||
 		!!search.da ||
 		!!search.a ||
+		!!search.corso ||
 		!!search.dipartimento ||
 		!!search.insegnamento ||
 		!!search.modalita;
