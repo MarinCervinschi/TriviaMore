@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useBlocker, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	notFound,
+	useBlocker,
+	useNavigate,
+} from "@tanstack/react-router";
 
+import { NotFoundPage } from "@/components/error/not-found-page";
 import { PageBand } from "@/components/layout/page-band";
 import { QuestionCard } from "@/components/quiz/question-card";
 import { QuizHeader } from "@/components/quiz/quiz-header";
@@ -18,16 +24,28 @@ import type { Quiz, UserAnswer } from "@/lib/quiz/types";
 
 export const Route = createFileRoute("/quiz/$quizId")({
 	loader: async ({ context, params }) => {
-		return context.queryClient.ensureQueryData(quizQueries.quiz(params.quizId));
+		const quiz = await context.queryClient.ensureQueryData(
+			quizQueries.quiz(params.quizId)
+		);
+		if (!quiz) throw notFound();
+		return quiz;
 	},
 	pendingComponent: QuizPlaySkeleton,
 	component: QuizPage,
+	// This route lives outside the app shell, so the not-found page brings its
+	// own band.
+	notFoundComponent: () => (
+		<NotFoundPage
+			title="Quiz non disponibile"
+			message="Questo quiz non esiste più: potresti averlo chiuso o annullato."
+		/>
+	),
 });
 
 function QuizPage() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const quiz = Route.useLoaderData() as Quiz | null;
+	const quiz = Route.useLoaderData() as Quiz;
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
@@ -116,11 +134,15 @@ function QuizPage() {
 		else navigate({ to: "/" });
 	}, [quiz, navigate, blocker]);
 
-	// Dismissing the dialog means staying, so a blocked navigation is released.
+	// Radix closes the dialog on confirm too, so the exit flag is what tells the
+	// two apart: dismissing means staying and releases the blocked navigation,
+	// confirming must leave it alone for `confirmExit` to proceed with.
 	const closeExitDialog = useCallback(
 		(open: boolean) => {
 			setShowExitDialog(open);
-			if (!open && blocker.status === "blocked") blocker.reset();
+			if (!open && !isExitingRef.current && blocker.status === "blocked") {
+				blocker.reset();
+			}
 		},
 		[blocker]
 	);
@@ -152,17 +174,6 @@ function QuizPage() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [currentIndex, quiz?.questions.length]);
-
-	if (!quiz) {
-		return (
-			<>
-				<PageBand />
-				<div className="relative isolate flex min-h-screen items-center justify-center">
-					<p className="text-muted-foreground">Quiz non trovato.</p>
-				</div>
-			</>
-		);
-	}
 
 	const currentQuestion = quiz.questions[currentIndex];
 	const currentAnswers =
