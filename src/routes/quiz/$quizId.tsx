@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useBlocker, useNavigate } from "@tanstack/react-router";
 
 import { PageBand } from "@/components/layout/page-band";
 import { QuestionCard } from "@/components/quiz/question-card";
@@ -37,6 +37,23 @@ function QuizPage() {
 	const [showExitDialog, setShowExitDialog] = useState(false);
 	const [isCompleting, setIsCompleting] = useState(false);
 	const isCompletingRef = useRef(false);
+	const isExitingRef = useRef(false);
+
+	// Leaving any other way — the back arrow, a nav link — used to abandon the
+	// attempt: it stayed open forever, holding a quiz nobody could reach. Route it
+	// through the same confirmation the Esci button uses, so the attempt is either
+	// finished or cancelled. `enableBeforeUnload` covers closing the tab, where the
+	// browser only lets us warn.
+	const blocker = useBlocker({
+		shouldBlockFn: () => !isCompletingRef.current && !isExitingRef.current,
+		enableBeforeUnload: () => !isCompletingRef.current && !isExitingRef.current,
+		disabled: !quiz?.attemptId,
+		withResolver: true,
+	});
+
+	useEffect(() => {
+		if (blocker.status === "blocked") setShowExitDialog(true);
+	}, [blocker.status]);
 
 	// Initialize answers when quiz loads
 	useEffect(() => {
@@ -87,6 +104,7 @@ function QuizPage() {
 	}, [quiz, userAnswers, startTime, navigate, queryClient]);
 
 	const confirmExit = useCallback(async () => {
+		isExitingRef.current = true;
 		if (quiz?.attemptId) {
 			try {
 				await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } });
@@ -94,8 +112,18 @@ function QuizPage() {
 				// Ignore cancel errors
 			}
 		}
-		navigate({ to: "/" });
-	}, [quiz, navigate]);
+		if (blocker.status === "blocked") blocker.proceed();
+		else navigate({ to: "/" });
+	}, [quiz, navigate, blocker]);
+
+	// Dismissing the dialog means staying, so a blocked navigation is released.
+	const closeExitDialog = useCallback(
+		(open: boolean) => {
+			setShowExitDialog(open);
+			if (!open && blocker.status === "blocked") blocker.reset();
+		},
+		[blocker]
+	);
 
 	const handleJump = useCallback((index: number) => {
 		setCurrentIndex(index);
@@ -203,7 +231,7 @@ function QuizPage() {
 			/>
 			<ConfirmationDialog
 				open={showExitDialog}
-				onOpenChange={setShowExitDialog}
+				onOpenChange={closeExitDialog}
 				title="Uscire dal quiz?"
 				description="Il quiz verrà eliminato e i progressi andranno persi."
 				confirmText="Esci"
