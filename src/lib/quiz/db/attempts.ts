@@ -177,8 +177,23 @@ export async function findRecentCompletedAttempts(
 		.limit(limit);
 }
 
-export async function findCompletedAttemptHistory(db: DbOrTx, userId: string) {
+export async function findCompletedAttemptHistory(
+	db: DbOrTx,
+	userId: string,
+	scope?: { level: "section" | "class" | "course"; id: string }
+) {
 	const { primaryCourse, columns } = sectionLocation(db);
+
+	// The snapshot section, then its live chain — the same rule `sectionScopeSql`
+	// applies to the mastery and study-stats queries.
+	const scoped =
+		scope?.level === "section"
+			? eq(quizAttempts.sectionId, scope.id)
+			: scope?.level === "class"
+				? eq(sections.classId, scope.id)
+				: scope?.level === "course"
+					? eq(primaryCourse.courseId, scope.id)
+					: undefined;
 
 	return db
 		.select({
@@ -199,7 +214,9 @@ export async function findCompletedAttemptHistory(db: DbOrTx, userId: string) {
 		.leftJoin(sections, eq(sections.id, quizAttempts.sectionId))
 		.leftJoin(classes, eq(classes.id, sections.classId))
 		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
+		.where(
+			and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt), scoped)
+		)
 		.orderBy(desc(quizAttempts.completedAt));
 }
 
