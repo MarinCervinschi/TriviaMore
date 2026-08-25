@@ -60,6 +60,7 @@ export async function getMastery(
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
 			 where qa.user_id = ${userId} and aa.difficulty is not null${scoped}
 			 group by aa.difficulty
+			having count(*) filter (where aa.is_correct is not null) > 0
 		`),
 		// Every section the user has answered in, with enough answers to rank; the
 		// weak/strong tails are split from this in TS.
