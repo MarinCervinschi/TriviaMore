@@ -3,7 +3,6 @@ import {
 	doublePrecision,
 	foreignKey,
 	index,
-	integer,
 	text,
 	unique,
 	uuid,
@@ -28,7 +27,6 @@ export const answerAttempts = quizSchema
 			userAnswer: text("user_answer").array().notNull(),
 			score: doublePrecision().notNull(),
 			isCorrect: boolean("is_correct"),
-			timeSpent: integer("time_spent"),
 		},
 		table => [
 			index("idx_answer_attempts_section_id").using(
