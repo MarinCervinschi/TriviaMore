@@ -14,9 +14,9 @@ export async function getDailyStudyStats(
 	scope?: MasteryScope
 ): Promise<DailyStudyStat[]> {
 	const db = getDb();
-	// Scoped by the ATTEMPT's section on both sides, the same rule `getMastery`
-	// follows: an exam simulation's answers carry the section each question came
-	// from, so scoping them by `aa.section_id` would drop every one of them.
+	// Both sides scope on the ATTEMPT's section, as `getMastery` does: an exam
+	// simulation's answers carry the section each question came from, so
+	// `aa.section_id` would drop every one of them.
 	const scoped = sectionScopeSql(scope, sql`qa.section_id`);
 
 	const result = await db.execute<{

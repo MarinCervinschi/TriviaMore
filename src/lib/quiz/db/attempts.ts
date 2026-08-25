@@ -184,8 +184,6 @@ export async function findCompletedAttemptHistory(
 ) {
 	const { primaryCourse, columns } = sectionLocation(db);
 
-	// The snapshot section, then its live chain — the same rule `sectionScopeSql`
-	// applies to the mastery and study-stats queries.
 	const scoped =
 		scope?.level === "section"
 			? eq(quizAttempts.sectionId, scope.id)

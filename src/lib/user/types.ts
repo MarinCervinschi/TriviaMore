@@ -85,8 +85,7 @@ export type RecentQuizAttempt = SectionLocation & {
 	departmentCode: string | null;
 };
 
-// One UTC day of study for one quiz mode. The client windows and sub-buckets
-// these into week/month/year metrics, and splits STUDY vs EXAM_SIMULATION.
+// One UTC day of study for one quiz mode; the client windows these.
 export type DailyStudyStat = {
 	date: string;
 	quizMode: QuizMode;

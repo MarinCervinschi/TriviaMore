@@ -14,7 +14,6 @@ export type ScoreConsistency = {
 export type StudyRhythm = {
 	currentStreak: number;
 	longestStreak: number;
-	/** Distinct active days within the trailing window. */
 	activeDays: number;
 	windowDays: number;
 	/** Completions per hour of the local day, length 24. */

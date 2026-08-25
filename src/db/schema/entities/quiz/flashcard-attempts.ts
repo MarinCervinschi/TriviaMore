@@ -19,8 +19,7 @@ export const flashcardAttempts = quizSchema
 			id: uuid().defaultRandom().primaryKey().notNull(),
 			userId: uuid("user_id").notNull(),
 			sectionId: uuid("section_id"),
-			// The encoded session the run came from. Its URL is replayable, so this
-			// is what keeps a reload from recording the same session twice.
+			// The session URL is replayable: this is the idempotency key.
 			sessionId: text("session_id"),
 			cardsReviewed: integer("cards_reviewed"),
 			completedAt: timestamp("completed_at", {

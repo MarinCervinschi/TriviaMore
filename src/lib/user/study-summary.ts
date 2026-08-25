@@ -7,7 +7,6 @@ export type SummaryPeriod = "week" | "month" | "year";
 
 export type SummaryMetric = {
 	key: "quizzes" | "grade" | "accuracy" | "time";
-	/** Display-ready value for the window. */
 	value: string;
 	/** Percent change vs the previous window; null when there is no baseline. */
 	delta: number | null;

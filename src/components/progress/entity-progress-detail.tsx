@@ -17,8 +17,7 @@ import { StudyRhythm } from "./study-rhythm";
 
 /**
  * One entity's progress (a section, insegnamento or course), reusing the trend
- * and mastery panels scoped to it. `attempts` are already filtered to the
- * entity by the route; `mastery` is fetched scoped.
+ * and mastery panels. Every input is already fetched scoped to the entity.
  */
 export function EntityProgressDetail({
 	kindLabel,

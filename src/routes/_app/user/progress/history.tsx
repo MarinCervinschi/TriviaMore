@@ -133,8 +133,7 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			},
 			cell: ({ row }) => row.original.className ?? "—",
 		}),
-		// Hidden filter-only columns: course and department are filters, not table
-		// columns.
+		// Filter-only: course and department are filters, not table columns.
 		column.accessor(row => row.courseId ?? "", {
 			id: "corso",
 			header: "Corso",
@@ -313,10 +312,10 @@ function AttemptHistoryPage() {
 	const facets = useMemo(() => deriveFacetOptions(attempts), [attempts]);
 	const columns = useMemo(() => buildColumns(facets), [facets]);
 
-	// The range is picked on the viewer's calendar, so it has to be compared on
-	// the viewer's calendar too — `completedAt` is stored in UTC, and slicing its
-	// date would push a quiz finished just after midnight into the day before.
-	// Only the browser knows that calendar, hence the gate.
+	// The range is picked on the viewer's calendar, so it must be compared there
+	// too — `completedAt` is UTC, and slicing its date would push a quiz finished
+	// just after midnight into the day before. Only the browser knows it, hence
+	// the gate.
 	const rows = useMemo(() => {
 		if (!hydrated || (!search.da && !search.a)) return attempts;
 		const from = search.da ? localDayIndex(parseDay(search.da)) : null;

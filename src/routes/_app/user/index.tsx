@@ -90,7 +90,6 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
-				{/* Quick actions */}
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard
 						icon={InboxIcon}
