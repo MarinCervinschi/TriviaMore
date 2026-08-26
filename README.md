@@ -17,61 +17,59 @@
 
 ## About
 
-TriviaMore is an open source study **ecosystem** for the University of Modena and Reggio Emilia (UniMore). It is not just a quiz tool: it mirrors the full UniMore catalog as a five-level hierarchy (departments → courses → classes → sections → questions), wraps it in interactive learning surfaces (study quizzes, exam simulations, flashcards), and exposes a layered role system (guest → student → maintainer → admin → superadmin) so the catalog can be curated collaboratively by the students who actually take the exams. Personal dashboards turn that catalog into a structured study path: follow your classes, bookmark questions, track progress over time, and see where you stand course by course.
+TriviaMore mirrors the full UniMore catalog as a five-level hierarchy — departments → courses →
+classes → sections → questions — and wraps it in study quizzes, exam simulations and flashcards. A
+layered role system (guest → student → maintainer → admin → superadmin) lets the catalog be curated
+by the students who actually sit the exams, and personal dashboards turn it into a study path:
+follow your classes, bookmark questions, and track where you stand course by course.
 
 ## Features
 
-- **Quizzes** — Study mode (no timer, instant feedback) and Exam Simulation (timer, randomized questions, final score). Multiple choice, true/false, short answer.
+- **Quizzes** — Study mode (no timer, instant feedback) and Exam Simulation (timer, randomized
+  questions, final score). Multiple choice, true/false, short answer.
 - **Flashcards** — Flip-card sessions with progress tracking.
-- **Hierarchical catalog** — Browse departments → courses → classes → sections → questions, with search, filters and breadcrumbs.
-- **Personal dashboard** — Followed classes, bookmarks, interactive progress charts, notifications.
+- **Hierarchical catalog** — Browse the five levels, with search, filters and breadcrumbs.
+- **Progress hub** — Trends over time, per-course rollup, per-difficulty mastery, study rhythm and
+  the full attempt history.
 - **Guest mode** — Quizzes and flashcards work without an account.
-- **Role-based back office** — Department-scoped maintainers curate content; admins manage users; superadmins manage the platform itself.
-- **Bulk content tools** — Mass import, request workflow for community-submitted edits.
+- **Role-based back office** — Course-scoped maintainers curate content, admins manage users,
+  superadmins manage the platform.
+- **Contribution flow** — Propose sections, questions or files; report a wrong question; follow your
+  requests in a personal inbox.
 
 ## Stack
 
-A short tour of the technologies that power the platform — click any name to jump to its docs.
-
-- <img src="https://api.iconify.design/logos:react.svg" height="16" /> **[React 19](https://react.dev)** — UI library, Server Components-aware.
-- <img src="https://api.iconify.design/logos:typescript-icon.svg" height="16" /> **[TypeScript](https://www.typescriptlang.org)** — Strict end-to-end typing across client, server functions and the Drizzle schema.
-- <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Start](https://tanstack.com/start)** — Full-stack React framework with file-based routing, server functions and built-in data loading.
-- <img src="https://api.iconify.design/logos:vitejs.svg" height="16" /> **[Vite](https://vite.dev)** — Dev server and build tool.
+- <img src="https://api.iconify.design/logos:react.svg" height="16" /> **[React 19](https://react.dev)** — UI library.
+- <img src="https://api.iconify.design/logos:typescript-icon.svg" height="16" /> **[TypeScript](https://www.typescriptlang.org)** — Strict typing across client, server functions and the schema.
+- <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Start](https://tanstack.com/start)** — Full-stack React framework: file-based routing, server functions, data loading. Built by Vite, served by Nitro.
 - <img src="https://api.iconify.design/logos:tailwindcss-icon.svg" height="16" /> **[Tailwind CSS v4](https://tailwindcss.com)** — Utility-first styling with CSS variables and `@theme`.
-- <img src="https://api.iconify.design/simple-icons:shadcnui.svg" height="16" /> **[shadcn/ui](https://ui.shadcn.com)** — New York style components on top of Radix UI primitives.
-- <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Query](https://tanstack.com/query)** — Server-state cache with persistent storage.
-- <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Postgres database, auth and storage.
-- <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets management, injected by the CLI in dev and in the container entrypoint.
-- <img src="https://api.iconify.design/logos:vitest.svg" height="16" /> **[Vitest](https://vitest.dev)** — Unit testing.
+- <img src="https://api.iconify.design/simple-icons:shadcnui.svg" height="16" /> **[shadcn/ui](https://ui.shadcn.com)** — New York style components on Radix UI primitives.
+- <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Query](https://tanstack.com/query)** — Server-state cache.
+- <img src="https://api.iconify.design/simple-icons:drizzle.svg" height="16" /> **[Drizzle ORM](https://orm.drizzle.team)** — Schema, queries and migrations, over a direct Postgres connection.
+- <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Self-hosted Postgres, auth and storage.
+- <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets, injected by the CLI in dev and in the container entrypoint.
+- <img src="https://api.iconify.design/logos:vitest.svg" height="16" /> **[Vitest](https://vitest.dev)** — Unit and integration tests.
+- <img src="https://api.iconify.design/logos:storybook-icon.svg" height="16" /> **[Storybook](https://storybook.js.org)** — Component workbench.
 
 ## Quick start
 
-**1. Install dependencies**
-
 ```bash
 pnpm install
-```
-
-**2. Start the local Supabase stack** (requires Docker)
-
-```bash
-supabase start
-```
-
-**3. Log in to Infisical** (first time only)
-
-```bash
-infisical login
+supabase start        # local Postgres, auth and storage (requires Docker)
+infisical login       # first time only
 infisical init
-```
-
-**4. Start the dev server** with secrets injected
-
-```bash
 pnpm dev
 ```
 
-For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`.
+For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisical steps.
+
+| Local service | URL |
+|---|---|
+| App | http://127.0.0.1:3000 |
+| Supabase Studio | http://127.0.0.1:54323 |
+| Supabase API | http://127.0.0.1:54321 |
+| Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Mailpit | http://127.0.0.1:54324 |
 
 ## Scripts
 
@@ -79,98 +77,57 @@ For UI-only work without secrets, skip steps 3–4 and run `pnpm dev:no-secrets`
 |---|---|
 | `pnpm dev` | Dev server with Infisical secrets |
 | `pnpm dev:no-secrets` | Dev server without Infisical |
-| `pnpm build` | Production build |
-| `pnpm build:dev` | Dev build with Infisical CLI |
-| `pnpm start` | Start production server (`node .output/server/index.mjs`) |
-| `pnpm preview` | Preview the production build |
-| `pnpm test` | Run tests with Vitest |
-| `pnpm db:generate` | Generate a migration from the Drizzle schema |
+| `pnpm build` / `pnpm build:dev` | Production build, without / with secrets |
+| `pnpm start` | Serve the production build |
+| `pnpm test` | Unit tests — offline, no database |
+| `pnpm test:db` | Integration tests — needs the local stack |
+| `pnpm storybook` / `pnpm build-storybook` | Component workbench, and the build that proves stories compile |
+| `pnpm format` | Prettier — tabs and semicolons |
+| `pnpm db:generate --name x` | Generate a migration from the schema |
 | `pnpm db:migrate` | Apply pending migrations |
-| `pnpm db:check` | Check the migration history for conflicts |
-| `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm db:dump` | Back up the database (schema + data) via the Supabase CLI |
+| `pnpm db:studio` | Drizzle Studio |
+| `pnpm db:dump` | Back up schema + data under `backups/` |
+| `pnpm smoke:reads` / `pnpm smoke:writes` | Run every read path, and the write paths in a rolled-back transaction |
 
-## Environment variables
+## Configuration
 
-Secrets are managed via [Infisical](https://infisical.com) (self-hosted). Contributors without access can fall back to a plain `.env` and the `:no-secrets` script variants.
-
-See [`docs/SECRETS.md`](./docs/SECRETS.md) for the full variable list, the with/without-Infisical workflows, and production setup.
-
-## Supabase local development
-
-```bash
-supabase start          # start all services (requires Docker)
-supabase status         # show URLs and keys
-supabase stop           # stop all services
-supabase db reset       # re-apply migrations + seed
-```
-
-| Service | URL |
-|---|---|
-| Studio | http://127.0.0.1:54323 |
-| API | http://127.0.0.1:54321 |
-| Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
-| Mailpit | http://127.0.0.1:54324 |
+Secrets are managed with [Infisical](https://infisical.com), self-hosted. Every script that needs
+them wraps `infisical run`, so there is no `.env` to maintain — contributors without access use the
+`:no-secrets` variants. The full variable list and the production setup are in
+[`docs/SECRETS.md`](./docs/SECRETS.md).
 
 ## Database
 
-`supabase db reset` applies all migrations and runs `supabase/seed.sql`, which provisions:
-
-- A superadmin user (`admin@trivia-more.local` / `password123`)
-- Catalog data (departments, courses, classes, sections, questions) dumped from staging
-
-### Migrations (Drizzle, Code First)
-
-The Drizzle schema in `src/db/schema/` is the source of truth. `drizzle-kit` diffs it against the database and writes SQL into `drizzle/`; both the TS change and the generated `.sql` are committed together. Same model as EF Core.
-
-Entities live one per file under `src/db/schema/entities/<postgres-schema>/`:
-
-```
-src/db/schema/
-├── common.ts                  pgSchema handles + the tsvector custom type
-├── index.ts                   barrel consumed by drizzle-kit and the runtime client
-└── entities/
-    ├── public/                profiles.ts, notifications.ts, … + enums.ts + relations.ts
-    ├── catalog/               departments.ts, courses.ts, sections.ts, … + enums.ts + relations.ts
-    └── quiz/                  quizzes.ts, quiz-attempts.ts, … + enums.ts + relations.ts
-```
-
-Naming follows the Drizzle convention: the table object is camelCase plural mirroring the SQL name (`courses`, `quizAttempts`), relations are `<table>Relations`, and row types are derived rather than hand-written — `type Course = typeof courses.$inferSelect`, `type NewCourse = typeof courses.$inferInsert`. Values and types never collide because one is plural camelCase and the other singular PascalCase. Row types stay in `src/lib/*/types.ts` next to the view models built on them.
-
-An entity file holds only what ends up in a migration: columns, indexes, constraints and foreign keys. **Relations live in the per-schema `relations.ts`** — they produce no DDL, they only feed `db.query`. Keeping them out is what makes the module graph acyclic: relations files import entities, entities never import relations, and the foreign-key graph on its own is a DAG. Co-locating them instead creates import cycles that happen to work but break the moment a table is referenced at module scope outside a `foreignKey` or a `relations` callback.
-
-This also maps onto Drizzle's Relational Queries v2, where relations move into `defineRelations` / `defineRelationsPart` merged at client construction — the three files become three parts.
-
-Each folder has its own `enums.ts`. Enum types are declared with `pgEnum`, not `<schema>.enum()`: every enum lives in the `public` Postgres schema because it is shared across the three, so the folder layout is organisational only.
+The Drizzle schema in `src/db/schema/` is the source of truth. `drizzle-kit` diffs it against the
+database and writes SQL into `drizzle/`; the TypeScript change and the generated `.sql` are committed
+together. There is deliberately no `db:push` — every change leaves a reviewable file.
 
 ```bash
-pnpm db:generate --name add_something   # diff the schema -> drizzle/*.sql   (ef migrations add)
-pnpm db:generate --custom --name grants # empty file for raw SQL             (migrationBuilder.Sql)
-pnpm db:migrate                         # apply pending migrations           (ef database update)
+pnpm db:generate --name add_something   # diff the schema into drizzle/*.sql
+pnpm db:generate --custom --name grants # an empty file for raw SQL
+pnpm db:migrate                         # apply what is pending
 ```
 
-**Migrations are always applied by hand.** They never run on container start, in an entrypoint, or in an automatic pre-deploy hook, in any environment. Apply the migration first, deploy the code second; use expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
+**Migrations are always applied by hand.** Never on container start, in an entrypoint, or in a
+deploy hook, in any environment. Apply the migration first and deploy the code second; use
+expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
+Take a `pnpm db:dump` before touching a shared database.
 
-There is deliberately no `db:push` — always generate + migrate, so every change leaves a reviewable SQL file.
+The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
+role through `SUPABASE_DB_URL`.
 
-The app connects through `DATABASE_URL` — the least-privilege `trivia_app` role in production — while `drizzle-kit` and the Supabase CLI connect as the admin role through `SUPABASE_DB_URL` (falling back to `DATABASE_URL` locally). `supabase/migrations/` is the historical archive from before the cutover and is no longer applied.
+`supabase/migrations/` is a frozen archive from before the cut-over — nothing new goes there, but it
+is still what `supabase start` uses to build the local database. The Drizzle migrations run **on top
+of a Supabase-provisioned database**: `drizzle/0000_baseline.sql` expects the `auth` schema, so they
+do not bootstrap an empty one on their own.
 
-### Backups
-
-`pnpm db:dump` writes a timestamped schema + data dump under `backups/` (gitignored), using the Supabase CLI's bundled `pg_dump` — no local install needed. Take one before applying a migration to a shared database.
-
-```bash
-pnpm db:dump                                                                    # local
-SUPABASE_DB_URL='postgresql://postgres:PASSWORD@HOST:PORT/postgres' pnpm db:dump prod
-```
-
-### Auth email templates
-
-Custom email templates are served as static assets from `public/email-templates/` so both local dev and the self-hosted GoTrue can fetch them. To customise the confirmation email, edit `public/email-templates/confirmation.html` and redeploy. The local CLI reads it via `supabase/config.toml`; self-hosted GoTrue fetches it via the public URL set in `MAILER_TEMPLATES_CONFIRMATION` (e.g. `https://www.trivia-more.it/email-templates/confirmation.html`).
+Conventions for entities, relations, enums and row types are in
+[`.claude/skills/drizzle-schema`](./.claude/skills/drizzle-schema/SKILL.md).
 
 ## Authentication
 
-Supabase Auth with email/password and OAuth (GitHub, Google). Routes are protected via `requireAuth` / `requireGuest` guards in `beforeLoad`:
+Supabase Auth with email/password and OAuth (GitHub, Google). Routes are protected by guards in
+`beforeLoad`, from `src/lib/auth/guards.ts`:
 
 ```typescript
 export const Route = createFileRoute('/dashboard')({
@@ -179,29 +136,53 @@ export const Route = createFileRoute('/dashboard')({
 })
 ```
 
+Server functions declare their own middleware and authorize inside the service layer;
+`requireAdmin` / `requireSuperadmin` cover the back office, and content-scoped checks live in
+`src/lib/admin/access.ts`.
+
+## Deployment
+
+The app runs on a self-hosted VPS: Coolify builds the `Dockerfile` and deploys on push, behind
+Cloudflare, co-located with the Supabase stack. `prod` is production, `preview` is the preview
+instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
+rather than leaving a container serving errors.
+
+Auth emails are served as static assets from `public/email-templates/`, so both the local CLI and the
+self-hosted GoTrue can fetch them.
+
+## Documentation
+
+| | |
+|---|---|
+| [`CHANGELOG.md`](./CHANGELOG.md) | Technical release notes, written at each merge to `prod` |
+| [`CLAUDE.md`](./CLAUDE.md) | Architecture, conventions and the rules that are not negotiable |
+| [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md) · [`docs/DESIGN_DECISIONS.md`](./docs/DESIGN_DECISIONS.md) | The UI system, and the reasoning behind each decision |
+| [`docs/OBSERVABILITY.md`](./docs/OBSERVABILITY.md) | Structured logging to Seq |
+| [`docs/SECRETS.md`](./docs/SECRETS.md) · [`docs/SECURITY.md`](./docs/SECURITY.md) | Secrets, and the security model |
+| [`.claude/skills/`](./.claude/skills) | Working conventions per area: schema, tables, design system, server functions, Storybook |
+
 ## Contributing
 
-Contributions are welcome — both to the code and to the catalog content.
+Contributions are welcome — to the code and to the catalog content.
 
-- **Found a wrong question or missing topic?** Open an issue with the `content` label and link to the affected section.
-- **Found a bug or want to propose a feature?** Open an issue with the `bug` or `enhancement` label.
-- **Code contributions:**
-  1. Fork the repo and create a branch off `preview` (e.g. `feat/quiz-shortcuts`, `fix/sitemap-encoding`).
-  2. Follow the existing patterns and keep commits small and logical.
-  3. Run `pnpm test` and `pnpm build` before pushing.
-  4. Open a pull request against `preview` with a short description and screenshots for UI changes.
+- **A wrong question or a missing topic?** Open an issue with the `content` label, linking the section.
+- **A bug or an idea?** Open an issue with the `bug` or `enhancement` label.
+- **Code:** fork, branch off `preview` (`feat/quiz-shortcuts`, `fix/sitemap-encoding`), keep commits
+  small and in Conventional Commits style, run `pnpm test` and `pnpm build`, then open a pull request
+  against `preview` with screenshots for UI changes.
 
-Want to maintain the catalog of your own department? Open an issue and we'll grant you the maintainer role for that scope.
+Want to maintain the catalog of your own department? Open an issue and we'll grant you the
+maintainer role for that scope.
 
 ## Branches
 
 ```
-preview         → Active development
-master          → Production (TanStack Start v3.0)
-trivia-more-3.0 → Reference: old Next.js code + migration roadmap
+preview → Active development, and the preview instance
+prod    → Production (default branch)
 ```
 
-The previous Next.js version is archived as tag [`v2.0.0`](https://github.com/MarinCervinschi/TriviaMore/releases/tag/v2.0.0).
+`master` is frozen at the pre-rewrite state and kept as an archive; the Next.js version before it is
+tagged [`v2.0.0`](https://github.com/MarinCervinschi/TriviaMore/releases/tag/v2.0.0).
 
 ## License
 
