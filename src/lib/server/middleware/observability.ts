@@ -1,13 +1,8 @@
 import { createMiddleware } from "@tanstack/react-start";
 
+import type { LogLevel } from "@/lib/logging/clef";
 import { createContext, currentContext, runWithContext } from "@/lib/logging/context";
-import { log } from "@/lib/logging/server";
-
-// One canonical event per request, carrying everything needed to answer "what
-// happened and how long did it take" — instead of a handful of scattered lines
-// that have to be stitched back together in Seq. Server functions arrive as
-// requests too, so this covers both them and page renders, and the trace it
-// opens is what every nested log call and every database query attaches to.
+import { log, logSpan } from "@/lib/logging/server";
 
 const ASSET_PATTERN = /\.(js|mjs|css|map|ico|png|jpe?g|gif|svg|webp|avif|woff2?)$/i;
 
@@ -22,10 +17,10 @@ function isAsset(pathname: string): boolean {
 	);
 }
 
-function levelFor(status: number): "info" | "warn" | "error" {
-	if (status >= 500) return "error";
-	if (status >= 400) return "warn";
-	return "info";
+function levelFor(status: number): LogLevel {
+	if (status >= 500) return "Error";
+	if (status >= 400) return "Warning";
+	return "Information";
 }
 
 export const observabilityMiddleware = createMiddleware({ type: "request" }).server(
@@ -39,6 +34,7 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 
 		return runWithContext(context, async () => {
 			const startedAt = performance.now();
+			const startedIso = new Date().toISOString();
 			let status = 500;
 
 			try {
@@ -70,14 +66,16 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 					AppMs: Math.max(0, elapsed - context.dbMs - context.authMs),
 				};
 
-				// Two templates rather than one, so Seq groups server function calls
-				// and page renders as distinct event types.
-				log[levelFor(status)](
-					context.fn
+				logSpan({
+					level: levelFor(status),
+					template: context.fn
 						? "{Fn} → {Outcome} in {Elapsed:0.0}ms"
 						: "{Method} {Path} → {Status} in {Elapsed:0.0}ms",
-					properties
-				);
+					properties,
+					spanId: context.spanId,
+					startedAt: startedIso,
+					kind: "Server",
+				});
 			}
 		});
 	}

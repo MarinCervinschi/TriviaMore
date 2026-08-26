@@ -7,6 +7,8 @@ export type LogLevel = "Debug" | "Information" | "Warning" | "Error";
 
 export type LogProperties = Record<string, unknown>;
 
+export type SpanKind = "Client" | "Server" | "Internal" | "Producer" | "Consumer";
+
 export type LogEvent = {
 	timestamp: string;
 	level: LogLevel;
@@ -14,6 +16,10 @@ export type LogEvent = {
 	properties: LogProperties;
 	error?: unknown;
 	traceId?: string;
+	spanId?: string;
+	parentSpanId?: string;
+	startTimestamp?: string;
+	spanKind?: SpanKind;
 };
 
 const LEVEL_ORDER: Record<LogLevel, number> = {
@@ -41,9 +47,6 @@ export function parseLevel(value: string | undefined): LogLevel {
 	}
 }
 
-// Substring matches, so `accessToken`, `refresh_token` and `userEmail` are all
-// caught. A property that holds a secret must never reach Seq even by accident:
-// the cost of over-redacting a field name is a `[redacted]` in a log line.
 const REDACTED = [
 	"password",
 	"passwd",
@@ -123,8 +126,6 @@ export function formatError(error: unknown): string {
 	return parts.join("\n");
 }
 
-// A Postgres error carries the two fields worth querying on. `detail` is left
-// out on purpose: it quotes the offending row, which is user data.
 export function errorProperties(error: unknown): LogProperties {
 	if (typeof error !== "object" || error === null) return {};
 	const { code, constraint } = error as { code?: unknown; constraint?: unknown };
@@ -141,6 +142,10 @@ export function toClef(event: LogEvent): string {
 		"@mt": event.template,
 	};
 	if (event.traceId) payload["@tr"] = event.traceId;
+	if (event.spanId) payload["@sp"] = event.spanId;
+	if (event.parentSpanId) payload["@ps"] = event.parentSpanId;
+	if (event.startTimestamp) payload["@st"] = event.startTimestamp;
+	if (event.spanKind) payload["@sk"] = event.spanKind;
 	if (event.error !== undefined) payload["@x"] = formatError(event.error);
 
 	const seen = new WeakSet<object>();
