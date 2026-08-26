@@ -43,10 +43,35 @@ would patch nothing, silently. Pino is out for the same class of reason: its tra
 worker thread that resolves the transport module by path at runtime, which does not exist inside the
 Rollup bundle.
 
-Both are fixable and neither is worth it yet. The door stays open: CLEF models spans natively
-(`@sp`, `@ps`, `@st`, `@sk`), Seq ingests OTLP at `/ingest/otlp/v1/traces` and
-`/ingest/otlp/v1/logs`, and the trace id is already W3C-shaped — so swapping the shipper for an OTLP
-exporter would not change the data model. Revisit when a second service appears.
+Both are fixable and neither is worth it yet: with one process and one Postgres, distributed tracing
+traces a graph with one node. The door stays open — Seq ingests OTLP at `/ingest/otlp/v1/traces` and
+`/ingest/otlp/v1/logs`, and the ids are already W3C-shaped, so swapping the shipper for an OTLP
+exporter would not change the data model. Revisit when a second service appears. Note that Seq
+speaks OTLP over gRPC and HTTP/protobuf but **not** HTTP/JSON, so that swap means taking on a real
+exporter dependency rather than pointing the current `fetch` somewhere else.
+
+## Spans
+
+The trace tree comes from CLEF's own span fields, without an OTel SDK:
+
+| Field | Meaning |
+|---|---|
+| `@tr` | trace id — one per request |
+| `@sp` | span id |
+| `@ps` | parent span id |
+| `@st` | when the span started; the event's `@t` is when it ended |
+| `@sk` | span kind — `Server` for the request, `Client` for a query |
+
+Two spans exist today. The **canonical line is the request's root span**, so everything raised
+inside the request nests under it. Each **database query is a child span**, which is what turns
+"340ms, 5 queries" into "340ms, and 280 of them were this one". An event that carries `@sp` but no
+`@st` is a log line *attached* to that span rather than a span of its own — that is what every
+ordinary `log.info` inside a request becomes.
+
+Query spans keep the levels the plain lines had: `Warning` past `SLOW_QUERY_MS`, `Debug` otherwise.
+So production ships the slow ones and nothing else, and a trace there shows the root span plus
+exactly the queries worth looking at; `LOG_LEVEL=debug` fills the tree in. A query raised outside a
+request — a script, a job — has no trace to hang from and stays a plain log line.
 
 ## The canonical log line
 
@@ -71,6 +96,7 @@ distinct event types.
 | `Source` | `ssr` \| `fn` \| `job` \| `browser` — see the note above on why `ssr` dominates, and the browser section below |
 | `Version` | commit sha, from Coolify's runtime `SOURCE_COMMIT` (or `APP_VERSION` off Coolify) |
 | `@tr` | 32-hex trace id, shared by every event in one request |
+| `@sp` / `@ps` / `@st` / `@sk` | span fields — see the Spans section |
 | `UserId` | uuid only — attached by the auth guards |
 | `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) |
 | `ErrorCode` | the AppError code, or the Postgres SQLSTATE |

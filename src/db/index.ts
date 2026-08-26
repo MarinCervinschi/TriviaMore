@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
 
-import { currentContext } from "@/lib/logging/context";
-import { log } from "@/lib/logging/server";
+import { currentContext, newSpanId } from "@/lib/logging/context";
+import { log, logSpan } from "@/lib/logging/server";
 
 import * as schema from "./schema";
 
@@ -44,6 +44,7 @@ async function track<T>(
 	const context = currentContext();
 	const idleBefore = pool.idleCount;
 	const startedAt = performance.now();
+	const startedEpoch = Date.now();
 	try {
 		return await run();
 	} finally {
@@ -58,13 +59,29 @@ async function track<T>(
 			PoolIdle: idleBefore,
 			PoolTotal: pool.totalCount,
 		};
-		if (elapsed >= SLOW_QUERY_MS) {
-			log.warn(
-				"Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}",
-				properties
-			);
+		const slow = elapsed >= SLOW_QUERY_MS;
+		const template = slow
+			? "Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}"
+			: "Query took {Elapsed:0.0}ms — {Statement}";
+
+		// A child span of the request, so the trace shows which query the time
+		// went into. Queries raised outside a request — scripts, jobs — have no
+		// trace to hang from, so they stay plain log lines. The level is unchanged
+		// either way: production still ships only the slow ones.
+		if (context) {
+			logSpan({
+				level: slow ? "Warning" : "Debug",
+				template,
+				properties,
+				spanId: newSpanId(),
+				parentSpanId: context.spanId,
+				startedAt: new Date(startedEpoch).toISOString(),
+				kind: "Client",
+			});
+		} else if (slow) {
+			log.warn(template, properties);
 		} else {
-			log.debug("Query took {Elapsed:0.0}ms — {Statement}", properties);
+			log.debug(template, properties);
 		}
 	}
 }
