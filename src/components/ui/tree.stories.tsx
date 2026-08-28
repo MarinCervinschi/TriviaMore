@@ -73,10 +73,23 @@ function Row({ node, guides }: { node: Node; guides: boolean[] }) {
 }
 
 export const Default: Story = {
-	name: "Elbow connectors",
+	name: "Gomiti",
 	render: () => (
 		<Card className="max-w-md p-2">
-			<Tree indent={20} lines>
+			<Tree indent={20} connector="elbow">
+				{NODES.map((node, i) => (
+					<Row key={i} node={node} guides={guidesFor(NODES, i)} />
+				))}
+			</Tree>
+		</Card>
+	),
+};
+
+export const Rail: Story = {
+	name: "Linee verticali",
+	render: () => (
+		<Card className="max-w-md p-2">
+			<Tree indent={20} connector="rail">
 				{NODES.map((node, i) => (
 					<Row key={i} node={node} guides={guidesFor(NODES, i)} />
 				))}
@@ -89,7 +102,7 @@ export const SenzaLinee: Story = {
 	name: "Senza linee",
 	render: () => (
 		<Card className="max-w-md p-2">
-			<Tree indent={20} lines={false}>
+			<Tree indent={20} connector="none">
 				{NODES.map((node, i) => (
 					<Row key={i} node={node} guides={guidesFor(NODES, i)} />
 				))}

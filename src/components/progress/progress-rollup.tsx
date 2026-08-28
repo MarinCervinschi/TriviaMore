@@ -37,16 +37,22 @@ const ROUTE: Record<Level, DetailRoute> = {
 
 const DEPTH: Record<Level, number> = { course: 0, class: 1, section: 2 };
 
-const BAND: Record<Level, string> = {
-	course: "bg-muted font-semibold",
-	class: "bg-muted/50 font-medium",
-	section: "hover:bg-muted/40 transition-colors",
+const WEIGHT: Record<Level, string> = {
+	course: "font-semibold",
+	class: "font-medium",
+	section: "",
 };
 
 const ENTITY_ICON: Record<Level, Icon> = {
 	course: DiplomaIcon,
 	class: BookIcon,
 	section: DocumentTextIcon,
+};
+
+const ENTITY_TINT: Record<Level, string> = {
+	course: "text-chart-2",
+	class: "text-chart-5",
+	section: "text-chart-4",
 };
 
 type SortKey = "name" | "grade" | "quizzes" | "time";
@@ -73,12 +79,11 @@ type Row = {
 	level: Level;
 	expandable: boolean;
 	open: boolean;
-	guides: boolean[];
 };
 
 function LevelIcon({ level }: { level: Level }) {
 	const Icon = ENTITY_ICON[level];
-	return <Icon className="text-muted-foreground size-4 shrink-0" />;
+	return <Icon className={cn("size-4 shrink-0", ENTITY_TINT[level])} />;
 }
 
 function SortHeader({
@@ -150,9 +155,6 @@ function Stats({
 }
 
 export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
-	// Which nodes the user has flipped, not which are open: a set seeded from
-	// `courses` would leave a course that arrives on a later refetch collapsed
-	// alone, with nothing to explain why.
 	const [flipped, setFlipped] = useState<Set<string>>(() => new Set());
 	const [sort, setSort] = useState<Sort>({ key: "name", dir: "asc" });
 
@@ -164,8 +166,6 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 			return next;
 		});
 
-	// A header click sorts ascending, then toggles direction on repeat — the same
-	// asc → desc → asc cycle the DataTable uses (no "unsorted" state).
 	const onSort = (key: SortKey) =>
 		setSort(prev =>
 			prev.key === key
@@ -183,30 +183,23 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 				level: "course",
 				expandable: true,
 				open: courseOpen,
-				guides: [],
 			});
 			if (!courseOpen) continue;
-			const classes = sortNodes(course.classes, sort);
-			for (let ci = 0; ci < classes.length; ci++) {
-				const klass = classes[ci]!;
-				const classContinues = ci < classes.length - 1;
+			for (const klass of sortNodes(course.classes, sort)) {
 				const classOpen = expanded(klass.id, false);
 				result.push({
 					node: klass,
 					level: "class",
 					expandable: true,
 					open: classOpen,
-					guides: [classContinues],
 				});
 				if (!classOpen) continue;
-				const sections = sortNodes(klass.sections, sort);
-				for (let si = 0; si < sections.length; si++) {
+				for (const section of sortNodes(klass.sections, sort)) {
 					result.push({
-						node: sections[si]!,
+						node: section,
 						level: "section",
 						expandable: false,
 						open: false,
-						guides: [classContinues, si < sections.length - 1],
 					});
 				}
 			}
@@ -253,18 +246,17 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 										/>
 									</span>
 								</div>
-								<Tree indent={20} lines className="text-sm">
-									{rows.map(({ node, level, expandable, open: isOpen, guides }) => (
+								<Tree indent={20} connector="rail" className="text-sm">
+									{rows.map(({ node, level, expandable, open: isOpen }) => (
 										<TreeItem
 											key={node.id}
 											level={DEPTH[level]}
-											guides={guides}
 											reach={level === "section" ? 24 : 0}
 										>
 											<div
 												className={cn(
-													"flex items-center gap-1.5 rounded-lg py-2 pe-1",
-													BAND[level]
+													"hover:bg-muted/40 flex items-center gap-1.5 rounded-lg py-2 pe-1 transition-colors",
+													WEIGHT[level]
 												)}
 											>
 												{expandable && (
@@ -272,7 +264,7 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 														type="button"
 														onClick={() => toggle(node.id)}
 														aria-label={isOpen ? "Comprimi" : "Espandi"}
-														className="hover:bg-background/60 -my-0.5 rounded-lg p-1"
+														className="hover:bg-muted -my-0.5 rounded-lg p-1"
 													>
 														<AltArrowDownIcon
 															className={cn(

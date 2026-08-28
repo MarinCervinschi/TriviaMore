@@ -76,6 +76,11 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["chart-3-ink", "muted", 4.5, "a category pill's label"],
 	["chart-4-ink", "muted", 4.5, "a category pill's label"],
 	["chart-5-ink", "muted", 4.5, "a category pill's label"],
+	// The rollup's level icons: a graphic, so 1.4.11's 3:1, and the fill rather than
+	// the ink — which is why these are the fills' only gated rows.
+	["chart-2", "muted", 3, "a level icon in the progress rollup"],
+	["chart-4", "muted", 3, "a level icon in the progress rollup"],
+	["chart-5", "muted", 3, "a level icon in the progress rollup"],
 	["foreground", "popover", 4.5, "a dropdown item"],
 	["muted-foreground", "popover", 4.5, "a dropdown's secondary text"],
 	// A lower bar for UI components and focus indicators (1.4.11).
