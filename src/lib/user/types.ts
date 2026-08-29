@@ -117,6 +117,12 @@ export type UserMastery = {
 	/** Mean seconds per answered question across the scope (null when untimed). */
 	avgSecondsPerQuestion: number | null;
 	byDifficulty: MasteryBreakdown[];
+	/**
+	 * Every section with enough answers to rank, by name. `weakSections` and
+	 * `strongSections` are the two ends of this same list — a chart that plots the
+	 * ends alone would show a hole in the middle that the student never had.
+	 */
+	sections: SectionAccuracy[];
 	weakSections: SectionAccuracy[];
 	strongSections: SectionAccuracy[];
 };
