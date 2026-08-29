@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Icon } from "@/components/icons";
+import { IconStack } from "@/components/ui/icon-stack";
 
 import { ExpandableDescription } from "./expandable-description";
 
@@ -32,9 +33,9 @@ export function BrowsePageHeader({
 				{(Icon || actions) && (
 					<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 						{Icon ? (
-							<div className="bg-primary/10 inline-flex shrink-0 rounded-2xl p-3">
-								<Icon className="text-brand h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
-							</div>
+							<IconStack className="shrink-0">
+								<Icon className="text-brand h-8 w-8" aria-hidden />
+							</IconStack>
 						) : (
 							<span aria-hidden />
 						)}
