@@ -119,8 +119,9 @@ export function ProgressSummary({
 					<span>{summary.footer}</span>
 					<Link
 						to="/user/analytics"
-						className="group text-foreground inline-flex items-center gap-1 font-medium hover:underline"
+						className="group text-foreground inline-flex items-center gap-1.5 font-medium hover:underline"
 					>
+						<GraphUpIcon className="size-4" />
 						Analisi complete
 						<AltArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
 					</Link>

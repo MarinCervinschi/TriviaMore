@@ -122,9 +122,8 @@ function DashboardPage() {
 				)}
 
 				<ActivitySection
-					data={profile.activity.days}
-					endDate={profile.activity.endDate}
 					attempts={profile.recentQuizAttempts}
+					total={profile.stats.quizAttemptsCount}
 				/>
 			</div>
 		</div>

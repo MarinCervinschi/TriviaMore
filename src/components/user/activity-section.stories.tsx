@@ -1,23 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { studyActivity } from "@/components/charts/fixtures";
-import type { RecentQuizAttempt } from "@/lib/user/types";
+import type { AttemptHistoryEntry } from "@/lib/user/types";
 
 import { ActivitySection } from "./activity-section";
-
-const activity = studyActivity();
 
 function attempt(
 	id: string,
 	sectionName: string,
 	score: number,
-	date: string
-): RecentQuizAttempt {
+	date: string,
+	quizMode: "STUDY" | "EXAM_SIMULATION" = "STUDY",
+	timeSpent: number | null = 14 * 60_000
+): AttemptHistoryEntry {
 	return {
 		id,
+		quizId: `quiz-${id}`,
 		sectionName,
 		score,
 		completedAt: date,
+		quizMode,
+		timeSpent,
 		sectionId: `sec-${id}`,
 		classId: `cls-${id}`,
 		className: "Intelligenza Artificiale",
@@ -32,9 +34,18 @@ function attempt(
 }
 
 const ATTEMPTS = [
-	attempt("a", "Advanced Clustering", 6, "2026-08-11"),
-	attempt("b", "Advanced Clustering", 1, "2026-08-02"),
-	attempt("c", "Exam Simulation", 1, "2026-08-02"),
+	attempt("a", "Advanced Clustering", 28, "2026-08-11"),
+	attempt(
+		"b",
+		"Reti neurali profonde",
+		31,
+		"2026-08-09",
+		"EXAM_SIMULATION",
+		42 * 60_000
+	),
+	attempt("c", "Exam Simulation", 24, "2026-08-02", "EXAM_SIMULATION"),
+	attempt("d", "Advanced Clustering", 19, "2026-07-30"),
+	attempt("e", "Ottimizzazione convessa", 30, "2026-07-28", "STUDY", null),
 ];
 
 const meta = {
@@ -53,14 +64,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Heatmap + recent quizzes, side by side. Click a year; click a quiz row. */
+/** The last sittings, with the way through to the full history. */
 export const Default: Story = {
-	render: () => (
-		<ActivitySection data={activity} endDate="2026-08-08" attempts={ATTEMPTS} />
-	),
+	render: () => <ActivitySection attempts={ATTEMPTS} total={42} />,
 };
 
-/** No completed quizzes yet: the heatmap shows its empty state, the list too. */
+/** No completed quizzes yet. */
 export const Empty: Story = {
-	render: () => <ActivitySection data={[]} endDate="2026-08-08" attempts={[]} />,
+	render: () => <ActivitySection attempts={[]} />,
 };
