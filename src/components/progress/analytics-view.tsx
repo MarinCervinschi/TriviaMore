@@ -2,6 +2,7 @@ import { type ReactNode, useMemo } from "react";
 
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { DownloadIcon } from "@solar-icons/react/linear/download";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { LayersIcon } from "@solar-icons/react/linear/layers";
 import { ShareIcon } from "@solar-icons/react/linear/share";
 
@@ -105,7 +106,9 @@ export function AnalyticsView({
 	return (
 		<div className="@container flex flex-col gap-4">
 			<PageToolbar
-				breadcrumb={breadcrumb ?? <UserBreadcrumb current="Analytics" />}
+				breadcrumb={
+					breadcrumb ?? <UserBreadcrumb current="Analytics" currentIcon={GraphUpIcon} />
+				}
 				title={title ?? "Analytics"}
 				badge={badge}
 				meta={

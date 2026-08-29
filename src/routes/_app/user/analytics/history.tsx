@@ -457,7 +457,14 @@ function AttemptHistoryPage() {
 					breadcrumb={
 						<UserBreadcrumb
 							current="Storico"
-							trail={[{ label: "Analytics", to: "/user/analytics" }]}
+							currentIcon={ClockCircleIcon}
+							trail={[
+								{
+									label: "Analytics",
+									to: "/user/analytics",
+									icon: GraphUpIcon,
+								},
+							]}
 						/>
 					}
 					title="Storico dei tentativi"

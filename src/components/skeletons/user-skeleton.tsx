@@ -9,9 +9,9 @@ import {
 
 function UserBreadcrumbSkeleton() {
 	return (
-		<div className="flex items-center gap-2">
-			<Skeleton className="h-4 w-16" />
-			<Skeleton className="h-3 w-3 rounded-full" />
+		<div className="border-border bg-background inline-flex items-center gap-2 rounded-xl border px-3 py-1.5">
+			<Skeleton className="size-4" />
+			<Skeleton className="size-3 rounded-full" />
 			<Skeleton className="h-4 w-24" />
 		</div>
 	);
@@ -133,7 +133,7 @@ export function AnalyticsSkeleton() {
 			className="container space-y-4 py-6 pb-10"
 		>
 			<div className="border-border/60 space-y-3 border-b pb-4">
-				<Skeleton className="h-9 w-56 rounded-full" />
+				<Skeleton className="h-9 w-56 rounded-xl" />
 				<div className="flex flex-wrap items-start justify-between gap-3">
 					<Skeleton className="h-8 w-40" />
 					<div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ export function EntityProgressSkeleton() {
 			className="container space-y-4 py-6 pb-10"
 		>
 			<div className="border-border/60 space-y-3 border-b pb-4">
-				<Skeleton className="h-9 w-72 rounded-full" />
+				<Skeleton className="h-9 w-72 rounded-xl" />
 				<div className="flex flex-wrap items-start justify-between gap-3">
 					<div className="space-y-2">
 						<Skeleton className="h-8 w-56" />
@@ -252,7 +252,7 @@ export function AttemptHistorySkeleton() {
 			className="container space-y-4 py-6 pb-10"
 		>
 			<div className="border-border/60 space-y-3 border-b pb-4">
-				<Skeleton className="h-9 w-64 rounded-full" />
+				<Skeleton className="h-9 w-64 rounded-xl" />
 				<div className="flex flex-wrap items-start justify-between gap-3">
 					<div className="space-y-2">
 						<Skeleton className="h-8 w-64" />
