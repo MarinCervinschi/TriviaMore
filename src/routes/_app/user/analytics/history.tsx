@@ -460,6 +460,8 @@ function AttemptHistoryPage() {
 							trail={[{ label: "Analytics", to: "/user/analytics" }]}
 						/>
 					}
+					title="Storico dei tentativi"
+					meta={`${attempts.length} quiz completati`}
 					actions={
 						<Button
 							variant={search.preferiti ? "default" : "outline"}
