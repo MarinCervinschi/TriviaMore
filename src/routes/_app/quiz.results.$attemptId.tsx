@@ -12,8 +12,10 @@ import { NotFoundPage } from "@/components/error/not-found-page";
 import { FavoriteStar } from "@/components/progress/favorite-star";
 import { BookmarkButton } from "@/components/quiz/bookmark-button";
 import { ReportButton } from "@/components/requests/report-button";
+import { Figure, FigureRow } from "@/components/shared/figure-row";
 import { QuizResultsSkeleton } from "@/components/skeletons";
 import { Button } from "@/components/ui/button";
+import { InsetCard } from "@/components/ui/inset-card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options";
 import { quizQueries } from "@/lib/quiz/queries";
@@ -85,78 +87,82 @@ function ResultsPage() {
 		<div className="container py-8">
 			<div className="mx-auto max-w-4xl space-y-8">
 				{/* Score Hero */}
-				<div className="bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12">
+				<InsetCard texture="top" textureAlpha={0.2}>
 					{/* Top right, out of the centred column: starring is an aside to the score. */}
-					<div className="absolute top-4 right-4">
+					<div className="absolute top-4 right-4 z-10">
 						<FavoriteStar
 							attemptId={result.id}
 							isFavorite={result.isFavorite}
 							className="size-10"
 						/>
 					</div>
-					<p className="text-muted-foreground relative mb-1 text-sm">
-						{result.quiz.section.name} &bull; {result.quiz.section.courseName}
-					</p>
-					<p
-						className={cn(
-							"relative text-6xl font-bold sm:text-7xl",
-							getGradeColor(result.score)
-						)}
-					>
-						{formatThirtyScaleGrade(result.score)}
-					</p>
-					<p className="text-muted-foreground relative mt-2 text-lg">
-						{getGradeDescription(result.score)}
-					</p>
+					<div className="relative p-8 text-center sm:p-12">
+						<p className="text-muted-foreground mb-1 text-sm">
+							{result.quiz.section.name} &bull; {result.quiz.section.courseName}
+						</p>
+						<p
+							className={cn(
+								"text-6xl font-bold sm:text-7xl",
+								getGradeColor(result.score)
+							)}
+						>
+							{formatThirtyScaleGrade(result.score)}
+						</p>
+						<p className="text-muted-foreground mt-2 text-lg">
+							{getGradeDescription(result.score)}
+						</p>
 
-					<div className="relative mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<CheckCircleIcon className="mx-auto mb-2 h-5 w-5 text-green-500" />
-							<p className="text-2xl font-bold">{correctCount}</p>
-							<p className="text-muted-foreground text-xs">Corrette</p>
-						</div>
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<RecordCircleIcon className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
-							<p className="text-2xl font-bold">{partialCount}</p>
-							<p className="text-muted-foreground text-xs">Parziali</p>
-						</div>
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<CloseCircleIcon className="mx-auto mb-2 h-5 w-5 text-red-500" />
-							<p className="text-2xl font-bold">{wrongCount}</p>
-							<p className="text-muted-foreground text-xs">Errate</p>
-						</div>
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<ClockCircleIcon className="mx-auto mb-2 h-5 w-5 text-blue-500" />
-							<p className="text-2xl font-bold">
-								{result.timeSpent ? formatTimeSpent(result.timeSpent) : "N/A"}
-							</p>
-							<p className="text-muted-foreground text-xs">Tempo</p>
-						</div>
-					</div>
-
-					{/* Evaluation inline */}
-					<div className="text-muted-foreground relative mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
-						<span>{evalMode.name}</span>
-						<span className="bg-muted-foreground/30 h-1 w-1 rounded-full" />
-						<span>
-							Corretta:{" "}
-							<span className="font-medium text-green-600">
-								+{formatScaledScore(perQuestionMax)} pt
-							</span>
-						</span>
-						{hasPenalty && (
-							<>
-								<span className="bg-muted-foreground/30 h-1 w-1 rounded-full" />
-								<span>
-									Errata:{" "}
-									<span className="font-medium text-red-600">
-										{formatScaledSigned(perQuestionMin)} pt
-									</span>
+						{/* Evaluation inline */}
+						<div className="text-muted-foreground mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
+							<span>{evalMode.name}</span>
+							<span className="bg-muted-foreground/30 h-1 w-1 rounded-full" />
+							<span>
+								Corretta:{" "}
+								<span className="text-success font-medium">
+									+{formatScaledScore(perQuestionMax)} pt
 								</span>
-							</>
-						)}
+							</span>
+							{hasPenalty && (
+								<>
+									<span className="bg-muted-foreground/30 h-1 w-1 rounded-full" />
+									<span>
+										Errata:{" "}
+										<span className="text-destructive font-medium">
+											{formatScaledSigned(perQuestionMin)} pt
+										</span>
+									</span>
+								</>
+							)}
+						</div>
 					</div>
-				</div>
+
+					<FigureRow className="relative grid-cols-2 sm:grid-cols-4">
+						<Figure
+							icon={CheckCircleIcon}
+							value={correctCount}
+							label="Corrette"
+							tone="text-success"
+						/>
+						<Figure
+							icon={RecordCircleIcon}
+							value={partialCount}
+							label="Parziali"
+							tone="text-warning"
+						/>
+						<Figure
+							icon={CloseCircleIcon}
+							value={wrongCount}
+							label="Errate"
+							tone="text-destructive"
+						/>
+						<Figure
+							icon={ClockCircleIcon}
+							value={result.timeSpent ? formatTimeSpent(result.timeSpent) : "N/A"}
+							label="Tempo"
+							tone="text-info"
+						/>
+					</FigureRow>
+				</InsetCard>
 
 				{/* Question Review */}
 				<div>

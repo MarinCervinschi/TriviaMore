@@ -124,18 +124,23 @@ export function QuizResultsSkeleton() {
 		<SkeletonRoot label="Caricamento risultati…" className="container py-8">
 			<div className="mx-auto max-w-4xl space-y-8">
 				{/* Score hero */}
-				<div className="bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12">
-					<Skeleton className="mx-auto mb-2 h-4 w-2/3 max-w-md" />
-					<Skeleton className="mx-auto h-16 w-32 sm:h-20 sm:w-40" />
-					<Skeleton className="mx-auto mt-3 h-5 w-48" />
-
-					<div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="bg-card rounded-2xl border p-4">
-								<Skeleton className="mx-auto mb-2 h-7 w-12" />
-								<Skeleton className="mx-auto h-3 w-20" />
-							</div>
-						))}
+				<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+					<div className="bg-card border-border/50 overflow-hidden rounded-xl border">
+						<div className="p-8 text-center sm:p-12">
+							<Skeleton className="mx-auto mb-2 h-4 w-2/3 max-w-md" />
+							<Skeleton className="mx-auto h-16 w-32 sm:h-20 sm:w-40" />
+							<Skeleton className="mx-auto mt-3 h-5 w-48" />
+							<Skeleton className="mx-auto mt-6 h-4 w-64" />
+						</div>
+						<div className="divide-border/60 grid grid-cols-2 divide-x border-t sm:grid-cols-4">
+							{Array.from({ length: 4 }).map((_, i) => (
+								<div key={i} className="flex flex-col items-center gap-1 p-4">
+									<Skeleton className="size-5 rounded-full" />
+									<Skeleton className="h-7 w-12" />
+									<Skeleton className="h-3 w-16" />
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
 

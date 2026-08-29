@@ -3,9 +3,11 @@ import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { EyeIcon } from "@solar-icons/react/linear/eye";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { Figure, FigureRow } from "@/components/shared/figure-row";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardTexture } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { Logo } from "@/components/ui/logo";
 import type { FlashcardQuestion } from "@/lib/flashcard/types";
 
@@ -49,43 +51,38 @@ export function FlashcardResults({
 			<ResultsHeader />
 			<div className="mx-auto max-w-4xl space-y-8 p-6">
 				{/* Score Hero */}
-				<Card
-					level="panel"
-					className="relative overflow-hidden p-8 text-center sm:p-12"
-				>
-					<CardTexture placement="tl" />
-
-					<p className="text-muted-foreground relative mb-2 text-sm font-medium">
-						{sectionName}
-					</p>
-					<p className="relative text-6xl font-bold text-green-600 sm:text-7xl">
-						{percentage}%
-					</p>
-					<p className="text-muted-foreground relative mt-2 text-lg">
-						{getCompletionMessage(percentage)}
-					</p>
-
-					{/* Stats row */}
-					<div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<EyeIcon className="mx-auto mb-2 h-5 w-5 text-green-500" />
-							<p className="text-2xl font-bold">
-								{studiedCount}/{totalCards}
-							</p>
-							<p className="text-muted-foreground text-xs">Studiate</p>
-						</div>
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<CheckCircleIcon className="text-brand mx-auto mb-2 h-5 w-5" />
-							<p className="text-2xl font-bold">{percentage}%</p>
-							<p className="text-muted-foreground text-xs">Completamento</p>
-						</div>
-						<div className="bg-muted/50 rounded-2xl p-4">
-							<ClockCircleIcon className="mx-auto mb-2 h-5 w-5 text-blue-500" />
-							<p className="text-2xl font-bold">{formatTime(timeSpent)}</p>
-							<p className="text-muted-foreground text-xs">Tempo</p>
-						</div>
+				<InsetCard texture="top" textureAlpha={0.2}>
+					<div className="relative p-8 text-center sm:p-12">
+						<p className="text-muted-foreground mb-2 text-sm font-medium">
+							{sectionName}
+						</p>
+						<p className="text-success text-6xl font-bold sm:text-7xl">{percentage}%</p>
+						<p className="text-muted-foreground mt-2 text-lg">
+							{getCompletionMessage(percentage)}
+						</p>
 					</div>
-				</Card>
+
+					<FigureRow className="relative grid-cols-1 sm:grid-cols-3">
+						<Figure
+							icon={EyeIcon}
+							value={`${studiedCount}/${totalCards}`}
+							label="Studiate"
+							tone="text-success"
+						/>
+						<Figure
+							icon={CheckCircleIcon}
+							value={`${percentage}%`}
+							label="Completamento"
+							tone="text-brand"
+						/>
+						<Figure
+							icon={ClockCircleIcon}
+							value={formatTime(timeSpent)}
+							label="Tempo"
+							tone="text-info"
+						/>
+					</FigureRow>
+				</InsetCard>
 
 				{/* Card Review */}
 				<div>
