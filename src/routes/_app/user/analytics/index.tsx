@@ -1,90 +1,48 @@
-import { useMemo } from "react";
-
-import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
-import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { MasteryPanel } from "@/components/progress/mastery-panel";
-import { MetricExplorer } from "@/components/progress/metric-explorer";
-import { ProgressRollup } from "@/components/progress/progress-rollup";
-import { StudyRhythm } from "@/components/progress/study-rhythm";
-import { ProgressSkeleton } from "@/components/skeletons";
-import { Button } from "@/components/ui/button";
+import { AnalyticsView } from "@/components/progress/analytics-view";
+import { AnalyticsSkeleton } from "@/components/skeletons";
 import { EmptyState } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
-import { buildProgressRollup } from "@/lib/user/rollup";
 
-export const Route = createFileRoute("/_app/user/progress/")({
+export const Route = createFileRoute("/_app/user/analytics/")({
 	loader: ({ context }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
 			context.queryClient.ensureQueryData(userQueries.mastery()),
 			context.queryClient.ensureQueryData(userQueries.studyStats()),
 		]),
-	head: () => seoHead({ title: "Progressi", noindex: true }),
-	pendingComponent: ProgressSkeleton,
-	component: ProgressPage,
+	head: () => seoHead({ title: "Analytics", noindex: true }),
+	pendingComponent: AnalyticsSkeleton,
+	component: AnalyticsPage,
 });
 
-function ProgressPage() {
+function AnalyticsPage() {
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
 	const { data: mastery } = useSuspenseQuery(userQueries.mastery());
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
 
-	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
-
-	if (attempts.length === 0) {
-		return (
-			<div className="space-y-8 pb-8">
-				<UserHero
-					icon={GraphUpIcon}
-					title="I miei progressi"
-					description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
-				/>
-				<div className="container space-y-6">
-					<UserBreadcrumb current="Progressi" />
+	// No hero on this page: the breadcrumb names it and the space goes to the data.
+	return (
+		<div className="container space-y-6 py-6 pb-10">
+			{attempts.length === 0 ? (
+				<>
+					<UserBreadcrumb current="Analytics" />
 					<EmptyState
 						icon={CupFirstIcon}
-						title="Nessun progresso disponibile"
-						description="Inizia a completare alcuni quiz per vedere i tuoi progressi qui!"
+						title="Ancora nessun dato"
+						description="Completa il primo quiz: da lì in poi trovi qui voti, costanza e punti deboli."
 						actionLabel="Esplora i dipartimenti"
 						actionHref="/browse"
 					/>
-				</div>
-			</div>
-		);
-	}
-
-	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={GraphUpIcon}
-				title="I miei progressi"
-				description="Analizza le tue performance e i tuoi miglioramenti nel tempo"
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb current="Progressi" />
-
-				<MetricExplorer daily={daily} />
-				<StudyRhythm attempts={attempts} />
-				<ProgressRollup courses={rollup} />
-				<MasteryPanel mastery={mastery} />
-
-				<div className="flex justify-center">
-					<Button asChild variant="outline">
-						<Link to="/user/progress/history">
-							<ClockCircleIcon className="h-4 w-4" />
-							Cronologia completa
-						</Link>
-					</Button>
-				</div>
-			</div>
+				</>
+			) : (
+				<AnalyticsView daily={daily} attempts={attempts} mastery={mastery} />
+			)}
 		</div>
 	);
 }

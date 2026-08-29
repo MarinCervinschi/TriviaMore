@@ -7,7 +7,7 @@ import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 
-export const Route = createFileRoute("/_app/user/progress/section/$id")({
+export const Route = createFileRoute("/_app/user/analytics/section/$id")({
 	loader: ({ context, params }) => {
 		const scope = { level: "section", id: params.id } as const;
 		return Promise.all([
