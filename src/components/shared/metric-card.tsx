@@ -1,13 +1,11 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import type { Icon } from "@/components/icons";
 import { DeltaBadge } from "@/components/shared/delta-badge";
-import { CardTexture, CardTitle } from "@/components/ui/card";
+import { CardTitle, type TexturePlacement } from "@/components/ui/card";
 import { InsetCard } from "@/components/ui/inset-card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
-type Texture = ComponentProps<typeof CardTexture>["placement"];
 
 // The figures inside the comparison line carry it — "vs **61** nel periodo
 // precedente" reads at a glance, the words only on a second pass. Splitting on a
@@ -56,15 +54,13 @@ export function MetricCard({
 	/** The baseline in words: "vs 61 nel periodo precedente". Figures are lifted. */
 	comparison?: ReactNode;
 	/** Where the pixel field sits; `null` leaves the card bare. */
-	texture?: Texture | null;
+	texture?: TexturePlacement | null;
 	className?: string;
 }) {
 	return (
 		// No header band, and a slightly larger icon: the headline row reads as its
 		// own family, a step apart from the cards that carry a chart.
-		<InsetCard className={className} panelClassName="relative">
-			{texture && <CardTexture placement={texture} alpha={0.18} />}
-
+		<InsetCard className={className} texture={texture}>
 			<div className="relative flex flex-1 flex-col gap-2.5 p-4">
 				<div className="flex items-center justify-between gap-2">
 					<CardTitle className="truncate text-sm">{label}</CardTitle>

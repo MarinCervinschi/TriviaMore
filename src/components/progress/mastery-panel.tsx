@@ -5,7 +5,7 @@ import { Link } from "@tanstack/react-router";
 
 import { ChartCard } from "@/components/charts";
 import type { Icon } from "@/components/icons";
-import { CardContent, CardTexture } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { InsetCard } from "@/components/ui/inset-card";
 import {
@@ -48,9 +48,10 @@ function Shell({
 	return (
 		<InsetCard
 			className={cn(fill && "flex-1")}
-			panelClassName={cn("relative", fill && "h-full")}
+			panelClassName={cn(fill && "h-full")}
+			texture={texture ? "top" : undefined}
+			textureAlpha={0.2}
 		>
-			{texture && <CardTexture placement="top" alpha={0.2} />}
 			{children}
 		</InsetCard>
 	);
