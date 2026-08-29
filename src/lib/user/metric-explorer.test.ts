@@ -5,6 +5,7 @@ import type { QuizMode } from "@/lib/quiz/types";
 import {
 	type Split,
 	type Totals,
+	attemptsInWindow,
 	buildMetricKpis,
 	buildMetricWindow,
 	buildQualityRows,
@@ -224,5 +225,32 @@ describe("buildMetricKpis", () => {
 	it("has no delta when nothing came before", () => {
 		const kpis = buildMetricKpis([daily[0]!], "week", "STUDY", TODAY);
 		expect(kpis.every(k => k.delta === null)).toBe(true);
+	});
+});
+
+describe("attemptsInWindow", () => {
+	const attempts = [
+		{ completedAt: "2026-04-18T10:00:00Z", quizMode: "STUDY" as const },
+		{ completedAt: "2026-04-14T10:00:00Z", quizMode: "EXAM_SIMULATION" as const },
+		{ completedAt: "2026-03-02T10:00:00Z", quizMode: "STUDY" as const },
+		{ completedAt: "2025-01-05T10:00:00Z", quizMode: "STUDY" as const },
+	];
+
+	it("keeps the week, the month and the year", () => {
+		expect(attemptsInWindow(attempts, "week", "both", TODAY)).toHaveLength(2);
+		expect(attemptsInWindow(attempts, "month", "both", TODAY)).toHaveLength(2);
+		expect(attemptsInWindow(attempts, "year", "both", TODAY)).toHaveLength(3);
+		expect(attemptsInWindow(attempts, "all", "both", TODAY)).toHaveLength(4);
+	});
+
+	it("keeps one side when a mode is picked", () => {
+		expect(attemptsInWindow(attempts, "all", "STUDY", TODAY)).toHaveLength(3);
+		expect(attemptsInWindow(attempts, "all", "EXAM_SIMULATION", TODAY)).toHaveLength(1);
+	});
+
+	it("drops an attempt with no mode once a side is picked", () => {
+		const unknown = [{ completedAt: "2026-04-18T10:00:00Z", quizMode: null }];
+		expect(attemptsInWindow(unknown, "all", "both", TODAY)).toHaveLength(1);
+		expect(attemptsInWindow(unknown, "all", "STUDY", TODAY)).toHaveLength(0);
 	});
 });

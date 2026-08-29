@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useMemo } from "react";
 
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { DownloadIcon } from "@solar-icons/react/linear/download";
@@ -9,7 +9,11 @@ import { PageToolbar } from "@/components/shared/page-toolbar";
 import { type ChipOption, SelectChip } from "@/components/shared/select-chip";
 import { Button } from "@/components/ui/button";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
+import {
+	type ExplorerMode,
+	type ExplorerPeriod,
+	attemptsInWindow,
+} from "@/lib/user/metric-explorer";
 import { buildProgressRollup } from "@/lib/user/rollup";
 import type {
 	AttemptHistoryEntry,
@@ -60,6 +64,10 @@ export function AnalyticsView({
 	title,
 	badge,
 	meta,
+	period,
+	mode,
+	onPeriodChange,
+	onModeChange,
 	showRollup = true,
 	showSectionBreakdown = true,
 }: {
@@ -74,19 +82,25 @@ export function AnalyticsView({
 	badge?: ReactNode;
 	/** The line under the title: where this entity sits. */
 	meta?: ReactNode;
+	period: ExplorerPeriod;
+	mode: ExplorerMode;
+	onPeriodChange: (period: ExplorerPeriod) => void;
+	onModeChange: (mode: ExplorerMode) => void;
 	/** Off when the page is already one course: the tree would have one branch. */
 	showRollup?: boolean;
 	/** Off on a single section: a scatter of one point compares nothing. */
 	showSectionBreakdown?: boolean;
 }) {
-	const [period, setPeriod] = useState<ExplorerPeriod>("year");
-	const [mode, setMode] = useState<ExplorerMode>("both");
-
+	const now = useMemo(() => today ?? new Date(), [today]);
+	const windowed = useMemo(
+		() => attemptsInWindow(attempts, period, mode, now),
+		[attempts, period, mode, now]
+	);
 	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
 	// What the page covers, in facts rather than a slogan: the attempts are newest
 	// first, so the oldest one is where this history starts.
-	const since = attempts.at(-1)?.completedAt;
-	const scores = useMemo(() => attempts.map(attempt => attempt.score), [attempts]);
+	const since = windowed.at(-1)?.completedAt;
+	const scores = useMemo(() => windowed.map(attempt => attempt.score), [windowed]);
 
 	return (
 		<div className="@container flex flex-col gap-4">
@@ -97,7 +111,7 @@ export function AnalyticsView({
 				meta={
 					meta ??
 					(since
-						? `${attempts.length} quiz completati, dal ${formatDate(since)}`
+						? `${windowed.length} quiz completati, dal ${formatDate(since)}`
 						: undefined)
 				}
 				actions={
@@ -105,14 +119,14 @@ export function AnalyticsView({
 						<SelectChip
 							label="Periodo"
 							value={period}
-							onChange={setPeriod}
+							onChange={onPeriodChange}
 							options={PERIODS}
 							lead={CalendarMinimalisticIcon}
 						/>
 						<SelectChip
 							label="Modalità"
 							value={mode}
-							onChange={setMode}
+							onChange={onModeChange}
 							options={MODES}
 							lead={LayersIcon}
 						/>
@@ -142,7 +156,7 @@ export function AnalyticsView({
 					<ConsistencyCard daily={daily} attempts={attempts} today={today} />
 				</div>
 				<div className="@[900px]:col-span-4">
-					<WhenYouStudyCard attempts={attempts} today={today} />
+					<WhenYouStudyCard attempts={windowed} today={today} />
 				</div>
 
 				<div

@@ -1,6 +1,7 @@
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 import { AnalyticsView } from "@/components/progress/analytics-view";
 import { AnalyticsSkeleton } from "@/components/skeletons";
@@ -8,8 +9,13 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
+import {
+	analyticsWindowSearch,
+	useAnalyticsWindow,
+} from "@/lib/user/use-analytics-window";
 
 export const Route = createFileRoute("/_app/user/analytics/")({
+	validateSearch: z.object(analyticsWindowSearch),
 	loader: ({ context }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
@@ -22,9 +28,16 @@ export const Route = createFileRoute("/_app/user/analytics/")({
 });
 
 function AnalyticsPage() {
+	const search = Route.useSearch();
+	const window = useAnalyticsWindow(search, Route.fullPath);
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
-	const { data: mastery } = useSuspenseQuery(userQueries.mastery());
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
+	// Not suspense: the window changes under the user, and a refetch must not
+	// throw the whole page back to its skeleton.
+	const { data: mastery } = useQuery({
+		...userQueries.mastery(window.masteryWindow),
+		placeholderData: previous => previous,
+	});
 
 	// No hero on this page: the breadcrumb names it and the space goes to the data.
 	return (
@@ -40,8 +53,18 @@ function AnalyticsPage() {
 						actionHref="/browse"
 					/>
 				</>
+			) : mastery ? (
+				<AnalyticsView
+					daily={daily}
+					attempts={attempts}
+					mastery={mastery}
+					period={window.period}
+					mode={window.mode}
+					onPeriodChange={window.onPeriodChange}
+					onModeChange={window.onModeChange}
+				/>
 			) : (
-				<AnalyticsView daily={daily} attempts={attempts} mastery={mastery} />
+				<AnalyticsSkeleton />
 			)}
 		</div>
 	);

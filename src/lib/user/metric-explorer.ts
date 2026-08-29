@@ -334,3 +334,38 @@ export function buildMetricKpis(
 		};
 	});
 }
+
+/** The first day of a window, as an epoch day; `all` has no floor. */
+function windowStartDay(period: ExplorerPeriod, today: Date): number {
+	const todayDay = epochDay(today.toISOString());
+	if (period === "week") return todayDay - 6;
+	if (period === "month") return todayDay - 27;
+	if (period === "year") {
+		const start = new Date(
+			Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 11, 1)
+		);
+		return epochDay(start.toISOString());
+	}
+	return Number.NEGATIVE_INFINITY;
+}
+
+/** The attempts a window and a mode keep, filtered in the browser rather than refetched. */
+export function attemptsInWindow<
+	T extends { completedAt: string; quizMode: QuizMode | null },
+>(attempts: T[], period: ExplorerPeriod, mode: ExplorerMode, today: Date): T[] {
+	const from = windowStartDay(period, today);
+	return attempts.filter(attempt => {
+		if (mode !== "both" && attempt.quizMode !== mode) return false;
+		return epochDay(attempt.completedAt) >= from;
+	});
+}
+
+/** The window's first day as a calendar date, for a query that must narrow the same way. */
+export function windowFromDate(
+	period: ExplorerPeriod,
+	today: Date
+): string | undefined {
+	if (period === "all") return undefined;
+	const day = windowStartDay(period, today);
+	return new Date(day * 86_400_000).toISOString().slice(0, 10);
+}
