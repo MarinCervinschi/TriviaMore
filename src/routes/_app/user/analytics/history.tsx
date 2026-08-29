@@ -6,7 +6,9 @@ import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-min
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { NotebookIcon } from "@solar-icons/react/linear/notebook";
+import { StarIcon } from "@solar-icons/react/linear/star";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { format, startOfMonth, startOfYear, subDays } from "date-fns";
@@ -22,13 +24,17 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
+import { ScoreRing } from "@/components/progress/score-ring";
+import { ComingSoon } from "@/components/shared/coming-soon";
+import { MetricCard } from "@/components/shared/metric-card";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { AttemptHistorySkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
@@ -37,17 +43,17 @@ import type { AttemptHistoryEntry } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 import { localDayIndex } from "@/lib/utils/datetime";
 import { formatDate } from "@/lib/utils/format";
-import { formatThirtyScaleGrade, getGradeColor } from "@/lib/utils/grading";
+import { formatGradeOutOf33, getGradeColor } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 const MODE_LABELS: Record<string, string> = {
 	STUDY: "Studio",
-	EXAM_SIMULATION: "Simulazione",
+	EXAM_SIMULATION: "Esame",
 };
 
 const MODE_OPTIONS: DataTableFacetOption[] = [
 	{ value: "STUDY", label: "Studio" },
-	{ value: "EXAM_SIMULATION", label: "Simulazione esame" },
+	{ value: "EXAM_SIMULATION", label: "Esame" },
 ];
 
 const INITIAL_SORTING = [{ id: "completedAt", desc: true }];
@@ -101,6 +107,24 @@ function deriveFacetOptions(attempts: AttemptHistoryEntry[]) {
 
 function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 	return [
+		// The grade comes first: scanning a history, it is the column the eye wants.
+		column.accessor("score", {
+			header: "Voto",
+			meta: { label: "Voto", align: "center", headerClassName: "w-20" },
+			cell: ({ row }) => (
+				<div className="flex items-center gap-2">
+					<ScoreRing score={row.original.score} />
+					<span
+						className={cn(
+							"text-sm font-semibold tabular-nums",
+							getGradeColor(row.original.score)
+						)}
+					>
+						/33
+					</span>
+				</div>
+			),
+		}),
 		column.accessor("completedAt", {
 			header: "Data",
 			meta: {
@@ -173,15 +197,6 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 					"—"
 				),
 		}),
-		column.accessor("score", {
-			header: "Voto",
-			meta: { label: "Voto", align: "center" },
-			cell: ({ row }) => (
-				<span className={`font-semibold ${getGradeColor(row.original.score)}`}>
-					{formatThirtyScaleGrade(row.original.score)}
-				</span>
-			),
-		}),
 		column.accessor(row => row.timeSpent ?? 0, {
 			id: "tempo",
 			header: "Tempo",
@@ -193,6 +208,25 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			},
 			cell: ({ row }) =>
 				row.original.timeSpent != null ? formatTimeSpent(row.original.timeSpent) : "—",
+		}),
+		column.display({
+			id: "azioni",
+			header: "",
+			enableHiding: false,
+			meta: { label: "Azioni", align: "right" },
+			cell: () => (
+				<ComingSoon note="Preferiti: in arrivo prossimamente">
+					<Button
+						variant="ghost"
+						size="icon"
+						disabled
+						aria-label="Salva tra i preferiti"
+						className="size-8"
+					>
+						<StarIcon className="size-4" />
+					</Button>
+				</ComingSoon>
+			),
 		}),
 	];
 }
@@ -386,18 +420,26 @@ function AttemptHistoryPage() {
 	};
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={ClockCircleIcon}
-				title="Cronologia tentativi"
-				description="Tutti i quiz che hai completato, con voto e tempo impiegato"
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb
-					current="Storico"
-					trail={[{ label: "Progressi", to: "/user/analytics" }]}
+		<TooltipProvider delayDuration={200}>
+			<div className="container space-y-4 py-6 pb-10">
+				<PageToolbar
+					breadcrumb={
+						<UserBreadcrumb
+							current="Storico"
+							trail={[{ label: "Analytics", to: "/user/analytics" }]}
+						/>
+					}
+					actions={
+						<ComingSoon note="Preferiti: in arrivo prossimamente">
+							<Button variant="outline" size="sm" disabled>
+								<StarIcon className="size-3.5" />
+								Preferiti
+							</Button>
+						</ComingSoon>
+					}
 				/>
+
+				{attempts.length > 0 && <HistorySummary attempts={attempts} />}
 
 				{attempts.length === 0 ? (
 					<EmptyState
@@ -436,6 +478,55 @@ function AttemptHistoryPage() {
 						}
 					/>
 				)}
+			</div>
+		</TooltipProvider>
+	);
+}
+
+/** What the whole history says, above the table that slices it. */
+function HistorySummary({ attempts }: { attempts: AttemptHistoryEntry[] }) {
+	const total = attempts.length;
+	const average = attempts.reduce((sum, a) => sum + a.score, 0) / total;
+	const timeSpent = attempts.reduce((sum, a) => sum + (a.timeSpent ?? 0), 0);
+	const best = attempts.reduce(
+		(top, a) => (a.score > top.score ? a : top),
+		attempts[0]!
+	);
+	const last = attempts.reduce((latest, a) =>
+		a.completedAt > latest.completedAt ? a : latest
+	);
+
+	return (
+		<div className="@container">
+			<div className="grid gap-4 @[340px]:grid-cols-2 @[900px]:grid-cols-4">
+				<MetricCard
+					label="Quiz completati"
+					value={total}
+					icon={CupFirstIcon}
+					tint="text-chart-1"
+					comparison={`ultimo il ${formatDate(last.completedAt)}`}
+				/>
+				<MetricCard
+					label="Media voto"
+					value={formatGradeOutOf33(average)}
+					icon={GraphUpIcon}
+					tint="text-chart-3"
+					comparison={`miglior voto ${formatGradeOutOf33(best.score)}`}
+				/>
+				<MetricCard
+					label="Tempo totale"
+					value={formatTimeSpent(timeSpent)}
+					icon={ClockCircleIcon}
+					tint="text-chart-4"
+					comparison={`${formatTimeSpent(Math.round(timeSpent / total))} medi per quiz`}
+				/>
+				<MetricCard
+					label="Sezioni toccate"
+					value={new Set(attempts.map(a => a.sectionId).filter(Boolean)).size}
+					icon={BookIcon}
+					tint="text-chart-2"
+					comparison={`in ${new Set(attempts.map(a => a.classId).filter(Boolean)).size} insegnamenti`}
+				/>
 			</div>
 		</div>
 	);
