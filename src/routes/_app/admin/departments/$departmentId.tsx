@@ -22,7 +22,6 @@ import {
 import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
 	Dialog,
@@ -31,6 +30,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	useCreateCourse,
 	useDeleteCourse,
@@ -162,11 +162,8 @@ function AdminDepartmentDetailPage() {
 			/>
 
 			<div className="grid gap-6">
-				<Card>
-					<CardHeader className="pb-4">
-						<CardTitle>Modifica dipartimento</CardTitle>
-					</CardHeader>
-					<CardContent>
+				<InsetCard title="Modifica dipartimento">
+					<div className="p-6">
 						<DepartmentForm
 							department={department}
 							onSubmit={formData =>
@@ -174,8 +171,8 @@ function AdminDepartmentDetailPage() {
 							}
 							isPending={updateDepartment.isPending}
 						/>
-					</CardContent>
-				</Card>
+					</div>
+				</InsetCard>
 
 				<section className="space-y-4">
 					<h2 className="text-xl font-semibold">Corsi ({courses.length})</h2>

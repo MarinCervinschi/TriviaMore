@@ -21,7 +21,6 @@ import {
 import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
 	Dialog,
@@ -30,6 +29,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useAuth } from "@/hooks/useAuth";
 import { addClassToCourseFn, createClassFn } from "@/lib/admin/api";
 import { useDeleteClass, useUpdateCourse } from "@/lib/admin/mutations";
@@ -160,11 +160,8 @@ function AdminCourseDetailPage() {
 
 			<div className="grid gap-6">
 				{!isMaintainer && (
-					<Card>
-						<CardHeader className="pb-4">
-							<CardTitle>Modifica corso</CardTitle>
-						</CardHeader>
-						<CardContent>
+					<InsetCard title="Modifica corso">
+						<div className="p-6">
 							<CourseForm
 								course={course}
 								departmentId={department.id}
@@ -173,8 +170,8 @@ function AdminCourseDetailPage() {
 								}
 								isPending={updateCourse.isPending}
 							/>
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				)}
 
 				<section className="space-y-4">
