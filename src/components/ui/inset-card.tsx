@@ -67,8 +67,7 @@ export function InsetCard({
 			{heading && <div className={band}>{heading}</div>}
 			<div
 				className={cn(
-					"bg-card border-border/50 flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border",
-					texture && "relative",
+					"bg-card border-border/50 relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border",
 					panelClassName
 				)}
 			>
