@@ -26,6 +26,8 @@ export {
 	seriesConfig,
 } from "./palette";
 export type { ChartSeries } from "./palette";
+export { ScatterPlot } from "./scatter-plot";
+export type { ScatterDatum, ScatterPlotProps } from "./scatter-plot";
 export { RadialGauge } from "./radial-gauge";
 export type { RadialGaugeProps } from "./radial-gauge";
 export { TimeSeriesChart } from "./time-series-chart";

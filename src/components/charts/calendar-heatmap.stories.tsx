@@ -31,3 +31,16 @@ export const Empty: Story = {
 		<CalendarHeatmap data={[]} view="rolling" emptyMessage="Nessun quiz registrato." />
 	),
 };
+
+/** Senza cornice: la griglia nuda, per una card che ne fornisce già una. */
+export const SenzaCornice: Story = {
+	name: "Senza cornice",
+	render: () => (
+		<CalendarHeatmap
+			data={activity}
+			view="rolling"
+			endDate="2026-08-08"
+			frame={false}
+		/>
+	),
+};
