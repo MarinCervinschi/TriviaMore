@@ -13,7 +13,7 @@ import {
 	getUserProfileFn,
 	isClassSavedFn,
 } from "./api";
-import type { MasteryScope } from "./schemas";
+import type { MasteryInput, MasteryScope } from "./schemas";
 
 export const userQueries = {
 	profile: () =>
@@ -51,10 +51,10 @@ export const userQueries = {
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
-	mastery: (scope?: MasteryScope) =>
+	mastery: (input?: MasteryInput) =>
 		queryOptions({
-			queryKey: ["user", "mastery", scope ?? null],
-			queryFn: () => getMasteryFn(scope ? { data: scope } : undefined),
+			queryKey: ["user", "mastery", input ?? null],
+			queryFn: () => getMasteryFn(input ? { data: input } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 
