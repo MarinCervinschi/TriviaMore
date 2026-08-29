@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconStack } from "@/components/ui/icon-stack";
 import { Input } from "@/components/ui/input";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Select,
 	SelectContent,
@@ -362,27 +363,36 @@ function SearchClassesPage() {
 
 				{/* Results */}
 				{!hasFilters ? (
-					<div className="bg-card rounded-2xl border p-12 text-center">
-						<IconStack className="**:data-[slot=icon-stack-layer]:fill-card mx-auto mb-4">
-							<MagnifierIcon className="text-brand h-8 w-8" />
-						</IconStack>
-						<h3 className="text-lg font-semibold">Inizia a cercare</h3>
-						<p className="text-muted-foreground mt-1 text-sm">
-							Cerca un insegnamento per nome, oppure seleziona un filtro
-						</p>
-					</div>
+					<InsetCard>
+						<div className="p-12 text-center">
+							<IconStack className="**:data-[slot=icon-stack-layer]:fill-card mx-auto mb-4">
+								<MagnifierIcon className="text-brand h-8 w-8" />
+							</IconStack>
+							<h3 className="text-lg font-semibold">Inizia a cercare</h3>
+							<p className="text-muted-foreground mt-1 text-sm">
+								Cerca un insegnamento per nome, oppure seleziona un filtro
+							</p>
+						</div>
+					</InsetCard>
 				) : !response && isFetching ? (
 					<SearchResultsSkeleton rows={5} />
 				) : !results || results.length === 0 ? (
-					<div className="bg-card rounded-2xl border p-12 text-center">
-						<h3 className="text-lg font-semibold">Nessun insegnamento trovato</h3>
-						<p className="text-muted-foreground mt-1 text-sm">
-							Prova a modificare i filtri o il termine di ricerca
-						</p>
-						<Button variant="outline" size="sm" onClick={clearFilters} className="mt-4">
-							Pulisci filtri
-						</Button>
-					</div>
+					<InsetCard>
+						<div className="p-12 text-center">
+							<h3 className="text-lg font-semibold">Nessun insegnamento trovato</h3>
+							<p className="text-muted-foreground mt-1 text-sm">
+								Prova a modificare i filtri o il termine di ricerca
+							</p>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={clearFilters}
+								className="mt-4"
+							>
+								Pulisci filtri
+							</Button>
+						</div>
+					</InsetCard>
 				) : (
 					<div className={isFetching ? "opacity-60 transition-opacity" : undefined}>
 						<div className="mb-3 flex items-center justify-between">
