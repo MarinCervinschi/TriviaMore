@@ -7,7 +7,7 @@ import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { motion } from "framer-motion";
 
 import type { Icon } from "@/components/icons";
-import { Card, CardTexture } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import type { PlatformStats } from "@/lib/browse/types";
@@ -80,21 +80,21 @@ function StatItem({
 	const animatedValue = useAnimatedCounter(value, isVisible, prefersReduced);
 
 	return (
-		<Card className="relative overflow-hidden p-6 text-center sm:p-8">
-			<CardTexture placement="top" alpha={0.12} />
+		<InsetCard className="h-full" texture="top" textureAlpha={0.12}>
+			<div className="relative p-6 text-center sm:p-8">
+				<div className={`mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
+					<Icon className={`h-6 w-6 ${color}`} />
+				</div>
 
-			<div className={`relative mx-auto mb-4 inline-flex rounded-2xl p-3 ${bg}`}>
-				<Icon className={`h-6 w-6 ${color}`} />
+				<p className="text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
+					{formatNumber(animatedValue)}
+				</p>
+
+				<p className="text-muted-foreground mt-2 text-sm font-medium sm:text-base">
+					{label}
+				</p>
 			</div>
-
-			<p className="relative text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
-				{formatNumber(animatedValue)}
-			</p>
-
-			<p className="text-muted-foreground relative mt-2 text-sm font-medium sm:text-base">
-				{label}
-			</p>
-		</Card>
+		</InsetCard>
 	);
 }
 
