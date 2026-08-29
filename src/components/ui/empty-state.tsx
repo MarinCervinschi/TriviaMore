@@ -5,11 +5,10 @@ import { motion } from "framer-motion";
 
 import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { CardTexture } from "@/components/ui/card";
 import { IconStack } from "@/components/ui/icon-stack";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
-import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
 	icon: Icon;
@@ -37,18 +36,13 @@ export function EmptyState({
 	const item = withReducedMotion(staggerItem, prefersReduced);
 
 	return (
-		<motion.div
-			className={cn(
-				"bg-card relative overflow-hidden rounded-3xl border p-12",
-				className
-			)}
-			variants={container}
-			initial="hidden"
-			animate="visible"
-		>
-			<CardTexture placement="top" alpha={0.12} />
-
-			<div className="relative text-center">
+		<InsetCard className={className} texture="top" textureAlpha={0.12}>
+			<motion.div
+				className="relative p-12 text-center"
+				variants={container}
+				initial="hidden"
+				animate="visible"
+			>
 				<motion.div className="mx-auto mb-4 inline-flex" variants={item}>
 					<IconStack className="**:data-[slot=icon-stack-layer]:fill-card">
 						<Icon className="text-brand h-8 w-8" />
@@ -80,8 +74,8 @@ export function EmptyState({
 				)}
 
 				{children && <motion.div variants={item}>{children}</motion.div>}
-			</div>
-		</motion.div>
+			</motion.div>
+		</InsetCard>
 	);
 }
 
