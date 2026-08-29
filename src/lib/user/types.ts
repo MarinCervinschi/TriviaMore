@@ -123,6 +123,8 @@ export type AttemptHistoryEntry = {
 	timeSpent: number | null;
 	completedAt: string;
 	quizMode: QuizMode | null;
+	/** Starred by the student, to find it again from the history filter. */
+	isFavorite: boolean;
 	sectionId: string | null;
 	sectionName: string | null;
 	classId: string | null;

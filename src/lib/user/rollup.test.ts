@@ -11,6 +11,7 @@ function entry(over: Partial<AttemptHistoryEntry>): AttemptHistoryEntry {
 		timeSpent: 60_000,
 		completedAt: "2026-08-01T10:00:00Z",
 		quizMode: "STUDY",
+		isFavorite: false,
 		sectionId: "sec1",
 		sectionName: "Sezione 1",
 		classId: "cls1",

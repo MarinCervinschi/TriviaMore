@@ -21,3 +21,10 @@ export const updateProfileSchema = z.object({
 	name: z.string().min(1, "Il nome è obbligatorio").max(100),
 	image: z.string().url().nullable().optional(),
 });
+
+export const attemptFavoriteSchema = z.object({
+	attemptId: z.string().uuid(),
+	// The wanted value, not a blind flip: an optimistic click that arrives twice
+	// must land on the same state, not undo itself.
+	isFavorite: z.boolean(),
+});

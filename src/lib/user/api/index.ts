@@ -9,6 +9,7 @@ export { getUserClassesFn } from "./get-user-classes";
 export { getUserProfileFn } from "./get-user-profile";
 export { isClassSavedFn } from "./is-class-saved";
 export { removeUserClassFn } from "./remove-user-class";
+export { setAttemptFavoriteFn } from "./set-attempt-favorite";
 export { toggleBookmarkFn } from "./toggle-bookmark";
 export { updateProfileFn } from "./update-profile";
 export { updateRecentClassFn } from "./update-recent-class";
