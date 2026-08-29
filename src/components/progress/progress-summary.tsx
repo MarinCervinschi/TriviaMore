@@ -113,7 +113,6 @@ export function ProgressSummary({
 
 	return (
 		<InsetCard
-			panelClassName="relative"
 			footer={
 				<div className="text-muted-foreground flex flex-col items-start gap-1 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2">
 					<span>{summary.footer}</span>
