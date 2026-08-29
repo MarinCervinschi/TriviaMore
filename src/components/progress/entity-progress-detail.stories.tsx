@@ -86,6 +86,10 @@ const meta = {
 		daily: DAILY,
 		mastery: MASTERY,
 		showSections: true,
+		period: "year",
+		mode: "both",
+		onPeriodChange: () => {},
+		onModeChange: () => {},
 	},
 } satisfies Meta<typeof EntityProgressDetail>;
 

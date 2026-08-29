@@ -3,6 +3,7 @@ import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
+import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 import type {
 	AttemptHistoryEntry,
 	DailyStudyStat,
@@ -25,6 +26,10 @@ export function EntityProgressDetail({
 	daily,
 	mastery,
 	showSections,
+	period,
+	mode,
+	onPeriodChange,
+	onModeChange,
 }: {
 	kindLabel: string;
 	name: string;
@@ -34,6 +39,10 @@ export function EntityProgressDetail({
 	mastery: UserMastery;
 	/** False on a section: there are no sub-sections to break down. */
 	showSections: boolean;
+	period: ExplorerPeriod;
+	mode: ExplorerMode;
+	onPeriodChange: (period: ExplorerPeriod) => void;
+	onModeChange: (mode: ExplorerMode) => void;
 }) {
 	if (attempts.length === 0) {
 		return (
@@ -59,6 +68,10 @@ export function EntityProgressDetail({
 				daily={daily}
 				attempts={attempts}
 				mastery={mastery}
+				period={period}
+				mode={mode}
+				onPeriodChange={onPeriodChange}
+				onModeChange={onModeChange}
 				showRollup={false}
 				showSectionBreakdown={showSections}
 				breadcrumb={

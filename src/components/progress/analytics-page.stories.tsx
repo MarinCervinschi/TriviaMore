@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 
 import { AnalyticsView } from "./analytics-view";
 import { ATTEMPTS, DAILY, MASTERY, TODAY } from "./fixtures";
@@ -11,6 +15,9 @@ import { ATTEMPTS, DAILY, MASTERY, TODAY } from "./fixtures";
 const CONTENT_WIDTH = 1216;
 
 function Framed({ width }: { width: number }) {
+	const [period, setPeriod] = useState<ExplorerPeriod>("year");
+	const [mode, setMode] = useState<ExplorerMode>("both");
+
 	return (
 		<div style={{ width }}>
 			<AnalyticsView
@@ -18,6 +25,10 @@ function Framed({ width }: { width: number }) {
 				attempts={ATTEMPTS}
 				mastery={MASTERY}
 				today={TODAY}
+				period={period}
+				mode={mode}
+				onPeriodChange={setPeriod}
+				onModeChange={setMode}
 			/>
 		</div>
 	);
