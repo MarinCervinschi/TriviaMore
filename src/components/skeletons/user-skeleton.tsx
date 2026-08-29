@@ -79,36 +79,31 @@ export function UserDashboardSkeleton() {
 					<SkeletonTable rows={3} columns={4} />
 				</div>
 
-				{/* Activity: heatmap + recent quizzes */}
+				{/* Activity: the last sittings, inside the inset card */}
 				<div className="space-y-4">
 					<div>
 						<Skeleton className="h-4 w-24" />
 						<Skeleton className="mt-1 h-6 w-40" />
 					</div>
-					<div className="flex flex-col gap-6 lg:flex-row">
-						<div className="flex flex-col gap-3">
-							<Skeleton className="h-8 w-24 rounded-md" />
-							<div className="bg-card rounded-2xl border p-6 shadow-sm">
-								<SkeletonChart height={120} />
+					<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
+							<div className="space-y-1.5">
+								<Skeleton className="h-4 w-32" />
+								<Skeleton className="h-3 w-40" />
 							</div>
+							<Skeleton className="h-8 w-40 rounded-lg" />
 						</div>
-						<div className="flex flex-1 flex-col gap-3">
-							<div className="flex h-8 items-center justify-between">
-								<Skeleton className="h-4 w-20" />
-								<Skeleton className="h-8 w-24 rounded-lg" />
-							</div>
-							<div className="bg-card flex-1 space-y-4 rounded-2xl border p-4 shadow-sm">
-								{Array.from({ length: 3 }).map((_, i) => (
-									<div key={i} className="flex items-center gap-3">
-										<Skeleton className="h-8 w-8 rounded-lg" />
-										<div className="flex-1 space-y-1.5">
-											<Skeleton className="h-4 w-2/3" />
-											<Skeleton className="h-3 w-1/2" />
-										</div>
-										<Skeleton className="h-6 w-12 rounded-full" />
+						<div className="bg-card border-border/50 space-y-4 rounded-xl border p-4">
+							{Array.from({ length: 5 }).map((_, i) => (
+								<div key={i} className="flex items-center gap-3">
+									<Skeleton className="size-9 rounded-full" />
+									<div className="flex-1 space-y-1.5">
+										<Skeleton className="h-4 w-2/3" />
+										<Skeleton className="h-3 w-1/2" />
 									</div>
-								))}
-							</div>
+									<Skeleton className="h-4 w-14" />
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
@@ -306,25 +301,39 @@ export function EntityProgressSkeleton() {
 
 export function AttemptHistorySkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento cronologia…" className="space-y-8 pb-8">
-			<SkeletonHero />
-
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
-
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div className="flex flex-1 flex-wrap items-center gap-2">
-						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
-						<Skeleton className="h-8 w-44 rounded-lg" />
-					</div>
-					<div className="flex items-center gap-2">
-						<Skeleton className="h-9 w-9 rounded-xl" />
-						<Skeleton className="h-9 w-28 rounded-xl" />
-					</div>
-				</div>
-
-				<SkeletonTable rows={10} columns={6} />
+		<SkeletonRoot
+			label="Caricamento cronologia…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<Skeleton className="h-9 w-64 rounded-full" />
+				<Skeleton className="h-8 w-28 rounded-lg" />
 			</div>
+
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<div className="flex flex-1 flex-wrap items-center gap-2">
+					<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
+					<Skeleton className="h-8 w-44 rounded-lg" />
+				</div>
+				<div className="flex items-center gap-2">
+					<Skeleton className="h-9 w-9 rounded-xl" />
+					<Skeleton className="h-9 w-28 rounded-xl" />
+				</div>
+			</div>
+
+			<SkeletonTable rows={10} columns={6} />
 		</SkeletonRoot>
 	);
 }
