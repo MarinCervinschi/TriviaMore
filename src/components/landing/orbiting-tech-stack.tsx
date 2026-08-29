@@ -10,8 +10,9 @@ import { cn } from "@/lib/utils";
 
 import { techStackItems } from "./tech-icons";
 
-const INNER_ITEMS = techStackItems.slice(0, 3);
-const OUTER_ITEMS = techStackItems.slice(3, 6);
+const HALF = Math.ceil(techStackItems.length / 2);
+const INNER_ITEMS = techStackItems.slice(0, HALF);
+const OUTER_ITEMS = techStackItems.slice(HALF);
 
 type OrbitSize = "sm" | "md" | "lg";
 
