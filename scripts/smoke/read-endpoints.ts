@@ -210,7 +210,10 @@ if (userId) {
 	await check("user.getAttemptHistory", () => getAttemptHistory(userId));
 	await check("user.getMastery", () => getMastery(userId));
 	await check("user.getMastery (scoped)", () =>
-		getMastery(userId, { level: "section", id: sample.section_id })
+		getMastery(userId, { scope: { level: "section", id: sample.section_id } })
+	);
+	await check("user.getMastery (windowed)", () =>
+		getMastery(userId, { from: "2020-01-01", mode: "STUDY" })
 	);
 	await check("user.getDailyStudyStats", () => getDailyStudyStats(userId));
 	await check("user.getDailyStudyStats (scoped)", () =>
