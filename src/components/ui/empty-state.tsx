@@ -94,8 +94,16 @@ export function EmptyState({
  */
 export function InlineEmpty({
 	children = "Nessun dato da mostrare.",
+	action,
 }: {
 	children?: ReactNode;
+	/** A way out of the empty state — clearing the filters, most often. */
+	action?: ReactNode;
 }) {
-	return <p className="text-muted-foreground py-10 text-center text-sm">{children}</p>;
+	return (
+		<div className="py-10 text-center">
+			<p className="text-muted-foreground text-sm">{children}</p>
+			{action && <div className="mt-3">{action}</div>}
+		</div>
+	);
 }
