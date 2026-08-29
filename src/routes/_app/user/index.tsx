@@ -19,8 +19,8 @@ import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CardTexture } from "@/components/ui/card";
 import { IconTile } from "@/components/ui/icon-tile";
+import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -146,26 +146,26 @@ function ActionCard({
 	const colors = decorativeTint(color);
 
 	return (
-		<Link
-			to={href}
-			className={cn(
-				"group bg-card relative flex items-center gap-3 overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
-				colors.border
-			)}
-		>
-			<CardTexture placement="tr" alpha={0.2} />
-			<IconTile
-				variant="soft"
-				size="lg"
-				className={cn("relative shrink-0", colors.icon)}
+		<Link to={href} className="group block">
+			<InsetCard
+				className={cn(
+					"transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
+					colors.border
+				)}
+				texture="tr"
+				textureAlpha={0.2}
 			>
-				<Icon />
-			</IconTile>
-			<div className="relative min-w-0 flex-1">
-				<h3 className="font-semibold tracking-tight">{title}</h3>
-				<p className="text-muted-foreground truncate text-sm">{state}</p>
-			</div>
-			<ArrowRightIcon className="text-muted-foreground relative size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
+				<div className="relative flex items-center gap-3 p-4">
+					<IconTile variant="soft" size="lg" className={cn("shrink-0", colors.icon)}>
+						<Icon />
+					</IconTile>
+					<div className="min-w-0 flex-1">
+						<h3 className="font-semibold tracking-tight">{title}</h3>
+						<p className="text-muted-foreground truncate text-sm">{state}</p>
+					</div>
+					<ArrowRightIcon className="text-muted-foreground size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
+				</div>
+			</InsetCard>
 		</Link>
 	);
 }
