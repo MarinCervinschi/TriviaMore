@@ -81,6 +81,7 @@ export type QuizAttemptResult = {
 	score: number;
 	timeSpent: number | null;
 	completedAt: string;
+	isFavorite: boolean;
 	quiz: {
 		id: string;
 		quizMode: QuizMode;

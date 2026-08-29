@@ -186,6 +186,7 @@ export async function findCompletedAttemptHistory(
 			timeSpent: quizAttempts.timeSpent,
 			quizMode: quizAttempts.quizMode,
 			completedAt: quizAttempts.completedAt,
+			isFavorite: quizAttempts.isFavorite,
 		})
 		.from(quizAttempts)
 		.leftJoin(sections, eq(sections.id, quizAttempts.sectionId))
@@ -216,6 +217,7 @@ export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 			score: quizAttempts.score,
 			timeSpent: quizAttempts.timeSpent,
 			completedAt: quizAttempts.completedAt,
+			isFavorite: quizAttempts.isFavorite,
 			quizId: quizzes.id,
 			quizMode: quizzes.quizMode,
 			timeLimit: quizzes.timeLimit,

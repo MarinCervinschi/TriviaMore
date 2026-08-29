@@ -7,9 +7,11 @@ import { toastUndo } from "@/lib/toast";
 import {
 	addUserClassFn,
 	removeUserClassFn,
+	setAttemptFavoriteFn,
 	toggleBookmarkFn,
 	updateProfileFn,
 } from "./api";
+import type { AttemptHistoryEntry } from "./types";
 
 const CLASS_INVALIDATE_KEYS = [
 	["user", "classes"],
@@ -103,6 +105,50 @@ export function useToggleBookmark() {
 		},
 		onError: (error: Error) => {
 			toast.error(error.message);
+		},
+	});
+}
+
+/**
+ * Stars an attempt. The list is patched before the round trip and rolled back if
+ * it fails: a star that waits for the server reads as a broken button, and the
+ * call carries the wanted value, so a double click cannot undo itself.
+ */
+export function useAttemptFavorite() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({
+			attemptId,
+			isFavorite,
+		}: {
+			attemptId: string;
+			isFavorite: boolean;
+		}) => setAttemptFavoriteFn({ data: { attemptId, isFavorite } }),
+		onMutate: async ({ attemptId, isFavorite }) => {
+			const key = ["user", "attempt-history"];
+			await queryClient.cancelQueries({ queryKey: key });
+			const previous = queryClient.getQueriesData<AttemptHistoryEntry[]>({
+				queryKey: key,
+			});
+			for (const [queryKey, rows] of previous) {
+				if (!rows) continue;
+				queryClient.setQueryData(
+					queryKey,
+					rows.map(row => (row.id === attemptId ? { ...row, isFavorite } : row))
+				);
+			}
+			return { previous };
+		},
+		onError: (_error, _input, context) => {
+			for (const [queryKey, rows] of context?.previous ?? []) {
+				queryClient.setQueryData(queryKey, rows);
+			}
+			toast.error("Non è stato possibile salvare il preferito");
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["user", "attempt-history"] });
+			queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
 		},
 	});
 }

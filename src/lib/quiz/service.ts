@@ -336,6 +336,7 @@ export async function getQuizResults(
 		score: attempt.score,
 		timeSpent: attempt.timeSpent,
 		completedAt: attempt.completedAt,
+		isFavorite: attempt.isFavorite,
 		quiz: {
 			id: attempt.quizId,
 			quizMode: attempt.quizMode,
