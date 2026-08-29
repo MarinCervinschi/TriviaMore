@@ -19,6 +19,7 @@ function attempt(
 		score,
 		completedAt: date,
 		quizMode,
+		isFavorite: false,
 		timeSpent,
 		sectionId: `sec-${id}`,
 		classId: `cls-${id}`,

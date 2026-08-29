@@ -14,6 +14,7 @@ const ATTEMPTS: AttemptHistoryEntry[] = [24, 22, 19, 15, 11].map((day, i) => ({
 	score: 22 + i,
 	timeSpent: 600_000,
 	completedAt: new Date(2026, 7, day, 20).toISOString(),
+	isFavorite: false,
 	quizMode: "STUDY",
 	sectionId: "s1",
 	sectionName: "Reti e Protocolli",
