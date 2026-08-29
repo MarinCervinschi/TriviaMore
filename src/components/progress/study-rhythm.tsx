@@ -1,12 +1,16 @@
 import { useMemo } from "react";
 
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
+import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { FireMinimalisticIcon } from "@solar-icons/react/linear/fire-minimalistic";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { TargetIcon } from "@solar-icons/react/linear/target";
 
+import { ChartCard } from "@/components/charts";
 import type { Icon } from "@/components/icons";
-import { Card, CardTexture } from "@/components/ui/card";
+import { CardTexture } from "@/components/ui/card";
+import { IconTile } from "@/components/ui/icon-tile";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Tooltip,
 	TooltipContent,
@@ -58,27 +62,10 @@ function Stat({
 	);
 }
 
-function WhenYouStudy({
-	byHour,
-	peakHour,
-}: {
-	byHour: number[];
-	peakHour: number | null;
-}) {
+function HourBars({ byHour, peakHour }: { byHour: number[]; peakHour: number | null }) {
 	const max = Math.max(1, ...byHour);
 	return (
-		<div className="space-y-2 p-4">
-			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">Quando studi</span>
-				{peakHour !== null && (
-					<span className="text-muted-foreground text-xs">
-						Più attivo verso le{" "}
-						<span className="text-foreground font-medium tabular-nums">
-							{peakHour}:00
-						</span>
-					</span>
-				)}
-			</div>
+		<div className="space-y-2">
 			<TooltipProvider delayDuration={80}>
 				<div className="flex h-12 items-end gap-px">
 					{byHour.map((count, hour) => (
@@ -117,41 +104,52 @@ function RhythmPanel({ rhythm }: { rhythm: Rhythm | null }) {
 	const { currentStreak, longestStreak, activeDays, windowDays, consistency } = shown;
 	const dash = (value: string) => (rhythm ? value : "—");
 	return (
-		<Card className="bg-muted/30 h-full overflow-hidden p-1">
-			<div className="bg-card relative flex h-full flex-col overflow-hidden rounded-xl border">
-				<CardTexture placement="top" alpha={0.2} />
-				<div className="relative grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-					<Stat
-						icon={FireMinimalisticIcon}
-						value={dash(String(currentStreak))}
-						label="Serie attuale"
-						hint={`${plural(currentStreak, "giorno", "giorni")} di fila`}
-						tone={rhythm && currentStreak > 0 ? "text-warning" : undefined}
-					/>
-					<Stat
-						icon={CalendarMinimalisticIcon}
-						value={dash(String(activeDays))}
-						label="Giorni attivi"
-						hint={`ultimi ${windowDays} giorni`}
-					/>
-					<Stat
-						icon={GraphUpIcon}
-						value={dash(String(longestStreak))}
-						label="Serie record"
-						hint={`${plural(longestStreak, "giorno", "giorni")} di fila`}
-					/>
-					<Stat
-						icon={TargetIcon}
-						value={consistency.thin ? "—" : `±${consistency.stdev.toFixed(1)}`}
-						label="Costanza voti"
-						hint={consistency.thin ? "pochi dati" : `su ${consistency.count} quiz`}
-					/>
-				</div>
-				<div className="relative flex flex-1 flex-col justify-end border-t">
-					<WhenYouStudy byHour={shown.byHour} peakHour={shown.peakHour} />
+		<InsetCard className="h-full" panelClassName="relative h-full">
+			<CardTexture placement="top" alpha={0.2} />
+			<div className="relative grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
+				<Stat
+					icon={FireMinimalisticIcon}
+					value={dash(String(currentStreak))}
+					label="Serie attuale"
+					hint={`${plural(currentStreak, "giorno", "giorni")} di fila`}
+					tone={rhythm && currentStreak > 0 ? "text-warning" : undefined}
+				/>
+				<Stat
+					icon={CalendarMinimalisticIcon}
+					value={dash(String(activeDays))}
+					label="Giorni attivi"
+					hint={`ultimi ${windowDays} giorni`}
+				/>
+				<Stat
+					icon={GraphUpIcon}
+					value={dash(String(longestStreak))}
+					label="Serie record"
+					hint={`${plural(longestStreak, "giorno", "giorni")} di fila`}
+				/>
+				<Stat
+					icon={TargetIcon}
+					value={consistency.thin ? "—" : `±${consistency.stdev.toFixed(1)}`}
+					label="Costanza voti"
+					hint={consistency.thin ? "pochi dati" : `su ${consistency.count} quiz`}
+				/>
+			</div>
+			<div className="relative flex flex-1 flex-col justify-end border-t">
+				<div className="space-y-2 p-4">
+					<div className="flex items-center justify-between">
+						<span className="text-muted-foreground text-sm">Quando studi</span>
+						{shown.peakHour !== null && (
+							<span className="text-muted-foreground text-xs">
+								Più attivo verso le{" "}
+								<span className="text-foreground font-medium tabular-nums">
+									{shown.peakHour}:00
+								</span>
+							</span>
+						)}
+					</div>
+					<HourBars byHour={shown.byHour} peakHour={shown.peakHour} />
 				</div>
 			</div>
-		</Card>
+		</InsetCard>
 	);
 }
 
@@ -181,6 +179,90 @@ export function StudyRhythm({
 		<div className="space-y-3">
 			<h2 className="text-lg font-semibold">Ritmo di studio</h2>
 			<RhythmPanel rhythm={rhythm} />
+		</div>
+	);
+}
+
+/**
+ * The hour histogram on its own, for the analytics grid: when you study, plus the
+ * two figures that qualify it — the peak hour and how much your grades scatter.
+ * Both are read in the **viewer's** timezone, which the server does not share, so
+ * they only appear once hydrated.
+ */
+export function WhenYouStudyCard({
+	attempts,
+	today,
+}: {
+	attempts: AttemptHistoryEntry[];
+	today?: Date;
+}) {
+	const hydrated = useIsHydrated();
+	const now = useMemo(() => today ?? new Date(), [today]);
+	const rhythm = useMemo(
+		() => (hydrated ? computeStudyRhythm(attempts, now) : null),
+		[hydrated, attempts, now]
+	);
+	const shown = rhythm ?? PENDING;
+
+	return (
+		<ChartCard
+			title="Quando studi"
+			description="Quiz completati per ora del giorno"
+			texture="top"
+			className="h-full"
+		>
+			<HourBars byHour={shown.byHour} peakHour={shown.peakHour} />
+			<div className="flex flex-col gap-3">
+				<RhythmFigure
+					icon={ClockCircleIcon}
+					label="Ora di punta"
+					value={rhythm && shown.peakHour !== null ? `${shown.peakHour}:00` : "—"}
+					hint={
+						rhythm && shown.peakHour !== null
+							? "l'ora in cui chiudi più quiz"
+							: undefined
+					}
+				/>
+				<RhythmFigure
+					icon={TargetIcon}
+					label="Costanza dei voti"
+					value={
+						shown.consistency.thin ? "—" : `±${shown.consistency.stdev.toFixed(1)}`
+					}
+					hint={
+						shown.consistency.thin
+							? "servono almeno tre quiz"
+							: `sugli ultimi ${shown.consistency.count} quiz`
+					}
+				/>
+			</div>
+		</ChartCard>
+	);
+}
+
+function RhythmFigure({
+	icon: LeadIcon,
+	label,
+	value,
+	hint,
+}: {
+	icon: Icon;
+	label: string;
+	value: string;
+	hint?: string;
+}) {
+	return (
+		<div className="flex items-center gap-3">
+			<IconTile variant="soft" size="sm" className="text-muted-foreground">
+				<LeadIcon />
+			</IconTile>
+			<div className="min-w-0">
+				<p className="text-muted-foreground text-sm">{label}</p>
+				<p className="text-xl font-bold tabular-nums">{value}</p>
+			</div>
+			{hint && (
+				<p className="text-muted-foreground ml-auto text-right text-xs">{hint}</p>
+			)}
 		</div>
 	);
 }

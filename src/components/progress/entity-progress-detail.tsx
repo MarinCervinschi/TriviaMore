@@ -48,7 +48,7 @@ export function EntityProgressDetail({
 
 			<div className="container space-y-6">
 				<Button asChild variant="ghost" size="sm" className="-ml-2">
-					<Link to="/user/progress">
+					<Link to="/user/analytics">
 						<AltArrowLeftIcon className="h-4 w-4" />
 						Progressi
 					</Link>
