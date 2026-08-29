@@ -108,17 +108,53 @@ export function SkeletonHero({
 	);
 }
 
+/** The app's framed surface: a muted frame holding a card panel, with optional bands. */
+export function SkeletonInset({
+	header,
+	footer,
+	children,
+	className,
+}: Common & { header?: boolean; footer?: boolean; children: React.ReactNode }) {
+	return (
+		<div
+			className={cn(
+				"bg-muted/40 border-border/60 rounded-2xl border p-1 shadow-xs",
+				className
+			)}
+		>
+			{header && (
+				<div className="flex items-center justify-between gap-3 px-2 py-2">
+					<Skeleton className="h-9 w-full max-w-64 rounded-xl" />
+					<div className="flex shrink-0 items-center gap-2">
+						<Skeleton className="h-9 w-9 rounded-xl" />
+						<Skeleton className="h-9 w-9 rounded-xl" />
+					</div>
+				</div>
+			)}
+			<div className="bg-card border-border/50 overflow-hidden rounded-xl border">
+				{children}
+			</div>
+			{footer && (
+				<div className="flex items-center justify-between gap-3 px-2 py-2">
+					<Skeleton className="h-4 w-40" />
+					<Skeleton className="h-8 w-48 rounded-xl" />
+				</div>
+			)}
+		</div>
+	);
+}
+
 export function SkeletonStatBlock({ className }: Common) {
 	return (
-		<div className={cn("bg-card rounded-2xl border p-5 shadow-sm", className)}>
-			<div className="flex items-center gap-3">
+		<SkeletonInset className={className}>
+			<div className="flex items-center gap-3 p-5">
 				<Skeleton className="h-10 w-10 rounded-xl" />
 				<div className="flex-1 space-y-2">
 					<Skeleton className="h-7 w-16" />
 					<Skeleton className="h-3 w-24" />
 				</div>
 			</div>
-		</div>
+		</SkeletonInset>
 	);
 }
 
@@ -167,10 +203,17 @@ export function SkeletonChart({
 export function SkeletonTable({
 	rows = 6,
 	columns = 5,
+	toolbar = false,
+	pagination = false,
 	className,
-}: Common & { rows?: number; columns?: number }) {
+}: Common & {
+	rows?: number;
+	columns?: number;
+	toolbar?: boolean;
+	pagination?: boolean;
+}) {
 	return (
-		<div className={cn("bg-card overflow-hidden rounded-2xl border", className)}>
+		<SkeletonInset className={className} header={toolbar} footer={pagination}>
 			{/* Header */}
 			<div
 				className="bg-muted/30 grid gap-4 border-b px-6 py-3"
@@ -196,7 +239,7 @@ export function SkeletonTable({
 					</div>
 				))}
 			</div>
-		</div>
+		</SkeletonInset>
 	);
 }
 
