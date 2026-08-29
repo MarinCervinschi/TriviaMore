@@ -54,7 +54,7 @@ const INITIAL_SORTING = [{ id: "completedAt", desc: true }];
 const INITIAL_COLUMN_VISIBILITY = { corso: false, dipartimento: false };
 const DATE_RESET_KEYS = ["da", "a"];
 
-export const Route = createFileRoute("/_app/user/progress/history")({
+export const Route = createFileRoute("/_app/user/analytics/history")({
 	validateSearch: z.object({
 		...dataTableSearchFields,
 		da: z.string().optional().catch(undefined),
@@ -396,7 +396,7 @@ function AttemptHistoryPage() {
 			<div className="container space-y-6">
 				<UserBreadcrumb
 					current="Storico"
-					trail={[{ label: "Progressi", to: "/user/progress" }]}
+					trail={[{ label: "Progressi", to: "/user/analytics" }]}
 				/>
 
 				{attempts.length === 0 ? (

@@ -213,39 +213,81 @@ function MasteryPanelSkeleton({ withSections = true }: { withSections?: boolean 
 	);
 }
 
-export function ProgressSkeleton() {
+/** One card of the analytics grid: the frame, and a panel of the given height. */
+function SkeletonCard({ height }: { height: number }) {
 	return (
-		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
-			<SkeletonHero />
+		<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+			<div className="bg-card border-border/50 space-y-3 rounded-xl border p-4">
+				<Skeleton className="h-4 w-32" />
+				<Skeleton className="w-full" style={{ height }} />
+			</div>
+		</div>
+	);
+}
 
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
+/**
+ * The analytics page: no hero — a toolbar, the four headline cards, then the grid
+ * of pairs. It has to match `AnalyticsView`, or the page jumps when it arrives.
+ */
+export function AnalyticsSkeleton() {
+	return (
+		<SkeletonRoot
+			label="Caricamento analytics…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<Skeleton className="h-9 w-56 rounded-full" />
+				<div className="flex items-center gap-2">
+					<Skeleton className="h-8 w-36 rounded-lg" />
+					<Skeleton className="h-8 w-32 rounded-lg" />
+					<Skeleton className="h-8 w-24 rounded-lg" />
+					<Skeleton className="h-8 w-24 rounded-lg" />
+				</div>
+			</div>
 
-				<MetricExplorerSkeleton />
-				<StudyRhythmSkeleton />
-
-				{/* Rollup */}
-				<div className="space-y-2">
-					<Skeleton className="h-6 w-28" />
-					<div className="bg-muted/30 rounded-2xl border p-1">
-						<div className="bg-card space-y-3 rounded-xl border p-3">
-							{Array.from({ length: 5 }).map((_, i) => (
-								<div key={i} className="flex items-center justify-between gap-3">
-									<Skeleton className="h-4 w-1/3" />
-									<Skeleton className="h-4 w-40" />
-								</div>
-							))}
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
 						</div>
 					</div>
-				</div>
+				))}
+			</div>
 
-				<MasteryPanelSkeleton />
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+				<div className="lg:col-span-8">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={280} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={280} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={180} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={160} />
+				</div>
 			</div>
 		</SkeletonRoot>
 	);
 }
 
-/** No breadcrumb and no rollup, unlike `ProgressSkeleton` — the detail pages have neither. */
+/** No breadcrumb and no rollup, unlike `AnalyticsSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">

@@ -6,7 +6,7 @@ import { EntityProgressSkeleton } from "@/components/skeletons";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 
-export const Route = createFileRoute("/_app/user/progress/class/$id")({
+export const Route = createFileRoute("/_app/user/analytics/class/$id")({
 	loader: ({ context, params }) => {
 		const scope = { level: "class", id: params.id } as const;
 		return Promise.all([
