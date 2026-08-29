@@ -244,10 +244,12 @@ export function SkeletonSearchInput({ className }: Common) {
 
 export function SkeletonBreadcrumb() {
 	return (
-		<div className="flex items-center gap-2">
-			<Skeleton className="h-4 w-20" />
-			<Skeleton className="h-3 w-3 rounded-full" />
+		<div className="border-border bg-background inline-flex items-center gap-2 rounded-xl border px-3 py-1.5">
+			<Skeleton className="size-4" />
+			<Skeleton className="size-3 rounded-full" />
 			<Skeleton className="h-4 w-24" />
+			<Skeleton className="size-3 rounded-full" />
+			<Skeleton className="h-4 w-20" />
 		</div>
 	);
 }

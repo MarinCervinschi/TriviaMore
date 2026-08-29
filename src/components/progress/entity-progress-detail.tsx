@@ -77,7 +77,7 @@ export function EntityProgressDetail({
 				breadcrumb={
 					<UserBreadcrumb
 						current={name}
-						trail={[{ label: "Analytics", to: "/user/analytics" }]}
+						trail={[{ label: "Analytics", to: "/user/analytics", icon: GraphUpIcon }]}
 					/>
 				}
 				title={name}

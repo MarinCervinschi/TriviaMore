@@ -1,4 +1,5 @@
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
@@ -44,7 +45,7 @@ function AnalyticsPage() {
 		<div className="container space-y-6 py-6 pb-10">
 			{attempts.length === 0 ? (
 				<>
-					<UserBreadcrumb current="Analytics" />
+					<UserBreadcrumb current="Analytics" currentIcon={GraphUpIcon} />
 					<EmptyState
 						icon={CupFirstIcon}
 						title="Ancora nessun dato"
