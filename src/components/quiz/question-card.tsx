@@ -1,6 +1,6 @@
 import { ReportButton } from "@/components/requests/report-button";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { InsetCard } from "@/components/ui/inset-card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { parseOptions } from "@/lib/quiz/options";
 import type { QuizQuestion } from "@/lib/quiz/types";
@@ -52,14 +52,14 @@ export function QuestionCard({
 			/>
 
 			{/* Question content */}
-			<Card className="mb-8 p-6">
-				<div className="text-lg leading-relaxed">
+			<InsetCard className="mb-8">
+				<div className="p-6 text-lg leading-relaxed">
 					<MarkdownRenderer
 						content={question.content}
 						className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
 					/>
 				</div>
-			</Card>
+			</InsetCard>
 
 			{/* Options */}
 			{question.questionType === "TRUE_FALSE" ? (
