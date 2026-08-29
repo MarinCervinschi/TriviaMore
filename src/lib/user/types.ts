@@ -4,13 +4,10 @@ import type { QuizMode } from "@/lib/quiz/types";
 type Profile = typeof profiles.$inferSelect;
 type QuestionRow = typeof questions.$inferSelect;
 
-export type ActivityDay = { date: string; value: number };
-
 export type UserProfile = Profile & {
 	stats: UserStats;
 	recentClasses: RecentClass[];
-	recentQuizAttempts: RecentQuizAttempt[];
-	activity: { days: ActivityDay[]; endDate: string };
+	recentQuizAttempts: AttemptHistoryEntry[];
 };
 
 export type UserStats = {
@@ -75,15 +72,6 @@ export type UserBookmark = SectionLocation &
 		questionId: string;
 		createdAt: string;
 	};
-
-export type RecentQuizAttempt = SectionLocation & {
-	id: string;
-	score: number;
-	completedAt: string;
-	classCode: string | null;
-	courseCode: string | null;
-	departmentCode: string | null;
-};
 
 // One UTC day of study for one quiz mode; the client windows these.
 export type DailyStudyStat = {

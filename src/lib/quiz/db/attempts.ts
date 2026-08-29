@@ -150,37 +150,16 @@ export async function findAnswers(db: DbOrTx, attemptId: string) {
 
 // The user dashboard's "recent activity". Lives here because it reads quiz
 // tables, even though the user domain is what renders it.
-export async function findRecentCompletedAttempts(
-	db: DbOrTx,
-	userId: string,
-	limit: number
-) {
-	const { primaryCourse, columns } = sectionLocation(db);
-
-	return db
-		.select({
-			...columns,
-			classCode: primaryCourse.classCode,
-			courseCode: primaryCourse.courseCode,
-			departmentCode: primaryCourse.departmentCode,
-			id: quizAttempts.id,
-			score: quizAttempts.score,
-			completedAt: quizAttempts.completedAt,
-		})
-		.from(quizAttempts)
-		.innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
-		.innerJoin(sections, eq(sections.id, quizzes.sectionId))
-		.innerJoin(classes, eq(classes.id, sections.classId))
-		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
-		.orderBy(desc(quizAttempts.completedAt))
-		.limit(limit);
-}
-
+/**
+ * Every completed attempt, newest first, optionally scoped and capped. The joins
+ * are left joins on purpose: an attempt whose section was deleted still happened,
+ * and the row has to survive it — the callers render it as "sezione eliminata".
+ */
 export async function findCompletedAttemptHistory(
 	db: DbOrTx,
 	userId: string,
-	scope?: { level: "section" | "class" | "course"; id: string }
+	scope?: { level: "section" | "class" | "course"; id: string },
+	limit?: number
 ) {
 	const { primaryCourse, columns } = sectionLocation(db);
 
@@ -215,7 +194,8 @@ export async function findCompletedAttemptHistory(
 		.where(
 			and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt), scoped)
 		)
-		.orderBy(desc(quizAttempts.completedAt));
+		.orderBy(desc(quizAttempts.completedAt))
+		.limit(limit ?? Number.MAX_SAFE_INTEGER);
 }
 
 export async function countCompletedAttempts(db: DbOrTx, userId: string) {
@@ -226,27 +206,6 @@ export async function countCompletedAttempts(db: DbOrTx, userId: string) {
 	return row?.value ?? 0;
 }
 
-export async function findDailyAttemptCounts(db: DbOrTx, userId: string) {
-	const result = await db.execute<{ date: string; value: number }>(sql`
-		select to_char(completed_at at time zone 'utc', 'YYYY-MM-DD') as date,
-		       count(*)::int as value
-		  from (
-		    select completed_at
-		      from quiz.quiz_attempts
-		     where user_id = ${userId} and completed_at is not null
-		    union all
-		    select completed_at
-		      from quiz.flashcard_attempts
-		     where user_id = ${userId} and completed_at is not null
-		  ) as days
-		 group by date
-		 order by date
-	`);
-	return result.rows;
-}
-
-// Replaces the quiz.quiz_attempts_detail view, and carries the codes the
-// results page needs to rebuild the section URL.
 export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 	const primaryCourse = primaryCourseByClass(db);
 
