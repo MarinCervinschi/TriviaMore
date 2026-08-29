@@ -9,6 +9,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { NotFoundPage } from "@/components/error/not-found-page";
+import { FavoriteStar } from "@/components/progress/favorite-star";
 import { BookmarkButton } from "@/components/quiz/bookmark-button";
 import { ReportButton } from "@/components/requests/report-button";
 import { QuizResultsSkeleton } from "@/components/skeletons";
@@ -85,6 +86,14 @@ function ResultsPage() {
 			<div className="mx-auto max-w-4xl space-y-8">
 				{/* Score Hero */}
 				<div className="bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12">
+					{/* Top right, out of the centred column: starring is an aside to the score. */}
+					<div className="absolute top-4 right-4">
+						<FavoriteStar
+							attemptId={result.id}
+							isFavorite={result.isFavorite}
+							className="size-10"
+						/>
+					</div>
 					<p className="text-muted-foreground relative mb-1 text-sm">
 						{result.quiz.section.name} &bull; {result.quiz.section.courseName}
 					</p>

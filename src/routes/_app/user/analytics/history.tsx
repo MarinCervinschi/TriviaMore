@@ -24,8 +24,8 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
+import { FavoriteStar } from "@/components/progress/favorite-star";
 import { ScoreRing } from "@/components/progress/score-ring";
-import { ComingSoon } from "@/components/shared/coming-soon";
 import { MetricCard } from "@/components/shared/metric-card";
 import { PageToolbar } from "@/components/shared/page-toolbar";
 import { AttemptHistorySkeleton } from "@/components/skeletons";
@@ -51,19 +51,29 @@ const MODE_LABELS: Record<string, string> = {
 	EXAM_SIMULATION: "Esame",
 };
 
+const FAVORITE_OPTIONS: DataTableFacetOption[] = [
+	{ value: "si", label: "Solo preferiti" },
+	{ value: "no", label: "Non preferiti" },
+];
+
 const MODE_OPTIONS: DataTableFacetOption[] = [
 	{ value: "STUDY", label: "Studio" },
 	{ value: "EXAM_SIMULATION", label: "Esame" },
 ];
 
 const INITIAL_SORTING = [{ id: "completedAt", desc: true }];
-const INITIAL_COLUMN_VISIBILITY = { corso: false, dipartimento: false };
+const INITIAL_COLUMN_VISIBILITY = {
+	corso: false,
+	dipartimento: false,
+	preferiti: false,
+};
 const DATE_RESET_KEYS = ["da", "a"];
 
 export const Route = createFileRoute("/_app/user/analytics/history")({
 	validateSearch: z.object({
 		...dataTableSearchFields,
 		da: z.string().optional().catch(undefined),
+		preferiti: dataTableFilterField,
 		a: z.string().optional().catch(undefined),
 		corso: dataTableFilterField,
 		dipartimento: dataTableFilterField,
@@ -209,23 +219,30 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			cell: ({ row }) =>
 				row.original.timeSpent != null ? formatTimeSpent(row.original.timeSpent) : "—",
 		}),
+		// Filter-only, like course and department: the star in the row is the control,
+		// this column exists so the toolbar and the URL can filter on it.
+		column.accessor(row => (row.isFavorite ? "si" : "no"), {
+			id: "preferiti",
+			header: "Preferiti",
+			enableSorting: false,
+			filterFn: "facet",
+			meta: {
+				label: "Preferiti",
+				facet: { options: FAVORITE_OPTIONS, icon: StarIcon },
+				align: "center",
+			},
+			cell: ({ row }) => (row.original.isFavorite ? "Sì" : "—"),
+		}),
 		column.display({
 			id: "azioni",
 			header: "",
 			enableHiding: false,
 			meta: { label: "Azioni", align: "right" },
-			cell: () => (
-				<ComingSoon note="Preferiti: in arrivo prossimamente">
-					<Button
-						variant="ghost"
-						size="icon"
-						disabled
-						aria-label="Salva tra i preferiti"
-						className="size-8"
-					>
-						<StarIcon className="size-4" />
-					</Button>
-				</ComingSoon>
+			cell: ({ row }) => (
+				<FavoriteStar
+					attemptId={row.original.id}
+					isFavorite={row.original.isFavorite}
+				/>
 			),
 		}),
 	];
@@ -383,6 +400,7 @@ function AttemptHistoryPage() {
 
 	const isFiltered =
 		!!search.q ||
+		!!search.preferiti ||
 		!!search.da ||
 		!!search.a ||
 		!!search.corso ||
@@ -430,12 +448,22 @@ function AttemptHistoryPage() {
 						/>
 					}
 					actions={
-						<ComingSoon note="Preferiti: in arrivo prossimamente">
-							<Button variant="outline" size="sm" disabled>
-								<StarIcon className="size-3.5" />
-								Preferiti
-							</Button>
-						</ComingSoon>
+						<Button
+							variant={search.preferiti ? "default" : "outline"}
+							size="sm"
+							onClick={() =>
+								navigate({
+									search: prev => ({
+										...prev,
+										preferiti: prev.preferiti ? undefined : "si",
+										page: undefined,
+									}),
+								})
+							}
+						>
+							<StarIcon className="size-3.5" />
+							Solo preferiti
+						</Button>
 					}
 				/>
 

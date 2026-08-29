@@ -25,6 +25,7 @@ function mk(
 		timeSpent: 600_000,
 		completedAt: new Date(2026, 7, day, hour).toISOString(),
 		quizMode: "STUDY",
+		isFavorite: false,
 		sectionId: section,
 		sectionName: SECTION_NAMES[section] ?? section,
 		classId: null,

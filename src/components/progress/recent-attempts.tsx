@@ -1,10 +1,8 @@
 import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
-import { StarIcon } from "@solar-icons/react/linear/star";
 import { Link } from "@tanstack/react-router";
 
 import { ChartCard } from "@/components/charts";
-import { ComingSoon } from "@/components/shared/coming-soon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
@@ -14,6 +12,7 @@ import type { QuizMode } from "@/lib/quiz/types";
 import { formatDate } from "@/lib/utils/format";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
+import { FavoriteStar } from "./favorite-star";
 import { ScoreRing } from "./score-ring";
 
 /**
@@ -25,6 +24,7 @@ export type RecentAttemptRow = {
 	score: number;
 	completedAt: string;
 	sectionName: string | null;
+	isFavorite?: boolean;
 	className?: string | null;
 	courseCode?: string | null;
 	departmentCode?: string | null;
@@ -112,17 +112,10 @@ export function RecentAttempts({
 										{formatDate(attempt.completedAt)}
 									</span>
 
-									<ComingSoon note="Preferiti: in arrivo prossimamente">
-										<Button
-											variant="ghost"
-											size="icon"
-											disabled
-											aria-label="Salva tra i preferiti"
-											className="size-8"
-										>
-											<StarIcon className="size-4" />
-										</Button>
-									</ComingSoon>
+									<FavoriteStar
+										attemptId={attempt.id}
+										isFavorite={attempt.isFavorite ?? false}
+									/>
 								</li>
 							);
 						})}

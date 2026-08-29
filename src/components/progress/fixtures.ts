@@ -178,6 +178,7 @@ for (let back = 0; back < 250; back++) {
 			timeSpent: Math.round((8 + rnd() * 14) * 60_000),
 			completedAt: `${day.toISOString().slice(0, 10)}T${String(hour).padStart(2, "0")}:20:00Z`,
 			quizMode: rnd() > 0.72 ? "EXAM_SIMULATION" : "STUDY",
+			isFavorite: rnd() > 0.85,
 			departmentId: "d1",
 			departmentName: "Ingegneria «Enzo Ferrari»",
 			departmentCode: "DIEF",
