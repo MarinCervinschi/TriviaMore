@@ -8,7 +8,6 @@ import { TargetIcon } from "@solar-icons/react/linear/target";
 
 import { ChartCard } from "@/components/charts";
 import type { Icon } from "@/components/icons";
-import { CardTexture } from "@/components/ui/card";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 import {
@@ -104,8 +103,12 @@ function RhythmPanel({ rhythm }: { rhythm: Rhythm | null }) {
 	const { currentStreak, longestStreak, activeDays, windowDays, consistency } = shown;
 	const dash = (value: string) => (rhythm ? value : "—");
 	return (
-		<InsetCard className="h-full" panelClassName="relative h-full">
-			<CardTexture placement="top" alpha={0.2} />
+		<InsetCard
+			className="h-full"
+			panelClassName="h-full"
+			texture="top"
+			textureAlpha={0.2}
+		>
 			<div className="relative grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
 				<Stat
 					icon={FireMinimalisticIcon}

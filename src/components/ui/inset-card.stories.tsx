@@ -39,6 +39,19 @@ function Band({ icon: LeadIcon, label }: { icon: Icon; label: string }) {
 
 export const Default: Story = { name: "Solo cornice" };
 
+export const ConTitolo: Story = {
+	name: "Con titolo",
+	args: {
+		title: "Distribuzione dei voti",
+		description: "Sulle bande del voto",
+		actions: (
+			<Button variant="outline" size="sm">
+				Esporta
+			</Button>
+		),
+	},
+};
+
 export const ConHeader: Story = {
 	name: "Con header",
 	args: { header: <Band icon={BoxIcon} label="Total Orders" /> },
