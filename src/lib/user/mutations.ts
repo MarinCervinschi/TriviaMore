@@ -140,6 +140,17 @@ export function useAttemptFavorite() {
 			}
 			return { previous };
 		},
+		onSuccess: (_result, { attemptId, isFavorite }) => {
+			// Reversible and frequent, so it gets an undo rather than a confirmation —
+			// and the reversal is the same call with the value flipped back.
+			toastUndo(isFavorite ? "Aggiunto ai preferiti" : "Rimosso dai preferiti", () => {
+				setAttemptFavoriteFn({ data: { attemptId, isFavorite: !isFavorite } })
+					.then(() =>
+						queryClient.invalidateQueries({ queryKey: ["user", "attempt-history"] })
+					)
+					.catch((error: Error) => toast.error(error.message));
+			});
+		},
 		onError: (_error, _input, context) => {
 			for (const [queryKey, rows] of context?.previous ?? []) {
 				queryClient.setQueryData(queryKey, rows);
