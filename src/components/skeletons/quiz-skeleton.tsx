@@ -1,7 +1,7 @@
 import { PageBand } from "@/components/layout/page-band";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { SkeletonRoot } from "./primitives";
+import { SkeletonInset, SkeletonRoot } from "./primitives";
 
 export function QuizPlaySkeleton() {
 	return (
@@ -46,11 +46,13 @@ export function QuizPlaySkeleton() {
 								<Skeleton className="h-6 w-20 rounded-full" />
 								<Skeleton className="h-6 w-24 rounded-full" />
 							</div>
-							<div className="space-y-3">
-								<Skeleton className="h-6 w-full" />
-								<Skeleton className="h-6 w-5/6" />
-								<Skeleton className="h-6 w-3/4" />
-							</div>
+							<SkeletonInset>
+								<div className="space-y-3 p-6">
+									<Skeleton className="h-6 w-full" />
+									<Skeleton className="h-6 w-5/6" />
+									<Skeleton className="h-6 w-3/4" />
+								</div>
+							</SkeletonInset>
 							<div className="space-y-3 pt-4">
 								{Array.from({ length: 4 }).map((_, i) => (
 									<Skeleton key={i} className="h-14 w-full rounded-2xl" />
