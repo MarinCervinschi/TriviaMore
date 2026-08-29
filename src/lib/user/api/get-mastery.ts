@@ -10,6 +10,7 @@ const EMPTY: UserMastery = {
 	totalAnswers: 0,
 	avgSecondsPerQuestion: null,
 	byDifficulty: [],
+	sections: [],
 	weakSections: [],
 	strongSections: [],
 };

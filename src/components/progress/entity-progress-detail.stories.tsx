@@ -46,6 +46,7 @@ const MASTERY: UserMastery = {
 		{ key: "MEDIUM", total: 45, correct: 31 },
 		{ key: "HARD", total: 15, correct: 7 },
 	],
+	sections: [],
 	weakSections: [
 		{
 			sectionId: "s2",

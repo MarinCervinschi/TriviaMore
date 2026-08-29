@@ -160,6 +160,7 @@ export async function getMastery(
 		totalAnswers,
 		avgSecondsPerQuestion,
 		byDifficulty,
+		sections: [...ranked].sort(byName).map(row => row.section),
 		weakSections,
 		strongSections,
 	};
