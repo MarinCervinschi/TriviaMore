@@ -3,9 +3,11 @@ import { MedalStarIcon } from "@solar-icons/react/linear/medal-star";
 import { TargetIcon } from "@solar-icons/react/linear/target";
 import { Link } from "@tanstack/react-router";
 
+import { ChartCard } from "@/components/charts";
 import type { Icon } from "@/components/icons";
-import { Card, CardContent, CardTexture } from "@/components/ui/card";
+import { CardContent, CardTexture } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Tooltip,
 	TooltipContent,
@@ -44,17 +46,13 @@ function Shell({
 	children: React.ReactNode;
 }) {
 	return (
-		<Card className={cn("bg-muted/30 relative overflow-hidden p-1", fill && "flex-1")}>
-			<div
-				className={cn(
-					"bg-card relative overflow-hidden rounded-xl border",
-					fill && "h-full"
-				)}
-			>
-				{texture && <CardTexture placement="top" alpha={0.2} />}
-				{children}
-			</div>
-		</Card>
+		<InsetCard
+			className={cn(fill && "flex-1")}
+			panelClassName={cn("relative", fill && "h-full")}
+		>
+			{texture && <CardTexture placement="top" alpha={0.2} />}
+			{children}
+		</InsetCard>
 	);
 }
 
@@ -129,9 +127,70 @@ function TickGauge({
 	);
 }
 
-function DifficultyBar({ row }: { row: MasteryBreakdown }) {
+const DIFFICULTY_STEPS: Record<string, number> = { EASY: 1, MEDIUM: 2, HARD: 3 };
+
+/**
+ * Three rising bars, the first `n` filled: the difficulty ladder as a shape,
+ * because in this row colour already means accuracy and cannot mean two things.
+ */
+function DifficultyMeter({ level }: { level: string }) {
+	const filled = DIFFICULTY_STEPS[level] ?? 0;
+	return (
+		<span className="flex items-end gap-[2px]" aria-hidden>
+			{[3, 5, 7].map((height, index) => (
+				<span
+					key={height}
+					className={cn(
+						"bg-muted-foreground w-[3px] rounded-[1px]",
+						index < filled ? "opacity-100" : "opacity-25"
+					)}
+					style={{ height }}
+				/>
+			))}
+		</span>
+	);
+}
+
+function DifficultyBar({
+	row,
+	layout = "inline",
+}: {
+	row: MasteryBreakdown;
+	/** `stacked` puts the bar on its own line — for a narrow column. */
+	layout?: "inline" | "stacked";
+}) {
 	const pct = pctOf(row.correct, row.total);
 	const tone = accuracyTone(pct);
+
+	if (layout === "stacked") {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<div className="space-y-2">
+						<div className="flex items-center justify-between gap-3">
+							<span className="flex items-center gap-2 text-sm font-medium">
+								<DifficultyMeter level={row.key} />
+								{getDifficultyLabel(row.key)}
+							</span>
+							<span className={cn("text-sm font-semibold tabular-nums", tone.ink)}>
+								{pct}%
+							</span>
+						</div>
+						<div className="bg-muted h-2 overflow-hidden rounded-full">
+							<div
+								className="h-full rounded-full"
+								style={{ width: `${pct}%`, backgroundColor: tone.fill }}
+							/>
+						</div>
+					</div>
+				</TooltipTrigger>
+				<TooltipContent className="tabular-nums">
+					{row.correct} risposte corrette su {row.total}
+				</TooltipContent>
+			</Tooltip>
+		);
+	}
+
 	return (
 		<div className="flex items-center gap-3">
 			<span className="w-20 shrink-0 text-sm">{getDifficultyLabel(row.key)}</span>
@@ -327,6 +386,73 @@ export function MasteryPanel({
 					</div>
 				)}
 			</div>
+		</TooltipProvider>
+	);
+}
+
+/**
+ * The same reading as `MasteryPanel`, folded into one narrow column: the gauge on
+ * top, the difficulty bars under it, and the areas to go back to at the bottom.
+ * For a dashboard grid, where this sits beside a wide chart and has to reach its
+ * height without spreading sideways.
+ */
+export function MasteryCard({
+	mastery,
+	action,
+}: {
+	mastery: UserMastery;
+	/** The card's closing control — usually a link to the full panel. */
+	action?: React.ReactNode;
+}) {
+	const total = mastery.byDifficulty.reduce((sum, row) => sum + row.total, 0);
+	const correct = mastery.byDifficulty.reduce((sum, row) => sum + row.correct, 0);
+	const pct = pctOf(correct, total);
+
+	return (
+		<TooltipProvider delayDuration={100}>
+			<ChartCard
+				title={
+					<span className="flex items-center gap-1.5">
+						Dove sbagli
+						<InfoDot>
+							Quanto padroneggi gli argomenti, dalle risposte corrette per singola
+							domanda — non dal voto dei quiz.
+						</InfoDot>
+					</span>
+				}
+				// Short enough not to wrap at the narrow width: the band then matches the
+				// two-line header of the wide card beside it, and the panels line up.
+				description="Accuratezza per difficoltà"
+				texture="top"
+				className="h-full"
+				actions={
+					mastery.avgSecondsPerQuestion != null && (
+						<span className="text-muted-foreground text-xs tabular-nums">
+							~{perQuestion(mastery.avgSecondsPerQuestion)} / domanda
+						</span>
+					)
+				}
+				footer={action}
+			>
+				{mastery.totalAnswers === 0 ? (
+					<InlineEmpty>Nessuna risposta registrata in questo periodo.</InlineEmpty>
+				) : (
+					<div className="flex flex-col gap-6">
+						<div className="flex flex-col items-center">
+							<TickGauge pct={pct} color={accuracyTone(pct).fill} size={200} />
+							<p className="text-muted-foreground text-xs tabular-nums">
+								{correct}/{total}
+							</p>
+						</div>
+
+						<div className="space-y-4">
+							{mastery.byDifficulty.map(row => (
+								<DifficultyBar key={row.key} row={row} layout="stacked" />
+							))}
+						</div>
+					</div>
+				)}
+			</ChartCard>
 		</TooltipProvider>
 	);
 }

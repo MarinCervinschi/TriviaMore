@@ -76,7 +76,7 @@ export function ActivitySection({
 					<div className="flex h-9 items-center justify-between">
 						<p className="text-muted-foreground text-sm font-medium">Ultimi quiz</p>
 						<Button asChild variant="ghost" size="sm" className="group">
-							<Link to="/user/progress/history" className="flex items-center gap-1">
+							<Link to="/user/analytics/history" className="flex items-center gap-1">
 								Vedi tutti
 								<ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
 							</Link>

@@ -1,6 +1,5 @@
-import { type ReactNode, useId, useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 
-import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
 import { BookIcon } from "@solar-icons/react/linear/book";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
@@ -8,51 +7,61 @@ import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LayersIcon } from "@solar-icons/react/linear/layers";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+	Area,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	ComposedChart,
+	Line,
+	XAxis,
+	YAxis,
+} from "recharts";
 
 import { CHART_SLOTS } from "@/components/charts";
 import type { Icon } from "@/components/icons";
-import { Card } from "@/components/ui/card";
+import { DeltaBadge } from "@/components/shared/delta-badge";
+import { SelectChip } from "@/components/shared/select-chip";
+import { CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
-	ChartLegend,
-	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuLabel,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import {
+	type DayRange,
 	type ExplorerMode,
 	type ExplorerPeriod,
+	METRIC_FAMILY,
 	type MetricKey,
 	buildMetricWindow,
+	buildQualityRows,
+	formatDayLabel,
+	metricPoint,
 	metricValue,
 	pickTotals,
+	qualityDomain,
 } from "@/lib/user/metric-explorer";
 import type { DailyStudyStat } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 import { formatGradeOutOf33 } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
-type ChartType = "dots" | "line";
 type Series = { key: string; label: string; color: string };
 
-const METRICS: { key: MetricKey; label: string; color: string; icon: Icon }[] = [
+/** What a metric is called, how it is coloured and how it is formatted: one table,
+ * so the tabs, the headline cards and any future export agree. */
+export const METRICS: { key: MetricKey; label: string; color: string; icon: Icon }[] = [
 	{ key: "quizzes", label: "Quiz", color: "var(--color-chart-1)", icon: CupFirstIcon },
 	{
 		key: "grade",
-		label: "Voto medio",
+		label: "Media voto",
 		color: "var(--color-chart-3)",
 		icon: GraphUpIcon,
 	},
@@ -70,107 +79,131 @@ const COMPARE: Series[] = [
 	{ key: "esame", label: "Esame", color: CHART_SLOTS[2] },
 ];
 
-const FORMAT: Record<MetricKey, (n: number) => string> = {
+export const FORMAT: Record<MetricKey, (n: number) => string> = {
 	quizzes: n => String(Math.round(n)),
 	grade: n => formatGradeOutOf33(n),
 	accuracy: n => `${Math.round(n)}%`,
 	time: n => formatTimeSpent(n),
 };
 
-const DOMAIN: Partial<Record<MetricKey, [number, number]>> = {
-	grade: [0, 33],
-	accuracy: [0, 100],
-};
-
 function pctChange(current: number, previous: number): number {
 	return previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100);
 }
 
-type ChipOption<T extends string> = {
-	value: T;
-	label: string;
-	icon?: Icon;
-	glyph?: ReactNode;
-};
+/** Mini-glyphs that show the plot style itself, so the toggle needs no words. */
+type Formatter = (n: number) => string;
 
-// A single-select chip, reading like the data-table filter chips.
-function SelectChip<T extends string>({
+/** One tooltip row: the swatch, the series label, the formatted value. */
+function TooltipRow({
+	color,
 	label,
 	value,
-	onChange,
-	options,
-	lead: Lead,
 }: {
+	color?: string;
 	label: string;
-	value: T;
-	onChange: (value: T) => void;
-	options: ChipOption<T>[];
-	lead?: Icon;
+	value: string;
 }) {
-	const current = options.find(option => option.value === value);
-	const CurrentIcon = current?.icon;
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<button
-					type="button"
-					aria-label={label}
-					className="border-border bg-background hover:bg-muted/50 inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs transition-colors"
-				>
-					{Lead ? (
-						<Lead className="text-muted-foreground size-3.5" />
-					) : CurrentIcon ? (
-						<CurrentIcon className="text-muted-foreground size-3.5" />
-					) : (
-						current?.glyph
-					)}
-					<span className="font-medium">{current?.label ?? label}</span>
-					<AltArrowDownIcon className="text-muted-foreground size-3.5" />
-				</button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="min-w-40">
-				<DropdownMenuLabel>{label}</DropdownMenuLabel>
-				<DropdownMenuRadioGroup
-					value={value}
-					onValueChange={next => onChange(next as T)}
-				>
-					{options.map(option => (
-						<DropdownMenuRadioItem key={option.value} value={option.value}>
-							{option.label}
-						</DropdownMenuRadioItem>
-					))}
-				</DropdownMenuRadioGroup>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}
-
-/** Mini-glyphs that show the plot style itself, so the toggle needs no words. */
-function GlyphDots() {
-	return (
-		<svg viewBox="0 0 24 12" width="24" height="12" fill="none" aria-hidden>
-			<path
-				d="M2 9 L9 4 L15 7 L22 2"
-				stroke="currentColor"
-				strokeWidth="1.5"
-				strokeDasharray="3 3"
-				strokeLinecap="round"
+		<>
+			<span
+				className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+				style={{ backgroundColor: color }}
 			/>
-			{[
-				[2, 9],
-				[9, 4],
-				[15, 7],
-				[22, 2],
-			].map(([x, y]) => (
-				<circle key={`${x}`} cx={x} cy={y} r="1.7" fill="currentColor" />
-			))}
-		</svg>
+			<div className="flex flex-1 items-center justify-between gap-3 leading-none">
+				<span className="text-muted-foreground">{label}</span>
+				<span className="text-foreground font-medium tabular-nums">{value}</span>
+			</div>
+		</>
 	);
 }
 
-function GlyphLine() {
+function chartConfig(series: Series[]): ChartConfig {
+	return Object.fromEntries(
+		series.map(s => [s.key, { label: s.label, color: s.color }])
+	);
+}
+
+function GridAndAxis({ hideY }: { hideY?: boolean }) {
 	return (
-		<svg viewBox="0 0 24 12" width="24" height="12" fill="none" aria-hidden>
+		<>
+			<CartesianGrid vertical={false} stroke="hsl(var(--border))" />
+			<XAxis
+				dataKey="label"
+				tickLine={false}
+				axisLine={false}
+				tickMargin={10}
+				minTickGap={24}
+			/>
+			{hideY && <YAxis hide />}
+		</>
+	);
+}
+
+/**
+ * A flow — a count or a sum. Columns, not an area: an area asserts a path
+ * *between* two buckets, and a month with no quizzes is an absence, not a
+ * descent. Its zero is the true value, so nothing here is nulled out.
+ */
+function FlowChart({
+	points,
+	series,
+	metricKey,
+	height = 300,
+}: {
+	points: Record<string, number | string>[];
+	series: Series[];
+	metricKey: MetricKey;
+	height?: number;
+}) {
+	const reduced = useReducedMotion();
+	const fmt: Formatter = FORMAT[metricKey];
+	const config = chartConfig(series);
+
+	return (
+		<ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
+			<BarChart data={points} margin={{ left: 8, right: 12, top: 8 }}>
+				<GridAndAxis hideY />
+				<ChartTooltip
+					content={
+						<ChartTooltipContent
+							formatter={(value, name) => (
+								<TooltipRow
+									color={config[String(name)]?.color}
+									label={String(config[String(name)]?.label ?? name)}
+									value={fmt(value as number)}
+								/>
+							)}
+						/>
+					}
+				/>
+				{series.map(s => (
+					<Bar
+						key={s.key}
+						dataKey={s.key}
+						fill={`var(--color-${s.key})`}
+						radius={[6, 6, 0, 0]}
+						maxBarSize={44}
+						isAnimationActive={!reduced}
+						animationDuration={420}
+					/>
+				))}
+			</BarChart>
+		</ChartContainer>
+	);
+}
+
+/**
+ * A ratio — a grade average or an accuracy. Read at *day* resolution on a time
+ * axis: a dot for the days that side studied, and the running average as the
+ * line, which holds flat across a gap because an average does not move when
+ * nothing is added to it. No point is ever invented for an empty period.
+ */
+type Curve = "step" | "smooth";
+
+/** The two line shapes, drawn: a toggle that shows what it does needs no label. */
+function GlyphSmooth() {
+	return (
+		<svg viewBox="0 0 24 12" width="20" height="10" fill="none" aria-hidden>
 			<path
 				d="M2 9 C 7 2, 10 2, 14 6 S 19 3, 22 2"
 				stroke="currentColor"
@@ -181,112 +214,53 @@ function GlyphLine() {
 	);
 }
 
-function DeltaBadge({ delta }: { delta: number | null }) {
-	if (delta === null) return null;
-	const tone =
-		delta > 0
-			? "text-success bg-success/10"
-			: delta < 0
-				? "text-danger bg-danger/10"
-				: "text-muted-foreground bg-muted";
+function GlyphStep() {
 	return (
-		<span
-			className={cn(
-				"rounded-lg px-1.5 py-0.5 text-xs font-semibold tabular-nums",
-				tone
-			)}
-		>
-			{delta > 0 ? "+" : ""}
-			{delta}%
-		</span>
-	);
-}
-
-function PulseDot({
-	cx,
-	cy,
-	color,
-	index,
-	reduced,
-}: {
-	cx: number;
-	cy: number;
-	color: string;
-	index: number;
-	reduced: boolean;
-}) {
-	const begin = `${(index % 5) * 0.18}s`;
-	return (
-		<g>
-			{!reduced && (
-				<circle cx={cx} cy={cy} r={4} fill={color} opacity={0.35}>
-					<animate
-						attributeName="r"
-						values="4;12;4"
-						dur="1.8s"
-						begin={begin}
-						repeatCount="indefinite"
-					/>
-					<animate
-						attributeName="opacity"
-						values="0.4;0;0.4"
-						dur="1.8s"
-						begin={begin}
-						repeatCount="indefinite"
-					/>
-				</circle>
-			)}
-			<circle
-				cx={cx}
-				cy={cy}
-				r={4}
-				fill={color}
-				stroke="var(--color-card)"
-				strokeWidth={2}
+		<svg viewBox="0 0 24 12" width="20" height="10" fill="none" aria-hidden>
+			<path
+				d="M2 10 H7 V7 H13 V5 H18 V2 H22"
+				stroke="currentColor"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
 			/>
-		</g>
+		</svg>
 	);
 }
 
-function MetricChart({
-	points,
+function QualityChart({
+	rows,
 	series,
 	metricKey,
-	chartType,
+	range,
+	ticks,
+	curve,
 	height = 300,
 }: {
-	points: Record<string, number | string>[];
+	rows: Record<string, number | null>[];
 	series: Series[];
 	metricKey: MetricKey;
-	chartType: ChartType;
+	range: DayRange;
+	ticks: { day: number; label: string }[];
+	/** `step` is the literal shape — the average holds until the next quiz. */
+	curve: Curve;
 	height?: number;
 }) {
-	const scope = `mx-${useId().replace(/:/g, "")}`;
+	const scope = `mq-${useId().replace(/:/g, "")}`;
 	const reduced = useReducedMotion();
-	const fmt = FORMAT[metricKey];
-	const dots = chartType === "dots";
-	const config: ChartConfig = Object.fromEntries(
-		series.map(s => [s.key, { label: s.label, color: s.color }])
-	);
+	const fmt: Formatter = FORMAT[metricKey];
+	const config = chartConfig(series);
+	const tickLabel = new Map(ticks.map(t => [t.day, t.label]));
 
-	const makeDot =
-		(color: string) => (props: { cx?: number; cy?: number; index?: number }) =>
-			props.cx == null || props.cy == null ? (
-				<g key={`e${props.index}`} />
-			) : (
-				<PulseDot
-					key={props.index}
-					cx={props.cx}
-					cy={props.cy}
-					color={color}
-					index={props.index ?? 0}
-					reduced={reduced}
-				/>
-			);
+	const values = rows.flatMap(row =>
+		Object.entries(row)
+			.filter(([key, value]) => key !== "t" && typeof value === "number")
+			.map(([, value]) => value as number)
+	);
 
 	return (
 		<ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
-			<AreaChart data={points} margin={{ left: 8, right: 12, top: 8 }}>
+			<ComposedChart data={rows} margin={{ left: 8, right: 12, top: 8 }}>
 				<defs>
 					{series.map(s => (
 						<linearGradient
@@ -300,7 +274,7 @@ function MetricChart({
 							<stop
 								offset="0%"
 								stopColor={`var(--color-${s.key})`}
-								stopOpacity={0.22}
+								stopOpacity={0.18}
 							/>
 							<stop
 								offset="95%"
@@ -312,53 +286,74 @@ function MetricChart({
 				</defs>
 				<CartesianGrid vertical={false} stroke="hsl(var(--border))" />
 				<XAxis
-					dataKey="label"
+					dataKey="t"
+					type="number"
+					domain={[range.fromDay, range.toDay]}
+					ticks={ticks.map(t => t.day)}
+					tickFormatter={(day: number) => tickLabel.get(day) ?? formatDayLabel(day)}
 					tickLine={false}
 					axisLine={false}
 					tickMargin={10}
 					minTickGap={24}
 				/>
-				<YAxis hide domain={DOMAIN[metricKey]} />
+				<YAxis hide domain={qualityDomain(metricKey, values)} />
 				<ChartTooltip
 					content={
 						<ChartTooltipContent
-							formatter={(value, name) => (
-								<>
-									<span
-										className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-										style={{ backgroundColor: config[String(name)]?.color }}
+							labelFormatter={(_, payload) =>
+								formatDayLabel(Number(payload?.[0]?.payload?.t ?? range.toDay))
+							}
+							formatter={(value, name, item) => {
+								const row = item?.payload as Record<string, number | null>;
+								const cum = row?.[`${String(name)}Cum`];
+								const own = typeof value === "number" ? fmt(value) : "—";
+								return (
+									<TooltipRow
+										color={config[String(name)]?.color}
+										label={String(config[String(name)]?.label ?? name)}
+										value={typeof cum === "number" ? `${own} · media ${fmt(cum)}` : own}
 									/>
-									<div className="flex flex-1 items-center justify-between gap-3 leading-none">
-										<span className="text-muted-foreground">
-											{config[String(name)]?.label ?? name}
-										</span>
-										<span className="text-foreground font-medium tabular-nums">
-											{fmt(value as number)}
-										</span>
-									</div>
-								</>
-							)}
+								);
+							}}
 						/>
 					}
 				/>
-				{series.length > 1 && <ChartLegend content={<ChartLegendContent />} />}
 				{series.map(s => (
 					<Area
-						key={s.key}
-						type={dots ? "linear" : "monotone"}
-						dataKey={s.key}
+						key={`${s.key}-cum`}
+						type={curve === "smooth" ? "monotone" : "stepAfter"}
+						dataKey={`${s.key}Cum`}
 						stroke={`var(--color-${s.key})`}
 						strokeWidth={2}
 						strokeLinecap="round"
-						strokeDasharray={dots ? "6 6" : undefined}
 						fill={`url(#${scope}-fill-${s.key})`}
-						dot={dots ? makeDot(s.color) : false}
+						dot={false}
+						activeDot={false}
+						connectNulls
+						legendType="none"
+						tooltipType="none"
+						isAnimationActive={!reduced}
+						animationDuration={420}
+					/>
+				))}
+				{series.map(s => (
+					<Line
+						key={s.key}
+						type="linear"
+						dataKey={s.key}
+						stroke="none"
+						dot={{
+							r: 3,
+							fill: `var(--color-${s.key})`,
+							stroke: "var(--color-card)",
+							strokeWidth: 1.5,
+						}}
 						activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--color-card)" }}
 						isAnimationActive={!reduced}
 						animationDuration={420}
 					/>
 				))}
-			</AreaChart>
+			</ComposedChart>
 		</ChartContainer>
 	);
 }
@@ -374,11 +369,6 @@ const MODE_OPTIONS: { value: ExplorerMode; label: string; icon: Icon }[] = [
 	{ value: "EXAM_SIMULATION", label: "Esame", icon: DiplomaIcon },
 	{ value: "both", label: "Entrambi", icon: LayersIcon },
 ];
-const TYPE_OPTIONS: { value: ChartType; label: string; glyph: ReactNode }[] = [
-	{ value: "dots", label: "Punti", glyph: <GlyphDots /> },
-	{ value: "line", label: "Linea", glyph: <GlyphLine /> },
-];
-
 /** Round the tab that lands on a top corner — and only that layout's corner. */
 function cornerClass(index: number, count: number): string {
 	return cn(
@@ -396,17 +386,31 @@ function cornerClass(index: number, count: number): string {
 export function MetricExplorer({
 	daily,
 	today,
+	initialMetric = "grade",
+	period: controlledPeriod,
+	mode: controlledMode,
 }: {
 	daily: DailyStudyStat[];
 	today?: Date;
+	/** Which tab a story opens on; the app lands on the grade. */
+	initialMetric?: MetricKey;
+	/**
+	 * Pass both to let the page own the window: the card then drops its own two
+	 * chips, which would otherwise be the twins of the ones in the page toolbar.
+	 */
+	period?: ExplorerPeriod;
+	mode?: ExplorerMode;
 }) {
-	const [metric, setMetric] = useState<MetricKey>("grade");
-	const [period, setPeriod] = useState<ExplorerPeriod>("all");
-	const [mode, setMode] = useState<ExplorerMode>("both");
-	const [chartType, setChartType] = useState<ChartType>("dots");
+	const controlled = controlledPeriod !== undefined && controlledMode !== undefined;
+	const [metric, setMetric] = useState<MetricKey>(initialMetric);
+	const [ownPeriod, setPeriod] = useState<ExplorerPeriod>("all");
+	const [ownMode, setMode] = useState<ExplorerMode>("both");
+	const [curve, setCurve] = useState<Curve>("smooth");
+	const period = controlledPeriod ?? ownPeriod;
+	const mode = controlledMode ?? ownMode;
 
 	const now = useMemo(() => today ?? new Date(), [today]);
-	const { buckets, previous } = useMemo(
+	const { buckets, previous, range } = useMemo(
 		() => buildMetricWindow(daily, period, now),
 		[daily, period, now]
 	);
@@ -447,97 +451,174 @@ export function MetricExplorer({
 		mode === "both"
 			? COMPARE
 			: [{ key: "value", label: active.label, color: active.color }];
+	const family = METRIC_FAMILY[metric];
 	const points: Record<string, number | string>[] = buckets.map(bucket => {
 		const row: Record<string, number | string> = { label: bucket.label };
+		const read = (totals: Parameters<typeof metricValue>[0]) =>
+			metricPoint(totals, metric) as number | string;
 		if (mode === "both") {
-			row.studio = metricValue(bucket.studio, metric);
-			row.esame = metricValue(bucket.esame, metric);
+			row.studio = read(bucket.studio);
+			row.esame = read(bucket.esame);
 		} else {
-			row.value = metricValue(pickTotals(bucket, mode), metric);
+			row.value = read(pickTotals(bucket, mode));
 		}
 		return row;
 	});
+	const qualityRows = useMemo(
+		() => (family === "quality" ? buildQualityRows(daily, metric, mode, range) : []),
+		[family, daily, metric, mode, range]
+	);
+	const ticks = buckets.map(bucket => ({
+		day: bucket.startDay,
+		label: bucket.label,
+	}));
 	const hasData = windowTotals.quizzes > 0;
+	// The whole span has no earlier window to compare against, so the tabs never
+	// carry a delta there — the range says what the figures cover instead.
+	const spanLabel = period === "all" ? buckets[0]?.label : null;
 
 	return (
-		<div className="space-y-3">
-			<div className="flex flex-wrap items-center justify-between gap-2">
-				<h2 className="text-lg font-semibold">Andamento</h2>
-				<div className="flex flex-wrap items-center gap-2">
-					<SelectChip
-						label="Modalità"
-						value={mode}
-						onChange={setMode}
-						options={MODE_OPTIONS}
-					/>
-					<SelectChip
-						label="Periodo"
-						value={period}
-						onChange={setPeriod}
-						options={PERIOD_OPTIONS}
-						lead={CalendarMinimalisticIcon}
-					/>
-					<SelectChip
-						label="Tipo grafico"
-						value={chartType}
-						onChange={setChartType}
-						options={TYPE_OPTIONS}
-					/>
-				</div>
-			</div>
-
-			<Card className="bg-muted/30 overflow-hidden p-1">
-				<div className="bg-card overflow-hidden rounded-xl border">
-					<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-						{tabs.map((tab, i) => {
-							const isActive = tab.key === metric;
-							const TabIcon = tab.icon;
-							return (
-								<button
-									key={tab.key}
-									type="button"
-									onClick={() => setMetric(tab.key)}
-									className={cn(
-										"relative flex flex-col gap-1.5 border-t-2 p-4 text-left transition-colors",
-										cornerClass(i, tabs.length),
-										isActive ? "bg-muted/30" : "hover:bg-muted/20 border-t-transparent"
-									)}
-									style={isActive ? { borderTopColor: tab.color } : undefined}
-								>
-									<div className="flex items-center justify-between gap-2">
-										<span className="text-muted-foreground flex items-center gap-1.5 text-sm">
-											<TabIcon className="h-4 w-4" />
-											{tab.label}
-										</span>
-										<DeltaBadge delta={tab.delta} />
-									</div>
-									<span
+		<InsetCard
+			className="h-full"
+			header={
+				<div className="flex items-start justify-between gap-4">
+					<div className="min-w-0">
+						<CardTitle className="text-base">Andamento</CardTitle>
+						<p className="text-muted-foreground mt-0.5 text-sm">
+							{family === "quality"
+								? "La media cumulativa, e un punto per giornata di studio"
+								: "Il totale di ogni periodo"}
+							{spanLabel && ` · dal ${spanLabel}`}
+						</p>
+					</div>
+					<div className="flex shrink-0 flex-wrap items-center gap-2">
+						{family === "quality" && (
+							<div className="bg-muted/60 flex items-center gap-0.5 rounded-lg p-0.5">
+								{(
+									[
+										{ value: "smooth", label: "Linea morbida", glyph: <GlyphSmooth /> },
+										{ value: "step", label: "Linea a gradini", glyph: <GlyphStep /> },
+									] as const
+								).map(option => (
+									<button
+										key={option.value}
+										type="button"
+										onClick={() => setCurve(option.value)}
+										aria-pressed={curve === option.value}
+										// The glyph is the whole control, so the name lives here: a
+										// drawing is not an accessible name.
+										aria-label={option.label}
 										className={cn(
-											"text-2xl font-bold tabular-nums",
-											!isActive && "text-muted-foreground"
+											"flex items-center rounded-md px-2 py-1.5 transition-colors",
+											curve === option.value
+												? "bg-background text-foreground shadow-xs"
+												: "text-muted-foreground hover:text-foreground"
 										)}
 									>
-										{tab.value}
-									</span>
-								</button>
-							);
-						})}
-					</div>
-
-					<div className="border-t p-4 pt-6">
-						{hasData ? (
-							<MetricChart
-								points={points}
-								series={series}
-								metricKey={metric}
-								chartType={chartType}
-							/>
-						) : (
-							<InlineEmpty>Nessuna attività in questo periodo.</InlineEmpty>
+										{option.glyph}
+									</button>
+								))}
+							</div>
+						)}
+						{!controlled && (
+							<>
+								<SelectChip
+									label="Modalità"
+									value={mode}
+									onChange={setMode}
+									options={MODE_OPTIONS}
+								/>
+								<SelectChip
+									label="Periodo"
+									value={period}
+									onChange={setPeriod}
+									options={PERIOD_OPTIONS}
+									lead={CalendarMinimalisticIcon}
+								/>
+							</>
 						)}
 					</div>
 				</div>
-			</Card>
-		</div>
+			}
+			footer={
+				hasData && (
+					<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+						<span className="text-muted-foreground flex items-center gap-2 text-xs">
+							<InfoCircleIcon className="size-3.5 shrink-0" />
+							{family === "quality"
+								? "I punti sono le giornate di studio; la linea è la media cumulativa e resta piatta quando non studi."
+								: "Un periodo senza quiz vale zero: è un valore, non un buco."}
+						</span>
+						<span className="flex items-center gap-3">
+							{series.map(item => (
+								<span
+									key={item.key}
+									className="text-muted-foreground flex items-center gap-1.5 text-xs"
+								>
+									<span
+										className="size-2 shrink-0 rounded-[3px]"
+										style={{ backgroundColor: item.color }}
+									/>
+									{item.label}
+								</span>
+							))}
+						</span>
+					</div>
+				)
+			}
+		>
+			<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
+				{tabs.map((tab, i) => {
+					const isActive = tab.key === metric;
+					const TabIcon = tab.icon;
+					return (
+						<button
+							key={tab.key}
+							type="button"
+							onClick={() => setMetric(tab.key)}
+							className={cn(
+								"relative flex flex-col gap-1.5 border-t-2 p-4 text-left transition-colors",
+								cornerClass(i, tabs.length),
+								isActive ? "bg-muted/30" : "hover:bg-muted/20 border-t-transparent"
+							)}
+							style={isActive ? { borderTopColor: tab.color } : undefined}
+						>
+							<div className="flex items-center justify-between gap-2">
+								<span className="text-muted-foreground flex items-center gap-1.5 text-sm">
+									<TabIcon className="h-4 w-4" />
+									{tab.label}
+								</span>
+								<DeltaBadge value={tab.delta} />
+							</div>
+							<span
+								className={cn(
+									"text-2xl font-bold tabular-nums",
+									!isActive && "text-muted-foreground"
+								)}
+							>
+								{tab.value}
+							</span>
+						</button>
+					);
+				})}
+			</div>
+
+			<div className="border-t p-4 pt-6">
+				{!hasData ? (
+					<InlineEmpty>Nessuna attività in questo periodo.</InlineEmpty>
+				) : family === "flow" ? (
+					<FlowChart points={points} series={series} metricKey={metric} />
+				) : (
+					<QualityChart
+						rows={qualityRows}
+						series={series}
+						metricKey={metric}
+						range={range}
+						ticks={ticks}
+						curve={curve}
+					/>
+				)}
+			</div>
+		</InsetCard>
 	);
 }
