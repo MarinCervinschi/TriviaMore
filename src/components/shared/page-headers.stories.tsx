@@ -1,13 +1,18 @@
 import { BookIcon } from "@solar-icons/react/linear/book";
+import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
+import { DownloadIcon } from "@solar-icons/react/linear/download";
+import { ShareIcon } from "@solar-icons/react/linear/share";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { BrowsePageHeader } from "@/components/browse/browse-page-header";
 import { LegalHero } from "@/components/legal/legal-hero";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
 
 /**
@@ -150,5 +155,38 @@ export const TuttiQuattro: Story = {
 				</div>
 			))}
 		</div>
+	),
+};
+
+/**
+ * The fifth head, and the odd one out: no hero at all. The breadcrumb names the
+ * page and the space goes to the controls — for a screen whose first fold is
+ * worth more as filters than as a large title.
+ */
+export const Toolbar: Story = {
+	name: "La toolbar compatta",
+	render: () => (
+		<PageToolbar
+			breadcrumb={<UserBreadcrumb current="Analytics" />}
+			actions={
+				<>
+					<Button variant="outline" size="sm">
+						<CalendarMinimalisticIcon className="size-3.5" />
+						Tutto lo storico
+					</Button>
+					<Button variant="outline" size="sm">
+						Studio + Esame
+					</Button>
+					<Button variant="outline" size="sm">
+						<ShareIcon className="size-3.5" />
+						Condividi
+					</Button>
+					<Button size="sm">
+						<DownloadIcon className="size-3.5" />
+						Esporta
+					</Button>
+				</>
+			}
+		/>
 	),
 };
