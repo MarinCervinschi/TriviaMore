@@ -3,7 +3,7 @@ import { Login3Icon } from "@solar-icons/react/linear/login-3";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardTexture } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/legal/declined")({
@@ -24,9 +24,8 @@ const DELETION_REQUEST_MAILTO = `mailto:privacy@trivia-more.it?subject=${encodeU
 function DeclinedPage() {
 	return (
 		<div className="relative container flex max-w-2xl items-center justify-center py-12 sm:py-20">
-			<Card level="panel" className="relative w-full overflow-hidden p-6 sm:p-10">
-				<CardTexture placement="tl" />
-				<div className="relative space-y-6">
+			<InsetCard className="w-full" texture="tl" textureAlpha={0.12}>
+				<div className="relative space-y-6 p-6 sm:p-10">
 					<div className="space-y-2">
 						<h1 className="text-2xl font-bold">Hai rifiutato i documenti aggiornati</h1>
 						<p className="text-muted-foreground text-sm">
@@ -63,7 +62,7 @@ function DeclinedPage() {
 						</Button>
 					</div>
 				</div>
-			</Card>
+			</InsetCard>
 		</div>
 	);
 }
