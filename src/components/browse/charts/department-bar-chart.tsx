@@ -1,6 +1,6 @@
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartCard } from "@/components/charts";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -31,74 +31,69 @@ export function DepartmentBarChart({ data }: { data: DepartmentChartData[] }) {
 	const chartHeight = sorted.length * rowHeight + 16;
 
 	return (
-		<Card className="flex h-full flex-col">
-			<CardHeader className="pb-1">
-				<CardTitle className="text-base">Corsi per dipartimento</CardTitle>
-			</CardHeader>
-			<CardContent className="flex flex-1 pb-4">
-				<ChartContainer
-					config={config}
-					className="aspect-auto w-full"
-					style={{ height: chartHeight }}
+		<ChartCard title="Corsi per dipartimento">
+			<ChartContainer
+				config={config}
+				className="aspect-auto w-full"
+				style={{ height: chartHeight }}
+			>
+				<BarChart
+					accessibilityLayer
+					data={sorted}
+					layout="vertical"
+					margin={{ left: 8, right: 32, top: 4, bottom: 4 }}
 				>
-					<BarChart
-						accessibilityLayer
-						data={sorted}
-						layout="vertical"
-						margin={{ left: 8, right: 32, top: 4, bottom: 4 }}
-					>
-						<CartesianGrid
-							horizontal={false}
-							strokeDasharray="3 3"
-							stroke="hsl(var(--border))"
-							strokeOpacity={0.5}
-						/>
-						<XAxis type="number" hide />
-						<YAxis
-							type="category"
-							dataKey="code"
-							width={64}
-							tickLine={false}
-							axisLine={false}
-							tick={{
-								fill: "hsl(var(--muted-foreground))",
-								fontSize: 11,
-								fontFamily: "ui-monospace, monospace",
-							}}
-						/>
-						<ChartTooltip
-							cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.4 }}
-							content={
-								<ChartTooltipContent
-									hideLabel
-									formatter={(value, _name, item) => {
-										const code = item.payload?.code;
-										const dept = sorted.find(d => d.code === code)?.name ?? code;
-										return (
-											<div className="flex w-full flex-col gap-0.5">
-												<span className="text-foreground font-medium">{dept}</span>
-												<span className="text-muted-foreground text-xs tabular-nums">
-													{formatNumber(value as number)} corsi
-												</span>
-											</div>
-										);
-									}}
-								/>
-							}
-						/>
-						<Bar dataKey="count" fill="var(--color-count)" radius={[0, 6, 6, 0]}>
-							<LabelList
-								dataKey="count"
-								position="right"
-								offset={8}
-								className="fill-foreground"
-								fontSize={11}
-								fontFamily="ui-monospace, monospace"
+					<CartesianGrid
+						horizontal={false}
+						strokeDasharray="3 3"
+						stroke="hsl(var(--border))"
+						strokeOpacity={0.5}
+					/>
+					<XAxis type="number" hide />
+					<YAxis
+						type="category"
+						dataKey="code"
+						width={64}
+						tickLine={false}
+						axisLine={false}
+						tick={{
+							fill: "hsl(var(--muted-foreground))",
+							fontSize: 11,
+							fontFamily: "ui-monospace, monospace",
+						}}
+					/>
+					<ChartTooltip
+						cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.4 }}
+						content={
+							<ChartTooltipContent
+								hideLabel
+								formatter={(value, _name, item) => {
+									const code = item.payload?.code;
+									const dept = sorted.find(d => d.code === code)?.name ?? code;
+									return (
+										<div className="flex w-full flex-col gap-0.5">
+											<span className="text-foreground font-medium">{dept}</span>
+											<span className="text-muted-foreground text-xs tabular-nums">
+												{formatNumber(value as number)} corsi
+											</span>
+										</div>
+									);
+								}}
 							/>
-						</Bar>
-					</BarChart>
-				</ChartContainer>
-			</CardContent>
-		</Card>
+						}
+					/>
+					<Bar dataKey="count" fill="var(--color-count)" radius={[0, 6, 6, 0]}>
+						<LabelList
+							dataKey="count"
+							position="right"
+							offset={8}
+							className="fill-foreground"
+							fontSize={11}
+							fontFamily="ui-monospace, monospace"
+						/>
+					</Bar>
+				</BarChart>
+			</ChartContainer>
+		</ChartCard>
 	);
 }

@@ -1,6 +1,5 @@
 import { type MouseEvent, useMemo, useRef, useState } from "react";
 
-import { Card } from "@/components/ui/card";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +27,6 @@ export type CalendarHeatmapProps = {
 	 * The card around the grid. Off when a parent card already provides one — two
 	 * nested surfaces read as a seam, not as depth.
 	 */
-	frame?: boolean;
 	className?: string;
 };
 
@@ -118,7 +116,6 @@ export function CalendarHeatmap({
 	view,
 	endDate,
 	unitLabel = "quiz",
-	frame = true,
 	emptyMessage,
 	className,
 }: CalendarHeatmapProps) {
@@ -161,21 +158,17 @@ export function CalendarHeatmap({
 	}
 
 	if (data.length === 0) {
-		const empty = <InlineEmpty>{emptyMessage}</InlineEmpty>;
-		return frame ? (
-			<Card className={cn("p-6", className)}>{empty}</Card>
-		) : (
-			<div className={className}>{empty}</div>
+		return (
+			<div className={className}>
+				<InlineEmpty>{emptyMessage}</InlineEmpty>
+			</div>
 		);
 	}
 
-	const Frame = frame ? Card : "div";
-
 	return (
-		<Frame
+		<div
 			className={cn(
 				"relative flex w-fit max-w-full flex-col justify-between overflow-hidden",
-				frame && "p-6",
 				className
 			)}
 		>
@@ -262,6 +255,6 @@ export function CalendarHeatmap({
 					<span>Più</span>
 				</div>
 			</div>
-		</Frame>
+		</div>
 	);
 }
