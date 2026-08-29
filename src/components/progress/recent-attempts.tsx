@@ -9,6 +9,7 @@ import { InlineEmpty } from "@/components/ui/empty-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { sectionDisplayName } from "@/lib/catalog/constants";
 import type { QuizMode } from "@/lib/quiz/types";
+import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
@@ -25,6 +26,7 @@ export type RecentAttemptRow = {
 	completedAt: string;
 	sectionName: string | null;
 	isFavorite?: boolean;
+	quizId?: string | null;
 	className?: string | null;
 	courseCode?: string | null;
 	departmentCode?: string | null;
@@ -81,19 +83,20 @@ export function RecentAttempts({
 							return (
 								<li
 									key={attempt.id}
-									className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+									className="group/row flex items-center gap-3 py-3 first:pt-0 last:pb-0"
 								>
 									<ScoreRing score={attempt.score} />
 
 									<div className="min-w-0 flex-1">
-										<p className="truncate text-sm font-medium">
-											{attempt.sectionName
-												? sectionDisplayName(attempt.sectionName)
-												: "Sezione eliminata"}
-										</p>
-										{place && (
-											<p className="text-muted-foreground truncate text-xs">{place}</p>
-										)}
+										<Body
+											name={
+												attempt.sectionName
+													? sectionDisplayName(attempt.sectionName)
+													: "Sezione eliminata"
+											}
+											place={place}
+											attemptId={attempt.quizId ? attempt.id : null}
+										/>
 									</div>
 
 									{attempt.quizMode && (
@@ -123,5 +126,38 @@ export function RecentAttempts({
 				)}
 			</ChartCard>
 		</TooltipProvider>
+	);
+}
+
+/** The two lines of a row, linked to the result when the quiz still exists. */
+function Body({
+	name,
+	place,
+	attemptId,
+}: {
+	name: string;
+	place: string;
+	attemptId: string | null;
+}) {
+	const body = (
+		<>
+			<p
+				className={cn(
+					"truncate text-sm font-medium",
+					attemptId && "group-hover/row:text-brand transition-colors"
+				)}
+			>
+				{name}
+			</p>
+			{place && <p className="text-muted-foreground truncate text-xs">{place}</p>}
+		</>
+	);
+
+	return attemptId ? (
+		<Link to="/quiz/results/$attemptId" params={{ attemptId }} className="block">
+			{body}
+		</Link>
+	) : (
+		body
 	);
 }

@@ -147,13 +147,26 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			id: "sezione",
 			header: "Sezione",
 			enableSorting: false,
-			meta: { label: "Sezione", cellClassName: "font-medium" },
-			cell: ({ row }) =>
-				row.original.sectionName ? (
-					sectionDisplayName(row.original.sectionName)
+			meta: { label: "Sezione", cellClassName: "min-w-[14rem] font-medium" },
+			cell: ({ row }) => {
+				if (!row.original.sectionName) {
+					return (
+						<span className="text-muted-foreground italic">Sezione eliminata</span>
+					);
+				}
+				const name = sectionDisplayName(row.original.sectionName);
+				return row.original.quizId ? (
+					<Link
+						to="/quiz/results/$attemptId"
+						params={{ attemptId: row.original.id }}
+						className="group-hover:text-brand transition-colors"
+					>
+						{name}
+					</Link>
 				) : (
-					<span className="text-muted-foreground italic">Sezione eliminata</span>
-				),
+					name
+				);
+			},
 		}),
 		column.accessor(row => row.classId ?? "", {
 			id: "insegnamento",
