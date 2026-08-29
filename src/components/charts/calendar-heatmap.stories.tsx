@@ -35,12 +35,5 @@ export const Empty: Story = {
 /** Senza cornice: la griglia nuda, per una card che ne fornisce già una. */
 export const SenzaCornice: Story = {
 	name: "Senza cornice",
-	render: () => (
-		<CalendarHeatmap
-			data={activity}
-			view="rolling"
-			endDate="2026-08-08"
-			frame={false}
-		/>
-	),
+	render: () => <CalendarHeatmap data={activity} view="rolling" endDate="2026-08-08" />,
 };

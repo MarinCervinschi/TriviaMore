@@ -138,7 +138,6 @@ export function ConsistencyCard({
 			<CalendarHeatmap
 				data={data}
 				view={heatmapView}
-				frame={false}
 				emptyMessage="Completa il tuo primo quiz per iniziare a tracciare la costanza."
 			/>
 		</ChartCard>

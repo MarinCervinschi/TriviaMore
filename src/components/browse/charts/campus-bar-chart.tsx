@@ -1,6 +1,6 @@
 import { PolarAngleAxis, PolarGrid, RadialBar, RadialBarChart } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartCard } from "@/components/charts";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -41,75 +41,70 @@ export function CampusBarChart({ data }: { data: CampusChartData[] }) {
 	}));
 
 	return (
-		<Card className="flex h-full flex-col">
-			<CardHeader className="pb-2">
-				<CardTitle className="text-base">Corsi per campus</CardTitle>
-			</CardHeader>
-			<CardContent className="flex flex-1 flex-col justify-center gap-4 pb-6">
-				<ChartContainer
-					config={config}
-					className="mx-auto aspect-square w-full max-w-[220px]"
+		<ChartCard title="Corsi per campus">
+			<ChartContainer
+				config={config}
+				className="mx-auto aspect-square w-full max-w-[220px]"
+			>
+				<RadialBarChart
+					data={chartData}
+					startAngle={90}
+					endAngle={-270}
+					innerRadius="32%"
+					outerRadius="100%"
+					barSize={12}
 				>
-					<RadialBarChart
-						data={chartData}
-						startAngle={90}
-						endAngle={-270}
-						innerRadius="32%"
-						outerRadius="100%"
-						barSize={12}
-					>
-						<PolarGrid
-							gridType="circle"
-							radialLines={false}
-							stroke="hsl(var(--border))"
-							strokeOpacity={0.5}
-						/>
-						<PolarAngleAxis type="number" domain={[0, Math.max(max, 1)]} tick={false} />
-						<RadialBar
-							dataKey="count"
-							background={{ fill: "hsl(var(--muted))", fillOpacity: 0.4 }}
-							cornerRadius={6}
-						/>
-						<ChartTooltip
-							cursor={false}
-							content={
-								<ChartTooltipContent
-									hideLabel
-									formatter={(value, _name, item) => {
-										const campus = item.payload?.campus;
-										const label =
-											(campus && config[campus]?.label) ?? item.payload?.label;
-										return (
-											<div className="flex w-full items-center justify-between gap-3">
-												<span className="text-muted-foreground">{label}</span>
-												<span className="font-semibold tabular-nums">
-													{formatNumber(value as number)} corsi
-												</span>
-											</div>
-										);
-									}}
-								/>
-							}
-						/>
-					</RadialBarChart>
-				</ChartContainer>
-				<ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
-					{chartData.map(entry => (
-						<li key={entry.campus} className="flex items-center justify-between gap-2">
-							<span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
-								<span
-									className="h-2 w-2 shrink-0 rounded-full"
-									style={{ backgroundColor: `var(--color-${entry.campus})` }}
-								/>
-								<span className="truncate">{entry.label}</span>
-							</span>
-							<span className="text-foreground font-semibold tabular-nums">
-								{entry.count}
-							</span>
-						</li>
-					))}
-				</ul>
-			</CardContent>
-		</Card>
+					<PolarGrid
+						gridType="circle"
+						radialLines={false}
+						stroke="hsl(var(--border))"
+						strokeOpacity={0.5}
+					/>
+					<PolarAngleAxis type="number" domain={[0, Math.max(max, 1)]} tick={false} />
+					<RadialBar
+						dataKey="count"
+						background={{ fill: "hsl(var(--muted))", fillOpacity: 0.4 }}
+						cornerRadius={6}
+					/>
+					<ChartTooltip
+						cursor={false}
+						content={
+							<ChartTooltipContent
+								hideLabel
+								formatter={(value, _name, item) => {
+									const campus = item.payload?.campus;
+									const label =
+										(campus && config[campus]?.label) ?? item.payload?.label;
+									return (
+										<div className="flex w-full items-center justify-between gap-3">
+											<span className="text-muted-foreground">{label}</span>
+											<span className="font-semibold tabular-nums">
+												{formatNumber(value as number)} corsi
+											</span>
+										</div>
+									);
+								}}
+							/>
+						}
+					/>
+				</RadialBarChart>
+			</ChartContainer>
+			<ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+				{chartData.map(entry => (
+					<li key={entry.campus} className="flex items-center justify-between gap-2">
+						<span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
+							<span
+								className="h-2 w-2 shrink-0 rounded-full"
+								style={{ backgroundColor: `var(--color-${entry.campus})` }}
+							/>
+							<span className="truncate">{entry.label}</span>
+						</span>
+						<span className="text-foreground font-semibold tabular-nums">
+							{entry.count}
+						</span>
+					</li>
+				))}
+			</ul>
+		</ChartCard>
 	);
 }
