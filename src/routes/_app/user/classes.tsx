@@ -19,7 +19,7 @@ import { CloseGlyph } from "@/components/icons";
 import { UserClassesSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -233,13 +233,19 @@ function ClassesPage() {
 							/>
 						}
 						empty={
-							<EmptyState
-								icon={DiplomaIcon}
-								title="Nessun insegnamento trovato"
-								description="Prova a modificare i filtri di ricerca."
-								actionLabel="Pulisci filtri"
-								onAction={() => table.options.meta?.resetFilters()}
-							/>
+							<InlineEmpty
+								action={
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => table.options.meta?.resetFilters()}
+									>
+										Pulisci filtri
+									</Button>
+								}
+							>
+								Nessun insegnamento trovato: prova a modificare i filtri.
+							</InlineEmpty>
 						}
 						rowLink={row => (
 							<Link

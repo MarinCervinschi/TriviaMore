@@ -1,12 +1,10 @@
-import { BookIcon } from "@solar-icons/react/linear/book";
-import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { InlineEmpty } from "@/components/ui/empty-state";
 
 import { DataTable } from "./data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -65,11 +63,7 @@ function AdminExample() {
 			density="compact"
 			toolbar={<DataTableToolbar table={table} searchPlaceholder="Cerca sezioni..." />}
 			empty={
-				<EmptyState
-					icon={InboxIcon}
-					title="Nessuna sezione trovata"
-					description="Prova a modificare la ricerca o i filtri."
-				/>
+				<InlineEmpty>Nessuna sezione trovata: prova a cambiare i filtri.</InlineEmpty>
 			}
 		/>
 	);
@@ -99,13 +93,7 @@ function EmptyExample() {
 		<DataTable
 			table={table}
 			toolbar={<DataTableToolbar table={table} searchable={false} />}
-			empty={
-				<EmptyState
-					icon={BookIcon}
-					title="Nessuna sezione"
-					description="Questo insegnamento non ha ancora sezioni."
-				/>
-			}
+			empty={<InlineEmpty>Questo insegnamento non ha ancora sezioni.</InlineEmpty>}
 		/>
 	);
 }
