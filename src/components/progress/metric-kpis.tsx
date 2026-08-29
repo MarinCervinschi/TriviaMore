@@ -25,7 +25,7 @@ const TINT: Record<string, string> = {
  */
 export function MetricKpis({
 	daily,
-	period = "all",
+	period = "year",
 	mode = "both",
 	today,
 }: {

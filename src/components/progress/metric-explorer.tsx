@@ -403,7 +403,7 @@ export function MetricExplorer({
 }) {
 	const controlled = controlledPeriod !== undefined && controlledMode !== undefined;
 	const [metric, setMetric] = useState<MetricKey>(initialMetric);
-	const [ownPeriod, setPeriod] = useState<ExplorerPeriod>("all");
+	const [ownPeriod, setPeriod] = useState<ExplorerPeriod>("year");
 	const [ownMode, setMode] = useState<ExplorerMode>("both");
 	const [curve, setCurve] = useState<Curve>("smooth");
 	const period = controlledPeriod ?? ownPeriod;
