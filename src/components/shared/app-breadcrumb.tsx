@@ -121,54 +121,53 @@ export function AppBreadcrumb({
 	const hidden = collapse ? shown.slice(1, shown.length - (maxItems - 2)) : [];
 	const tail = collapse ? shown.slice(shown.length - (maxItems - 2)) : [];
 
+	const pieces = [
+		...head.map(crumb => (
+			<Piece
+				key={crumb.label}
+				crumb={crumb}
+				boxed={boxedFirstIcon}
+				maxLabel={maxLabel}
+			/>
+		)),
+		...(collapse
+			? [
+					<DropdownMenu key="__menu">
+						<DropdownMenuTrigger
+							aria-label="Mostra i livelli nascosti"
+							className="hover:text-foreground hover:bg-muted rounded-md transition-colors"
+						>
+							<BreadcrumbEllipsis className="h-5 w-6" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start" className="min-w-48">
+							{hidden.map(crumb => (
+								<DropdownMenuItem key={crumb.label} asChild>
+									{crumb.to ? (
+										<Link to={crumb.to} params={crumb.params as never}>
+											{crumb.label}
+										</Link>
+									) : (
+										<span>{crumb.label}</span>
+									)}
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>,
+				]
+			: []),
+		...tail.map(crumb => (
+			<Piece key={crumb.label} crumb={crumb} boxed={false} maxLabel={maxLabel} />
+		)),
+	];
+
 	return (
 		<TooltipProvider delayDuration={200}>
-			<Breadcrumb className={cn("max-w-full", SURFACE[surface], className)}>
+			<Breadcrumb className={cn("inline-flex max-w-full", SURFACE[surface], className)}>
 				<BreadcrumbList className="flex-nowrap gap-1.5 sm:gap-2">
-					{head.map(crumb => (
-						<Fragment key={crumb.label}>
-							<BreadcrumbItem className="min-w-0">
-								<Piece crumb={crumb} boxed={boxedFirstIcon} maxLabel={maxLabel} />
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-						</Fragment>
-					))}
-
-					{collapse && (
-						<>
-							<BreadcrumbItem>
-								<DropdownMenu>
-									<DropdownMenuTrigger
-										aria-label="Mostra i livelli nascosti"
-										className="hover:text-foreground hover:bg-muted rounded-md transition-colors"
-									>
-										<BreadcrumbEllipsis className="h-5 w-6" />
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="start" className="min-w-48">
-										{hidden.map(crumb => (
-											<DropdownMenuItem key={crumb.label} asChild>
-												{crumb.to ? (
-													<Link to={crumb.to} params={crumb.params as never}>
-														{crumb.label}
-													</Link>
-												) : (
-													<span>{crumb.label}</span>
-												)}
-											</DropdownMenuItem>
-										))}
-									</DropdownMenuContent>
-								</DropdownMenu>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-						</>
-					)}
-
-					{tail.map((crumb, index) => (
-						<Fragment key={crumb.label}>
-							<BreadcrumbItem className="min-w-0">
-								<Piece crumb={crumb} boxed={false} maxLabel={maxLabel} />
-							</BreadcrumbItem>
-							{index < tail.length - 1 && <BreadcrumbSeparator />}
+					{pieces.map((piece, index) => (
+						<Fragment key={index}>
+							<BreadcrumbItem className="min-w-0">{piece}</BreadcrumbItem>
+							{index < pieces.length - 1 && <BreadcrumbSeparator />}
 						</Fragment>
 					))}
 				</BreadcrumbList>
