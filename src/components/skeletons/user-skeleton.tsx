@@ -1,7 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
-	SkeletonChart,
 	SkeletonHero,
 	SkeletonRoot,
 	SkeletonStatBlock,
@@ -112,103 +111,6 @@ export function UserDashboardSkeleton() {
 	);
 }
 
-function MetricExplorerSkeleton() {
-	return (
-		<div className="space-y-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Skeleton className="h-8 w-44 rounded-lg" />
-				<Skeleton className="h-8 w-48 rounded-lg" />
-				<Skeleton className="ml-auto h-8 w-20 rounded-lg" />
-			</div>
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card overflow-hidden rounded-xl border">
-					<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="space-y-2 p-4">
-								<Skeleton className="h-4 w-20" />
-								<Skeleton className="h-7 w-16" />
-							</div>
-						))}
-					</div>
-					<div className="border-t p-4 pt-6">
-						<SkeletonChart height={280} />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function StudyRhythmSkeleton() {
-	return (
-		<div className="space-y-3">
-			<Skeleton className="h-6 w-40" />
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card overflow-hidden rounded-xl border">
-					<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="space-y-2 p-4">
-								<Skeleton className="h-4 w-24" />
-								<Skeleton className="h-7 w-12" />
-								<Skeleton className="h-3 w-20" />
-							</div>
-						))}
-					</div>
-					<div className="space-y-2 border-t p-4">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-12 w-full" />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function MasteryPanelSkeleton({ withSections = true }: { withSections?: boolean }) {
-	return (
-		<div className="space-y-4">
-			<Skeleton className="h-6 w-32" />
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card rounded-xl border p-6">
-					<div className="flex flex-col items-center gap-6 sm:flex-row">
-						<Skeleton className="h-[94px] w-[184px] shrink-0 rounded-t-full" />
-						<div className="w-full flex-1 space-y-3">
-							{Array.from({ length: 3 }).map((_, i) => (
-								<div key={i} className="flex items-center gap-3">
-									<Skeleton className="h-4 w-20 shrink-0" />
-									<Skeleton className="h-2 flex-1" />
-									<Skeleton className="h-4 w-9 shrink-0" />
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			</div>
-
-			{withSections && (
-				<div className="grid gap-4 lg:grid-cols-2">
-					{Array.from({ length: 2 }).map((_, i) => (
-						<div key={i} className="space-y-2">
-							<Skeleton className="h-4 w-28" />
-							<div className="bg-muted/30 rounded-2xl border p-1">
-								<div className="bg-card space-y-4 rounded-xl border p-4">
-									{Array.from({ length: 3 }).map((_, j) => (
-										<div key={j} className="space-y-1.5">
-											<Skeleton className="h-4 w-1/2" />
-											<Skeleton className="h-1.5 w-full" />
-										</div>
-									))}
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
-	);
-}
-
-/** One card of the analytics grid: the frame, and a panel of the given height. */
 function SkeletonCard({ height }: { height: number }) {
 	return (
 		<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
@@ -230,13 +132,16 @@ export function AnalyticsSkeleton() {
 			label="Caricamento analytics…"
 			className="container space-y-4 py-6 pb-10"
 		>
-			<div className="flex flex-wrap items-center justify-between gap-2">
+			<div className="border-border/60 space-y-3 border-b pb-4">
 				<Skeleton className="h-9 w-56 rounded-full" />
-				<div className="flex items-center gap-2">
-					<Skeleton className="h-8 w-36 rounded-lg" />
-					<Skeleton className="h-8 w-32 rounded-lg" />
-					<Skeleton className="h-8 w-24 rounded-lg" />
-					<Skeleton className="h-8 w-24 rounded-lg" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<Skeleton className="h-8 w-40" />
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-8 w-36 rounded-lg" />
+						<Skeleton className="h-8 w-32 rounded-lg" />
+						<Skeleton className="h-8 w-24 rounded-lg" />
+						<Skeleton className="h-8 w-24 rounded-lg" />
+					</div>
 				</div>
 			</div>
 
@@ -285,15 +190,56 @@ export function AnalyticsSkeleton() {
 /** No breadcrumb and no rollup, unlike `AnalyticsSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
-			<SkeletonHero />
+		<SkeletonRoot
+			label="Caricamento progressi…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="border-border/60 space-y-3 border-b pb-4">
+				<Skeleton className="h-9 w-72 rounded-full" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div className="space-y-2">
+						<Skeleton className="h-8 w-56" />
+						<Skeleton className="h-4 w-40" />
+					</div>
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-8 w-36 rounded-lg" />
+						<Skeleton className="h-8 w-32 rounded-lg" />
+					</div>
+				</div>
+			</div>
 
-			<div className="container space-y-6">
-				<Skeleton className="h-8 w-28 rounded-xl" />
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
+						</div>
+					</div>
+				))}
+			</div>
 
-				<MetricExplorerSkeleton />
-				<StudyRhythmSkeleton />
-				<MasteryPanelSkeleton />
+			{/* Same rows as the full page, less the tree and the section scatter. */}
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+				<div className="lg:col-span-8">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={260} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={160} />
+				</div>
 			</div>
 		</SkeletonRoot>
 	);
@@ -305,9 +251,15 @@ export function AttemptHistorySkeleton() {
 			label="Caricamento cronologia…"
 			className="container space-y-4 py-6 pb-10"
 		>
-			<div className="flex flex-wrap items-center justify-between gap-2">
+			<div className="border-border/60 space-y-3 border-b pb-4">
 				<Skeleton className="h-9 w-64 rounded-full" />
-				<Skeleton className="h-8 w-28 rounded-lg" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div className="space-y-2">
+						<Skeleton className="h-8 w-64" />
+						<Skeleton className="h-4 w-32" />
+					</div>
+					<Skeleton className="h-8 w-28 rounded-lg" />
+				</div>
 			</div>
 
 			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

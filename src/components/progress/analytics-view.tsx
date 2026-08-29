@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { DownloadIcon } from "@solar-icons/react/linear/download";
@@ -16,6 +16,7 @@ import type {
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
+import { formatDate } from "@/lib/utils/format";
 
 import { ConsistencyCard } from "./consistency-card";
 import { GradeDistribution } from "./grade-distribution";
@@ -55,22 +56,50 @@ export function AnalyticsView({
 	attempts,
 	mastery,
 	today,
+	breadcrumb,
+	title,
+	badge,
+	meta,
+	showRollup = true,
+	showSectionBreakdown = true,
 }: {
 	daily: DailyStudyStat[];
 	attempts: AttemptHistoryEntry[];
 	mastery: UserMastery;
 	today?: Date;
+	/** What names the page on the left of the toolbar. */
+	breadcrumb?: ReactNode;
+	title?: ReactNode;
+	/** A chip beside the title: the kind of thing the page is about. */
+	badge?: ReactNode;
+	/** The line under the title: where this entity sits. */
+	meta?: ReactNode;
+	/** Off when the page is already one course: the tree would have one branch. */
+	showRollup?: boolean;
+	/** Off on a single section: a scatter of one point compares nothing. */
+	showSectionBreakdown?: boolean;
 }) {
-	const [period, setPeriod] = useState<ExplorerPeriod>("all");
+	const [period, setPeriod] = useState<ExplorerPeriod>("year");
 	const [mode, setMode] = useState<ExplorerMode>("both");
 
 	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
+	// What the page covers, in facts rather than a slogan: the attempts are newest
+	// first, so the oldest one is where this history starts.
+	const since = attempts.at(-1)?.completedAt;
 	const scores = useMemo(() => attempts.map(attempt => attempt.score), [attempts]);
 
 	return (
 		<div className="@container flex flex-col gap-4">
 			<PageToolbar
-				breadcrumb={<UserBreadcrumb current="Analytics" />}
+				breadcrumb={breadcrumb ?? <UserBreadcrumb current="Analytics" />}
+				title={title ?? "Analytics"}
+				badge={badge}
+				meta={
+					meta ??
+					(since
+						? `${attempts.length} quiz completati, dal ${formatDate(since)}`
+						: undefined)
+				}
 				actions={
 					<>
 						<SelectChip
@@ -116,16 +145,24 @@ export function AnalyticsView({
 					<WhenYouStudyCard attempts={attempts} today={today} />
 				</div>
 
-				<div className="@[900px]:col-span-4">
+				<div
+					className={
+						showSectionBreakdown ? "@[900px]:col-span-4" : "@[900px]:col-span-12"
+					}
+				>
 					<MasteryCard mastery={mastery} />
 				</div>
-				<div className="@[900px]:col-span-8">
-					<SpeedAccuracy sections={mastery.sections} />
-				</div>
+				{showSectionBreakdown && (
+					<div className="@[900px]:col-span-8">
+						<SpeedAccuracy sections={mastery.sections} />
+					</div>
+				)}
 
-				<div className="@[900px]:col-span-12">
-					<ProgressRollup courses={rollup} />
-				</div>
+				{showRollup && (
+					<div className="@[900px]:col-span-12">
+						<ProgressRollup courses={rollup} />
+					</div>
+				)}
 				<div className="@[900px]:col-span-12">
 					<RecentAttempts attempts={attempts} />
 				</div>
