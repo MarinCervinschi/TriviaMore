@@ -11,7 +11,6 @@ import {
 	toggleBookmarkFn,
 	updateProfileFn,
 } from "./api";
-import type { AttemptHistoryEntry } from "./types";
 
 const CLASS_INVALIDATE_KEYS = [
 	["user", "classes"],
@@ -110,56 +109,23 @@ export function useToggleBookmark() {
 }
 
 /**
- * Stars an attempt. The list is patched before the round trip and rolled back if
- * it fails: a star that waits for the server reads as a broken button, and the
- * call carries the wanted value, so a double click cannot undo itself.
+ * Stars an attempt, through the shared wrapper: the success toast, the undo and
+ * the error path all come from there. A toggle is its own inverse, so the undo is
+ * the same call with the value flipped back.
  */
 export function useAttemptFavorite() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: ({
-			attemptId,
-			isFavorite,
-		}: {
-			attemptId: string;
-			isFavorite: boolean;
-		}) => setAttemptFavoriteFn({ data: { attemptId, isFavorite } }),
-		onMutate: async ({ attemptId, isFavorite }) => {
-			const key = ["user", "attempt-history"];
-			await queryClient.cancelQueries({ queryKey: key });
-			const previous = queryClient.getQueriesData<AttemptHistoryEntry[]>({
-				queryKey: key,
-			});
-			for (const [queryKey, rows] of previous) {
-				if (!rows) continue;
-				queryClient.setQueryData(
-					queryKey,
-					rows.map(row => (row.id === attemptId ? { ...row, isFavorite } : row))
-				);
-			}
-			return { previous };
-		},
-		onSuccess: (_result, { attemptId, isFavorite }) => {
-			// Reversible and frequent, so it gets an undo rather than a confirmation —
-			// and the reversal is the same call with the value flipped back.
-			toastUndo(isFavorite ? "Aggiunto ai preferiti" : "Rimosso dai preferiti", () => {
-				setAttemptFavoriteFn({ data: { attemptId, isFavorite: !isFavorite } })
-					.then(() =>
-						queryClient.invalidateQueries({ queryKey: ["user", "attempt-history"] })
-					)
-					.catch((error: Error) => toast.error(error.message));
-			});
-		},
-		onError: (_error, _input, context) => {
-			for (const [queryKey, rows] of context?.previous ?? []) {
-				queryClient.setQueryData(queryKey, rows);
-			}
-			toast.error("Non è stato possibile salvare il preferito");
-		},
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["user", "attempt-history"] });
-			queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
-		},
-	});
+	return useMutationWithToast<{ attemptId: string; isFavorite: boolean }, unknown>(
+		setAttemptFavoriteFn,
+		{
+			successMessage: "Preferiti aggiornati",
+			invalidateKeys: [
+				["user", "attempt-history"],
+				["quiz", "results"],
+			],
+			undo: input =>
+				setAttemptFavoriteFn({
+					data: { attemptId: input.attemptId, isFavorite: !input.isFavorite },
+				}),
+		}
+	);
 }
