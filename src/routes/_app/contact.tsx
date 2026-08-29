@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { ContactForm } from "@/components/contact/contact-form";
 import { GithubIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { CardTexture } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
@@ -198,8 +198,8 @@ function ContactPage() {
 					<div className="grid gap-12 lg:grid-cols-5">
 						{/* Form — takes 3 cols */}
 						<motion.div className="lg:col-span-3" variants={item}>
-							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<div className="relative">
+							<InsetCard>
+								<div className="relative p-6 sm:p-8">
 									<div className="mb-6 flex items-center gap-3">
 										<div className="bg-primary/10 inline-flex rounded-xl p-3">
 											<Plane2Icon className="text-brand h-5 w-5" />
@@ -215,15 +215,14 @@ function ContactPage() {
 									</div>
 									<ContactForm />
 								</div>
-							</div>
+							</InsetCard>
 						</motion.div>
 
 						{/* Sidebar — takes 2 cols */}
 						<motion.div className="space-y-6 lg:col-span-2" variants={item}>
 							{/* GitHub card */}
-							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<CardTexture placement="tr" />
-								<div className="relative">
+							<InsetCard texture="tr">
+								<div className="relative p-6 sm:p-8">
 									<GithubIcon className="mb-4 h-10 w-10" />
 									<h3 className="mb-2 text-lg font-semibold tracking-tight">
 										Contribuisci su GitHub
@@ -243,28 +242,29 @@ function ContactPage() {
 										</a>
 									</Button>
 								</div>
-							</div>
+							</InsetCard>
 
 							{/* Guidelines */}
-							<div className="bg-card relative overflow-hidden rounded-2xl border p-6 sm:p-8">
-								<CardTexture placement="tr" />
-								<h3 className="relative mb-4 text-lg font-semibold tracking-tight">
-									Linee guida
-								</h3>
-								<div className="relative space-y-3">
-									{[
-										"Sii rispettoso e costruttivo",
-										"Fornisci dettagli chiari nei report",
-										"Cerca nelle issue esistenti prima",
-										"Segui le linee guida del progetto",
-									].map(rule => (
-										<div key={rule} className="flex items-start gap-3">
-											<div className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
-											<p className="text-muted-foreground text-sm">{rule}</p>
-										</div>
-									))}
+							<InsetCard texture="tr">
+								<div className="relative p-6 sm:p-8">
+									<h3 className="mb-4 text-lg font-semibold tracking-tight">
+										Linee guida
+									</h3>
+									<div className="space-y-3">
+										{[
+											"Sii rispettoso e costruttivo",
+											"Fornisci dettagli chiari nei report",
+											"Cerca nelle issue esistenti prima",
+											"Segui le linee guida del progetto",
+										].map(rule => (
+											<div key={rule} className="flex items-start gap-3">
+												<div className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
+												<p className="text-muted-foreground text-sm">{rule}</p>
+											</div>
+										))}
+									</div>
 								</div>
-							</div>
+							</InsetCard>
 						</motion.div>
 					</div>
 				</motion.div>
@@ -286,11 +286,13 @@ function ContactPage() {
 						</h2>
 					</div>
 
-					<div className="bg-card rounded-2xl border p-6 sm:p-8">
-						{faqs.map(faq => (
-							<FAQItem key={faq.q} q={faq.q} a={faq.a} />
-						))}
-					</div>
+					<InsetCard>
+						<div className="p-6 sm:p-8">
+							{faqs.map(faq => (
+								<FAQItem key={faq.q} q={faq.q} a={faq.a} />
+							))}
+						</div>
+					</InsetCard>
 				</motion.div>
 			</section>
 		</div>
