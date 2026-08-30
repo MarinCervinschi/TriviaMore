@@ -27,3 +27,11 @@ export function formatTimeSpent(milliseconds: number): string {
 	if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
 	return `${seconds}s`;
 }
+
+/** A duration already in whole seconds, short form: "43s", "1m 20s", "2m". */
+export function formatSeconds(seconds: number): string {
+	if (seconds < 60) return `${seconds}s`;
+	const minutes = Math.floor(seconds / 60);
+	const rest = seconds % 60;
+	return rest ? `${minutes}m ${rest}s` : `${minutes}m`;
+}
