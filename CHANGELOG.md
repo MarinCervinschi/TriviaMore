@@ -12,6 +12,75 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.2.0 — 2026-08-30
+
+The restyle lands. One frame — `InsetCard` — replaces the surfaces five areas had hand-rolled, the
+outcome screens are rebuilt around what a student actually needs after a run, and the analytics hub
+gains detail pages and a window that lives in the URL.
+
+### Added
+
+- **`InsetCard`** — the muted frame around a card panel, previously hand-rolled in five places and now
+  the surface for browse, the landing, the legal screens, about and contact, search states, the request
+  detail, the admin detail panels, the settings and quiz question panels, the stat tiles and their
+  skeletons, the data table and the score panels. (#127, #146, #148, #156)
+- **The quiz results page, rebuilt.** The grade sits on the five bands with the distance to the next
+  one; blank answers are counted apart from wrong ones, which under a penalty are not the same event;
+  pace is read against the time limit in a simulation or the student's own average on the section;
+  accuracy is split by difficulty; a penalised run shows where its points went. The question review
+  moves onto `InsetCard` and opens filtered to what is left to go back to. (#157)
+- **The attempt's run on its section** — every completed attempt on the same section in the same mode,
+  so a result says whether it is going anywhere. The series stops at the attempt being viewed. (#157)
+- **Flashcard results** on the same vocabulary: deck coverage instead of a grade, and the card list
+  filtered to what was never turned over. (#157)
+- **Starred attempts** — `quiz_attempts.is_favorite`, an optimistic star with an undo toast, and
+  favourites as a filter on the history rather than a page of their own. (#147)
+- **Analytics detail pages** for course, insegnamento and section on one shared view, with the window
+  — period and mode — carried in the URL. (#147)
+- **A segmented control**, for a filter whose two or three options are worth showing at once. (#157)
+- **The quiz header names the run** — the section, or the class when it is an exam simulation. (#127)
+- **Charts**: a scatter plot, donut variants and a frameless heatmap. (#127)
+
+### Changed
+
+- **`/user/progress` is now `/user/analytics`**, the old address redirecting. (#147)
+- **One breadcrumb**, built on the `ui/breadcrumb` primitive: semantic markup, a dropdown for the
+  collapsed middle, and labels cut at a character budget with the full name in a tooltip. (#127, #148)
+- **The question is set apart from its answers.** Both were `prose-sm` and the options carried
+  `border-2` against the question's single hairline, so the thing to read looked lighter than the
+  things to pick. True/false options are sized as controls rather than as cards. (#157)
+- **One table names the grades.** `GRADE_BANDS` carries the name and the mark; the parallel
+  six-level `getGradeDescription` contradicted it and is gone. (#157)
+- The analytics window and the home progress summary both open on the last year. (#147)
+- Mastery exposes every ranked section rather than the two ends, and narrows by window and mode. (#147)
+- Every chart goes through `ChartCard`. (#127)
+- The browse path helpers moved to a client-safe module, so a breadcrumb can build the same routes a
+  query does. (#157)
+
+### Fixed
+
+- **The session sliders cap at the limit the schemas enforce.** `startQuizFn` takes at most 100
+  questions, but the number lived only inside the zod schema: a section with more than that — and an
+  exam simulation, which draws from every section of a class, reaches it easily — let the slider ask
+  for more, and the run died on a validation error the student could do nothing about.
+- The breadcrumb tooltip appears only when the label is really clipped, measured rather than counted
+  from a character budget in `ch`; its separator sits on the row's centre instead of the text baseline.
+- A ratio with no data behind it renders as a gap, not as a zero. (#147)
+- The inset panel is always positioned, so its texture cannot escape the panel.
+- The toaster renders on our own tokens.
+
+### Removed
+
+- **Code nothing reaches**, found by sweeping every export in `src` for references across the repo:
+  the client-side quiz scorer superseded when grading moved server-side, three helpers alive only in
+  their own tests, a duplicate family of request submission schemas that nothing validated with, two
+  unused query modules, and three admin hooks the course page bypasses by calling the endpoints itself.
+
+### Migrations
+
+- `0018_add_attempt_favorite.sql` — adds `quiz_attempts.is_favorite` and a partial index on the
+  starred rows. Not destructive.
+
 ## 3.1.0 — 2026-08-25
 
 The server-first rewrite, the progress hub, and the move off Vercel. Everything the app reads now
