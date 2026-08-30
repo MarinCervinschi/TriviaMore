@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+	GRADE_BANDS,
 	formatThirtyScaleGrade,
 	getGradeChartColor,
 	getGradeColor,
-	getGradeDescription,
+	gradeBandIndex,
+	pointsToNextBand,
 } from "./grading";
 
 describe("formatThirtyScaleGrade", () => {
@@ -60,17 +62,35 @@ describe("getGradeChartColor", () => {
 	});
 });
 
-describe("getGradeDescription", () => {
+describe("gradeBandIndex", () => {
 	it.each([
-		[17, "Insufficiente"],
-		[18, "Sufficiente"],
-		[20, "Sufficiente"],
-		[21, "Discreto"],
-		[24, "Buono"],
-		[27, "Ottimo"],
-		[30, "Ottimo"],
-		[31, "Eccellente"],
-	])("maps %d to %s", (score, expected) => {
-		expect(getGradeDescription(score)).toBe(expected);
+		[0, 0],
+		[17.9, 0],
+		[18, 1],
+		[23.9, 1],
+		[24, 2],
+		[26.9, 2],
+		[27, 3],
+		[30, 3],
+		[30.1, 4],
+		[33, 4],
+	])("puts %s in band %s", (score, index) => {
+		expect(gradeBandIndex(score)).toBe(index);
+	});
+});
+
+describe("pointsToNextBand", () => {
+	it("counts up to the floor of the band above", () => {
+		expect(pointsToNextBand(16.5)).toEqual({ points: 1.5, band: GRADE_BANDS[1] });
+		expect(pointsToNextBand(26.4)).toEqual({ points: 0.6, band: GRADE_BANDS[3] });
+	});
+
+	it("rounds to a tenth, so the copy never reads 0.6000000000000014", () => {
+		expect(pointsToNextBand(23.4)?.points).toBe(0.6);
+	});
+
+	it("has nothing left to reach in the top band", () => {
+		expect(pointsToNextBand(30.5)).toBeNull();
+		expect(pointsToNextBand(33)).toBeNull();
 	});
 });
