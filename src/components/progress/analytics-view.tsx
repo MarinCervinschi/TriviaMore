@@ -26,7 +26,7 @@ import { formatDate } from "@/lib/utils/format";
 
 import { ConsistencyCard } from "./consistency-card";
 import { GradeDistribution } from "./grade-distribution";
-import { MasteryCard } from "./mastery-panel";
+import { MasteryCard } from "./mastery-card";
 import { MetricExplorer } from "./metric-explorer";
 import { MetricKpis } from "./metric-kpis";
 import { ProgressRollup } from "./progress-rollup";
