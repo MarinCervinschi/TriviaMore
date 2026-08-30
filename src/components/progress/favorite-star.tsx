@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 /**
  * The star on an attempt. It sends the wanted value rather than a flip, so a
  * second click while the first is in flight settles on what the user last asked
- * for; the list is patched optimistically, so the star never lags the click.
+ * for. The icon follows the refetched list, not the click: there is no optimistic
+ * patch, so it settles a round trip late.
  */
 export function FavoriteStar({
 	attemptId,

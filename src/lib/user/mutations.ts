@@ -120,6 +120,7 @@ export function useAttemptFavorite() {
 			successMessage: "Preferiti aggiornati",
 			invalidateKeys: [
 				["user", "attempt-history"],
+				["user", "profile"],
 				["quiz", "results"],
 			],
 			undo: input =>
