@@ -1,5 +1,7 @@
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 
+import { sessionHint } from "@/lib/shared/session";
+
 import { AnimatedBlock } from "./animated-block";
 import { SliderWithInput } from "./session-form-blocks";
 import { CardStackBlock, Eyebrow } from "./summary-blocks";
@@ -11,10 +13,14 @@ export function FlashcardConfigFields({
 	cardCount,
 	setCardCount,
 	maxCards,
+	available,
 }: {
 	cardCount: number;
 	setCardCount: (v: number) => void;
+	/** The most this session may draw: the section's own total, capped. */
 	maxCards: number;
+	/** How many exist, so the hint never claims "all" while showing the ceiling. */
+	available?: number;
 }) {
 	return (
 		<>
@@ -25,11 +31,7 @@ export function FlashcardConfigFields({
 					onChange={setCardCount}
 					min={1}
 					max={maxCards}
-					hint={
-						cardCount === maxCards
-							? `Tutte (${maxCards})`
-							: `${cardCount} di ${maxCards}`
-					}
+					hint={sessionHint(cardCount, maxCards, available ?? maxCards)}
 				/>
 			</AnimatedBlock>
 			<AnimatedBlock>
