@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { sectionBrowsePath } from "@/lib/catalog/service";
+import { sectionBrowsePath } from "@/lib/catalog/paths";
 
 import type { MasteryInput } from "../schemas";
 import type { MasteryBreakdown, SectionAccuracy, UserMastery } from "../types";

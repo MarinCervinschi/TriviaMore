@@ -6,7 +6,8 @@ import { evaluationModes, questions } from "@/db/schema";
 import { assertSectionAccess } from "@/lib/auth/checks";
 import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
-import { accessibleSectionIdsInClass, sectionBrowsePath } from "@/lib/catalog/service";
+import { sectionBrowsePath } from "@/lib/catalog/paths";
+import { accessibleSectionIdsInClass } from "@/lib/catalog/service";
 import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
