@@ -18,6 +18,7 @@ import {
 import { buildProgressRollup } from "@/lib/user/rollup";
 import type {
 	AttemptHistoryEntry,
+	DailyFlashcardDay,
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
@@ -58,6 +59,7 @@ const MODES: ChipOption<ExplorerMode>[] = [
  */
 export function AnalyticsView({
 	daily,
+	flashcardDays,
 	attempts,
 	mastery,
 	today,
@@ -73,6 +75,7 @@ export function AnalyticsView({
 	showSectionBreakdown = true,
 }: {
 	daily: DailyStudyStat[];
+	flashcardDays?: DailyFlashcardDay[];
 	attempts: AttemptHistoryEntry[];
 	mastery: UserMastery;
 	today?: Date;
@@ -156,7 +159,12 @@ export function AnalyticsView({
 				</div>
 
 				<div className="@[900px]:col-span-8">
-					<ConsistencyCard daily={daily} attempts={attempts} today={today} />
+					<ConsistencyCard
+						daily={daily}
+						flashcardDays={flashcardDays}
+						attempts={attempts}
+						today={today}
+					/>
 				</div>
 				<div className="@[900px]:col-span-4">
 					<WhenYouStudyCard attempts={windowed} today={today} />

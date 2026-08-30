@@ -5,6 +5,7 @@ import { STALE_TIME } from "@/lib/shared/cache";
 import {
 	getAttemptHistoryFn,
 	getBookmarkedQuestionIdsFn,
+	getFlashcardDaysFn,
 	getMasteryFn,
 	getRecentClassesFn,
 	getStudyStatsFn,
@@ -55,6 +56,13 @@ export const userQueries = {
 		queryOptions({
 			queryKey: ["user", "mastery", input ?? null],
 			queryFn: () => getMasteryFn(input ? { data: input } : undefined),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+
+	flashcardDays: (scope?: MasteryScope) =>
+		queryOptions({
+			queryKey: ["user", "flashcard-days", scope ?? null],
+			queryFn: () => getFlashcardDaysFn(scope ? { data: scope } : undefined),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 

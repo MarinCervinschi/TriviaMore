@@ -1,6 +1,7 @@
 export { addUserClassFn } from "./add-user-class";
 export { getAttemptHistoryFn } from "./get-attempt-history";
 export { getBookmarkedQuestionIdsFn } from "./get-bookmarked-question-ids";
+export { getFlashcardDaysFn } from "./get-flashcard-days";
 export { getMasteryFn } from "./get-mastery";
 export { getStudyStatsFn } from "./get-study-stats";
 export { getRecentClassesFn } from "./get-recent-classes";

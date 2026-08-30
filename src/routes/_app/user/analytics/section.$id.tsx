@@ -38,6 +38,7 @@ function SectionProgress() {
 		placeholderData: previous => previous,
 	});
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats(scope));
+	const { data: flashcardDays } = useSuspenseQuery(userQueries.flashcardDays(scope));
 
 	const first = attempts[0];
 
@@ -52,6 +53,7 @@ function SectionProgress() {
 			}
 			attempts={attempts}
 			daily={daily}
+			flashcardDays={flashcardDays}
 			mastery={mastery}
 			period={window.period}
 			mode={window.mode}
