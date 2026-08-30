@@ -58,29 +58,6 @@ export type UserAnswer = {
 	score?: number;
 };
 
-// Computed on the client when a run ends, then submitted.
-export type QuizResults = {
-	totalScore: number;
-	correctAnswers: number;
-	totalQuestions: number;
-	timeSpent: number;
-	quizId: string;
-	quizTitle: string;
-	evaluationMode: EvaluationMode;
-	questions: {
-		id: string;
-		content: string;
-		options: string[] | null;
-		correctAnswer: string[];
-	}[];
-	answers: {
-		questionId: string;
-		answer: string[];
-		isCorrect: boolean;
-		score: number;
-	}[];
-};
-
 /**
  * This attempt's place in the run of attempts on the same section, in the same
  * mode. The series stops at this attempt: the page is about this one, so "5º

@@ -199,14 +199,6 @@ export async function findCompletedAttemptHistory(
 		.limit(limit ?? Number.MAX_SAFE_INTEGER);
 }
 
-export async function countCompletedAttempts(db: DbOrTx, userId: string) {
-	const [row] = await db
-		.select({ value: count() })
-		.from(quizAttempts)
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)));
-	return row?.value ?? 0;
-}
-
 export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 	const primaryCourse = primaryCourseByClass(db);
 

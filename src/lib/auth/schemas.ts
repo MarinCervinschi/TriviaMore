@@ -62,7 +62,6 @@ export const oauthProviderSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type OAuthProviderInput = z.infer<typeof oauthProviderSchema>;
 
 // The OTP types Supabase accepts on a confirmation link. Anything else is a
 // crafted URL, not a mistake.

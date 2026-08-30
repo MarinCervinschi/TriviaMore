@@ -104,10 +104,6 @@ export function logSpan(params: {
 	});
 }
 
-export function debugEnabled(): boolean {
-	return meetsLevel("Debug", minimumLevel());
-}
-
 // `Source` is stamped here, not by the client, so it cannot be forged.
 export function shipBrowserEvent(event: {
 	level: LogLevel;

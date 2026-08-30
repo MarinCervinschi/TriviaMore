@@ -1,4 +1,4 @@
-import type { EvaluationMode, QuizQuestion, QuizResults, UserAnswer } from "./types";
+import type { EvaluationMode } from "./types";
 
 export const THIRTY_SCALE_MAX = 33;
 
@@ -106,63 +106,5 @@ export function calculateAnswerScore(
 	return {
 		score: evaluationMode.incorrectAnswerPoints,
 		isCorrect: false,
-	};
-}
-
-export function calculateQuizResults(params: {
-	userAnswers: UserAnswer[];
-	questions: QuizQuestion[];
-	evaluationMode: EvaluationMode;
-	startTime: number;
-	quizId: string;
-	quizTitle: string;
-}): QuizResults {
-	const { userAnswers, questions, evaluationMode, startTime, quizId, quizTitle } =
-		params;
-
-	let totalScore = 0;
-	let correctAnswers = 0;
-
-	const answersWithResults = userAnswers.map(userAnswer => {
-		const question = questions.find(q => q.id === userAnswer.questionId);
-		if (!question) {
-			return { ...userAnswer, isCorrect: false, score: 0 };
-		}
-
-		const { score, isCorrect } = calculateAnswerScore(
-			userAnswer.answer,
-			question.correctAnswer,
-			evaluationMode
-		);
-
-		totalScore += score;
-		if (isCorrect) correctAnswers++;
-
-		return { ...userAnswer, isCorrect, score };
-	});
-
-	const maxScore = questions.length * evaluationMode.correctAnswerPoints;
-	const normalizedScore = maxScore > 0 ? Math.round((totalScore / maxScore) * 33) : 0;
-
-	return {
-		totalScore: normalizedScore,
-		correctAnswers,
-		totalQuestions: questions.length,
-		timeSpent: Date.now() - startTime,
-		quizId,
-		quizTitle,
-		evaluationMode,
-		questions: questions.map(q => ({
-			id: q.id,
-			content: q.content,
-			options: q.options,
-			correctAnswer: q.correctAnswer,
-		})),
-		answers: answersWithResults.map(a => ({
-			questionId: a.questionId,
-			answer: a.answer,
-			isCorrect: a.isCorrect ?? false,
-			score: a.score ?? 0,
-		})),
 	};
 }

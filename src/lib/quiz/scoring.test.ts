@@ -1,15 +1,14 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
 	THIRTY_SCALE_MAX,
 	calculateAnswerScore,
-	calculateQuizResults,
 	formatScaledScore,
 	formatScaledSigned,
 	getNormalizedEvaluationScale,
 	scaleAnswerScore,
 } from "./scoring";
-import type { EvaluationMode, QuizQuestion, UserAnswer } from "./types";
+import type { EvaluationMode } from "./types";
 
 function mode(overrides: Partial<EvaluationMode> = {}): EvaluationMode {
 	return {
@@ -19,20 +18,6 @@ function mode(overrides: Partial<EvaluationMode> = {}): EvaluationMode {
 		correctAnswerPoints: 1,
 		incorrectAnswerPoints: 0,
 		partialCreditEnabled: false,
-		...overrides,
-	};
-}
-
-function question(overrides: Partial<QuizQuestion> = {}): QuizQuestion {
-	return {
-		id: "q1",
-		content: "Domanda?",
-		questionType: "MULTIPLE_CHOICE",
-		options: ["a", "b", "c", "d"],
-		correctAnswer: ["a"],
-		explanation: null,
-		difficulty: "MEDIUM",
-		order: 0,
 		...overrides,
 	};
 }
@@ -189,73 +174,5 @@ describe("formatScaledSigned", () => {
 
 	it("leaves zero unsigned", () => {
 		expect(formatScaledSigned(0)).toBe("0");
-	});
-});
-
-describe("calculateQuizResults", () => {
-	afterEach(() => {
-		vi.useRealTimers();
-	});
-
-	it("aggregates per-answer scores and normalizes to the thirty scale", () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(new Date(5000));
-
-		const questions = [
-			question({ id: "q1", correctAnswer: ["a"] }),
-			question({ id: "q2", correctAnswer: ["b"] }),
-		];
-		const userAnswers: UserAnswer[] = [
-			{ questionId: "q1", answer: ["a"] },
-			{ questionId: "q2", answer: ["x"] },
-		];
-
-		const result = calculateQuizResults({
-			userAnswers,
-			questions,
-			evaluationMode: mode(),
-			startTime: 1000,
-			quizId: "quiz-1",
-			quizTitle: "Quiz",
-		});
-
-		expect(result.correctAnswers).toBe(1);
-		expect(result.totalQuestions).toBe(2);
-		// 1 raw point of a 2-point max → round(0.5 * 33) = 17
-		expect(result.totalScore).toBe(17);
-		expect(result.timeSpent).toBe(4000);
-		expect(result.answers).toEqual([
-			{ questionId: "q1", answer: ["a"], isCorrect: true, score: 1 },
-			{ questionId: "q2", answer: ["x"], isCorrect: false, score: 0 },
-		]);
-	});
-
-	it("scores an answer whose question is missing as zero", () => {
-		const result = calculateQuizResults({
-			userAnswers: [{ questionId: "ghost", answer: ["a"] }],
-			questions: [question({ id: "q1" })],
-			evaluationMode: mode(),
-			startTime: 0,
-			quizId: "quiz-1",
-			quizTitle: "Quiz",
-		});
-
-		expect(result.correctAnswers).toBe(0);
-		expect(result.answers).toEqual([
-			{ questionId: "ghost", answer: ["a"], isCorrect: false, score: 0 },
-		]);
-	});
-
-	it("normalizes to zero when the max score is not positive", () => {
-		const result = calculateQuizResults({
-			userAnswers: [{ questionId: "q1", answer: ["a"] }],
-			questions: [question({ id: "q1", correctAnswer: ["a"] })],
-			evaluationMode: mode({ correctAnswerPoints: 0 }),
-			startTime: 0,
-			quizId: "quiz-1",
-			quizTitle: "Quiz",
-		});
-
-		expect(result.totalScore).toBe(0);
 	});
 });
