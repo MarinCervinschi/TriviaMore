@@ -108,7 +108,9 @@ export function ProgressSummary({
 	/** Injected in stories to keep them deterministic; the app uses now. */
 	today?: Date;
 }) {
-	const [period, setPeriod] = useState<SummaryPeriod>("week");
+	// A week is often a single session, or none: the year is the window that has
+	// something to show on a home page.
+	const [period, setPeriod] = useState<SummaryPeriod>("year");
 	const summary = buildStudySummary(daily, period, today ?? new Date());
 
 	return (
