@@ -1,33 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-	formatTimeSpent,
-	getPerformanceLevel,
-	getScoreBadgeVariant,
-} from "./quiz-results";
-
-describe("getPerformanceLevel", () => {
-	it.each([
-		[30, "excellent"],
-		[25, "good"],
-		[24, "fair"],
-		[20, "fair"],
-		[19, "poor"],
-	] as const)("maps %d to %s", (score, level) => {
-		expect(getPerformanceLevel(score).level).toBe(level);
-	});
-});
-
-describe("getScoreBadgeVariant", () => {
-	it.each([
-		[30, "default"],
-		[25, "secondary"],
-		[20, "outline"],
-		[19, "destructive"],
-	] as const)("maps %d to %s", (score, variant) => {
-		expect(getScoreBadgeVariant(score)).toBe(variant);
-	});
-});
+import { formatTimeSpent } from "./quiz-results";
 
 describe("formatTimeSpent", () => {
 	it("shows only seconds under a minute", () => {

@@ -96,23 +96,3 @@ export function studyActivity(startIso = "2022-01-01", endIso = "2026-08-08") {
 	}
 	return days;
 }
-
-/** A year of study days, generated from a fixed seed so the grid never moves. */
-export function studyYear(endDate = "2026-08-08") {
-	const end = new Date(`${endDate}T00:00:00Z`);
-	const days: { date: string; value: number }[] = [];
-	let seed = 20260808;
-	for (let offset = 364; offset >= 0; offset--) {
-		const day = new Date(end.getTime() - offset * 86_400_000);
-		seed = (seed * 1103515245 + 12345) % 2147483648;
-		const roll = seed % 100;
-		const weekend = day.getUTCDay() === 0 || day.getUTCDay() === 6;
-		// Term-time bursts, a quiet summer, and lighter weekends.
-		const month = day.getUTCMonth();
-		const inTerm = month <= 5 || month >= 8;
-		const chance = inTerm ? (weekend ? 35 : 70) : weekend ? 8 : 20;
-		const value = roll < chance ? 1 + (seed % (inTerm ? 8 : 3)) : 0;
-		days.push({ date: day.toISOString().slice(0, 10), value });
-	}
-	return days;
-}

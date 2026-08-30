@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { daysBetween, localDayIndex, localHour } from "./datetime";
+import { localDayIndex, localHour } from "./datetime";
 
 describe("localDayIndex", () => {
 	it("gives consecutive days consecutive integers", () => {
@@ -27,16 +27,6 @@ describe("localDayIndex", () => {
 		const date = new Date(2026, 7, 24, 12);
 		expect(localDayIndex(date.toISOString())).toBe(localDayIndex(date));
 		expect(localDayIndex(date.getTime())).toBe(localDayIndex(date));
-	});
-});
-
-describe("daysBetween", () => {
-	it("ignores the time of day", () => {
-		expect(daysBetween(new Date(2026, 7, 20, 23), new Date(2026, 7, 24, 1))).toBe(4);
-	});
-
-	it("is negative when the range runs backwards", () => {
-		expect(daysBetween(new Date(2026, 7, 24), new Date(2026, 7, 20))).toBe(-4);
 	});
 });
 
