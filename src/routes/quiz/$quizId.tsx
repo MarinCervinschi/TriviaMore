@@ -12,13 +12,14 @@ import { toast } from "sonner";
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { PageBand } from "@/components/layout/page-band";
 import { QuestionCard } from "@/components/quiz/question-card";
-import { QuizHeader } from "@/components/quiz/quiz-header";
+import { type QuizContext, QuizHeader } from "@/components/quiz/quiz-header";
 import { QuizNavigation } from "@/components/quiz/quiz-navigation";
 import { QuizProgress } from "@/components/quiz/quiz-progress";
 import { QuizSidebar, QuizSidebarContent } from "@/components/quiz/quiz-sidebar";
 import { QuizPlaySkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { cancelQuizFn, completeQuizFn } from "@/lib/quiz/api";
 import { quizQueries } from "@/lib/quiz/queries";
 import type { Quiz, UserAnswer } from "@/lib/quiz/types";
@@ -180,6 +181,13 @@ function QuizPage() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [currentIndex, quiz?.questions.length]);
 
+	// The exam sentinel is a stable id, not a place the student recognises: a
+	// simulation is over its class, and that is the name worth showing.
+	const exam = quiz.section.name === EXAM_SIMULATION_SECTION;
+	const quizContext: QuizContext = exam
+		? { kind: "exam", name: quiz.section.className }
+		: { kind: "section", name: quiz.section.name };
+
 	const currentQuestion = quiz.questions[currentIndex];
 	const currentAnswers =
 		userAnswers.find(ua => ua.questionId === currentQuestion?.id)?.answer ?? [];
@@ -195,6 +203,7 @@ function QuizPage() {
 				questionIndex={currentIndex}
 				totalQuestions={quiz.questions.length}
 				timeLimit={quiz.timeLimit}
+				context={quizContext}
 				sidebarOpen={sidebarOpen}
 				onToggleSidebar={toggleSidebar}
 				onTimeUp={handleComplete}
