@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
@@ -56,6 +56,30 @@ function CrumbIcon({ crumb, boxed }: { crumb: Crumb; boxed: boolean }) {
 	);
 }
 
+/**
+ * Whether the label is actually showing an ellipsis. Measured rather than counted:
+ * the cut is `maxLabel` in `ch`, and a `ch` is the width of a zero, so a label of
+ * 26 narrow characters still fits inside 22ch. Counting characters put a tooltip
+ * on names that were rendering in full.
+ */
+function useIsClipped<T extends HTMLElement>() {
+	const ref = useRef<T>(null);
+	const [clipped, setClipped] = useState(false);
+
+	useEffect(() => {
+		const node = ref.current;
+		if (!node) return;
+		// A pixel of tolerance: sub-pixel rounding otherwise reports a clip that is not there.
+		const measure = () => setClipped(node.scrollWidth > node.clientWidth + 1);
+		measure();
+		const observer = new ResizeObserver(measure);
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [ref]);
+
+	return [ref, clipped] as const;
+}
+
 function CrumbBody({
 	crumb,
 	boxed,
@@ -65,17 +89,19 @@ function CrumbBody({
 	boxed: boolean;
 	maxLabel: number;
 }) {
+	const [labelRef, clipped] = useIsClipped<HTMLSpanElement>();
+
 	const body = (
 		<span className="inline-flex min-w-0 items-center gap-1.5">
 			<CrumbIcon crumb={crumb} boxed={boxed} />
 			{/* `ch` cuts by character while still respecting the font's own metrics. */}
-			<span className="truncate" style={{ maxWidth: `${maxLabel}ch` }}>
+			<span ref={labelRef} className="truncate" style={{ maxWidth: `${maxLabel}ch` }}>
 				{crumb.label}
 			</span>
 		</span>
 	);
 
-	if (crumb.label.length <= maxLabel) return body;
+	if (!clipped) return body;
 
 	return (
 		<Tooltip>
