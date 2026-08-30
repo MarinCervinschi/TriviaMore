@@ -1,5 +1,6 @@
 import type {
 	AttemptHistoryEntry,
+	DailyFlashcardDay,
 	DailyStudyStat,
 	SectionAccuracy,
 	UserMastery,
@@ -261,3 +262,16 @@ export const MASTERY: UserMastery = {
 	weakSections: SECTIONS.filter(s => s.correct / s.total < 0.6).slice(0, 6),
 	strongSections: SECTIONS.filter(s => s.correct / s.total >= 0.75).slice(0, 6),
 };
+
+/** On days with no quiz, so the story shows whether the calendar counts them. */
+export const FLASHCARD_DAYS: DailyFlashcardDay[] = (() => {
+	const quizDays = new Set(DAILY.map(row => row.date));
+	const days: DailyFlashcardDay[] = [];
+	for (let back = 1; back <= 90 && days.length < 14; back += 1) {
+		if (back % 6 !== 0) continue;
+		const date = new Date((TODAY_DAY - back) * 86_400_000).toISOString().slice(0, 10);
+		if (quizDays.has(date)) continue;
+		days.push({ date, sessions: 1 + (back % 3) });
+	}
+	return days.sort((a, b) => a.date.localeCompare(b.date));
+})();

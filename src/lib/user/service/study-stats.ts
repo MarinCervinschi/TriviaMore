@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { getDb } from "@/db";
 
 import type { MasteryScope } from "../schemas";
-import type { DailyStudyStat } from "../types";
+import type { DailyFlashcardDay, DailyStudyStat } from "../types";
 import { sectionScopeSql } from "./scope";
 
 // Rows without a mode snapshot are dropped so the split stays clean (the #159
@@ -70,4 +70,25 @@ export async function getDailyStudyStats(
 		answersTotal: row.answers_total,
 		answersCorrect: row.answers_correct,
 	}));
+}
+
+// Kept out of `getDailyStudyStats`: a deck carries no grade and no verdicts, so
+// folding it into those rows would move every average they feed.
+export async function getDailyFlashcardDays(
+	userId: string,
+	scope?: MasteryScope
+): Promise<DailyFlashcardDay[]> {
+	const db = getDb();
+	const scoped = sectionScopeSql(scope, sql`fa.section_id`);
+
+	const result = await db.execute<{ date: string; sessions: number }>(sql`
+		select to_char(fa.completed_at at time zone 'utc', 'YYYY-MM-DD') as date,
+		       count(*)::int as sessions
+		  from quiz.flashcard_attempts fa
+		 where fa.user_id = ${userId}${scoped}
+		 group by date
+		 order by date
+	`);
+
+	return result.rows.map(row => ({ date: row.date, sessions: row.sessions }));
 }

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { ConsistencyCard } from "./consistency-card";
-import { ATTEMPTS, DAILY, TODAY } from "./fixtures";
+import { ATTEMPTS, DAILY, FLASHCARD_DAYS, TODAY } from "./fixtures";
 import { WhenYouStudyCard } from "./study-rhythm";
 
 // The two widths this row gets on the page: eight columns and four.
@@ -20,7 +20,12 @@ export const Default: Story = {
 	name: "Costanza",
 	render: () => (
 		<div style={{ width: WIDE }}>
-			<ConsistencyCard daily={DAILY} attempts={ATTEMPTS} today={TODAY} />
+			<ConsistencyCard
+				daily={DAILY}
+				flashcardDays={FLASHCARD_DAYS}
+				attempts={ATTEMPTS}
+				today={TODAY}
+			/>
 		</div>
 	),
 };
@@ -40,7 +45,12 @@ export const LaRiga: Story = {
 	render: () => (
 		<div className="flex items-stretch gap-4" style={{ width: WIDE + NARROW + 16 }}>
 			<div style={{ width: WIDE }}>
-				<ConsistencyCard daily={DAILY} attempts={ATTEMPTS} today={TODAY} />
+				<ConsistencyCard
+					daily={DAILY}
+					flashcardDays={FLASHCARD_DAYS}
+					attempts={ATTEMPTS}
+					today={TODAY}
+				/>
 			</div>
 			<div style={{ width: NARROW }}>
 				<WhenYouStudyCard attempts={ATTEMPTS} today={TODAY} />

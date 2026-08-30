@@ -17,19 +17,32 @@ import { IconTile } from "@/components/ui/icon-tile";
 import { Separator } from "@/components/ui/separator";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { computeStudyRhythm } from "@/lib/user/rhythm";
-import type { AttemptHistoryEntry, DailyStudyStat } from "@/lib/user/types";
+import type {
+	AttemptHistoryEntry,
+	DailyFlashcardDay,
+	DailyStudyStat,
+} from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 
-/** One square per day, both modes summed: the heatmap counts sittings, not marks. */
-function toCalendar(daily: DailyStudyStat[]): CalendarDatum[] {
+/** One square per day, quizzes and decks summed: it counts sittings, not marks. */
+function toCalendar(
+	daily: DailyStudyStat[],
+	flashcardDays: DailyFlashcardDay[]
+): CalendarDatum[] {
 	const perDay = new Map<string, number>();
 	for (const row of daily) {
 		perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.quizzes);
+	}
+	for (const row of flashcardDays) {
+		perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.sessions);
 	}
 	return [...perDay.entries()]
 		.map(([date, value]) => ({ date, value }))
 		.sort((a, b) => a.date.localeCompare(b.date));
 }
+
+// Hoisted: a literal default would be a new array each render, re-running the memo.
+const NO_FLASHCARDS: DailyFlashcardDay[] = [];
 
 function Figure({
 	icon: LeadIcon,
@@ -66,10 +79,12 @@ function Figure({
  */
 export function ConsistencyCard({
 	daily,
+	flashcardDays = NO_FLASHCARDS,
 	attempts,
 	today,
 }: {
 	daily: DailyStudyStat[];
+	flashcardDays?: DailyFlashcardDay[];
 	attempts: AttemptHistoryEntry[];
 	today?: Date;
 }) {
@@ -79,7 +94,7 @@ export function ConsistencyCard({
 		() => (hydrated ? computeStudyRhythm(attempts, now) : null),
 		[hydrated, attempts, now]
 	);
-	const data = useMemo(() => toCalendar(daily), [daily]);
+	const data = useMemo(() => toCalendar(daily, flashcardDays), [daily, flashcardDays]);
 
 	// The chip speaks strings (a radio group's value is one); the heatmap's own
 	// view type carries the year as a number, so it is parsed back on the way out.
@@ -96,7 +111,7 @@ export function ConsistencyCard({
 	return (
 		<ChartCard
 			title="Costanza"
-			description="Un quadretto per giorno, più intenso dove hai fatto più quiz"
+			description="Un quadretto per giorno, più intenso dove hai studiato di più"
 			texture="top"
 			className="h-full"
 			actions={

@@ -49,7 +49,10 @@ import {
 } from "../../src/lib/user/service/classes.ts";
 import { getMastery } from "../../src/lib/user/service/mastery.ts";
 import { getUserProfile } from "../../src/lib/user/service/profile.ts";
-import { getDailyStudyStats } from "../../src/lib/user/service/study-stats.ts";
+import {
+	getDailyFlashcardDays,
+	getDailyStudyStats,
+} from "../../src/lib/user/service/study-stats.ts";
 
 let failures = 0;
 
@@ -218,6 +221,10 @@ if (userId) {
 	await check("user.getDailyStudyStats", () => getDailyStudyStats(userId));
 	await check("user.getDailyStudyStats (scoped)", () =>
 		getDailyStudyStats(userId, { level: "section", id: sample.section_id })
+	);
+	await check("user.getDailyFlashcardDays", () => getDailyFlashcardDays(userId));
+	await check("user.getDailyFlashcardDays (scoped)", () =>
+		getDailyFlashcardDays(userId, { level: "section", id: sample.section_id })
 	);
 	await check("user.isClassSaved", () =>
 		isClassSaved(userId, "00000000-0000-0000-0000-000000000000")

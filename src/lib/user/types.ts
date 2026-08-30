@@ -85,6 +85,12 @@ export type DailyStudyStat = {
 	answersCorrect: number;
 };
 
+// One UTC day of flashcard study; the calendar sums these with the quiz days.
+export type DailyFlashcardDay = {
+	date: string;
+	sessions: number;
+};
+
 // Per-question mastery, aggregated from the frozen `answer_attempts` verdicts.
 export type MasteryBreakdown = { key: string; total: number; correct: number };
 

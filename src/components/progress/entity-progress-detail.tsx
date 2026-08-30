@@ -6,6 +6,7 @@ import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 import type {
 	AttemptHistoryEntry,
+	DailyFlashcardDay,
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
@@ -24,6 +25,7 @@ export function EntityProgressDetail({
 	context,
 	attempts,
 	daily,
+	flashcardDays,
 	mastery,
 	showSections,
 	period,
@@ -36,6 +38,7 @@ export function EntityProgressDetail({
 	context?: string;
 	attempts: AttemptHistoryEntry[];
 	daily: DailyStudyStat[];
+	flashcardDays?: DailyFlashcardDay[];
 	mastery: UserMastery;
 	/** False on a section: there are no sub-sections to break down. */
 	showSections: boolean;
@@ -66,6 +69,7 @@ export function EntityProgressDetail({
 		<div className="container space-y-4 py-6 pb-10">
 			<AnalyticsView
 				daily={daily}
+				flashcardDays={flashcardDays}
 				attempts={attempts}
 				mastery={mastery}
 				period={period}

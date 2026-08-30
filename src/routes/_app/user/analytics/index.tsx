@@ -22,6 +22,7 @@ export const Route = createFileRoute("/_app/user/analytics/")({
 			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
 			context.queryClient.ensureQueryData(userQueries.mastery()),
 			context.queryClient.ensureQueryData(userQueries.studyStats()),
+			context.queryClient.ensureQueryData(userQueries.flashcardDays()),
 		]),
 	head: () => seoHead({ title: "Analytics", noindex: true }),
 	pendingComponent: AnalyticsSkeleton,
@@ -33,6 +34,7 @@ function AnalyticsPage() {
 	const window = useAnalyticsWindow(search, Route.fullPath);
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
+	const { data: flashcardDays } = useSuspenseQuery(userQueries.flashcardDays());
 	// Not suspense: the window changes under the user, and a refetch must not
 	// throw the whole page back to its skeleton.
 	const { data: mastery } = useQuery({
@@ -57,6 +59,7 @@ function AnalyticsPage() {
 			) : mastery ? (
 				<AnalyticsView
 					daily={daily}
+					flashcardDays={flashcardDays}
 					attempts={attempts}
 					mastery={mastery}
 					period={window.period}
