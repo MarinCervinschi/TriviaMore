@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
 import { answerAttempts, classes, quizAttempts, quizzes, sections } from "@/db/schema";
@@ -242,4 +242,42 @@ export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 		.limit(1);
 
 	return attempt;
+}
+
+/**
+ * Every completed attempt this user made on one section, in one mode, oldest
+ * first — with the answers each one recorded, which is what turns a duration into
+ * a pace. The mode is part of the filter on purpose: a timed simulation with a
+ * penalty and an untimed study run are not the same measurement.
+ */
+export async function findSectionAttempts(
+	db: DbOrTx,
+	params: {
+		userId: string;
+		sectionId: string;
+		quizMode: (typeof quizAttempts.$inferSelect)["quizMode"];
+	}
+) {
+	return db
+		.select({
+			id: quizAttempts.id,
+			score: quizAttempts.score,
+			timeSpent: quizAttempts.timeSpent,
+			completedAt: quizAttempts.completedAt,
+			answers: count(answerAttempts.id),
+		})
+		.from(quizAttempts)
+		.leftJoin(answerAttempts, eq(answerAttempts.quizAttemptId, quizAttempts.id))
+		.where(
+			and(
+				eq(quizAttempts.userId, params.userId),
+				eq(quizAttempts.sectionId, params.sectionId),
+				isNotNull(quizAttempts.completedAt),
+				params.quizMode
+					? eq(quizAttempts.quizMode, params.quizMode)
+					: isNull(quizAttempts.quizMode)
+			)
+		)
+		.groupBy(quizAttempts.id)
+		.orderBy(asc(quizAttempts.completedAt));
 }
