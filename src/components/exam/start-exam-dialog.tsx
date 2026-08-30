@@ -25,6 +25,7 @@ import { useStartExamFlashcard } from "@/lib/flashcard/mutations";
 import { TIME_STEPS } from "@/lib/quiz/constants";
 import { useStartQuiz } from "@/lib/quiz/mutations";
 import { quizQueries } from "@/lib/quiz/queries";
+import { sessionCap } from "@/lib/shared/session";
 
 type ExamTab = "quiz" | "flashcard";
 
@@ -46,16 +47,16 @@ export function StartExamDialog({
 	const [tab, setTab] = useState<ExamTab>(hasQuiz ? "quiz" : "flashcard");
 
 	// Quiz state
+	const quizCap = sessionCap(maxQuizQuestions);
+	const cardCap = sessionCap(maxFlashcardQuestions);
 	const [questionCount, setQuestionCount] = useState(
-		Math.min(33, Math.max(1, maxQuizQuestions))
+		Math.min(33, Math.max(1, quizCap))
 	);
 	const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(60));
 	const [evalModeId, setEvalModeId] = useState<string | undefined>();
 
 	// Flashcard state
-	const [cardCount, setCardCount] = useState(
-		Math.min(20, Math.max(1, maxFlashcardQuestions))
-	);
+	const [cardCount, setCardCount] = useState(Math.min(20, Math.max(1, cardCap)));
 
 	const { data: evalModes } = useQuery({
 		...quizQueries.evaluationModes(),
@@ -76,7 +77,7 @@ export function StartExamDialog({
 	const handleStartQuiz = () => {
 		quizMutation.mutate({
 			sectionId,
-			questionCount: Math.min(questionCount, maxQuizQuestions),
+			questionCount: Math.min(questionCount, quizCap),
 			timeLimit,
 			quizMode: "EXAM_SIMULATION",
 			evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
@@ -86,7 +87,7 @@ export function StartExamDialog({
 	const handleStartFlashcard = () => {
 		flashcardMutation.mutate({
 			sectionId,
-			cardCount: Math.min(cardCount, maxFlashcardQuestions),
+			cardCount: Math.min(cardCount, cardCap),
 		});
 	};
 
@@ -100,14 +101,16 @@ export function StartExamDialog({
 			setEvalModeId={setEvalModeId}
 			evalModes={evalModes}
 			selectedEvalMode={selectedEvalMode}
-			maxQuestions={maxQuizQuestions}
+			maxQuestions={quizCap}
+			available={maxQuizQuestions}
 		/>
 	);
 	const flashcardFields = (
 		<FlashcardConfigFields
 			cardCount={cardCount}
 			setCardCount={setCardCount}
-			maxCards={maxFlashcardQuestions}
+			maxCards={cardCap}
+			available={maxFlashcardQuestions}
 		/>
 	);
 

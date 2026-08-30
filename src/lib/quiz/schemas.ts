@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { MAX_SESSION_ITEMS } from "@/lib/shared/session";
+
 export const startQuizSchema = z.object({
 	sectionId: z.string().uuid(),
-	questionCount: z.number().min(1).max(100).default(30),
+	questionCount: z.number().min(1).max(MAX_SESSION_ITEMS).default(30),
 	timeLimit: z.number().nullable().default(30),
 	quizMode: z.enum(["STUDY", "EXAM_SIMULATION"]).default("STUDY"),
 	evaluationModeId: z.string().uuid().optional(),
