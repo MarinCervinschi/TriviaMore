@@ -1,20 +1,13 @@
 import {
 	type LogLevel,
 	type LogProperties,
+	type SpanKind,
 	errorProperties,
 	meetsLevel,
 	parseLevel,
 } from "./clef";
 import { currentContext, newTraceId, recordAuthCheck } from "./context";
 import { ship } from "./shipper";
-
-// The server-side logging API. Never import this from a component: it reaches
-// `node:async_hooks` through the request context. Browser logging goes through
-// its own entry point.
-//
-// Property names are PascalCase, matching the `{Placeholder}` in the template —
-// Seq indexes them, so `Elapsed > 500` only works if the value is passed as a
-// property and not interpolated into the message.
 
 let minimum: LogLevel | undefined;
 let version: string | null | undefined;
@@ -24,11 +17,6 @@ function minimumLevel(): LogLevel {
 	return minimum;
 }
 
-// Coolify injects SOURCE_COMMIT at runtime. Reading it here rather than baking
-// it in at build time is deliberate: passing it as a build arg would change the
-// Dockerfile on every commit and invalidate the layer cache, which is why
-// Coolify keeps it out of builds by default. APP_VERSION is the manual override
-// for anything not deployed by Coolify.
 function appVersion(): string | null {
 	if (version === undefined) {
 		version =
@@ -53,6 +41,7 @@ function emit(
 		level,
 		template,
 		traceId: context?.traceId,
+		spanId: context?.spanId,
 		error,
 		properties: {
 			Source: context?.source ?? "job",
@@ -75,8 +64,44 @@ export const log = {
 		emit("Error", template, properties, error),
 };
 
-export function debugEnabled(): boolean {
-	return meetsLevel("Debug", minimumLevel());
+/**
+ * A completed unit of work, as a span rather than a log line: Seq nests it under
+ * the request it belongs to and shows where the time went. `startedAt` is the
+ * ISO instant the work began — the event's own timestamp closes it.
+ */
+export function logSpan(params: {
+	level: LogLevel;
+	template: string;
+	properties?: LogProperties;
+	spanId: string;
+	parentSpanId?: string;
+	startedAt: string;
+	kind: SpanKind;
+	error?: unknown;
+}): void {
+	if (!meetsLevel(params.level, minimumLevel())) return;
+
+	const context = currentContext();
+	const release = appVersion();
+
+	ship({
+		timestamp: new Date().toISOString(),
+		level: params.level,
+		template: params.template,
+		traceId: context?.traceId,
+		spanId: params.spanId,
+		parentSpanId: params.parentSpanId,
+		startTimestamp: params.startedAt,
+		spanKind: params.kind,
+		error: params.error,
+		properties: {
+			Source: context?.source ?? "job",
+			...(context?.userId ? { UserId: context.userId } : {}),
+			...(release ? { Version: release } : {}),
+			...params.properties,
+			...(params.error === undefined ? {} : errorProperties(params.error)),
+		},
+	});
 }
 
 // `Source` is stamped here, not by the client, so it cannot be forged.

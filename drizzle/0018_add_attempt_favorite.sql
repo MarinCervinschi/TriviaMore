@@ -1,0 +1,2 @@
+ALTER TABLE "quiz"."quiz_attempts" ADD COLUMN "is_favorite" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "idx_quiz_attempts_user_favorite" ON "quiz"."quiz_attempts" USING btree ("user_id" uuid_ops) WHERE is_favorite;

@@ -1,23 +1,3 @@
-export function getPerformanceLevel(score: number): {
-	level: "excellent" | "good" | "fair" | "poor";
-	label: string;
-	color: string;
-} {
-	if (score >= 30) return { level: "excellent", label: "Eccellente", color: "green" };
-	if (score >= 25) return { level: "good", label: "Buono", color: "blue" };
-	if (score >= 20) return { level: "fair", label: "Sufficiente", color: "yellow" };
-	return { level: "poor", label: "Insufficiente", color: "red" };
-}
-
-export function getScoreBadgeVariant(
-	score: number
-): "default" | "secondary" | "destructive" | "outline" {
-	if (score >= 30) return "default";
-	if (score >= 25) return "secondary";
-	if (score >= 20) return "outline";
-	return "destructive";
-}
-
 export function formatTimeSpent(milliseconds: number): string {
 	const seconds = Math.floor(milliseconds / 1000);
 	const minutes = Math.floor(seconds / 60);
@@ -26,4 +6,12 @@ export function formatTimeSpent(milliseconds: number): string {
 	if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
 	if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
 	return `${seconds}s`;
+}
+
+/** A duration already in whole seconds, short form: "43s", "1m 20s", "2m". */
+export function formatSeconds(seconds: number): string {
+	if (seconds < 60) return `${seconds}s`;
+	const minutes = Math.floor(seconds / 60);
+	const rest = seconds % 60;
+	return rest ? `${minutes}m ${rest}s` : `${minutes}m`;
 }

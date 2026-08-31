@@ -2,6 +2,7 @@ import { CalendarDateIcon } from "@solar-icons/react/linear/calendar-date";
 import { TagIcon } from "@solar-icons/react/linear/tag";
 
 import type { Icon } from "@/components/icons";
+import { IconStack } from "@/components/ui/icon-stack";
 
 interface LegalHeroProps {
 	icon: Icon;
@@ -25,9 +26,9 @@ export function LegalHero({
 }: LegalHeroProps) {
 	return (
 		<div className="space-y-4">
-			<div className="bg-primary/10 inline-flex h-12 w-12 items-center justify-center rounded-2xl">
-				<Icon className="text-brand h-6 w-6" />
-			</div>
+			<IconStack>
+				<Icon className="text-brand h-7 w-7" />
+			</IconStack>
 			<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
 			<p className="text-muted-foreground max-w-2xl text-sm leading-relaxed sm:text-base">
 				{description}

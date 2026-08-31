@@ -4,7 +4,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { BulkImportForm } from "@/components/admin/forms/bulk-import-form";
 import { QuestionForm } from "@/components/admin/forms/question-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
 	useCreateQuestion,
@@ -104,40 +104,31 @@ function AdminQuestionPage() {
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="single">
-						<Card>
-							<CardHeader>
-								<CardTitle>Crea domanda</CardTitle>
-							</CardHeader>
-							<CardContent>
+						<InsetCard title="Crea domanda">
+							<div className="p-6">
 								<QuestionForm
 									sectionId={sectionId}
 									onSubmit={data => createQuestion.mutate(data)}
 									isPending={createQuestion.isPending}
 								/>
-							</CardContent>
-						</Card>
+							</div>
+						</InsetCard>
 					</TabsContent>
 					<TabsContent value="bulk">
-						<Card>
-							<CardHeader>
-								<CardTitle>Importa domande da JSON</CardTitle>
-							</CardHeader>
-							<CardContent>
+						<InsetCard title="Importa domande da JSON">
+							<div className="p-6">
 								<BulkImportForm
 									sectionId={sectionId}
 									onSubmit={questions => createBulk.mutate(questions)}
 									isPending={createBulk.isPending}
 								/>
-							</CardContent>
-						</Card>
+							</div>
+						</InsetCard>
 					</TabsContent>
 				</Tabs>
 			) : (
-				<Card>
-					<CardHeader>
-						<CardTitle>Modifica domanda</CardTitle>
-					</CardHeader>
-					<CardContent>
+				<InsetCard title="Modifica domanda">
+					<div className="p-6">
 						{questionData && (
 							<QuestionForm
 								question={questionData}
@@ -146,8 +137,8 @@ function AdminQuestionPage() {
 								isPending={updateQuestion.isPending}
 							/>
 						)}
-					</CardContent>
-				</Card>
+					</div>
+				</InsetCard>
 			)}
 		</div>
 	);

@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+	boolean,
 	doublePrecision,
 	foreignKey,
 	index,
@@ -28,6 +30,7 @@ export const quizAttempts = quizSchema
 				withTimezone: true,
 				mode: "string",
 			}),
+			isFavorite: boolean("is_favorite").notNull().default(false),
 		},
 		table => [
 			index("idx_quiz_attempts_completed_at").using(
@@ -46,6 +49,11 @@ export const quizAttempts = quizSchema
 				"btree",
 				table.userId.asc().nullsLast().op("uuid_ops")
 			),
+			// The favourites filter is "this user's starred attempts", never a global
+			// scan of the flag, so the index leads with the user.
+			index("idx_quiz_attempts_user_favorite")
+				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
+				.where(sql`is_favorite`),
 			foreignKey({
 				columns: [table.quizId],
 				foreignColumns: [quizzes.id],

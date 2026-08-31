@@ -17,8 +17,8 @@ import { SettingsSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardTexture } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { InsetCard } from "@/components/ui/inset-card";
 import { Label } from "@/components/ui/label";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
@@ -91,8 +91,7 @@ function SettingsPage() {
 				</div>
 
 				{/* Account Details */}
-				<Card level="panel" className="relative overflow-hidden">
-					<CardTexture placement="top" alpha={0.12} />
+				<InsetCard texture="top" textureAlpha={0.12}>
 					<div className="relative p-6 sm:p-8">
 						<h2 className="mb-1 text-xl font-bold">Dettagli account</h2>
 						<p className="text-muted-foreground mb-6 text-sm">
@@ -118,7 +117,7 @@ function SettingsPage() {
 							</div>
 						</div>
 					</div>
-				</Card>
+				</InsetCard>
 
 				{/* TODO: implement account deletion with proper RLS policies */}
 				{/* <DeleteAccountSection /> */}
@@ -153,9 +152,8 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 	};
 
 	return (
-		<div className="bg-card relative overflow-hidden rounded-3xl border">
+		<InsetCard texture="top" textureAlpha={0.12}>
 			<form onSubmit={handleSubmit} className="relative p-6 sm:p-8">
-				<CardTexture placement="top" alpha={0.12} />
 				<h2 className="mb-1 text-xl font-bold">Informazioni profilo</h2>
 				<p className="text-muted-foreground mb-6 text-sm">
 					Modifica le tue informazioni personali
@@ -244,7 +242,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 					)}
 				</div>
 			</form>
-		</div>
+		</InsetCard>
 	);
 }
 

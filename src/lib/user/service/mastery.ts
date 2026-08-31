@@ -1,9 +1,9 @@
 import { sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { sectionBrowsePath } from "@/lib/catalog/service";
+import { sectionBrowsePath } from "@/lib/catalog/paths";
 
-import type { MasteryScope } from "../schemas";
+import type { MasteryInput } from "../schemas";
 import type { MasteryBreakdown, SectionAccuracy, UserMastery } from "../types";
 import { sectionScopeSql } from "./scope";
 
@@ -32,22 +32,21 @@ const PRIMARY_COURSE = sql`
 
 export async function getMastery(
 	userId: string,
-	scope?: MasteryScope
+	input?: MasteryInput
 ): Promise<UserMastery> {
 	const db = getDb();
-	// Areas, difficulty and time are all read by the ATTEMPT's section, so an exam
-	// simulation counts as its own section ("Simulazione d'esame") instead of
-	// splintering its answers across the sections its questions were drawn from.
+	const scope = input?.scope;
+	const windowed = input?.from
+		? sql` and qa.completed_at >= ${input.from}::date`
+		: sql``;
+	const byMode = input?.mode ? sql` and qa.quiz_mode = ${input.mode}` : sql``;
 	const scoped = sectionScopeSql(scope, sql`qa.section_id`);
 
-	// Time lives on the attempt (one row), answers on `answer_attempts` (many
-	// rows) — joining the two would multiply the time by the answer count. So the
-	// per-section time is summed over the distinct attempts here and joined in.
 	const ATTEMPT_TIME = sql`
 		select qa.section_id,
 		       round(sum(qa.time_spent) / 1000.0)::int as time_sec
 		  from quiz.quiz_attempts qa
-		 where qa.user_id = ${userId} and qa.time_spent is not null
+		 where qa.user_id = ${userId} and qa.time_spent is not null${windowed}${byMode}
 		 group by qa.section_id
 	`;
 
@@ -58,12 +57,11 @@ export async function getMastery(
 			       count(*) filter (where aa.is_correct)::int as correct
 			  from quiz.answer_attempts aa
 			  join quiz.quiz_attempts qa on qa.id = aa.quiz_attempt_id
-			 where qa.user_id = ${userId} and aa.difficulty is not null${scoped}
+			 where qa.user_id = ${userId} and aa.difficulty is not null${scoped}${windowed}${byMode}
 			 group by aa.difficulty
 			having count(*) filter (where aa.is_correct is not null) > 0
 		`),
-		// Every section the user has answered in, with enough answers to rank; the
-		// weak/strong tails are split from this in TS.
+
 		db.execute<{
 			section_id: string;
 			section_name: string | null;
@@ -90,7 +88,7 @@ export async function getMastery(
 			  left join catalog.classes k on k.id = s.class_id
 			  left join pc on pc.class_id = s.class_id
 			  left join at on at.section_id = qa.section_id
-			 where qa.user_id = ${userId} and qa.section_id is not null${scoped}
+			 where qa.user_id = ${userId} and qa.section_id is not null${scoped}${windowed}${byMode}
 			 group by qa.section_id, s.name, s.slug, k.name,
 			          pc.class_code, pc.course_code, pc.dept_code, at.time_sec
 			having count(*) filter (where aa.is_correct is not null) >= ${MIN_ANSWERS}
@@ -98,7 +96,7 @@ export async function getMastery(
 		db.execute<{ time_sec: number | null }>(sql`
 			select round(sum(qa.time_spent) / 1000.0)::int as time_sec
 			  from quiz.quiz_attempts qa
-			 where qa.user_id = ${userId} and qa.time_spent is not null${scoped}
+			 where qa.user_id = ${userId} and qa.time_spent is not null${scoped}${windowed}${byMode}
 		`),
 	]);
 
@@ -160,6 +158,7 @@ export async function getMastery(
 		totalAnswers,
 		avgSecondsPerQuestion,
 		byDifficulty,
+		sections: [...ranked].sort(byName).map(row => row.section),
 		weakSections,
 		strongSections,
 	};

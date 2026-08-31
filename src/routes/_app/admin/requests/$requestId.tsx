@@ -26,6 +26,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { InsetCard } from "@/components/ui/inset-card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
@@ -133,96 +134,105 @@ function AdminRequestDetailPage() {
 			/>
 
 			{/* Summary: type + outcome, then who sent it and when */}
-			<div className="bg-card space-y-4 rounded-2xl border p-6">
-				<div className="space-y-2">
-					<div className="flex flex-wrap items-center gap-2">
-						<RequestTypeBadge type={request.requestType} />
-						<RequestStatusBadge status={request.status} />
-					</div>
-					{request.handledAt && (
-						<p className="text-muted-foreground flex items-center gap-1.5 text-xs">
-							<CheckCircleIcon className="size-3.5 shrink-0" />
-							<span>
-								Gestita da{" "}
-								<span className="text-foreground font-medium">
-									{request.handledByUser?.name ?? "Team"}
-								</span>{" "}
-								· {formatDateTime(request.handledAt)}
-							</span>
-						</p>
-					)}
-				</div>
-
-				{request.user && (
-					<div className="flex items-center justify-between gap-4 border-t pt-4">
-						<div className="flex min-w-0 items-center gap-3">
-							<Avatar className="h-11 w-11">
-								<AvatarImage src={request.user.image ?? undefined} />
-								<AvatarFallback>
-									{(
-										request.user.name?.[0] ??
-										request.user.email?.[0] ??
-										"?"
-									).toUpperCase()}
-								</AvatarFallback>
-							</Avatar>
-							<div className="min-w-0 space-y-1.5">
-								<p className="text-muted-foreground eyebrow">Inviata da</p>
-								<p className="truncate text-sm font-semibold">
-									{request.user.name ?? "Utente"}
-								</p>
-								{request.user.email && (
-									<p className="text-muted-foreground truncate text-xs">
-										{request.user.email}
-									</p>
-								)}
-								<p className="text-muted-foreground flex items-center gap-1.5 pt-1 text-xs">
-									<ClockCircleIcon className="size-3 shrink-0" />
-									<span>Inviata {formatDateTime(request.createdAt)}</span>
-								</p>
-							</div>
+			<InsetCard>
+				<div className="space-y-4 p-6">
+					<div className="space-y-2">
+						<div className="flex flex-wrap items-center gap-2">
+							<RequestTypeBadge type={request.requestType} />
+							<RequestStatusBadge status={request.status} />
 						</div>
-						{!isMaintainer && (
-							<Button asChild variant="outline" size="sm" className="shrink-0 gap-1.5">
-								<Link to="/admin/users/$userId" params={{ userId: request.user.id }}>
-									<UserIdIcon className="size-4" />
-									Scheda utente
-								</Link>
-							</Button>
+						{request.handledAt && (
+							<p className="text-muted-foreground flex items-center gap-1.5 text-xs">
+								<CheckCircleIcon className="size-3.5 shrink-0" />
+								<span>
+									Gestita da{" "}
+									<span className="text-foreground font-medium">
+										{request.handledByUser?.name ?? "Team"}
+									</span>{" "}
+									· {formatDateTime(request.handledAt)}
+								</span>
+							</p>
 						)}
 					</div>
-				)}
 
-				{request.adminNote && (
-					<div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-						<p className="text-xs font-medium text-amber-600 dark:text-amber-400">
-							Risposta inviata all&apos;utente
-						</p>
-						<p className="mt-1 text-sm">{request.adminNote}</p>
-					</div>
-				)}
-			</div>
+					{request.user && (
+						<div className="flex items-center justify-between gap-4 border-t pt-4">
+							<div className="flex min-w-0 items-center gap-3">
+								<Avatar className="h-11 w-11">
+									<AvatarImage src={request.user.image ?? undefined} />
+									<AvatarFallback>
+										{(
+											request.user.name?.[0] ??
+											request.user.email?.[0] ??
+											"?"
+										).toUpperCase()}
+									</AvatarFallback>
+								</Avatar>
+								<div className="min-w-0 space-y-1.5">
+									<p className="text-muted-foreground eyebrow">Inviata da</p>
+									<p className="truncate text-sm font-semibold">
+										{request.user.name ?? "Utente"}
+									</p>
+									{request.user.email && (
+										<p className="text-muted-foreground truncate text-xs">
+											{request.user.email}
+										</p>
+									)}
+									<p className="text-muted-foreground flex items-center gap-1.5 pt-1 text-xs">
+										<ClockCircleIcon className="size-3 shrink-0" />
+										<span>Inviata {formatDateTime(request.createdAt)}</span>
+									</p>
+								</div>
+							</div>
+							{!isMaintainer && (
+								<Button
+									asChild
+									variant="outline"
+									size="sm"
+									className="shrink-0 gap-1.5"
+								>
+									<Link to="/admin/users/$userId" params={{ userId: request.user.id }}>
+										<UserIdIcon className="size-4" />
+										Scheda utente
+									</Link>
+								</Button>
+							)}
+						</div>
+					)}
+
+					{request.adminNote && (
+						<div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+							<p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+								Risposta inviata all&apos;utente
+							</p>
+							<p className="mt-1 text-sm">{request.adminNote}</p>
+						</div>
+					)}
+				</div>
+			</InsetCard>
 
 			{/* 2. The user's message — only when there is one */}
 			{hasUserMessage && (
 				<section className="space-y-3">
 					<SectionLabel>Messaggio dell&apos;utente</SectionLabel>
-					<div className="bg-card space-y-3 rounded-2xl border p-6">
-						{reasons.length > 0 && (
-							<div className="flex flex-wrap gap-1.5">
-								{reasons.map(r => (
-									<Badge
-										key={r}
-										variant="outline"
-										className="border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
-									>
-										{REASON_LABELS[r] ?? r}
-									</Badge>
-								))}
-							</div>
-						)}
-						{userComment && <p className="text-sm leading-relaxed">{userComment}</p>}
-					</div>
+					<InsetCard>
+						<div className="space-y-3 p-6">
+							{reasons.length > 0 && (
+								<div className="flex flex-wrap gap-1.5">
+									{reasons.map(r => (
+										<Badge
+											key={r}
+											variant="outline"
+											className="border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+										>
+											{REASON_LABELS[r] ?? r}
+										</Badge>
+									))}
+								</div>
+							)}
+							{userComment && <p className="text-sm leading-relaxed">{userComment}</p>}
+						</div>
+					</InsetCard>
 				</section>
 			)}
 
@@ -252,31 +262,35 @@ function AdminRequestDetailPage() {
 			{isAcknowledgeOnly && isPending && (
 				<section className="space-y-3">
 					<SectionLabel>Rispondi e prendi in carico</SectionLabel>
-					<div className="bg-card space-y-4 rounded-2xl border p-6">
-						<PresetReplies
-							presets={ACK_PRESETS}
-							onPick={text => setReportNote(prev => (prev ? `${prev} ${text}` : text))}
-						/>
-						<Textarea
-							value={reportNote}
-							onChange={e => setReportNote(e.target.value)}
-							placeholder="Lascia una nota per l'utente (opzionale)"
-							rows={3}
-							className="rounded-xl"
-						/>
-						<div className="flex justify-end">
-							<Button
-								className="gap-1.5"
-								onClick={() =>
-									acknowledge.mutate({ id: request.id, admin_note: reportNote })
+					<InsetCard>
+						<div className="space-y-4 p-6">
+							<PresetReplies
+								presets={ACK_PRESETS}
+								onPick={text =>
+									setReportNote(prev => (prev ? `${prev} ${text}` : text))
 								}
-								disabled={acknowledge.isPending}
-							>
-								<EyeIcon className="size-4" />
-								{acknowledge.isPending ? "Salvataggio..." : "Presa visione"}
-							</Button>
+							/>
+							<Textarea
+								value={reportNote}
+								onChange={e => setReportNote(e.target.value)}
+								placeholder="Lascia una nota per l'utente (opzionale)"
+								rows={3}
+								className="rounded-xl"
+							/>
+							<div className="flex justify-end">
+								<Button
+									className="gap-1.5"
+									onClick={() =>
+										acknowledge.mutate({ id: request.id, admin_note: reportNote })
+									}
+									disabled={acknowledge.isPending}
+								>
+									<EyeIcon className="size-4" />
+									{acknowledge.isPending ? "Salvataggio..." : "Presa visione"}
+								</Button>
+							</div>
 						</div>
-					</div>
+					</InsetCard>
 				</section>
 			)}
 
@@ -328,12 +342,14 @@ function MaterialPreview({
 
 	if (submitted.type === "section") {
 		return (
-			<div className="bg-card space-y-2 rounded-2xl border p-6">
-				<p className="text-lg font-semibold">{submitted.name}</p>
-				{submitted.description && (
-					<p className="text-muted-foreground text-sm">{submitted.description}</p>
-				)}
-			</div>
+			<InsetCard>
+				<div className="space-y-2 p-6">
+					<p className="text-lg font-semibold">{submitted.name}</p>
+					{submitted.description && (
+						<p className="text-muted-foreground text-sm">{submitted.description}</p>
+					)}
+				</div>
+			</InsetCard>
 		);
 	}
 
@@ -366,84 +382,89 @@ function QuestionCard({
 	const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" };
 
 	return (
-		<div className="bg-card space-y-3 rounded-2xl border p-5">
-			<div className="flex items-center justify-between">
-				<p className="text-muted-foreground text-xs font-semibold">
-					Domanda {index + 1}
-				</p>
-				<div className="flex gap-1.5">
-					<Badge variant="outline" size="sm">
-						{typeLabels[question.question_type]}
-					</Badge>
-					<Badge
-						variant="outline"
-						size="sm"
-						className={diffColors[question.difficulty]}
-					>
-						{diffLabels[question.difficulty]}
-					</Badge>
+		<InsetCard>
+			<div className="space-y-3 p-5">
+				<div className="flex items-center justify-between">
+					<p className="text-muted-foreground text-xs font-semibold">
+						Domanda {index + 1}
+					</p>
+					<div className="flex gap-1.5">
+						<Badge variant="outline" size="sm">
+							{typeLabels[question.question_type]}
+						</Badge>
+						<Badge
+							variant="outline"
+							size="sm"
+							className={diffColors[question.difficulty]}
+						>
+							{diffLabels[question.difficulty]}
+						</Badge>
+					</div>
 				</div>
+
+				<MarkdownRenderer content={question.content} className="text-sm font-medium" />
+
+				{/* Options */}
+				{question.options && question.options.length > 0 && (
+					<div className="space-y-1.5">
+						{question.options.map((opt, oi) => {
+							const optId = String.fromCharCode(97 + oi);
+							const isCorrect = question.correct_answer.includes(optId);
+							return (
+								<div
+									key={oi}
+									className={cn(
+										"flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+										isCorrect
+											? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
+											: "bg-muted/50"
+									)}
+								>
+									<span className="text-muted-foreground font-mono text-xs">
+										{optId.toUpperCase()}
+									</span>
+									<MarkdownRenderer content={opt} inline />
+									{isCorrect && (
+										<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
+									)}
+								</div>
+							);
+						})}
+					</div>
+				)}
+
+				{/* True/False answer */}
+				{question.question_type === "TRUE_FALSE" && (
+					<p className="text-sm">
+						Risposta:{" "}
+						<span className="font-medium text-green-600">
+							{question.correct_answer[0] === "true" ? "Vero" : "Falso"}
+						</span>
+					</p>
+				)}
+
+				{/* Short answer */}
+				{question.question_type === "SHORT_ANSWER" && (
+					<p className="text-sm">
+						Risposta:{" "}
+						<span className="font-medium text-green-600">
+							{question.correct_answer[0]}
+						</span>
+					</p>
+				)}
+
+				{/* Explanation */}
+				{question.explanation && (
+					<div className="bg-muted/50 rounded-lg px-3 py-2">
+						<p className="text-muted-foreground text-xs font-medium">Spiegazione</p>
+						<MarkdownRenderer
+							content={question.explanation}
+							className="mt-0.5 text-sm"
+						/>
+					</div>
+				)}
 			</div>
-
-			<MarkdownRenderer content={question.content} className="text-sm font-medium" />
-
-			{/* Options */}
-			{question.options && question.options.length > 0 && (
-				<div className="space-y-1.5">
-					{question.options.map((opt, oi) => {
-						const optId = String.fromCharCode(97 + oi);
-						const isCorrect = question.correct_answer.includes(optId);
-						return (
-							<div
-								key={oi}
-								className={cn(
-									"flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
-									isCorrect
-										? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
-										: "bg-muted/50"
-								)}
-							>
-								<span className="text-muted-foreground font-mono text-xs">
-									{optId.toUpperCase()}
-								</span>
-								<MarkdownRenderer content={opt} inline />
-								{isCorrect && (
-									<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
-								)}
-							</div>
-						);
-					})}
-				</div>
-			)}
-
-			{/* True/False answer */}
-			{question.question_type === "TRUE_FALSE" && (
-				<p className="text-sm">
-					Risposta:{" "}
-					<span className="font-medium text-green-600">
-						{question.correct_answer[0] === "true" ? "Vero" : "Falso"}
-					</span>
-				</p>
-			)}
-
-			{/* Short answer */}
-			{question.question_type === "SHORT_ANSWER" && (
-				<p className="text-sm">
-					Risposta:{" "}
-					<span className="font-medium text-green-600">
-						{question.correct_answer[0]}
-					</span>
-				</p>
-			)}
-
-			{/* Explanation */}
-			{question.explanation && (
-				<div className="bg-muted/50 rounded-lg px-3 py-2">
-					<p className="text-muted-foreground text-xs font-medium">Spiegazione</p>
-					<MarkdownRenderer content={question.explanation} className="mt-0.5 text-sm" />
-				</div>
-			)}
-		</div>
+		</InsetCard>
 	);
 }
 
@@ -463,74 +484,80 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 	const diffLabels = { EASY: "Facile", MEDIUM: "Medio", HARD: "Difficile" };
 
 	return (
-		<div className="bg-card space-y-3 rounded-2xl border p-5">
-			<div className="flex items-center justify-end gap-1.5">
-				<Badge variant="outline" size="sm">
-					{typeLabels[question.questionType]}
-				</Badge>
-				<Badge variant="outline" size="sm" className={diffColors[question.difficulty]}>
-					{diffLabels[question.difficulty]}
-				</Badge>
-			</div>
-
-			<MarkdownRenderer content={question.content} className="text-sm font-medium" />
-
-			<Collapsible open={open} onOpenChange={setOpen}>
-				<CollapsibleTrigger asChild>
-					<Button
+		<InsetCard>
+			<div className="space-y-3 p-5">
+				<div className="flex items-center justify-end gap-1.5">
+					<Badge variant="outline" size="sm">
+						{typeLabels[question.questionType]}
+					</Badge>
+					<Badge
 						variant="outline"
 						size="sm"
-						className="w-full justify-between gap-1.5"
+						className={diffColors[question.difficulty]}
 					>
-						{open ? "Nascondi opzioni e risposta" : "Mostra opzioni e risposta"}
-						<AltArrowDownIcon
-							className={cn("size-4 transition-transform", open && "rotate-180")}
-						/>
-					</Button>
-				</CollapsibleTrigger>
-				<CollapsibleContent className="space-y-1.5 pt-2">
-					{options.length > 0 ? (
-						options.map((option, oi) => {
-							const isCorrect = isCorrectOption(option.id, question.correctAnswer);
-							return (
-								<div
-									key={oi}
-									className={cn(
-										"flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
-										isCorrect
-											? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
-											: "bg-muted/50"
-									)}
-								>
-									<span className="text-muted-foreground font-mono text-xs">
-										{String.fromCharCode(65 + oi)}
-									</span>
-									<MarkdownRenderer content={option.text} inline />
-									{isCorrect && (
-										<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
-									)}
-								</div>
-							);
-						})
-					) : (
-						<div className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
-							<span className="font-medium">Risposta corretta: </span>
-							{question.correctAnswer.join(", ")}
-						</div>
-					)}
+						{diffLabels[question.difficulty]}
+					</Badge>
+				</div>
 
-					{question.explanation && (
-						<div className="bg-muted/50 rounded-lg px-3 py-2">
-							<p className="text-muted-foreground text-xs font-medium">Spiegazione</p>
-							<MarkdownRenderer
-								content={question.explanation}
-								className="mt-0.5 text-sm"
+				<MarkdownRenderer content={question.content} className="text-sm font-medium" />
+
+				<Collapsible open={open} onOpenChange={setOpen}>
+					<CollapsibleTrigger asChild>
+						<Button
+							variant="outline"
+							size="sm"
+							className="w-full justify-between gap-1.5"
+						>
+							{open ? "Nascondi opzioni e risposta" : "Mostra opzioni e risposta"}
+							<AltArrowDownIcon
+								className={cn("size-4 transition-transform", open && "rotate-180")}
 							/>
-						</div>
-					)}
-				</CollapsibleContent>
-			</Collapsible>
-		</div>
+						</Button>
+					</CollapsibleTrigger>
+					<CollapsibleContent className="space-y-1.5 pt-2">
+						{options.length > 0 ? (
+							options.map((option, oi) => {
+								const isCorrect = isCorrectOption(option.id, question.correctAnswer);
+								return (
+									<div
+										key={oi}
+										className={cn(
+											"flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+											isCorrect
+												? "border border-green-500/30 bg-green-500/10 font-medium text-green-700 dark:text-green-400"
+												: "bg-muted/50"
+										)}
+									>
+										<span className="text-muted-foreground font-mono text-xs">
+											{String.fromCharCode(65 + oi)}
+										</span>
+										<MarkdownRenderer content={option.text} inline />
+										{isCorrect && (
+											<CheckCircleIcon className="ml-auto size-4 shrink-0 text-green-500" />
+										)}
+									</div>
+								);
+							})
+						) : (
+							<div className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+								<span className="font-medium">Risposta corretta: </span>
+								{question.correctAnswer.join(", ")}
+							</div>
+						)}
+
+						{question.explanation && (
+							<div className="bg-muted/50 rounded-lg px-3 py-2">
+								<p className="text-muted-foreground text-xs font-medium">Spiegazione</p>
+								<MarkdownRenderer
+									content={question.explanation}
+									className="mt-0.5 text-sm"
+								/>
+							</div>
+						)}
+					</CollapsibleContent>
+				</Collapsible>
+			</div>
+		</InsetCard>
 	);
 }
 
@@ -561,26 +588,28 @@ function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
 	}
 
 	return (
-		<div className="bg-card flex items-center gap-4 rounded-2xl border p-5">
-			<div className="rounded-xl bg-emerald-500/10 p-3">
-				<CloudUploadIcon className="size-6 text-emerald-500" />
+		<InsetCard>
+			<div className="flex items-center gap-4 p-5">
+				<div className="rounded-xl bg-emerald-500/10 p-3">
+					<CloudUploadIcon className="size-6 text-emerald-500" />
+				</div>
+				<div className="flex-1">
+					<p className="font-medium">{file.file_name}</p>
+					<p className="text-muted-foreground text-sm">
+						{formatFileSize(file.file_size)}
+					</p>
+				</div>
+				<Button
+					variant="outline"
+					size="sm"
+					className="gap-1.5"
+					onClick={handleDownload}
+					disabled={downloading}
+				>
+					<DownloadMinimalisticIcon className="size-4" />
+					{downloading ? "Download..." : "Scarica"}
+				</Button>
 			</div>
-			<div className="flex-1">
-				<p className="font-medium">{file.file_name}</p>
-				<p className="text-muted-foreground text-sm">
-					{formatFileSize(file.file_size)}
-				</p>
-			</div>
-			<Button
-				variant="outline"
-				size="sm"
-				className="gap-1.5"
-				onClick={handleDownload}
-				disabled={downloading}
-			>
-				<DownloadMinimalisticIcon className="size-4" />
-				{downloading ? "Download..." : "Scarica"}
-			</Button>
-		</div>
+		</InsetCard>
 	);
 }

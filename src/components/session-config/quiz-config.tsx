@@ -1,5 +1,6 @@
 import { TIME_STEPS } from "@/lib/quiz/constants";
 import type { EvaluationMode } from "@/lib/quiz/types";
+import { sessionHint } from "@/lib/shared/session";
 
 import { AnimatedBlock } from "./animated-block";
 import {
@@ -23,6 +24,7 @@ export function QuizConfigFields({
 	evalModes,
 	selectedEvalMode,
 	maxQuestions,
+	available,
 }: {
 	questionCount: number;
 	setQuestionCount: (v: number) => void;
@@ -32,8 +34,12 @@ export function QuizConfigFields({
 	setEvalModeId: (v: string) => void;
 	evalModes: EvaluationMode[] | undefined;
 	selectedEvalMode: EvaluationMode | undefined;
+	/** The most this session may draw: the section's own total, capped. */
 	maxQuestions: number;
+	/** How many exist, so the hint never claims "all" while showing the ceiling. */
+	available?: number;
 }) {
+	const total = available ?? maxQuestions;
 	return (
 		<>
 			<AnimatedBlock>
@@ -43,11 +49,7 @@ export function QuizConfigFields({
 					onChange={setQuestionCount}
 					min={1}
 					max={maxQuestions}
-					hint={
-						questionCount === maxQuestions
-							? `Tutte (${maxQuestions})`
-							: `${questionCount} di ${maxQuestions}`
-					}
+					hint={sessionHint(questionCount, maxQuestions, total)}
 				/>
 			</AnimatedBlock>
 			<AnimatedBlock>

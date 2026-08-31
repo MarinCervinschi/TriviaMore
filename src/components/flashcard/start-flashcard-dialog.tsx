@@ -10,6 +10,7 @@ import {
 } from "@/components/session-config/session-dialog";
 import { SummaryPanel } from "@/components/session-config/summary-panel";
 import { useStartFlashcard } from "@/lib/flashcard/mutations";
+import { sessionCap } from "@/lib/shared/session";
 
 export function StartFlashcardDialog({
 	open,
@@ -22,7 +23,8 @@ export function StartFlashcardDialog({
 	sectionId: string;
 	maxQuestions: number;
 }) {
-	const [cardCount, setCardCount] = useState(Math.min(20, maxQuestions));
+	const cap = sessionCap(maxQuestions);
+	const [cardCount, setCardCount] = useState(Math.min(20, cap));
 	const mutation = useStartFlashcard(() => onOpenChange(false));
 
 	return (
@@ -34,7 +36,7 @@ export function StartFlashcardDialog({
 				onSubmit={() =>
 					mutation.mutate({
 						sectionId,
-						cardCount: Math.min(cardCount, maxQuestions),
+						cardCount: Math.min(cardCount, cap),
 					})
 				}
 				onCancel={() => onOpenChange(false)}
@@ -43,7 +45,8 @@ export function StartFlashcardDialog({
 				<FlashcardConfigFields
 					cardCount={cardCount}
 					setCardCount={setCardCount}
-					maxCards={maxQuestions}
+					maxCards={cap}
+					available={maxQuestions}
 				/>
 			</SessionDialogColumn>
 

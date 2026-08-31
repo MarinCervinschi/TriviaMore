@@ -28,6 +28,7 @@ export const Header: Story = {
 				questionIndex={3}
 				totalQuestions={24}
 				timeLimit={15}
+				context={{ kind: "exam", name: "Algoritmi e Strutture Dati" }}
 				sidebarOpen={false}
 				onToggleSidebar={noop}
 				onTimeUp={noop}
@@ -37,14 +38,25 @@ export const Header: Story = {
 				questionIndex={0}
 				totalQuestions={1}
 				timeLimit={null}
+				context={{ kind: "section", name: "Alberi binari di ricerca" }}
 				sidebarOpen
+				onToggleSidebar={noop}
+				onTimeUp={noop}
+				onExit={noop}
+			/>
+			<QuizHeader
+				questionIndex={11}
+				totalQuestions={30}
+				timeLimit={20}
+				sidebarOpen={false}
 				onToggleSidebar={noop}
 				onTimeUp={noop}
 				onExit={noop}
 			/>
 			<p className="text-muted-foreground text-xs">
 				Il secondo è senza limite di tempo e con una sola domanda: il cronometro conta
-				in su invece di scalare.
+				in su invece di scalare. Il terzo è senza contesto, come restano le sessioni che
+				non sanno da dove arrivano.
 			</p>
 		</div>
 	),

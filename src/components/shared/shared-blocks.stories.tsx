@@ -8,6 +8,7 @@ import { FilterPills } from "@/components/search/filter-pills";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 
 import { ContentHierarchyDiagram } from "./content-hierarchy-diagram";
+import { DeltaBadge } from "./delta-badge";
 
 /**
  * The pieces that belong to no feature: the hierarchy explainer, the filter pills, the user
@@ -70,7 +71,7 @@ export const Breadcrumb: Story = {
 			<UserBreadcrumb current="Analisi matematica I" />
 			<UserBreadcrumb
 				current="Storico"
-				trail={[{ label: "Progressi", to: "/user/progress" }]}
+				trail={[{ label: "Progressi", to: "/user/analytics" }]}
 			/>
 		</div>
 	),
@@ -86,4 +87,22 @@ export const Soon: Story = {
 	name: "Coming soon",
 	parameters: { layout: "fullscreen" },
 	render: () => <ComingSoon />,
+};
+
+/** The change pill every metric shares. `null` renders nothing — see the last cell. */
+export const Delta: Story = {
+	name: "Il delta",
+	render: () => (
+		<div className="flex flex-wrap items-center gap-3">
+			<DeltaBadge value={14} />
+			<DeltaBadge value={-6} />
+			<DeltaBadge value={0} />
+			<DeltaBadge value={3} unit="points" />
+			<DeltaBadge value={1.2} unit="raw" />
+			<span className="text-muted-foreground text-xs">
+				null → <DeltaBadge value={null} />
+				(niente)
+			</span>
+		</div>
+	),
 };

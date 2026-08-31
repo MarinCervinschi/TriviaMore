@@ -103,3 +103,26 @@ describe("buildStudySummary", () => {
 		expect(summary.metrics[0]!.spark.at(-1)).toBe(1);
 	});
 });
+
+describe("quality sparklines", () => {
+	it("carry the running average and stay null before the first quiz", () => {
+		// A single quiz on the last day of a 7-day window.
+		const daily: DailyStudyStat[] = [
+			{
+				date: "2026-04-18",
+				quizMode: "STUDY",
+				quizzes: 1,
+				gradeSum: 30,
+				timeSpent: 0,
+				answersTotal: 10,
+				answersCorrect: 8,
+			},
+		];
+		const summary = buildStudySummary(daily, "week", new Date("2026-04-18T12:00:00Z"));
+		const grade = summary.metrics.find(m => m.key === "grade")!;
+		expect(grade.spark).toEqual([null, null, null, null, null, null, 30]);
+		const accuracy = summary.metrics.find(m => m.key === "accuracy")!;
+		expect(accuracy.spark.slice(0, 6).every(v => v === null)).toBe(true);
+		expect(accuracy.spark.at(-1)).toBe(80);
+	});
+});

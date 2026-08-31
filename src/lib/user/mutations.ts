@@ -7,6 +7,7 @@ import { toastUndo } from "@/lib/toast";
 import {
 	addUserClassFn,
 	removeUserClassFn,
+	setAttemptFavoriteFn,
 	toggleBookmarkFn,
 	updateProfileFn,
 } from "./api";
@@ -105,4 +106,27 @@ export function useToggleBookmark() {
 			toast.error(error.message);
 		},
 	});
+}
+
+/**
+ * Stars an attempt, through the shared wrapper: the success toast, the undo and
+ * the error path all come from there. A toggle is its own inverse, so the undo is
+ * the same call with the value flipped back.
+ */
+export function useAttemptFavorite() {
+	return useMutationWithToast<{ attemptId: string; isFavorite: boolean }, unknown>(
+		setAttemptFavoriteFn,
+		{
+			successMessage: "Preferiti aggiornati",
+			invalidateKeys: [
+				["user", "attempt-history"],
+				["user", "profile"],
+				["quiz", "results"],
+			],
+			undo: input =>
+				setAttemptFavoriteFn({
+					data: { attemptId: input.attemptId, isFavorite: !input.isFavorite },
+				}),
+		}
+	);
 }

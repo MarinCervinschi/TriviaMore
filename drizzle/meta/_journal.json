@@ -127,6 +127,13 @@
       "when": 1787675521633,
       "tag": "0017_drop_answer_time_spent",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1788005923008,
+      "tag": "0018_add_attempt_favorite",
+      "breakpoints": true
     }
   ]
 }

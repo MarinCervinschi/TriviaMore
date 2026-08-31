@@ -11,6 +11,7 @@ import { SummaryPanel } from "@/components/session-config/summary-panel";
 import { TIME_STEPS } from "@/lib/quiz/constants";
 import { useStartQuiz } from "@/lib/quiz/mutations";
 import { quizQueries } from "@/lib/quiz/queries";
+import { sessionCap } from "@/lib/shared/session";
 
 export function StartQuizDialog({
 	open,
@@ -23,7 +24,8 @@ export function StartQuizDialog({
 	sectionId: string;
 	maxQuestions: number;
 }) {
-	const [questionCount, setQuestionCount] = useState(Math.min(11, maxQuestions));
+	const cap = sessionCap(maxQuestions);
+	const [questionCount, setQuestionCount] = useState(Math.min(11, cap));
 	const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(30));
 	const [evalModeId, setEvalModeId] = useState<string | undefined>();
 
@@ -44,7 +46,7 @@ export function StartQuizDialog({
 	const handleStart = () => {
 		mutation.mutate({
 			sectionId,
-			questionCount: Math.min(questionCount, maxQuestions),
+			questionCount: Math.min(questionCount, cap),
 			timeLimit,
 			quizMode: "STUDY",
 			evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
@@ -70,7 +72,8 @@ export function StartQuizDialog({
 					setEvalModeId={setEvalModeId}
 					evalModes={evalModes}
 					selectedEvalMode={selectedEvalMode}
-					maxQuestions={maxQuestions}
+					maxQuestions={cap}
+					available={maxQuestions}
 				/>
 			</SessionDialogColumn>
 

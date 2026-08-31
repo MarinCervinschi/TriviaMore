@@ -33,6 +33,7 @@ import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departmen
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
+import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
@@ -42,7 +43,7 @@ import { Route as AppLegalDeclinedRouteImport } from './routes/_app/legal/declin
 import { Route as AppLegalCookiesRouteImport } from './routes/_app/legal/cookies'
 import { Route as AppLegalAcceptRouteImport } from './routes/_app/legal/accept'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
-import { Route as AppUserProgressIndexRouteImport } from './routes/_app/user/progress/index'
+import { Route as AppUserAnalyticsIndexRouteImport } from './routes/_app/user/analytics/index'
 import { Route as AppSearchCoursesIndexRouteImport } from './routes/_app/search/courses/index'
 import { Route as AppSearchClassesIndexRouteImport } from './routes/_app/search/classes/index'
 import { Route as AppDepartmentsDepartmentIndexRouteImport } from './routes/_app/departments/$department/index'
@@ -50,7 +51,7 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
-import { Route as AppUserProgressHistoryRouteImport } from './routes/_app/user/progress/history'
+import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppAdminUsersUserIdRouteImport } from './routes/_app/admin/users/$userId'
 import { Route as AppAdminSectionsSectionIdRouteImport } from './routes/_app/admin/sections/$sectionId'
@@ -61,9 +62,9 @@ import { Route as AppAdminCoursesCourseIdRouteImport } from './routes/_app/admin
 import { Route as AppAdminClassesClassIdRouteImport } from './routes/_app/admin/classes/$classId'
 import { Route as AppDepartmentsDepartmentCourseIndexRouteImport } from './routes/_app/departments/$department/$course/index'
 import { Route as AppBrowseDepartmentCourseIndexRouteImport } from './routes/_app/browse/$department/$course/index'
-import { Route as AppUserProgressSectionIdRouteImport } from './routes/_app/user/progress/section.$id'
-import { Route as AppUserProgressCourseIdRouteImport } from './routes/_app/user/progress/course.$id'
-import { Route as AppUserProgressClassIdRouteImport } from './routes/_app/user/progress/class.$id'
+import { Route as AppUserAnalyticsSectionIdRouteImport } from './routes/_app/user/analytics/section.$id'
+import { Route as AppUserAnalyticsCourseIdRouteImport } from './routes/_app/user/analytics/course.$id'
+import { Route as AppUserAnalyticsClassIdRouteImport } from './routes/_app/user/analytics/class.$id'
 import { Route as AppDepartmentsDepartmentCourseClassIndexRouteImport } from './routes/_app/departments/$department/$course/$class/index'
 import { Route as AppBrowseDepartmentCourseClassIndexRouteImport } from './routes/_app/browse/$department/$course/$class/index'
 import { Route as AppDepartmentsDepartmentCourseClassSectionIndexRouteImport } from './routes/_app/departments/$department/$course/$class/$section/index'
@@ -188,6 +189,11 @@ const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
+const AppUserProgressRoute = AppUserProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
 const AppUserNotificationsRoute = AppUserNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -233,9 +239,9 @@ const AppUserRequestsIndexRoute = AppUserRequestsIndexRouteImport.update({
   path: '/requests/',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
-const AppUserProgressIndexRoute = AppUserProgressIndexRouteImport.update({
-  id: '/progress/',
-  path: '/progress/',
+const AppUserAnalyticsIndexRoute = AppUserAnalyticsIndexRouteImport.update({
+  id: '/analytics/',
+  path: '/analytics/',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppSearchCoursesIndexRoute = AppSearchCoursesIndexRouteImport.update({
@@ -276,9 +282,9 @@ const AppAdminDepartmentsIndexRoute =
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
   } as any)
-const AppUserProgressHistoryRoute = AppUserProgressHistoryRouteImport.update({
-  id: '/progress/history',
-  path: '/progress/history',
+const AppUserAnalyticsHistoryRoute = AppUserAnalyticsHistoryRouteImport.update({
+  id: '/analytics/history',
+  path: '/analytics/history',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
@@ -337,20 +343,21 @@ const AppBrowseDepartmentCourseIndexRoute =
     path: '/browse/$department/$course/',
     getParentRoute: () => AppRoute,
   } as any)
-const AppUserProgressSectionIdRoute =
-  AppUserProgressSectionIdRouteImport.update({
-    id: '/progress/section/$id',
-    path: '/progress/section/$id',
+const AppUserAnalyticsSectionIdRoute =
+  AppUserAnalyticsSectionIdRouteImport.update({
+    id: '/analytics/section/$id',
+    path: '/analytics/section/$id',
     getParentRoute: () => AppUserRouteRoute,
   } as any)
-const AppUserProgressCourseIdRoute = AppUserProgressCourseIdRouteImport.update({
-  id: '/progress/course/$id',
-  path: '/progress/course/$id',
-  getParentRoute: () => AppUserRouteRoute,
-} as any)
-const AppUserProgressClassIdRoute = AppUserProgressClassIdRouteImport.update({
-  id: '/progress/class/$id',
-  path: '/progress/class/$id',
+const AppUserAnalyticsCourseIdRoute =
+  AppUserAnalyticsCourseIdRouteImport.update({
+    id: '/analytics/course/$id',
+    path: '/analytics/course/$id',
+    getParentRoute: () => AppUserRouteRoute,
+  } as any)
+const AppUserAnalyticsClassIdRoute = AppUserAnalyticsClassIdRouteImport.update({
+  id: '/analytics/class/$id',
+  path: '/analytics/class/$id',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppDepartmentsDepartmentCourseClassIndexRoute =
@@ -405,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
+  '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
@@ -418,7 +426,7 @@ export interface FileRoutesByFullPath {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/user/progress/history': typeof AppUserProgressHistoryRoute
+  '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -426,11 +434,11 @@ export interface FileRoutesByFullPath {
   '/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
   '/search/classes/': typeof AppSearchClassesIndexRoute
   '/search/courses/': typeof AppSearchCoursesIndexRoute
-  '/user/progress/': typeof AppUserProgressIndexRoute
+  '/user/analytics/': typeof AppUserAnalyticsIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
-  '/user/progress/class/$id': typeof AppUserProgressClassIdRoute
-  '/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
-  '/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
+  '/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
+  '/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
+  '/user/analytics/section/$id': typeof AppUserAnalyticsSectionIdRoute
   '/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -463,6 +471,7 @@ export interface FileRoutesByTo {
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
+  '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
@@ -476,7 +485,7 @@ export interface FileRoutesByTo {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/user/progress/history': typeof AppUserProgressHistoryRoute
+  '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -484,11 +493,11 @@ export interface FileRoutesByTo {
   '/departments/$department': typeof AppDepartmentsDepartmentIndexRoute
   '/search/classes': typeof AppSearchClassesIndexRoute
   '/search/courses': typeof AppSearchCoursesIndexRoute
-  '/user/progress': typeof AppUserProgressIndexRoute
+  '/user/analytics': typeof AppUserAnalyticsIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
-  '/user/progress/class/$id': typeof AppUserProgressClassIdRoute
-  '/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
-  '/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
+  '/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
+  '/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
+  '/user/analytics/section/$id': typeof AppUserAnalyticsSectionIdRoute
   '/browse/$department/$course': typeof AppBrowseDepartmentCourseIndexRoute
   '/departments/$department/$course': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/browse/$department/$course/$class': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -525,6 +534,7 @@ export interface FileRoutesById {
   '/_app/user/bookmarks': typeof AppUserBookmarksRoute
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/notifications': typeof AppUserNotificationsRoute
+  '/_app/user/progress': typeof AppUserProgressRoute
   '/_app/user/settings': typeof AppUserSettingsRoute
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
@@ -538,7 +548,7 @@ export interface FileRoutesById {
   '/_app/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/_app/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
-  '/_app/user/progress/history': typeof AppUserProgressHistoryRoute
+  '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -546,11 +556,11 @@ export interface FileRoutesById {
   '/_app/departments/$department/': typeof AppDepartmentsDepartmentIndexRoute
   '/_app/search/classes/': typeof AppSearchClassesIndexRoute
   '/_app/search/courses/': typeof AppSearchCoursesIndexRoute
-  '/_app/user/progress/': typeof AppUserProgressIndexRoute
+  '/_app/user/analytics/': typeof AppUserAnalyticsIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
-  '/_app/user/progress/class/$id': typeof AppUserProgressClassIdRoute
-  '/_app/user/progress/course/$id': typeof AppUserProgressCourseIdRoute
-  '/_app/user/progress/section/$id': typeof AppUserProgressSectionIdRoute
+  '/_app/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
+  '/_app/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
+  '/_app/user/analytics/section/$id': typeof AppUserAnalyticsSectionIdRoute
   '/_app/browse/$department/$course/': typeof AppBrowseDepartmentCourseIndexRoute
   '/_app/departments/$department/$course/': typeof AppDepartmentsDepartmentCourseIndexRoute
   '/_app/browse/$department/$course/$class/': typeof AppBrowseDepartmentCourseClassIndexRoute
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
+    | '/user/progress'
     | '/user/settings'
     | '/admin/'
     | '/browse/'
@@ -600,7 +611,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/user/progress/history'
+    | '/user/analytics/history'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -608,11 +619,11 @@ export interface FileRouteTypes {
     | '/departments/$department/'
     | '/search/classes/'
     | '/search/courses/'
-    | '/user/progress/'
+    | '/user/analytics/'
     | '/user/requests/'
-    | '/user/progress/class/$id'
-    | '/user/progress/course/$id'
-    | '/user/progress/section/$id'
+    | '/user/analytics/class/$id'
+    | '/user/analytics/course/$id'
+    | '/user/analytics/section/$id'
     | '/browse/$department/$course/'
     | '/departments/$department/$course/'
     | '/browse/$department/$course/$class/'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
+    | '/user/progress'
     | '/user/settings'
     | '/admin'
     | '/browse'
@@ -658,7 +670,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
-    | '/user/progress/history'
+    | '/user/analytics/history'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -666,11 +678,11 @@ export interface FileRouteTypes {
     | '/departments/$department'
     | '/search/classes'
     | '/search/courses'
-    | '/user/progress'
+    | '/user/analytics'
     | '/user/requests'
-    | '/user/progress/class/$id'
-    | '/user/progress/course/$id'
-    | '/user/progress/section/$id'
+    | '/user/analytics/class/$id'
+    | '/user/analytics/course/$id'
+    | '/user/analytics/section/$id'
     | '/browse/$department/$course'
     | '/departments/$department/$course'
     | '/browse/$department/$course/$class'
@@ -706,6 +718,7 @@ export interface FileRouteTypes {
     | '/_app/user/bookmarks'
     | '/_app/user/classes'
     | '/_app/user/notifications'
+    | '/_app/user/progress'
     | '/_app/user/settings'
     | '/_app/admin/'
     | '/_app/browse/'
@@ -719,7 +732,7 @@ export interface FileRouteTypes {
     | '/_app/admin/sections/$sectionId'
     | '/_app/admin/users/$userId'
     | '/_app/quiz/results/$attemptId'
-    | '/_app/user/progress/history'
+    | '/_app/user/analytics/history'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -727,11 +740,11 @@ export interface FileRouteTypes {
     | '/_app/departments/$department/'
     | '/_app/search/classes/'
     | '/_app/search/courses/'
-    | '/_app/user/progress/'
+    | '/_app/user/analytics/'
     | '/_app/user/requests/'
-    | '/_app/user/progress/class/$id'
-    | '/_app/user/progress/course/$id'
-    | '/_app/user/progress/section/$id'
+    | '/_app/user/analytics/class/$id'
+    | '/_app/user/analytics/course/$id'
+    | '/_app/user/analytics/section/$id'
     | '/_app/browse/$department/$course/'
     | '/_app/departments/$department/$course/'
     | '/_app/browse/$department/$course/$class/'
@@ -925,6 +938,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserSettingsRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
+    '/_app/user/progress': {
+      id: '/_app/user/progress'
+      path: '/progress'
+      fullPath: '/user/progress'
+      preLoaderRoute: typeof AppUserProgressRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
     '/_app/user/notifications': {
       id: '/_app/user/notifications'
       path: '/notifications'
@@ -988,11 +1008,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserRequestsIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
-    '/_app/user/progress/': {
-      id: '/_app/user/progress/'
-      path: '/progress'
-      fullPath: '/user/progress/'
-      preLoaderRoute: typeof AppUserProgressIndexRouteImport
+    '/_app/user/analytics/': {
+      id: '/_app/user/analytics/'
+      path: '/analytics'
+      fullPath: '/user/analytics/'
+      preLoaderRoute: typeof AppUserAnalyticsIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/search/courses/': {
@@ -1044,11 +1064,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/user/progress/history': {
-      id: '/_app/user/progress/history'
-      path: '/progress/history'
-      fullPath: '/user/progress/history'
-      preLoaderRoute: typeof AppUserProgressHistoryRouteImport
+    '/_app/user/analytics/history': {
+      id: '/_app/user/analytics/history'
+      path: '/analytics/history'
+      fullPath: '/user/analytics/history'
+      preLoaderRoute: typeof AppUserAnalyticsHistoryRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/quiz/results/$attemptId': {
@@ -1121,25 +1141,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrowseDepartmentCourseIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/user/progress/section/$id': {
-      id: '/_app/user/progress/section/$id'
-      path: '/progress/section/$id'
-      fullPath: '/user/progress/section/$id'
-      preLoaderRoute: typeof AppUserProgressSectionIdRouteImport
+    '/_app/user/analytics/section/$id': {
+      id: '/_app/user/analytics/section/$id'
+      path: '/analytics/section/$id'
+      fullPath: '/user/analytics/section/$id'
+      preLoaderRoute: typeof AppUserAnalyticsSectionIdRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
-    '/_app/user/progress/course/$id': {
-      id: '/_app/user/progress/course/$id'
-      path: '/progress/course/$id'
-      fullPath: '/user/progress/course/$id'
-      preLoaderRoute: typeof AppUserProgressCourseIdRouteImport
+    '/_app/user/analytics/course/$id': {
+      id: '/_app/user/analytics/course/$id'
+      path: '/analytics/course/$id'
+      fullPath: '/user/analytics/course/$id'
+      preLoaderRoute: typeof AppUserAnalyticsCourseIdRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
-    '/_app/user/progress/class/$id': {
-      id: '/_app/user/progress/class/$id'
-      path: '/progress/class/$id'
-      fullPath: '/user/progress/class/$id'
-      preLoaderRoute: typeof AppUserProgressClassIdRouteImport
+    '/_app/user/analytics/class/$id': {
+      id: '/_app/user/analytics/class/$id'
+      path: '/analytics/class/$id'
+      fullPath: '/user/analytics/class/$id'
+      preLoaderRoute: typeof AppUserAnalyticsClassIdRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/departments/$department/$course/$class/': {
@@ -1229,28 +1249,30 @@ interface AppUserRouteRouteChildren {
   AppUserBookmarksRoute: typeof AppUserBookmarksRoute
   AppUserClassesRoute: typeof AppUserClassesRoute
   AppUserNotificationsRoute: typeof AppUserNotificationsRoute
+  AppUserProgressRoute: typeof AppUserProgressRoute
   AppUserSettingsRoute: typeof AppUserSettingsRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
-  AppUserProgressHistoryRoute: typeof AppUserProgressHistoryRoute
-  AppUserProgressIndexRoute: typeof AppUserProgressIndexRoute
+  AppUserAnalyticsHistoryRoute: typeof AppUserAnalyticsHistoryRoute
+  AppUserAnalyticsIndexRoute: typeof AppUserAnalyticsIndexRoute
   AppUserRequestsIndexRoute: typeof AppUserRequestsIndexRoute
-  AppUserProgressClassIdRoute: typeof AppUserProgressClassIdRoute
-  AppUserProgressCourseIdRoute: typeof AppUserProgressCourseIdRoute
-  AppUserProgressSectionIdRoute: typeof AppUserProgressSectionIdRoute
+  AppUserAnalyticsClassIdRoute: typeof AppUserAnalyticsClassIdRoute
+  AppUserAnalyticsCourseIdRoute: typeof AppUserAnalyticsCourseIdRoute
+  AppUserAnalyticsSectionIdRoute: typeof AppUserAnalyticsSectionIdRoute
 }
 
 const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserBookmarksRoute: AppUserBookmarksRoute,
   AppUserClassesRoute: AppUserClassesRoute,
   AppUserNotificationsRoute: AppUserNotificationsRoute,
+  AppUserProgressRoute: AppUserProgressRoute,
   AppUserSettingsRoute: AppUserSettingsRoute,
   AppUserIndexRoute: AppUserIndexRoute,
-  AppUserProgressHistoryRoute: AppUserProgressHistoryRoute,
-  AppUserProgressIndexRoute: AppUserProgressIndexRoute,
+  AppUserAnalyticsHistoryRoute: AppUserAnalyticsHistoryRoute,
+  AppUserAnalyticsIndexRoute: AppUserAnalyticsIndexRoute,
   AppUserRequestsIndexRoute: AppUserRequestsIndexRoute,
-  AppUserProgressClassIdRoute: AppUserProgressClassIdRoute,
-  AppUserProgressCourseIdRoute: AppUserProgressCourseIdRoute,
-  AppUserProgressSectionIdRoute: AppUserProgressSectionIdRoute,
+  AppUserAnalyticsClassIdRoute: AppUserAnalyticsClassIdRoute,
+  AppUserAnalyticsCourseIdRoute: AppUserAnalyticsCourseIdRoute,
+  AppUserAnalyticsSectionIdRoute: AppUserAnalyticsSectionIdRoute,
 }
 
 const AppUserRouteRouteWithChildren = AppUserRouteRoute._addFileChildren(

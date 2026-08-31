@@ -15,10 +15,7 @@ import { z } from "zod";
 
 import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb";
-import {
-	BrowseContributeState,
-	BrowseEmptyState,
-} from "@/components/browse/browse-empty-state";
+import { BrowseContributeState } from "@/components/browse/browse-empty-state";
 import { BrowsePageHeader } from "@/components/browse/browse-page-header";
 import { SearchFilter } from "@/components/browse/search-filter";
 import {
@@ -32,6 +29,7 @@ import { RequestFormDialog } from "@/components/requests/request-form-dialog";
 import { ClassDetailSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { useAuth } from "@/hooks/useAuth";
 import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -373,7 +371,7 @@ function ClassPage() {
 				) : (
 					<DataTable
 						table={table}
-						empty={<BrowseEmptyState message="Nessuna sezione trovata." />}
+						empty={<InlineEmpty>Nessuna sezione trovata.</InlineEmpty>}
 						rowLink={row => (
 							<Link
 								to="/browse/$department/$course/$class/$section"

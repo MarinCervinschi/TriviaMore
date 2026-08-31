@@ -1,6 +1,7 @@
 export { addUserClassFn } from "./add-user-class";
 export { getAttemptHistoryFn } from "./get-attempt-history";
 export { getBookmarkedQuestionIdsFn } from "./get-bookmarked-question-ids";
+export { getFlashcardDaysFn } from "./get-flashcard-days";
 export { getMasteryFn } from "./get-mastery";
 export { getStudyStatsFn } from "./get-study-stats";
 export { getRecentClassesFn } from "./get-recent-classes";
@@ -9,6 +10,7 @@ export { getUserClassesFn } from "./get-user-classes";
 export { getUserProfileFn } from "./get-user-profile";
 export { isClassSavedFn } from "./is-class-saved";
 export { removeUserClassFn } from "./remove-user-class";
+export { setAttemptFavoriteFn } from "./set-attempt-favorite";
 export { toggleBookmarkFn } from "./toggle-bookmark";
 export { updateProfileFn } from "./update-profile";
 export { updateRecentClassFn } from "./update-recent-class";

@@ -11,6 +11,7 @@ import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
+import { InsetCard } from "@/components/ui/inset-card";
 import { AREA_CONFIG, CAMPUS_LOCATION_CONFIG } from "@/lib/browse/constants";
 import { cn } from "@/lib/utils";
 
@@ -56,10 +57,9 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 			params={{ department: department.code.toLowerCase() }}
 			className="group block h-full"
 		>
-			<article
+			<InsetCard
 				className={cn(
-					"bg-card relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-sm",
-					"transition-all duration-300",
+					"h-full transition-all duration-300",
 					"hover:border-primary/30 hover:-translate-y-1 hover:shadow-xl"
 				)}
 			>
@@ -140,7 +140,7 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						)}
 					</div>
 				</div>
-			</article>
+			</InsetCard>
 		</Link>
 	);
 }

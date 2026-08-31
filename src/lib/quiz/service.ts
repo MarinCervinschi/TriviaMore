@@ -6,7 +6,8 @@ import { evaluationModes, questions } from "@/db/schema";
 import { assertSectionAccess } from "@/lib/auth/checks";
 import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
-import { accessibleSectionIdsInClass, sectionBrowsePath } from "@/lib/catalog/service";
+import { sectionBrowsePath } from "@/lib/catalog/paths";
+import { accessibleSectionIdsInClass } from "@/lib/catalog/service";
 import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
@@ -19,6 +20,7 @@ import {
 	findAttempt,
 	findAttemptWithChain,
 	findOpenAttemptId,
+	findSectionAttempts,
 	insertAnswers,
 	insertAttempt,
 } from "./db/attempts";
@@ -33,7 +35,13 @@ import {
 import { selectRandomItems, shuffleArray } from "./randomization";
 import type { CompleteQuizInput, StartQuizInput } from "./schemas";
 import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
-import type { EvaluationMode, Quiz, QuizAttemptResult, QuizQuestion } from "./types";
+import type {
+	AttemptHistory,
+	EvaluationMode,
+	Quiz,
+	QuizAttemptResult,
+	QuizQuestion,
+} from "./types";
 
 const QUIZ_GONE =
 	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
@@ -196,9 +204,13 @@ export async function getQuiz(
 		section: {
 			id: quiz.sectionId,
 			name: quiz.sectionName,
+			classId: quiz.classId,
 			className: quiz.className,
 			courseName: quiz.courseName,
 			departmentName: quiz.departmentName,
+			departmentCode: quiz.departmentCode,
+			courseCode: quiz.courseCode,
+			classCode: quiz.classCode,
 			path: sectionBrowsePath(quiz),
 		},
 		questions: questionList,
@@ -307,6 +319,39 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 	});
 }
 
+// Eight columns is what the card can plot without the labels colliding; the tail
+// is the part worth reading anyway.
+const HISTORY_POINTS = 8;
+
+function buildHistory(
+	rows: Awaited<ReturnType<typeof findSectionAttempts>>,
+	attemptId: string
+): AttemptHistory | null {
+	const index = rows.findIndex(row => row.id === attemptId);
+	if (index === -1) return null;
+
+	const run = rows.slice(0, index + 1);
+	const current = run[index]!;
+	const earlier = run.slice(0, index);
+
+	const timed = earlier.filter(row => row.timeSpent != null && row.answers > 0);
+	const seconds = timed.reduce((sum, row) => sum + (row.timeSpent ?? 0), 0) / 1000;
+	const answers = timed.reduce((sum, row) => sum + row.answers, 0);
+
+	return {
+		points: run.slice(-HISTORY_POINTS).map(row => ({
+			attemptId: row.id,
+			score: row.score,
+			completedAt: row.completedAt!,
+		})),
+		average: run.reduce((sum, row) => sum + row.score, 0) / run.length,
+		position: index + 1,
+		isPersonalBest:
+			earlier.length > 0 && current.score > Math.max(...earlier.map(row => row.score)),
+		avgSecondsPerQuestion: answers > 0 ? Math.round(seconds / answers) : null,
+	};
+}
+
 export async function getQuizResults(
 	userId: string | null,
 	attemptId: string
@@ -319,13 +364,20 @@ export async function getQuizResults(
 
 	const order = await findQuizQuestionOrder(db, attempt.quizId);
 
-	const [rows, answers, evaluationMode] = await Promise.all([
+	const [rows, answers, evaluationMode, sectionAttempts] = await Promise.all([
 		findQuestionsByIds(
 			db,
 			order.map(entry => entry.questionId)
 		),
 		findAnswers(db, attemptId),
 		findEvaluationMode(db, attempt.evaluationModeId),
+		attempt.sectionId
+			? findSectionAttempts(db, {
+					userId,
+					sectionId: attempt.sectionId,
+					quizMode: attempt.quizMode,
+				})
+			: Promise.resolve([]),
 	]);
 	if (!evaluationMode) return null;
 
@@ -336,6 +388,7 @@ export async function getQuizResults(
 		score: attempt.score,
 		timeSpent: attempt.timeSpent,
 		completedAt: attempt.completedAt,
+		isFavorite: attempt.isFavorite,
 		quiz: {
 			id: attempt.quizId,
 			quizMode: attempt.quizMode,
@@ -343,9 +396,13 @@ export async function getQuizResults(
 			section: {
 				id: attempt.sectionId,
 				name: attempt.sectionName,
+				classId: attempt.classId,
 				className: attempt.className,
 				courseName: attempt.courseName,
 				departmentName: attempt.departmentName,
+				departmentCode: attempt.departmentCode,
+				courseCode: attempt.courseCode,
+				classCode: attempt.classCode,
 				path: sectionBrowsePath(attempt),
 			},
 			evaluationMode,
@@ -369,5 +426,6 @@ export async function getQuizResults(
 			...answer,
 			isCorrect: answer.isCorrect ?? false,
 		})),
+		history: buildHistory(sectionAttempts, attempt.id),
 	};
 }
