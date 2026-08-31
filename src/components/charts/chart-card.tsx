@@ -1,53 +1,51 @@
 import type { ReactNode } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { TexturePlacement } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { cn } from "@/lib/utils";
 
 export type ChartCardProps = {
-	title?: string;
+	title?: ReactNode;
 	description?: string;
 	/** Rendered at the top right — a filter, a range switch, a link. */
 	actions?: ReactNode;
 	/** Rendered under the plot — a legend list, a total, a caveat. */
 	footer?: ReactNode;
+	/** The pixel field, in the panel. Off by default: a plot is busy enough. */
+	texture?: TexturePlacement;
 	className?: string;
 	children: ReactNode;
 };
 
 /**
  * The shell every chart shares, so a plot dropped into any page arrives with the
- * same heading, padding and framing.
+ * same heading, padding and framing. The heading and the footer ride on the
+ * frame, the plot sits in the panel: a reader can tell chrome from data without
+ * reading either.
  */
 export function ChartCard({
 	title,
 	description,
 	actions,
 	footer,
+	texture,
 	className,
 	children,
 }: ChartCardProps) {
 	return (
-		<Card className={cn("relative flex h-full flex-col overflow-hidden", className)}>
-			{(title || actions) && (
-				<CardHeader className="relative pb-2">
-					<div className="flex items-start justify-between gap-4">
-						<div className="min-w-0">
-							{title && <CardTitle className="text-base">{title}</CardTitle>}
-							{description && (
-								<p className="text-muted-foreground mt-0.5 text-sm">{description}</p>
-							)}
-						</div>
-						{actions && (
-							<div className="flex shrink-0 items-center gap-2">{actions}</div>
-						)}
-					</div>
-				</CardHeader>
-			)}
-			<CardContent className="relative flex flex-1 flex-col justify-center gap-4 pb-6">
+		<InsetCard
+			className={cn("h-full", className)}
+			title={title}
+			description={description}
+			actions={actions}
+			footer={footer}
+			texture={texture}
+			textureAlpha={0.12}
+		>
+			<div className="relative flex flex-1 flex-col justify-center gap-4 p-4">
 				{children}
-				{footer}
-			</CardContent>
-		</Card>
+			</div>
+		</InsetCard>
 	);
 }
 

@@ -18,23 +18,3 @@ export async function accessibleSectionIdsInClass(
 	);
 	return all.filter(section => allowed.has(section.id)).map(s => s.id);
 }
-
-// The public URL of a section. Null when the class hangs off no course, since
-// there is no browse route to point at.
-export function sectionBrowsePath(
-	chain:
-		| {
-				departmentCode: string | null;
-				courseCode: string | null;
-				classCode: string | null;
-				sectionSlug: string | null;
-		  }
-		| null
-		| undefined
-): string | null {
-	if (!chain) return null;
-	const { departmentCode, courseCode, classCode, sectionSlug } = chain;
-	if (!departmentCode || !courseCode || !classCode || !sectionSlug) return null;
-
-	return `/browse/${departmentCode.toLowerCase()}/${courseCode.toLowerCase()}/${classCode.toLowerCase()}/${sectionSlug}`;
-}

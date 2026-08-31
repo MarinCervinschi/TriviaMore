@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
 import { useId } from "react";
 
+import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { Label, Pie, PieChart } from "recharts";
 
 import {
@@ -33,6 +35,18 @@ export type DonutChartProps = Omit<ChartCardProps, "children" | "footer"> & {
 	size?: number;
 	/** Hides the legend list under the ring. */
 	hideLegend?: boolean;
+	/**
+	 * `ring` is the thin donut with the total in the middle. `petals` is thicker and
+	 * cuts the slices apart with rounded ends — for a distribution, where the arcs
+	 * are the reading and the counts belong to the legend and the tooltip.
+	 */
+	variant?: "ring" | "petals";
+	/** A figure that belongs above the ring — a total, a headline count. */
+	header?: ReactNode;
+	/** What sits in the hole. Defaults to the total and the unit. */
+	center?: { value: ReactNode; caption?: string };
+	/** A caveat under the legend, behind a rule: how to read the slices. */
+	note?: ReactNode;
 	emptyMessage?: string;
 };
 
@@ -46,6 +60,10 @@ export function DonutChart({
 	unitLabel,
 	size = 220,
 	hideLegend = false,
+	variant = "ring",
+	header,
+	center,
+	note,
 	emptyMessage,
 	...card
 }: DonutChartProps) {
@@ -61,6 +79,7 @@ export function DonutChart({
 		legendColor: entry.color ?? `var(--color-${entry.key})`,
 	}));
 	const total = data.reduce((sum, entry) => sum + entry.value, 0);
+	const petals = variant === "petals";
 
 	if (data.length === 0) {
 		return (
@@ -74,26 +93,15 @@ export function DonutChart({
 		<ChartCard
 			{...card}
 			footer={
-				hideLegend ? undefined : (
-					<ul className="grid grid-cols-1 gap-1.5 text-xs">
-						{chartData.map(entry => (
-							<li key={entry.key} className="flex items-center justify-between gap-2">
-								<span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
-									<span
-										className="h-2 w-2 shrink-0 rounded-full"
-										style={{ backgroundColor: entry.legendColor }}
-									/>
-									<span className="truncate">{entry.label}</span>
-								</span>
-								<span className="text-foreground font-semibold tabular-nums">
-									{formatNumber(entry.value)}
-								</span>
-							</li>
-						))}
-					</ul>
+				note && (
+					<p className="text-muted-foreground flex items-start gap-2 text-xs">
+						<InfoCircleIcon className="mt-px size-3.5 shrink-0" />
+						<span>{note}</span>
+					</p>
 				)
 			}
 		>
+			{header}
 			<ChartContainer
 				config={config}
 				className="mx-auto aspect-square w-full"
@@ -126,41 +134,62 @@ export function DonutChart({
 						data={chartData}
 						dataKey="value"
 						nameKey="key"
-						innerRadius="56%"
-						strokeWidth={3}
-						paddingAngle={2}
+						innerRadius={petals ? "34%" : "56%"}
+						strokeWidth={petals ? 0 : 3}
+						paddingAngle={petals ? 3 : 2}
+						cornerRadius={petals ? 8 : undefined}
 					>
-						<Label
-							content={({ viewBox }) => {
-								if (!viewBox || !("cx" in viewBox)) return null;
-								return (
-									<text
-										x={viewBox.cx}
-										y={viewBox.cy}
-										textAnchor="middle"
-										dominantBaseline="middle"
-									>
-										<tspan
+						{!petals && (
+							<Label
+								content={({ viewBox }) => {
+									if (!viewBox || !("cx" in viewBox)) return null;
+									return (
+										<text
 											x={viewBox.cx}
 											y={viewBox.cy}
-											className="fill-foreground text-2xl font-bold"
+											textAnchor="middle"
+											dominantBaseline="middle"
 										>
-											{formatNumber(total)}
-										</tspan>
-										<tspan
-											x={viewBox.cx}
-											y={(viewBox.cy ?? 0) + 22}
-											className="fill-muted-foreground text-xs"
-										>
-											{unitLabel}
-										</tspan>
-									</text>
-								);
-							}}
-						/>
+											<tspan
+												x={viewBox.cx}
+												y={viewBox.cy}
+												className="fill-foreground text-2xl font-bold"
+											>
+												{center?.value ?? formatNumber(total)}
+											</tspan>
+											<tspan
+												x={viewBox.cx}
+												y={(viewBox.cy ?? 0) + 22}
+												className="fill-muted-foreground text-xs"
+											>
+												{center?.caption ?? unitLabel}
+											</tspan>
+										</text>
+									);
+								}}
+							/>
+						)}
 					</Pie>
 				</PieChart>
 			</ChartContainer>
+			{!hideLegend && (
+				<ul className="grid grid-cols-1 gap-2 text-sm">
+					{chartData.map(entry => (
+						<li key={entry.key} className="flex items-center justify-between gap-2">
+							<span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
+								<span
+									className="h-2 w-2 shrink-0 rounded-full"
+									style={{ backgroundColor: entry.legendColor }}
+								/>
+								<span className="truncate">{entry.label}</span>
+							</span>
+							<span className="text-foreground font-semibold tabular-nums">
+								{formatNumber(entry.value)}
+							</span>
+						</li>
+					))}
+				</ul>
+			)}
 		</ChartCard>
 	);
 }

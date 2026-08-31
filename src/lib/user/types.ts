@@ -4,13 +4,10 @@ import type { QuizMode } from "@/lib/quiz/types";
 type Profile = typeof profiles.$inferSelect;
 type QuestionRow = typeof questions.$inferSelect;
 
-export type ActivityDay = { date: string; value: number };
-
 export type UserProfile = Profile & {
 	stats: UserStats;
 	recentClasses: RecentClass[];
-	recentQuizAttempts: RecentQuizAttempt[];
-	activity: { days: ActivityDay[]; endDate: string };
+	recentQuizAttempts: AttemptHistoryEntry[];
 };
 
 export type UserStats = {
@@ -76,15 +73,6 @@ export type UserBookmark = SectionLocation &
 		createdAt: string;
 	};
 
-export type RecentQuizAttempt = SectionLocation & {
-	id: string;
-	score: number;
-	completedAt: string;
-	classCode: string | null;
-	courseCode: string | null;
-	departmentCode: string | null;
-};
-
 // One UTC day of study for one quiz mode; the client windows these.
 export type DailyStudyStat = {
 	date: string;
@@ -95,6 +83,12 @@ export type DailyStudyStat = {
 	timeSpent: number;
 	answersTotal: number;
 	answersCorrect: number;
+};
+
+// One UTC day of flashcard study; the calendar sums these with the quiz days.
+export type DailyFlashcardDay = {
+	date: string;
+	sessions: number;
 };
 
 // Per-question mastery, aggregated from the frozen `answer_attempts` verdicts.
@@ -117,6 +111,12 @@ export type UserMastery = {
 	/** Mean seconds per answered question across the scope (null when untimed). */
 	avgSecondsPerQuestion: number | null;
 	byDifficulty: MasteryBreakdown[];
+	/**
+	 * Every section with enough answers to rank, by name. `weakSections` and
+	 * `strongSections` are the two ends of this same list — a chart that plots the
+	 * ends alone would show a hole in the middle that the student never had.
+	 */
+	sections: SectionAccuracy[];
 	weakSections: SectionAccuracy[];
 	strongSections: SectionAccuracy[];
 };
@@ -129,6 +129,8 @@ export type AttemptHistoryEntry = {
 	timeSpent: number | null;
 	completedAt: string;
 	quizMode: QuizMode | null;
+	/** Starred by the student, to find it again from the history filter. */
+	isFavorite: boolean;
 	sectionId: string | null;
 	sectionName: string | null;
 	classId: string | null;

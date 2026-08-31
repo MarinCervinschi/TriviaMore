@@ -3,8 +3,8 @@ import type { LinkProps } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import { decorativeTint } from "@/components/shared/decorative-tints";
-import { Card, CardTexture } from "@/components/ui/card";
 import { IconTile } from "@/components/ui/icon-tile";
+import { InsetCard } from "@/components/ui/inset-card";
 
 // The one stat tile used across the admin dashboard, the user area and progress.
 // `color` drives the icon badge and icon tint together; an optional `href`
@@ -27,9 +27,12 @@ export function StatCard({
 	const colors = decorativeTint(color);
 
 	const content = (
-		<Card className="group relative overflow-hidden p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-5">
-			<CardTexture placement="tl" alpha={0.12} />
-			<div className="relative flex flex-col gap-3">
+		<InsetCard
+			className="h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+			texture="tl"
+			textureAlpha={0.12}
+		>
+			<div className="relative flex flex-col gap-3 p-4 sm:p-5">
 				<IconTile variant="soft" className={colors.icon}>
 					<Icon />
 				</IconTile>
@@ -45,11 +48,15 @@ export function StatCard({
 					)}
 				</div>
 			</div>
-		</Card>
+		</InsetCard>
 	);
 
 	if (href) {
-		return <Link to={href as LinkProps["to"]}>{content}</Link>;
+		return (
+			<Link to={href as LinkProps["to"]} className="block">
+				{content}
+			</Link>
+		);
 	}
 
 	return content;

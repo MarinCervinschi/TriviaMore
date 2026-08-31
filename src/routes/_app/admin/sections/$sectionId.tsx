@@ -24,9 +24,9 @@ import {
 import { PlusGlyph } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Select,
 	SelectContent,
@@ -218,11 +218,8 @@ function AdminSectionDetailPage() {
 
 			<div className="grid gap-6">
 				<div className="grid gap-6 md:grid-cols-2">
-					<Card>
-						<CardHeader className="pb-4">
-							<CardTitle>Modifica sezione</CardTitle>
-						</CardHeader>
-						<CardContent>
+					<InsetCard title="Modifica sezione">
+						<div className="p-6">
 							<SectionForm
 								section={section}
 								classId={section.classId}
@@ -232,14 +229,11 @@ function AdminSectionDetailPage() {
 								isPending={updateSection.isPending}
 								canEditVisibility={!isMaintainer}
 							/>
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 
-					<Card>
-						<CardHeader>
-							<CardTitle>Statistiche</CardTitle>
-						</CardHeader>
-						<CardContent>
+					<InsetCard title="Statistiche">
+						<div className="p-6">
 							<dl className="grid grid-cols-2 gap-4">
 								<div className="bg-muted/30 rounded-xl p-4">
 									<dt className="text-muted-foreground text-sm">Totale domande</dt>
@@ -266,23 +260,22 @@ function AdminSectionDetailPage() {
 									<dd className="text-2xl font-bold">{countByType("SHORT_ANSWER")}</dd>
 								</div>
 							</dl>
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				</div>
 
 				{/* Section access management (private sections, SUPERADMIN only) */}
 				{!section.isPublic && isSuperadmin && (
-					<Card>
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+					<InsetCard
+						title={
+							<span className="flex items-center gap-2">
 								<UsersGroupRoundedIcon className="h-5 w-5" />
 								Accessi utente ({accessUsers?.length ?? 0})
-							</CardTitle>
-							<p className="text-muted-foreground text-sm">
-								Utenti con accesso a questa sezione privata
-							</p>
-						</CardHeader>
-						<CardContent>
+							</span>
+						}
+						description="Utenti con accesso a questa sezione privata"
+					>
+						<div className="p-6">
 							{(accessUsers?.length ?? 0) > 0 && (
 								<div className="mb-4 flex flex-wrap gap-2">
 									{accessUsers?.map(u => (
@@ -343,8 +336,8 @@ function AdminSectionDetailPage() {
 									</div>
 								) : null;
 							})()}
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				)}
 
 				<section className="space-y-4">

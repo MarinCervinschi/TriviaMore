@@ -15,6 +15,7 @@ import { SearchFilter } from "@/components/browse/search-filter";
 import { ContentHierarchyDiagram } from "@/components/shared/content-hierarchy-diagram";
 import { BrowseOverviewSkeleton } from "@/components/skeletons";
 import { IconStack } from "@/components/ui/icon-stack";
+import { InsetCard } from "@/components/ui/inset-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -354,16 +355,20 @@ function TopClassesStrip({
 	if (data.length === 0) return null;
 
 	return (
-		<article className="bg-card relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6">
-			<div className="from-primary/5 to-primary/0 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br via-transparent" />
-			<div className="mb-4 flex items-baseline justify-between gap-3">
-				<div className="flex items-center gap-2">
+		<InsetCard
+			className="h-full"
+			title={
+				<span className="flex items-center gap-2">
 					<CupFirstIcon className="text-brand h-4 w-4" />
-					<p className="text-brand eyebrow">Insegnamenti più contribuiti</p>
-				</div>
-				<p className="text-muted-foreground text-xs">Per numero di sezioni</p>
-			</div>
-			<ol className="flex flex-1 flex-col justify-center gap-1.5">
+					Insegnamenti con più contribuiti
+				</span>
+			}
+			actions={
+				<span className="text-muted-foreground text-xs">Per numero di sezioni</span>
+			}
+		>
+			<div className="from-primary/5 to-primary/0 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
+			<ol className="relative flex flex-1 flex-col justify-center gap-1.5 p-4">
 				{data.map((cls, i) => {
 					const accent = cls.deptArea ? AREA_CONFIG[cls.deptArea]?.accent : null;
 					return (
@@ -409,7 +414,7 @@ function TopClassesStrip({
 					);
 				})}
 			</ol>
-		</article>
+		</InsetCard>
 	);
 }
 

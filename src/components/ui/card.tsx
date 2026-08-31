@@ -76,7 +76,7 @@ CardFooter.displayName = "CardFooter";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
-type TexturePlacement =
+export type TexturePlacement =
 	| "full"
 	| "top"
 	| "bottom"

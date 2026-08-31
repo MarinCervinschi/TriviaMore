@@ -26,5 +26,3 @@ const browserEvent = z.object({
 export const browserLogBatch = z.object({
 	events: z.array(browserEvent).min(1).max(10),
 });
-
-export type BrowserLogEvent = z.infer<typeof browserEvent>;

@@ -3,80 +3,90 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * A static hierarchy view with ReUI/Linear-style elbow connectors, without a
- * headless-tree dependency. Each row renders one gutter cell per ancestor level;
- * a cell draws a straight vertical when that ancestor continues below, and the
- * deepest cell draws the rounded elbow into the row (`└` when the row is the last
- * child, `├` otherwise). The caller passes `guides` — one boolean per level,
- * "does the line at this depth continue below me" — and owns the expand state.
- * `reach` widens the deepest cell so the elbow reaches a row whose content is
- * indented further (e.g. a leaf that stands in for a missing toggle).
+ * A static hierarchy view without a headless-tree dependency. Each row renders one
+ * gutter cell per ancestor level; what a cell draws depends on `connector`.
+ * `elbow` is the ReUI/Linear look: a straight vertical while that ancestor
+ * continues below, and a rounded elbow into the row (`└` when the row is the last
+ * child, `├` otherwise). `rail` is the file-explorer look: one full-height vertical
+ * per level, the shape nested `border-l` containers produce, so the line runs past
+ * the last child. The caller passes `guides` — one boolean per level, "does the line
+ * at this depth continue below me", read by `elbow` only — and owns the expand
+ * state. `reach` widens the deepest cell so the connector reaches a row whose
+ * content is indented further (e.g. a leaf that stands in for a missing toggle).
  */
-const TreeContext = React.createContext<{ indent: number; lines: boolean }>({
+type TreeConnector = "elbow" | "rail" | "none";
+
+const TreeContext = React.createContext<{ indent: number; connector: TreeConnector }>({
 	indent: 20,
-	lines: true,
+	connector: "elbow",
 });
 
 interface TreeProps extends React.HTMLAttributes<HTMLDivElement> {
 	/** Pixels per level, and the guide spacing. */
 	indent?: number;
-	/** Draw the elbow connectors; when false the gutter is plain indentation. */
-	lines?: boolean;
+	/** Elbow connectors, full-height rails, or plain indentation. */
+	connector?: TreeConnector;
 }
 
-function Tree({ indent = 20, lines = true, className, ...props }: TreeProps) {
+function Tree({ indent = 20, connector = "elbow", className, ...props }: TreeProps) {
 	return (
-		<TreeContext.Provider value={{ indent, lines }}>
+		<TreeContext.Provider value={{ indent, connector }}>
 			<div data-slot="tree" className={cn("flex flex-col", className)} {...props} />
 		</TreeContext.Provider>
 	);
 }
 
-/** One indent cell: a straight vertical, or the rounded elbow into the row. */
+/** One indent cell: a vertical rail, or the rounded elbow into the row. */
 function Guide({
 	indent,
+	connector,
 	continues,
-	elbow,
+	deepest,
 	reach,
 }: {
 	indent: number;
+	connector: TreeConnector;
 	continues: boolean;
-	elbow: boolean;
+	deepest: boolean;
 	reach: number;
 }) {
 	const left = Math.round(indent / 2);
-	return (
-		<div
-			className="relative shrink-0"
-			style={{ width: elbow ? indent + reach : indent }}
-			aria-hidden
-		>
-			{elbow ? (
-				<>
-					{/* solid vertical + rounded corner + a short solid start */}
+	const width = deepest ? indent + reach : indent;
+
+	if (connector === "elbow" && deepest) {
+		return (
+			<div className="relative shrink-0" style={{ width }} aria-hidden>
+				{/* solid vertical + rounded corner + a short solid start */}
+				<span
+					className="border-border absolute top-0 h-1/2 rounded-bl-[6px] border-b border-l"
+					style={{ left, width: 10 }}
+				/>
+				{/* dashed continuation, fading out before the row */}
+				<span
+					className="border-border/70 absolute top-0 h-1/2 border-b border-dashed"
+					style={{ left: left + 8, right: 8 }}
+				/>
+				{continues && (
 					<span
-						className="border-border absolute top-0 h-1/2 rounded-bl-[6px] border-b border-l"
-						style={{ left, width: 10 }}
-					/>
-					{/* dashed continuation, fading out before the row */}
-					<span
-						className="border-border/70 absolute top-0 h-1/2 border-b border-dashed"
-						style={{ left: left + 8, right: 8 }}
-					/>
-					{continues && (
-						<span
-							className="border-border absolute top-1/2 bottom-0 border-l"
-							style={{ left }}
-						/>
-					)}
-				</>
-			) : (
-				continues && (
-					<span
-						className="border-border absolute inset-y-0 border-l"
+						className="border-border absolute top-1/2 bottom-0 border-l"
 						style={{ left }}
 					/>
-				)
+				)}
+			</div>
+		);
+	}
+
+	const draw = connector === "rail" || continues;
+	return (
+		<div className="relative shrink-0" style={{ width }} aria-hidden>
+			{draw && (
+				<span
+					className={cn(
+						"absolute inset-y-0 border-l",
+						connector === "rail" ? "border-border/60" : "border-border"
+					)}
+					style={{ left }}
+				/>
 			)}
 		</div>
 	);
@@ -87,7 +97,7 @@ interface TreeItemProps extends React.HTMLAttributes<HTMLDivElement> {
 	level: number;
 	/** Per ancestor level: does the guide line continue below this row? */
 	guides?: boolean[];
-	/** Extra width on the deepest cell, so the elbow reaches an indented row. */
+	/** Extra width on the deepest cell, so the connector reaches an indented row. */
 	reach?: number;
 }
 
@@ -99,22 +109,23 @@ function TreeItem({
 	children,
 	...props
 }: TreeItemProps) {
-	const { indent, lines } = React.useContext(TreeContext);
+	const { indent, connector } = React.useContext(TreeContext);
 	return (
 		<div data-slot="tree-item" className={cn("flex", className)} {...props}>
 			{level > 0 &&
-				(lines ? (
+				(connector === "none" ? (
+					<div className="shrink-0" style={{ width: level * indent }} />
+				) : (
 					Array.from({ length: level }).map((_, i) => (
 						<Guide
 							key={i}
 							indent={indent}
+							connector={connector}
 							continues={guides[i] ?? false}
-							elbow={i === level - 1}
+							deepest={i === level - 1}
 							reach={i === level - 1 ? reach : 0}
 						/>
 					))
-				) : (
-					<div className="shrink-0" style={{ width: level * indent }} />
 				))}
 			<div className="min-w-0 flex-1">{children}</div>
 		</div>
@@ -122,3 +133,4 @@ function TreeItem({
 }
 
 export { Tree, TreeItem };
+export type { TreeConnector };

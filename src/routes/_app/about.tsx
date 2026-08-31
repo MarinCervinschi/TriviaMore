@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { GithubIcon } from "@/components/icons";
 import { OrbitingTechStack } from "@/components/landing";
 import { Button } from "@/components/ui/button";
-import { CardTexture } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
@@ -151,15 +151,14 @@ function AboutPage() {
 								{ value: "UNIMORE", label: "Focalizzato" },
 								{ value: "Community", label: "Driven" },
 							].map(stat => (
-								<div
-									key={stat.label}
-									className="bg-card rounded-2xl border p-4 text-center sm:p-6"
-								>
-									<p className="text-brand text-2xl font-bold sm:text-3xl">
-										{stat.value}
-									</p>
-									<p className="text-muted-foreground mt-1 text-sm">{stat.label}</p>
-								</div>
+								<InsetCard key={stat.label}>
+									<div className="p-4 text-center sm:p-6">
+										<p className="text-brand text-2xl font-bold sm:text-3xl">
+											{stat.value}
+										</p>
+										<p className="text-muted-foreground mt-1 text-sm">{stat.label}</p>
+									</div>
+								</InsetCard>
 							))}
 						</div>
 					</div>
@@ -186,36 +185,33 @@ function AboutPage() {
 						{values.map(value => {
 							const Icon = value.icon;
 							return (
-								<motion.div
-									key={value.title}
-									className={`bg-card relative overflow-hidden rounded-2xl border shadow-sm ${value.span}`}
-									variants={item}
-								>
-									<CardTexture placement="tr" />
-									<div
-										className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}
-									>
+								<motion.div key={value.title} className={value.span} variants={item}>
+									<InsetCard className="h-full" texture="tr">
 										<div
-											className={`inline-flex shrink-0 rounded-2xl p-3 sm:p-4 ${value.bg}`}
+											className={`relative flex flex-col gap-4 p-6 sm:p-8 ${value.span ? "sm:flex-row sm:items-start sm:gap-6" : ""}`}
 										>
-											<Icon
-												className={`h-6 w-6 sm:h-7 sm:w-7 ${value.color}`}
-												aria-hidden
-											/>
-										</div>
+											<div
+												className={`inline-flex shrink-0 rounded-2xl p-3 sm:p-4 ${value.bg}`}
+											>
+												<Icon
+													className={`h-6 w-6 sm:h-7 sm:w-7 ${value.color}`}
+													aria-hidden
+												/>
+											</div>
 
-										<div className="min-w-0">
-											<h3 className="mb-1.5 text-lg font-semibold tracking-tight">
-												{value.title}
-											</h3>
-											<p className="text-muted-foreground text-sm font-medium">
-												{value.description}
-											</p>
-											<p className="text-muted-foreground mt-3 leading-relaxed">
-												{value.detail}
-											</p>
+											<div className="min-w-0">
+												<h3 className="mb-1.5 text-lg font-semibold tracking-tight">
+													{value.title}
+												</h3>
+												<p className="text-muted-foreground text-sm font-medium">
+													{value.description}
+												</p>
+												<p className="text-muted-foreground mt-3 leading-relaxed">
+													{value.detail}
+												</p>
+											</div>
 										</div>
-									</div>
+									</InsetCard>
 								</motion.div>
 							);
 						})}
@@ -262,33 +258,35 @@ function AboutPage() {
 			{/* CTA — gradient card full-width */}
 			<section className="relative py-16 sm:py-24">
 				<div className="container">
-					<div className="border-primary/20 bg-card relative overflow-hidden rounded-3xl border p-8 text-center sm:p-16">
-						<h2 className="relative mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-							Unisciti alla community
-						</h2>
-						<p className="text-muted-foreground relative mx-auto mb-8 max-w-2xl text-lg">
-							Che tu sia uno sviluppatore, un designer o semplicemente uno studente con
-							idee, il tuo contributo è prezioso!
-						</p>
-						<div className="relative flex flex-col items-center justify-center gap-4 sm:flex-row">
-							<Button size="lg" className="shadow-primary/25 shadow-lg" asChild>
-								<a
-									href="https://github.com/MarinCervinschi/TriviaMore"
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<GithubIcon className="mr-2 h-5 w-5" />
-									Contribuisci su GitHub
-								</a>
-							</Button>
-							<Button variant="outline" size="lg" asChild>
-								<Link to="/contact">
-									Contattaci
-									<ArrowRightIcon className="ml-2 h-4 w-4" />
-								</Link>
-							</Button>
+					<InsetCard className="border-primary/20">
+						<div className="p-8 text-center sm:p-16">
+							<h2 className="relative mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
+								Unisciti alla community
+							</h2>
+							<p className="text-muted-foreground relative mx-auto mb-8 max-w-2xl text-lg">
+								Che tu sia uno sviluppatore, un designer o semplicemente uno studente
+								con idee, il tuo contributo è prezioso!
+							</p>
+							<div className="relative flex flex-col items-center justify-center gap-4 sm:flex-row">
+								<Button size="lg" className="shadow-primary/25 shadow-lg" asChild>
+									<a
+										href="https://github.com/MarinCervinschi/TriviaMore"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										<GithubIcon className="mr-2 h-5 w-5" />
+										Contribuisci su GitHub
+									</a>
+								</Button>
+								<Button variant="outline" size="lg" asChild>
+									<Link to="/contact">
+										Contattaci
+										<ArrowRightIcon className="ml-2 h-4 w-4" />
+									</Link>
+								</Button>
+							</div>
 						</div>
-					</div>
+					</InsetCard>
 				</div>
 			</section>
 		</div>

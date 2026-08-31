@@ -30,11 +30,6 @@ export function localDayIndex(value: DateInput): number {
 	);
 }
 
-/** Whole calendar days from `from` to `to`, ignoring the time of day. */
-export function daysBetween(from: DateInput, to: DateInput): number {
-	return localDayIndex(to) - localDayIndex(from);
-}
-
 /** Hour of the local day, 0–23. */
 export function localHour(value: DateInput): number {
 	return toDate(value).getHours();

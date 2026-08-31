@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { IconStack } from "@/components/ui/icon-stack";
 
 type AdminPageHeaderProps = {
 	title: string;
@@ -39,9 +40,9 @@ export function AdminPageHeader({
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-4">
 					{Icon && (
-						<div className="bg-primary/10 inline-flex rounded-2xl p-3">
-							<Icon className="text-brand h-6 w-6" />
-						</div>
+						<IconStack className="shrink-0">
+							<Icon className="text-brand h-7 w-7" />
+						</IconStack>
 					)}
 					<div>
 						<h1 className="text-3xl font-bold tracking-tight">{title}</h1>

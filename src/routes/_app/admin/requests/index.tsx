@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
@@ -15,7 +14,7 @@ import {
 } from "@/components/data-table";
 import { RequestStatusBadge } from "@/components/requests/request-status-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EmptyState } from "@/components/ui/empty-state";
+import { InlineEmpty } from "@/components/ui/empty-state";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requestQueries } from "@/lib/requests/queries";
 import type {
@@ -238,23 +237,13 @@ function AdminRequestsPage() {
 					/>
 				}
 				empty={
-					<EmptyState
-						icon={InboxIcon}
-						title={
-							filtered.length === 0
-								? statusFilter === "open"
-									? "Nessuna richiesta da gestire"
-									: "Nessuna richiesta"
-								: "Nessun risultato"
-						}
-						description={
-							filtered.length === 0
-								? tab === "reports"
-									? "Non ci sono segnalazioni in questa vista."
-									: "Non ci sono contenuti proposti in questa vista."
-								: "Prova a modificare i filtri o la ricerca."
-						}
-					/>
+					<InlineEmpty>
+						{filtered.length === 0
+							? tab === "reports"
+								? "Non ci sono segnalazioni in questa vista."
+								: "Non ci sono contenuti proposti in questa vista."
+							: "Nessun risultato: prova a modificare i filtri o la ricerca."}
+					</InlineEmpty>
 				}
 			/>
 		</div>

@@ -1,23 +1,23 @@
-import { AltArrowLeftIcon } from "@solar-icons/react/linear/alt-arrow-left";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
-import { Link } from "@tanstack/react-router";
 
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { UserHero } from "@/components/user/user-hero";
+import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
+import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 import type {
 	AttemptHistoryEntry,
+	DailyFlashcardDay,
 	DailyStudyStat,
 	UserMastery,
 } from "@/lib/user/types";
 
-import { MasteryPanel } from "./mastery-panel";
-import { MetricExplorer } from "./metric-explorer";
-import { StudyRhythm } from "./study-rhythm";
+import { AnalyticsView } from "./analytics-view";
 
 /**
- * One entity's progress (a section, insegnamento or course), reusing the trend
- * and mastery panels. Every input is already fetched scoped to the entity.
+ * One entity's analytics — a section, an insegnamento or a course. It is the same
+ * page as `/user/analytics` with its inputs already scoped, so it stays the same
+ * page as that one changes; only the two cards that compare *across* the scope
+ * are dropped.
  */
 export function EntityProgressDetail({
 	kindLabel,
@@ -25,51 +25,69 @@ export function EntityProgressDetail({
 	context,
 	attempts,
 	daily,
+	flashcardDays,
 	mastery,
 	showSections,
+	period,
+	mode,
+	onPeriodChange,
+	onModeChange,
 }: {
 	kindLabel: string;
 	name: string;
 	context?: string;
 	attempts: AttemptHistoryEntry[];
 	daily: DailyStudyStat[];
+	flashcardDays?: DailyFlashcardDay[];
 	mastery: UserMastery;
+	/** False on a section: there are no sub-sections to break down. */
 	showSections: boolean;
+	period: ExplorerPeriod;
+	mode: ExplorerMode;
+	onPeriodChange: (period: ExplorerPeriod) => void;
+	onModeChange: (mode: ExplorerMode) => void;
 }) {
-	const count = attempts.length;
+	if (attempts.length === 0) {
+		return (
+			<div className="container space-y-4 py-6 pb-10">
+				<UserBreadcrumb
+					current={name}
+					trail={[{ label: "Analytics", to: "/user/analytics" }]}
+				/>
+				<EmptyState
+					icon={GraphUpIcon}
+					title="Nessun dato"
+					description={`Non hai ancora completato quiz per questa ${kindLabel.toLowerCase()}.`}
+					actionLabel="Esplora i dipartimenti"
+					actionHref="/browse"
+				/>
+			</div>
+		);
+	}
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={GraphUpIcon}
-				title={name}
-				description={context ? `${kindLabel} · ${context}` : kindLabel}
-			/>
-
-			<div className="container space-y-6">
-				<Button asChild variant="ghost" size="sm" className="-ml-2">
-					<Link to="/user/progress">
-						<AltArrowLeftIcon className="h-4 w-4" />
-						Progressi
-					</Link>
-				</Button>
-
-				{count === 0 ? (
-					<EmptyState
-						icon={GraphUpIcon}
-						title="Nessun dato"
-						description="Non hai ancora completato quiz per questa voce."
-						actionLabel="Esplora i dipartimenti"
-						actionHref="/browse"
+		<div className="container space-y-4 py-6 pb-10">
+			<AnalyticsView
+				daily={daily}
+				flashcardDays={flashcardDays}
+				attempts={attempts}
+				mastery={mastery}
+				period={period}
+				mode={mode}
+				onPeriodChange={onPeriodChange}
+				onModeChange={onModeChange}
+				showRollup={false}
+				showSectionBreakdown={showSections}
+				breadcrumb={
+					<UserBreadcrumb
+						current={name}
+						trail={[{ label: "Analytics", to: "/user/analytics", icon: GraphUpIcon }]}
 					/>
-				) : (
-					<>
-						<MetricExplorer daily={daily} />
-						<StudyRhythm attempts={attempts} />
-						<MasteryPanel mastery={mastery} sections={showSections} />
-					</>
-				)}
-			</div>
+				}
+				title={name}
+				badge={<Badge variant="secondary">{kindLabel}</Badge>}
+				meta={context}
+			/>
 		</div>
 	);
 }

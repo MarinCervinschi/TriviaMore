@@ -3,16 +3,13 @@ import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { profiles } from "@/db/schema";
 import { findProfile } from "@/lib/auth/db/profiles";
-import {
-	findDailyAttemptCounts,
-	findRecentCompletedAttempts,
-} from "@/lib/quiz/db/attempts";
+import { findCompletedAttemptHistory } from "@/lib/quiz/db/attempts";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import type { UserProfile, UserStats } from "../types";
 import { getRecentClasses } from "./classes";
 
-const RECENT_ATTEMPTS_LIMIT = 3;
+const RECENT_ATTEMPTS_LIMIT = 5;
 
 // One query for the dashboard counters. `average_score` is the mean of the
 // per-section averages, ignoring the zeros a section gets before its first
@@ -54,11 +51,10 @@ export async function getUserProfile(
 	const profile = await findProfile(db, userId);
 	if (!profile) return null;
 
-	const [stats, recentClasses, recentAttempts, activityDays] = await Promise.all([
+	const [stats, recentClasses, recentAttempts] = await Promise.all([
 		getStats(userId),
 		getRecentClasses(db, userId),
-		findRecentCompletedAttempts(db, userId, RECENT_ATTEMPTS_LIMIT),
-		findDailyAttemptCounts(db, userId),
+		findCompletedAttemptHistory(db, userId, undefined, RECENT_ATTEMPTS_LIMIT),
 	]);
 
 	return {
@@ -70,7 +66,6 @@ export async function getUserProfile(
 			...attempt,
 			completedAt: attempt.completedAt!,
 		})),
-		activity: { days: activityDays, endDate: new Date().toISOString().slice(0, 10) },
 	};
 }
 

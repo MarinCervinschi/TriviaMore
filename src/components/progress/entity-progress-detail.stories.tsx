@@ -14,6 +14,7 @@ const ATTEMPTS: AttemptHistoryEntry[] = [24, 22, 19, 15, 11].map((day, i) => ({
 	score: 22 + i,
 	timeSpent: 600_000,
 	completedAt: new Date(2026, 7, day, 20).toISOString(),
+	isFavorite: false,
 	quizMode: "STUDY",
 	sectionId: "s1",
 	sectionName: "Reti e Protocolli",
@@ -46,6 +47,7 @@ const MASTERY: UserMastery = {
 		{ key: "MEDIUM", total: 45, correct: 31 },
 		{ key: "HARD", total: 15, correct: 7 },
 	],
+	sections: [],
 	weakSections: [
 		{
 			sectionId: "s2",
@@ -84,6 +86,10 @@ const meta = {
 		daily: DAILY,
 		mastery: MASTERY,
 		showSections: true,
+		period: "year",
+		mode: "both",
+		onPeriodChange: () => {},
+		onModeChange: () => {},
 	},
 } satisfies Meta<typeof EntityProgressDetail>;
 

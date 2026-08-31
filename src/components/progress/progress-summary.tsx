@@ -8,13 +8,9 @@ import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTexture,
-	CardTitle,
-} from "@/components/ui/card";
+import { DeltaBadge } from "@/components/shared/delta-badge";
+import { CardContent, CardHeader, CardTexture, CardTitle } from "@/components/ui/card";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	type SummaryMetric,
 	type SummaryPeriod,
@@ -42,16 +38,23 @@ function note(delta: number) {
 	return "Stabile";
 }
 
-function Sparkline({ points }: { points: number[] }) {
+function Sparkline({ points }: { points: (number | null)[] }) {
 	const w = 96;
 	const h = 28;
 	const pad = 2;
-	const min = Math.min(...points);
-	const max = Math.max(...points);
+	// A gap keeps its place on the x axis: the point is dropped, its slot is not.
+	const drawn = points.flatMap((p, i) => (p === null ? [] : [{ value: p, i }]));
+	if (drawn.length < 2) return null;
+	const values = drawn.map(point => point.value);
+	const min = Math.min(...values);
+	const max = Math.max(...values);
 	const range = max - min || 1;
 	const step = points.length > 1 ? (w - pad * 2) / (points.length - 1) : 0;
-	const d = points
-		.map((p, i) => `${pad + i * step},${pad + (h - pad * 2) * (1 - (p - min) / range)}`)
+	const d = drawn
+		.map(
+			({ value, i }) =>
+				`${pad + i * step},${pad + (h - pad * 2) * (1 - (value - min) / range)}`
+		)
 		.join(" ");
 	return (
 		<svg
@@ -73,26 +76,6 @@ function Sparkline({ points }: { points: number[] }) {
 	);
 }
 
-function DeltaBadge({ delta }: { delta: number }) {
-	const tone =
-		delta > 0
-			? "text-success bg-success/10"
-			: delta < 0
-				? "text-danger bg-danger/10"
-				: "text-muted-foreground bg-muted";
-	return (
-		<span
-			className={cn(
-				"rounded-lg px-1.5 py-0.5 text-xs font-semibold tabular-nums",
-				tone
-			)}
-		>
-			{delta > 0 ? "+" : ""}
-			{delta}%
-		</span>
-	);
-}
-
 function Tile({ metric }: { metric: SummaryMetric }) {
 	const { icon: Icon, label } = META[metric.key];
 	return (
@@ -109,7 +92,7 @@ function Tile({ metric }: { metric: SummaryMetric }) {
 			</div>
 			{metric.delta !== null && (
 				<div className="flex items-center gap-2">
-					<DeltaBadge delta={metric.delta} />
+					<DeltaBadge value={metric.delta} />
 					<span className="text-muted-foreground text-xs">{note(metric.delta)}</span>
 				</div>
 			)}
@@ -125,60 +108,64 @@ export function ProgressSummary({
 	/** Injected in stories to keep them deterministic; the app uses now. */
 	today?: Date;
 }) {
-	const [period, setPeriod] = useState<SummaryPeriod>("week");
+	// A week is often a single session, or none: the year is the window that has
+	// something to show on a home page.
+	const [period, setPeriod] = useState<SummaryPeriod>("year");
 	const summary = buildStudySummary(daily, period, today ?? new Date());
 
 	return (
-		<Card className="bg-muted/30 relative overflow-hidden p-1">
-			<div className="bg-card relative overflow-hidden rounded-xl border">
-				<div className="pointer-events-none absolute inset-x-0 top-0 h-36">
-					<CardTexture placement="top" alpha={0.2} />
+		<InsetCard
+			footer={
+				<div className="text-muted-foreground flex flex-col items-start gap-1 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+					<span>{summary.footer}</span>
+					<Link
+						to="/user/analytics"
+						className="group text-foreground inline-flex items-center gap-1.5 font-medium hover:underline"
+					>
+						<GraphUpIcon className="size-4" />
+						Analisi complete
+						<AltArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+					</Link>
 				</div>
-				<CardHeader className="relative pb-6">
-					<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-						<div>
-							<CardTitle className="text-sm">I miei progressi</CardTitle>
-							<p className="text-muted-foreground mt-0.5 text-sm">
-								Colpo d'occhio su quiz, voto e costanza.
-							</p>
-						</div>
-						<div className="bg-muted/50 flex gap-0.5 rounded-lg p-0.5">
-							{PERIODS.map(p => (
-								<button
-									key={p.value}
-									type="button"
-									onClick={() => setPeriod(p.value)}
-									className={cn(
-										"rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
-										period === p.value
-											? "bg-background shadow-sm"
-											: "text-muted-foreground hover:text-foreground"
-									)}
-								>
-									{p.label}
-								</button>
-							))}
-						</div>
+			}
+		>
+			<div className="pointer-events-none absolute inset-x-0 top-0 h-36">
+				<CardTexture placement="top" alpha={0.2} />
+			</div>
+			<CardHeader className="relative pb-6">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+					<div>
+						<CardTitle className="text-sm">I miei progressi</CardTitle>
+						<p className="text-muted-foreground mt-0.5 text-sm">
+							Colpo d'occhio su quiz, voto e costanza.
+						</p>
 					</div>
-				</CardHeader>
-				<CardContent className="relative">
-					<div className="divide-border/60 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 md:gap-y-0 md:divide-x">
-						{summary.metrics.map(metric => (
-							<Tile key={metric.key} metric={metric} />
+					<div className="bg-muted/50 flex gap-0.5 rounded-lg p-0.5">
+						{PERIODS.map(p => (
+							<button
+								key={p.value}
+								type="button"
+								onClick={() => setPeriod(p.value)}
+								className={cn(
+									"rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
+									period === p.value
+										? "bg-background shadow-sm"
+										: "text-muted-foreground hover:text-foreground"
+								)}
+							>
+								{p.label}
+							</button>
 						))}
 					</div>
-				</CardContent>
-			</div>
-			<div className="text-muted-foreground flex flex-col items-start gap-1 px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-				<span>{summary.footer}</span>
-				<Link
-					to="/user/progress"
-					className="group text-foreground inline-flex items-center gap-1 font-medium hover:underline"
-				>
-					Analisi complete
-					<AltArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-				</Link>
-			</div>
-		</Card>
+				</div>
+			</CardHeader>
+			<CardContent className="relative">
+				<div className="divide-border/60 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 md:gap-y-0 md:divide-x">
+					{summary.metrics.map(metric => (
+						<Tile key={metric.key} metric={metric} />
+					))}
+				</div>
+			</CardContent>
+		</InsetCard>
 	);
 }

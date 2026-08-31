@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
 import { answerAttempts, classes, quizAttempts, quizzes, sections } from "@/db/schema";
@@ -150,37 +150,16 @@ export async function findAnswers(db: DbOrTx, attemptId: string) {
 
 // The user dashboard's "recent activity". Lives here because it reads quiz
 // tables, even though the user domain is what renders it.
-export async function findRecentCompletedAttempts(
-	db: DbOrTx,
-	userId: string,
-	limit: number
-) {
-	const { primaryCourse, columns } = sectionLocation(db);
-
-	return db
-		.select({
-			...columns,
-			classCode: primaryCourse.classCode,
-			courseCode: primaryCourse.courseCode,
-			departmentCode: primaryCourse.departmentCode,
-			id: quizAttempts.id,
-			score: quizAttempts.score,
-			completedAt: quizAttempts.completedAt,
-		})
-		.from(quizAttempts)
-		.innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
-		.innerJoin(sections, eq(sections.id, quizzes.sectionId))
-		.innerJoin(classes, eq(classes.id, sections.classId))
-		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)))
-		.orderBy(desc(quizAttempts.completedAt))
-		.limit(limit);
-}
-
+/**
+ * Every completed attempt, newest first, optionally scoped and capped. The joins
+ * are left joins on purpose: an attempt whose section was deleted still happened,
+ * and the row has to survive it — the callers render it as "sezione eliminata".
+ */
 export async function findCompletedAttemptHistory(
 	db: DbOrTx,
 	userId: string,
-	scope?: { level: "section" | "class" | "course"; id: string }
+	scope?: { level: "section" | "class" | "course"; id: string },
+	limit?: number
 ) {
 	const { primaryCourse, columns } = sectionLocation(db);
 
@@ -207,6 +186,7 @@ export async function findCompletedAttemptHistory(
 			timeSpent: quizAttempts.timeSpent,
 			quizMode: quizAttempts.quizMode,
 			completedAt: quizAttempts.completedAt,
+			isFavorite: quizAttempts.isFavorite,
 		})
 		.from(quizAttempts)
 		.leftJoin(sections, eq(sections.id, quizAttempts.sectionId))
@@ -215,38 +195,10 @@ export async function findCompletedAttemptHistory(
 		.where(
 			and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt), scoped)
 		)
-		.orderBy(desc(quizAttempts.completedAt));
+		.orderBy(desc(quizAttempts.completedAt))
+		.limit(limit ?? Number.MAX_SAFE_INTEGER);
 }
 
-export async function countCompletedAttempts(db: DbOrTx, userId: string) {
-	const [row] = await db
-		.select({ value: count() })
-		.from(quizAttempts)
-		.where(and(eq(quizAttempts.userId, userId), isNotNull(quizAttempts.completedAt)));
-	return row?.value ?? 0;
-}
-
-export async function findDailyAttemptCounts(db: DbOrTx, userId: string) {
-	const result = await db.execute<{ date: string; value: number }>(sql`
-		select to_char(completed_at at time zone 'utc', 'YYYY-MM-DD') as date,
-		       count(*)::int as value
-		  from (
-		    select completed_at
-		      from quiz.quiz_attempts
-		     where user_id = ${userId} and completed_at is not null
-		    union all
-		    select completed_at
-		      from quiz.flashcard_attempts
-		     where user_id = ${userId} and completed_at is not null
-		  ) as days
-		 group by date
-		 order by date
-	`);
-	return result.rows;
-}
-
-// Replaces the quiz.quiz_attempts_detail view, and carries the codes the
-// results page needs to rebuild the section URL.
 export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 	const primaryCourse = primaryCourseByClass(db);
 
@@ -257,6 +209,7 @@ export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 			score: quizAttempts.score,
 			timeSpent: quizAttempts.timeSpent,
 			completedAt: quizAttempts.completedAt,
+			isFavorite: quizAttempts.isFavorite,
 			quizId: quizzes.id,
 			quizMode: quizzes.quizMode,
 			timeLimit: quizzes.timeLimit,
@@ -281,4 +234,42 @@ export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 		.limit(1);
 
 	return attempt;
+}
+
+/**
+ * Every completed attempt this user made on one section, in one mode, oldest
+ * first — with the answers each one recorded, which is what turns a duration into
+ * a pace. The mode is part of the filter on purpose: a timed simulation with a
+ * penalty and an untimed study run are not the same measurement.
+ */
+export async function findSectionAttempts(
+	db: DbOrTx,
+	params: {
+		userId: string;
+		sectionId: string;
+		quizMode: (typeof quizAttempts.$inferSelect)["quizMode"];
+	}
+) {
+	return db
+		.select({
+			id: quizAttempts.id,
+			score: quizAttempts.score,
+			timeSpent: quizAttempts.timeSpent,
+			completedAt: quizAttempts.completedAt,
+			answers: count(answerAttempts.id),
+		})
+		.from(quizAttempts)
+		.leftJoin(answerAttempts, eq(answerAttempts.quizAttemptId, quizAttempts.id))
+		.where(
+			and(
+				eq(quizAttempts.userId, params.userId),
+				eq(quizAttempts.sectionId, params.sectionId),
+				isNotNull(quizAttempts.completedAt),
+				params.quizMode
+					? eq(quizAttempts.quizMode, params.quizMode)
+					: isNull(quizAttempts.quizMode)
+			)
+		)
+		.groupBy(quizAttempts.id)
+		.orderBy(asc(quizAttempts.completedAt));
 }

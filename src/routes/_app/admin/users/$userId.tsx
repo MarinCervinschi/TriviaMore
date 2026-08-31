@@ -14,8 +14,8 @@ import { PlusGlyph } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Select,
 	SelectContent,
@@ -112,11 +112,8 @@ function AdminUserDetailPage() {
 			<div className="grid gap-6">
 				{/* Profile + Stats */}
 				<div className="grid gap-6 md:grid-cols-2">
-					<Card>
-						<CardHeader>
-							<CardTitle>Profilo</CardTitle>
-						</CardHeader>
-						<CardContent>
+					<InsetCard title="Profilo">
+						<div className="p-6">
 							<div className="flex items-center gap-4">
 								<Avatar className="ring-primary/10 h-20 w-20 ring-4">
 									<AvatarImage src={user.image ?? undefined} />
@@ -172,14 +169,11 @@ function AdminUserDetailPage() {
 									courses={availableCourses}
 								/>
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 
-					<Card>
-						<CardHeader>
-							<CardTitle>Statistiche</CardTitle>
-						</CardHeader>
-						<CardContent>
+					<InsetCard title="Statistiche">
+						<div className="p-6">
 							<dl className="grid grid-cols-2 gap-4">
 								<div>
 									<dt className="text-muted-foreground text-sm">Quiz completati</dt>
@@ -205,25 +199,22 @@ function AdminUserDetailPage() {
 									</dd>
 								</div>
 							</dl>
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				</div>
 
 				{/* Department Admin assignments — ADMIN+ only */}
 				{canManageDepartments && (
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between">
-							<div>
-								<CardTitle className="flex items-center gap-2">
-									<LibraryIcon className="h-5 w-5" />
-									Dipartimenti gestiti
-								</CardTitle>
-								<p className="text-muted-foreground mt-1 text-sm">
-									Dipartimenti di cui l'utente è amministratore
-								</p>
-							</div>
-						</CardHeader>
-						<CardContent>
+					<InsetCard
+						title={
+							<span className="flex items-center gap-2">
+								<LibraryIcon className="h-5 w-5" />
+								Dipartimenti gestiti
+							</span>
+						}
+						description="Dipartimenti di cui l'utente è amministratore"
+					>
+						<div className="p-6">
 							{user.managedDepartments.length > 0 && (
 								<div className="mb-4 flex flex-wrap gap-2">
 									{user.managedDepartments.map(dept => (
@@ -288,23 +279,22 @@ function AdminUserDetailPage() {
 									Nessun dipartimento disponibile.
 								</p>
 							)}
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				)}
 
 				{/* Course Maintainer assignments — MAINTAINER+ only */}
 				{canMaintainCourses && (
-					<Card>
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
+					<InsetCard
+						title={
+							<span className="flex items-center gap-2">
 								<DiplomaIcon className="h-5 w-5" />
 								Corsi mantenuti
-							</CardTitle>
-							<p className="text-muted-foreground text-sm">
-								Corsi di cui l'utente è maintainer
-							</p>
-						</CardHeader>
-						<CardContent>
+							</span>
+						}
+						description="Corsi di cui l'utente è maintainer"
+					>
+						<div className="p-6">
 							{user.maintainedCourses.length > 0 && (
 								<div className="mb-4 flex flex-wrap gap-2">
 									{user.maintainedCourses.map(course => (
@@ -369,22 +359,21 @@ function AdminUserDetailPage() {
 									Nessun corso disponibile.
 								</p>
 							)}
-						</CardContent>
-					</Card>
+						</div>
+					</InsetCard>
 				)}
 
 				{/* Section Access */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2">
+				<InsetCard
+					title={
+						<span className="flex items-center gap-2">
 							<BookIcon className="h-5 w-5" />
 							Accessi sezioni private
-						</CardTitle>
-						<p className="text-muted-foreground text-sm">
-							Sezioni private a cui l'utente ha accesso
-						</p>
-					</CardHeader>
-					<CardContent>
+						</span>
+					}
+					description="Sezioni private a cui l'utente ha accesso"
+				>
+					<div className="p-6">
 						{user.sectionAccesses.length > 0 && (
 							<div className="mb-4 flex flex-wrap gap-2">
 								{user.sectionAccesses.map(section => (
@@ -453,8 +442,8 @@ function AdminUserDetailPage() {
 								</p>
 							) : null;
 						})()}
-					</CardContent>
-				</Card>
+					</div>
+				</InsetCard>
 			</div>
 
 			{/* Role change confirmation */}

@@ -10,8 +10,11 @@ export type SummaryMetric = {
 	value: string;
 	/** Percent change vs the previous window; null when there is no baseline. */
 	delta: number | null;
-	/** One value per sub-bucket of the window, for the sparkline. */
-	spark: number[];
+	/**
+	 * One value per sub-bucket of the window, for the sparkline. `null` where a
+	 * ratio has nothing to show yet — never 0, which would read as a real crash.
+	 */
+	spark: (number | null)[];
 };
 
 export type StudySummary = {
@@ -53,6 +56,22 @@ function add(target: Bucket, stat: Bucket) {
 	target.timeSpent += stat.timeSpent;
 	target.answersTotal += stat.answersTotal;
 	target.answersCorrect += stat.answersCorrect;
+}
+
+/**
+ * The running value across the window's buckets: a ratio only moves when a
+ * bucket adds something to it, and is `null` until the first one does. Plotting
+ * a bucket's own average instead would drop the line to 0 on every quiet day.
+ */
+function runningSpark(
+	buckets: Bucket[],
+	read: (totals: Bucket) => number | null
+): (number | null)[] {
+	const acc = zero();
+	return buckets.map(bucket => {
+		add(acc, bucket);
+		return read(acc);
+	});
 }
 
 // null, not 0, when there is nothing before to compare against — the badge is
@@ -115,14 +134,14 @@ export function buildStudySummary(
 			key: "grade",
 			value: formatGradeOutOf33(avgGrade),
 			delta: pctChange(avgGrade, prevAvgGrade),
-			spark: current.map(b => (b.quizzes ? b.gradeSum / b.quizzes : 0)),
+			spark: runningSpark(current, t => (t.quizzes ? t.gradeSum / t.quizzes : null)),
 		},
 		{
 			key: "accuracy",
 			value: `${Math.round(accuracy)}%`,
 			delta: pctChange(accuracy, prevAccuracy),
-			spark: current.map(b =>
-				b.answersTotal ? (b.answersCorrect / b.answersTotal) * 100 : 0
+			spark: runningSpark(current, t =>
+				t.answersTotal ? (t.answersCorrect / t.answersTotal) * 100 : null
 			),
 		},
 		{

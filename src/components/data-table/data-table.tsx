@@ -5,6 +5,7 @@ import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { FlexRender } from "@tanstack/react-table";
 import type { RowData } from "@tanstack/react-table";
 
+import { InsetCard } from "@/components/ui/inset-card";
 import {
 	Table,
 	TableBody,
@@ -54,7 +55,6 @@ export type DataTableProps<TData extends RowData> = {
 	 */
 	rowLink?: (row: TData) => ReactElement | null;
 	density?: keyof typeof DENSITY_CLASS;
-	bordered?: boolean;
 	showPagination?: boolean;
 	className?: string;
 };
@@ -65,99 +65,95 @@ export function DataTable<TData extends RowData>({
 	empty,
 	rowLink,
 	density = "comfortable",
-	bordered = true,
 	showPagination = true,
 	className,
 }: DataTableProps<TData>) {
 	const rows = table.getRowModel().rows;
 	const cellPadding = DENSITY_CLASS[density];
 
-	return (
-		<div className={cn("space-y-4", className)}>
-			{toolbar}
+	const showEmpty = rows.length === 0 && empty;
+	const showPager = showPagination && !showEmpty && table.getPageCount() > 1;
 
-			{rows.length === 0 && empty ? (
+	return (
+		<InsetCard
+			className={className}
+			header={toolbar}
+			footer={showPager ? <DataTablePagination table={table} /> : undefined}
+			bandClassName="px-2 py-2"
+		>
+			{showEmpty ? (
 				empty
 			) : (
-				<>
-					<div
-						className={cn(
-							"overflow-hidden",
-							bordered && "bg-card border-border/50 rounded-2xl border shadow-xs"
-						)}
-					>
-						<Table>
-							<TableHeader>
-								{table.getHeaderGroups().map(headerGroup => (
-									<TableRow key={headerGroup.id} className="bg-muted/50">
-										{headerGroup.headers.map(header => {
-											const meta = header.column.columnDef.meta;
-											const align = meta?.align ?? "left";
+				<div className="overflow-hidden">
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map(headerGroup => (
+								<TableRow key={headerGroup.id} className="bg-muted/50">
+									{headerGroup.headers.map(header => {
+										const meta = header.column.columnDef.meta;
+										const align = meta?.align ?? "left";
+										return (
+											<TableHead
+												key={header.id}
+												colSpan={header.colSpan}
+												className={cn(
+													"text-muted-foreground eyebrow h-auto whitespace-nowrap",
+													cellPadding,
+													ALIGN_CLASS[align],
+													meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],
+													meta?.headerClassName
+												)}
+											>
+												{header.isPlaceholder ? null : header.column.getCanSort() ? (
+													<DataTableColumnHeader header={header} align={align} />
+												) : (
+													<FlexRender header={header} />
+												)}
+											</TableHead>
+										);
+									})}
+									{rowLink && <TableHead className="w-10 pr-6" />}
+								</TableRow>
+							))}
+						</TableHeader>
+						<TableBody>
+							{rows.map(row => {
+								const link = rowLink?.(row.original);
+								return (
+									<TableRow key={row.id} className="group">
+										{row.getVisibleCells().map(cell => {
+											const meta = cell.column.columnDef.meta;
 											return (
-												<TableHead
-													key={header.id}
-													colSpan={header.colSpan}
+												<TableCell
+													key={cell.id}
 													className={cn(
-														"text-muted-foreground eyebrow h-auto whitespace-nowrap",
 														cellPadding,
-														ALIGN_CLASS[align],
+														ALIGN_CLASS[meta?.align ?? "left"],
 														meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],
-														meta?.headerClassName
+														meta?.cellClassName
 													)}
 												>
-													{header.isPlaceholder ? null : header.column.getCanSort() ? (
-														<DataTableColumnHeader header={header} align={align} />
-													) : (
-														<FlexRender header={header} />
-													)}
-												</TableHead>
+													<FlexRender cell={cell} />
+												</TableCell>
 											);
 										})}
-										{rowLink && <TableHead className="w-10 pr-6" />}
+										{rowLink && (
+											<TableCell className="py-4 pr-6">
+												{link &&
+													cloneElement(
+														link,
+														{ className: "inline-flex" } as never,
+														<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 transition-transform group-hover:translate-x-1" />
+													)}
+											</TableCell>
+										)}
 									</TableRow>
-								))}
-							</TableHeader>
-							<TableBody>
-								{rows.map(row => {
-									const link = rowLink?.(row.original);
-									return (
-										<TableRow key={row.id} className="group">
-											{row.getVisibleCells().map(cell => {
-												const meta = cell.column.columnDef.meta;
-												return (
-													<TableCell
-														key={cell.id}
-														className={cn(
-															cellPadding,
-															ALIGN_CLASS[meta?.align ?? "left"],
-															meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],
-															meta?.cellClassName
-														)}
-													>
-														<FlexRender cell={cell} />
-													</TableCell>
-												);
-											})}
-											{rowLink && (
-												<TableCell className="py-4 pr-6">
-													{link &&
-														cloneElement(
-															link,
-															{ className: "inline-flex" } as never,
-															<ArrowRightIcon className="text-muted-foreground/50 group-hover:text-brand h-4 w-4 transition-transform group-hover:translate-x-1" />
-														)}
-												</TableCell>
-											)}
-										</TableRow>
-									);
-								})}
-							</TableBody>
-						</Table>
-					</div>
-
-					{showPagination && <DataTablePagination table={table} />}
-				</>
+								);
+							})}
+						</TableBody>
+					</Table>
+				</div>
 			)}
-		</div>
+		</InsetCard>
 	);
 }

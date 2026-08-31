@@ -1,7 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
-	SkeletonChart,
 	SkeletonHero,
 	SkeletonRoot,
 	SkeletonStatBlock,
@@ -10,9 +9,9 @@ import {
 
 function UserBreadcrumbSkeleton() {
 	return (
-		<div className="flex items-center gap-2">
-			<Skeleton className="h-4 w-16" />
-			<Skeleton className="h-3 w-3 rounded-full" />
+		<div className="border-border bg-background inline-flex items-center gap-2 rounded-xl border px-3 py-1.5">
+			<Skeleton className="size-4" />
+			<Skeleton className="size-3 rounded-full" />
 			<Skeleton className="h-4 w-24" />
 		</div>
 	);
@@ -79,184 +78,168 @@ export function UserDashboardSkeleton() {
 					<SkeletonTable rows={3} columns={4} />
 				</div>
 
-				{/* Activity: heatmap + recent quizzes */}
+				{/* Activity: the last sittings, inside the inset card */}
 				<div className="space-y-4">
 					<div>
 						<Skeleton className="h-4 w-24" />
 						<Skeleton className="mt-1 h-6 w-40" />
 					</div>
-					<div className="flex flex-col gap-6 lg:flex-row">
-						<div className="flex flex-col gap-3">
-							<Skeleton className="h-8 w-24 rounded-md" />
-							<div className="bg-card rounded-2xl border p-6 shadow-sm">
-								<SkeletonChart height={120} />
+					<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
+							<div className="space-y-1.5">
+								<Skeleton className="h-4 w-32" />
+								<Skeleton className="h-3 w-40" />
 							</div>
+							<Skeleton className="h-8 w-40 rounded-lg" />
 						</div>
-						<div className="flex flex-1 flex-col gap-3">
-							<div className="flex h-8 items-center justify-between">
-								<Skeleton className="h-4 w-20" />
-								<Skeleton className="h-8 w-24 rounded-lg" />
-							</div>
-							<div className="bg-card flex-1 space-y-4 rounded-2xl border p-4 shadow-sm">
-								{Array.from({ length: 3 }).map((_, i) => (
-									<div key={i} className="flex items-center gap-3">
-										<Skeleton className="h-8 w-8 rounded-lg" />
-										<div className="flex-1 space-y-1.5">
-											<Skeleton className="h-4 w-2/3" />
-											<Skeleton className="h-3 w-1/2" />
-										</div>
-										<Skeleton className="h-6 w-12 rounded-full" />
-									</div>
-								))}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</SkeletonRoot>
-	);
-}
-
-function MetricExplorerSkeleton() {
-	return (
-		<div className="space-y-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Skeleton className="h-8 w-44 rounded-lg" />
-				<Skeleton className="h-8 w-48 rounded-lg" />
-				<Skeleton className="ml-auto h-8 w-20 rounded-lg" />
-			</div>
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card overflow-hidden rounded-xl border">
-					<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="space-y-2 p-4">
-								<Skeleton className="h-4 w-20" />
-								<Skeleton className="h-7 w-16" />
-							</div>
-						))}
-					</div>
-					<div className="border-t p-4 pt-6">
-						<SkeletonChart height={280} />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function StudyRhythmSkeleton() {
-	return (
-		<div className="space-y-3">
-			<Skeleton className="h-6 w-40" />
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card overflow-hidden rounded-xl border">
-					<div className="grid grid-cols-2 divide-x divide-y md:grid-cols-4 md:divide-y-0">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="space-y-2 p-4">
-								<Skeleton className="h-4 w-24" />
-								<Skeleton className="h-7 w-12" />
-								<Skeleton className="h-3 w-20" />
-							</div>
-						))}
-					</div>
-					<div className="space-y-2 border-t p-4">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-12 w-full" />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function MasteryPanelSkeleton({ withSections = true }: { withSections?: boolean }) {
-	return (
-		<div className="space-y-4">
-			<Skeleton className="h-6 w-32" />
-			<div className="bg-muted/30 rounded-2xl border p-1">
-				<div className="bg-card rounded-xl border p-6">
-					<div className="flex flex-col items-center gap-6 sm:flex-row">
-						<Skeleton className="h-[94px] w-[184px] shrink-0 rounded-t-full" />
-						<div className="w-full flex-1 space-y-3">
-							{Array.from({ length: 3 }).map((_, i) => (
-								<div key={i} className="flex items-center gap-3">
-									<Skeleton className="h-4 w-20 shrink-0" />
-									<Skeleton className="h-2 flex-1" />
-									<Skeleton className="h-4 w-9 shrink-0" />
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			</div>
-
-			{withSections && (
-				<div className="grid gap-4 lg:grid-cols-2">
-					{Array.from({ length: 2 }).map((_, i) => (
-						<div key={i} className="space-y-2">
-							<Skeleton className="h-4 w-28" />
-							<div className="bg-muted/30 rounded-2xl border p-1">
-								<div className="bg-card space-y-4 rounded-xl border p-4">
-									{Array.from({ length: 3 }).map((_, j) => (
-										<div key={j} className="space-y-1.5">
-											<Skeleton className="h-4 w-1/2" />
-											<Skeleton className="h-1.5 w-full" />
-										</div>
-									))}
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
-	);
-}
-
-export function ProgressSkeleton() {
-	return (
-		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
-			<SkeletonHero />
-
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
-
-				<MetricExplorerSkeleton />
-				<StudyRhythmSkeleton />
-
-				{/* Rollup */}
-				<div className="space-y-2">
-					<Skeleton className="h-6 w-28" />
-					<div className="bg-muted/30 rounded-2xl border p-1">
-						<div className="bg-card space-y-3 rounded-xl border p-3">
+						<div className="bg-card border-border/50 space-y-4 rounded-xl border p-4">
 							{Array.from({ length: 5 }).map((_, i) => (
-								<div key={i} className="flex items-center justify-between gap-3">
-									<Skeleton className="h-4 w-1/3" />
-									<Skeleton className="h-4 w-40" />
+								<div key={i} className="flex items-center gap-3">
+									<Skeleton className="size-9 rounded-full" />
+									<div className="flex-1 space-y-1.5">
+										<Skeleton className="h-4 w-2/3" />
+										<Skeleton className="h-3 w-1/2" />
+									</div>
+									<Skeleton className="h-4 w-14" />
 								</div>
 							))}
 						</div>
 					</div>
 				</div>
-
-				<MasteryPanelSkeleton />
 			</div>
 		</SkeletonRoot>
 	);
 }
 
-/** No breadcrumb and no rollup, unlike `ProgressSkeleton` — the detail pages have neither. */
+function SkeletonCard({ height }: { height: number }) {
+	return (
+		<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+			<div className="bg-card border-border/50 space-y-3 rounded-xl border p-4">
+				<Skeleton className="h-4 w-32" />
+				<Skeleton className="w-full" style={{ height }} />
+			</div>
+		</div>
+	);
+}
+
+/**
+ * The analytics page: no hero — a toolbar, the four headline cards, then the grid
+ * of pairs. It has to match `AnalyticsView`, or the page jumps when it arrives.
+ */
+export function AnalyticsSkeleton() {
+	return (
+		<SkeletonRoot
+			label="Caricamento analytics…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="border-border/60 space-y-3 border-b pb-4">
+				<Skeleton className="h-9 w-56 rounded-xl" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<Skeleton className="h-8 w-40" />
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-8 w-36 rounded-lg" />
+						<Skeleton className="h-8 w-32 rounded-lg" />
+						<Skeleton className="h-8 w-24 rounded-lg" />
+						<Skeleton className="h-8 w-24 rounded-lg" />
+					</div>
+				</div>
+			</div>
+
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+				<div className="lg:col-span-8">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={280} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={280} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={180} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={160} />
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}
+
+/** No breadcrumb and no rollup, unlike `AnalyticsSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento progressi…" className="space-y-8 pb-8">
-			<SkeletonHero />
+		<SkeletonRoot
+			label="Caricamento progressi…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="border-border/60 space-y-3 border-b pb-4">
+				<Skeleton className="h-9 w-72 rounded-xl" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div className="space-y-2">
+						<Skeleton className="h-8 w-56" />
+						<Skeleton className="h-4 w-40" />
+					</div>
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-8 w-36 rounded-lg" />
+						<Skeleton className="h-8 w-32 rounded-lg" />
+					</div>
+				</div>
+			</div>
 
-			<div className="container space-y-6">
-				<Skeleton className="h-8 w-28 rounded-xl" />
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
+						</div>
+					</div>
+				))}
+			</div>
 
-				<MetricExplorerSkeleton />
-				<StudyRhythmSkeleton />
-				<MasteryPanelSkeleton />
+			{/* Same rows as the full page, less the tree and the section scatter. */}
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+				<div className="lg:col-span-8">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={340} />
+				</div>
+				<div className="lg:col-span-8">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-4">
+					<SkeletonCard height={200} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={260} />
+				</div>
+				<div className="lg:col-span-12">
+					<SkeletonCard height={160} />
+				</div>
 			</div>
 		</SkeletonRoot>
 	);
@@ -264,25 +247,34 @@ export function EntityProgressSkeleton() {
 
 export function AttemptHistorySkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento cronologia…" className="space-y-8 pb-8">
-			<SkeletonHero />
-
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
-
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div className="flex flex-1 flex-wrap items-center gap-2">
-						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
-						<Skeleton className="h-8 w-44 rounded-lg" />
+		<SkeletonRoot
+			label="Caricamento cronologia…"
+			className="container space-y-4 py-6 pb-10"
+		>
+			<div className="border-border/60 space-y-3 border-b pb-4">
+				<Skeleton className="h-9 w-64 rounded-xl" />
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div className="space-y-2">
+						<Skeleton className="h-8 w-64" />
+						<Skeleton className="h-4 w-32" />
 					</div>
-					<div className="flex items-center gap-2">
-						<Skeleton className="h-9 w-9 rounded-xl" />
-						<Skeleton className="h-9 w-28 rounded-xl" />
-					</div>
+					<Skeleton className="h-8 w-28 rounded-lg" />
 				</div>
-
-				<SkeletonTable rows={10} columns={6} />
 			</div>
+
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 space-y-2.5 rounded-xl border p-4">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-7 w-20" />
+							<Skeleton className="h-3 w-full" />
+						</div>
+					</div>
+				))}
+			</div>
+
+			<SkeletonTable rows={10} columns={6} toolbar pagination />
 		</SkeletonRoot>
 	);
 }
@@ -322,18 +314,7 @@ export function UserClassesSkeleton() {
 			<div className="container space-y-6">
 				<UserBreadcrumbSkeleton />
 
-				{/* Data table toolbar: search, then the inline filter add + column visibility */}
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div className="flex flex-1 flex-wrap items-center gap-2">
-						<Skeleton className="h-9 w-full rounded-xl sm:w-64" />
-					</div>
-					<div className="flex items-center gap-2">
-						<Skeleton className="h-9 w-9 rounded-xl" />
-						<Skeleton className="h-9 w-28 rounded-xl" />
-					</div>
-				</div>
-
-				<SkeletonTable rows={6} columns={6} />
+				<SkeletonTable rows={6} columns={6} toolbar pagination />
 			</div>
 		</SkeletonRoot>
 	);
