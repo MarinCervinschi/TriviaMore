@@ -100,3 +100,13 @@ export type QuizAttemptResult = {
 	/** Null when the section is gone, or when nothing else was ever run on it. */
 	history: AttemptHistory | null;
 };
+
+export type OpenAttempt = {
+	attemptId: string;
+	quizId: string;
+	quizMode: QuizMode;
+	timeLimit: number | null;
+	startedAt: string;
+	sectionName: string;
+	className: string;
+};

@@ -174,6 +174,7 @@ function QuizPage() {
 			clearQuizDraft();
 			// Invalidate user data caches so dashboard shows updated stats
 			queryClient.invalidateQueries({ queryKey: ["user"] });
+			queryClient.invalidateQueries({ queryKey: ["quiz", "open-attempt"] });
 			navigate({
 				to: "/quiz/results/$attemptId",
 				params: { attemptId },
@@ -203,6 +204,7 @@ function QuizPage() {
 			}
 		}
 
+		queryClient.invalidateQueries({ queryKey: ["quiz", "open-attempt"] });
 		if (blocker.status === "blocked") blocker.proceed();
 		else navigate({ to: "/" });
 	}, [quiz, navigate, blocker, queryClient]);

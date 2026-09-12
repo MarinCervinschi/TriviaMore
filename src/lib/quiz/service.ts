@@ -20,6 +20,7 @@ import {
 	findAnswers,
 	findAttempt,
 	findAttemptWithChain,
+	findOpenAttemptForUser,
 	findOpenAttemptId,
 	findSectionAttempts,
 	insertAnswers,
@@ -39,6 +40,7 @@ import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
 import type {
 	AttemptHistory,
 	EvaluationMode,
+	OpenAttempt,
 	Quiz,
 	QuizAttemptResult,
 	QuizQuestion,
@@ -46,6 +48,9 @@ import type {
 
 const QUIZ_GONE =
 	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
+
+const QUIZ_IN_PROGRESS =
+	"Hai già un quiz in corso. Riprendilo o eliminalo prima di iniziarne uno nuovo.";
 
 const ATTEMPT_GONE =
 	"Questa sessione non è più disponibile: era rimasta aperta troppo a lungo ed è stata chiusa. Le tue risposte non sono state registrate.";
@@ -127,6 +132,10 @@ async function reapAbandonedAttempts(userId: string): Promise<void> {
 	}
 }
 
+export async function getOpenAttempt(userId: string): Promise<OpenAttempt | null> {
+	return (await findOpenAttemptForUser(getDb(), userId)) ?? null;
+}
+
 export async function startQuiz(
 	userId: string,
 	input: StartQuizInput
@@ -135,7 +144,10 @@ export async function startQuiz(
 
 	await assertSectionAccess(db, userId, input.sectionId);
 
+	// Reap before the gate, or an attempt the user forgot about would lock them
+	// out of starting anything until they came back and dealt with it by hand.
 	await reapAbandonedAttempts(userId);
+	if (await findOpenAttemptForUser(db, userId)) throw new Conflict(QUIZ_IN_PROGRESS);
 
 	const evaluationModeId =
 		input.evaluationModeId ?? (await findDefaultEvaluationModeId(db));

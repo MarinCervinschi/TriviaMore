@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
+import { OpenAttemptDialog } from "@/components/quiz/open-attempt-banner";
 import { QuizConfigFields, QuizSummary } from "@/components/session-config/quiz-config";
 import {
 	SessionDialogColumn,
@@ -34,6 +35,8 @@ export function StartQuizDialog({
 		enabled: open,
 	});
 
+	const openAttempt = useQuery({ ...quizQueries.openAttempt(), enabled: open });
+
 	const selectedEvalMode = evalModes?.find(
 		m => m.id === (evalModeId ?? evalModes?.[0]?.id)
 	);
@@ -52,6 +55,17 @@ export function StartQuizDialog({
 			evaluationModeId: evalModeId ?? evalModes?.[0]?.id,
 		});
 	};
+
+	if (openAttempt.isPending) return null;
+	if (openAttempt.data) {
+		return (
+			<OpenAttemptDialog
+				attempt={openAttempt.data}
+				open={open}
+				onOpenChange={onOpenChange}
+			/>
+		);
+	}
 
 	return (
 		<SessionDialogShell open={open} onOpenChange={onOpenChange}>

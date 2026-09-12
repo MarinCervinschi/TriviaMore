@@ -33,6 +33,33 @@ export async function findOpenAttemptId(db: DbOrTx, userId: string, quizId: stri
 	return attempt?.id;
 }
 
+/**
+ * The one quiz this user has left unfinished, if any. Joining `quizzes` drops an
+ * attempt whose section was deleted: its `quiz_id` is null, so there is nothing to
+ * resume and nothing to block a new quiz with — the horizon collects it instead.
+ */
+export async function findOpenAttemptForUser(db: DbOrTx, userId: string) {
+	const [attempt] = await db
+		.select({
+			attemptId: quizAttempts.id,
+			quizId: quizzes.id,
+			quizMode: quizzes.quizMode,
+			timeLimit: quizzes.timeLimit,
+			startedAt: quizAttempts.startedAt,
+			sectionName: sections.name,
+			className: classes.name,
+		})
+		.from(quizAttempts)
+		.innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+		.innerJoin(sections, eq(sections.id, quizzes.sectionId))
+		.innerJoin(classes, eq(classes.id, sections.classId))
+		.where(and(eq(quizAttempts.userId, userId), isNull(quizAttempts.completedAt)))
+		.orderBy(desc(quizAttempts.startedAt))
+		.limit(1);
+
+	return attempt;
+}
+
 export async function findAttempt(db: DbOrTx, attemptId: string) {
 	const [attempt] = await db
 		.select({
