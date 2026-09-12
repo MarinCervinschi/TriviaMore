@@ -1,34 +1,55 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 
 export function QuizTimer({
 	timeLimitMinutes,
+	resumeFromSeconds = 0,
+	onTick,
 	onTimeUp,
 }: {
 	/** Countdown limit in minutes; null = open-ended chronometer counting up. */
 	timeLimitMinutes: number | null;
+	/** Seconds already spent in earlier sittings, restored from the draft. */
+	resumeFromSeconds?: number;
+	onTick?: (elapsedSeconds: number) => void;
 	onTimeUp: () => void;
 }) {
 	const isUnlimited = timeLimitMinutes === null;
-	const [seconds, setSeconds] = useState(isUnlimited ? 0 : timeLimitMinutes * 60);
+	const [elapsed, setElapsed] = useState(resumeFromSeconds);
+	const secondsRef = useRef(resumeFromSeconds);
+	const onTickRef = useRef(onTick);
 
 	useEffect(() => {
+		onTickRef.current = onTick;
+	}, [onTick]);
+
+	useEffect(() => {
+		secondsRef.current = resumeFromSeconds;
+		setElapsed(resumeFromSeconds);
+	}, [resumeFromSeconds]);
+
+	// The count lives in a ref so a tick can report it without the report being a
+	// side effect of rendering: only a real second ever reaches `onTick`, which is
+	// what stops a mount from handing the page a zero that overwrites the draft.
+	useEffect(() => {
 		const interval = setInterval(() => {
-			setSeconds(prev => {
-				if (isUnlimited) return prev + 1;
-				if (prev <= 1) {
-					clearInterval(interval);
-					onTimeUp();
-					return 0;
-				}
-				return prev - 1;
-			});
+			const next = secondsRef.current + 1;
+			secondsRef.current = next;
+			setElapsed(next);
+			onTickRef.current?.(next);
+
+			if (!isUnlimited && next >= timeLimitMinutes * 60) {
+				clearInterval(interval);
+				onTimeUp();
+			}
 		}, 1000);
 		return () => clearInterval(interval);
-	}, [onTimeUp, isUnlimited]);
+	}, [onTimeUp, isUnlimited, timeLimitMinutes]);
 
-	const totalSeconds = Math.max(0, seconds);
+	const totalSeconds = isUnlimited
+		? elapsed
+		: Math.max(0, timeLimitMinutes * 60 - elapsed);
 	const hours = Math.floor(totalSeconds / 3600);
 	const minutes = Math.floor((totalSeconds % 3600) / 60);
 	const secs = totalSeconds % 60;
