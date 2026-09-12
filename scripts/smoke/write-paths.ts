@@ -18,7 +18,6 @@ import {
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
 import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
-import { abandonedAttemptCutoff } from "../../src/lib/quiz/constants.ts";
 import {
 	applyAttemptGrade,
 	claimAttempt,
@@ -234,15 +233,14 @@ try {
 		});
 		await tx
 			.update(quizAttempts)
-			.set({ startedAt: sql`now() - interval '2 days'` })
+			.set({ startedAt: sql`now() - interval '3 days'` })
 			.where(eq(quizAttempts.id, staleAttempt.id));
 
-		const reaped = await deleteStaleOpenAttempts(
-			tx,
-			seed.user_id,
-			abandonedAttemptCutoff()
+		const reaped = await deleteStaleOpenAttempts(tx, seed.user_id);
+		expect(
+			"reap: the stale attempt's quiz is reported",
+			reaped.filter(id => id === staleQuiz.id).length === 1
 		);
-		expect("reap: only the stale attempt taken", reaped.length === 1);
 
 		const survivors = await tx
 			.select({ id: quizAttempts.id })

@@ -152,8 +152,6 @@ export type QuizScope = {
 	evaluationModeId: string;
 };
 
-// Two students and a section to run quizzes on: enough to tell "this user's
-// abandoned attempt" apart from someone else's.
 export async function seedQuizScope(tx: TestTx): Promise<QuizScope> {
 	const classId = await createClass(tx);
 	const [mode] = await tx

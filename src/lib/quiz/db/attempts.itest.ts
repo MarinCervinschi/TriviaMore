@@ -7,24 +7,20 @@ import { closeTestDb, withRollback } from "@/lib/testing/db";
 import type { QuizScope } from "@/lib/testing/fixtures";
 import { seedQuizScope } from "@/lib/testing/fixtures";
 
-import { abandonedAttemptCutoff } from "../constants";
 import { deleteStaleOpenAttempts, insertAttempt } from "./attempts";
-import { deleteOrphanQuizzes } from "./quizzes";
+import { deleteOrphanQuizzes, insertQuiz } from "./quizzes";
 
 afterAll(() => closeTestDb());
 
-const CUTOFF = abandonedAttemptCutoff();
 const LONG_AGO = "2020-01-01T00:00:00.000Z";
 
 async function createQuiz(tx: TestTx, scope: QuizScope): Promise<string> {
-	const [quiz] = await tx
-		.insert(quizzes)
-		.values({
-			sectionId: scope.sectionId,
-			evaluationModeId: scope.evaluationModeId,
-			quizMode: "STUDY",
-		})
-		.returning({ id: quizzes.id });
+	const quiz = await insertQuiz(tx, {
+		sectionId: scope.sectionId,
+		evaluationModeId: scope.evaluationModeId,
+		quizMode: "STUDY",
+		timeLimit: null,
+	});
 	return quiz.id;
 }
 
@@ -67,7 +63,7 @@ describe("deleteStaleOpenAttempts", () => {
 				startedAt: LONG_AGO,
 			});
 
-			expect(await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)).toEqual([quizId]);
+			expect(await deleteStaleOpenAttempts(tx, scope.owner)).toEqual([quizId]);
 			expect(await survivors(tx, [stale])).toEqual([]);
 		}));
 
@@ -79,7 +75,7 @@ describe("deleteStaleOpenAttempts", () => {
 				quizId: await createQuiz(tx, scope),
 			});
 
-			expect(await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)).toEqual([]);
+			expect(await deleteStaleOpenAttempts(tx, scope.owner)).toEqual([]);
 			expect(await survivors(tx, [fresh])).toEqual([fresh]);
 		}));
 
@@ -94,7 +90,7 @@ describe("deleteStaleOpenAttempts", () => {
 				startedAt: LONG_AGO,
 			});
 
-			expect(await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)).toEqual([]);
+			expect(await deleteStaleOpenAttempts(tx, scope.owner)).toEqual([]);
 			expect(await survivors(tx, [theirs])).toEqual([theirs]);
 		}));
 
@@ -108,7 +104,7 @@ describe("deleteStaleOpenAttempts", () => {
 				completedAt: LONG_AGO,
 			});
 
-			expect(await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)).toEqual([]);
+			expect(await deleteStaleOpenAttempts(tx, scope.owner)).toEqual([]);
 			expect(await survivors(tx, [done])).toEqual([done]);
 		}));
 
@@ -128,8 +124,18 @@ describe("deleteStaleOpenAttempts", () => {
 				startedAt: LONG_AGO,
 			});
 
-			const reaped = await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF);
+			const reaped = await deleteStaleOpenAttempts(tx, scope.owner);
 			expect([...reaped].sort()).toEqual([first, second].sort());
+		}));
+
+	it("reports a quiz once even when several stale attempts held it", () =>
+		withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+			const quizId = await createQuiz(tx, scope);
+			await createAttempt(tx, { userId: scope.owner, quizId, startedAt: LONG_AGO });
+			await createAttempt(tx, { userId: scope.owner, quizId, startedAt: LONG_AGO });
+
+			expect(await deleteStaleOpenAttempts(tx, scope.owner)).toEqual([quizId]);
 		}));
 });
 
@@ -140,10 +146,7 @@ describe("deleteOrphanQuizzes", () => {
 			const quizId = await createQuiz(tx, scope);
 			await createAttempt(tx, { userId: scope.owner, quizId, startedAt: LONG_AGO });
 
-			await deleteOrphanQuizzes(
-				tx,
-				await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)
-			);
+			await deleteOrphanQuizzes(tx, await deleteStaleOpenAttempts(tx, scope.owner));
 
 			const left = await tx
 				.select({ id: quizzes.id })
@@ -159,10 +162,7 @@ describe("deleteOrphanQuizzes", () => {
 			await createAttempt(tx, { userId: scope.owner, quizId, startedAt: LONG_AGO });
 			const live = await createAttempt(tx, { userId: scope.owner, quizId });
 
-			await deleteOrphanQuizzes(
-				tx,
-				await deleteStaleOpenAttempts(tx, scope.owner, CUTOFF)
-			);
+			await deleteOrphanQuizzes(tx, await deleteStaleOpenAttempts(tx, scope.owner));
 
 			const left = await tx
 				.select({ id: quizzes.id })
