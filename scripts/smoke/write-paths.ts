@@ -18,17 +18,18 @@ import {
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
 import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
+import { abandonedAttemptCutoff } from "../../src/lib/quiz/constants.ts";
 import {
 	applyAttemptGrade,
 	claimAttempt,
-	countAttempts,
 	deleteAttempt,
+	deleteStaleOpenAttempts,
 	findAnswers,
 	insertAnswers,
 	insertAttempt,
 } from "../../src/lib/quiz/db/attempts.ts";
 import {
-	deleteQuiz,
+	deleteOrphanQuizzes,
 	findQuizQuestionOrder,
 	insertQuiz,
 	insertQuizQuestions,
@@ -193,8 +194,12 @@ try {
 		);
 
 		await deleteAttempt(tx, attempt.id);
-		expect("cancel: attempt gone", (await countAttempts(tx, quiz.id)) === 0);
-		await deleteQuiz(tx, quiz.id);
+		const cancelled = await tx
+			.select({ id: quizAttempts.id })
+			.from(quizAttempts)
+			.where(eq(quizAttempts.id, attempt.id));
+		expect("cancel: attempt gone", cancelled.length === 0);
+		await deleteOrphanQuizzes(tx, [quiz.id]);
 
 		const orphanQuestions = await tx
 			.select({ id: quizQuestions.id })
@@ -207,6 +212,53 @@ try {
 			.from(quizzes)
 			.where(eq(quizzes.id, quiz.id));
 		expect("cancel: quiz gone", orphanQuiz.length === 0);
+
+		const staleQuiz = await insertQuiz(tx, {
+			sectionId: seed.section_id,
+			evaluationModeId: mode.id,
+			quizMode: "STUDY",
+			timeLimit: null,
+		});
+		await insertQuizQuestions(
+			tx,
+			staleQuiz.id,
+			picked.map(question => question.id)
+		);
+		const staleAttempt = await insertAttempt(tx, {
+			userId: seed.user_id,
+			quizId: staleQuiz.id,
+		});
+		const liveAttempt = await insertAttempt(tx, {
+			userId: seed.user_id,
+			quizId: staleQuiz.id,
+		});
+		await tx
+			.update(quizAttempts)
+			.set({ startedAt: sql`now() - interval '2 days'` })
+			.where(eq(quizAttempts.id, staleAttempt.id));
+
+		const reaped = await deleteStaleOpenAttempts(
+			tx,
+			seed.user_id,
+			abandonedAttemptCutoff()
+		);
+		expect("reap: only the stale attempt taken", reaped.length === 1);
+
+		const survivors = await tx
+			.select({ id: quizAttempts.id })
+			.from(quizAttempts)
+			.where(inArray(quizAttempts.id, [staleAttempt.id, liveAttempt.id]));
+		expect(
+			"reap: the fresh attempt survives",
+			survivors.length === 1 && survivors[0]?.id === liveAttempt.id
+		);
+
+		await deleteOrphanQuizzes(tx, reaped);
+		const heldQuiz = await tx
+			.select({ id: quizzes.id })
+			.from(quizzes)
+			.where(eq(quizzes.id, staleQuiz.id));
+		expect("reap: a quiz another attempt holds is kept", heldQuiz.length === 1);
 
 		tx.rollback();
 	});

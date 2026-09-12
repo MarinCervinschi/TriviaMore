@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNotNull, isNull, lt, sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
 import { answerAttempts, classes, quizAttempts, quizzes, sections } from "@/db/schema";
@@ -94,12 +94,27 @@ export async function deleteAttempt(db: DbOrTx, attemptId: string) {
 	await db.delete(quizAttempts).where(eq(quizAttempts.id, attemptId));
 }
 
-export async function countAttempts(db: DbOrTx, quizId: string) {
-	const [row] = await db
-		.select({ value: count() })
-		.from(quizAttempts)
-		.where(eq(quizAttempts.quizId, quizId));
-	return row?.value ?? 0;
+/**
+ * Drops this user's unfinished attempts that started before `cutoff` and reports
+ * the quizzes they held, so the caller can collect the ones nobody else attempted.
+ */
+export async function deleteStaleOpenAttempts(
+	db: DbOrTx,
+	userId: string,
+	cutoff: string
+): Promise<string[]> {
+	const reaped = await db
+		.delete(quizAttempts)
+		.where(
+			and(
+				eq(quizAttempts.userId, userId),
+				isNull(quizAttempts.completedAt),
+				lt(quizAttempts.startedAt, cutoff)
+			)
+		)
+		.returning({ quizId: quizAttempts.quizId });
+
+	return reaped.flatMap(row => (row.quizId ? [row.quizId] : []));
 }
 
 export async function insertAnswers(
