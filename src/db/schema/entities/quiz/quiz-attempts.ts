@@ -26,6 +26,9 @@ export const quizAttempts = quizSchema
 			quizMode: quizModeEnum("quiz_mode"),
 			score: doublePrecision().notNull(),
 			timeSpent: integer("time_spent"),
+			startedAt: timestamp("started_at", { withTimezone: true, mode: "string" })
+				.defaultNow()
+				.notNull(),
 			completedAt: timestamp("completed_at", {
 				withTimezone: true,
 				mode: "string",
@@ -54,6 +57,11 @@ export const quizAttempts = quizSchema
 			index("idx_quiz_attempts_user_favorite")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`is_favorite`),
+			// The reaper asks "has this user left anything open", and open attempts
+			// are a handful against a table that only ever grows with finished ones.
+			index("idx_quiz_attempts_user_open")
+				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
+				.where(sql`completed_at IS NULL`),
 			foreignKey({
 				columns: [table.quizId],
 				foreignColumns: [quizzes.id],
