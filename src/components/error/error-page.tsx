@@ -25,7 +25,9 @@ export function ErrorPage({
 	const prefersReduced = useReducedMotion();
 
 	useEffect(() => {
-		reportBrowserError("Error boundary rendered", error);
+		reportBrowserError("Error boundary rendered", error, {
+			properties: { Path: window.location.pathname },
+		});
 	}, [error]);
 	const container = withReducedMotion(staggerContainer, prefersReduced);
 	const item = withReducedMotion(staggerItem, prefersReduced);

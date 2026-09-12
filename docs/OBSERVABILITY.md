@@ -86,7 +86,9 @@ questions are answered by querying it alone, and it keeps volume low enough that
 ```
 
 Server functions and page renders use two different templates on purpose, so Seq groups them as
-distinct event types.
+distinct event types. A request that never produced a response — a client hanging up mid-request,
+most of them scanners — uses a third, `{Method} {Path} → {Outcome} in {Elapsed:0.0}ms`, carries the
+exception and **no `Status` at all**. `Status: 500` therefore only ever means a 500 we really sent.
 
 ## Properties
 
@@ -98,7 +100,8 @@ distinct event types.
 | `@tr` | 32-hex trace id, shared by every event in one request |
 | `@sp` / `@ps` / `@st` / `@sk` | span fields — see the Spans section |
 | `UserId` | uuid only — attached by the auth guards |
-| `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) |
+| `Status` | the response status — **absent** when the request was never served |
+| `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) \| `aborted` (the client hung up) |
 | `ErrorCode` | the AppError code, or the Postgres SQLSTATE |
 | `DbQueries` / `DbMs` | accumulated by the pool wrapper |
 | `AuthChecks` / `AuthMs` | accumulated by the auth guards — see below |
