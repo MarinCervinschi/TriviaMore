@@ -8,14 +8,16 @@ import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
 import { sectionBrowsePath } from "@/lib/catalog/paths";
 import { accessibleSectionIdsInClass } from "@/lib/catalog/service";
+import { log } from "@/lib/logging/server";
 import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
+import { abandonedAttemptCutoff } from "./constants";
 import {
 	applyAttemptGrade,
 	claimAttempt,
-	countAttempts,
 	deleteAttempt,
+	deleteStaleOpenAttempts,
 	findAnswers,
 	findAttempt,
 	findAttemptWithChain,
@@ -25,7 +27,7 @@ import {
 	insertAttempt,
 } from "./db/attempts";
 import {
-	deleteQuiz,
+	deleteOrphanQuizzes,
 	findQuizQuestionOrder,
 	findQuizSectionAndMode,
 	findQuizWithChain,
@@ -107,6 +109,28 @@ async function resolveSourceSections(
 	return accessibleSectionIdsInClass(userId, section.classId);
 }
 
+/**
+ * Discards what this user walked away from: past the horizon an open attempt is
+ * scrap holding a quiz nothing can reach. Lazy so it needs no scheduler, and
+ * best-effort — failing to take out the rubbish must not block a quiz.
+ */
+async function reapAbandonedAttempts(userId: string): Promise<void> {
+	try {
+		await getDb().transaction(async tx => {
+			const orphanedQuizzes = await deleteStaleOpenAttempts(
+				tx,
+				userId,
+				abandonedAttemptCutoff()
+			);
+			await deleteOrphanQuizzes(tx, orphanedQuizzes);
+		});
+	} catch (error) {
+		log.warn("Reaping abandoned attempts failed: {Reason}", {
+			Reason: error instanceof Error ? error.message : String(error),
+		});
+	}
+}
+
 export async function startQuiz(
 	userId: string,
 	input: StartQuizInput
@@ -114,6 +138,7 @@ export async function startQuiz(
 	const db = getDb();
 
 	await assertSectionAccess(db, userId, input.sectionId);
+	await reapAbandonedAttempts(userId);
 
 	const evaluationModeId =
 		input.evaluationModeId ?? (await findDefaultEvaluationModeId(db));
@@ -311,11 +336,7 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 		if (!attempt || attempt.userId !== userId) return;
 
 		await deleteAttempt(tx, attemptId);
-
-		// A quiz nobody attempted is dead weight: it only exists to be resumed.
-		if (attempt.quizId && (await countAttempts(tx, attempt.quizId)) === 0) {
-			await deleteQuiz(tx, attempt.quizId);
-		}
+		if (attempt.quizId) await deleteOrphanQuizzes(tx, [attempt.quizId]);
 	});
 }
 
