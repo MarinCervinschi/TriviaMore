@@ -52,13 +52,9 @@ export const quizAttempts = quizSchema
 				"btree",
 				table.userId.asc().nullsLast().op("uuid_ops")
 			),
-			// The favourites filter is "this user's starred attempts", never a global
-			// scan of the flag, so the index leads with the user.
 			index("idx_quiz_attempts_user_favorite")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`is_favorite`),
-			// The reaper asks "has this user left anything open", and open attempts
-			// are a handful against a table that only ever grows with finished ones.
 			index("idx_quiz_attempts_user_open")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`completed_at IS NULL`),
