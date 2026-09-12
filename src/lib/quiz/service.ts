@@ -12,7 +12,6 @@ import { log } from "@/lib/logging/server";
 import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
-import { abandonedAttemptCutoff } from "./constants";
 import {
 	applyAttemptGrade,
 	claimAttempt,
@@ -47,6 +46,9 @@ import type {
 
 const QUIZ_GONE =
 	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
+
+const ATTEMPT_GONE =
+	"Questa sessione non è più disponibile: era rimasta aperta troppo a lungo ed è stata chiusa. Le tue risposte non sono state registrate.";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
@@ -117,17 +119,11 @@ async function resolveSourceSections(
 async function reapAbandonedAttempts(userId: string): Promise<void> {
 	try {
 		await getDb().transaction(async tx => {
-			const orphanedQuizzes = await deleteStaleOpenAttempts(
-				tx,
-				userId,
-				abandonedAttemptCutoff()
-			);
+			const orphanedQuizzes = await deleteStaleOpenAttempts(tx, userId);
 			await deleteOrphanQuizzes(tx, orphanedQuizzes);
 		});
 	} catch (error) {
-		log.warn("Reaping abandoned attempts failed: {Reason}", {
-			Reason: error instanceof Error ? error.message : String(error),
-		});
+		log.error("Reaping abandoned attempts failed", {}, error);
 	}
 }
 
@@ -138,6 +134,7 @@ export async function startQuiz(
 	const db = getDb();
 
 	await assertSectionAccess(db, userId, input.sectionId);
+
 	await reapAbandonedAttempts(userId);
 
 	const evaluationModeId =
@@ -291,7 +288,8 @@ export async function completeQuiz(
 			// request already completed it. Only the last case is a success, and it
 			// has to stay one so a retry lands on the results page.
 			const existing = await findAttempt(tx, input.quizAttemptId);
-			if (!existing || existing.userId !== userId || !existing.completedAt) {
+			if (!existing) throw new Conflict(ATTEMPT_GONE);
+			if (existing.userId !== userId || !existing.completedAt) {
 				throw new NotFound("Tentativo non trovato");
 			}
 			return { attemptId: input.quizAttemptId };

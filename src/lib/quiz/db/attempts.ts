@@ -5,6 +5,8 @@ import { answerAttempts, classes, quizAttempts, quizzes, sections } from "@/db/s
 import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
 import { sectionLocation } from "@/lib/catalog/db/section-location";
 
+import { ABANDONED_ATTEMPT_TTL_HOURS } from "../constants";
+
 export async function insertAttempt(
 	db: DbOrTx,
 	values: { userId: string; quizId: string }
@@ -95,13 +97,14 @@ export async function deleteAttempt(db: DbOrTx, attemptId: string) {
 }
 
 /**
- * Drops this user's unfinished attempts that started before `cutoff` and reports
- * the quizzes they held, so the caller can collect the ones nobody else attempted.
+ * Drops this user's unfinished attempts left open past the horizon and reports the
+ * quizzes they held, so the caller can collect the ones nobody else attempted. The
+ * horizon is resolved by the database, which is also what writes `started_at`:
+ * comparing it against the app process clock would let clock skew reap a live one.
  */
 export async function deleteStaleOpenAttempts(
 	db: DbOrTx,
-	userId: string,
-	cutoff: string
+	userId: string
 ): Promise<string[]> {
 	const reaped = await db
 		.delete(quizAttempts)
@@ -109,12 +112,15 @@ export async function deleteStaleOpenAttempts(
 			and(
 				eq(quizAttempts.userId, userId),
 				isNull(quizAttempts.completedAt),
-				lt(quizAttempts.startedAt, cutoff)
+				lt(
+					quizAttempts.startedAt,
+					sql`now() - make_interval(hours => ${ABANDONED_ATTEMPT_TTL_HOURS})`
+				)
 			)
 		)
 		.returning({ quizId: quizAttempts.quizId });
 
-	return reaped.flatMap(row => (row.quizId ? [row.quizId] : []));
+	return [...new Set(reaped.flatMap(row => (row.quizId ? [row.quizId] : [])))];
 }
 
 export async function insertAnswers(

@@ -2,9 +2,6 @@
 // An index equal to TIME_STEPS.length represents "unlimited" (timeLimit: null).
 export const TIME_STEPS = [5, 10, 15, 20, 30, 45, 60, 90, 120] as const;
 
-// Only has to outlast the longest plausible sitting, so no reap hits a live one.
-export const ABANDONED_ATTEMPT_TTL_MS = 24 * 60 * 60 * 1000;
-
-export function abandonedAttemptCutoff(now: number = Date.now()): string {
-	return new Date(now - ABANDONED_ATTEMPT_TTL_MS).toISOString();
-}
+// A backstop, not a policy: the resume banner is what stands between a live
+// sitting and the reap, so this only bounds how long a forgotten one lingers.
+export const ABANDONED_ATTEMPT_TTL_HOURS = 48;
