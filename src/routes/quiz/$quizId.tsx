@@ -21,6 +21,7 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { cancelQuizFn, completeQuizFn } from "@/lib/quiz/api";
+import { clearQuizDraft, readQuizDraft, writeQuizDraft } from "@/lib/quiz/draft";
 import { quizQueries } from "@/lib/quiz/queries";
 import type { Quiz, UserAnswer } from "@/lib/quiz/types";
 
@@ -51,19 +52,26 @@ function QuizPage() {
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-	const [startTime] = useState(Date.now());
+	const [resumeFromSeconds, setResumeFromSeconds] = useState(0);
+	const [draftLoaded, setDraftLoaded] = useState(false);
+	const elapsedRef = useRef(0);
+	const draftLoadedRef = useRef(false);
+	const answersRef = useRef<{ answers: UserAnswer[]; currentIndex: number }>({
+		answers: [],
+		currentIndex: 0,
+	});
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 	const [showExitDialog, setShowExitDialog] = useState(false);
 	const [isCompleting, setIsCompleting] = useState(false);
 	const isCompletingRef = useRef(false);
 	const isExitingRef = useRef(false);
+	const discardedRef = useRef(false);
 
-	// Leaving any other way — the back arrow, a nav link — used to abandon the
-	// attempt: it stayed open forever, holding a quiz nobody could reach. Route it
-	// through the same confirmation the Esci button uses, so the attempt is either
-	// finished or cancelled. `enableBeforeUnload` covers closing the tab, where the
-	// browser only lets us warn.
+	// Leaving any other way — the back arrow, a nav link — would abandon the attempt
+	// silently, so route it through the same confirmation the Esci button uses.
+	// `enableBeforeUnload` covers closing the tab, where the browser only lets us
+	// warn — and that is the exit the draft exists for.
 	const blocker = useBlocker({
 		shouldBlockFn: () => !isCompletingRef.current && !isExitingRef.current,
 		enableBeforeUnload: () => !isCompletingRef.current && !isExitingRef.current,
@@ -75,17 +83,70 @@ function QuizPage() {
 		if (blocker.status === "blocked") setShowExitDialog(true);
 	}, [blocker.status]);
 
-	// Initialize answers when quiz loads
 	useEffect(() => {
-		if (quiz) {
-			setUserAnswers(
-				quiz.questions.map(q => ({
-					questionId: q.id,
-					answer: [],
-				}))
-			);
+		if (!quiz) return;
+		const blank = quiz.questions.map(q => ({ questionId: q.id, answer: [] }));
+		const draft = quiz.attemptId ? readQuizDraft(quiz.attemptId) : null;
+
+		// The refs are what a flush reads, and a flush can beat these state updates
+		// to the draft — so they are filled in here, not by the effect below.
+		if (draft) {
+			const saved = new Map(draft.answers.map(a => [a.questionId, a.answer]));
+			const restored = blank.map(a => ({
+				...a,
+				answer: saved.get(a.questionId) ?? [],
+			}));
+			const index = Math.min(Math.max(draft.currentIndex, 0), blank.length - 1);
+
+			setUserAnswers(restored);
+			setCurrentIndex(index);
+			setResumeFromSeconds(draft.elapsedSeconds);
+			elapsedRef.current = draft.elapsedSeconds;
+			answersRef.current = { answers: restored, currentIndex: index };
+		} else {
+			setUserAnswers(blank);
+			answersRef.current = { answers: blank, currentIndex: 0 };
 		}
+		draftLoadedRef.current = true;
+		setDraftLoaded(true);
 	}, [quiz]);
+
+	useEffect(() => {
+		if (!draftLoaded || !quiz?.attemptId || isCompletingRef.current) return;
+		answersRef.current = { answers: userAnswers, currentIndex };
+		writeQuizDraft({
+			attemptId: quiz.attemptId,
+			answers: userAnswers,
+			currentIndex,
+			elapsedSeconds: elapsedRef.current,
+		});
+	}, [draftLoaded, quiz, userAnswers, currentIndex]);
+
+	const flushDraft = useCallback(() => {
+		if (!draftLoadedRef.current || !quiz?.attemptId) return;
+		if (isCompletingRef.current || discardedRef.current) return;
+		writeQuizDraft({
+			attemptId: quiz.attemptId,
+			answers: answersRef.current.answers,
+			currentIndex: answersRef.current.currentIndex,
+			elapsedSeconds: elapsedRef.current,
+		});
+	}, [quiz]);
+
+	const handleTick = useCallback(
+		(elapsedSeconds: number) => {
+			elapsedRef.current = elapsedSeconds;
+			if (elapsedSeconds % 5 === 0) flushDraft();
+		},
+		[flushDraft]
+	);
+
+	// Closing the tab runs no React cleanup, so the last seconds of the clock would
+	// otherwise never reach the draft.
+	useEffect(() => {
+		window.addEventListener("pagehide", flushDraft);
+		return () => window.removeEventListener("pagehide", flushDraft);
+	}, [flushDraft]);
 
 	const handleAnswerChange = useCallback((questionId: string, answer: string[]) => {
 		setUserAnswers(prev =>
@@ -107,9 +168,10 @@ function QuizPage() {
 						questionId: ua.questionId,
 						userAnswer: ua.answer,
 					})),
-					timeSpent: Date.now() - startTime,
+					timeSpent: elapsedRef.current * 1000,
 				},
 			});
+			clearQuizDraft();
 			// Invalidate user data caches so dashboard shows updated stats
 			queryClient.invalidateQueries({ queryKey: ["user"] });
 			navigate({
@@ -125,10 +187,14 @@ function QuizPage() {
 			isCompletingRef.current = false;
 			setIsCompleting(false);
 		}
-	}, [quiz, userAnswers, startTime, navigate, queryClient]);
+	}, [quiz, userAnswers, navigate, queryClient]);
 
 	const confirmExit = useCallback(async () => {
+		if (isExitingRef.current) return;
 		isExitingRef.current = true;
+		discardedRef.current = true;
+		clearQuizDraft();
+
 		if (quiz?.attemptId) {
 			try {
 				await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } });
@@ -136,9 +202,10 @@ function QuizPage() {
 				// Ignore cancel errors
 			}
 		}
+
 		if (blocker.status === "blocked") blocker.proceed();
 		else navigate({ to: "/" });
-	}, [quiz, navigate, blocker]);
+	}, [quiz, navigate, blocker, queryClient]);
 
 	// Radix closes the dialog on confirm too, so the exit flag is what tells the
 	// two apart: dismissing means staying and releases the blocked navigation,
@@ -181,9 +248,9 @@ function QuizPage() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [currentIndex, quiz?.questions.length]);
 
+	const exam = quiz.section.name === EXAM_SIMULATION_SECTION;
 	// The exam sentinel is a stable id, not a place the student recognises: a
 	// simulation is over its class, and that is the name worth showing.
-	const exam = quiz.section.name === EXAM_SIMULATION_SECTION;
 	const quizContext: QuizContext = exam
 		? { kind: "exam", name: quiz.section.className }
 		: { kind: "section", name: quiz.section.name };
@@ -203,9 +270,11 @@ function QuizPage() {
 				questionIndex={currentIndex}
 				totalQuestions={quiz.questions.length}
 				timeLimit={quiz.timeLimit}
+				resumeFromSeconds={resumeFromSeconds}
 				context={quizContext}
 				sidebarOpen={sidebarOpen}
 				onToggleSidebar={toggleSidebar}
+				onTick={handleTick}
 				onTimeUp={handleComplete}
 				onExit={() => setShowExitDialog(true)}
 			/>
