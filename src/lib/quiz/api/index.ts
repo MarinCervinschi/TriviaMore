@@ -1,6 +1,7 @@
 export { cancelQuizFn } from "./cancel-quiz";
 export { completeQuizFn } from "./complete-quiz";
 export { getEvaluationModesFn } from "./get-evaluation-modes";
+export { getOpenAttemptFn } from "./get-open-attempt";
 export { getQuizFn } from "./get-quiz";
 export { getQuizResultsFn } from "./get-quiz-results";
 export { startQuizFn } from "./start-quiz";

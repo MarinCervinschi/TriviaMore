@@ -2,7 +2,10 @@ import { useState } from "react";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { EVAL_MODES_SEED } from "@/components/session-config/fixtures";
+import {
+	EVAL_MODES_SEED,
+	OPEN_ATTEMPT_SEED,
+} from "@/components/session-config/fixtures";
 import { Button } from "@/components/ui/button";
 
 import { StartQuizDialog } from "./start-quiz-dialog";
@@ -44,5 +47,12 @@ export const Small: Story = {
 export const NoEvalModes: Story = {
 	name: "Senza modalità di valutazione",
 	parameters: { queryData: [] },
+	render: () => <Harness maxQuestions={40} />,
+};
+
+/** With a quiz already open the config never appears: the way out is offered instead. */
+export const Blocked: Story = {
+	name: "Con un quiz già in corso",
+	parameters: { queryData: [...EVAL_MODES_SEED, ...OPEN_ATTEMPT_SEED] },
 	render: () => <Harness maxQuestions={40} />,
 };

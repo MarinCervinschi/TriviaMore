@@ -5,7 +5,7 @@ import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import {
@@ -14,6 +14,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { ProgressSummary } from "@/components/progress/progress-summary";
+import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
 import { decorativeTint } from "@/components/shared/decorative-tints";
 import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +25,7 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { quizQueries } from "@/lib/quiz/queries";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { RecentClass } from "@/lib/user/types";
@@ -45,6 +47,7 @@ export const Route = createFileRoute("/_app/user/")({
 function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
 	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
+	const { data: openAttempt } = useQuery(quizQueries.openAttempt());
 
 	if (!profile) return null;
 
@@ -90,6 +93,8 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
+				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}
+
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard
 						icon={InboxIcon}
