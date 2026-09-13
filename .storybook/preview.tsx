@@ -1,3 +1,5 @@
+import { type ReactNode, useState } from "react";
+
 import "@fontsource/dm-mono/400.css";
 import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
@@ -5,7 +7,7 @@ import "@fontsource/dm-sans/600.css";
 import "@fontsource/dm-sans/700.css";
 import "@fontsource/dm-serif-display/400.css";
 import { withThemeByClassName } from "@storybook/addon-themes";
-import type { Preview, ReactRenderer } from "@storybook/react-vite";
+import type { Preview, ReactRenderer, StoryContext } from "@storybook/react-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "../src/styles/globals.css";
@@ -14,12 +16,30 @@ import { withRouter } from "./router-decorator";
 import { SeededQueries } from "./seed-decorator";
 import { withTheme } from "./theme-decorator";
 
-// Provided globally so any component using TanStack Query renders. Retries off, because the
-// server-function stub throws rather than reaching a backend: a story feeds data through props or by
-// seeding this cache (see auth-decorator).
-const queryClient = new QueryClient({
-	defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
-});
+// Provided so any component using TanStack Query renders. Retries off, because the server-function
+// stub throws rather than reaching a backend: a story feeds data through props or by seeding this
+// cache (see auth-decorator). One client per story — a shared one carries a story's seeded keys into
+// the next, which then renders someone else's state and reads as a component bug.
+function StoryQueries({
+	context,
+	children,
+}: {
+	context: StoryContext;
+	children: ReactNode;
+}) {
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },
+			})
+	);
+
+	return (
+		<QueryClientProvider client={queryClient}>
+			<SeededQueries context={context}>{children}</SeededQueries>
+		</QueryClientProvider>
+	);
+}
 
 const preview: Preview = {
 	parameters: {
@@ -36,14 +56,10 @@ const preview: Preview = {
 			themes: { light: "", dark: "dark" },
 			defaultTheme: "light",
 		}),
-		// The provider and the seeding are one decorator on purpose: seeding calls useQueryClient, so
-		// splitting them makes the story depend on Storybook's decorator ordering.
 		(Story, context) => (
-			<QueryClientProvider client={queryClient}>
-				<SeededQueries context={context}>
-					<Story />
-				</SeededQueries>
-			</QueryClientProvider>
+			<StoryQueries key={context.id} context={context}>
+				<Story />
+			</StoryQueries>
 		),
 		withTheme,
 		withRouter,
