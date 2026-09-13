@@ -66,7 +66,7 @@ function QuizPage() {
 	const [isCompleting, setIsCompleting] = useState(false);
 	const isCompletingRef = useRef(false);
 	const isExitingRef = useRef(false);
-	const discardedRef = useRef(false);
+	const lastFlushRef = useRef(0);
 
 	// Leaving any other way — the back arrow, a nav link — would abandon the attempt
 	// silently, so route it through the same confirmation the Esci button uses.
@@ -102,6 +102,7 @@ function QuizPage() {
 			setCurrentIndex(index);
 			setResumeFromSeconds(draft.elapsedSeconds);
 			elapsedRef.current = draft.elapsedSeconds;
+			lastFlushRef.current = draft.elapsedSeconds;
 			answersRef.current = { answers: restored, currentIndex: index };
 		} else {
 			setUserAnswers(blank);
@@ -111,20 +112,9 @@ function QuizPage() {
 		setDraftLoaded(true);
 	}, [quiz]);
 
-	useEffect(() => {
-		if (!draftLoaded || !quiz?.attemptId || isCompletingRef.current) return;
-		answersRef.current = { answers: userAnswers, currentIndex };
-		writeQuizDraft({
-			attemptId: quiz.attemptId,
-			answers: userAnswers,
-			currentIndex,
-			elapsedSeconds: elapsedRef.current,
-		});
-	}, [draftLoaded, quiz, userAnswers, currentIndex]);
-
 	const flushDraft = useCallback(() => {
 		if (!draftLoadedRef.current || !quiz?.attemptId) return;
-		if (isCompletingRef.current || discardedRef.current) return;
+		if (isCompletingRef.current || isExitingRef.current) return;
 		writeQuizDraft({
 			attemptId: quiz.attemptId,
 			answers: answersRef.current.answers,
@@ -133,10 +123,22 @@ function QuizPage() {
 		});
 	}, [quiz]);
 
+	// The refs are the one source the draft is written from, so answering updates
+	// them and then flushes through the same path every other caller uses.
+	useEffect(() => {
+		if (!draftLoaded) return;
+		answersRef.current = { answers: userAnswers, currentIndex };
+		flushDraft();
+	}, [draftLoaded, userAnswers, currentIndex, flushDraft]);
+
 	const handleTick = useCallback(
 		(elapsedSeconds: number) => {
 			elapsedRef.current = elapsedSeconds;
-			if (elapsedSeconds % 5 === 0) flushDraft();
+			// A hidden tab is throttled, so ticks arrive in jumps: pace the flush by
+			// how far the clock actually moved rather than by a modulo it can skip.
+			if (elapsedSeconds - lastFlushRef.current < 5) return;
+			lastFlushRef.current = elapsedSeconds;
+			flushDraft();
 		},
 		[flushDraft]
 	);
@@ -193,7 +195,6 @@ function QuizPage() {
 	const confirmExit = useCallback(async () => {
 		if (isExitingRef.current) return;
 		isExitingRef.current = true;
-		discardedRef.current = true;
 		clearQuizDraft();
 
 		if (quiz?.attemptId) {
