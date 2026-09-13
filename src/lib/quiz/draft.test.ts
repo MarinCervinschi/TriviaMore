@@ -67,6 +67,18 @@ describe("the quiz draft slot", () => {
 		expect(readQuizDraft("attempt-a")).toBeNull();
 	});
 
+	it.each([
+		["no clock", { ...DRAFT, elapsedSeconds: undefined }],
+		["a clock that is not a number", { ...DRAFT, elapsedSeconds: "420" }],
+		["a clock running backwards", { ...DRAFT, elapsedSeconds: -1 }],
+		["no position", { ...DRAFT, currentIndex: undefined }],
+		["a position that is not a number", { ...DRAFT, currentIndex: null }],
+		["answers that are not answers", { ...DRAFT, answers: [{ questionId: 1 }] }],
+	])("refuses a draft with %s", (_, written) => {
+		installStorage().set("trivia-more:quiz-draft", JSON.stringify(written));
+		expect(readQuizDraft("attempt-a")).toBeNull();
+	});
+
 	it("never throws when the store refuses to write", () => {
 		vi.stubGlobal("localStorage", {
 			getItem: () => null,
