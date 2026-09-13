@@ -66,7 +66,7 @@ export function StartExamDialog({
 
 	// Only the quiz half is gated: a flashcard sitting holds no attempt, so an
 	// unfinished quiz must not stand in its way.
-	const { data: openAttempt } = useQuery({
+	const { data: openAttempt, isPending: checkingAttempt } = useQuery({
 		...quizQueries.openAttempt(),
 		enabled: open && hasQuiz,
 	});
@@ -187,7 +187,9 @@ export function StartExamDialog({
 					</Button>
 					<Button
 						onClick={tab === "quiz" ? handleStartQuiz : handleStartFlashcard}
-						disabled={loading || (tab === "quiz" && Boolean(openAttempt))}
+						disabled={
+							loading || (tab === "quiz" && (checkingAttempt || Boolean(openAttempt)))
+						}
 					>
 						{loading && <Spinner className="mr-2" />}
 						{tab === "quiz" ? "Inizia Quiz" : "Inizia Flashcard"}

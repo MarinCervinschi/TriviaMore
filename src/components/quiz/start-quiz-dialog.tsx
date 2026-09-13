@@ -56,7 +56,6 @@ export function StartQuizDialog({
 		});
 	};
 
-	if (openAttempt.isPending) return null;
 	if (openAttempt.data) {
 		return (
 			<OpenAttemptDialog
@@ -75,7 +74,7 @@ export function StartQuizDialog({
 				submitLabel="Inizia Quiz"
 				onSubmit={handleStart}
 				onCancel={() => onOpenChange(false)}
-				isPending={mutation.isPending}
+				isPending={mutation.isPending || openAttempt.isPending}
 			>
 				<QuizConfigFields
 					questionCount={questionCount}
