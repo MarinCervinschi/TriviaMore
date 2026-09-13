@@ -37,7 +37,6 @@ export const OPEN_ATTEMPT: OpenAttempt = {
 	attemptId: "attempt-open",
 	quizId: "quiz-open",
 	quizMode: "STUDY",
-	timeLimit: 30,
 	startedAt: "2026-09-11T14:20:00.000Z",
 	sectionName: "Alberi binari di ricerca",
 	className: "Algoritmi e Strutture Dati",

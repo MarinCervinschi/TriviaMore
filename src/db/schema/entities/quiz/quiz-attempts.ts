@@ -6,6 +6,7 @@ import {
 	index,
 	integer,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
@@ -27,6 +28,11 @@ export const quizAttempts = quizSchema
 			score: doublePrecision().notNull(),
 			timeSpent: integer("time_spent"),
 			startedAt: timestamp("started_at", { withTimezone: true, mode: "string" })
+				.defaultNow()
+				.notNull(),
+			// What the abandonment horizon measures. `started_at` cannot: an attempt
+			// resumed daily for a week is in use, however long ago it was begun.
+			lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
 				.notNull(),
 			completedAt: timestamp("completed_at", {
@@ -55,7 +61,9 @@ export const quizAttempts = quizSchema
 			index("idx_quiz_attempts_user_favorite")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`is_favorite`),
-			index("idx_quiz_attempts_user_open")
+			// Unique, not merely indexed: one open attempt per user is an invariant the
+			// database holds, so two concurrent starts cannot both pass the read gate.
+			uniqueIndex("idx_quiz_attempts_user_open")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`completed_at IS NULL`),
 			foreignKey({

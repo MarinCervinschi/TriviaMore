@@ -21,10 +21,11 @@ import {
 	findAttempt,
 	findAttemptWithChain,
 	findOpenAttemptForUser,
-	findOpenAttemptId,
 	findSectionAttempts,
 	insertAnswers,
 	insertAttempt,
+	isOpenAttemptViolation,
+	touchOpenAttempt,
 } from "./db/attempts";
 import {
 	deleteOrphanQuizzes,
@@ -53,7 +54,7 @@ const QUIZ_IN_PROGRESS =
 	"Hai già un quiz in corso. Riprendilo o eliminalo prima di iniziarne uno nuovo.";
 
 const ATTEMPT_GONE =
-	"Questa sessione non è più disponibile: era rimasta aperta troppo a lungo ed è stata chiusa. Le tue risposte non sono state registrate.";
+	"Questa sessione non è più disponibile: potrebbe essere stata chiusa o eliminata. Le tue risposte non sono state registrate.";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
@@ -132,8 +133,31 @@ async function reapAbandonedAttempts(userId: string): Promise<void> {
 	}
 }
 
+type OpenAttemptRow = NonNullable<Awaited<ReturnType<typeof findOpenAttemptForUser>>>;
+
+function toOpenAttempt(row: OpenAttemptRow): OpenAttempt {
+	return {
+		attemptId: row.attemptId,
+		quizId: row.quizId,
+		quizMode: row.quizMode,
+		startedAt: row.startedAt,
+		sectionName: row.sectionName,
+		className: row.className,
+	};
+}
+
 export async function getOpenAttempt(userId: string): Promise<OpenAttempt | null> {
-	return (await findOpenAttemptForUser(getDb(), userId)) ?? null;
+	const db = getDb();
+	const attempt = await findOpenAttemptForUser(db, userId);
+	if (!attempt) return null;
+	if (!attempt.isStale) return toOpenAttempt(attempt);
+
+	// Every screen that offers the attempt back reads through here, and the gate in
+	// `startQuiz` is the only other reaper — so without this the student would be
+	// shown a quiz the horizon has already written off, with no way past it.
+	await reapAbandonedAttempts(userId);
+	const remaining = await findOpenAttemptForUser(db, userId);
+	return remaining ? toOpenAttempt(remaining) : null;
 }
 
 export async function startQuiz(
@@ -165,24 +189,31 @@ export async function startQuiz(
 
 	// One transaction: a quiz without its questions, or without the attempt that
 	// owns it, is unreachable garbage the user cannot resume or delete.
-	return db.transaction(async tx => {
-		const quiz = await insertQuiz(tx, {
-			sectionId: input.sectionId,
-			evaluationModeId,
-			quizMode: input.quizMode,
-			timeLimit: input.timeLimit,
+	try {
+		return await db.transaction(async tx => {
+			const quiz = await insertQuiz(tx, {
+				sectionId: input.sectionId,
+				evaluationModeId,
+				quizMode: input.quizMode,
+				timeLimit: input.timeLimit,
+			});
+
+			await insertQuizQuestions(
+				tx,
+				quiz.id,
+				selected.map(question => question.id)
+			);
+
+			const attempt = await insertAttempt(tx, { userId, quizId: quiz.id });
+
+			return { quizId: quiz.id, attemptId: attempt.id };
 		});
-
-		await insertQuizQuestions(
-			tx,
-			quiz.id,
-			selected.map(question => question.id)
-		);
-
-		const attempt = await insertAttempt(tx, { userId, quizId: quiz.id });
-
-		return { quizId: quiz.id, attemptId: attempt.id };
-	});
+	} catch (error) {
+		// The gate above is a read, so two starts racing it both pass; the index is
+		// what decides, and this gives its violation the answer the gate would have.
+		if (!isOpenAttemptViolation(error)) throw error;
+		throw new Conflict(QUIZ_IN_PROGRESS);
+	}
 }
 
 export async function getQuiz(
@@ -207,7 +238,7 @@ export async function getQuiz(
 			db,
 			order.map(entry => entry.questionId)
 		),
-		findOpenAttemptId(db, userId, quizId),
+		touchOpenAttempt(db, userId, quizId),
 		findEvaluationMode(db, quiz.evaluationModeId),
 	]);
 	if (!evaluationMode) return null;
@@ -297,12 +328,12 @@ export async function completeQuiz(
 
 		if (!claimed) {
 			// Either the attempt is not this user's, does not exist, or a concurrent
-			// request already completed it. Only the last case is a success, and it
-			// has to stay one so a retry lands on the results page.
+			// request already completed it. Only the last is a success, and it has to
+			// stay one so a retry lands on the results page; the other two answer
+			// alike, so a stranger's id cannot be told apart from a deleted one.
 			const existing = await findAttempt(tx, input.quizAttemptId);
-			if (!existing) throw new Conflict(ATTEMPT_GONE);
-			if (existing.userId !== userId || !existing.completedAt) {
-				throw new NotFound("Tentativo non trovato");
+			if (existing?.userId !== userId || !existing.completedAt) {
+				throw new Conflict(ATTEMPT_GONE);
 			}
 			return { attemptId: input.quizAttemptId };
 		}

@@ -223,17 +223,25 @@ try {
 			staleQuiz.id,
 			picked.map(question => question.id)
 		);
-		const staleAttempt = await insertAttempt(tx, {
-			userId: seed.user_id,
-			quizId: staleQuiz.id,
-		});
-		const liveAttempt = await insertAttempt(tx, {
+
+		// Completed first: the partial unique index allows one open attempt per user,
+		// so the quiz can only be held by a second attempt that is already finished.
+		const doneAttempt = await insertAttempt(tx, {
 			userId: seed.user_id,
 			quizId: staleQuiz.id,
 		});
 		await tx
 			.update(quizAttempts)
-			.set({ startedAt: sql`now() - interval '3 days'` })
+			.set({ completedAt: sql`now()` })
+			.where(eq(quizAttempts.id, doneAttempt.id));
+
+		const staleAttempt = await insertAttempt(tx, {
+			userId: seed.user_id,
+			quizId: staleQuiz.id,
+		});
+		await tx
+			.update(quizAttempts)
+			.set({ lastSeenAt: sql`now() - interval '3 days'` })
 			.where(eq(quizAttempts.id, staleAttempt.id));
 
 		const reaped = await deleteStaleOpenAttempts(tx, seed.user_id);
@@ -245,10 +253,10 @@ try {
 		const survivors = await tx
 			.select({ id: quizAttempts.id })
 			.from(quizAttempts)
-			.where(inArray(quizAttempts.id, [staleAttempt.id, liveAttempt.id]));
+			.where(inArray(quizAttempts.id, [staleAttempt.id, doneAttempt.id]));
 		expect(
-			"reap: the fresh attempt survives",
-			survivors.length === 1 && survivors[0]?.id === liveAttempt.id
+			"reap: the completed attempt survives",
+			survivors.length === 1 && survivors[0]?.id === doneAttempt.id
 		);
 
 		await deleteOrphanQuizzes(tx, reaped);
