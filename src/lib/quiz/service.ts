@@ -8,24 +8,27 @@ import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
 import { sectionBrowsePath } from "@/lib/catalog/paths";
 import { accessibleSectionIdsInClass } from "@/lib/catalog/service";
+import { log } from "@/lib/logging/server";
 import { Conflict, NotFound } from "@/lib/server/errors";
 
 import { evaluationModeColumns } from "./columns";
 import {
 	applyAttemptGrade,
 	claimAttempt,
-	countAttempts,
 	deleteAttempt,
+	deleteStaleOpenAttempts,
 	findAnswers,
 	findAttempt,
 	findAttemptWithChain,
-	findOpenAttemptId,
+	findOpenAttemptForUser,
 	findSectionAttempts,
 	insertAnswers,
 	insertAttempt,
+	isOpenAttemptViolation,
+	touchOpenAttempt,
 } from "./db/attempts";
 import {
-	deleteQuiz,
+	deleteOrphanQuizzes,
 	findQuizQuestionOrder,
 	findQuizSectionAndMode,
 	findQuizWithChain,
@@ -38,6 +41,7 @@ import { THIRTY_SCALE_MAX, calculateAnswerScore } from "./scoring";
 import type {
 	AttemptHistory,
 	EvaluationMode,
+	OpenAttempt,
 	Quiz,
 	QuizAttemptResult,
 	QuizQuestion,
@@ -45,6 +49,12 @@ import type {
 
 const QUIZ_GONE =
 	"Questo quiz non è più disponibile: il contenuto è stato modificato durante la sessione. Le tue risposte non sono state registrate.";
+
+const QUIZ_IN_PROGRESS =
+	"Hai già un quiz in corso. Riprendilo o eliminalo prima di iniziarne uno nuovo.";
+
+const ATTEMPT_GONE =
+	"Questa sessione non è più disponibile: potrebbe essere stata chiusa o eliminata. Le tue risposte non sono state registrate.";
 
 function findEvaluationMode(db: DbOrTx, id: string) {
 	return db
@@ -107,6 +117,49 @@ async function resolveSourceSections(
 	return accessibleSectionIdsInClass(userId, section.classId);
 }
 
+/**
+ * Discards what this user walked away from: past the horizon an open attempt is
+ * scrap holding a quiz nothing can reach. Lazy so it needs no scheduler, and
+ * best-effort — failing to take out the rubbish must not block a quiz.
+ */
+async function reapAbandonedAttempts(userId: string): Promise<void> {
+	try {
+		await getDb().transaction(async tx => {
+			const orphanedQuizzes = await deleteStaleOpenAttempts(tx, userId);
+			await deleteOrphanQuizzes(tx, orphanedQuizzes);
+		});
+	} catch (error) {
+		log.error("Reaping abandoned attempts failed", {}, error);
+	}
+}
+
+type OpenAttemptRow = NonNullable<Awaited<ReturnType<typeof findOpenAttemptForUser>>>;
+
+function toOpenAttempt(row: OpenAttemptRow): OpenAttempt {
+	return {
+		attemptId: row.attemptId,
+		quizId: row.quizId,
+		quizMode: row.quizMode,
+		startedAt: row.startedAt,
+		sectionName: row.sectionName,
+		className: row.className,
+	};
+}
+
+export async function getOpenAttempt(userId: string): Promise<OpenAttempt | null> {
+	const db = getDb();
+	const attempt = await findOpenAttemptForUser(db, userId);
+	if (!attempt) return null;
+	if (!attempt.isStale) return toOpenAttempt(attempt);
+
+	// Every screen that offers the attempt back reads through here, and the gate in
+	// `startQuiz` is the only other reaper — so without this the student would be
+	// shown a quiz the horizon has already written off, with no way past it.
+	await reapAbandonedAttempts(userId);
+	const remaining = await findOpenAttemptForUser(db, userId);
+	return remaining ? toOpenAttempt(remaining) : null;
+}
+
 export async function startQuiz(
 	userId: string,
 	input: StartQuizInput
@@ -114,6 +167,11 @@ export async function startQuiz(
 	const db = getDb();
 
 	await assertSectionAccess(db, userId, input.sectionId);
+
+	// Reap before the gate, or an attempt the user forgot about would lock them
+	// out of starting anything until they came back and dealt with it by hand.
+	await reapAbandonedAttempts(userId);
+	if (await findOpenAttemptForUser(db, userId)) throw new Conflict(QUIZ_IN_PROGRESS);
 
 	const evaluationModeId =
 		input.evaluationModeId ?? (await findDefaultEvaluationModeId(db));
@@ -131,24 +189,31 @@ export async function startQuiz(
 
 	// One transaction: a quiz without its questions, or without the attempt that
 	// owns it, is unreachable garbage the user cannot resume or delete.
-	return db.transaction(async tx => {
-		const quiz = await insertQuiz(tx, {
-			sectionId: input.sectionId,
-			evaluationModeId,
-			quizMode: input.quizMode,
-			timeLimit: input.timeLimit,
+	try {
+		return await db.transaction(async tx => {
+			const quiz = await insertQuiz(tx, {
+				sectionId: input.sectionId,
+				evaluationModeId,
+				quizMode: input.quizMode,
+				timeLimit: input.timeLimit,
+			});
+
+			await insertQuizQuestions(
+				tx,
+				quiz.id,
+				selected.map(question => question.id)
+			);
+
+			const attempt = await insertAttempt(tx, { userId, quizId: quiz.id });
+
+			return { quizId: quiz.id, attemptId: attempt.id };
 		});
-
-		await insertQuizQuestions(
-			tx,
-			quiz.id,
-			selected.map(question => question.id)
-		);
-
-		const attempt = await insertAttempt(tx, { userId, quizId: quiz.id });
-
-		return { quizId: quiz.id, attemptId: attempt.id };
-	});
+	} catch (error) {
+		// The gate above is a read, so two starts racing it both pass; the index is
+		// what decides, and this gives its violation the answer the gate would have.
+		if (!isOpenAttemptViolation(error)) throw error;
+		throw new Conflict(QUIZ_IN_PROGRESS);
+	}
 }
 
 export async function getQuiz(
@@ -173,7 +238,7 @@ export async function getQuiz(
 			db,
 			order.map(entry => entry.questionId)
 		),
-		findOpenAttemptId(db, userId, quizId),
+		touchOpenAttempt(db, userId, quizId),
 		findEvaluationMode(db, quiz.evaluationModeId),
 	]);
 	if (!evaluationMode) return null;
@@ -263,11 +328,12 @@ export async function completeQuiz(
 
 		if (!claimed) {
 			// Either the attempt is not this user's, does not exist, or a concurrent
-			// request already completed it. Only the last case is a success, and it
-			// has to stay one so a retry lands on the results page.
+			// request already completed it. Only the last is a success, and it has to
+			// stay one so a retry lands on the results page; the other two answer
+			// alike, so a stranger's id cannot be told apart from a deleted one.
 			const existing = await findAttempt(tx, input.quizAttemptId);
-			if (!existing || existing.userId !== userId || !existing.completedAt) {
-				throw new NotFound("Tentativo non trovato");
+			if (existing?.userId !== userId || !existing.completedAt) {
+				throw new Conflict(ATTEMPT_GONE);
 			}
 			return { attemptId: input.quizAttemptId };
 		}
@@ -311,11 +377,7 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 		if (!attempt || attempt.userId !== userId) return;
 
 		await deleteAttempt(tx, attemptId);
-
-		// A quiz nobody attempted is dead weight: it only exists to be resumed.
-		if (attempt.quizId && (await countAttempts(tx, attempt.quizId)) === 0) {
-			await deleteQuiz(tx, attempt.quizId);
-		}
+		if (attempt.quizId) await deleteOrphanQuizzes(tx, [attempt.quizId]);
 	});
 }
 

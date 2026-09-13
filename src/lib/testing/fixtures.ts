@@ -6,6 +6,7 @@ import {
 	courseMaintainers,
 	courses,
 	departments,
+	evaluationModes,
 	profiles,
 	sectionAccess,
 	sections,
@@ -142,4 +143,26 @@ export async function seedSectionAccessScope(tx: TestTx): Promise<SectionAccessS
 	await tx.insert(sectionAccess).values({ userId: student, sectionId: privateGranted });
 
 	return { student, publicSection, privateGranted, privateDenied };
+}
+
+export type QuizScope = {
+	owner: string;
+	stranger: string;
+	sectionId: string;
+	evaluationModeId: string;
+};
+
+export async function seedQuizScope(tx: TestTx): Promise<QuizScope> {
+	const classId = await createClass(tx);
+	const [mode] = await tx
+		.insert(evaluationModes)
+		.values({ name: `Modalità ${shortId()}` })
+		.returning({ id: evaluationModes.id });
+
+	return {
+		owner: await createUser(tx, "STUDENT"),
+		stranger: await createUser(tx, "STUDENT"),
+		sectionId: await createSection(tx, classId, true),
+		evaluationModeId: mode.id,
+	};
 }

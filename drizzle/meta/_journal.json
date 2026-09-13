@@ -134,6 +134,34 @@
       "when": 1788005923008,
       "tag": "0018_add_attempt_favorite",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789212635146,
+      "tag": "0019_add_attempt_started_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789212644594,
+      "tag": "0020_backfill_attempt_started_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1789325814300,
+      "tag": "0021_dedupe_open_attempts",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1789325822119,
+      "tag": "0022_attempt_last_seen_at",
+      "breakpoints": true
     }
   ]
 }

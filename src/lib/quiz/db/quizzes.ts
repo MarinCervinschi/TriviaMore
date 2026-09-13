@@ -1,7 +1,7 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray, notExists, sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
-import { classes, quizQuestions, quizzes, sections } from "@/db/schema";
+import { classes, quizAttempts, quizQuestions, quizzes, sections } from "@/db/schema";
 import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
 
 import type { QuizMode } from "../types";
@@ -90,7 +90,23 @@ export async function findQuizSectionAndMode(db: DbOrTx, quizId: string) {
 	return quiz;
 }
 
-export async function deleteQuiz(db: DbOrTx, quizId: string) {
-	// quiz_questions cascade on the foreign key.
-	await db.delete(quizzes).where(eq(quizzes.id, quizId));
+/**
+ * Drops the given quizzes that no attempt points at any more — a quiz only exists
+ * to be taken, so one nobody holds is dead weight. `quiz_questions` cascade on the
+ * foreign key.
+ */
+export async function deleteOrphanQuizzes(db: DbOrTx, quizIds: string[]) {
+	if (quizIds.length === 0) return;
+
+	await db.delete(quizzes).where(
+		and(
+			inArray(quizzes.id, quizIds),
+			notExists(
+				db
+					.select({ one: sql`1` })
+					.from(quizAttempts)
+					.where(eq(quizAttempts.quizId, quizzes.id))
+			)
+		)
+	);
 }
