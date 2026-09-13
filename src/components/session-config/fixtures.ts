@@ -1,4 +1,4 @@
-import type { EvaluationMode } from "@/lib/quiz/types";
+import type { EvaluationMode, OpenAttempt } from "@/lib/quiz/types";
 
 // Seeded into ["quiz", "evaluation-modes"] by the session dialog stories. Fixed ids and no randomness:
 // a story that reshuffles is useless for comparing two variants.
@@ -31,4 +31,17 @@ export const EVAL_MODES: EvaluationMode[] = [
 
 export const EVAL_MODES_SEED: [unknown[], unknown][] = [
 	[["quiz", "evaluation-modes"], EVAL_MODES],
+];
+
+export const OPEN_ATTEMPT: OpenAttempt = {
+	attemptId: "attempt-open",
+	quizId: "quiz-open",
+	quizMode: "STUDY",
+	startedAt: "2026-09-11T14:20:00.000Z",
+	sectionName: "Alberi binari di ricerca",
+	className: "Algoritmi e Strutture Dati",
+};
+
+export const OPEN_ATTEMPT_SEED: [unknown[], unknown][] = [
+	[["quiz", "open-attempt"], OPEN_ATTEMPT],
 ];
