@@ -24,9 +24,7 @@ export const Banner: Story = {
 export const Exam: Story = {
 	name: "Il banner per una simulazione",
 	render: () => (
-		<OpenAttemptBanner
-			attempt={{ ...OPEN_ATTEMPT, quizMode: "EXAM_SIMULATION", timeLimit: 60 }}
-		/>
+		<OpenAttemptBanner attempt={{ ...OPEN_ATTEMPT, quizMode: "EXAM_SIMULATION" }} />
 	),
 };
 

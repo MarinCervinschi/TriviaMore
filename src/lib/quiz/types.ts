@@ -105,7 +105,6 @@ export type OpenAttempt = {
 	attemptId: string;
 	quizId: string;
 	quizMode: QuizMode;
-	timeLimit: number | null;
 	startedAt: string;
 	sectionName: string;
 	className: string;
