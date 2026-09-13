@@ -38,6 +38,8 @@ export function UserDashboardSkeleton() {
 			</section>
 
 			<div className="container space-y-8">
+				{/* No slot for the open-attempt banner: its query is not in the loader, so it
+				    cannot have resolved while this skeleton is on screen. */}
 				{/* Quick actions — icon + state */}
 				<div className="grid gap-4 sm:grid-cols-3">
 					{Array.from({ length: 3 }).map((_, i) => (
