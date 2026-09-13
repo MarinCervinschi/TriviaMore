@@ -17,35 +17,38 @@ export function QuizTimer({
 }) {
 	const isUnlimited = timeLimitMinutes === null;
 	const [elapsed, setElapsed] = useState(resumeFromSeconds);
-	const secondsRef = useRef(resumeFromSeconds);
+	const anchorRef = useRef(Date.now() - resumeFromSeconds * 1000);
 	const onTickRef = useRef(onTick);
+	const onTimeUpRef = useRef(onTimeUp);
 
 	useEffect(() => {
 		onTickRef.current = onTick;
-	}, [onTick]);
+		onTimeUpRef.current = onTimeUp;
+	});
 
 	useEffect(() => {
-		secondsRef.current = resumeFromSeconds;
+		anchorRef.current = Date.now() - resumeFromSeconds * 1000;
 		setElapsed(resumeFromSeconds);
 	}, [resumeFromSeconds]);
 
-	// The count lives in a ref so a tick can report it without the report being a
-	// side effect of rendering: only a real second ever reaches `onTick`, which is
-	// what stops a mount from handing the page a zero that overwrites the draft.
+	// Elapsed is read off the wall clock instead of counted in ticks: an interval
+	// that restarts drops its partial second and a hidden tab is throttled to one
+	// tick a minute, so a count drifts below the real duration — which is both what
+	// `timeSpent` records and what the exam countdown enforces. The handlers live in
+	// refs so a new `onTimeUp` identity cannot restart the interval.
 	useEffect(() => {
 		const interval = setInterval(() => {
-			const next = secondsRef.current + 1;
-			secondsRef.current = next;
+			const next = Math.floor((Date.now() - anchorRef.current) / 1000);
 			setElapsed(next);
 			onTickRef.current?.(next);
 
 			if (!isUnlimited && next >= timeLimitMinutes * 60) {
 				clearInterval(interval);
-				onTimeUp();
+				onTimeUpRef.current();
 			}
 		}, 1000);
 		return () => clearInterval(interval);
-	}, [onTimeUp, isUnlimited, timeLimitMinutes]);
+	}, [isUnlimited, timeLimitMinutes]);
 
 	const totalSeconds = isUnlimited
 		? elapsed
