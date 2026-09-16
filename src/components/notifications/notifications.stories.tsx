@@ -30,6 +30,7 @@ const TYPES: Notification["type"][] = [
 	"CONTENT_UPDATED",
 	"NEW_SECTION_ADDED",
 	"MAINTAINER_ASSIGNED",
+	"ACHIEVEMENT_UNLOCKED",
 ];
 
 const BODIES: Record<Notification["type"], { title: string; body: string }> = {
@@ -60,6 +61,10 @@ const BODIES: Record<Notification["type"], { title: string; body: string }> = {
 	MAINTAINER_ASSIGNED: {
 		title: "Sei maintainer",
 		body: "Ora puoi gestire i contenuti di Ingegneria Informatica.",
+	},
+	ACHIEVEMENT_UNLOCKED: {
+		title: "Nuovo traguardo: Esploratore",
+		body: "Completa un quiz in 10 sezioni diverse.",
 	},
 };
 

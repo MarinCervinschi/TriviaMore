@@ -2,6 +2,7 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -171,7 +172,7 @@ export async function handleRequest(input: {
 export async function approveRequest(id: string) {
 	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
 
-	await getDb().transaction(async tx => {
+	const authorId = await getDb().transaction(async tx => {
 		const target = await findRequestOrThrow(tx, id);
 		await assertInScope(tx, scopeCourseIds, target);
 
@@ -235,13 +236,17 @@ export async function approveRequest(id: string) {
 			referenceType: "content_request",
 			link: `/user/requests`,
 		});
+
+		return claimed.userId;
 	});
+
+	evaluateAchievementsInBackground(authorId);
 }
 
 export async function acknowledgeRequest(input: { id: string; admin_note?: string }) {
 	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
 
-	await getDb().transaction(async tx => {
+	const authorId = await getDb().transaction(async tx => {
 		const request = await findRequestOrThrow(tx, input.id);
 		await assertInScope(tx, scopeCourseIds, request);
 
@@ -271,7 +276,11 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 			referenceType: "content_request",
 			link: `/user/requests`,
 		});
+
+		return request.userId;
 	});
+
+	evaluateAchievementsInBackground(authorId);
 }
 
 export async function getFileDownloadUrl(filePath: string): Promise<string> {

@@ -3,6 +3,7 @@ import { and, count, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { questions } from "@/db/schema";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { assertSectionAccess } from "@/lib/auth/checks";
 import { FLASHCARD_QUESTION_TYPE } from "@/lib/catalog/db/questions";
 import { findSectionChain } from "@/lib/catalog/db/sections";
@@ -113,6 +114,8 @@ export async function completeFlashcard(
 		sectionId: session.sectionId,
 		cardsReviewed: input.cardsReviewed,
 	});
+
+	evaluateAchievementsInBackground(userId);
 
 	return { ok: true };
 }
