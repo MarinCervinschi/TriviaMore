@@ -3,6 +3,7 @@ import { ChatSquareIcon } from "@solar-icons/react/linear/chat-square";
 import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
+import { MedalRibbonStarIcon } from "@solar-icons/react/linear/medal-ribbon-star";
 import { PenNewSquareIcon } from "@solar-icons/react/linear/pen-new-square";
 import { RefreshIcon } from "@solar-icons/react/linear/refresh";
 import { StarsIcon } from "@solar-icons/react/linear/stars";
@@ -23,6 +24,7 @@ const typeConfig: Record<Notification["type"], { icon: Icon; color: string }> = 
 	CONTENT_UPDATED: { icon: StarsIcon, color: "text-brand" },
 	NEW_SECTION_ADDED: { icon: ChatSquareIcon, color: "text-brand" },
 	MAINTAINER_ASSIGNED: { icon: DiplomaIcon, color: "text-brand" },
+	ACHIEVEMENT_UNLOCKED: { icon: MedalRibbonStarIcon, color: "text-brand" },
 };
 
 function timeAgo(dateStr: string): string {
