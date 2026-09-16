@@ -299,8 +299,16 @@ function toView(
 	};
 }
 
-/** The whole page in one call: the catalogue and this user's standing against it. */
-export async function getAchievements(userId: string): Promise<AchievementsOverview> {
+/**
+ * The whole page in one call: the catalogue and this user's standing against it.
+ *
+ * `heal: false` makes it a pure read — `pnpm smoke:reads` runs against the live
+ * database and must not award anything on its way past.
+ */
+export async function getAchievements(
+	userId: string,
+	options?: { heal?: boolean }
+): Promise<AchievementsOverview> {
 	const db = getDb();
 	const [catalogue, awards, snapshots] = await Promise.all([
 		findActiveAchievements(db),
@@ -320,7 +328,7 @@ export async function getAchievements(userId: string): Promise<AchievementsOverv
 	// trigger firing, and a fire-and-forget evaluation can be lost. Lazy and scoped,
 	// like the reaper in `startQuiz`. Silent, because a repair is not an event —
 	// to announce a badge added later, run the replay with --notify.
-	if (metrics) {
+	if (metrics && options?.heal !== false) {
 		const pending = evaluate(catalogue, metrics, new Set(awardByKey.keys()));
 		if (pending.length > 0) {
 			const inserted = await insertAwards(
