@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
 import type { UserMetrics } from "../types";
 
@@ -53,7 +54,9 @@ export async function readMetricSnapshots(
 		),
 		breadth as (
 			select a.user_id,
-			       count(distinct a.section_id)::int as distinct_sections,
+			       count(distinct a.section_id) filter (
+			         where s.name is distinct from ${EXAM_SIMULATION_SECTION}
+			       )::int as distinct_sections,
 			       count(distinct s.class_id)::int as distinct_classes,
 			       count(distinct pc.department_id)::int as distinct_departments
 			  from attempt a
@@ -76,7 +79,7 @@ export async function readMetricSnapshots(
 			 group by a.user_id
 		),
 		hard as (
-			select a.user_id, count(*)::int as hard_correct
+			select a.user_id, count(distinct aa.question_id)::int as hard_correct
 			  from quiz.answer_attempts aa
 			  join attempt a on a.id = aa.quiz_attempt_id
 			 where aa.difficulty = 'HARD' and aa.is_correct
@@ -199,7 +202,11 @@ export async function readMetricSnapshots(
 			FLASHCARD_SESSIONS: Number(row.flashcard_sessions ?? 0),
 			BOOKMARKED_THEN_CORRECT: Number(row.bookmarked_then_correct ?? 0),
 			APPROVED_REQUESTS: Number(row.approved_requests ?? 0),
-			SIGNUP_RANK: Number(row.signup_rank ?? 0),
+			// Compared with LTE, so a missing rank is the worst value, not 0 — the best.
+			SIGNUP_RANK:
+				row.signup_rank === null || row.signup_rank === undefined
+					? Number.POSITIVE_INFINITY
+					: Number(row.signup_rank),
 		},
 	}));
 }
