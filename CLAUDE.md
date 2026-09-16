@@ -95,8 +95,10 @@ This caused three near-regressions during the migration; check `pg_policies` bef
 ported from the old code. Auth and Storage stay on supabase-js, and are all `src/lib/supabase/` still
 contains.
 
-Issue #87 holds the plan and the decisions. Every phase of it is closed except #106 (move hosting off
-Vercel to the VPS) and #93, which is future work — browser-direct reads with Realtime.
+Issue #87 holds the plan and the decisions. Every phase of it is closed except #93, which is future
+work — browser-direct reads with Realtime. Hosting is **self-hosted on the VPS** (Coolify behind
+Cloudflare): there is no Vercel and no serverless runtime, so a long-running Node process is what
+the app can rely on.
 
 Automated testing is deliberately deferred until the refactor settles — see #109. The app is **not in
 production**; it runs on `preview` and has no users yet, so a visible regression costs a look, not an
