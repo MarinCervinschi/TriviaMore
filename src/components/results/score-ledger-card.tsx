@@ -69,9 +69,15 @@ export function ScoreLedgerCard({
 							className="bg-success absolute inset-y-0 left-0"
 							style={{ width: `${earnedPct}%` }}
 						/>
+						{/* The divider's colour is inline: `globals.css` sets `border-color`
+						    on `*` outside any layer, so `border-card` never applies. */}
 						<div
-							className="bg-destructive border-card absolute inset-y-0 border-l-2"
-							style={{ left: `${netPct}%`, width: `${earnedPct - netPct}%` }}
+							className="bg-destructive absolute inset-y-0 border-l-2"
+							style={{
+								left: `${netPct}%`,
+								width: `${earnedPct - netPct}%`,
+								borderLeftColor: "hsl(var(--card))",
+							}}
 						/>
 					</div>
 					<div

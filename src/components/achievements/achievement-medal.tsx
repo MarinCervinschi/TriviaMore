@@ -204,7 +204,8 @@ export function AchievementMedal({
 			{numeral && !locked && (
 				<span
 					className={cn(
-						"text-card border-card absolute -right-0.5 -bottom-0.5 inline-flex items-center justify-center rounded-full border-2 font-medium tabular-nums",
+						// A ring: `globals.css` sets `border-color` on `*` outside any layer.
+						"text-card ring-card absolute -right-0.5 -bottom-0.5 inline-flex items-center justify-center rounded-full font-medium tabular-nums ring-2",
 						accentClasses.numeral,
 						dimensions.numeral
 					)}
