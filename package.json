@@ -31,7 +31,9 @@
 		"mcp:questions": "tsx scripts/mcp/questions-server.ts",
 		"smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
 		"smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts",
-		"achievements:replay": "infisical run --recursive -- tsx scripts/achievements/replay.ts"
+		"achievements:replay": "infisical run --recursive -- tsx scripts/achievements/replay.ts",
+		"achievements:backfill": "infisical run --recursive -- tsx scripts/achievements/backfill-rollups.ts",
+		"achievements:reconcile": "infisical run --recursive -- tsx scripts/achievements/reconcile.ts"
 	},
 	"dependencies": {
 		"@fontsource/dm-mono": "^5.3.0",
