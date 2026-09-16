@@ -1,0 +1,1 @@
+ALTER TABLE "achievements" ADD COLUMN "shape" text DEFAULT 'seal' NOT NULL;
