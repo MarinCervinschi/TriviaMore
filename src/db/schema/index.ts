@@ -9,6 +9,10 @@ export * from "./entities/public/bookmarks";
 export * from "./entities/public/user-classes";
 export * from "./entities/public/user-recent-classes";
 export * from "./entities/public/user-changelog-reads";
+export * from "./entities/public/user-stats";
+export * from "./entities/public/user-section-stats";
+export * from "./entities/public/user-question-stats";
+export * from "./entities/public/user-day-activity";
 export * from "./entities/public/relations";
 
 export * from "./entities/catalog/enums";
