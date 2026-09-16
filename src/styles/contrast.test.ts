@@ -17,7 +17,7 @@ function parseTokens(block: string): Record<string, Hsl> {
 	return out;
 }
 
-function relativeLuminance({ h, s, l }: Hsl): number {
+function toRgb({ h, s, l }: Hsl): [number, number, number] {
 	const c = (1 - Math.abs(2 * l - 1)) * s;
 	const hp = h / 60;
 	const x = c * (1 - Math.abs((hp % 2) - 1));
@@ -34,11 +34,28 @@ function relativeLuminance({ h, s, l }: Hsl): number {
 							? [x, 0, c]
 							: [c, 0, x];
 	const min = l - c / 2;
-	const lin = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-	return 0.2126 * lin(r + min) + 0.7152 * lin(g + min) + 0.0722 * lin(b + min);
+	return [r + min, g + min, b + min];
 }
 
-function ratio(a: Hsl, b: Hsl): number {
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+	const lin = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+	return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+/** What the browser paints when `fg` is drawn at `alpha` over `base`. */
+function composite(
+	fg: [number, number, number],
+	base: [number, number, number],
+	alpha: number
+): [number, number, number] {
+	return [
+		fg[0] * alpha + base[0] * (1 - alpha),
+		fg[1] * alpha + base[1] * (1 - alpha),
+		fg[2] * alpha + base[2] * (1 - alpha),
+	];
+}
+
+function ratio(a: [number, number, number], b: [number, number, number]): number {
 	const [la, lb] = [relativeLuminance(a), relativeLuminance(b)];
 	return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
@@ -107,6 +124,31 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["border", "card", 1.2, "a card's own border"],
 ];
 
+/**
+ * Pairs whose background is a translucent token composited over a surface. A locked
+ * medal is the case that needs this: both halves are `muted-foreground`, at two
+ * different alphas, so neither is a token pair the table above can express — and a
+ * fresh account sees the locked state on nearly every medal.
+ */
+const COMPOSITE_PAIRS: [
+	fg: string,
+	bgFg: string,
+	bgAlpha: number,
+	bgBase: string,
+	floor: number,
+	what: string,
+][] = [
+	["muted-foreground", "muted-foreground", 0.25, "card", 3, "a locked medal's glyph"],
+	[
+		"muted-foreground",
+		"muted-foreground",
+		0.25,
+		"background",
+		3,
+		"a locked medal's glyph",
+	],
+];
+
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
 const rootAt = css.indexOf(":root {");
 const darkAt = css.indexOf(".dark {");
@@ -132,8 +174,28 @@ describe("colour tokens clear WCAG 2.2 AA", () => {
 			it.each(PAIRS)("%s on %s clears %s:1 — %s", (fg, bg, floor) => {
 				expect(tokens[fg], `--${fg} is missing — was it renamed?`).toBeDefined();
 				expect(tokens[bg], `--${bg} is missing — was it renamed?`).toBeDefined();
-				expect(ratio(tokens[fg], tokens[bg])).toBeGreaterThanOrEqual(floor);
+				expect(ratio(toRgb(tokens[fg]), toRgb(tokens[bg]))).toBeGreaterThanOrEqual(
+					floor
+				);
 			});
+
+			it.each(COMPOSITE_PAIRS)(
+				"%s on %s at %s over %s clears %s:1 — %s",
+				(fg, bgFg, bgAlpha, bgBase, floor) => {
+					for (const name of [fg, bgFg, bgBase]) {
+						expect(
+							tokens[name],
+							`--${name} is missing — was it renamed?`
+						).toBeDefined();
+					}
+					const backdrop = composite(
+						toRgb(tokens[bgFg]),
+						toRgb(tokens[bgBase]),
+						bgAlpha
+					);
+					expect(ratio(toRgb(tokens[fg]), backdrop)).toBeGreaterThanOrEqual(floor);
+				}
+			);
 		});
 	}
 });

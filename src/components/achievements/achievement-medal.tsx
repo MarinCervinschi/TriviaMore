@@ -194,7 +194,8 @@ export function AchievementMedal({
 			<span
 				className={cn(
 					"absolute inset-0 grid place-items-center",
-					locked ? "text-muted-foreground/70" : "text-card"
+					// Solid: at /70 the glyph measured 2.02:1 on its own silhouette, under 3:1.
+					locked ? "text-muted-foreground" : "text-card"
 				)}
 			>
 				<Glyph className={dimensions.glyph} />
