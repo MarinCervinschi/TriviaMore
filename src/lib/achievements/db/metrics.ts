@@ -20,14 +20,25 @@ export async function readMetricSnapshots(
 ): Promise<UserMetrics[]> {
 	const scoped = userId ? sql` where p.id = ${userId}` : sql``;
 
+	// Ranking every profile sorts the whole table on the quiz-completion path.
+	const signup = userId
+		? sql`select t.user_id,
+			       (select count(*)
+			          from public.profiles earlier
+			         where (earlier.created_at, earlier.id) <= (p.created_at, p.id)
+			       )::int as signup_rank
+			  from target t
+			  join public.profiles p on p.id = t.user_id`
+		: sql`select p.id as user_id,
+			       rank() over (order by p.created_at, p.id)::int as signup_rank
+			  from public.profiles p`;
+
 	const result = await db.execute<Record<string, string | number | null>>(sql`
 		with target as (
 			select p.id as user_id from public.profiles p${scoped}
 		),
 		signup as (
-			select p.id as user_id,
-			       rank() over (order by p.created_at, p.id)::int as signup_rank
-			  from public.profiles p
+			${signup}
 		),
 		att as (
 			select qa.id, qa.user_id, qa.section_id, qa.score, qa.quiz_mode,
