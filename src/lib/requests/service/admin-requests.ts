@@ -2,6 +2,7 @@ import { and, count, desc, eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
+import { applyApprovedRequest } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
@@ -237,6 +238,8 @@ export async function approveRequest(id: string) {
 			link: `/user/requests`,
 		});
 
+		await applyApprovedRequest(tx, claimed.userId);
+
 		return claimed.userId;
 	});
 
@@ -276,6 +279,8 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 			referenceType: "content_request",
 			link: `/user/requests`,
 		});
+
+		await applyApprovedRequest(tx, request.userId);
 
 		return request.userId;
 	});
