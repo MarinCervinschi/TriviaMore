@@ -331,11 +331,19 @@ export async function getAchievements(userId: string): Promise<AchievementsOverv
 		toView(entry, awardByKey.get(entry.key), metrics)
 	);
 
+	// Keyed, not by runs of adjacent rows: a badge inserted from the console defaults
+	// to `position` 0 and sorts away from its category, which would otherwise split it
+	// into two tabs with the same name — and the second one is unreachable.
 	const categories: AchievementCategory[] = [];
+	const byCategory = new Map<string, AchievementCategory>();
 	for (const view of views) {
-		const last = categories.at(-1);
-		if (last?.category === view.category) last.achievements.push(view);
-		else categories.push({ category: view.category, achievements: [view] });
+		const group = byCategory.get(view.category);
+		if (group) group.achievements.push(view);
+		else {
+			const created = { category: view.category, achievements: [view] };
+			byCategory.set(view.category, created);
+			categories.push(created);
+		}
 	}
 
 	const nextUp = views
