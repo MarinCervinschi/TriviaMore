@@ -6,11 +6,14 @@ import { log } from "@/lib/logging/server";
 import { createNotification } from "@/lib/notifications/service";
 import { Invalid } from "@/lib/server/errors";
 
+import { backfillRollups } from "./db/backfill";
 import { readMetricSnapshots } from "./db/metrics";
+import { recomputeMetricSnapshots } from "./db/recompute";
 import { evaluate, notifiableUnlocks, progressOf } from "./rules";
 import type {
 	Achievement,
 	AchievementCategory,
+	AchievementMetric,
 	AchievementUnlock,
 	AchievementView,
 	AchievementsOverview,
@@ -272,6 +275,63 @@ export async function replayAchievements(options?: {
 	});
 
 	return { users: snapshots.length, awarded };
+}
+
+export type MetricDrift = {
+	userId: string;
+	metric: AchievementMetric;
+	stored: number;
+	computed: number;
+};
+
+/** Scores are doubles, so the improvement metric needs a tolerance, not equality. */
+const DRIFT_EPSILON = 1e-9;
+
+/**
+ * Compares the rollups against the history they are derived from. Read-only by
+ * default — a repair is a decision, not a side effect of looking.
+ *
+ * Drift is expected in two cases and is not a bug: a question or a section
+ * deleted from the catalogue leaves its counter behind, and a rollup written by
+ * a release older than the rule it feeds will lag until the next backfill.
+ */
+export async function reconcileAchievementMetrics(options?: {
+	repair?: boolean;
+}): Promise<{ users: number; drift: MetricDrift[] }> {
+	const db = getDb();
+	const [stored, computed] = await Promise.all([
+		readMetricSnapshots(db),
+		recomputeMetricSnapshots(db),
+	]);
+
+	const computedByUser = new Map(computed.map(row => [row.userId, row.metrics]));
+	const drift: MetricDrift[] = [];
+
+	for (const row of stored) {
+		const truth = computedByUser.get(row.userId);
+		if (!truth) continue;
+
+		for (const [metric, value] of Object.entries(row.metrics) as [
+			AchievementMetric,
+			number,
+		][]) {
+			const expected = truth[metric];
+			if (Math.abs(value - expected) > DRIFT_EPSILON) {
+				drift.push({ userId: row.userId, metric, stored: value, computed: expected });
+			}
+		}
+	}
+
+	if (drift.length > 0) {
+		log.warn("Achievement rollups drifted {Users} {Metrics}", {
+			Users: new Set(drift.map(entry => entry.userId)).size,
+			Metrics: drift.length,
+		});
+	}
+
+	if (options?.repair) await backfillRollups(db);
+
+	return { users: stored.length, drift };
 }
 
 const PIN_LIMIT = 3;
