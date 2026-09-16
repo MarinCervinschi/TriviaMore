@@ -56,6 +56,7 @@ type Accent = {
 	ink: string;
 	fill: string;
 	numeral: string;
+	stroke: string;
 };
 
 // The glyph is `text-card`, never a white literal: white measures 2.83 on
@@ -65,32 +66,43 @@ const ACCENTS: Record<string, Accent> = {
 		ink: "text-chart-1-ink",
 		fill: "text-chart-1",
 		numeral: "bg-chart-1-ink",
+		stroke: "stroke-chart-1-ink",
 	},
 	"chart-2": {
 		ink: "text-chart-2-ink",
 		fill: "text-chart-2",
 		numeral: "bg-chart-2-ink",
+		stroke: "stroke-chart-2-ink",
 	},
 	"chart-3": {
 		ink: "text-chart-3-ink",
 		fill: "text-chart-3",
 		numeral: "bg-chart-3-ink",
+		stroke: "stroke-chart-3-ink",
 	},
 	"chart-4": {
 		ink: "text-chart-4-ink",
 		fill: "text-chart-4",
 		numeral: "bg-chart-4-ink",
+		stroke: "stroke-chart-4-ink",
 	},
 	"chart-5": {
 		ink: "text-chart-5-ink",
 		fill: "text-chart-5",
 		numeral: "bg-chart-5-ink",
+		stroke: "stroke-chart-5-ink",
 	},
-	brand: { ink: "text-brand", fill: "text-brand", numeral: "bg-brand" },
+	brand: {
+		ink: "text-brand",
+		fill: "text-brand",
+		numeral: "bg-brand",
+		stroke: "stroke-brand",
+	},
 	muted: {
 		ink: "text-muted-foreground",
 		fill: "text-muted-foreground",
 		numeral: "bg-muted-foreground",
+		stroke: "stroke-muted-foreground",
 	},
 };
 
@@ -108,6 +120,10 @@ function achievementAccent(accent: string): Accent {
 
 export function achievementInk(accent: string): string {
 	return achievementAccent(accent).ink;
+}
+
+export function achievementStroke(accent: string): string {
+	return achievementAccent(accent).stroke;
 }
 
 const TIER_NUMERAL: Record<number, string> = { 2: "II", 3: "III" };
