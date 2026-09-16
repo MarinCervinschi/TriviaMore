@@ -9,10 +9,12 @@ import { departmentAdmins } from "../internal/department-admins"
 import { legalAcceptances } from "../internal/legal-acceptances"
 import { sectionAccess } from "../internal/section-access"
 import { quizAttempts } from "../quiz/quiz-attempts"
+import { achievements } from "./achievements"
 import { bookmarks } from "./bookmarks"
 import { notifications } from "./notifications"
 import { profiles } from "./profiles"
 import { userChangelogReads } from "./user-changelog-reads"
+import { userAchievements } from "./user-achievements"
 import { userClasses } from "./user-classes"
 import { userRecentClasses } from "./user-recent-classes"
 
@@ -25,6 +27,7 @@ export const profilesRelations = relations(profiles, ({ many }) => ({
   recentClasses: many(userRecentClasses),
   changelogReads: many(userChangelogReads),
   notifications: many(notifications),
+  achievements: many(userAchievements),
   legalAcceptances: many(legalAcceptances),
   quizAttempts: many(quizAttempts),
   contentRequests: many(contentRequests, {
@@ -95,3 +98,18 @@ export const userChangelogReadsRelations = relations(
     }),
   }),
 )
+
+export const achievementsRelations = relations(achievements, ({ many }) => ({
+  awards: many(userAchievements),
+}))
+
+export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+  user: one(profiles, {
+    fields: [userAchievements.userId],
+    references: [profiles.id],
+  }),
+  achievement: one(achievements, {
+    fields: [userAchievements.achievementKey],
+    references: [achievements.key],
+  }),
+}))

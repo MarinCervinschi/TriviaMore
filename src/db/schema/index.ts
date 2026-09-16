@@ -3,6 +3,8 @@ export * from "./common";
 export * from "./entities/public/enums";
 export * from "./entities/public/profiles";
 export * from "./entities/public/notifications";
+export * from "./entities/public/achievements";
+export * from "./entities/public/user-achievements";
 export * from "./entities/public/bookmarks";
 export * from "./entities/public/user-classes";
 export * from "./entities/public/user-recent-classes";
