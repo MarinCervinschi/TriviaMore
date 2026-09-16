@@ -20,11 +20,12 @@ export function progressOf(
 ): AchievementProgress | null {
 	if (rule.comparator === "LTE" || rule.threshold <= 1) return null;
 
-	const value = snapshot[rule.metric];
+	// MAX_SECTION_IMPROVEMENT is a delta and goes negative: "-4 di 6" reads as a bug.
+	const value = Math.max(0, snapshot[rule.metric]);
 	return {
 		value,
 		target: rule.threshold,
-		ratio: Math.min(1, Math.max(0, value / rule.threshold)),
+		ratio: Math.min(1, value / rule.threshold),
 	};
 }
 

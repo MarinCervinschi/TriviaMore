@@ -68,6 +68,15 @@ describe("progressOf", () => {
 		expect(progress?.ratio).toBe(1);
 	});
 
+	it('floors a negative metric at zero, so no tile reads "-4 di 6"', () => {
+		expect(
+			progressOf(
+				rule({ metric: "MAX_SECTION_IMPROVEMENT", threshold: 6 }),
+				snapshot({ MAX_SECTION_IMPROVEMENT: -4 })
+			)
+		).toEqual({ value: 0, target: 6, ratio: 0 });
+	});
+
 	it("has no bar for a binary rule", () => {
 		expect(
 			progressOf(rule({ metric: "PERFECT_QUIZZES", threshold: 1 }), snapshot())
