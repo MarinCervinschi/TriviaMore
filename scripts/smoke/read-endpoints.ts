@@ -207,7 +207,9 @@ if (userId) {
 }
 
 if (userId) {
-	await check("achievements.getAchievements", () => getAchievements(userId));
+	await check("achievements.getAchievements", () =>
+		getAchievements(userId, { heal: false })
+	);
 	// Unscoped too: the replay runs it that way over every user at once.
 	await check("achievements.readMetricSnapshots", () => readMetricSnapshots(db));
 	await check("user.getUserProfile", () => getUserProfile(userId));
