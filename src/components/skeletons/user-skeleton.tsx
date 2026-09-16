@@ -454,3 +454,68 @@ export function SettingsSkeleton() {
 		</SkeletonRoot>
 	);
 }
+
+/** Mirrors `/user/achievements`: breadcrumb, the two summary panels, tabs, one group. */
+export function AchievementsSkeleton() {
+	return (
+		<SkeletonRoot
+			label="Caricamento traguardi…"
+			className="container space-y-6 py-6 pb-10"
+		>
+			<Skeleton className="h-9 w-56 rounded-xl" />
+
+			<div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+				{Array.from({ length: 2 }).map((_, i) => (
+					<div key={i} className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="space-y-1.5 px-3.5 py-2.5">
+							<Skeleton className="h-4 w-36" />
+							<Skeleton className="h-3 w-44" />
+						</div>
+						<div className="bg-card border-border/50 rounded-xl border p-5">
+							<div className="flex items-center gap-6">
+								<Skeleton className="h-[93px] w-[150px] shrink-0 rounded-xl" />
+								<div className="min-w-0 flex-1 space-y-3">
+									{Array.from({ length: 3 }).map((_, row) => (
+										<Skeleton key={row} className="h-4 w-full" />
+									))}
+								</div>
+							</div>
+						</div>
+						<div className="flex items-center justify-between px-3.5 py-2.5">
+							<div className="flex items-center gap-2">
+								<Skeleton className="size-10 rounded-full" />
+								<Skeleton className="size-10 rounded-full" />
+								<Skeleton className="size-10 rounded-full" />
+							</div>
+							<Skeleton className="h-8 w-20 rounded-lg" />
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div className="space-y-3">
+				<div className="flex gap-9 pb-2.5">
+					{Array.from({ length: 5 }).map((_, i) => (
+						<Skeleton key={i} className="h-5 w-24 shrink-0 rounded-md" />
+					))}
+				</div>
+				<div className="flex justify-end">
+					<Skeleton className="h-9 w-32 rounded-xl" />
+				</div>
+			</div>
+
+			<div className="space-y-4">
+				<Skeleton className="h-4 w-56" />
+				<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+					{Array.from({ length: 10 }).map((_, i) => (
+						<div key={i} className="flex flex-col items-center gap-2 px-2 py-4">
+							<Skeleton className="size-24 rounded-full" />
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-3 w-16" />
+						</div>
+					))}
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}
