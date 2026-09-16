@@ -106,20 +106,10 @@ incident.
 
 ### Derived state
 
-The achievement metrics are **rollups, not a recomputation**. Four tables — `user_stats`,
-`user_section_stats`, `user_question_stats`, `user_day_activity` — plus `profiles.signup_rank` are
-written incrementally by `src/lib/achievements/db/rollups.ts`, **inside the transaction that
-produced the event**; a counter that moves after the commit is a counter that can silently fail to
-move. `readMetricSnapshots` serves every read from them, so cost no longer grows with how long a
-student has been studying.
-
-The history stays authoritative. `recomputeMetricSnapshots` derives the same measures from
-`quiz_attempts` / `answer_attempts`, `pnpm achievements:backfill` rebuilds the rollups from it
-(idempotent — every statement is an upsert), and `pnpm achievements:reconcile` proves the two agree,
-read-only unless given `--repair`. **A derived value you cannot rebuild is a corrupt value waiting
-to be found**, so any new metric needs all three: the incremental write, the recompute, and a row in
-`rollups.itest.ts`. Thresholds live once, in `src/lib/achievements/constants.ts`, because the
-incremental path and the recompute must not be able to disagree.
+The achievement metrics are **rollups, not a recomputation**: four tables written incrementally
+inside the transaction that produced the event, with the raw history kept as the authority that
+proves them right. **For anything touching traguardi — a new badge, a new metric, the rollup tables,
+or the backfill/reconcile/replay runbook — use the `achievements` skill.**
 
 ### Roles
 
