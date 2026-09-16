@@ -19,8 +19,8 @@ const TIER_NAME: Record<number, string> = { 1: "I", 2: "II", 3: "III" };
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
 	return (
 		<div className="flex items-baseline justify-between gap-3 py-1.5">
-			<span className="text-muted-foreground text-sm">{label}</span>
-			<span className="truncate text-sm font-semibold">{children}</span>
+			<dt className="text-muted-foreground text-sm">{label}</dt>
+			<dd className="truncate text-sm font-semibold">{children}</dd>
 		</div>
 	);
 }
