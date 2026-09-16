@@ -241,17 +241,26 @@ export async function replayAchievements(options?: {
 		return { users: snapshots.length, awarded: pending.length };
 	}
 
+	const byUser = new Map<string, AchievementUnlock[]>();
+	const unlockByRow = new Map(
+		pending.map(row => [`${row.userId}\u0000${row.unlock.key}`, row.unlock])
+	);
+
 	let awarded = 0;
 	for (let index = 0; index < pending.length; index += AWARD_CHUNK) {
 		const inserted = await insertAwards(db, pending.slice(index, index + AWARD_CHUNK));
 		awarded += inserted.length;
+
+		// From the rows the insert created, never from `pending`: a live evaluation
+		// running alongside a long replay already awarded — and announced — some of
+		// these, and `onConflictDoNothing` is what tells the two apart.
+		for (const row of inserted) {
+			const unlock = unlockByRow.get(`${row.userId}\u0000${row.achievementKey}`);
+			if (unlock) byUser.set(row.userId, [...(byUser.get(row.userId) ?? []), unlock]);
+		}
 	}
 
 	if (options?.notify) {
-		const byUser = new Map<string, AchievementUnlock[]>();
-		for (const row of pending) {
-			byUser.set(row.userId, [...(byUser.get(row.userId) ?? []), row.unlock]);
-		}
 		for (const [userId, unlocks] of byUser) {
 			await notifyUnlocks(userId, unlocks, catalogue);
 		}
