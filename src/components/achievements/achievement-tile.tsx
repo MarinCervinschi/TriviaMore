@@ -3,7 +3,7 @@ import type { AchievementView } from "@/lib/achievements/types";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 
-import { AchievementMedal } from "./achievement-medal";
+import { AchievementMedal, achievementStroke } from "./achievement-medal";
 
 // Precomputed, as `ScoreRing` and `TickArc` are: trigonometry at render breaks
 // hydration. The box is reserved on every tile so the grid never jumps.
@@ -28,18 +28,6 @@ const CRADLE = [
 	[90.0, 50.0, 97.0, 50.0],
 ] as const;
 
-// Written out: Tailwind scans source text, so a class built by string surgery
-// never reaches the stylesheet.
-const CRADLE_STROKE: Record<string, string> = {
-	"chart-1": "stroke-chart-1-ink",
-	"chart-2": "stroke-chart-2-ink",
-	"chart-3": "stroke-chart-3-ink",
-	"chart-4": "stroke-chart-4-ink",
-	"chart-5": "stroke-chart-5-ink",
-	brand: "stroke-brand",
-	muted: "stroke-muted-foreground",
-};
-
 /** One achievement, on the page rather than in a card: the medal is the object. */
 export function AchievementTile({
 	achievement,
@@ -51,7 +39,7 @@ export function AchievementTile({
 	const locked = achievement.awardedAt === null;
 	const { progress } = achievement;
 	const filled = progress ? Math.round(progress.ratio * CRADLE.length) : 0;
-	const stroke = CRADLE_STROKE[achievement.accent] ?? "stroke-brand";
+	const stroke = achievementStroke(achievement.accent);
 
 	return (
 		<button
