@@ -3,24 +3,39 @@ import { sql } from "drizzle-orm";
 import type { DbOrTx } from "@/db";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
+import {
+	ACTIVE_WEEK_MIN_DAYS,
+	ACTIVITY_ZONE,
+	EXAM_MIN_ANSWERS,
+	EXAM_PASS_SCORE,
+	IMPROVEMENT_MIN_RUNS,
+	PERFECT_MIN_ANSWERS,
+	PERFECT_SCORE,
+} from "../constants";
 import type { UserMetrics } from "../types";
+import { toUserMetrics } from "./metrics";
 
 /**
- * The one query the engine runs: every metric, one row per user — scoped for a
- * live unlock, unscoped for a replay. Adding a badge never adds a query.
+ * Every metric computed from the raw history, which is the only authoritative
+ * source. This is no longer what a read or an unlock runs — `readMetricSnapshots`
+ * serves those from the rollups — but it is what proves the rollups right, so it
+ * stays in lockstep with them and with the thresholds in `../constants`.
+ *
+ * Cost is proportional to the user's entire history, which is exactly why it was
+ * demoted: run it from `pnpm achievements:reconcile` or a backfill, not on a
+ * request path.
  *
  * A day is Europe/Rome throughout, while the analytics page groups in UTC and the
- * rhythm card in the viewer's zone; a streak here can differ from one shown there.
- * And RLS filters nothing on this connection: `target` is what keeps one user's
- * attempts out of another's totals.
+ * rhythm card in the viewer's zone. And RLS filters nothing on this connection:
+ * `target` is what keeps one user's attempts out of another's totals.
  */
-export async function readMetricSnapshots(
+export async function recomputeMetricSnapshots(
 	db: DbOrTx,
 	userId?: string
 ): Promise<UserMetrics[]> {
 	const scoped = userId ? sql` where p.id = ${userId}` : sql``;
 
-	// Ranking every profile sorts the whole table on the quiz-completion path.
+	// The stored rank is what this checks, so it is recomputed rather than read.
 	const signup = userId
 		? sql`select t.user_id,
 			       (select count(*)
@@ -80,11 +95,11 @@ export async function readMetricSnapshots(
 			       count(*)::int as quizzes_completed,
 			       sum(a.time_spent)::bigint as total_time_ms,
 			       count(*) filter (
-			         where a.score >= 33 and a.answers >= 10
+			         where a.score >= ${PERFECT_SCORE} and a.answers >= ${PERFECT_MIN_ANSWERS}
 			       )::int as perfect_quizzes,
 			       count(*) filter (
 			         where a.quiz_mode = 'EXAM_SIMULATION'
-			           and a.score >= 27 and a.answers >= 15
+			           and a.score >= ${EXAM_PASS_SCORE} and a.answers >= ${EXAM_MIN_ANSWERS}
 			       )::int as exam_sims_passed
 			  from attempt a
 			 group by a.user_id
@@ -109,7 +124,7 @@ export async function readMetricSnapshots(
 			select user_id,
 			       max(last_score - first_score)::float8 as max_section_improvement
 			  from section_runs
-			 where runs >= 3
+			 where runs >= ${IMPROVEMENT_MIN_RUNS}
 			 group by user_id
 		),
 		flash as (
@@ -136,10 +151,10 @@ export async function readMetricSnapshots(
 			 group by cr.user_id
 		),
 		days as (
-			select a.user_id, (a.completed_at at time zone 'Europe/Rome')::date as day
+			select a.user_id, (a.completed_at at time zone ${ACTIVITY_ZONE})::date as day
 			  from attempt a
 			 union
-			select fa.user_id, (fa.completed_at at time zone 'Europe/Rome')::date
+			select fa.user_id, (fa.completed_at at time zone ${ACTIVITY_ZONE})::date
 			  from quiz.flashcard_attempts fa
 			  join target t on t.user_id = fa.user_id
 		),
@@ -164,7 +179,7 @@ export async function readMetricSnapshots(
 			    select user_id, date_trunc('week', day) as wk, count(*) as n
 			      from days group by user_id, date_trunc('week', day)
 			  ) w
-			 where w.n >= 3
+			 where w.n >= ${ACTIVE_WEEK_MIN_DAYS}
 			 group by user_id
 		)
 		select t.user_id,
@@ -196,28 +211,5 @@ export async function readMetricSnapshots(
 		  join signup sg on sg.user_id = t.user_id
 	`);
 
-	return result.rows.map(row => ({
-		userId: String(row.user_id),
-		metrics: {
-			QUIZZES_COMPLETED: Number(row.quizzes_completed ?? 0),
-			DISTINCT_SECTIONS: Number(row.distinct_sections ?? 0),
-			DISTINCT_CLASSES: Number(row.distinct_classes ?? 0),
-			DISTINCT_DEPARTMENTS: Number(row.distinct_departments ?? 0),
-			PERFECT_QUIZZES: Number(row.perfect_quizzes ?? 0),
-			HARD_CORRECT: Number(row.hard_correct ?? 0),
-			EXAM_SIMS_PASSED: Number(row.exam_sims_passed ?? 0),
-			MAX_SECTION_IMPROVEMENT: Number(row.max_section_improvement ?? 0),
-			ACTIVE_WEEKS: Number(row.active_weeks ?? 0),
-			BEST_DAY_STREAK: Number(row.best_day_streak ?? 0),
-			TOTAL_TIME_MS: Number(row.total_time_ms ?? 0),
-			FLASHCARD_SESSIONS: Number(row.flashcard_sessions ?? 0),
-			BOOKMARKED_THEN_CORRECT: Number(row.bookmarked_then_correct ?? 0),
-			APPROVED_REQUESTS: Number(row.approved_requests ?? 0),
-			// Compared with LTE, so a missing rank is the worst value, not 0 — the best.
-			SIGNUP_RANK:
-				row.signup_rank === null || row.signup_rank === undefined
-					? Number.POSITIVE_INFINITY
-					: Number(row.signup_rank),
-		},
-	}));
+	return result.rows.map(toUserMetrics);
 }
