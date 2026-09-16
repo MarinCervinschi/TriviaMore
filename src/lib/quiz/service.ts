@@ -3,6 +3,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { evaluationModes, questions } from "@/db/schema";
+import { applyQuizActivity } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsSafely } from "@/lib/achievements/service";
 import type { UnlockedAchievement } from "@/lib/achievements/types";
 import { assertSectionAccess } from "@/lib/auth/checks";
@@ -367,6 +368,17 @@ export async function completeQuiz(
 			score: graded.score,
 			sectionId: quiz.sectionId,
 			quizMode: quiz.quizMode,
+		});
+
+		// In the transaction, not after it: a rollup that can fail independently of
+		// the attempt it describes is drift waiting to happen.
+		await applyQuizActivity(tx, {
+			userId,
+			sectionId: quiz.sectionId,
+			quizMode: quiz.quizMode,
+			score: graded.score,
+			timeSpentMs: input.timeSpent ?? 0,
+			answers: graded.answers,
 		});
 
 		return { attemptId: input.quizAttemptId };
