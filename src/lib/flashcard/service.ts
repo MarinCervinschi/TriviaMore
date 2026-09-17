@@ -3,6 +3,8 @@ import { and, count, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { questions } from "@/db/schema";
+import { applyFlashcardActivity } from "@/lib/achievements/db/rollups";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { assertSectionAccess } from "@/lib/auth/checks";
 import { FLASHCARD_QUESTION_TYPE } from "@/lib/catalog/db/questions";
 import { findSectionChain } from "@/lib/catalog/db/sections";
@@ -107,12 +109,17 @@ export async function completeFlashcard(
 	const db = getDb();
 	await assertSectionAccess(db, userId, session.sectionId);
 
-	await insertFlashcardAttempt(db, {
-		userId,
-		sessionId: input.sessionId,
-		sectionId: session.sectionId,
-		cardsReviewed: input.cardsReviewed,
+	await db.transaction(async tx => {
+		await insertFlashcardAttempt(tx, {
+			userId,
+			sessionId: input.sessionId,
+			sectionId: session.sectionId,
+			cardsReviewed: input.cardsReviewed,
+		});
+		await applyFlashcardActivity(tx, userId);
 	});
+
+	evaluateAchievementsInBackground(userId);
 
 	return { ok: true };
 }

@@ -3,6 +3,9 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { evaluationModes, questions } from "@/db/schema";
+import { applyQuizActivity } from "@/lib/achievements/db/rollups";
+import { evaluateAchievementsSafely } from "@/lib/achievements/service";
+import type { UnlockedAchievement } from "@/lib/achievements/types";
 import { assertSectionAccess } from "@/lib/auth/checks";
 import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
@@ -318,8 +321,8 @@ function gradeAttempt(
 export async function completeQuiz(
 	userId: string,
 	input: CompleteQuizInput
-): Promise<{ attemptId: string }> {
-	return getDb().transaction(async tx => {
+): Promise<{ attemptId: string; unlocked: UnlockedAchievement[] }> {
+	const result = await getDb().transaction(async tx => {
 		const claimed = await claimAttempt(tx, {
 			attemptId: input.quizAttemptId,
 			userId,
@@ -367,8 +370,25 @@ export async function completeQuiz(
 			quizMode: quiz.quizMode,
 		});
 
+		// In the transaction, not after it: a rollup that can fail independently of
+		// the attempt it describes is drift waiting to happen.
+		await applyQuizActivity(tx, {
+			userId,
+			sectionId: quiz.sectionId,
+			quizMode: quiz.quizMode,
+			score: graded.score,
+			timeSpentMs: input.timeSpent ?? 0,
+			answers: graded.answers,
+		});
+
 		return { attemptId: input.quizAttemptId };
 	});
+
+	// Awaited, not fired and forgotten: the unlock is announced in this response.
+	// It runs after the commit and cannot throw, so the quiz is never at risk.
+	const unlocked = await evaluateAchievementsSafely(userId);
+
+	return { ...result, unlocked };
 }
 
 export async function cancelQuiz(userId: string, attemptId: string): Promise<void> {

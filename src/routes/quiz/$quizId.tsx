@@ -163,7 +163,7 @@ function QuizPage() {
 		setIsCompleting(true);
 
 		try {
-			const { attemptId } = await completeQuizFn({
+			const { attemptId, unlocked } = await completeQuizFn({
 				data: {
 					quizAttemptId: quiz.attemptId,
 					answers: userAnswers.map(ua => ({
@@ -177,6 +177,17 @@ function QuizPage() {
 			// Invalidate user data caches so dashboard shows updated stats
 			queryClient.invalidateQueries({ queryKey: ["user"] });
 			queryClient.invalidateQueries({ queryKey: ["quiz", "open-attempt"] });
+
+			if (unlocked.length > 0) {
+				queryClient.invalidateQueries({ queryKey: ["achievements"] });
+				const first = unlocked[0]!;
+				toast.success(
+					unlocked.length === 1
+						? `Nuovo traguardo: ${first.name}`
+						: `${unlocked.length} nuovi traguardi`,
+					{ description: unlocked.length === 1 ? first.description : undefined }
+				);
+			}
 			navigate({
 				to: "/quiz/results/$attemptId",
 				params: { attemptId },
