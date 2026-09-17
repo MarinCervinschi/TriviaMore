@@ -118,10 +118,30 @@ On a local database, always prefer dropping and rebuilding over faking.
 
 ## Connection
 
-`DATABASE_URL` must be set. The `pnpm db:*` scripts wrap `infisical run`, which supplies it; running
-`drizzle-kit` directly needs it in the environment. It is deliberately separate from
-`SUPABASE_DB_URL`, which belongs to the Supabase CLI: on the VPS the runtime URL points at
-`supabase-db:5432` on the Docker network while the CLI needs the public host.
+`drizzle.config.ts` reads **`SUPABASE_DB_URL ?? DATABASE_URL`**, so `SUPABASE_DB_URL` is the primary
+name for migrations — not a Supabase-CLI-only variable. The two are separate because on the VPS the
+runtime URL points at `supabase-db:5432` on the Docker network while an external tool needs the
+public host. Everything under `scripts/` goes through `getDb()` instead, which reads `DATABASE_URL`
+and nothing else.
 
-The self-hosted Postgres has no TLS on its exposed port, so tooling run from a dev machine may need
-`PGSSLMODE=disable`.
+| What you run | Reads |
+|---|---|
+| `drizzle-kit` (migrate, generate, studio) | `SUPABASE_DB_URL` ?? `DATABASE_URL` |
+| `scripts/**` (smoke, achievements) | `DATABASE_URL` |
+
+**Targeting a remote database means bypassing Infisical.** The `pnpm db:*` scripts wrap
+`infisical run --recursive`, which injects `dev`'s secrets **on top of** the process environment: an
+inline variable that environment also defines is silently discarded, and the command reports success
+against your local database.
+
+```bash
+SUPABASE_DB_URL='<remote>' pnpm exec drizzle-kit migrate     # bypasses infisical
+SUPABASE_DB_URL='<remote>' pnpm db:migrate                   # may not — dev wins if it defines it
+```
+
+Which variables `dev` defines decides which of the two happens, so **never infer the target from the
+command you typed** — verify it from the result.
+
+`PGSSLMODE=disable` is only for the **Supabase CLI** (`pnpm db:dump`), which bundles its own client
+and ignores `?sslmode=` in the URL (supabase/cli#4142). The node-postgres path — drizzle-kit and
+every script — builds its pool with no `ssl` option, never negotiates TLS, and needs nothing.
