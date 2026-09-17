@@ -68,15 +68,18 @@ pnpm achievements:reconcile             report drift, read-only
 pnpm achievements:reconcile --repair    report it, then rebuild
 pnpm achievements:replay --dry-run      count what would be awarded
 pnpm achievements:replay                award it, silently
-pnpm achievements:replay --notify       award it and notify — rarely what you want
 ```
 
-**After applying a migration that adds rollup columns or tables, run the backfill before anything
-reads.** Without it every counter is zero and the page shows a full catalogue of locked medals.
+**`docs/ACHIEVEMENTS.md` is the operational reference** — when each one recurs, which drift is
+legitimate, and the deployment order. Read it before running any of them against a real
+environment; three things there are easy to get wrong and quiet when you do:
 
-**Drift is expected in two cases and is not a bug:** a question or a section deleted from the
-catalogue leaves its counter behind, and a rollup written before a rule was retuned lags until the
-next backfill. `reconcile` is how you tell those apart from a real defect.
+- **`pnpm <script>` always talks to the local database.** Infisical injects `dev` on top of the
+  process environment, so an inline `DATABASE_URL` is discarded. `pnpm exec` is what bypasses it,
+  and the scripts read `DATABASE_URL` while migrations read `SUPABASE_DB_URL`.
+- **Backfill before anything reads**, or every counter is zero and the catalogue renders locked.
+- **Replay after the backfill**, never before: on zeroed counters it awards nothing and reports a
+  confident `0`.
 
 ## Traps
 

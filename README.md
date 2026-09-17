@@ -158,6 +158,7 @@ self-hosted GoTrue can fetch them.
 | [`CLAUDE.md`](./CLAUDE.md) | Architecture, conventions and the rules that are not negotiable |
 | [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md) · [`docs/DESIGN_DECISIONS.md`](./docs/DESIGN_DECISIONS.md) | The UI system, and the reasoning behind each decision |
 | [`docs/OBSERVABILITY.md`](./docs/OBSERVABILITY.md) | Structured logging to Seq |
+| [`docs/ACHIEVEMENTS.md`](./docs/ACHIEVEMENTS.md) | Running the achievement backfill, reconcile and replay — and against which database |
 | [`docs/SECRETS.md`](./docs/SECRETS.md) · [`docs/SECURITY.md`](./docs/SECURITY.md) | Secrets, and the security model |
 | [`.claude/skills/`](./.claude/skills) | Working conventions per area: schema, tables, design system, server functions, Storybook |
 
