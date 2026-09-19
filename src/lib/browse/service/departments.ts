@@ -64,7 +64,13 @@ export async function getDepartmentWithCourses(
 
 export async function getDepartmentCourseList(departmentId: string) {
 	return getDb()
-		.select({ id: courses.id, name: courses.name, code: courses.code })
+		.select({
+			id: courses.id,
+			name: courses.name,
+			code: courses.code,
+			courseType: courses.courseType,
+			cfu: courses.cfu,
+		})
 		.from(courses)
 		.where(eq(courses.departmentId, departmentId))
 		.orderBy(asc(courses.name));
