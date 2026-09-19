@@ -5,18 +5,13 @@ import {
 	type PickerOption,
 } from "@/components/onboarding/onboarding-picker";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 
 export type CourseKind = "BACHELOR" | "MASTER" | "SINGLE_CYCLE";
 
 export interface CourseOption extends PickerOption {
 	courseType: CourseKind;
 }
-
-const KIND_LABEL: Record<CourseKind, string> = {
-	BACHELOR: "Triennale",
-	MASTER: "Magistrale",
-	SINGLE_CYCLE: "Ciclo unico",
-};
 
 const KIND_ORDER: CourseKind[] = ["BACHELOR", "MASTER", "SINGLE_CYCLE"];
 
@@ -54,7 +49,7 @@ export function CoursePicker({
 					onChange={setKind}
 					options={kinds.map(item => ({
 						value: item,
-						label: KIND_LABEL[item],
+						label: COURSE_TYPE_CONFIG[item]?.label ?? item,
 						count: options.filter(option => option.courseType === item).length,
 					}))}
 					className="self-start"

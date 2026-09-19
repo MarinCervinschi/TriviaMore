@@ -5,13 +5,8 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { crmQueries } from "@/lib/crm/queries";
-
-const COURSE_TYPE_LABEL = {
-	BACHELOR: "Triennale",
-	MASTER: "Magistrale",
-	SINGLE_CYCLE: "Ciclo unico",
-} as const;
 
 /** The settings view of the enrolment: what is declared, and the way back in. */
 export function EnrollmentCard() {
@@ -37,7 +32,7 @@ export function EnrollmentCard() {
 							<>
 								<p className="truncate font-semibold">{enrollment.courseName}</p>
 								<p className="text-muted-foreground truncate text-sm">
-									{COURSE_TYPE_LABEL[enrollment.courseType]}
+									{COURSE_TYPE_CONFIG[enrollment.courseType]?.label}
 									{enrollment.courseCfu ? ` · ${enrollment.courseCfu} CFU` : ""} ·{" "}
 									{enrollment.departmentName}
 								</p>

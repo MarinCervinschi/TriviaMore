@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { requireAuthFn } from "@/lib/auth/api";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
 import { avatarQueries } from "@/lib/avatar/queries";
+import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
 import { useSetEnrollment } from "@/lib/crm/mutations";
 import { requireLegalAcceptanceFn } from "@/lib/legal/api";
@@ -57,12 +58,6 @@ const COPY = [
 		description: "Controlla che sia tutto giusto, poi scegli come farti vedere.",
 	},
 ];
-
-const COURSE_TYPE_LABEL = {
-	BACHELOR: "Triennale",
-	MASTER: "Magistrale",
-	SINGLE_CYCLE: "Ciclo unico",
-} as const;
 
 function OnboardingPage() {
 	const navigate = useNavigate();
@@ -194,7 +189,7 @@ function OnboardingPage() {
 											const type = courses.find(
 												item => item.id === courseId
 											)?.courseType;
-											return type ? COURSE_TYPE_LABEL[type] : null;
+											return type ? (COURSE_TYPE_CONFIG[type]?.label ?? null) : null;
 										})(),
 									},
 								]}
