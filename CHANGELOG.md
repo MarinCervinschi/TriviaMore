@@ -12,6 +12,112 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.3.0 — 2026-09-19
+
+Two things a student will notice, and a layer underneath the first of them. Traguardi arrive as a
+catalogue kept in the database rather than in code, unlocked from four rollup tables written inside
+the transaction that earned them. And a quiz now survives the tab that was closed on it: one attempt
+may be open at a time, it is offered back instead of lost, and what was typed into it is kept in the
+browser until it is submitted.
+
+### Added
+
+- **Traguardi** — 24 badges across seven categories at `/user/achievements`, each a medal whose
+  silhouette follows its category and whose progress ramp shows the distance to the threshold.
+  Up to three can be pinned onto a strip on the dashboard, which sits outside the loader and outside
+  suspense, so an additive feature cannot take the dashboard down. (#132, #173)
+- **The catalogue is data.** `achievements` holds the copy, the icon, the metric, the comparator and
+  the threshold; `family` chains the tiers of one rule and `category` is the section the page groups
+  it under. A new badge — or a new category — is an `INSERT` from the SQL console, with no deploy.
+  (#132, #173)
+- **The unlock engine**, evaluated after a completed quiz, a flashcard session and an approved
+  request, each run once its own transaction has committed, so a failed evaluation costs an
+  announcement rather than the thing that earned it. An unlock raises an `ACHIEVEMENT_UNLOCKED`
+  notification. (#132, #173)
+- **Four rollup tables** — `user_stats`, `user_section_stats`, `user_question_stats` and
+  `user_day_activity` — written incrementally inside the event's transaction, with the raw history
+  kept as the authority that proves them right. The fifteen metrics are read from the rollups
+  instead of aggregated on demand. (#132, #173)
+- **A runbook and three scripts** — `achievements:backfill` rebuilds every rollup from history,
+  `achievements:reconcile` reports drift and exits non-zero on it, `achievements:replay` awards what
+  a catalogue change left unawarded and is silent unless given `--notify`.
+  (`docs/ACHIEVEMENTS.md`, the `achievements` skill) (#132, #173)
+- **The unfinished quiz is offered back.** Only one attempt may be open at a time; the dashboard and
+  the start dialogs show the open quiz with the two ways out of it, resume or delete, instead of
+  letting a forgotten attempt lock the student out of starting another. (#169, #172)
+- **The sitting survives a closed tab.** Answers, position and elapsed time go to one `localStorage`
+  slot keyed by the attempt and are restored when that attempt is reopened. (#169, #172)
+- **Abandoned attempts are reaped** past a 48-hour horizon measured on `last_seen_at`, lazily on
+  starting a quiz and on reading the open-attempt banner, so the sweep needs no scheduler and does
+  not wait for the start the stale attempt is blocking. Best-effort: a failed sweep never blocks a
+  quiz. (#169, #172)
+- **Charts**: a tick gauge, an arc and a bar — a threshold is a count, and reads better as marks than
+  as a length. (#132)
+
+### Changed
+
+- **One open attempt per user is a database rule**, a unique partial index on the incomplete rows.
+  The read gate alone let two concurrent starts through. (#169, #172)
+- **The quiz timer counts elapsed rather than remaining**, which is the figure that can be persisted
+  and resumed across sittings, and is what `timeSpent` reports. (#169, #172)
+- `quiz_attempts` records `started_at` and `last_seen_at`; `cancelQuiz` drops its hand-rolled orphan
+  count for the same `deleteOrphanQuizzes`, leaving one path for "drop the quiz nobody holds". (#169)
+- The achievement queries moved out of `db/` and into the service, which is the only caller. (#132)
+
+### Fixed
+
+- **Elapsed time is measured on the wall clock.** Counting interval ticks dropped a partial second on
+  every answer — the interval was recreated whenever `onTimeUp` changed identity — and a hidden tab
+  is throttled to one tick a minute, so `timeSpent` under-reported and an exam countdown could be
+  kept from ever firing. (#169)
+- **A half-written quiz draft is refused.** A slot without its clock or position reached the page as
+  `NaN`: no question rendered, and `timeSpent` failed validation, so the quiz could not be submitted
+  at all and the attempt stayed open. (#169)
+- **The reaper resolves its horizon in the database**, which is also what writes the timestamps;
+  comparing against the app process clock let skew reap a live attempt. Reaped quiz ids are
+  deduplicated and a failed sweep is logged with its error, so Seq keeps the SQLSTATE. (#169)
+- The start dialogs are gated while the open-attempt check runs — the quiz dialog rendered nothing
+  until it returned and its button looked dead, the exam dialog answered with a conflict toast
+  instead of the banner. (#169)
+- A disconnected request is no longer reported as a server error, and the maintenance page no longer
+  rides on one. (`docs/OBSERVABILITY.md`)
+- `border-color` utilities are inert under the global `*` rule in `globals.css`, so the medal's edge
+  is drawn with a ring.
+- **Accessibility**: the locked medal's glyph measured 2.02:1 in light and 2.94:1 in dark against its
+  own silhouette — the state a fresh account sees on every medal — and now clears 1.4.11's 3:1, with
+  the composite pairs added to the contrast gate. The summary's facts are a real description list.
+- Each Storybook story gets its own query cache, so one story's fetch cannot answer another's.
+
+### Migrations
+
+Ten, `0019`–`0028`. One is destructive.
+
+- `0019_add_attempt_started_at.sql` — `quiz_attempts.started_at` and a partial index on the open
+  attempts. Not destructive.
+- `0020_backfill_attempt_started_at.sql` — dates historical attempts from their completion minus
+  `time_spent`, since the column's `now()` default would claim every one of them started today.
+  Not destructive.
+- **`0021_dedupe_open_attempts.sql` — destructive.** Deletes the superseded open attempts of any user
+  who holds more than one, keeping the newest, along with the quizzes no attempt holds any more.
+  Nothing enforced uniqueness before, and the next migration's index refuses to build over a
+  duplicate.
+- `0022_attempt_last_seen_at.sql` — `last_seen_at`, and the open-attempt index becomes unique.
+  Not destructive.
+- `0023_achievement_notification_type.sql` — `ACHIEVEMENT_UNLOCKED` on `notification_type`.
+  Not destructive.
+- `0024_add_achievements.sql` — the catalogue and award tables, the metric and comparator enums.
+  Not destructive.
+- `0025_achievement_catalogue.sql` — the v1 catalogue as reference data, re-runnable, leaving
+  `is_active` alone so a badge retired from the console stays retired. Not destructive.
+- `0026_achievement_shape.sql`, `0027_achievement_shapes_backfill.sql` — the silhouette per
+  category. Not destructive.
+- `0028_add_user_rollups.sql` — the four rollup tables. Not destructive.
+
+**After migrating, and before the app is read:** run `achievements:backfill`, then `reconcile`, then
+`replay`. Without the backfill every counter is zero and the whole catalogue renders locked; replay
+before it awards nothing and reports a confident `0`. The order and the traps are in
+`docs/ACHIEVEMENTS.md`.
+
 ## 3.2.0 — 2026-08-30
 
 The restyle lands. One frame — `InsetCard` — replaces the surfaces five areas had hand-rolled, the
