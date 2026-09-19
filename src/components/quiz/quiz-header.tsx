@@ -28,18 +28,22 @@ export function QuizHeader({
 	questionIndex,
 	totalQuestions,
 	timeLimit,
+	resumeFromSeconds,
 	context,
 	sidebarOpen,
 	onToggleSidebar,
+	onTick,
 	onTimeUp,
 	onExit,
 }: {
 	questionIndex: number;
 	totalQuestions: number;
 	timeLimit: number | null;
+	resumeFromSeconds?: number;
 	context?: QuizContext;
 	sidebarOpen: boolean;
 	onToggleSidebar: () => void;
+	onTick?: (elapsedSeconds: number) => void;
 	onTimeUp: () => void;
 	onExit: () => void;
 }) {
@@ -71,7 +75,12 @@ export function QuizHeader({
 			</div>
 
 			<div className="flex items-center gap-3">
-				<QuizTimer timeLimitMinutes={timeLimit} onTimeUp={onTimeUp} />
+				<QuizTimer
+					timeLimitMinutes={timeLimit}
+					resumeFromSeconds={resumeFromSeconds}
+					onTick={onTick}
+					onTimeUp={onTimeUp}
+				/>
 				<ThemeToggle className="h-9 w-9" />
 				<Button
 					variant="ghost"

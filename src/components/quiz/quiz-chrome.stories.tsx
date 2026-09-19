@@ -155,6 +155,7 @@ export const Timer: Story = {
 			<QuizTimer timeLimitMinutes={15} onTimeUp={noop} />
 			<QuizTimer timeLimitMinutes={1} onTimeUp={noop} />
 			<QuizTimer timeLimitMinutes={null} onTimeUp={noop} />
+			<QuizTimer timeLimitMinutes={60} resumeFromSeconds={2400} onTimeUp={noop} />
 		</div>
 	),
 };

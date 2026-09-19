@@ -1,5 +1,14 @@
 import { authUsers } from "drizzle-orm/supabase"
-import { foreignKey, index, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core"
+import {
+  foreignKey,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+} from "drizzle-orm/pg-core"
 
 import { roleEnum } from "./enums"
 
@@ -11,6 +20,9 @@ export const profiles = pgTable(
     email: text(),
     image: text(),
     role: roleEnum().default("STUDENT").notNull(),
+    // Position in signup order, immutable once set. Stored because deriving it
+    // meant ranking the whole table on every achievement evaluation.
+    signupRank: integer("signup_rank"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),

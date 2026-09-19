@@ -6,6 +6,9 @@
 import { sql } from "drizzle-orm";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
+import { readMetricSnapshots } from "../../src/lib/achievements/db/metrics.ts";
+import { recomputeMetricSnapshots } from "../../src/lib/achievements/db/recompute.ts";
+import { getAchievements } from "../../src/lib/achievements/service.ts";
 import { getClassWithSections } from "../../src/lib/browse/service/classes.ts";
 import { searchClasses } from "../../src/lib/browse/service/classes.ts";
 import { getAvailableClassYears } from "../../src/lib/browse/service/classes.ts";
@@ -205,6 +208,15 @@ if (userId) {
 }
 
 if (userId) {
+	await check("achievements.getAchievements", () =>
+		getAchievements(userId, { heal: false })
+	);
+	// Unscoped too: the replay runs it that way over every user at once.
+	await check("achievements.readMetricSnapshots", () => readMetricSnapshots(db));
+	// The reconciler's side of the same measures, straight from the history.
+	await check("achievements.recomputeMetricSnapshots", () =>
+		recomputeMetricSnapshots(db)
+	);
 	await check("user.getUserProfile", () => getUserProfile(userId));
 	await check("user.getUserClasses", () => getUserClasses(userId));
 	await check("user.getRecentClasses", () => getRecentClasses(db, userId));

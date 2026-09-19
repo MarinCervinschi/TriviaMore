@@ -8,6 +8,15 @@ const ASSET_PATTERN = /\.(js|mjs|css|map|ico|png|jpe?g|gif|svg|webp|avif|woff2?)
 
 const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
 
+const DISCONNECT_CODES = new Set([
+	"ABORT_ERR",
+	"AbortError",
+	"ECONNABORTED",
+	"ECONNRESET",
+	"EPIPE",
+	"ERR_STREAM_PREMATURE_CLOSE",
+]);
+
 function isAsset(pathname: string): boolean {
 	return (
 		pathname.startsWith("/_build/") ||
@@ -17,10 +26,26 @@ function isAsset(pathname: string): boolean {
 	);
 }
 
-function levelFor(status: number): LogLevel {
+function isDisconnect(error: unknown, request: Request): boolean {
+	if (request.signal.aborted) return true;
+	if (typeof error !== "object" || error === null) return false;
+	const { code, name } = error as { code?: unknown; name?: unknown };
+	return (
+		(typeof code === "string" && DISCONNECT_CODES.has(code)) ||
+		(typeof name === "string" && DISCONNECT_CODES.has(name))
+	);
+}
+
+function levelFor(status: number | undefined, disconnected: boolean): LogLevel {
+	if (status === undefined) return disconnected ? "Warning" : "Error";
 	if (status >= 500) return "Error";
 	if (status >= 400) return "Warning";
 	return "Information";
+}
+
+function outcomeFor(status: number | undefined, disconnected: boolean): string {
+	if (status === undefined) return disconnected ? "aborted" : "failed";
+	return status < 400 ? "ok" : "error";
 }
 
 export const observabilityMiddleware = createMiddleware({ type: "request" }).server(
@@ -35,7 +60,8 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 		return runWithContext(context, async () => {
 			const startedAt = performance.now();
 			const startedIso = new Date().toISOString();
-			let status = 500;
+			let status: number | undefined;
+			let failure: unknown;
 
 			try {
 				const result = await next();
@@ -49,14 +75,20 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 					/* empty */
 				}
 				return result;
+			} catch (error) {
+				failure = error;
+				throw error;
 			} finally {
 				const elapsed = performance.now() - startedAt;
+				// Nothing was served, so there is no status to report: defaulting it
+				// to 500 made every scanner that hangs up look like a server error.
+				const disconnected = status === undefined && isDisconnect(failure, request);
 				const properties = {
 					Method: request.method,
 					Path: pathname,
-					Status: status,
+					...(status === undefined ? {} : { Status: status }),
 					Elapsed: elapsed,
-					Outcome: context.outcome ?? (status < 400 ? "ok" : "error"),
+					Outcome: context.outcome ?? outcomeFor(status, disconnected),
 					...(context.fn ? { Fn: context.fn } : {}),
 					...(context.errorCode ? { ErrorCode: context.errorCode } : {}),
 					DbQueries: context.dbQueries,
@@ -67,14 +99,17 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 				};
 
 				logSpan({
-					level: levelFor(status),
+					level: levelFor(status, disconnected),
 					template: context.fn
 						? "{Fn} → {Outcome} in {Elapsed:0.0}ms"
-						: "{Method} {Path} → {Status} in {Elapsed:0.0}ms",
+						: status === undefined
+							? "{Method} {Path} → {Outcome} in {Elapsed:0.0}ms"
+							: "{Method} {Path} → {Status} in {Elapsed:0.0}ms",
 					properties,
 					spanId: context.spanId,
 					startedAt: startedIso,
 					kind: "Server",
+					error: failure,
 				});
 			}
 		});

@@ -21,14 +21,14 @@ import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-att
 import {
 	applyAttemptGrade,
 	claimAttempt,
-	countAttempts,
 	deleteAttempt,
+	deleteStaleOpenAttempts,
 	findAnswers,
 	insertAnswers,
 	insertAttempt,
 } from "../../src/lib/quiz/db/attempts.ts";
 import {
-	deleteQuiz,
+	deleteOrphanQuizzes,
 	findQuizQuestionOrder,
 	insertQuiz,
 	insertQuizQuestions,
@@ -193,8 +193,12 @@ try {
 		);
 
 		await deleteAttempt(tx, attempt.id);
-		expect("cancel: attempt gone", (await countAttempts(tx, quiz.id)) === 0);
-		await deleteQuiz(tx, quiz.id);
+		const cancelled = await tx
+			.select({ id: quizAttempts.id })
+			.from(quizAttempts)
+			.where(eq(quizAttempts.id, attempt.id));
+		expect("cancel: attempt gone", cancelled.length === 0);
+		await deleteOrphanQuizzes(tx, [quiz.id]);
 
 		const orphanQuestions = await tx
 			.select({ id: quizQuestions.id })
@@ -207,6 +211,60 @@ try {
 			.from(quizzes)
 			.where(eq(quizzes.id, quiz.id));
 		expect("cancel: quiz gone", orphanQuiz.length === 0);
+
+		const staleQuiz = await insertQuiz(tx, {
+			sectionId: seed.section_id,
+			evaluationModeId: mode.id,
+			quizMode: "STUDY",
+			timeLimit: null,
+		});
+		await insertQuizQuestions(
+			tx,
+			staleQuiz.id,
+			picked.map(question => question.id)
+		);
+
+		// Completed first: the partial unique index allows one open attempt per user,
+		// so the quiz can only be held by a second attempt that is already finished.
+		const doneAttempt = await insertAttempt(tx, {
+			userId: seed.user_id,
+			quizId: staleQuiz.id,
+		});
+		await tx
+			.update(quizAttempts)
+			.set({ completedAt: sql`now()` })
+			.where(eq(quizAttempts.id, doneAttempt.id));
+
+		const staleAttempt = await insertAttempt(tx, {
+			userId: seed.user_id,
+			quizId: staleQuiz.id,
+		});
+		await tx
+			.update(quizAttempts)
+			.set({ lastSeenAt: sql`now() - interval '3 days'` })
+			.where(eq(quizAttempts.id, staleAttempt.id));
+
+		const reaped = await deleteStaleOpenAttempts(tx, seed.user_id);
+		expect(
+			"reap: the stale attempt's quiz is reported",
+			reaped.filter(id => id === staleQuiz.id).length === 1
+		);
+
+		const survivors = await tx
+			.select({ id: quizAttempts.id })
+			.from(quizAttempts)
+			.where(inArray(quizAttempts.id, [staleAttempt.id, doneAttempt.id]));
+		expect(
+			"reap: the completed attempt survives",
+			survivors.length === 1 && survivors[0]?.id === doneAttempt.id
+		);
+
+		await deleteOrphanQuizzes(tx, reaped);
+		const heldQuiz = await tx
+			.select({ id: quizzes.id })
+			.from(quizzes)
+			.where(eq(quizzes.id, staleQuiz.id));
+		expect("reap: a quiz another attempt holds is kept", heldQuiz.length === 1);
 
 		tx.rollback();
 	});

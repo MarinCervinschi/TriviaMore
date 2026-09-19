@@ -2,9 +2,21 @@ import { queryOptions } from "@tanstack/react-query";
 
 import { STALE_TIME } from "@/lib/shared/cache";
 
-import { getEvaluationModesFn, getQuizFn, getQuizResultsFn } from "./api";
+import {
+	getEvaluationModesFn,
+	getOpenAttemptFn,
+	getQuizFn,
+	getQuizResultsFn,
+} from "./api";
 
 export const quizQueries = {
+	openAttempt: () =>
+		queryOptions({
+			queryKey: ["quiz", "open-attempt"],
+			queryFn: () => getOpenAttemptFn(),
+			staleTime: STALE_TIME.FAST,
+		}),
+
 	quiz: (quizId: string) =>
 		queryOptions({
 			queryKey: ["quiz", quizId],

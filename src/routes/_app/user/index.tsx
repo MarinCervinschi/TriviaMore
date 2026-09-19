@@ -5,15 +5,18 @@ import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import { AchievementStrip } from "@/components/achievements/achievement-strip";
+import { PinnedAchievements } from "@/components/achievements/pinned-achievements";
 import {
 	DataTable,
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
 import { ProgressSummary } from "@/components/progress/progress-summary";
+import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
 import { decorativeTint } from "@/components/shared/decorative-tints";
 import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,7 +26,9 @@ import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
 import { UserHero } from "@/components/user/user-hero";
+import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { quizQueries } from "@/lib/quiz/queries";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { RecentClass } from "@/lib/user/types";
@@ -45,6 +50,10 @@ export const Route = createFileRoute("/_app/user/")({
 function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
 	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
+	const { data: openAttempt } = useQuery(quizQueries.openAttempt());
+	// Not suspense, and not in the loader: the dashboard is the page a student
+	// lands on, and an additive feature must never be able to take it down.
+	const { data: achievements } = useQuery(achievementQueries.all());
 
 	if (!profile) return null;
 
@@ -66,10 +75,16 @@ function DashboardPage() {
 						<h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
 							Ciao, <span className="gradient-text break-words">{displayName}</span>
 						</h1>
-						<div className="mb-3 flex items-center gap-2">
+						<div className="mb-3 flex flex-wrap items-center gap-2">
 							<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
 								{getRoleLabel(profile.role)}
 							</Badge>
+							{achievements && achievements.pinned.length > 0 && (
+								<>
+									<span className="bg-border h-4 w-px" aria-hidden />
+									<PinnedAchievements pinned={achievements.pinned} />
+								</>
+							)}
 						</div>
 						<div className="text-muted-foreground flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
 							{profile.email && (
@@ -90,6 +105,8 @@ function DashboardPage() {
 			</UserHero>
 
 			<div className="container space-y-8">
+				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}
+
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard
 						icon={InboxIcon}
@@ -115,6 +132,8 @@ function DashboardPage() {
 				</div>
 
 				{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
+
+				{achievements && <AchievementStrip overview={achievements} />}
 
 				{/* Recent Classes */}
 				{profile.recentClasses.length > 0 && (

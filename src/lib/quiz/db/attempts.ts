@@ -1,9 +1,29 @@
-import { and, asc, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNotNull, isNull, lt, sql } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
 import { answerAttempts, classes, quizAttempts, quizzes, sections } from "@/db/schema";
 import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
 import { sectionLocation } from "@/lib/catalog/db/section-location";
+
+import { ABANDONED_ATTEMPT_TTL_HOURS } from "../constants";
+
+const ABANDONED_BEFORE = sql`now() - make_interval(hours => ${ABANDONED_ATTEMPT_TTL_HOURS}::int)`;
+
+/**
+ * Whether an insert lost the race for this user's one open attempt. The partial
+ * unique index is what holds that invariant — a read-then-write check in the
+ * service cannot — and drizzle wraps the driver error, so the SQLSTATE is on the
+ * cause rather than on what was thrown.
+ */
+export function isOpenAttemptViolation(error: unknown): boolean {
+	for (let cause: unknown = error, depth = 0; cause && depth < 4; depth++) {
+		if (typeof cause !== "object") return false;
+		const { code, constraint } = cause as { code?: string; constraint?: string };
+		if (code === "23505" && constraint === "idx_quiz_attempts_user_open") return true;
+		cause = (cause as { cause?: unknown }).cause;
+	}
+	return false;
+}
 
 export async function insertAttempt(
 	db: DbOrTx,
@@ -16,10 +36,16 @@ export async function insertAttempt(
 	return attempt;
 }
 
-export async function findOpenAttemptId(db: DbOrTx, userId: string, quizId: string) {
+/**
+ * This user's open attempt on this quiz, if any — and, in the same round trip, the
+ * proof that they are still using it. Opening the quiz page is what keeps the
+ * horizon from collecting work in progress: `started_at` cannot say that, since an
+ * attempt resumed every day for a week still started a week ago.
+ */
+export async function touchOpenAttempt(db: DbOrTx, userId: string, quizId: string) {
 	const [attempt] = await db
-		.select({ id: quizAttempts.id })
-		.from(quizAttempts)
+		.update(quizAttempts)
+		.set({ lastSeenAt: sql`now()` })
 		.where(
 			and(
 				eq(quizAttempts.quizId, quizId),
@@ -27,8 +53,37 @@ export async function findOpenAttemptId(db: DbOrTx, userId: string, quizId: stri
 				isNull(quizAttempts.completedAt)
 			)
 		)
-		.limit(1);
+		.returning({ id: quizAttempts.id });
 	return attempt?.id;
+}
+
+/**
+ * The one quiz this user has left unfinished, if any. Joining `quizzes` drops an
+ * attempt whose section was deleted: its `quiz_id` is null, so there is nothing to
+ * resume and nothing to block a new quiz with — the horizon collects it instead.
+ * `isStale` is decided here rather than by the caller so that the row and the
+ * reaper agree on one clock.
+ */
+export async function findOpenAttemptForUser(db: DbOrTx, userId: string) {
+	const [attempt] = await db
+		.select({
+			attemptId: quizAttempts.id,
+			quizId: quizzes.id,
+			quizMode: quizzes.quizMode,
+			startedAt: quizAttempts.startedAt,
+			sectionName: sections.name,
+			className: classes.name,
+			isStale: sql<boolean>`${quizAttempts.lastSeenAt} < ${ABANDONED_BEFORE}`,
+		})
+		.from(quizAttempts)
+		.innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+		.innerJoin(sections, eq(sections.id, quizzes.sectionId))
+		.innerJoin(classes, eq(classes.id, sections.classId))
+		.where(and(eq(quizAttempts.userId, userId), isNull(quizAttempts.completedAt)))
+		.orderBy(desc(quizAttempts.startedAt))
+		.limit(1);
+
+	return attempt;
 }
 
 export async function findAttempt(db: DbOrTx, attemptId: string) {
@@ -94,12 +149,26 @@ export async function deleteAttempt(db: DbOrTx, attemptId: string) {
 	await db.delete(quizAttempts).where(eq(quizAttempts.id, attemptId));
 }
 
-export async function countAttempts(db: DbOrTx, quizId: string) {
-	const [row] = await db
-		.select({ value: count() })
-		.from(quizAttempts)
-		.where(eq(quizAttempts.quizId, quizId));
-	return row?.value ?? 0;
+/**
+ * Drops this user's unfinished attempts left open past the horizon and reports the
+ * quizzes they held, so the caller can collect the ones nobody else attempted.
+ */
+export async function deleteStaleOpenAttempts(
+	db: DbOrTx,
+	userId: string
+): Promise<string[]> {
+	const reaped = await db
+		.delete(quizAttempts)
+		.where(
+			and(
+				eq(quizAttempts.userId, userId),
+				isNull(quizAttempts.completedAt),
+				lt(quizAttempts.lastSeenAt, ABANDONED_BEFORE)
+			)
+		)
+		.returning({ quizId: quizAttempts.quizId });
+
+	return [...new Set(reaped.flatMap(row => (row.quizId ? [row.quizId] : [])))];
 }
 
 export async function insertAnswers(

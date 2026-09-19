@@ -1,34 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 
 export function QuizTimer({
 	timeLimitMinutes,
+	resumeFromSeconds = 0,
+	onTick,
 	onTimeUp,
 }: {
 	/** Countdown limit in minutes; null = open-ended chronometer counting up. */
 	timeLimitMinutes: number | null;
+	/** Seconds already spent in earlier sittings, restored from the draft. */
+	resumeFromSeconds?: number;
+	onTick?: (elapsedSeconds: number) => void;
 	onTimeUp: () => void;
 }) {
 	const isUnlimited = timeLimitMinutes === null;
-	const [seconds, setSeconds] = useState(isUnlimited ? 0 : timeLimitMinutes * 60);
+	const [elapsed, setElapsed] = useState(resumeFromSeconds);
+	const anchorRef = useRef(Date.now() - resumeFromSeconds * 1000);
+	const onTickRef = useRef(onTick);
+	const onTimeUpRef = useRef(onTimeUp);
 
 	useEffect(() => {
+		onTickRef.current = onTick;
+		onTimeUpRef.current = onTimeUp;
+	});
+
+	useEffect(() => {
+		anchorRef.current = Date.now() - resumeFromSeconds * 1000;
+		setElapsed(resumeFromSeconds);
+	}, [resumeFromSeconds]);
+
+	// Elapsed is read off the wall clock instead of counted in ticks: an interval
+	// that restarts drops its partial second and a hidden tab is throttled to one
+	// tick a minute, so a count drifts below the real duration — which is both what
+	// `timeSpent` records and what the exam countdown enforces. The handlers live in
+	// refs so a new `onTimeUp` identity cannot restart the interval.
+	useEffect(() => {
 		const interval = setInterval(() => {
-			setSeconds(prev => {
-				if (isUnlimited) return prev + 1;
-				if (prev <= 1) {
-					clearInterval(interval);
-					onTimeUp();
-					return 0;
-				}
-				return prev - 1;
-			});
+			const next = Math.floor((Date.now() - anchorRef.current) / 1000);
+			setElapsed(next);
+			onTickRef.current?.(next);
+
+			if (!isUnlimited && next >= timeLimitMinutes * 60) {
+				clearInterval(interval);
+				onTimeUpRef.current();
+			}
 		}, 1000);
 		return () => clearInterval(interval);
-	}, [onTimeUp, isUnlimited]);
+	}, [isUnlimited, timeLimitMinutes]);
 
-	const totalSeconds = Math.max(0, seconds);
+	const totalSeconds = isUnlimited
+		? elapsed
+		: Math.max(0, timeLimitMinutes * 60 - elapsed);
 	const hours = Math.floor(totalSeconds / 3600);
 	const minutes = Math.floor((totalSeconds % 3600) / 60);
 	const secs = totalSeconds % 60;

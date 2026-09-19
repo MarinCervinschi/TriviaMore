@@ -1,7 +1,9 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
+import { applyApprovedRequest } from "@/lib/achievements/db/rollups";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -171,7 +173,7 @@ export async function handleRequest(input: {
 export async function approveRequest(id: string) {
 	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
 
-	await getDb().transaction(async tx => {
+	const authorId = await getDb().transaction(async tx => {
 		const target = await findRequestOrThrow(tx, id);
 		await assertInScope(tx, scopeCourseIds, target);
 
@@ -235,19 +237,25 @@ export async function approveRequest(id: string) {
 			referenceType: "content_request",
 			link: `/user/requests`,
 		});
+
+		await applyApprovedRequest(tx, claimed.userId);
+
+		return claimed.userId;
 	});
+
+	evaluateAchievementsInBackground(authorId);
 }
 
 export async function acknowledgeRequest(input: { id: string; admin_note?: string }) {
 	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
 
-	await getDb().transaction(async tx => {
+	const authorId = await getDb().transaction(async tx => {
 		const request = await findRequestOrThrow(tx, input.id);
 		await assertInScope(tx, scopeCourseIds, request);
 
 		const note = input.admin_note?.trim() || null;
 
-		await tx
+		const [claimed] = await tx
 			.update(contentRequests)
 			.set({
 				status: "APPROVED",
@@ -255,7 +263,12 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 				handledAt: sql`now()`,
 				adminNote: note,
 			})
-			.where(eq(contentRequests.id, input.id));
+			.where(
+				and(eq(contentRequests.id, input.id), ne(contentRequests.status, "APPROVED"))
+			)
+			.returning({ id: contentRequests.id });
+
+		if (!claimed) throw new Conflict("La proposta è già stata presa in carico");
 
 		const titleMap: Record<string, string> = {
 			REPORT: "Segnalazione presa in carico",
@@ -271,7 +284,13 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 			referenceType: "content_request",
 			link: `/user/requests`,
 		});
+
+		await applyApprovedRequest(tx, request.userId);
+
+		return request.userId;
 	});
+
+	evaluateAchievementsInBackground(authorId);
 }
 
 export async function getFileDownloadUrl(filePath: string): Promise<string> {

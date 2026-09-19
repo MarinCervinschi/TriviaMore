@@ -134,6 +134,76 @@
       "when": 1788005923008,
       "tag": "0018_add_attempt_favorite",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789212635146,
+      "tag": "0019_add_attempt_started_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789212644594,
+      "tag": "0020_backfill_attempt_started_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1789325814300,
+      "tag": "0021_dedupe_open_attempts",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1789325822119,
+      "tag": "0022_attempt_last_seen_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1789332477216,
+      "tag": "0023_achievement_notification_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1789369434919,
+      "tag": "0024_add_achievements",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1789369439590,
+      "tag": "0025_achievement_catalogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789493673060,
+      "tag": "0026_achievement_shape",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1789493690533,
+      "tag": "0027_achievement_shapes_backfill",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1789585068989,
+      "tag": "0028_add_user_rollups",
+      "breakpoints": true
     }
   ]
 }
