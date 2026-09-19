@@ -15,6 +15,7 @@ const EXTENSION: Record<string, string> = {
 	"image/png": "png",
 	"image/webp": "webp",
 };
+const RASTER_TYPES = new Set(Object.keys(EXTENSION));
 
 export function getAvatarChoices(userId: string, page = 0): AvatarChoice[] {
 	return avatarSeeds(`${userId}:${page}`, PREVIEW_COUNT).map(seed => ({
@@ -102,11 +103,18 @@ export async function confirmUploadedAvatar(
 		throw new Unavailable("Percorso non valido.");
 	}
 
-	const { error } = await getSupabaseAdmin()
+	const name = path.slice(userId.length + 1);
+	const { data, error } = await getSupabaseAdmin()
 		.storage.from(BUCKET)
-		.list(userId, { search: path.slice(userId.length + 1) });
+		.list(userId, { search: name });
 
-	if (error) throw new Unavailable("Caricamento non trovato. Riprova.");
+	const uploaded = data?.find(file => file.name === name);
+	if (error || !uploaded) throw new Unavailable("Caricamento non trovato. Riprova.");
+
+	if (!RASTER_TYPES.has(String(uploaded.metadata?.mimetype ?? ""))) {
+		await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
+		throw new Unavailable("Formato non supportato.");
+	}
 
 	return commitAvatar(userId, path);
 }
