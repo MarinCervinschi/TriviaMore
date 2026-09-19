@@ -40,3 +40,6 @@ export * from "./entities/internal/section-access";
 export * from "./entities/internal/content-requests";
 export * from "./entities/internal/legal-acceptances";
 export * from "./entities/internal/relations";
+
+export * from "./entities/crm/enrollments";
+export * from "./entities/crm/relations";

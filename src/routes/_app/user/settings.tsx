@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
-import { CameraIcon } from "@solar-icons/react/linear/camera";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { DisketteIcon } from "@solar-icons/react/linear/diskette";
@@ -12,14 +11,15 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CloseGlyph, Spinner } from "@/components/icons";
+import { EnrollmentCard } from "@/components/onboarding/enrollment-card";
 import { StatCard } from "@/components/shared/stat-card";
 import { SettingsSkeleton } from "@/components/skeletons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InsetCard } from "@/components/ui/inset-card";
 import { Label } from "@/components/ui/label";
+import { AvatarEditor } from "@/components/user/avatar-editor";
 import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
@@ -55,6 +55,8 @@ function SettingsPage() {
 				<UserBreadcrumb current="Impostazioni" />
 
 				<ProfileForm profile={profile} />
+
+				<EnrollmentCard />
 
 				{/* Account Stats */}
 				<div>
@@ -132,24 +134,18 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 	const initials = getInitials(profile);
 
 	const [name, setName] = useState(profile.name ?? "");
-	const [imageUrl, setImageUrl] = useState(profile.image ?? "");
 
-	const hasChanges =
-		name !== (profile.name ?? "") || imageUrl !== (profile.image ?? "");
+	const hasChanges = name !== (profile.name ?? "");
 
+	// No `image` here on purpose: the picture is saved the moment it is chosen in
+	// the editor, so leaving it out is what keeps this form from undoing it.
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!name.trim()) return;
-		updateProfile.mutate({
-			name: name.trim(),
-			image: imageUrl.trim() || null,
-		});
+		updateProfile.mutate({ name: name.trim() });
 	};
 
-	const handleReset = () => {
-		setName(profile.name ?? "");
-		setImageUrl(profile.image ?? "");
-	};
+	const handleReset = () => setName(profile.name ?? "");
 
 	return (
 		<InsetCard texture="top" textureAlpha={0.12}>
@@ -160,15 +156,13 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 				</p>
 
 				<div className="mb-6 flex items-center gap-4">
-					<Avatar className="border-background ring-primary/20 h-24 w-24 border-4 shadow-xl ring-2">
-						<AvatarImage
-							src={imageUrl || profile.image || undefined}
-							alt={displayName}
-						/>
-						<AvatarFallback className="bg-primary/10 text-brand text-xl font-bold">
-							{initials}
-						</AvatarFallback>
-					</Avatar>
+					<AvatarEditor
+						imageUrl={profile.image}
+						initials={initials}
+						name={displayName}
+						className="border-background ring-primary/20 h-24 w-24 shrink-0 overflow-hidden border-4 shadow-xl ring-2"
+						fallbackClassName="bg-primary/10 text-brand text-xl font-bold"
+					/>
 					<div>
 						<h3 className="text-lg font-semibold">{name || displayName}</h3>
 						<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-sm font-medium">
@@ -201,24 +195,6 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 							L'email non può essere modificata
 						</p>
 					</div>
-				</div>
-
-				<div className="mt-4 space-y-2">
-					<Label htmlFor="image">
-						<CameraIcon className="mr-1 inline h-4 w-4" />
-						URL immagine profilo
-					</Label>
-					<Input
-						id="image"
-						type="url"
-						value={imageUrl}
-						onChange={e => setImageUrl(e.target.value)}
-						placeholder="https://esempio.com/la-tua-foto.jpg"
-						className="rounded-xl"
-					/>
-					<p className="text-muted-foreground text-xs">
-						Inserisci l'URL di un'immagine per il tuo avatar
-					</p>
 				</div>
 
 				<div className="mt-6 flex items-center gap-3">

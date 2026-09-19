@@ -28,6 +28,7 @@ export function toUserMetrics(row: MetricRow): UserMetrics {
 			FLASHCARD_SESSIONS: Number(row.flashcard_sessions ?? 0),
 			BOOKMARKED_THEN_CORRECT: Number(row.bookmarked_then_correct ?? 0),
 			APPROVED_REQUESTS: Number(row.approved_requests ?? 0),
+			ENROLLMENT_DECLARED: Number(row.enrollment_declared ?? 0),
 			// Compared with LTE, so a missing rank is the worst value, not 0 — the best.
 			SIGNUP_RANK:
 				row.signup_rank === null || row.signup_rank === undefined
@@ -104,6 +105,13 @@ export async function readMetricSnapshots(
 			  ) runs
 			 group by user_id
 		),
+		enrolled as (
+			select e.user_id
+			  from crm.enrollments e
+			  join target t on t.user_id = e.user_id
+			 where e.is_current
+			 group by e.user_id
+		),
 		weeks as (
 			select user_id, count(*)::int as active_weeks
 			  from (
@@ -128,12 +136,14 @@ export async function readMetricSnapshots(
 		       coalesce(us.flashcard_sessions, 0) as flashcard_sessions,
 		       coalesce(us.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(us.approved_requests, 0) as approved_requests,
-		       t.signup_rank
+		       t.signup_rank,
+		       (en.user_id is not null)::int as enrollment_declared
 		  from target t
 		  left join public.user_stats us on us.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
 		  left join streak st on st.user_id = t.user_id
 		  left join weeks w on w.user_id = t.user_id
+		  left join enrolled en on en.user_id = t.user_id
 	`);
 
 	return result.rows.map(toUserMetrics);

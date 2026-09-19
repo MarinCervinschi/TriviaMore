@@ -15,19 +15,21 @@ import {
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
+import { EnrollmentPrompt } from "@/components/onboarding/enrollment-prompt";
 import { ProgressSummary } from "@/components/progress/progress-summary";
 import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
 import { decorativeTint } from "@/components/shared/decorative-tints";
 import { UserDashboardSkeleton } from "@/components/skeletons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
+import { AvatarEditor } from "@/components/user/avatar-editor";
 import { UserHero } from "@/components/user/user-hero";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { crmQueries } from "@/lib/crm/queries";
 import { quizQueries } from "@/lib/quiz/queries";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
@@ -54,6 +56,11 @@ function DashboardPage() {
 	// Not suspense, and not in the loader: the dashboard is the page a student
 	// lands on, and an additive feature must never be able to take it down.
 	const { data: achievements } = useQuery(achievementQueries.all());
+	// Same reasoning: a missing enrolment is a nudge, never a reason for the
+	// dashboard to fail to render.
+	const { data: enrollment, isSuccess: enrollmentLoaded } = useQuery(
+		crmQueries.currentEnrollment()
+	);
 
 	if (!profile) return null;
 
@@ -65,12 +72,13 @@ function DashboardPage() {
 			{/* Hero */}
 			<UserHero icon={CupFirstIcon} title="" description="">
 				<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-					<Avatar className="border-background ring-primary/20 h-16 w-16 shrink-0 border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
-						<AvatarImage src={profile.image ?? undefined} alt={displayName} />
-						<AvatarFallback className="bg-primary/10 text-brand text-xl font-bold sm:text-2xl">
-							{initials}
-						</AvatarFallback>
-					</Avatar>
+					<AvatarEditor
+						imageUrl={profile.image}
+						initials={initials}
+						name={displayName}
+						className="border-background ring-primary/20 h-16 w-16 shrink-0 overflow-hidden border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
+						fallbackClassName="bg-primary/10 text-brand text-xl font-bold sm:text-2xl"
+					/>
 					<div className="min-w-0 flex-1">
 						<h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
 							Ciao, <span className="gradient-text break-words">{displayName}</span>
@@ -106,6 +114,8 @@ function DashboardPage() {
 
 			<div className="container space-y-8">
 				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}
+
+				{enrollmentLoaded && !enrollment && <EnrollmentPrompt />}
 
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard

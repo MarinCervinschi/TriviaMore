@@ -35,7 +35,7 @@ export async function createUser(
 	return id;
 }
 
-async function createDepartment(tx: TestTx): Promise<string> {
+export async function createDepartment(tx: TestTx): Promise<string> {
 	const [row] = await tx
 		.insert(departments)
 		.values({ name: "Dip. Test", code: `D-${shortId()}` })
@@ -43,7 +43,7 @@ async function createDepartment(tx: TestTx): Promise<string> {
 	return row.id;
 }
 
-async function createCourse(tx: TestTx, departmentId: string): Promise<string> {
+export async function createCourse(tx: TestTx, departmentId: string): Promise<string> {
 	const [row] = await tx
 		.insert(courses)
 		.values({ name: "Corso Test", code: `C-${shortId()}`, departmentId })

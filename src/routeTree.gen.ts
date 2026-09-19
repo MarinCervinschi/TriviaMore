@@ -22,6 +22,7 @@ import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as ApiLogRouteImport } from './routes/api/log'
+import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
 import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
 import { Route as AppAboutRouteImport } from './routes/_app/about'
@@ -134,6 +135,11 @@ const ApiLogRoute = ApiLogRouteImport.update({
   id: '/api/log',
   path: '/api/log',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppNewsRoute = AppNewsRouteImport.update({
   id: '/news',
@@ -401,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -460,6 +467,7 @@ export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -524,6 +532,7 @@ export interface FileRoutesById {
   '/_app/about': typeof AppAboutRoute
   '/_app/contact': typeof AppContactRoute
   '/_app/news': typeof AppNewsRoute
+  '/_app/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -589,6 +598,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
@@ -648,6 +658,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/news'
+    | '/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
@@ -711,6 +722,7 @@ export interface FileRouteTypes {
     | '/_app/about'
     | '/_app/contact'
     | '/_app/news'
+    | '/_app/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/callback'
@@ -872,6 +884,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/log'
       preLoaderRoute: typeof ApiLogRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/onboarding': {
+      id: '/_app/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/news': {
       id: '/_app/news'
@@ -1307,6 +1326,7 @@ interface AppRouteChildren {
   AppAboutRoute: typeof AppAboutRoute
   AppContactRoute: typeof AppContactRoute
   AppNewsRoute: typeof AppNewsRoute
+  AppOnboardingRoute: typeof AppOnboardingRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBrowseIndexRoute: typeof AppBrowseIndexRoute
   AppDepartmentsIndexRoute: typeof AppDepartmentsIndexRoute
@@ -1330,6 +1350,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAboutRoute: AppAboutRoute,
   AppContactRoute: AppContactRoute,
   AppNewsRoute: AppNewsRoute,
+  AppOnboardingRoute: AppOnboardingRoute,
   AppIndexRoute: AppIndexRoute,
   AppBrowseIndexRoute: AppBrowseIndexRoute,
   AppDepartmentsIndexRoute: AppDepartmentsIndexRoute,

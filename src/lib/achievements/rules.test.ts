@@ -20,6 +20,7 @@ function snapshot(overrides: Partial<MetricSnapshot> = {}): MetricSnapshot {
 		BOOKMARKED_THEN_CORRECT: 0,
 		APPROVED_REQUESTS: 0,
 		SIGNUP_RANK: 0,
+		ENROLLMENT_DECLARED: 0,
 		...overrides,
 	};
 }

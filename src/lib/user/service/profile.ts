@@ -74,9 +74,16 @@ export async function updateProfile(
 	input: { name: string; image?: string | null }
 ) {
 	// `set_profiles_updated_at` maintains updated_at.
+	//
+	// An absent `image` leaves the stored one alone; only an explicit null clears
+	// it. Sending `?? null` here wiped the avatar of anyone who saved just a name,
+	// which is exactly what the onboarding does.
 	await getDb()
 		.update(profiles)
-		.set({ name: input.name, image: input.image ?? null })
+		.set({
+			name: input.name,
+			image: input.image === undefined ? undefined : input.image,
+		})
 		.where(eq(profiles.id, userId));
 
 	// The name is duplicated into the auth user's metadata, which is what OAuth
