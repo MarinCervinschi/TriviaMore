@@ -110,13 +110,13 @@ export async function completeFlashcard(
 	await assertSectionAccess(db, userId, session.sectionId);
 
 	await db.transaction(async tx => {
-		await insertFlashcardAttempt(tx, {
+		const recorded = await insertFlashcardAttempt(tx, {
 			userId,
 			sessionId: input.sessionId,
 			sectionId: session.sectionId,
 			cardsReviewed: input.cardsReviewed,
 		});
-		await applyFlashcardActivity(tx, userId);
+		if (recorded) await applyFlashcardActivity(tx, userId);
 	});
 
 	evaluateAchievementsInBackground(userId);
