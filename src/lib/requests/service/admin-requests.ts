@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
@@ -255,7 +255,7 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 
 		const note = input.admin_note?.trim() || null;
 
-		await tx
+		const [claimed] = await tx
 			.update(contentRequests)
 			.set({
 				status: "APPROVED",
@@ -263,7 +263,12 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 				handledAt: sql`now()`,
 				adminNote: note,
 			})
-			.where(eq(contentRequests.id, input.id));
+			.where(
+				and(eq(contentRequests.id, input.id), ne(contentRequests.status, "APPROVED"))
+			)
+			.returning({ id: contentRequests.id });
+
+		if (!claimed) throw new Conflict("La proposta è già stata presa in carico");
 
 		const titleMap: Record<string, string> = {
 			REPORT: "Segnalazione presa in carico",
