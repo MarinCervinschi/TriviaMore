@@ -5,6 +5,7 @@ import { StarsIcon } from "@solar-icons/react/linear/stars";
 import { useQuery } from "@tanstack/react-query";
 
 import { Spinner } from "@/components/icons";
+import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
 import { AnimatedStack } from "@/components/session-config/animated-block";
 import {
 	FlashcardConfigFields,
@@ -63,6 +64,13 @@ export function StartExamDialog({
 		enabled: open && hasQuiz,
 	});
 
+	// Only the quiz half is gated: a flashcard sitting holds no attempt, so an
+	// unfinished quiz must not stand in its way.
+	const { data: openAttempt, isPending: checkingAttempt } = useQuery({
+		...quizQueries.openAttempt(),
+		enabled: open && hasQuiz,
+	});
+
 	const selectedEvalMode = evalModes?.find(
 		m => m.id === (evalModeId ?? evalModes?.[0]?.id)
 	);
@@ -91,7 +99,9 @@ export function StartExamDialog({
 		});
 	};
 
-	const quizFields = (
+	const quizFields = openAttempt ? (
+		<OpenAttemptBanner attempt={openAttempt} />
+	) : (
 		<QuizConfigFields
 			questionCount={questionCount}
 			setQuestionCount={setQuestionCount}
@@ -177,7 +187,9 @@ export function StartExamDialog({
 					</Button>
 					<Button
 						onClick={tab === "quiz" ? handleStartQuiz : handleStartFlashcard}
-						disabled={loading}
+						disabled={
+							loading || (tab === "quiz" && (checkingAttempt || Boolean(openAttempt)))
+						}
 					>
 						{loading && <Spinner className="mr-2" />}
 						{tab === "quiz" ? "Inizia Quiz" : "Inizia Flashcard"}

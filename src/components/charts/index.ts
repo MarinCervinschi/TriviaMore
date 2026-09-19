@@ -32,3 +32,4 @@ export { RadialGauge } from "./radial-gauge";
 export type { RadialGaugeProps } from "./radial-gauge";
 export { TimeSeriesChart } from "./time-series-chart";
 export type { TimeSeriesChartProps } from "./time-series-chart";
+export { TickArc, TickBar } from "./tick-gauge";

@@ -37,6 +37,7 @@ import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
+import { Route as AppUserAchievementsRouteImport } from './routes/_app/user/achievements'
 import { Route as AppLegalTermsRouteImport } from './routes/_app/legal/terms'
 import { Route as AppLegalPrivacyRouteImport } from './routes/_app/legal/privacy'
 import { Route as AppLegalDeclinedRouteImport } from './routes/_app/legal/declined'
@@ -207,6 +208,11 @@ const AppUserClassesRoute = AppUserClassesRouteImport.update({
 const AppUserBookmarksRoute = AppUserBookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserAchievementsRoute = AppUserAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppLegalTermsRoute = AppLegalTermsRouteImport.update({
@@ -409,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/legal/declined': typeof AppLegalDeclinedRoute
   '/legal/privacy': typeof AppLegalPrivacyRoute
   '/legal/terms': typeof AppLegalTermsRoute
+  '/user/achievements': typeof AppUserAchievementsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
@@ -468,6 +475,7 @@ export interface FileRoutesByTo {
   '/legal/declined': typeof AppLegalDeclinedRoute
   '/legal/privacy': typeof AppLegalPrivacyRoute
   '/legal/terms': typeof AppLegalTermsRoute
+  '/user/achievements': typeof AppUserAchievementsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
@@ -531,6 +539,7 @@ export interface FileRoutesById {
   '/_app/legal/declined': typeof AppLegalDeclinedRoute
   '/_app/legal/privacy': typeof AppLegalPrivacyRoute
   '/_app/legal/terms': typeof AppLegalTermsRoute
+  '/_app/user/achievements': typeof AppUserAchievementsRoute
   '/_app/user/bookmarks': typeof AppUserBookmarksRoute
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/notifications': typeof AppUserNotificationsRoute
@@ -594,6 +603,7 @@ export interface FileRouteTypes {
     | '/legal/declined'
     | '/legal/privacy'
     | '/legal/terms'
+    | '/user/achievements'
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
@@ -653,6 +663,7 @@ export interface FileRouteTypes {
     | '/legal/declined'
     | '/legal/privacy'
     | '/legal/terms'
+    | '/user/achievements'
     | '/user/bookmarks'
     | '/user/classes'
     | '/user/notifications'
@@ -715,6 +726,7 @@ export interface FileRouteTypes {
     | '/_app/legal/declined'
     | '/_app/legal/privacy'
     | '/_app/legal/terms'
+    | '/_app/user/achievements'
     | '/_app/user/bookmarks'
     | '/_app/user/classes'
     | '/_app/user/notifications'
@@ -964,6 +976,13 @@ declare module '@tanstack/react-router' {
       path: '/bookmarks'
       fullPath: '/user/bookmarks'
       preLoaderRoute: typeof AppUserBookmarksRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/achievements': {
+      id: '/_app/user/achievements'
+      path: '/achievements'
+      fullPath: '/user/achievements'
+      preLoaderRoute: typeof AppUserAchievementsRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/legal/terms': {
@@ -1246,6 +1265,7 @@ const AppLegalRouteRouteWithChildren = AppLegalRouteRoute._addFileChildren(
 )
 
 interface AppUserRouteRouteChildren {
+  AppUserAchievementsRoute: typeof AppUserAchievementsRoute
   AppUserBookmarksRoute: typeof AppUserBookmarksRoute
   AppUserClassesRoute: typeof AppUserClassesRoute
   AppUserNotificationsRoute: typeof AppUserNotificationsRoute
@@ -1261,6 +1281,7 @@ interface AppUserRouteRouteChildren {
 }
 
 const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
+  AppUserAchievementsRoute: AppUserAchievementsRoute,
   AppUserBookmarksRoute: AppUserBookmarksRoute,
   AppUserClassesRoute: AppUserClassesRoute,
   AppUserNotificationsRoute: AppUserNotificationsRoute,

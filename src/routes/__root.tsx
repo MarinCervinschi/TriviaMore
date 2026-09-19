@@ -19,7 +19,7 @@ import { UmamiAnalytics } from "@/components/analytics/umami-analytics";
 import { ErrorPage } from "@/components/error/error-page";
 import { NotFoundPage } from "@/components/error/not-found-page";
 import { Toaster } from "@/components/ui/sonner";
-import { getMaintenanceModeFn } from "@/lib/maintenance/server";
+import { inMaintenanceMode } from "@/lib/maintenance/server";
 import { ThemeProvider } from "@/providers/theme-provider";
 import globalsCss from "@/styles/globals.css?url";
 
@@ -28,8 +28,7 @@ const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
 	beforeLoad: async ({ location }) => {
 		if (location.pathname === "/maintenance") return;
-		const maintenance = await getMaintenanceModeFn();
-		if (maintenance) {
+		if (await inMaintenanceMode()) {
 			throw redirect({ to: "/maintenance" });
 		}
 	},
