@@ -1,0 +1,1 @@
+ALTER TYPE "public"."achievement_metric" ADD VALUE 'ENROLLMENT_DECLARED';

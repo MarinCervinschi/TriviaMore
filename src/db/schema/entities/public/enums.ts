@@ -56,6 +56,7 @@ export const achievementMetricEnum = pgEnum("achievement_metric", [
   "BOOKMARKED_THEN_CORRECT",
   "APPROVED_REQUESTS",
   "SIGNUP_RANK",
+  "ENROLLMENT_DECLARED",
 ])
 
 export const achievementComparatorEnum = pgEnum("achievement_comparator", [

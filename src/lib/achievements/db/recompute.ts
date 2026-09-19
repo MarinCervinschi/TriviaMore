@@ -25,6 +25,10 @@ import { toUserMetrics } from "./metrics";
  * demoted: run it from `pnpm achievements:reconcile` or a backfill, not on a
  * request path.
  *
+ * `ENROLLMENT_DECLARED` is the exception to "recompute from history": the
+ * enrolment table *is* the history, it holds one row per career, and there is no
+ * rollup to prove right — both sides read it, so they cannot disagree.
+ *
  * A day is Europe/Rome throughout, while the analytics page groups in UTC and the
  * rhythm card in the viewer's zone. And RLS filters nothing on this connection:
  * `target` is what keeps one user's attempts out of another's totals.
@@ -150,6 +154,13 @@ export async function recomputeMetricSnapshots(
 			 where cr.status = 'APPROVED'
 			 group by cr.user_id
 		),
+		enrolled as (
+			select e.user_id
+			  from crm.enrollments e
+			  join target t on t.user_id = e.user_id
+			 where e.is_current
+			 group by e.user_id
+		),
 		days as (
 			select a.user_id, (a.completed_at at time zone ${ACTIVITY_ZONE})::date as day
 			  from attempt a
@@ -197,7 +208,8 @@ export async function recomputeMetricSnapshots(
 		       coalesce(f.flashcard_sessions, 0) as flashcard_sessions,
 		       coalesce(bk.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(r.approved_requests, 0) as approved_requests,
-		       sg.signup_rank as signup_rank
+		       sg.signup_rank as signup_rank,
+		       (en.user_id is not null)::int as enrollment_declared
 		  from target t
 		  left join volume v on v.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
@@ -208,6 +220,7 @@ export async function recomputeMetricSnapshots(
 		  left join flash f on f.user_id = t.user_id
 		  left join book bk on bk.user_id = t.user_id
 		  left join req r on r.user_id = t.user_id
+		  left join enrolled en on en.user_id = t.user_id
 		  join signup sg on sg.user_id = t.user_id
 	`);
 

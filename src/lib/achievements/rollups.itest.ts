@@ -9,9 +9,14 @@ import {
 	quizAttempts,
 	userDayActivity,
 } from "@/db/schema";
+import {
+	findCurrentEnrollment,
+	insertEnrollment,
+	setEnrollmentCurrent,
+} from "@/lib/crm/db/enrollments";
 import { insertFlashcardAttempt } from "@/lib/flashcard/db/flashcard-attempts";
 import { type TestTx, closeTestDb, withRollback } from "@/lib/testing/db";
-import { seedQuizScope } from "@/lib/testing/fixtures";
+import { createCourse, createDepartment, seedQuizScope } from "@/lib/testing/fixtures";
 
 import { backfillRollups } from "./db/backfill";
 import { readMetricSnapshots } from "./db/metrics";
@@ -220,6 +225,33 @@ describe("user rollups agree with the history they derive from", () => {
 			const { stored, computed } = await snapshots(tx, scope.owner);
 			expect(stored.SIGNUP_RANK).toBe(computed.SIGNUP_RANK);
 			expect(Number.isFinite(stored.SIGNUP_RANK)).toBe(true);
+		});
+	});
+
+	// The one metric with no rollup: both sides read crm.enrollments, so this
+	// asserts the rule rather than the agreement — which holds by construction.
+	it("declares an enrolment, and follows the current one", async () => {
+		await withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+
+			const before = await snapshots(tx, scope.owner);
+			expect(before.stored.ENROLLMENT_DECLARED).toBe(0);
+			expect(before.computed.ENROLLMENT_DECLARED).toBe(0);
+
+			const courseId = await createCourse(tx, await createDepartment(tx));
+			await insertEnrollment(tx, { userId: scope.owner, courseId });
+
+			const after = await snapshots(tx, scope.owner);
+			expect(after.stored.ENROLLMENT_DECLARED).toBe(1);
+			expect(after.computed.ENROLLMENT_DECLARED).toBe(1);
+
+			// A row kept only as history does not count as a declaration.
+			const row = await findCurrentEnrollment(tx, scope.owner);
+			await setEnrollmentCurrent(tx, row!.id, false);
+
+			const demoted = await snapshots(tx, scope.owner);
+			expect(demoted.stored.ENROLLMENT_DECLARED).toBe(0);
+			expect(demoted.computed.ENROLLMENT_DECLARED).toBe(0);
 		});
 	});
 });
