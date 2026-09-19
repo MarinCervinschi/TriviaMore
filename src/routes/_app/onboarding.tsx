@@ -205,12 +205,12 @@ function OnboardingPage() {
 										selectedSeed={seed}
 										onSelect={setSeed}
 										onShuffle={() => setPage(current => current + 1)}
-										onUpload={file =>
+										onUpload={file => {
 											// Clearing the seed is the fix, not a tidy-up: the preview
 											// prefers it over the stored image, and the confirm step
 											// would re-apply it over the photo just uploaded.
-											uploadAvatar.mutate(file, { onSuccess: () => setSeed(null) })
-										}
+											uploadAvatar.mutate(file, { onSuccess: () => setSeed(null) });
+										}}
 										isLoading={choices.isFetching}
 										isUploading={uploadAvatar.isPending}
 									/>
