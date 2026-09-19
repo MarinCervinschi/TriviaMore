@@ -26,6 +26,7 @@ import {
 	getPlatformStats,
 } from "../../src/lib/browse/service/overview.ts";
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts";
+import { getCurrentEnrollment, hasEnrollment } from "../../src/lib/crm/service.ts";
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts";
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts";
 import {
@@ -245,6 +246,8 @@ if (userId) {
 	await check("requests.getContentTree", () => getContentTree(userId));
 	await check("notifications.getNotifications", () => getNotifications(userId));
 	await check("notifications.getUnreadCount", () => getUnreadCount(userId));
+	await check("crm.getCurrentEnrollment", () => getCurrentEnrollment(userId));
+	await check("crm.hasEnrollment", () => hasEnrollment(userId));
 	await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId));
 	await check("legal.getAcceptanceHistory", () => getAcceptanceHistory(userId));
 } else {

@@ -16,8 +16,7 @@ export default defineConfig({
 	schema: "./src/db/schema",
 	out: "./drizzle",
 	dbCredentials: { url: migrationUrl },
-	schemaFilter: ["public", "catalog", "quiz", "internal"],
-	// Without this drizzle-kit emits DROP ROLE for anon/authenticated/service_role.
+	schemaFilter: ["public", "catalog", "quiz", "internal", "crm"],
 	entities: { roles: { provider: "supabase" } },
 	casing: "snake_case",
 	verbose: true,
