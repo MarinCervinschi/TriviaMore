@@ -116,9 +116,14 @@ function OnboardingPage() {
 	async function confirm() {
 		if (!courseId) return;
 
-		await setEnrollment.mutateAsync({ courseId });
-		await updateProfile.mutateAsync({ name: name.trim() });
-		if (seed) await setGeneratedAvatar.mutateAsync(seed);
+		try {
+			await setEnrollment.mutateAsync({ courseId });
+			await updateProfile.mutateAsync({ name: name.trim() });
+			if (seed) await setGeneratedAvatar.mutateAsync(seed);
+		} catch {
+			// Each mutation toasts its own message; the wizard stays where it is.
+			return;
+		}
 
 		navigate({ to: "/user" });
 	}

@@ -45,7 +45,12 @@ export function AvatarEditor({
 	const preview = choices.data?.find(choice => choice.seed === seed)?.dataUri;
 
 	async function save() {
-		if (seed) await setGenerated.mutateAsync(seed);
+		try {
+			if (seed) await setGenerated.mutateAsync(seed);
+		} catch {
+			// The mutation toasts its own message; the dialog stays open to retry.
+			return;
+		}
 		setOpen(false);
 		setSeed(null);
 	}
