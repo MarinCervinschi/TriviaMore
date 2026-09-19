@@ -265,11 +265,12 @@ const ENROLLMENT = {
 	startYear: null,
 };
 
-/** The dashboard nudge, which is what reaches accounts made before the wizard. */
+/** The dashboard nudge, which is what reaches accounts made before the wizard.
+ *  It sits beside the profile in the hero, so it is shown at that width. */
 export const IlPromemoria: Story = {
 	name: "Il promemoria in dashboard",
 	render: () => (
-		<div className="max-w-3xl">
+		<div className="lg:w-72">
 			<EnrollmentPrompt />
 		</div>
 	),
