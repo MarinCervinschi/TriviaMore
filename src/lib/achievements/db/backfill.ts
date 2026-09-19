@@ -12,8 +12,9 @@ import {
 
 /**
  * Rebuilds every rollup from the history that is their source of truth. Safe to
- * run repeatedly: each statement is an upsert keyed the same way the incremental
- * path writes, so a rebuild converges rather than accumulating.
+ * run repeatedly: every statement is keyed the same way the incremental path
+ * writes and whatever the history no longer justifies is deleted, so a rebuild
+ * converges rather than accumulating.
  *
  * This is the guarantee that makes the derived tables acceptable at all — a
  * counter you cannot rebuild is a corrupt value waiting to be discovered.
@@ -39,6 +40,17 @@ export async function backfillRollups(db: DbOrTx): Promise<void> {
 	`);
 
 	await db.execute(sql`
+		delete from public.user_section_stats ss
+		 where not exists (
+		   select 1
+		     from quiz.quiz_attempts qa
+		    where qa.user_id = ss.user_id
+		      and qa.section_id = ss.section_id
+		      and qa.completed_at is not null
+		 )
+	`);
+
+	await db.execute(sql`
 		insert into public.user_question_stats
 			(user_id, question_id, hard_correct, bookmarked_then_correct)
 		select qa.user_id, aa.question_id,
@@ -60,6 +72,27 @@ export async function backfillRollups(db: DbOrTx): Promise<void> {
 		       bookmarked_then_correct = excluded.bookmarked_then_correct
 	`);
 
+	// Before user_stats, which counts these rows.
+	await db.execute(sql`
+		delete from public.user_question_stats qs
+		 where not exists (
+		   select 1
+		     from quiz.answer_attempts aa
+		     join quiz.quiz_attempts qa
+		       on qa.id = aa.quiz_attempt_id and qa.completed_at is not null
+		     left join public.bookmarks b
+		       on b.user_id = qa.user_id
+		      and b.question_id = aa.question_id
+		      and b.created_at < qa.completed_at
+		    where qa.user_id = qs.user_id
+		      and aa.question_id = qs.question_id
+		      and (
+		        (aa.difficulty = 'HARD' and aa.is_correct)
+		        or (aa.is_correct and b.question_id is not null)
+		      )
+		 )
+	`);
+
 	await db.execute(sql`
 		insert into public.user_day_activity (user_id, day, quizzes, flashcards)
 		select user_id, day, sum(q)::int, sum(f)::int
@@ -79,6 +112,23 @@ export async function backfillRollups(db: DbOrTx): Promise<void> {
 		on conflict (user_id, day) do update set
 		       quizzes = excluded.quizzes,
 		       flashcards = excluded.flashcards
+	`);
+
+	await db.execute(sql`
+		delete from public.user_day_activity d
+		 where not exists (
+		   select 1
+		     from quiz.quiz_attempts qa
+		    where qa.user_id = d.user_id
+		      and qa.completed_at is not null
+		      and (qa.completed_at at time zone ${ACTIVITY_ZONE})::date = d.day
+		 )
+		   and not exists (
+		   select 1
+		     from quiz.flashcard_attempts fa
+		    where fa.user_id = d.user_id
+		      and (fa.completed_at at time zone ${ACTIVITY_ZONE})::date = d.day
+		 )
 	`);
 
 	await db.execute(sql`

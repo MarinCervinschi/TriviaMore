@@ -1,7 +1,7 @@
 // Rebuilds every user rollup from the history that is their source of truth.
 // Run it once after applying 0028, and again any time the incremental path has
 // been bypassed — a bulk import, a manual fix, a release that changed a rule.
-// Idempotent: every statement is an upsert, so a rebuild converges.
+// Idempotent: a rebuild converges on the history rather than accumulating.
 //
 //   pnpm achievements:backfill
 import { closeDb, getDb } from "../../src/db/index.ts";
