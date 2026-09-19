@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 
 import {
@@ -6,7 +7,9 @@ import {
 	flashcardAttempts,
 	questions,
 	quizAttempts,
+	userDayActivity,
 } from "@/db/schema";
+import { insertFlashcardAttempt } from "@/lib/flashcard/db/flashcard-attempts";
 import { type TestTx, closeTestDb, withRollback } from "@/lib/testing/db";
 import { seedQuizScope } from "@/lib/testing/fixtures";
 
@@ -155,6 +158,44 @@ describe("user rollups agree with the history they derive from", () => {
 			expect(stored.HARD_CORRECT).toBe(1);
 			expect(stored.QUIZZES_COMPLETED).toBe(3);
 			expect(stored.MAX_SECTION_IMPROVEMENT).toBe(20);
+		});
+	});
+
+	it("drops an active day the history does not justify", async () => {
+		await withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+			await recordAttempt(tx, {
+				userId: scope.owner,
+				sectionId: scope.sectionId,
+				score: 30,
+				answers: [],
+			});
+			await tx
+				.insert(userDayActivity)
+				.values({ userId: scope.owner, day: "2020-01-01", flashcards: 1 });
+
+			await backfillRollups(tx);
+
+			const days = await tx
+				.select({ day: userDayActivity.day })
+				.from(userDayActivity)
+				.where(eq(userDayActivity.userId, scope.owner));
+			expect(days.map(row => row.day)).not.toContain("2020-01-01");
+		});
+	});
+
+	it("records a replayed flashcard session once", async () => {
+		await withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+			const attempt = {
+				userId: scope.owner,
+				sessionId: `s-${crypto.randomUUID().slice(0, 8)}`,
+				sectionId: scope.sectionId,
+				cardsReviewed: 5,
+			};
+
+			expect(await insertFlashcardAttempt(tx, attempt)).toBe(true);
+			expect(await insertFlashcardAttempt(tx, attempt)).toBe(false);
 		});
 	});
 
