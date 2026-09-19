@@ -71,51 +71,53 @@ function DashboardPage() {
 		<div className="space-y-8 pb-8">
 			{/* Hero */}
 			<UserHero icon={CupFirstIcon} title="" description="">
-				<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-					<AvatarEditor
-						imageUrl={profile.image}
-						initials={initials}
-						name={displayName}
-						className="border-background ring-primary/20 h-16 w-16 shrink-0 overflow-hidden border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
-						fallbackClassName="bg-primary/10 text-brand text-xl font-bold sm:text-2xl"
-					/>
-					<div className="min-w-0 flex-1">
-						<h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-							Ciao, <span className="gradient-text break-words">{displayName}</span>
-						</h1>
-						<div className="mb-3 flex flex-wrap items-center gap-2">
-							<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
-								{getRoleLabel(profile.role)}
-							</Badge>
-							{achievements && achievements.pinned.length > 0 && (
-								<>
-									<span className="bg-border h-4 w-px" aria-hidden />
-									<PinnedAchievements pinned={achievements.pinned} />
-								</>
-							)}
-						</div>
-						<div className="text-muted-foreground flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-							{profile.email && (
-								<div className="flex min-w-0 items-center gap-1.5">
-									<LetterIcon className="h-4 w-4 shrink-0" />
-									<span className="truncate text-sm">{profile.email}</span>
+				<div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+					<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+						<AvatarEditor
+							imageUrl={profile.image}
+							initials={initials}
+							name={displayName}
+							className="border-background ring-primary/20 h-16 w-16 shrink-0 overflow-hidden border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
+							fallbackClassName="bg-primary/10 text-brand text-xl font-bold sm:text-2xl"
+						/>
+						<div className="min-w-0 flex-1">
+							<h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+								Ciao, <span className="gradient-text break-words">{displayName}</span>
+							</h1>
+							<div className="mb-3 flex flex-wrap items-center gap-2">
+								<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
+									{getRoleLabel(profile.role)}
+								</Badge>
+								{achievements && achievements.pinned.length > 0 && (
+									<>
+										<span className="bg-border h-4 w-px" aria-hidden />
+										<PinnedAchievements pinned={achievements.pinned} />
+									</>
+								)}
+							</div>
+							<div className="text-muted-foreground flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+								{profile.email && (
+									<div className="flex min-w-0 items-center gap-1.5">
+										<LetterIcon className="h-4 w-4 shrink-0" />
+										<span className="truncate text-sm">{profile.email}</span>
+									</div>
+								)}
+								<div className="flex items-center gap-1.5">
+									<CalendarMinimalisticIcon className="h-4 w-4 shrink-0" />
+									<span className="text-sm">
+										Membro dal {formatDate(profile.createdAt)}
+									</span>
 								</div>
-							)}
-							<div className="flex items-center gap-1.5">
-								<CalendarMinimalisticIcon className="h-4 w-4 shrink-0" />
-								<span className="text-sm">
-									Membro dal {formatDate(profile.createdAt)}
-								</span>
 							</div>
 						</div>
 					</div>
+
+					{enrollmentLoaded && !enrollment && <EnrollmentPrompt />}
 				</div>
 			</UserHero>
 
 			<div className="container space-y-8">
 				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}
-
-				{enrollmentLoaded && !enrollment && <EnrollmentPrompt />}
 
 				<div className="grid gap-4 sm:grid-cols-3">
 					<ActionCard
