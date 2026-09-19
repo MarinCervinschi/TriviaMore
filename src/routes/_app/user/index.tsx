@@ -16,6 +16,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { EnrollmentPrompt } from "@/components/onboarding/enrollment-prompt";
+import { EnrollmentSummary } from "@/components/onboarding/enrollment-summary";
 import { ProgressSummary } from "@/components/progress/progress-summary";
 import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
 import { decorativeTint } from "@/components/shared/decorative-tints";
@@ -112,7 +113,12 @@ function DashboardPage() {
 						</div>
 					</div>
 
-					{enrollmentLoaded && !enrollment && <EnrollmentPrompt />}
+					{enrollmentLoaded &&
+						(enrollment ? (
+							<EnrollmentSummary enrollment={enrollment} />
+						) : (
+							<EnrollmentPrompt />
+						))}
 				</div>
 			</UserHero>
 

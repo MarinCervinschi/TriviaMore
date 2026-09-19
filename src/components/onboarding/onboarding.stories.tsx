@@ -9,6 +9,7 @@ import { avatarChoices } from "@/components/onboarding/avatar-fixtures";
 import { CoursePicker } from "@/components/onboarding/course-picker";
 import { EnrollmentCard } from "@/components/onboarding/enrollment-card";
 import { EnrollmentPrompt } from "@/components/onboarding/enrollment-prompt";
+import { EnrollmentSummary } from "@/components/onboarding/enrollment-summary";
 import {
 	DEPARTMENTS,
 	DSV_COURSES,
@@ -265,13 +266,46 @@ const ENROLLMENT = {
 	startYear: null,
 };
 
+/** The longest name in the catalogue — 70 characters, against 28 on average.
+ *  The lab judges the surfaces on the worst case, not on "Informatica". */
+const LONG_ENROLLMENT = {
+	...ENROLLMENT,
+	courseId: "83-313",
+	courseName: "Scienze Dell'Educazione Per Il Nido E Le Professioni Socio-Pedagogiche",
+	courseCode: "83-313",
+	departmentId: "desu",
+	departmentName: "Dipartimento di Educazione e Scienze Umane",
+	departmentCode: "DESU",
+};
+
 /** The dashboard nudge, which is what reaches accounts made before the wizard.
  *  It sits beside the profile in the hero, so it is shown at that width. */
 export const IlPromemoria: Story = {
 	name: "Il promemoria in dashboard",
 	render: () => (
-		<div className="lg:w-72">
+		<div className="lg:w-80">
 			<EnrollmentPrompt />
+		</div>
+	),
+};
+
+/** The same hero slot once the course is declared. */
+export const IlCorsoInDashboard: Story = {
+	name: "Il corso dichiarato, in dashboard",
+	render: () => (
+		<div className="lg:w-80">
+			<EnrollmentSummary enrollment={ENROLLMENT} />
+		</div>
+	),
+};
+
+/** The 70-character worst case in the catalogue, which is where the two lines
+ *  and the tooltip earn their keep. Hover the name. */
+export const IlCorsoPiuLungo: Story = {
+	name: "Il corso dal nome piu lungo",
+	render: () => (
+		<div className="lg:w-80">
+			<EnrollmentSummary enrollment={LONG_ENROLLMENT} />
 		</div>
 	),
 };

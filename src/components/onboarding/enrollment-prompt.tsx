@@ -10,7 +10,7 @@ import { InsetCard } from "@/components/ui/inset-card";
  *  beside the profile in the hero, not to span the page. */
 export function EnrollmentPrompt() {
 	return (
-		<InsetCard className="w-full lg:w-72 lg:shrink-0" panelClassName="p-3.5">
+		<InsetCard className="w-full lg:w-80 lg:shrink-0" panelClassName="p-3.5">
 			<div className="flex items-center gap-3">
 				<IconTile size="sm" variant="soft" className="shrink-0">
 					<DiplomaIcon />
