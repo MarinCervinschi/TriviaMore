@@ -4,11 +4,13 @@
 // whole flow runs on a handle the caller controls.
 //
 //   pnpm smoke:writes
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { TransactionRollbackError } from "drizzle-orm/errors";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
 import {
+	courses,
+	enrollments,
 	evaluationModes,
 	flashcardAttempts,
 	questions,
@@ -17,6 +19,13 @@ import {
 	quizzes,
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
+import {
+	findCurrentEnrollment,
+	findEnrollmentByCourse,
+	insertEnrollment,
+	setEnrollmentCurrent,
+	updateEnrollmentDetails,
+} from "../../src/lib/crm/db/enrollments.ts";
 import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
 import {
 	applyAttemptGrade,
@@ -265,6 +274,74 @@ try {
 			.from(quizzes)
 			.where(eq(quizzes.id, staleQuiz.id));
 		expect("reap: a quiz another attempt holds is kept", heldQuiz.length === 1);
+
+		// Two courses the seed profile has never been enrolled in. The unique index
+		// is on (user_id, course_id) and ignores is_current, so a demoted row from
+		// an earlier career collides just as hard as the live one.
+		const heldCourses = await tx
+			.select({ courseId: enrollments.courseId })
+			.from(enrollments)
+			.where(eq(enrollments.userId, seed.user_id));
+		const held = await findCurrentEnrollment(tx, seed.user_id);
+		const taken = heldCourses.map(row => row.courseId);
+		const pair = await tx
+			.select({ id: courses.id })
+			.from(courses)
+			.where(taken.length > 0 ? notInArray(courses.id, taken) : undefined)
+			.orderBy(courses.createdAt)
+			.limit(2);
+		if (pair.length === 2) {
+			const [first, second] = pair as [{ id: string }, { id: string }];
+
+			// One current row per user, so step aside before adding ours. Everything
+			// here is inside the transaction that is rolled back at the end.
+			if (held) await setEnrollmentCurrent(tx, held.id, false);
+
+			await insertEnrollment(tx, { userId: seed.user_id, courseId: first.id });
+			const opened = await findCurrentEnrollment(tx, seed.user_id);
+			expect("enrolment: the first one is current", opened?.courseId === first.id);
+
+			// Switching course demotes the old row instead of deleting it, so the
+			// exam record built on its id survives.
+			if (opened) await setEnrollmentCurrent(tx, opened.id, false);
+			await insertEnrollment(tx, { userId: seed.user_id, courseId: second.id });
+			const switched = await findCurrentEnrollment(tx, seed.user_id);
+			expect(
+				"enrolment: switching promotes the new course",
+				switched?.courseId === second.id
+			);
+			expect(
+				"enrolment: the previous course is kept as history",
+				(await findEnrollmentByCourse(tx, seed.user_id, first.id)) !== undefined
+			);
+
+			// Switching back promotes the original row rather than adding a third.
+			if (switched) await setEnrollmentCurrent(tx, switched.id, false);
+			const previous = await findEnrollmentByCourse(tx, seed.user_id, first.id);
+			if (previous) await setEnrollmentCurrent(tx, previous.id, true);
+			const back = await findCurrentEnrollment(tx, seed.user_id);
+			expect(
+				"enrolment: switching back reuses the original row",
+				back?.id === opened?.id && back?.courseId === first.id
+			);
+
+			// The wizard sends only a course, so the details patch is empty and
+			// `.set({})` would throw "No values to set" — it must be a no-op.
+			let emptyPatchThrew = false;
+			try {
+				await updateEnrollmentDetails(tx, back!.id, {
+					curriculum: undefined,
+					startYear: undefined,
+				});
+			} catch {
+				emptyPatchThrew = true;
+			}
+			expect("enrolment: an empty details patch is a no-op", !emptyPatchThrew);
+
+			await updateEnrollmentDetails(tx, back!.id, { startYear: 2023 });
+			const patched = await findCurrentEnrollment(tx, seed.user_id);
+			expect("enrolment: a non-empty patch still writes", patched?.startYear === 2023);
+		}
 
 		tx.rollback();
 	});

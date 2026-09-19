@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@dicebear/core':
+        specifier: ^9.4.3
+        version: 9.4.3
+      '@dicebear/lorelei':
+        specifier: ^9.4.2
+        version: 9.4.2(@dicebear/core@9.4.3)
       '@fontsource/dm-mono':
         specifier: ^5.3.0
         version: 5.3.0
@@ -443,6 +449,16 @@ packages:
 
   '@date-fns/tz@1.5.0':
     resolution: {integrity: sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg==}
+
+  '@dicebear/core@9.4.3':
+    resolution: {integrity: sha512-9ITrQI57k3p5hKuU8HZJ1d0kPdrmTKEJDOdlKQ8CpaChbtmnD1R+dtWmNz5IesYThXM8F64pJ0ZvJ2rsY8Hciw==}
+    engines: {node: '>=18.0.0'}
+
+  '@dicebear/lorelei@9.4.2':
+    resolution: {integrity: sha512-YMv6vnriW6VLFDsreKuOnUFFno6SRe7+7X7R7zPY0rZ+MaHX9V3jcioIG+1PSjIHEDfOLUHpr5vd1JBWv8y7UA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@dicebear/core': ^9.0.0
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -5713,6 +5729,14 @@ snapshots:
   '@csstools/css-tokenizer@4.0.0': {}
 
   '@date-fns/tz@1.5.0': {}
+
+  '@dicebear/core@9.4.3':
+    dependencies:
+      '@types/json-schema': 7.0.15
+
+  '@dicebear/lorelei@9.4.2(@dicebear/core@9.4.3)':
+    dependencies:
+      '@dicebear/core': 9.4.3
 
   '@drizzle-team/brocli@0.10.2': {}
 
