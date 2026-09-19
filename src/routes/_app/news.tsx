@@ -55,7 +55,7 @@ function NewsPage() {
 	}, [isAuthenticated, markRead]);
 
 	const { ref: heroRef, isVisible: heroVisible } = useScrollReveal();
-	const { ref: listRef, isVisible: listVisible } = useScrollReveal();
+	const { ref: listRef, isVisible: listVisible } = useScrollReveal({ threshold: 0 });
 
 	const container = withReducedMotion(staggerContainer, prefersReduced);
 	const item = withReducedMotion(staggerItem, prefersReduced);
