@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
+import { Pagination } from "@/components/ui/pagination";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options";
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/_app/user/bookmarks")({
 function BookmarksPage() {
 	const { data: bookmarks } = useSuspenseQuery(userQueries.bookmarks());
 	const toggleBookmark = useToggleBookmark();
+	const paged = usePagedList(bookmarks);
 	const prefersReduced = useReducedMotion();
 	const container = withReducedMotion(staggerContainer, prefersReduced);
 	const item = withReducedMotion(staggerItem, prefersReduced);
@@ -69,7 +72,7 @@ function BookmarksPage() {
 						initial="hidden"
 						animate="visible"
 					>
-						{bookmarks.map(bookmark => (
+						{paged.items.map(bookmark => (
 							<motion.div key={bookmark.questionId} variants={item}>
 								<BookmarkCard
 									bookmark={bookmark}
@@ -79,6 +82,14 @@ function BookmarksPage() {
 						))}
 					</motion.div>
 				)}
+
+				<Pagination
+					page={paged.page}
+					totalPages={paged.totalPages}
+					pageSize={paged.pageSize}
+					totalItems={paged.total}
+					onPageChange={paged.setPage}
+				/>
 			</div>
 		</div>
 	);

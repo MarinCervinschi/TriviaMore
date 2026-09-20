@@ -26,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -34,6 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import {
@@ -119,6 +121,7 @@ function timeAgo(dateStr: string): string {
 
 function UserContributionsPage() {
 	const { data: requests } = useSuspenseQuery(requestQueries.userRequests());
+	const paged = usePagedList(requests);
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const prefersReduced = useReducedMotion();
 
@@ -172,14 +175,14 @@ function UserContributionsPage() {
 						initial="hidden"
 						animate="visible"
 					>
-						{requests.map((request, i) => (
+						{paged.items.map((request, i) => (
 							<motion.div
 								key={request.id}
 								variants={withReducedMotion(staggerItem, prefersReduced)}
 							>
 								<ContributionRow
 									request={request}
-									isLast={i === requests.length - 1}
+									isLast={i === paged.items.length - 1}
 									isExpanded={expandedId === request.id}
 									onToggle={() =>
 										setExpandedId(expandedId === request.id ? null : request.id)
@@ -190,6 +193,14 @@ function UserContributionsPage() {
 						))}
 					</motion.div>
 				)}
+
+				<Pagination
+					page={paged.page}
+					totalPages={paged.totalPages}
+					pageSize={paged.pageSize}
+					totalItems={paged.total}
+					onPageChange={paged.setPage}
+				/>
 			</div>
 		</div>
 	);
