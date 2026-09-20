@@ -235,8 +235,10 @@ never appears on something inert.
 
 ## Background
 
-One texture, `<PageBand />`, mounted **once** in the `_app` shell so it spans the sidebar gutter
-(D12, D13). Dots plus one soft orb, both fading vertically, anchored **top left**.
+One texture, `<PageBand />`, mounted **once** in the `_app` shell (D12, D13, D29). Dots plus one
+soft orb, both fading vertically, anchored **top left** — but inside the app shell the band sits in
+the inset panel, starting **below the header**, and passes `glow={false}`, so there it is the dots
+alone. The public shell keeps both.
 
 - **`level` follows `isAuthenticated`.** `"public"` is the same band with its two alphas turned up —
   not a second system.

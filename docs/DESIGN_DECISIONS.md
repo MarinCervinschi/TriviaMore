@@ -1277,6 +1277,37 @@ D25: **lifting or recolouring the card itself** — D28 moved the canvas, never 
 
 ---
 
+## D29 — The shell is a sidebar and an inset panel, and the band lives inside it
+
+**Decided 2026-09-20 (#148).** The floating 66px icon rail is replaced by the shadcn sidebar
+primitive in its **`inset`** variant: a sidebar on the canvas, and the page in a rounded panel a tone
+above it. That is D28 applied to the shell rather than to a card — canvas ≠ surface, at shell scale.
+
+**ReUI was evaluated and is not the source.** `reui.io/r/sidebar.json` answers **401**: it is behind a
+licence, and what it sells is shadcn's own API with paid app-shell blocks on top. The primitive is
+vendored from shadcn's **`new-york-v4`** registry — the unsuffixed style is still Tailwind v3
+(`w-[--sidebar-width]`, `theme(spacing.4)`) and does not compile here.
+
+- **Six `--sidebar-*` aliases, not a family.** They map onto tokens the app already has, so no colour
+  enters the system and the contrast gate needs no new row. D13 deleted 16 of these because nothing
+  read them; these six are exactly the six `sidebar.tsx` reads. `--sidebar` is the **canvas**.
+- **The 90px gutter is gone.** `--spacing-rail{,-inset,-gutter}` and `.full-bleed-band` went with it:
+  the panel *is* the column, so nothing needs to reach across a rail any more. The `container`'s cap
+  became `var(--container-max, 80rem)`, which the panel sets to `none` — an 80rem column centred in a
+  wide panel leaves exactly the gutters the shell was meant to remove.
+- **The band starts below the header, inside the panel.** D13 put one band in the shell because it was
+  the only place that spanned the gutter; with no gutter, the reason is different but the count is the
+  same. **The orb is off inside the app shell** (`glow={false}`) and kept for the public one.
+- **The panel is its own scroll port from `md` up**, so its top edge stays on screen. The router is
+  told by `scrollToTopSelectors`, or a new page inherits the previous scroll.
+
+**Rules out:** buying ReUI for a component shadcn gives away; a `--sidebar-*` family with values of its
+own; reinstating the rail gutter or `.full-bleed-band`; a page-level rule under a heading — over the
+dot field it reads as neither boundary nor decoration; `overflow-hidden` on the inset panel, which
+stops every `sticky` inside it.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -1448,3 +1479,4 @@ is a CSS transition on state the user caused, and exactly two places earn it.
 | 2026-08-11 | D19–D20 close #152 and #154: ink tokens split from surfaces, undo for the reversible |
 | 2026-08-11 | D21–D22: one Italian word per catalog level; the focus ring declared once |
 | 2026-08-12 | D23 closes O5 — icon motion is CSS on user-caused state. **D9 reversed**: AutoAnimate not adopted, Framer stays the only motion dependency |
+| 2026-09-20 | D29 (#148): the shell becomes sidebar + inset panel; the 90px rail gutter, `.full-bleed-band` and the app-shell orb are retired |

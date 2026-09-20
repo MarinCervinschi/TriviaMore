@@ -116,8 +116,9 @@ construction.
   `bg-transparent` from shadcn. **This is the first thing to check when a control looks wrong.**
 - Six surfaces sit genuinely outside `_app` (auth, quiz, flashcard, quiz skeleton, error, not-found)
   and mount their own band.
-- The band belongs in the **shell**, not in page headers: they sit at different nesting depths, so none
-  of them can reach across the sidebar's 90px gutter — and that gutter is where the seam appears.
+- The band belongs in the **shell**, not in page headers — one mount, so no two of them can disagree.
+  Since D29 it lives inside the inset panel and starts below the header, and the app shell asks for
+  **no orb** (`glow={false}`). The 90px rail gutter the earlier version of this rule spoke of is gone.
 
 ## Motion
 
