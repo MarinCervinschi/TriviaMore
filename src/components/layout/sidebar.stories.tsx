@@ -47,12 +47,6 @@ export const Collapsed: Story = {
 	parameters: { path: "/user", sidebarOpen: false },
 };
 
-/** The search row opens in place when there is room for it. */
-export const SearchOpen: Story = {
-	name: "Ricerca aperta",
-	parameters: { path: "/search/courses" },
-};
-
 /** No name and no image: the avatar falls back to an initial from the email. */
 export const NoProfile: Story = {
 	name: "Senza nome né immagine",

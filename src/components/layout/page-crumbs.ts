@@ -172,8 +172,7 @@ const CRUMBS: Record<string, CrumbDef> = {
 		],
 	},
 
-	"/_app/search/courses/": { label: "Cerca corso", icon: MagnifierIcon },
-	"/_app/search/classes/": { label: "Cerca insegnamento", icon: MagnifierIcon },
+	"/_app/search/": { label: "Cerca", icon: MagnifierIcon },
 
 	"/_app/admin/": { label: "Gestione", icon: ShieldIcon },
 	"/_app/about": { label: "Chi siamo", icon: InfoCircleIcon },

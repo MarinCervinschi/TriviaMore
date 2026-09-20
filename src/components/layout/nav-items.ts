@@ -1,4 +1,3 @@
-import { BookIcon } from "@solar-icons/react/linear/book";
 import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { CompassIcon } from "@solar-icons/react/linear/compass";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
@@ -67,16 +66,7 @@ export const ANALYTICS_TABS: TabItem[] = [
 /** The catalogue — the same pages a guest can reach, hence its own group. */
 export const CATALOG_ITEMS: NavItem[] = [
 	{ to: "/browse", icon: CompassIcon, label: "Esplora", fuzzy: false },
-	{
-		to: "/search/courses",
-		icon: MagnifierIcon,
-		label: "Cerca",
-		fuzzy: false,
-		children: [
-			{ to: "/search/courses", icon: DiplomaIcon, label: "Cerca corso" },
-			{ to: "/search/classes", icon: BookIcon, label: "Cerca insegnamento" },
-		],
-	},
+	{ to: "/search", icon: MagnifierIcon, label: "Cerca", fuzzy: false },
 ];
 
 /** Something you do rather than consult, so it sits with the tools at the bottom. */
