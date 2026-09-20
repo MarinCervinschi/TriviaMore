@@ -27,7 +27,6 @@ import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
 import { AvatarEditor } from "@/components/user/avatar-editor";
-import { UserHero } from "@/components/user/user-hero";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { crmQueries } from "@/lib/crm/queries";
@@ -70,8 +69,7 @@ function DashboardPage() {
 
 	return (
 		<div className="space-y-8 pb-8">
-			{/* Hero */}
-			<UserHero icon={CupFirstIcon} title="" description="">
+			<section className="container pt-6">
 				<div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
 						<AvatarEditor
@@ -120,7 +118,7 @@ function DashboardPage() {
 							<EnrollmentPrompt />
 						))}
 				</div>
-			</UserHero>
+			</section>
 
 			<div className="container space-y-8">
 				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}

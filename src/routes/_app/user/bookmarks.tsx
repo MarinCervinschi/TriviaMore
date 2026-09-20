@@ -7,13 +7,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 import { ReportButton } from "@/components/requests/report-button";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { BookmarksSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options";
@@ -43,20 +42,17 @@ function BookmarksPage() {
 	const item = withReducedMotion(staggerItem, prefersReduced);
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={BookmarkIcon}
-				title="I miei segnalibri"
-				description="Domande che hai salvato per ripassare piu tardi"
-				stats={
-					bookmarks.length > 0
-						? [{ label: "domande salvate", value: bookmarks.length }]
-						: undefined
-				}
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb current="Segnalibri" />
+		<div className="pb-8">
+			<div className="container space-y-6 py-6">
+				<PageToolbar
+					title="I miei segnalibri"
+					meta="Domande che hai salvato per ripassare più tardi"
+					metrics={
+						bookmarks.length > 0
+							? [{ label: "domande salvate", value: bookmarks.length }]
+							: undefined
+					}
+				/>
 
 				{bookmarks.length === 0 ? (
 					<EmptyState

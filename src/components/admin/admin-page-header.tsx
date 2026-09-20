@@ -2,8 +2,8 @@ import { ArrowLeftIcon } from "@solar-icons/react/linear/arrow-left";
 import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { Button } from "@/components/ui/button";
-import { IconStack } from "@/components/ui/icon-stack";
 
 type AdminPageHeaderProps = {
 	title: string;
@@ -15,6 +15,10 @@ type AdminPageHeaderProps = {
 	actions?: React.ReactNode;
 };
 
+/**
+ * The admin head is `PageToolbar` plus the one thing the rest of the app has no use
+ * for: a way back up the catalogue, which the deep entity pages are reached through.
+ */
 export function AdminPageHeader({
 	title,
 	description,
@@ -25,9 +29,9 @@ export function AdminPageHeader({
 	actions,
 }: AdminPageHeaderProps) {
 	return (
-		<div className="border-border/50 mb-8 border-b pb-6">
+		<div className="mb-6">
 			{backTo && (
-				<div className="mb-4">
+				<div className="mb-3">
 					{backLabel && <p className="text-brand eyebrow mb-1">{backLabel}</p>}
 					<Button variant="ghost" size="sm" className="-ml-2" asChild>
 						<Link to={backTo} params={backParams}>
@@ -37,20 +41,20 @@ export function AdminPageHeader({
 					</Button>
 				</div>
 			)}
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-4">
-					{Icon && (
-						<IconStack className="shrink-0">
-							<Icon className="text-brand h-7 w-7" />
-						</IconStack>
-					)}
-					<div>
-						<h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-						{description && <p className="text-muted-foreground mt-1">{description}</p>}
-					</div>
-				</div>
-				{actions && <div className="flex items-center gap-2">{actions}</div>}
-			</div>
+			<PageToolbar
+				title={
+					Icon ? (
+						<span className="flex min-w-0 items-center gap-2">
+							<Icon className="text-brand size-5 shrink-0" />
+							<span className="truncate">{title}</span>
+						</span>
+					) : (
+						title
+					)
+				}
+				meta={description}
+				actions={actions}
+			/>
 		</div>
 	);
 }

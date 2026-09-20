@@ -16,12 +16,11 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { CloseGlyph } from "@/components/icons";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { UserClassesSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { seoHead } from "@/lib/seo";
 import { useRemoveClass } from "@/lib/user/mutations";
@@ -200,19 +199,16 @@ function ClassesPage() {
 	const visibleCount = table.getRowCount();
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={DiplomaIcon}
-				title="I miei insegnamenti"
-				description="Gestisci gli insegnamenti che stai seguendo"
-				stats={[
-					{ label: "insegnamenti totali", value: userClasses.length },
-					{ label: "visualizzati", value: visibleCount },
-				]}
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb current="I miei insegnamenti" />
+		<div className="pb-8">
+			<div className="container space-y-6 py-6">
+				<PageToolbar
+					title="I miei insegnamenti"
+					meta="Gestisci gli insegnamenti che stai seguendo"
+					metrics={[
+						{ label: "insegnamenti totali", value: userClasses.length },
+						{ label: "visualizzati", value: visibleCount },
+					]}
+				/>
 
 				{userClasses.length === 0 ? (
 					<EmptyState

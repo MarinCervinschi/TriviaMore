@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { BookIcon } from "@solar-icons/react/linear/book";
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -13,6 +12,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import { CloseGlyph } from "@/components/icons";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { SearchResultsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { UserHero } from "@/components/user/user-hero";
 import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { browseQueries } from "@/lib/browse/queries";
@@ -241,18 +240,19 @@ function SearchClassesPage() {
 
 	return (
 		<div>
-			<UserHero
-				icon={BookIcon}
-				title="Cerca insegnamento"
-				description="Cerca insegnamenti per nome"
-				stats={
-					hasFilters && results
-						? [{ label: "risultati", value: totalItems }]
-						: undefined
-				}
-			/>
+			<div className="container py-6">
+				<PageToolbar
+					title="Cerca insegnamento"
+					meta="Cerca insegnamenti per nome"
+					metrics={
+						hasFilters && results
+							? [{ label: "risultati", value: totalItems }]
+							: undefined
+					}
+				/>
+			</div>
 
-			<div className="container py-8">
+			<div className="container pb-8">
 				{/* Search & Filters toolbar */}
 				<div className="mb-6 space-y-3">
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
