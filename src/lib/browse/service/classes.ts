@@ -10,6 +10,7 @@ import { findSectionsInClass } from "@/lib/catalog/db/sections";
 
 import type {
 	BrowseSection,
+	CampusLocation,
 	ClassWithSections,
 	SearchClassesParams,
 	SearchClassesResponse,
@@ -110,6 +111,11 @@ export async function searchClasses(
 	}
 	if (params.classYear !== undefined) {
 		filters.push(eq(courseClasses.classYear, params.classYear));
+	}
+	// A row is a (course, class) pair, so this is the campus that pairing is
+	// taught at: a class shared by two courses can match on either.
+	if (params.campus) {
+		filters.push(eq(courses.location, params.campus as CampusLocation));
 	}
 	if (params.mandatory !== undefined) {
 		filters.push(eq(courseClasses.mandatory, params.mandatory));
