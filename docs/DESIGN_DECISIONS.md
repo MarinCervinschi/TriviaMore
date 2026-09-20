@@ -1308,6 +1308,33 @@ stops every `sticky` inside it.
 
 ---
 
+## D30 — One search, and the kind of result is a filter on it
+
+**Decided 2026-09-20.** `/search/courses` and `/search/classes` become `/search`, with `tipo` as a
+search param and the old paths redirecting onto it. A course and a class are two shapes of one
+question — "what is there on this subject" — and asking it twice made the catalogue feel like two
+catalogues.
+
+- **Grouped, not merged.** Courses and classes have **separate full-text indexes with no shared
+  score**, so one ranked list would need a ranking invented for it — server work, and an order nobody
+  could explain. Grouped, `searchCourses` and `searchClasses` stay exactly the queries they were:
+  `Tutto` calls both, a focused tab calls one. Each tab carries its own total.
+- **The kind decides which filters exist**, which is why it is not merely one filter among the others.
+  Department and campus cut both; type is only a course's, year and mandatory only a class's. The
+  funnel names each one's scope, so a year emptying the courses reads as the rule rather than a fault.
+- **The filter is the tables' funnel**, rebuilt on the same primitives — at UI level, not by mounting a
+  table. It stays **single-select**: the tables' version filters loaded rows client-side and can offer
+  *is one of*; this one filters in SQL on one value per facet, and a multi-select that silently used
+  the first would be a lie. Multi-select is an `inArray` away, on both services, when it is wanted.
+- **A kind that matched nothing says so in a line**, not with the whole page: the other kind still has
+  results. This state does not exist in a single-kind search, and it is the one the split created.
+
+**Rules out:** a second search page for a third kind; a merged ranked list without a ranking that can
+be explained; a multi-select facet over a server that takes one value; a page-level empty state when
+only one of the two groups is empty.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -1480,3 +1507,4 @@ is a CSS transition on state the user caused, and exactly two places earn it.
 | 2026-08-11 | D21–D22: one Italian word per catalog level; the focus ring declared once |
 | 2026-08-12 | D23 closes O5 — icon motion is CSS on user-caused state. **D9 reversed**: AutoAnimate not adopted, Framer stays the only motion dependency |
 | 2026-09-20 | D29 (#148): the shell becomes sidebar + inset panel; the 90px rail gutter, `.full-bleed-band` and the app-shell orb are retired |
+| 2026-09-20 | D30: the two catalogue searches become one, the kind a filter on it; the phone tiles D21 named fold into a single «Cerca» |
