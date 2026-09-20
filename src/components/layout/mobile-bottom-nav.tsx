@@ -25,9 +25,8 @@ import { notificationQueries } from "@/lib/notifications/queries";
 import { cn } from "@/lib/utils";
 
 import {
-	ABOUT_ITEM,
 	ADMIN_ITEM,
-	NAV_ITEMS,
+	MOBILE_ITEMS,
 	type NavItem,
 	getInitials,
 	useIsAdmin,
@@ -202,9 +201,9 @@ function ProfileSheet({
 						onClose={close}
 					/>
 					<ToolTile
-						to={ABOUT_ITEM.to}
+						to="/about"
 						icon={InfoCircleIcon}
-						label={ABOUT_ITEM.label}
+						label="Chi siamo"
 						onClose={close}
 					/>
 					{isAdmin && (
@@ -326,7 +325,7 @@ export function MobileBottomNav() {
 			)}
 		>
 			<ul className="flex items-stretch justify-around px-1">
-				{NAV_ITEMS.map(item => (
+				{MOBILE_ITEMS.map(item => (
 					<BottomNavItem
 						key={item.to}
 						item={item}
