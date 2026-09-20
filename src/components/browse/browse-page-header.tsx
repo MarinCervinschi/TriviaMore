@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import type { Icon } from "@/components/icons";
 import { IconStack } from "@/components/ui/icon-stack";
+import { useAuth } from "@/hooks/useAuth";
 
 import { ExpandableDescription } from "./expandable-description";
 
@@ -22,10 +23,13 @@ export function BrowsePageHeader({
 	stats?: { label: string; value: number }[];
 	actions?: ReactNode;
 }) {
+	const { isAuthenticated } = useAuth();
+
 	return (
 		<section className="relative w-full pt-6 pb-10 sm:pt-8 sm:pb-14">
 			<div className="container">
-				{breadcrumb}
+				{/* A guest has no shell header to put the trail in; signed in, it is there. */}
+				{!isAuthenticated && breadcrumb}
 
 				{/* Top row: icon left, actions right. On mobile, actions wrap below
             so the title block underneath always has full width and never gets
