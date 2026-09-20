@@ -24,6 +24,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
+import { ANALYTICS_TABS } from "@/components/layout/nav-items";
 import { FavoriteStar } from "@/components/progress/favorite-star";
 import { ScoreRing } from "@/components/progress/score-ring";
 import { MetricCard } from "@/components/shared/metric-card";
@@ -34,7 +35,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
@@ -453,41 +453,7 @@ function AttemptHistoryPage() {
 	return (
 		<TooltipProvider delayDuration={200}>
 			<div className="container space-y-4 py-6 pb-10">
-				<PageToolbar
-					breadcrumb={
-						<UserBreadcrumb
-							current="Storico"
-							currentIcon={ClockCircleIcon}
-							trail={[
-								{
-									label: "Analytics",
-									to: "/user/analytics",
-									icon: GraphUpIcon,
-								},
-							]}
-						/>
-					}
-					title="Storico dei tentativi"
-					meta={`${attempts.length} quiz completati`}
-					actions={
-						<Button
-							variant={search.preferiti ? "default" : "outline"}
-							size="sm"
-							onClick={() =>
-								navigate({
-									search: prev => ({
-										...prev,
-										preferiti: prev.preferiti ? undefined : "si",
-										page: undefined,
-									}),
-								})
-							}
-						>
-							<StarIcon className="size-3.5" />
-							Solo preferiti
-						</Button>
-					}
-				/>
+				<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 				{attempts.length > 0 && <HistorySummary attempts={attempts} />}
 

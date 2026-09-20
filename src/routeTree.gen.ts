@@ -54,6 +54,7 @@ import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/user
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
 import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
+import { Route as AppUserAnalyticsCoursesRouteImport } from './routes/_app/user/analytics/courses'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppAdminUsersUserIdRouteImport } from './routes/_app/admin/users/$userId'
 import { Route as AppAdminSectionsSectionIdRouteImport } from './routes/_app/admin/sections/$sectionId'
@@ -299,6 +300,11 @@ const AppUserAnalyticsHistoryRoute = AppUserAnalyticsHistoryRouteImport.update({
   path: '/analytics/history',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
+const AppUserAnalyticsCoursesRoute = AppUserAnalyticsCoursesRouteImport.update({
+  id: '/analytics/courses',
+  path: '/analytics/courses',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
 const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
   id: '/quiz/results/$attemptId',
   path: '/quiz/results/$attemptId',
@@ -440,6 +446,7 @@ export interface FileRoutesByFullPath {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
@@ -566,6 +574,7 @@ export interface FileRoutesById {
   '/_app/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/_app/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/_app/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
@@ -631,6 +640,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
+    | '/user/analytics/courses'
     | '/user/analytics/history'
     | '/admin/departments/'
     | '/admin/requests/'
@@ -692,6 +702,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
+    | '/user/analytics/courses'
     | '/user/analytics/history'
     | '/admin/departments'
     | '/admin/requests'
@@ -756,6 +767,7 @@ export interface FileRouteTypes {
     | '/_app/admin/sections/$sectionId'
     | '/_app/admin/users/$userId'
     | '/_app/quiz/results/$attemptId'
+    | '/_app/user/analytics/courses'
     | '/_app/user/analytics/history'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
@@ -1109,6 +1121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserAnalyticsHistoryRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
+    '/_app/user/analytics/courses': {
+      id: '/_app/user/analytics/courses'
+      path: '/analytics/courses'
+      fullPath: '/user/analytics/courses'
+      preLoaderRoute: typeof AppUserAnalyticsCoursesRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
     '/_app/quiz/results/$attemptId': {
       id: '/_app/quiz/results/$attemptId'
       path: '/quiz/results/$attemptId'
@@ -1291,6 +1310,7 @@ interface AppUserRouteRouteChildren {
   AppUserProgressRoute: typeof AppUserProgressRoute
   AppUserSettingsRoute: typeof AppUserSettingsRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
+  AppUserAnalyticsCoursesRoute: typeof AppUserAnalyticsCoursesRoute
   AppUserAnalyticsHistoryRoute: typeof AppUserAnalyticsHistoryRoute
   AppUserAnalyticsIndexRoute: typeof AppUserAnalyticsIndexRoute
   AppUserRequestsIndexRoute: typeof AppUserRequestsIndexRoute
@@ -1307,6 +1327,7 @@ const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserProgressRoute: AppUserProgressRoute,
   AppUserSettingsRoute: AppUserSettingsRoute,
   AppUserIndexRoute: AppUserIndexRoute,
+  AppUserAnalyticsCoursesRoute: AppUserAnalyticsCoursesRoute,
   AppUserAnalyticsHistoryRoute: AppUserAnalyticsHistoryRoute,
   AppUserAnalyticsIndexRoute: AppUserAnalyticsIndexRoute,
   AppUserRequestsIndexRoute: AppUserRequestsIndexRoute,

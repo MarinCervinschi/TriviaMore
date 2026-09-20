@@ -1,51 +1,23 @@
 import { type ReactNode, useMemo } from "react";
 
-import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
-import { DownloadIcon } from "@solar-icons/react/linear/download";
-import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
-import { LayersIcon } from "@solar-icons/react/linear/layers";
-import { ShareIcon } from "@solar-icons/react/linear/share";
-
 import { PageToolbar } from "@/components/shared/page-toolbar";
-import { type ChipOption, SelectChip } from "@/components/shared/select-chip";
-import { Button } from "@/components/ui/button";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
+import type { TabNavItem } from "@/components/ui/tab-nav";
 import {
 	type ExplorerMode,
 	type ExplorerPeriod,
 	attemptsInWindow,
 } from "@/lib/user/metric-explorer";
-import { buildProgressRollup } from "@/lib/user/rollup";
 import type {
 	AttemptHistoryEntry,
 	DailyFlashcardDay,
 	DailyStudyStat,
-	UserMastery,
 } from "@/lib/user/types";
-import { formatDate } from "@/lib/utils/format";
 
 import { ConsistencyCard } from "./consistency-card";
 import { GradeDistribution } from "./grade-distribution";
-import { MasteryCard } from "./mastery-card";
 import { MetricExplorer } from "./metric-explorer";
 import { MetricKpis } from "./metric-kpis";
-import { ProgressRollup } from "./progress-rollup";
-import { RecentAttempts } from "./recent-attempts";
-import { SpeedAccuracy } from "./speed-accuracy";
 import { WhenYouStudyCard } from "./study-rhythm";
-
-const PERIODS: ChipOption<ExplorerPeriod>[] = [
-	{ value: "week", label: "Ultima settimana" },
-	{ value: "month", label: "Ultimo mese" },
-	{ value: "year", label: "Ultimo anno" },
-	{ value: "all", label: "Tutto lo storico" },
-];
-
-const MODES: ChipOption<ExplorerMode>[] = [
-	{ value: "both", label: "Studio + Esame" },
-	{ value: "STUDY", label: "Solo studio" },
-	{ value: "EXAM_SIMULATION", label: "Solo esame" },
-];
 
 /**
  * The analytics page itself — everything but the data loading, so the same layout
@@ -61,26 +33,20 @@ export function AnalyticsView({
 	daily,
 	flashcardDays,
 	attempts,
-	mastery,
 	today,
-	breadcrumb,
 	title,
 	badge,
 	meta,
 	period,
 	mode,
-	onPeriodChange,
-	onModeChange,
-	showRollup = true,
-	showSectionBreakdown = true,
+	tabs,
+	actions,
+	children,
 }: {
 	daily: DailyStudyStat[];
 	flashcardDays?: DailyFlashcardDay[];
 	attempts: AttemptHistoryEntry[];
-	mastery: UserMastery;
 	today?: Date;
-	/** What names the page on the left of the toolbar. */
-	breadcrumb?: ReactNode;
 	title?: ReactNode;
 	/** A chip beside the title: the kind of thing the page is about. */
 	badge?: ReactNode;
@@ -88,64 +54,32 @@ export function AnalyticsView({
 	meta?: ReactNode;
 	period: ExplorerPeriod;
 	mode: ExplorerMode;
-	onPeriodChange: (period: ExplorerPeriod) => void;
-	onModeChange: (mode: ExplorerMode) => void;
-	/** Off when the page is already one course: the tree would have one branch. */
-	showRollup?: boolean;
-	/** Off on a single section: a scatter of one point compares nothing. */
-	showSectionBreakdown?: boolean;
+	/** The section's tab row, which the page's own head would otherwise carry. */
+	tabs?: TabNavItem[];
+	/** Controls for the head. The overview leaves it empty: the shell header has them. */
+	actions?: ReactNode;
+	/**
+	 * Extra cards for the grid, each carrying its own `col-span`. The entity pages
+	 * add mastery and their recent attempts here; the overview adds nothing, which
+	 * is what took it from nine blocks to five.
+	 */
+	children?: ReactNode;
 }) {
 	const now = useMemo(() => today ?? new Date(), [today]);
 	const windowed = useMemo(
 		() => attemptsInWindow(attempts, period, mode, now),
 		[attempts, period, mode, now]
 	);
-	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
-	// What the page covers, in facts rather than a slogan: the attempts are newest
-	// first, so the oldest one is where this history starts.
-	const since = windowed.at(-1)?.completedAt;
 	const scores = useMemo(() => windowed.map(attempt => attempt.score), [windowed]);
 
 	return (
 		<div className="@container flex flex-col gap-4">
 			<PageToolbar
-				breadcrumb={
-					breadcrumb ?? <UserBreadcrumb current="Analytics" currentIcon={GraphUpIcon} />
-				}
+				tabs={tabs}
 				title={title ?? "Analytics"}
 				badge={badge}
-				meta={
-					meta ??
-					(since
-						? `${windowed.length} quiz completati, dal ${formatDate(since)}`
-						: undefined)
-				}
-				actions={
-					<>
-						<SelectChip
-							label="Periodo"
-							value={period}
-							onChange={onPeriodChange}
-							options={PERIODS}
-							lead={CalendarMinimalisticIcon}
-						/>
-						<SelectChip
-							label="Modalità"
-							value={mode}
-							onChange={onModeChange}
-							options={MODES}
-							lead={LayersIcon}
-						/>
-						<Button variant="outline" size="sm" disabled>
-							<ShareIcon className="size-3.5" />
-							Condividi
-						</Button>
-						<Button size="sm" disabled>
-							<DownloadIcon className="size-3.5" />
-							Esporta
-						</Button>
-					</>
-				}
+				meta={meta}
+				actions={actions}
 			/>
 
 			<MetricKpis daily={daily} period={period} mode={mode} today={today} />
@@ -170,27 +104,7 @@ export function AnalyticsView({
 					<WhenYouStudyCard attempts={windowed} today={today} />
 				</div>
 
-				<div
-					className={
-						showSectionBreakdown ? "@[900px]:col-span-4" : "@[900px]:col-span-12"
-					}
-				>
-					<MasteryCard mastery={mastery} />
-				</div>
-				{showSectionBreakdown && (
-					<div className="@[900px]:col-span-8">
-						<SpeedAccuracy sections={mastery.sections} />
-					</div>
-				)}
-
-				{showRollup && (
-					<div className="@[900px]:col-span-12">
-						<ProgressRollup courses={rollup} />
-					</div>
-				)}
-				<div className="@[900px]:col-span-12">
-					<RecentAttempts attempts={attempts} />
-				</div>
+				{children}
 			</div>
 		</div>
 	);
