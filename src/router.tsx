@@ -48,6 +48,9 @@ export function getRouter() {
 		routeTree,
 		context: { queryClient },
 		scrollRestoration: true,
+		// The app shell scrolls its own panel, not the window, so a new page has to be
+		// sent to the top by selector — scrolling the window reaches nothing there.
+		scrollToTopSelectors: ['[data-scroll-restoration-id="app-panel"]'],
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
 		defaultPendingMs: 200,
