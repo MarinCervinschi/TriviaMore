@@ -12,10 +12,14 @@ import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LayersIcon } from "@solar-icons/react/linear/layers";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { LibraryIcon } from "@solar-icons/react/linear/library";
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { MedalRibbonStarIcon } from "@solar-icons/react/linear/medal-ribbon-star";
+import { QuestionSquareIcon } from "@solar-icons/react/linear/question-square";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
+import { UserIcon } from "@solar-icons/react/linear/user";
+import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
 import { isMatch, useMatches } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
@@ -78,6 +82,68 @@ const ANALYTICS: Crumb = {
 	icon: GraphUpIcon,
 };
 const BROWSE: Crumb = { label: "Esplora", to: "/browse", icon: CompassIcon };
+const ADMIN: Crumb = { label: "Gestione", to: "/admin", icon: ShieldIcon };
+const ADMIN_DEPARTMENTS: Crumb = {
+	label: "Dipartimenti",
+	to: "/admin/departments",
+	icon: LibraryIcon,
+};
+const ADMIN_REQUESTS: Crumb = {
+	label: "Richieste",
+	to: "/admin/requests",
+	icon: InboxIcon,
+};
+const ADMIN_USERS: Crumb = {
+	label: "Utenti",
+	to: "/admin/users",
+	icon: UsersGroupRoundedIcon,
+};
+
+/** The admin catalogue levels, each linked by the id its own route takes. */
+const adminDepartment = (data: unknown, at: string): Crumb[] => {
+	const name = dig(data, `${at}.name`);
+	const id = dig(data, `${at}.id`);
+	return name && id
+		? [
+				{
+					label: name,
+					to: "/admin/departments/$departmentId",
+					params: { departmentId: id },
+					icon: BuildingsIcon,
+				},
+			]
+		: [];
+};
+
+const adminCourse = (data: unknown, at: string, idAt = `${at}.id`): Crumb[] => {
+	const name = dig(data, `${at}.courseName`) ?? dig(data, `${at}.name`);
+	const id = dig(data, idAt);
+	return name && id
+		? [
+				{
+					label: name,
+					to: "/admin/courses/$courseId",
+					params: { courseId: id },
+					icon: DiplomaIcon,
+				},
+			]
+		: [];
+};
+
+const adminClass = (data: unknown, nameAt: string, idAt: string): Crumb[] => {
+	const name = dig(data, nameAt);
+	const id = dig(data, idAt);
+	return name && id
+		? [
+				{
+					label: name,
+					to: "/admin/classes/$classId",
+					params: { classId: id },
+					icon: BookIcon,
+				},
+			]
+		: [];
+};
 
 /** The catalogue's ancestors, addressed by route params so the links stay typed. */
 const department = (ctx: CrumbCtx, path: string): Crumb => ({
@@ -214,7 +280,101 @@ const CRUMBS: Record<string, CrumbDef> = {
 		parents: ctx => resultParents(ctx.loaderData),
 	},
 
+	// Every admin page had an empty header: the section carried a hand-rolled
+	// «Indietro» of one level instead of a trail. Its routes address entities by id,
+	// so a link needs the id out of the data, not the params.
 	"/_app/admin/": { label: "Gestione", icon: ShieldIcon },
+	"/_app/admin/departments/": {
+		label: "Dipartimenti",
+		icon: LibraryIcon,
+		parents: [ADMIN],
+	},
+	"/_app/admin/departments/$departmentId": {
+		label: ctx => dig(ctx.loaderData, "name") ?? "Dipartimento",
+		icon: BuildingsIcon,
+		parents: [ADMIN, ADMIN_DEPARTMENTS],
+	},
+	"/_app/admin/courses/$courseId": {
+		label: ctx => dig(ctx.loaderData, "name") ?? "Corso",
+		icon: DiplomaIcon,
+		parents: ctx => [
+			ADMIN,
+			ADMIN_DEPARTMENTS,
+			...adminDepartment(ctx.loaderData, "department"),
+		],
+	},
+	"/_app/admin/classes/$classId": {
+		label: ctx => dig(ctx.loaderData, "name") ?? "Insegnamento",
+		icon: BookIcon,
+		parents: ctx => [
+			ADMIN,
+			ADMIN_DEPARTMENTS,
+			...adminDepartment(ctx.loaderData, "course.department"),
+			...adminCourse(ctx.loaderData, "course"),
+		],
+	},
+	"/_app/admin/sections/$sectionId": {
+		label: ctx => dig(ctx.loaderData, "name") ?? "Sezione",
+		icon: DocumentTextIcon,
+		parents: ctx => [
+			ADMIN,
+			// The section carries its parents' names but only the course's id, so the
+			// department above it is named without being a link.
+			...(dig(ctx.loaderData, "parent.departmentName")
+				? [
+						{
+							label: dig(ctx.loaderData, "parent.departmentName")!,
+							icon: BuildingsIcon,
+						},
+					]
+				: []),
+			...adminCourse(ctx.loaderData, "parent", "parent.courseId"),
+			...adminClass(ctx.loaderData, "className", "classId"),
+		],
+	},
+	"/_app/admin/questions/$questionId": {
+		label: "Domanda",
+		icon: QuestionSquareIcon,
+		parents: ctx => [
+			ADMIN,
+			...adminClass(ctx.loaderData, "className", "classId"),
+			...(dig(ctx.loaderData, "sectionName")
+				? [
+						{
+							label: dig(ctx.loaderData, "sectionName")!,
+							to: "/admin/sections/$sectionId" as Crumb["to"],
+							params: { sectionId: dig(ctx.loaderData, "sectionId")! },
+							icon: DocumentTextIcon,
+						},
+					]
+				: []),
+		],
+	},
+	"/_app/admin/requests/": {
+		label: "Richieste",
+		icon: InboxIcon,
+		parents: [ADMIN],
+	},
+	"/_app/admin/requests/$requestId": {
+		label: ctx => dig(ctx.loaderData, "title") ?? "Richiesta",
+		icon: InboxIcon,
+		parents: [ADMIN, ADMIN_REQUESTS],
+	},
+	"/_app/admin/users/": {
+		label: "Utenti",
+		icon: UsersGroupRoundedIcon,
+		parents: [ADMIN],
+	},
+	"/_app/admin/users/$userId": {
+		label: ctx =>
+			dig(ctx.loaderData, "name") ?? dig(ctx.loaderData, "email") ?? "Utente",
+		icon: UserIcon,
+		parents: [ADMIN, ADMIN_USERS],
+	},
+
+	"/_app/legal/terms": { label: "Termini", icon: DocumentTextIcon },
+	"/_app/legal/privacy": { label: "Privacy", icon: DocumentTextIcon },
+	"/_app/legal/cookies": { label: "Cookie", icon: DocumentTextIcon },
 	"/_app/about": { label: "Chi siamo", icon: InfoCircleIcon },
 	"/_app/news": { label: "Novità", icon: ConfettiIcon },
 	"/_app/contact": { label: "Contatti", icon: LetterIcon },
