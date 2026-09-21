@@ -125,13 +125,7 @@ export function QuizResultsSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento risultati…" className="container py-8">
 			<div className="mx-auto max-w-4xl space-y-6">
-				{/* Toolbar */}
-				<div className="flex items-center justify-between gap-4">
-					<Skeleton className="h-5 w-72" />
-					<Skeleton className="h-5 w-40" />
-				</div>
-
-				{/* Outcome */}
+				{/* Outcome — the trail above it moved to the shell header */}
 				<SkeletonInset header>
 					<div className="flex flex-col sm:flex-row">
 						<div className="flex-1 p-7">

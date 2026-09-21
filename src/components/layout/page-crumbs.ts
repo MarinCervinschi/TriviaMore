@@ -20,6 +20,12 @@ import { isMatch, useMatches } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import type { Crumb } from "@/components/shared/app-breadcrumb";
+import { sectionDisplayName } from "@/lib/catalog/constants";
+import {
+	classBrowsePath,
+	courseBrowsePath,
+	departmentBrowsePath,
+} from "@/lib/catalog/paths";
 
 /**
  * The trail is derived from the matched routes, not rendered by the page.
@@ -99,6 +105,33 @@ const classCrumb = (ctx: CrumbCtx, path: string): Crumb => ({
 	icon: BookIcon,
 });
 
+/**
+ * A result's trail is the catalogue chain of the section it was taken from. The
+ * path helpers are pure string work, so the same routes a query builds are the
+ * ones this points at.
+ */
+function resultParents(data: unknown): Crumb[] {
+	const chain = {
+		departmentCode: dig(data, "quiz.section.departmentCode") ?? null,
+		courseCode: dig(data, "quiz.section.courseCode") ?? null,
+		classCode: dig(data, "quiz.section.classCode") ?? null,
+	};
+
+	const levels: [string | undefined, string | null, Icon][] = [
+		[
+			dig(data, "quiz.section.departmentCode")?.toUpperCase(),
+			departmentBrowsePath(chain),
+			BuildingsIcon,
+		],
+		[dig(data, "quiz.section.courseName"), courseBrowsePath(chain), DiplomaIcon],
+		[dig(data, "quiz.section.className"), classBrowsePath(chain), BookIcon],
+	];
+
+	return levels.flatMap(([label, path, icon]) =>
+		label ? [{ label, to: (path ?? undefined) as Crumb["to"], icon }] : []
+	);
+}
+
 const CRUMBS: Record<string, CrumbDef> = {
 	"/_app/user/": { label: "Dashboard", icon: HomeIcon },
 	"/_app/user/classes": { label: "I miei insegnamenti", icon: DiplomaIcon },
@@ -173,6 +206,13 @@ const CRUMBS: Record<string, CrumbDef> = {
 	},
 
 	"/_app/search/": { label: "Cerca", icon: MagnifierIcon },
+
+	"/_app/quiz/results/$attemptId": {
+		label: ctx =>
+			sectionDisplayName(dig(ctx.loaderData, "quiz.section.name") ?? "Esito"),
+		icon: DocumentTextIcon,
+		parents: ctx => resultParents(ctx.loaderData),
+	},
 
 	"/_app/admin/": { label: "Gestione", icon: ShieldIcon },
 	"/_app/about": { label: "Chi siamo", icon: InfoCircleIcon },
