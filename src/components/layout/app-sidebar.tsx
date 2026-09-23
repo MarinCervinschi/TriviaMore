@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AltArrowDownIcon } from "@solar-icons/react/linear/alt-arrow-down";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { MenuDotsIcon } from "@solar-icons/react/linear/menu-dots";
 import { MonitorIcon } from "@solar-icons/react/linear/monitor";
 import { MoonIcon } from "@solar-icons/react/linear/moon";
 import { PaletteIcon } from "@solar-icons/react/linear/palette";
@@ -245,7 +246,7 @@ function ProfileRow() {
 								</span>
 							</span>
 						</span>
-						<AltArrowDownIcon className="ml-auto size-4" />
+						<MenuDotsIcon className="text-muted-foreground ml-auto size-4" />
 					</SidebarMenuButton>
 				</PopoverTrigger>
 
