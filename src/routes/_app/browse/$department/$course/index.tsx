@@ -309,7 +309,7 @@ function CoursePage() {
 				}
 			/>
 
-			<div className="container pt-8">
+			<div className="container">
 				<div className="mb-4 flex flex-wrap items-center justify-between gap-4">
 					{availableYears.length > 1 && (
 						<div className="flex flex-wrap gap-2">

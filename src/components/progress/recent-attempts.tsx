@@ -1,10 +1,9 @@
-import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { Link } from "@tanstack/react-router";
 
 import { ChartCard } from "@/components/charts";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { sectionDisplayName } from "@/lib/catalog/constants";
@@ -58,13 +57,9 @@ export function RecentAttempts({
 				title="Ultimi tentativi"
 				description={`${count} quiz completati in tutto`}
 				actions={
-					<Button asChild variant="ghost" size="sm" className="group">
-						<Link to="/user/analytics/history" className="flex items-center gap-1.5">
-							<ClockCircleIcon className="size-3.5" />
-							Cronologia completa
-							<ArrowRightIcon className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-						</Link>
-					</Button>
+					<SeeAllLink to="/user/analytics/history" icon={ClockCircleIcon}>
+						Cronologia completa
+					</SeeAllLink>
 				}
 			>
 				{recent.length === 0 ? (

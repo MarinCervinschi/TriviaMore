@@ -57,6 +57,24 @@ describe("canAccessSection", () => {
 				false
 			);
 		}));
+
+	// The arm the move off RLS dropped, which left a superadmin on an empty page.
+	it("lets an admin and a superadmin into an ungranted private section", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			expect(await canAccessSection(tx, scope.admin, scope.privateDenied)).toBe(true);
+			expect(await canAccessSection(tx, scope.superadmin, scope.privateDenied)).toBe(
+				true
+			);
+		}));
+
+	it("keeps a maintainer out of a private section", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			expect(await canAccessSection(tx, scope.maintainer, scope.privateDenied)).toBe(
+				false
+			);
+		}));
 });
 
 describe("assertSectionAccess", () => {
@@ -104,5 +122,43 @@ describe("filterAccessibleSections", () => {
 				scope.privateGranted,
 			]);
 			expect(allowed).toEqual(new Set([scope.publicSection]));
+		}));
+
+	it("keeps every private section for an admin, granted or not", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			const allowed = await filterAccessibleSections(tx, scope.admin, [
+				scope.publicSection,
+				scope.privateGranted,
+				scope.privateDenied,
+			]);
+			expect(allowed).toEqual(
+				new Set([scope.publicSection, scope.privateGranted, scope.privateDenied])
+			);
+		}));
+
+	it("agrees with canAccessSection on every role", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			const sectionIds = [
+				scope.publicSection,
+				scope.privateGranted,
+				scope.privateDenied,
+			];
+
+			for (const userId of [
+				null,
+				scope.student,
+				scope.maintainer,
+				scope.admin,
+				scope.superadmin,
+			]) {
+				const allowed = await filterAccessibleSections(tx, userId, sectionIds);
+				for (const sectionId of sectionIds) {
+					expect(allowed.has(sectionId)).toBe(
+						await canAccessSection(tx, userId, sectionId)
+					);
+				}
+			}
 		}));
 });

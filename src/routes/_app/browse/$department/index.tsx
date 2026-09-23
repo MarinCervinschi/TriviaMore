@@ -277,12 +277,6 @@ function DepartmentPage() {
 			/>
 
 			<div className="container">
-				{department.locations.length > 0 && (
-					<Suspense fallback={<Skeleton className="mb-6 h-[300px] w-full" />}>
-						<DepartmentMap locations={department.locations} />
-					</Suspense>
-				)}
-
 				{courseTypeFilters.length > 2 && (
 					<div className="mb-4 flex flex-wrap gap-2">
 						{courseTypeFilters.map(filter => (
@@ -338,6 +332,14 @@ function DepartmentPage() {
 							</section>
 						))}
 					</div>
+				)}
+
+				{department.locations.length > 0 && (
+					<Suspense fallback={<Skeleton className="mt-10 h-[300px] w-full" />}>
+						<div className="mt-10">
+							<DepartmentMap locations={department.locations} />
+						</div>
+					</Suspense>
 				)}
 			</div>
 		</div>

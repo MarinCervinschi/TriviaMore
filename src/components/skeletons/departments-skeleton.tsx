@@ -68,9 +68,6 @@ export function DepartmentDetailSkeleton() {
 		<SkeletonRoot label="Caricamento dipartimento…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={3} stats={1} />
 			<div className="container">
-				{/* Map */}
-				<SkeletonChart className="mb-6" height={300} />
-
 				<SkeletonFilterBar chips={4} />
 				<SkeletonSearchInput className="mb-6" />
 
@@ -85,6 +82,9 @@ export function DepartmentDetailSkeleton() {
 						</section>
 					))}
 				</div>
+
+				{/* Map, at the foot of the page */}
+				<SkeletonChart className="mt-10" height={300} />
 			</div>
 		</SkeletonRoot>
 	);

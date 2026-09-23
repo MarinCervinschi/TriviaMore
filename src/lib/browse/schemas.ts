@@ -39,6 +39,7 @@ export const searchClassesSchema = z.object({
 	query: z.string().optional(),
 	departmentId: z.string().uuid().optional(),
 	courseId: z.string().uuid().optional(),
+	campus: z.string().optional(),
 	classYear: z.number().int().optional(),
 	mandatory: z.boolean().optional(),
 	...paginationSchema,

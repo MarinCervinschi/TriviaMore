@@ -1,33 +1,38 @@
 import type { ReactNode } from "react";
 
+import { TabNav, type TabNavItem } from "@/components/ui/tab-nav";
 import { cn } from "@/lib/utils";
 
 /**
- * The page's head where there is no hero: the trail on top, the name of the page
- * with its controls beside it, and a rule under the whole thing. It says what the
- * page is in one line and gives the rest of the fold to the data.
+ * Every page's head: the name of the page with its controls beside it. It says what
+ * the page is in one line and gives the rest of the fold to the data.
+ *
+ * The trail is not here — the shell's `AppHeader` carries it, so it stays put while
+ * the page scrolls and cannot go missing on a page that forgot to render one.
  */
 export function PageToolbar({
-	breadcrumb,
 	title,
 	badge,
 	meta,
+	metrics,
+	tabs,
 	actions,
 	className,
 }: {
-	breadcrumb?: ReactNode;
 	title?: ReactNode;
 	/** A chip beside the title — what kind of thing this page is about. */
 	badge?: ReactNode;
 	/** The line under the title: where the entity sits, what it covers. */
 	meta?: ReactNode;
+	/** Figures about the page, reading as one line: "12 totali · 3 in revisione". */
+	metrics?: { label: string; value: string | number }[];
+	/** The sections this page is one of — entries the sidebar no longer carries. */
+	tabs?: TabNavItem[];
 	actions?: ReactNode;
 	className?: string;
 }) {
 	return (
-		<div className={cn("border-border/60 space-y-5 border-b pb-4", className)}>
-			{breadcrumb}
-
+		<div className={cn("space-y-3", className)}>
 			<div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
 				<div className="min-w-0">
 					{title && (
@@ -41,6 +46,22 @@ export function PageToolbar({
 
 				{actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
 			</div>
+
+			{tabs && tabs.length > 0 && <TabNav label="Sezioni" tabs={tabs} />}
+
+			{metrics && metrics.length > 0 && (
+				<div className="text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+					{metrics.map((metric, index) => (
+						<span key={metric.label} className="flex items-center gap-2">
+							{index > 0 && (
+								<span className="bg-muted-foreground/30 mr-1 h-1 w-1 rounded-full" />
+							)}
+							<span className="text-foreground font-semibold">{metric.value}</span>
+							{metric.label}
+						</span>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

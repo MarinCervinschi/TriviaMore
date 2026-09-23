@@ -121,7 +121,7 @@ function AboutPage() {
 			</section>
 
 			{/* Mission — full-width accent band */}
-			<section className="full-bleed-band bg-muted/30 relative border-y">
+			<section className="bg-muted/30 relative border-y">
 				<motion.div
 					ref={missionRef}
 					className="container py-16 sm:py-24"
@@ -220,7 +220,7 @@ function AboutPage() {
 			</section>
 
 			{/* Tech Stack — Orbiting animation */}
-			<section className="full-bleed-band bg-muted/20 border-y py-16 sm:py-24">
+			<section className="bg-muted/20 border-y py-16 sm:py-24">
 				<div className="container">
 					<div className="mb-10 text-center">
 						<p className="text-brand eyebrow-lg mb-3">Stack tecnologico</p>

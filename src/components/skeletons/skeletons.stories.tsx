@@ -17,13 +17,13 @@ import {
 	SkeletonFilterBar,
 	SkeletonGridCard,
 	SkeletonHeading,
-	SkeletonHero,
 	SkeletonListRow,
 	SkeletonRoot,
 	SkeletonSearchInput,
 	SkeletonStatBlock,
 	SkeletonTable,
 	SkeletonText,
+	SkeletonToolbar,
 } from "./primitives";
 import {
 	FlashcardSkeleton,
@@ -203,19 +203,19 @@ export const Primitives: Story = {
 	),
 };
 
-/** The hero, whose three knobs are the only thing separating the browse levels from each other. */
-export const Hero: Story = {
-	name: "L'hero",
+/** The compact head every page opens with, now that the shell carries the trail. */
+export const Toolbar: Story = {
+	name: "La testata compatta",
 	render: () => (
 		<Group>
-			<Labelled label="nudo">
-				<SkeletonHero />
+			<Labelled label="solo titolo">
+				<SkeletonToolbar />
 			</Labelled>
-			<Labelled label="withBadges={2}">
-				<SkeletonHero withBadges={2} />
+			<Labelled label="withMetrics={2}">
+				<SkeletonToolbar withMetrics={2} />
 			</Labelled>
-			<Labelled label="withStats={3} withBreadcrumb">
-				<SkeletonHero withStats={3} withBreadcrumb />
+			<Labelled label="withActions">
+				<SkeletonToolbar withMetrics={1} withActions />
 			</Labelled>
 		</Group>
 	),

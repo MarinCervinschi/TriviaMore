@@ -1,11 +1,9 @@
-import { useState } from "react";
-
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 
 import { AnalyticsView } from "./analytics-view";
-import { ATTEMPTS, DAILY, MASTERY, TODAY } from "./fixtures";
+import { ATTEMPTS, DAILY, TODAY } from "./fixtures";
 
 /**
  * The page itself, at the width it really gets: the content column is 1216px —
@@ -15,20 +13,17 @@ import { ATTEMPTS, DAILY, MASTERY, TODAY } from "./fixtures";
 const CONTENT_WIDTH = 1216;
 
 function Framed({ width }: { width: number }) {
-	const [period, setPeriod] = useState<ExplorerPeriod>("year");
-	const [mode, setMode] = useState<ExplorerMode>("both");
+	const period: ExplorerPeriod = "year";
+	const mode: ExplorerMode = "both";
 
 	return (
 		<div style={{ width }}>
 			<AnalyticsView
 				daily={DAILY}
 				attempts={ATTEMPTS}
-				mastery={MASTERY}
 				today={TODAY}
 				period={period}
 				mode={mode}
-				onPeriodChange={setPeriod}
-				onModeChange={setMode}
 			/>
 		</div>
 	);

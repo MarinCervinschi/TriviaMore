@@ -6,12 +6,12 @@ import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { DisketteIcon } from "@solar-icons/react/linear/diskette";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
-import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CloseGlyph, Spinner } from "@/components/icons";
 import { EnrollmentCard } from "@/components/onboarding/enrollment-card";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { StatCard } from "@/components/shared/stat-card";
 import { SettingsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +20,6 @@ import { Input } from "@/components/ui/input";
 import { InsetCard } from "@/components/ui/inset-card";
 import { Label } from "@/components/ui/label";
 import { AvatarEditor } from "@/components/user/avatar-editor";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
 import { seoHead } from "@/lib/seo";
 import { useUpdateProfile } from "@/lib/user/mutations";
 // TODO: uncomment when RLS DELETE policies are in place
@@ -44,15 +42,12 @@ function SettingsPage() {
 	if (!profile) return null;
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={SettingsIcon}
-				title="Impostazioni profilo"
-				description="Gestisci le informazioni del tuo account e le preferenze"
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb current="Impostazioni" />
+		<div className="pb-8">
+			<div className="container space-y-6 py-6">
+				<PageToolbar
+					title="Impostazioni profilo"
+					meta="Gestisci le informazioni del tuo account e le preferenze"
+				/>
 
 				<ProfileForm profile={profile} />
 

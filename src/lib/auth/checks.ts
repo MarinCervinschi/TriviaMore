@@ -1,7 +1,8 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, exists, inArray, or, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
-import { sectionAccess, sections } from "@/db/schema";
+import { profiles, sectionAccess, sections } from "@/db/schema";
 import { findSectionById } from "@/lib/catalog/db/sections";
 import { Forbidden } from "@/lib/server/errors";
 
@@ -25,6 +26,48 @@ async function grantedSectionIds(db: DbOrTx, userId: string, sectionIds: string[
 	return rows.map(row => row.sectionId);
 }
 
+// The third arm of the old `can_access_section()`. MAINTAINER is deliberately out:
+// its scope stops at public content.
+export async function readsPrivateSections(db: DbOrTx, userId: string | null) {
+	if (!userId) return false;
+
+	const [row] = await db
+		.select({ role: profiles.role })
+		.from(profiles)
+		.where(eq(profiles.id, userId))
+		.limit(1);
+	return row?.role === "ADMIN" || row?.role === "SUPERADMIN";
+}
+
+/**
+ * `filterAccessibleSections` as a predicate, so a count and the list it labels
+ * cannot drift. The exam-simulation sentinel is a catalogue rule, not an access
+ * one: the caller excludes it.
+ */
+export function accessibleSectionsSql(
+	db: DbOrTx,
+	userId: string | null,
+	readsPrivate: boolean
+): SQL {
+	if (readsPrivate) return sql`true`;
+	if (!userId) return eq(sections.isPublic, true);
+
+	return or(
+		eq(sections.isPublic, true),
+		exists(
+			db
+				.select({ one: sql`1` })
+				.from(sectionAccess)
+				.where(
+					and(
+						eq(sectionAccess.userId, userId),
+						eq(sectionAccess.sectionId, sections.id)
+					)
+				)
+		)
+	)!;
+}
+
 export async function canAccessSection(
 	db: DbOrTx,
 	userId: string | null,
@@ -34,6 +77,7 @@ export async function canAccessSection(
 	if (!section) return false;
 	if (section.isPublic) return true;
 	if (!userId) return false;
+	if (await readsPrivateSections(db, userId)) return true;
 
 	return (await grantedSectionIds(db, userId, [sectionId])).length > 0;
 }
@@ -70,8 +114,12 @@ export async function filterAccessibleSections(
 	}
 
 	if (restricted.length > 0 && userId) {
-		for (const sectionId of await grantedSectionIds(db, userId, restricted)) {
-			allowed.add(sectionId);
+		if (await readsPrivateSections(db, userId)) {
+			for (const sectionId of restricted) allowed.add(sectionId);
+		} else {
+			for (const sectionId of await grantedSectionIds(db, userId, restricted)) {
+				allowed.add(sectionId);
+			}
 		}
 	}
 

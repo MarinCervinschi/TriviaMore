@@ -1,13 +1,13 @@
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
-import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { ANALYTICS_TABS } from "@/components/layout/nav-items";
 import { AnalyticsView } from "@/components/progress/analytics-view";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { AnalyticsSkeleton } from "@/components/skeletons";
 import { EmptyState } from "@/components/ui/empty-state";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import {
@@ -20,7 +20,6 @@ export const Route = createFileRoute("/_app/user/analytics/")({
 	loader: ({ context }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(userQueries.attemptHistory()),
-			context.queryClient.ensureQueryData(userQueries.mastery()),
 			context.queryClient.ensureQueryData(userQueries.studyStats()),
 			context.queryClient.ensureQueryData(userQueries.flashcardDays()),
 		]),
@@ -35,19 +34,13 @@ function AnalyticsPage() {
 	const { data: attempts } = useSuspenseQuery(userQueries.attemptHistory());
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
 	const { data: flashcardDays } = useSuspenseQuery(userQueries.flashcardDays());
-	// Not suspense: the window changes under the user, and a refetch must not
-	// throw the whole page back to its skeleton.
-	const { data: mastery } = useQuery({
-		...userQueries.mastery(window.masteryWindow),
-		placeholderData: previous => previous,
-	});
 
 	// No hero on this page: the breadcrumb names it and the space goes to the data.
 	return (
-		<div className="container space-y-6 py-6 pb-10">
+		<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
 			{attempts.length === 0 ? (
 				<>
-					<UserBreadcrumb current="Analytics" currentIcon={GraphUpIcon} />
+					<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 					<EmptyState
 						icon={CupFirstIcon}
 						title="Ancora nessun dato"
@@ -56,19 +49,15 @@ function AnalyticsPage() {
 						actionHref="/browse"
 					/>
 				</>
-			) : mastery ? (
+			) : (
 				<AnalyticsView
 					daily={daily}
 					flashcardDays={flashcardDays}
 					attempts={attempts}
-					mastery={mastery}
+					tabs={ANALYTICS_TABS}
 					period={window.period}
 					mode={window.mode}
-					onPeriodChange={window.onPeriodChange}
-					onModeChange={window.onModeChange}
 				/>
-			) : (
-				<AnalyticsSkeleton />
 			)}
 		</div>
 	);

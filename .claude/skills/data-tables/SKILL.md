@@ -149,10 +149,11 @@ replaces the default with a row-level predicate. `query` arrives lowercased and 
 calls `useDataTable` once and render it per group. Build the column defs once in the parent and pass
 them down. Examples: `CourseGroupTable`, `ClassTable`.
 
-**A server-driven table** (`/search/*`): pass `manual: { pageCount, rowCount }`. That switches
-`manualPagination`, `manualSorting` and `manualFiltering` all on, so the table renders `data` verbatim
-and only drives the pagination UI. **Mark every column `enableSorting: false`** unless the API really
-accepts a sort parameter — a header that sorts nothing is worse than no header control.
+**A server-driven table**: pass `manual: { pageCount, rowCount }`. That switches `manualPagination`,
+`manualSorting` and `manualFiltering` all on, so the table renders `data` verbatim and only drives the
+pagination UI. **Mark every column `enableSorting: false`** unless the API really accepts a sort
+parameter — a header that sorts nothing is worse than no header control. **No table uses this today**
+— `/search` was the one, and it stopped being a table (D30); the capability stays for the next one.
 
 **A filter the table cannot own** — one that maps to a *set* of values rather than a column value,
 like `open` = `PENDING | NEEDS_REVISION` in `/admin/requests`. Keep it as page state, put it in the

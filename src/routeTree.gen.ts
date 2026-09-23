@@ -30,6 +30,7 @@ import { Route as AppUserRouteRouteImport } from './routes/_app/user/route'
 import { Route as AppLegalRouteRouteImport } from './routes/_app/legal/route'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppUserIndexRouteImport } from './routes/_app/user/index'
+import { Route as AppSearchIndexRouteImport } from './routes/_app/search/index'
 import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
@@ -54,6 +55,7 @@ import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/user
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
 import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
+import { Route as AppUserAnalyticsCoursesRouteImport } from './routes/_app/user/analytics/courses'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
 import { Route as AppAdminUsersUserIdRouteImport } from './routes/_app/admin/users/$userId'
 import { Route as AppAdminSectionsSectionIdRouteImport } from './routes/_app/admin/sections/$sectionId'
@@ -176,6 +178,11 @@ const AppUserIndexRoute = AppUserIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
+const AppSearchIndexRoute = AppSearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDepartmentsIndexRoute = AppDepartmentsIndexRouteImport.update({
   id: '/departments/',
   path: '/departments/',
@@ -297,6 +304,11 @@ const AppAdminDepartmentsIndexRoute =
 const AppUserAnalyticsHistoryRoute = AppUserAnalyticsHistoryRouteImport.update({
   id: '/analytics/history',
   path: '/analytics/history',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserAnalyticsCoursesRoute = AppUserAnalyticsCoursesRouteImport.update({
+  id: '/analytics/courses',
+  path: '/analytics/courses',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppQuizResultsAttemptIdRoute = AppQuizResultsAttemptIdRouteImport.update({
@@ -431,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/departments/': typeof AppDepartmentsIndexRoute
+  '/search/': typeof AppSearchIndexRoute
   '/user/': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -440,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
@@ -492,6 +506,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
   '/departments': typeof AppDepartmentsIndexRoute
+  '/search': typeof AppSearchIndexRoute
   '/user': typeof AppUserIndexRoute
   '/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -501,6 +516,7 @@ export interface FileRoutesByTo {
   '/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
@@ -557,6 +573,7 @@ export interface FileRoutesById {
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/departments/': typeof AppDepartmentsIndexRoute
+  '/_app/search/': typeof AppSearchIndexRoute
   '/_app/user/': typeof AppUserIndexRoute
   '/_app/admin/classes/$classId': typeof AppAdminClassesClassIdRoute
   '/_app/admin/courses/$courseId': typeof AppAdminCoursesCourseIdRoute
@@ -566,6 +583,7 @@ export interface FileRoutesById {
   '/_app/admin/sections/$sectionId': typeof AppAdminSectionsSectionIdRoute
   '/_app/admin/users/$userId': typeof AppAdminUsersUserIdRoute
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
+  '/_app/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
@@ -622,6 +640,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/browse/'
     | '/departments/'
+    | '/search/'
     | '/user/'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -631,6 +650,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
+    | '/user/analytics/courses'
     | '/user/analytics/history'
     | '/admin/departments/'
     | '/admin/requests/'
@@ -683,6 +703,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/browse'
     | '/departments'
+    | '/search'
     | '/user'
     | '/admin/classes/$classId'
     | '/admin/courses/$courseId'
@@ -692,6 +713,7 @@ export interface FileRouteTypes {
     | '/admin/sections/$sectionId'
     | '/admin/users/$userId'
     | '/quiz/results/$attemptId'
+    | '/user/analytics/courses'
     | '/user/analytics/history'
     | '/admin/departments'
     | '/admin/requests'
@@ -747,6 +769,7 @@ export interface FileRouteTypes {
     | '/_app/admin/'
     | '/_app/browse/'
     | '/_app/departments/'
+    | '/_app/search/'
     | '/_app/user/'
     | '/_app/admin/classes/$classId'
     | '/_app/admin/courses/$courseId'
@@ -756,6 +779,7 @@ export interface FileRouteTypes {
     | '/_app/admin/sections/$sectionId'
     | '/_app/admin/users/$userId'
     | '/_app/quiz/results/$attemptId'
+    | '/_app/user/analytics/courses'
     | '/_app/user/analytics/history'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
@@ -941,6 +965,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
+    '/_app/search/': {
+      id: '/_app/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof AppSearchIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/departments/': {
       id: '/_app/departments/'
       path: '/departments'
@@ -1107,6 +1138,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics/history'
       fullPath: '/user/analytics/history'
       preLoaderRoute: typeof AppUserAnalyticsHistoryRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/analytics/courses': {
+      id: '/_app/user/analytics/courses'
+      path: '/analytics/courses'
+      fullPath: '/user/analytics/courses'
+      preLoaderRoute: typeof AppUserAnalyticsCoursesRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/quiz/results/$attemptId': {
@@ -1291,6 +1329,7 @@ interface AppUserRouteRouteChildren {
   AppUserProgressRoute: typeof AppUserProgressRoute
   AppUserSettingsRoute: typeof AppUserSettingsRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
+  AppUserAnalyticsCoursesRoute: typeof AppUserAnalyticsCoursesRoute
   AppUserAnalyticsHistoryRoute: typeof AppUserAnalyticsHistoryRoute
   AppUserAnalyticsIndexRoute: typeof AppUserAnalyticsIndexRoute
   AppUserRequestsIndexRoute: typeof AppUserRequestsIndexRoute
@@ -1307,6 +1346,7 @@ const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserProgressRoute: AppUserProgressRoute,
   AppUserSettingsRoute: AppUserSettingsRoute,
   AppUserIndexRoute: AppUserIndexRoute,
+  AppUserAnalyticsCoursesRoute: AppUserAnalyticsCoursesRoute,
   AppUserAnalyticsHistoryRoute: AppUserAnalyticsHistoryRoute,
   AppUserAnalyticsIndexRoute: AppUserAnalyticsIndexRoute,
   AppUserRequestsIndexRoute: AppUserRequestsIndexRoute,
@@ -1330,6 +1370,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppBrowseIndexRoute: typeof AppBrowseIndexRoute
   AppDepartmentsIndexRoute: typeof AppDepartmentsIndexRoute
+  AppSearchIndexRoute: typeof AppSearchIndexRoute
   AppQuizResultsAttemptIdRoute: typeof AppQuizResultsAttemptIdRoute
   AppBrowseDepartmentIndexRoute: typeof AppBrowseDepartmentIndexRoute
   AppDepartmentsDepartmentIndexRoute: typeof AppDepartmentsDepartmentIndexRoute
@@ -1354,6 +1395,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppBrowseIndexRoute: AppBrowseIndexRoute,
   AppDepartmentsIndexRoute: AppDepartmentsIndexRoute,
+  AppSearchIndexRoute: AppSearchIndexRoute,
   AppQuizResultsAttemptIdRoute: AppQuizResultsAttemptIdRoute,
   AppBrowseDepartmentIndexRoute: AppBrowseDepartmentIndexRoute,
   AppDepartmentsDepartmentIndexRoute: AppDepartmentsDepartmentIndexRoute,

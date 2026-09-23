@@ -1,12 +1,11 @@
 import { useState } from "react";
 
 import { BellIcon } from "@solar-icons/react/linear/bell";
-import { BookIcon } from "@solar-icons/react/linear/book";
-import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { FeedIcon } from "@solar-icons/react/linear/feed";
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import { useQuery } from "@tanstack/react-query";
@@ -25,9 +24,8 @@ import { notificationQueries } from "@/lib/notifications/queries";
 import { cn } from "@/lib/utils";
 
 import {
-	ABOUT_ITEM,
 	ADMIN_ITEM,
-	NAV_ITEMS,
+	MOBILE_ITEMS,
 	type NavItem,
 	getInitials,
 	useIsAdmin,
@@ -189,22 +187,11 @@ function ProfileSheet({
 						badge={unreadChangelogs}
 						onClose={close}
 					/>
+					<ToolTile to="/search" icon={MagnifierIcon} label="Cerca" onClose={close} />
 					<ToolTile
-						to="/search/courses"
-						icon={DiplomaIcon}
-						label="Corsi di laurea"
-						onClose={close}
-					/>
-					<ToolTile
-						to="/search/classes"
-						icon={BookIcon}
-						label="Insegnamenti"
-						onClose={close}
-					/>
-					<ToolTile
-						to={ABOUT_ITEM.to}
+						to="/about"
 						icon={InfoCircleIcon}
-						label={ABOUT_ITEM.label}
+						label="Chi siamo"
 						onClose={close}
 					/>
 					{isAdmin && (
@@ -326,7 +313,7 @@ export function MobileBottomNav() {
 			)}
 		>
 			<ul className="flex items-stretch justify-around px-1">
-				{NAV_ITEMS.map(item => (
+				{MOBILE_ITEMS.map(item => (
 					<BottomNavItem
 						key={item.to}
 						item={item}

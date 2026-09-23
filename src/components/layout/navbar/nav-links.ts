@@ -1,10 +1,10 @@
-import { BookIcon } from "@solar-icons/react/linear/book";
 import { CompassIcon } from "@solar-icons/react/linear/compass";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { FeedIcon } from "@solar-icons/react/linear/feed";
 import { HomeIcon } from "@solar-icons/react/linear/home";
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import { UserIcon } from "@solar-icons/react/linear/user";
@@ -34,16 +34,10 @@ const EXPLORE_DROPDOWN: NavDropdownItem = {
 	icon: CompassIcon,
 	children: [
 		{
-			to: "/search/courses",
-			label: "Cerca corso",
-			icon: DiplomaIcon,
-			description: "Trova un corso per nome",
-		},
-		{
-			to: "/search/classes",
-			label: "Cerca insegnamento",
-			icon: BookIcon,
-			description: "Trova un insegnamento per nome",
+			to: "/search",
+			label: "Cerca",
+			icon: MagnifierIcon,
+			description: "Corsi e insegnamenti, in un posto solo",
 		},
 	],
 };

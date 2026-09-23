@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PlusGlyph } from "@/components/icons";
 import { RequestFormDialog } from "@/components/requests/request-form-dialog";
 import { RequestStatusBadge } from "@/components/requests/request-status-badge";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { UserRequestsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -33,8 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import {
@@ -120,19 +121,17 @@ function timeAgo(dateStr: string): string {
 
 function UserContributionsPage() {
 	const { data: requests } = useSuspenseQuery(requestQueries.userRequests());
+	const paged = usePagedList(requests);
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const prefersReduced = useReducedMotion();
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={InboxIcon}
-				title="I miei contributi"
-				description="Proponi nuovi contenuti per la piattaforma."
-			/>
-
-			<div className="container space-y-6">
-				<UserBreadcrumb current="Contributi" />
+		<div className="pb-8">
+			<div className="container space-y-6 py-6">
+				<PageToolbar
+					title="I miei contributi"
+					meta="Proponi nuovi contenuti per la piattaforma."
+				/>
 
 				{/* Info banner */}
 				<div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
@@ -176,14 +175,14 @@ function UserContributionsPage() {
 						initial="hidden"
 						animate="visible"
 					>
-						{requests.map((request, i) => (
+						{paged.items.map((request, i) => (
 							<motion.div
 								key={request.id}
 								variants={withReducedMotion(staggerItem, prefersReduced)}
 							>
 								<ContributionRow
 									request={request}
-									isLast={i === requests.length - 1}
+									isLast={i === paged.items.length - 1}
 									isExpanded={expandedId === request.id}
 									onToggle={() =>
 										setExpandedId(expandedId === request.id ? null : request.id)
@@ -194,6 +193,14 @@ function UserContributionsPage() {
 						))}
 					</motion.div>
 				)}
+
+				<Pagination
+					page={paged.page}
+					totalPages={paged.totalPages}
+					pageSize={paged.pageSize}
+					totalItems={paged.total}
+					onPageChange={paged.setPage}
+				/>
 			</div>
 		</div>
 	);

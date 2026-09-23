@@ -26,6 +26,7 @@ function hasClassesFilter(p: SearchClassesParams): boolean {
 		p.query ||
 		p.departmentId ||
 		p.courseId ||
+		p.campus ||
 		p.classYear !== undefined ||
 		p.mandatory !== undefined
 	);
