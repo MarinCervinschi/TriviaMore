@@ -345,6 +345,28 @@ No dialog says "Sei sicuro?". It names the object and the act.
 When a route has a `pendingComponent`, its skeleton in `src/components/skeletons/` changes with the
 page. A skeleton that drifts is worse than none: it makes the swap jump.
 
+### How wide the content is
+
+`container` caps at `var(--container-max, 80rem)`, and the cap is a token so the
+context can set it (D29, D31):
+
+| where | value | why |
+|---|---|---|
+| the inset panel | `none` | so the header's trail starts at the panel edge |
+| the wrapper around `<Outlet />` | `80rem` | the measure every page gets by default |
+| a page that opts out | `none` | set on the element that carries `container` |
+
+**Content is measured, chrome is not.** The cap wraps the `Outlet`, never the panel:
+the trail belongs to the shell and runs edge to edge.
+
+**Opt out where width carries information** — a chart grid, a long table — not where
+it merely fills: past ~1280px a fixed-column card grid shows the same cards wider,
+not more of them. Today: analytics and its entity pages, the attempt history, I miei
+insegnamenti, the whole admin layout.
+
+**A tab set shares one measure.** Traguardi sits in the analytics tab row, so it opts
+out with them: switching tab must not move the layout.
+
 ### The `container` trap
 
 `container` is an `@utility`, not a plain `.container` rule — and it has to be. **A plain rule is

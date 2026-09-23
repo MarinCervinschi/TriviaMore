@@ -46,7 +46,7 @@ function AchievementsPage() {
 
 	if (data.total === 0) {
 		return (
-			<div className="container space-y-6 py-6 pb-10">
+			<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
 				<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 				<EmptyState
 					icon={MedalRibbonStarIcon}
@@ -65,7 +65,7 @@ function AchievementsPage() {
 		data.categories.find(group => group.category === categoria) ?? data.categories[0]!;
 
 	return (
-		<div className="container space-y-6 py-6 pb-10">
+		<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
 			<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 			<AchievementSummary
