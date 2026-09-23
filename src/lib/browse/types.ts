@@ -171,6 +171,7 @@ export interface SearchClassesParams {
 	query?: string;
 	departmentId?: string;
 	courseId?: string;
+	campus?: string;
 	classYear?: number;
 	mandatory?: boolean;
 	page?: number;

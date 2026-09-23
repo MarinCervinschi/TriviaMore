@@ -19,6 +19,7 @@ import {
 } from "@/lib/quiz/scoring";
 import type { QuizAttemptResult } from "@/lib/quiz/types";
 import { cn } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils/format";
 import { formatThirtyScaleGrade, getGradeColor, gradeBand } from "@/lib/utils/grading";
 import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
@@ -94,6 +95,7 @@ export function ResultsHero({
 	return (
 		<InsetCard
 			title="Esito della prova"
+			description={formatDateTime(result.completedAt)}
 			actions={favorite}
 			texture="top"
 			textureAlpha={0.2}

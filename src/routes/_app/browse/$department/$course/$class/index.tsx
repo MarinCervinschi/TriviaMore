@@ -350,7 +350,7 @@ function ClassPage() {
 					</>
 				}
 			/>
-			<div className="container pt-8">
+			<div className="container">
 				{classData.examSimulation &&
 					(classData.examSimulation.totalQuizQuestions > 0 ||
 						classData.examSimulation.totalFlashcardQuestions > 0) && (

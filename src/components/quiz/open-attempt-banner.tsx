@@ -61,7 +61,14 @@ function useAttemptActions(attempt: OpenAttempt) {
 		/>
 	);
 
-	return { label, resume, discard, confirmation };
+	return {
+		label,
+		resume,
+		discard,
+		confirmation,
+		askDiscard: () => setConfirmOpen(true),
+		discarding: cancel.isPending,
+	};
 }
 
 function AttemptWhere({ attempt }: { attempt: OpenAttempt }): ReactNode {
@@ -107,6 +114,39 @@ export function OpenAttemptBanner({
 					</div>
 				</div>
 			</Card>
+			{confirmation}
+		</>
+	);
+}
+
+/** The same attempt as one line. No instant: saying when costs the card's hydration gate. */
+export function OpenAttemptStatus({ attempt }: { attempt: OpenAttempt }) {
+	const { label, confirmation, askDiscard, discarding } = useAttemptActions(attempt);
+
+	return (
+		<>
+			<span className="flex min-w-0 flex-1 items-center gap-2">
+				<ClockCircleIcon className="text-warning size-4 shrink-0" />
+				<span className="truncate">
+					Hai un {label} in corso — {attempt.sectionName} · {attempt.className}
+				</span>
+				<span className="ms-auto flex shrink-0 items-center gap-1 ps-2">
+					<Button asChild size="sm">
+						<Link to="/quiz/$quizId" params={{ quizId: attempt.quizId }}>
+							Riprendi
+						</Link>
+					</Button>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={askDiscard}
+						disabled={discarding}
+						className="text-muted-foreground hover:bg-card hover:text-danger"
+					>
+						Elimina
+					</Button>
+				</span>
+			</span>
 			{confirmation}
 		</>
 	);

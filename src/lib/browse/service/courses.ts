@@ -2,7 +2,7 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
+import { classes, courseClasses, courses, departments } from "@/db/schema";
 
 import { classColumns, courseClassColumns } from "../columns";
 import type {
@@ -12,27 +12,37 @@ import type {
 	SearchCoursesParams,
 	SearchCoursesResponse,
 } from "../types";
-import { paginationOf, resolveCourseByCodes, toFtsQuery } from "./shared";
+import {
+	countVisibleSectionsByClass,
+	paginationOf,
+	resolveCourseByCodes,
+	toFtsQuery,
+} from "./shared";
 
 export async function getCourseWithClasses(
+	userId: string | null,
 	deptCode: string,
 	courseCode: string
 ): Promise<CourseWithClasses | null> {
 	const resolved = await resolveCourseByCodes(deptCode, courseCode);
 	if (!resolved) return null;
 
-	const rows = await getDb()
+	const db = getDb();
+	const rows = await db
 		.select({
 			class: classColumns,
 			courseClass: courseClassColumns,
-			sectionCount: sql<number>`count(${sections.id})`.mapWith(Number),
 		})
 		.from(courseClasses)
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
-		.leftJoin(sections, eq(sections.classId, classes.id))
 		.where(eq(courseClasses.courseId, resolved.course.id))
-		.groupBy(classes.id, courseClasses.courseId, courseClasses.classId)
 		.orderBy(asc(courseClasses.classYear), asc(courseClasses.position));
+
+	const counts = await countVisibleSectionsByClass(
+		db,
+		rows.map(row => row.class.id),
+		userId
+	);
 
 	return {
 		...resolved.course,
@@ -40,7 +50,7 @@ export async function getCourseWithClasses(
 		classes: rows.map(row => ({
 			...row.class,
 			...row.courseClass,
-			sectionCount: row.sectionCount,
+			sectionCount: counts.get(row.class.id) ?? 0,
 		})),
 	};
 }

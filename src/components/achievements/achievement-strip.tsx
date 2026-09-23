@@ -1,7 +1,6 @@
-import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
-import { Link } from "@tanstack/react-router";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 
-import { Button } from "@/components/ui/button";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { InsetCard } from "@/components/ui/inset-card";
 import { Progress } from "@/components/ui/progress";
 import { formatMetricValue } from "@/lib/achievements/format";
@@ -30,12 +29,9 @@ export function AchievementStrip({ overview }: { overview: AchievementsOverview 
 			title="Traguardi"
 			description={`${overview.unlocked} sbloccati su ${overview.total}`}
 			actions={
-				<Button asChild variant="ghost" size="sm" className="group">
-					<Link to="/user/achievements" className="flex items-center gap-1">
-						Tutti i traguardi
-						<ArrowRightIcon className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-					</Link>
-				</Button>
+				<SeeAllLink to="/user/achievements" icon={CupFirstIcon}>
+					Tutti i traguardi
+				</SeeAllLink>
 			}
 			panelClassName="p-4"
 		>

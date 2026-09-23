@@ -12,13 +12,14 @@ import {
 	AchievementGroup,
 } from "@/components/achievements/achievement-group";
 import { AchievementSummary } from "@/components/achievements/achievement-summary";
+import { ANALYTICS_TABS } from "@/components/layout/nav-items";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { type ChipOption, SelectChip } from "@/components/shared/select-chip";
 import { AchievementsSkeleton } from "@/components/skeletons";
 import { EmptyState } from "@/components/ui/empty-state";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
+import { TabNav } from "@/components/ui/tab-nav";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { seoHead } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 
 const FILTER_OPTIONS: ChipOption<AchievementFilter>[] = [
 	{ value: "tutti", label: "Tutti", icon: WidgetIcon },
@@ -45,8 +46,8 @@ function AchievementsPage() {
 
 	if (data.total === 0) {
 		return (
-			<div className="container space-y-6 py-6 pb-10">
-				<UserBreadcrumb current="Traguardi" currentIcon={MedalRibbonStarIcon} />
+			<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
+				<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 				<EmptyState
 					icon={MedalRibbonStarIcon}
 					title="Nessun traguardo ancora in catalogo"
@@ -63,10 +64,9 @@ function AchievementsPage() {
 	const active =
 		data.categories.find(group => group.category === categoria) ?? data.categories[0]!;
 
-	// No hero: the breadcrumb names the page and the space goes to the medals.
 	return (
-		<div className="container space-y-6 py-6 pb-10">
-			<UserBreadcrumb current="Traguardi" currentIcon={MedalRibbonStarIcon} />
+		<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
+			<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 			<AchievementSummary
 				unlocked={data.unlocked}
@@ -76,60 +76,20 @@ function AchievementsPage() {
 				pinned={data.pinned}
 			/>
 
-			<div>
-				{/* Both properties, as `CalendarHeatmap` does: the row scrolls without a bar. */}
-				<div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-					<div role="tablist" aria-label="Categorie" className="flex w-max gap-9">
-						{data.categories.map(group => {
-							const done = group.achievements.filter(
-								entry => entry.awardedAt !== null
-							).length;
-							const current = group.category === active.category;
-
-							return (
-								<button
-									key={group.category}
-									type="button"
-									role="tab"
-									aria-selected={current}
-									onClick={() =>
-										navigate({
-											search: prev => ({ ...prev, categoria: group.category }),
-											replace: true,
-										})
-									}
-									className={cn(
-										"focus-visible:ring-ring relative inline-flex shrink-0 items-center gap-2 px-1 pb-2.5 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",
-										current
-											? "text-foreground font-semibold"
-											: "text-muted-foreground hover:text-foreground"
-									)}
-								>
-									{group.category}
-									<span
-										className={cn(
-											"text-2xs rounded-md px-1.5 py-0.5 tabular-nums",
-											current
-												? "bg-muted text-foreground"
-												: "bg-muted/60 text-muted-foreground"
-										)}
-									>
-										{done}/{group.achievements.length}
-									</span>
-									{/* A span, not a border: `globals.css` sets `border-color` on `*`
-										    outside any layer, so `border-transparent` never applies. */}
-									{current && (
-										<span
-											className="bg-foreground absolute inset-x-0 bottom-0 h-0.5 rounded-full"
-											aria-hidden
-										/>
-									)}
-								</button>
-							);
-						})}
-					</div>
-				</div>
-			</div>
+			<TabNav
+				label="Categorie"
+				tabs={data.categories.map(group => ({
+					key: group.category,
+					label: group.category,
+					badge: `${group.achievements.filter(entry => entry.awardedAt !== null).length}/${group.achievements.length}`,
+					active: group.category === active.category,
+					onSelect: () =>
+						navigate({
+							search: prev => ({ ...prev, categoria: group.category }),
+							replace: true,
+						}),
+				}))}
+			/>
 
 			<AchievementGroup
 				category={active.category}

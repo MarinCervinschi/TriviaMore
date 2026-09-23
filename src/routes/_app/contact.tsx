@@ -151,7 +151,7 @@ function ContactPage() {
 			</section>
 
 			{/* Quick action links */}
-			<section className="full-bleed-band bg-muted/20 border-y">
+			<section className="bg-muted/20 border-y">
 				<motion.div
 					ref={linksRef}
 					className="container"
@@ -271,7 +271,7 @@ function ContactPage() {
 			</section>
 
 			{/* FAQ — accordion style */}
-			<section className="full-bleed-band bg-muted/20 border-t py-16 sm:py-24">
+			<section className="bg-muted/20 border-t py-16 sm:py-24">
 				<motion.div
 					ref={faqRef}
 					className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8"

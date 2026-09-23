@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination } from "@/components/ui/pagination";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import {
@@ -23,6 +25,7 @@ export function NotificationList() {
 	const prefersReduced = useReducedMotion();
 
 	const hasUnread = notifications.some(n => !n.isRead);
+	const paged = usePagedList(notifications);
 
 	if (notifications.length === 0) {
 		return (
@@ -58,7 +61,7 @@ export function NotificationList() {
 				initial="hidden"
 				animate="visible"
 			>
-				{notifications.map(notification => (
+				{paged.items.map(notification => (
 					<motion.div
 						key={notification.id}
 						variants={item}
@@ -72,6 +75,14 @@ export function NotificationList() {
 					</motion.div>
 				))}
 			</motion.div>
+
+			<Pagination
+				page={paged.page}
+				totalPages={paged.totalPages}
+				pageSize={paged.pageSize}
+				totalItems={paged.total}
+				onPageChange={paged.setPage}
+			/>
 		</div>
 	);
 }

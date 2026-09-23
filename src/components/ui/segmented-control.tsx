@@ -1,3 +1,4 @@
+import type { Icon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 export type SegmentedOption<T extends string> = {
@@ -5,6 +6,8 @@ export type SegmentedOption<T extends string> = {
 	label: string;
 	/** Shown beside the label, in muted ink — the size of what the segment selects. */
 	count?: number;
+	/** Drawn before the label, or in its place when the control hides labels. */
+	icon?: Icon;
 };
 
 /**
@@ -21,6 +24,7 @@ export function SegmentedControl<T extends string>({
 	onChange,
 	options,
 	size = "default",
+	iconOnly = false,
 	className,
 }: {
 	/** Names the group for a screen reader — the segments only name themselves. */
@@ -28,8 +32,13 @@ export function SegmentedControl<T extends string>({
 	value: T;
 	onChange: (value: T) => void;
 	options: SegmentedOption<T>[];
-	/** `lg` for a touch target on a phone. */
-	size?: "default" | "lg";
+	/** `lg` for a touch target on a phone, `sm` where the frame is tight. */
+	size?: "default" | "lg" | "sm";
+	/**
+	 * Shows only the icons, for a control too narrow for words. The label stays in
+	 * the accessible name — a glyph on its own names nothing.
+	 */
+	iconOnly?: boolean;
 	className?: string;
 }) {
 	return (
@@ -43,6 +52,7 @@ export function SegmentedControl<T extends string>({
 		>
 			{options.map(option => {
 				const selected = option.value === value;
+				const Glyph = option.icon;
 				return (
 					<button
 						key={option.value}
@@ -50,14 +60,16 @@ export function SegmentedControl<T extends string>({
 						aria-pressed={selected}
 						onClick={() => onChange(option.value)}
 						className={cn(
-							"focus-visible:ring-ring inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",
-							size === "lg" ? "h-10" : "h-7",
+							"focus-visible:ring-ring inline-flex cursor-pointer items-center gap-1.5 rounded-lg text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",
+							size === "lg" ? "h-10" : size === "sm" ? "h-6" : "h-7",
+							iconOnly ? "aspect-square justify-center px-0" : "px-3",
 							selected
 								? "bg-card text-foreground font-semibold shadow-xs"
 								: "text-muted-foreground hover:text-foreground font-medium"
 						)}
 					>
-						{option.label}
+						{Glyph && <Glyph className="size-4 shrink-0" aria-hidden />}
+						<span className={cn(iconOnly && "sr-only")}>{option.label}</span>
 						{option.count !== undefined && (
 							<span className="text-muted-foreground font-medium tabular-nums">
 								{option.count}

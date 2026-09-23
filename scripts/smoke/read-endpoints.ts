@@ -134,7 +134,7 @@ await check("browse.getDepartmentWithCourses", () =>
 	getDepartmentWithCourses(sample.dept_code)
 );
 await check("browse.getCourseWithClasses", () =>
-	getCourseWithClasses(sample.dept_code, sample.course_code)
+	getCourseWithClasses(userId, sample.dept_code, sample.course_code)
 );
 await check("browse.getClassWithSections", () =>
 	getClassWithSections(userId, {
@@ -155,7 +155,7 @@ await check("browse.searchCourses (fts)", () =>
 	searchCourses({ query: "ingegneria", page: 1, pageSize: 5 })
 );
 await check("browse.searchClasses (fts)", () =>
-	searchClasses({ query: "analisi", page: 1, pageSize: 5 })
+	searchClasses(userId, { query: "analisi", page: 1, pageSize: 5 })
 );
 await check("browse.getAvailableClassYears", () => getAvailableClassYears({}));
 await check("browse.getDepartmentCourseList", async () => {
