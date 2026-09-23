@@ -26,7 +26,7 @@ export function BrowsePageHeader({
 	const { isAuthenticated } = useAuth();
 
 	return (
-		<section className="relative w-full pt-6 pb-10 sm:pt-8 sm:pb-14">
+		<section className="relative w-full pt-6 pb-6 sm:pt-8 sm:pb-8">
 			<div className="container">
 				{/* A guest has no shell header to put the trail in; signed in, it is there. */}
 				{!isAuthenticated && breadcrumb}
