@@ -15,7 +15,12 @@ import type {
 	SearchClassesParams,
 	SearchClassesResponse,
 } from "../types";
-import { paginationOf, resolveClassByCodes, toFtsQuery } from "./shared";
+import {
+	countVisibleSectionsByClass,
+	paginationOf,
+	resolveClassByCodes,
+	toFtsQuery,
+} from "./shared";
 
 function findExamSimulationSection(classId: string) {
 	return getDb()
@@ -97,6 +102,7 @@ export async function getClassWithSections(
 }
 
 export async function searchClasses(
+	userId: string | null,
 	params: SearchClassesParams
 ): Promise<SearchClassesResponse> {
 	const filters: SQL[] = [];
@@ -123,7 +129,8 @@ export async function searchClasses(
 
 	const { limit, offset } = paginationOf(params);
 
-	const rows = await getDb()
+	const db = getDb();
+	const rows = await db
 		.select({
 			id: classes.id,
 			name: classes.name,
@@ -137,26 +144,22 @@ export async function searchClasses(
 			courseCode: courses.code,
 			departmentCode: departments.code,
 			departmentName: departments.name,
-			sectionCount: sql<number>`count(${sections.id})`.mapWith(Number),
 			total: sql<number>`count(*) over()`.mapWith(Number),
 		})
 		.from(courseClasses)
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
 		.innerJoin(courses, eq(courses.id, courseClasses.courseId))
 		.innerJoin(departments, eq(departments.id, courses.departmentId))
-		.leftJoin(sections, eq(sections.classId, classes.id))
 		.where(filters.length > 0 ? and(...filters) : undefined)
-		.groupBy(
-			courseClasses.courseId,
-			courseClasses.classId,
-			classes.id,
-			courses.id,
-			departments.code,
-			departments.name
-		)
 		.orderBy(asc(courseClasses.classYear), asc(courseClasses.code))
 		.limit(limit)
 		.offset(offset);
+
+	const counts = await countVisibleSectionsByClass(
+		db,
+		rows.map(row => row.id),
+		userId
+	);
 
 	return {
 		data: rows.map(row => ({
@@ -173,7 +176,7 @@ export async function searchClasses(
 				code: row.courseCode,
 				department: { code: row.departmentCode, name: row.departmentName },
 			},
-			sectionCount: row.sectionCount,
+			sectionCount: counts.get(row.id) ?? 0,
 		})),
 		total: rows[0]?.total ?? 0,
 	};
