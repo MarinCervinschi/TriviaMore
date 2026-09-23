@@ -66,7 +66,16 @@ function AppLayout() {
 					<PageBand level="app" glow={false} />
 				</div>
 				<AppHeader />
-				<Outlet />
+
+				{/*
+				 * Content is measured, chrome is not. 80rem sits in the 1200–1440px the
+				 * guidance gives for an application: past it a fixed-column card grid
+				 * shows the same cards wider, not more of them. A page whose width
+				 * genuinely carries information opts out with `--container-max: none`.
+				 */}
+				<div className="[--container-max:80rem]">
+					<Outlet />
+				</div>
 			</SidebarInset>
 			<MobileBottomNav />
 		</SidebarProvider>

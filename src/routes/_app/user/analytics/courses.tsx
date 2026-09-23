@@ -32,7 +32,7 @@ function AnalyticsCoursesPage() {
 	const rollup = useMemo(() => buildProgressRollup(attempts), [attempts]);
 
 	return (
-		<div className="@container container space-y-6 py-6 pb-10">
+		<div className="@container container space-y-6 py-6 pb-10 [--container-max:none]">
 			<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 			{attempts.length === 0 ? (

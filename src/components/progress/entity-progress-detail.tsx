@@ -52,7 +52,7 @@ export function EntityProgressDetail({
 }) {
 	if (attempts.length === 0) {
 		return (
-			<div className="container space-y-4 py-6 pb-10">
+			<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
 				<EmptyState
 					icon={GraphUpIcon}
 					title="Nessun dato"
@@ -65,7 +65,7 @@ export function EntityProgressDetail({
 	}
 
 	return (
-		<div className="container space-y-4 py-6 pb-10">
+		<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
 			<AnalyticsView
 				daily={daily}
 				flashcardDays={flashcardDays}

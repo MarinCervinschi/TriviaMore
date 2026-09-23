@@ -200,7 +200,7 @@ function ClassesPage() {
 
 	return (
 		<div className="pb-8">
-			<div className="container space-y-6 py-6">
+			<div className="container space-y-6 py-6 [--container-max:none]">
 				<PageToolbar
 					title="I miei insegnamenti"
 					meta="Gestisci gli insegnamenti che stai seguendo"

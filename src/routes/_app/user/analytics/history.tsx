@@ -452,7 +452,7 @@ function AttemptHistoryPage() {
 
 	return (
 		<TooltipProvider delayDuration={200}>
-			<div className="container space-y-4 py-6 pb-10">
+			<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
 				<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 				{attempts.length > 0 && <HistorySummary attempts={attempts} />}
