@@ -2,9 +2,13 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments } from "@/db/schema";
+import { classes, courseClasses, coursePlans, courses, departments } from "@/db/schema";
+import { academicYearOf } from "@/lib/catalog/academic-year";
 import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
-import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import {
+	offeredCourseClassSql,
+	studiableCourseClassSql,
+} from "@/lib/catalog/db/course-classes";
 
 import type {
 	CampusLocation,
@@ -29,16 +33,31 @@ export async function getCourseWithClasses(
 	if (!resolved) return null;
 
 	const db = getDb();
-	const rows = await db
-		.select({
-			class: classColumns,
-			courseClass: courseClassColumns,
-			studiable: sql<boolean>`${studiableCourseClassSql(db)}`,
-		})
-		.from(courseClasses)
-		.innerJoin(classes, eq(classes.id, courseClasses.classId))
-		.where(eq(courseClasses.courseId, resolved.course.id))
-		.orderBy(asc(courseClasses.classYear), asc(courseClasses.position));
+	const year = academicYearOf(new Date());
+	const [rows, [plan]] = await Promise.all([
+		db
+			.select({
+				class: classColumns,
+				courseClass: courseClassColumns,
+				studiable: sql<boolean>`${studiableCourseClassSql(db, year)}`,
+			})
+			.from(courseClasses)
+			.innerJoin(classes, eq(classes.id, courseClasses.classId))
+			.where(
+				and(
+					eq(courseClasses.courseId, resolved.course.id),
+					offeredCourseClassSql(db, year)
+				)
+			)
+			.orderBy(asc(courseClasses.classYear), asc(courseClasses.position)),
+		db
+			.select({ id: coursePlans.id })
+			.from(coursePlans)
+			.where(
+				and(eq(coursePlans.courseId, resolved.course.id), eq(coursePlans.cohort, year))
+			)
+			.limit(1),
+	]);
 
 	const studiable = rows.filter(row => row.studiable);
 	const counts = await countVisibleSectionsByClass(
@@ -63,6 +82,7 @@ export async function getCourseWithClasses(
 				cfu: row.class.cfu,
 				classYear: row.courseClass.classYear,
 			})),
+		offeringYear: plan ? year : null,
 	};
 }
 

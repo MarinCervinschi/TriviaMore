@@ -81,6 +81,8 @@ export type CourseWithClasses = Course & {
 	department: Department;
 	classes: BrowseClassInCourse[];
 	activities: PlanActivity[];
+	// The academic year whose official offering the lists follow; null when the course has no plan for it.
+	offeringYear: number | null;
 };
 
 export type ClassWithSections = Class & {
