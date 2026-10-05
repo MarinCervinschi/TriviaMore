@@ -109,6 +109,21 @@ export function CourseDetailSkeleton() {
 						</section>
 					))}
 				</div>
+
+				<section className="mt-10">
+					<Skeleton className="h-5 w-48" />
+					<Skeleton className="mt-2 mb-4 h-4 w-80 max-w-full" />
+					<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 divide-y rounded-xl border">
+							{Array.from({ length: 3 }).map((_, i) => (
+								<div key={i} className="flex justify-between gap-4 px-4 py-2.5">
+									<Skeleton className="h-4 w-40" />
+									<Skeleton className="h-4 w-24" />
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
 			</div>
 		</SkeletonRoot>
 	);

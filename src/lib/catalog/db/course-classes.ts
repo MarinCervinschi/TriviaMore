@@ -1,7 +1,10 @@
-import { asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, exists, inArray, ne, or, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
-import { courseClasses, courses, departments } from "@/db/schema";
+import { courseClasses, courses, departments, sections } from "@/db/schema";
+
+import { EXAM_SIMULATION_SECTION } from "../constants";
 
 type DepartmentArea = (typeof departments.$inferSelect)["area"];
 
@@ -33,4 +36,22 @@ export function primaryCourseByClass(db: DbOrTx, classIds?: string[]) {
 		.where(classIds ? inArray(courseClasses.classId, classIds) : undefined)
 		.orderBy(asc(courseClasses.classId), asc(courseClasses.position))
 		.as("primary_course");
+}
+
+/** A course-class a student can study: a teaching, or any class that already has content. */
+export function studiableCourseClassSql(db: DbOrTx): SQL {
+	return or(
+		sql`coalesce(${courseClasses.isTeaching}, true)`,
+		exists(
+			db
+				.select({ one: sql`1` })
+				.from(sections)
+				.where(
+					and(
+						eq(sections.classId, courseClasses.classId),
+						ne(sections.name, EXAM_SIMULATION_SECTION)
+					)
+				)
+		)
+	)!;
 }

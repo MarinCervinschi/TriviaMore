@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 
 type SitemapEntry = {
 	loc: string;
@@ -46,7 +47,8 @@ export async function buildSitemap(): Promise<string> {
 			})
 			.from(courseClasses)
 			.innerJoin(courses, eq(courses.id, courseClasses.courseId))
-			.innerJoin(departments, eq(departments.id, courses.departmentId)),
+			.innerJoin(departments, eq(departments.id, courses.departmentId))
+			.where(studiableCourseClassSql(db)),
 		// A section is listed under every course its class belongs to, so this
 		// joins through the junction rather than resolving a primary course.
 		db

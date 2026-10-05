@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { BrowseBreadcrumb } from "./browse-breadcrumb";
 import { BrowseContributeState, BrowseEmptyState } from "./browse-empty-state";
 import { ExpandableDescription } from "./expandable-description";
+import { PlanActivities } from "./plan-activities";
 import { SearchFilter } from "./search-filter";
 
 // The small parts a browse page is framed with: where you are, what to do when there is nothing, and
@@ -99,4 +100,18 @@ function FilterHarness() {
 export const Search: Story = {
 	name: "Filtro di ricerca",
 	render: () => <FilterHarness />,
+};
+
+export const Activities: Story = {
+	name: "Altre attività del piano",
+	render: () => (
+		<PlanActivities
+			activities={[
+				{ id: "a1", name: "Obblighi Formativi Aggiuntivi", cfu: 0, classYear: 1 },
+				{ id: "a2", name: "Tirocinio", cfu: 12, classYear: 3 },
+				{ id: "a3", name: "Prova Finale", cfu: 6, classYear: 3 },
+				{ id: "a4", name: "Tirocinio/Attività Progettuale", cfu: null, classYear: 3 },
+			]}
+		/>
+	),
 };
