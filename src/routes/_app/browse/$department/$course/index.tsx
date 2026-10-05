@@ -9,6 +9,7 @@ import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb";
 import { BrowseEmptyState } from "@/components/browse/browse-empty-state";
 import { BrowsePageHeader } from "@/components/browse/browse-page-header";
+import { PlanActivities } from "@/components/browse/plan-activities";
 import { SearchFilter } from "@/components/browse/search-filter";
 import {
 	DataTable,
@@ -236,6 +237,15 @@ function CoursePage() {
 		);
 	}, [preFiltered, q]);
 
+	const activities = useMemo(() => {
+		const query = (q ?? "").trim().toLowerCase();
+		return (course?.activities ?? []).filter(
+			a =>
+				(year === undefined || a.classYear === year) &&
+				(query === "" || a.name.toLowerCase().includes(query))
+		);
+	}, [course, year, q]);
+
 	const groupedClasses = useMemo(() => {
 		const byYear = new Map<number, BrowseClassInCourse[]>();
 		for (const c of preFiltered) {
@@ -415,6 +425,8 @@ function CoursePage() {
 						paginated
 					/>
 				)}
+
+				<PlanActivities activities={activities} />
 			</div>
 		</div>
 	);

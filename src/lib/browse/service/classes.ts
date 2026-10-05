@@ -5,6 +5,7 @@ import { getDb } from "@/db";
 import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
 import { filterAccessibleSections } from "@/lib/auth/checks";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 import { countQuestionsBySection } from "@/lib/catalog/db/questions";
 import { findSectionsInClass } from "@/lib/catalog/db/sections";
 
@@ -105,7 +106,8 @@ export async function searchClasses(
 	userId: string | null,
 	params: SearchClassesParams
 ): Promise<SearchClassesResponse> {
-	const filters: SQL[] = [];
+	const db = getDb();
+	const filters: SQL[] = [studiableCourseClassSql(db)];
 
 	const ftsQuery = params.query?.trim() ? toFtsQuery(params.query) : "";
 	if (ftsQuery) {
@@ -129,7 +131,6 @@ export async function searchClasses(
 
 	const { limit, offset } = paginationOf(params);
 
-	const db = getDb();
 	const rows = await db
 		.select({
 			id: classes.id,

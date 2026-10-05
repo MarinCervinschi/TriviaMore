@@ -7,6 +7,7 @@ import {
 	departmentColumns,
 	locationColumns,
 } from "@/lib/catalog/columns";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 
 import type { BrowseDepartment, CampusLocation, DepartmentWithCourses } from "../types";
 import { findDepartmentByCode } from "./shared";
@@ -53,7 +54,10 @@ export async function getDepartmentWithCourses(
 		getDb()
 			.select({
 				...courseColumns,
-				classCount: sql<number>`count(${courseClasses.classId})`.mapWith(Number),
+				classCount:
+					sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(getDb())})`.mapWith(
+						Number
+					),
 			})
 			.from(courses)
 			.leftJoin(courseClasses, eq(courseClasses.courseId, courses.id))

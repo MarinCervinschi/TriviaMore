@@ -69,9 +69,18 @@ export type DepartmentWithCourses = Department & {
 	locations: DepartmentLocation[];
 };
 
+/** A plan entry that is not a class to study, such as a traineeship or the final exam. */
+export type PlanActivity = {
+	id: string;
+	name: string;
+	cfu: number | null;
+	classYear: number;
+};
+
 export type CourseWithClasses = Course & {
 	department: Department;
 	classes: BrowseClassInCourse[];
+	activities: PlanActivity[];
 };
 
 export type ClassWithSections = Class & {

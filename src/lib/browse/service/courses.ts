@@ -4,6 +4,7 @@ import type { SQL } from "drizzle-orm";
 import { getDb } from "@/db";
 import { classes, courseClasses, courses, departments } from "@/db/schema";
 import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 
 import type {
 	CampusLocation,
@@ -32,26 +33,36 @@ export async function getCourseWithClasses(
 		.select({
 			class: classColumns,
 			courseClass: courseClassColumns,
+			studiable: sql<boolean>`${studiableCourseClassSql(db)}`,
 		})
 		.from(courseClasses)
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
 		.where(eq(courseClasses.courseId, resolved.course.id))
 		.orderBy(asc(courseClasses.classYear), asc(courseClasses.position));
 
+	const studiable = rows.filter(row => row.studiable);
 	const counts = await countVisibleSectionsByClass(
 		db,
-		rows.map(row => row.class.id),
+		studiable.map(row => row.class.id),
 		userId
 	);
 
 	return {
 		...resolved.course,
 		department: resolved.department,
-		classes: rows.map(row => ({
+		classes: studiable.map(row => ({
 			...row.class,
 			...row.courseClass,
 			sectionCount: counts.get(row.class.id) ?? 0,
 		})),
+		activities: rows
+			.filter(row => !row.studiable)
+			.map(row => ({
+				id: row.class.id,
+				name: row.class.name,
+				cfu: row.class.cfu,
+				classYear: row.courseClass.classYear,
+			})),
 	};
 }
 
@@ -86,7 +97,10 @@ export async function searchCourses(
 			cfu: courses.cfu,
 			departmentCode: departments.code,
 			departmentName: departments.name,
-			classCount: sql<number>`count(${courseClasses.classId})`.mapWith(Number),
+			classCount:
+				sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(getDb())})`.mapWith(
+					Number
+				),
 			// Window function over the filtered set: the total comes back with the
 			// page instead of costing a second round trip.
 			total: sql<number>`count(*) over()`.mapWith(Number),
