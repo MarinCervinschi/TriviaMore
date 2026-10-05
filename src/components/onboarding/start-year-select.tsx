@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/select";
 import { academicYearOf, formatAcademicYear } from "@/lib/catalog/academic-year";
 
-const YEARS_SHOWN = 20;
+// A single-cycle degree lasts six years, plus two years behind schedule.
+const YEARS_SHOWN = 8;
 
 /** The academic year the student enrolled in, which picks their cohort's study plan. */
 export function StartYearSelect({
