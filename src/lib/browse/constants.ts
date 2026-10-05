@@ -22,8 +22,6 @@ export const CAMPUS_LOCATION_CONFIG: Record<string, { label: string; short: stri
 		MANTOVA: { label: "Mantova", short: "MN" },
 	};
 
-// All five slots at once, so chart-2 and chart-4 sit together and collapse under CVD.
-// The icon each area renders is what keeps colour from being the only channel.
 export const AREA_CONFIG: Record<
 	string,
 	{ label: string; gradient: string; accent: string }
