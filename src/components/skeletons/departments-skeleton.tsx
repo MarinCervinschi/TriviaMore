@@ -19,7 +19,7 @@ function BrowsePageHeaderSkeleton({
 	withActions?: boolean;
 }) {
 	return (
-		<section className="relative w-full pt-8 pb-10 sm:pt-12">
+		<section className="relative w-full pt-6 pb-6 sm:pt-8 sm:pb-8">
 			<div className="container">
 				<div className="mb-4 flex items-center gap-2">
 					<Skeleton className="h-4 w-20" />
@@ -94,7 +94,7 @@ export function CourseDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento corso…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={3} stats={1} />
-			<div className="container pt-8">
+			<div className="container">
 				<div className="mb-4 flex flex-wrap items-center justify-between gap-4">
 					<SkeletonFilterBar chips={4} />
 					<Skeleton className="h-10 w-48 rounded-xl" />
@@ -118,7 +118,7 @@ export function ClassDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento insegnamento…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={5} stats={2} />
-			<div className="container pt-8">
+			<div className="container">
 				{/* Exam simulation banner */}
 				<div className="bg-card mb-6 rounded-xl border p-5">
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -147,7 +147,7 @@ export function SectionDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento sezione…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={3} stats={0} />
-			<div className="container pt-8">
+			<div className="container">
 				<div className="grid gap-6 md:grid-cols-2">
 					{Array.from({ length: 2 }).map((_, i) => (
 						<div key={i} className="bg-card rounded-2xl border p-6 shadow-sm">
