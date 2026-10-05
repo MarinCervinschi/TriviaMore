@@ -18,16 +18,7 @@ import {
 	PERFECT_SCORE,
 } from "../constants";
 
-/**
- * The incremental half of the engine. Every function here runs **inside the
- * transaction that produced the event**: a counter that moves after the commit
- * is a counter that can silently fail to move, and drift in derived state is
- * invisible by construction.
- *
- * Nothing here is authoritative. `recomputeMetricSnapshots` reads the same
- * measures straight from history, and `pnpm achievements:reconcile` is what
- * proves the two agree.
- */
+// Every function here runs inside the transaction that produced the event.
 
 const TODAY = sql`(now() at time zone ${ACTIVITY_ZONE})::date`;
 
@@ -74,7 +65,6 @@ async function addToStats(db: DbOrTx, userId: string, delta: StatDelta) {
 		});
 }
 
-/** Immutable once written, so this fires once per user and never again. */
 async function ensureSignupRank(db: DbOrTx, userId: string) {
 	await db.execute(sql`
 		update ${profiles} p
@@ -104,11 +94,7 @@ async function markActiveDay(db: DbOrTx, userId: string, kind: "quiz" | "flashca
 		});
 }
 
-/**
- * Flips a flag on the question set and reports how many questions it actually
- * turned on. `setWhere` is what makes the count truthful: a question already
- * marked is not returned, so the counter never double-counts a replay.
- */
+/** Returns how many questions it actually turned on; one already marked is not counted. */
 async function markQuestions(
 	db: DbOrTx,
 	userId: string,
@@ -161,8 +147,7 @@ export async function applyQuizActivity(db: DbOrTx, activity: QuizActivity) {
 		)
 		.map(answer => answer.questionId!);
 
-	// Any bookmark that exists now was made before this attempt finished, which is
-	// exactly what the recompute's `b.created_at < a.completed_at` means.
+	// A bookmark that exists now was made before this attempt finished.
 	const bookmarkedFirst =
 		correctIds.length === 0
 			? []
@@ -173,8 +158,7 @@ export async function applyQuizActivity(db: DbOrTx, activity: QuizActivity) {
 						and(eq(bookmarks.userId, userId), inArray(bookmarks.questionId, correctIds))
 					);
 
-	// Sequential, not Promise.all: these share one transaction, and a transaction
-	// is one connection — concurrent statements on it interleave or throw.
+	// Sequential, because statements in one transaction share a connection.
 	const hardCorrect = await markQuestions(db, userId, hardIds, "hardCorrect");
 	const bookmarkedThenCorrect = await markQuestions(
 		db,
@@ -195,8 +179,7 @@ export async function applyQuizActivity(db: DbOrTx, activity: QuizActivity) {
 			lastAt: sql`now()` as unknown as string,
 		})
 		.onConflictDoUpdate({
-			// first_score and first_at are left alone on purpose: they are what an
-			// improvement is measured from.
+			// first_score and first_at stay, because an improvement is measured from them.
 			target: [userSectionStats.userId, userSectionStats.sectionId],
 			set: {
 				runs: sql`${userSectionStats.runs} + 1`,

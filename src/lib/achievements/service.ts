@@ -93,7 +93,7 @@ async function clearPins(db: DbOrTx, userId: string) {
 		);
 }
 
-/** Returns false when the user does not hold the badge — a pin is never a grant. */
+/** Returns false when the user does not hold the badge. */
 async function setPin(
 	db: DbOrTx,
 	userId: string,
@@ -137,11 +137,7 @@ async function notifyUnlocks(
 	}
 }
 
-/**
- * Evaluates one user against the catalogue. Runs *after* the transaction that
- * produced the event: the query must see the new row, and a failure here must not
- * roll it back.
- */
+/** Runs after the event's transaction commits, so it sees the new row and cannot roll it back. */
 export async function evaluateAchievements(
 	userId: string,
 	options?: { notify?: boolean }
@@ -191,7 +187,7 @@ export async function evaluateAchievements(
 		}));
 }
 
-/** Awaited, but never able to fail the caller: the quiz is already committed. */
+/** Awaited, but never fails the caller. */
 export async function evaluateAchievementsSafely(
 	userId: string
 ): Promise<UnlockedAchievement[]> {
@@ -203,18 +199,13 @@ export async function evaluateAchievementsSafely(
 	}
 }
 
-/** Fire and forget: the replay recovers whatever a swallowed error loses. */
 export function evaluateAchievementsInBackground(userId: string): void {
 	void evaluateAchievements(userId).catch(error => {
 		log.error("Achievement evaluation failed", { userId }, error);
 	});
 }
 
-/**
- * Awards everything every user has already earned — a badge added later still
- * reaches whoever met its rule. Silent by default: a backfill would otherwise drop
- * a dozen unread rows on every account.
- */
+/** Awards everything every user has already earned; silent unless asked to notify. */
 export async function replayAchievements(options?: {
 	notify?: boolean;
 	dryRun?: boolean;
@@ -254,9 +245,7 @@ export async function replayAchievements(options?: {
 		const inserted = await insertAwards(db, pending.slice(index, index + AWARD_CHUNK));
 		awarded += inserted.length;
 
-		// From the rows the insert created, never from `pending`: a live evaluation
-		// running alongside a long replay already awarded — and announced — some of
-		// these, and `onConflictDoNothing` is what tells the two apart.
+		// From the inserted rows, because a live evaluation may already have awarded and announced some.
 		for (const row of inserted) {
 			const unlock = unlockByRow.get(`${row.userId}\u0000${row.achievementKey}`);
 			if (unlock) byUser.set(row.userId, [...(byUser.get(row.userId) ?? []), unlock]);
@@ -284,17 +273,10 @@ export type MetricDrift = {
 	computed: number;
 };
 
-/** Scores are doubles, so the improvement metric needs a tolerance, not equality. */
+/** Scores are doubles, so the improvement metric is compared with a tolerance. */
 const DRIFT_EPSILON = 1e-9;
 
-/**
- * Compares the rollups against the history they are derived from. Read-only by
- * default — a repair is a decision, not a side effect of looking.
- *
- * Drift is expected in two cases and is not a bug: a question or a section
- * deleted from the catalogue leaves its counter behind, and a rollup written by
- * a release older than the rule it feeds will lag until the next backfill.
- */
+/** Compares the rollups against the history; read-only unless asked to repair. */
 export async function reconcileAchievementMetrics(options?: {
 	repair?: boolean;
 }): Promise<{ users: number; drift: MetricDrift[] }> {
@@ -359,12 +341,7 @@ function toView(
 	};
 }
 
-/**
- * The whole page in one call: the catalogue and this user's standing against it.
- *
- * `heal: false` makes it a pure read — `pnpm smoke:reads` runs against the live
- * database and must not award anything on its way past.
- */
+/** `heal: false` makes it a pure read. */
 export async function getAchievements(
 	userId: string,
 	options?: { heal?: boolean }
@@ -384,10 +361,7 @@ export async function getAchievements(
 	);
 	const metrics = snapshots[0]?.metrics;
 
-	// Self-healing, on the data already in hand: a rule can be met without any
-	// trigger firing, and a fire-and-forget evaluation can be lost. Lazy and scoped,
-	// like the reaper in `startQuiz`. Silent, because a repair is not an event —
-	// to announce a badge added later, run the replay with --notify.
+	// Self-healing, because a rule can be met without any trigger firing.
 	if (metrics && options?.heal !== false) {
 		const pending = evaluate(catalogue, metrics, new Set(awardByKey.keys()));
 		if (pending.length > 0) {
@@ -408,9 +382,7 @@ export async function getAchievements(
 		toView(entry, awardByKey.get(entry.key), metrics)
 	);
 
-	// Keyed, not by runs of adjacent rows: a badge inserted from the console defaults
-	// to `position` 0 and sorts away from its category, which would otherwise split it
-	// into two tabs with the same name — and the second one is unreachable.
+	// Keyed by category, because a console-inserted badge defaults to `position` 0 and sorts away from its siblings.
 	const categories: AchievementCategory[] = [];
 	const byCategory = new Map<string, AchievementCategory>();
 	for (const view of views) {
@@ -442,7 +414,7 @@ export async function getAchievements(
 	};
 }
 
-/** Replaces the pinned set wholesale, in the order given. */
+/** Replaces the pinned set, in the order given. */
 export async function setPinnedAchievements(userId: string, keys: string[]) {
 	if (keys.length > PIN_LIMIT) {
 		throw new Invalid(`Puoi mettere in evidenza al massimo ${PIN_LIMIT} traguardi`);
