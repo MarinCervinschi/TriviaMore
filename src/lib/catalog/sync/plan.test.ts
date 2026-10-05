@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { type SourceActivity, pairKey } from "@/lib/catalog/sync/diff";
 import {
 	type LocalCourseClass,
+	classifyTeaching,
 	consensus,
 	latest,
 	mapEvaluation,
@@ -34,9 +35,11 @@ function courseClass(over: Partial<LocalCourseClass> = {}): LocalCourseClass {
 		classId: "k1",
 		courseCode: "16-315",
 		code: "I215-002",
+		name: "Fisica",
 		evaluation: null,
 		taf: null,
 		teachingPeriod: null,
+		isTeaching: true,
 		...over,
 	};
 }
@@ -225,6 +228,87 @@ describe("planCatalogueUpdates", () => {
 			EMPTY_SOURCE
 		);
 		expect(plan.unmatched.courseClasses).toBe(1);
+		expect(plan.courseClasses).toEqual([]);
+	});
+});
+
+describe("classifyTeaching", () => {
+	it.each([
+		"Prova Finale",
+		"Tirocinio 3 Anno",
+		"Tirocinio/Attività Progettuale",
+		"Traineeship",
+		"Final Examination",
+		"Tesi",
+		"Ofa - Obblighi Formativi Aggiuntivi",
+		"Verifica Preparazione Iniziale",
+		"Ulteriori Conoscenze Linguistiche",
+		"Ulteriori Attività Formative (Art. 10)",
+		"Materie a Scelta - Art. 10, C. 5, L. A)",
+	])("reads %s as a plan activity, graded or not", name => {
+		expect(classifyTeaching(name, "GRADED")).toBe(false);
+	});
+
+	it.each([
+		"Analisi Matematica I",
+		"Inglese Avanzato",
+		"Protesi Dentaria II",
+		"Stagecraft",
+	])("reads %s as a class", name => {
+		expect(classifyTeaching(name, "GRADED")).toBe(true);
+	});
+
+	it("reads an ungraded class as not a teaching", () => {
+		expect(classifyTeaching("Lingua Inglese", "PASS_FAIL")).toBe(false);
+	});
+
+	it("leaves a class unclassified when its evaluation is unknown", () => {
+		expect(classifyTeaching("Diritto Processuale Civile", null)).toBeNull();
+	});
+});
+
+describe("planCatalogueUpdates — classification", () => {
+	it("classifies an unclassified row from its evaluation", () => {
+		const k = pairKey("16-315", "I215-002");
+		const plan = planCatalogueUpdates(
+			{ ...EMPTY_LOCAL, courseClasses: [courseClass({ isTeaching: null })] },
+			{
+				...EMPTY_SOURCE,
+				attributes: new Map([
+					[k, [{ academicYear: "2025", evaluation: "Giudizio Finale", ssd: null }]],
+				]),
+			}
+		);
+		expect(plan.courseClasses[0]!.set).toMatchObject({ isTeaching: false });
+	});
+
+	it("classifies by name a row the source says nothing about", () => {
+		const plan = planCatalogueUpdates(
+			{
+				...EMPTY_LOCAL,
+				courseClasses: [
+					courseClass({ code: "GONE", name: "Prova Finale", isTeaching: null }),
+				],
+			},
+			EMPTY_SOURCE
+		);
+		expect(plan.courseClasses[0]!.set).toEqual({ isTeaching: false });
+	});
+
+	it("never overwrites a classification already made", () => {
+		const k = pairKey("16-315", "I215-002");
+		const plan = planCatalogueUpdates(
+			{
+				...EMPTY_LOCAL,
+				courseClasses: [courseClass({ evaluation: "PASS_FAIL", isTeaching: true })],
+			},
+			{
+				...EMPTY_SOURCE,
+				attributes: new Map([
+					[k, [{ academicYear: "2025", evaluation: "Giudizio Finale", ssd: null }]],
+				]),
+			}
+		);
 		expect(plan.courseClasses).toEqual([]);
 	});
 });

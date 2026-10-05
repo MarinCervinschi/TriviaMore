@@ -61,6 +61,7 @@ export const courseClassColumns = {
 	evaluation: courseClasses.evaluation,
 	taf: courseClasses.taf,
 	teachingPeriod: courseClasses.teachingPeriod,
+	isTeaching: courseClasses.isTeaching,
 	position: courseClasses.position,
 };
 

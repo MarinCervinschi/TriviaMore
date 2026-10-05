@@ -29,6 +29,8 @@ export const courseClasses = catalogSchema
 			evaluation: evaluationTypeEnum(),
 			taf: text(),
 			teachingPeriod: text("teaching_period"),
+			// Null until classified: the sync fills it only when null, so a correction sticks.
+			isTeaching: boolean("is_teaching"),
 			position: integer().default(0).notNull(),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
