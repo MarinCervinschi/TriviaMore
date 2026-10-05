@@ -8,12 +8,7 @@ interface MarkdownRendererProps {
 	content: string;
 	className?: string;
 	inline?: boolean;
-	/**
-	 * The prose scale. It has to be a prop: `prose-sm` and `prose-lg` are plugin
-	 * modifiers, so a second one passed through `className` wins or loses by CSS
-	 * order rather than by class order — a wrapper's `text-xl` never reaches the
-	 * paragraphs at all.
-	 */
+	/** Set the prose scale here; a `prose-*` class in `className` wins or loses by CSS order. */
 	size?: "sm" | "base" | "lg";
 }
 

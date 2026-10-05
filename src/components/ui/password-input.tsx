@@ -6,8 +6,6 @@ import { EyeClosedIcon } from "@solar-icons/react/linear/eye-closed";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// A password field with a show/hide toggle. Owns its own visibility state and
-// forwards every input prop (including react-hook-form's `field`) to the Input.
 const PasswordInput = React.forwardRef<
 	HTMLInputElement,
 	Omit<React.ComponentProps<"input">, "type">

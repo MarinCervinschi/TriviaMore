@@ -28,7 +28,6 @@ export function LoadingSpinner({
 	return (
 		<div className={cn("flex flex-col items-center justify-center gap-3", className)}>
 			<div className="relative" style={{ width: ring, height: ring }}>
-				{/* Rotating ring */}
 				{!prefersReduced && (
 					<motion.svg
 						className="absolute inset-0"
@@ -52,7 +51,6 @@ export function LoadingSpinner({
 					</motion.svg>
 				)}
 
-				{/* Static track */}
 				<svg
 					className="absolute inset-0"
 					width={ring}
@@ -69,7 +67,6 @@ export function LoadingSpinner({
 					/>
 				</svg>
 
-				{/* Center logo */}
 				<div className="absolute inset-0 flex items-center justify-center">
 					<LogoIcon size={logo} />
 				</div>

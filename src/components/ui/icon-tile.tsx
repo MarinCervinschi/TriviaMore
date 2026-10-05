@@ -4,13 +4,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-/**
- * A square surface for a single icon — adapted from ReUI's Icon Tile to our
- * tokens (Base UI composition dropped, `text-primary` → `text-brand` per D19,
- * raw shadow → `shadow-sm`). `soft` and `frame` paint their inner card with an
- * `::after`, so no extra node is needed. Tint `soft` / `solid` by setting a text
- * colour on the tile — e.g. `text-chart-1-ink` for a per-metric identity.
- */
+/** Tint `soft` and `solid` by setting a text colour on the tile, such as `text-chart-1-ink`. */
 const iconTileVariants = cva(
 	"relative inline-flex size-(--icon-tile-size) shrink-0 items-center justify-center rounded-(--icon-tile-radius) align-middle [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-(--icon-tile-icon-size)",
 	{
