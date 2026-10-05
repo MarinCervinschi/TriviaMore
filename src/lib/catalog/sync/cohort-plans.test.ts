@@ -193,6 +193,23 @@ describe("planCohortPlans", () => {
 		expect(changes.plans.inserts[0]!.classId).toBe("k1");
 	});
 
+	it("does not fall back to a name two of the course's classes share", () => {
+		const changes = planCohortPlans(
+			{
+				...LOCAL,
+				courseClasses: [
+					...LOCAL.courseClasses,
+					{ courseId: "c1", classId: "k2", code: "a2", name: "Analisi Matematica" },
+				],
+			},
+			{
+				cohorts: [cohort(2023, [activity({ code: "RENAMED" })])],
+				attributes: NO_ATTRIBUTES,
+			}
+		);
+		expect(changes.plans.inserts[0]!.classId).toBeNull();
+	});
+
 	it("takes the evaluation from the latest year, under any of the course's codes", () => {
 		const changes = planCohortPlans(LOCAL, {
 			cohorts: [
