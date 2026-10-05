@@ -12,6 +12,7 @@ export type SourceActivity = {
 	ssd: string | null;
 	evaluation: string | null;
 	curriculum: string | null;
+	group: string | null;
 };
 
 export type LocalClass = {

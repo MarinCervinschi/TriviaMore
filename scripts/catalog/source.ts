@@ -31,11 +31,19 @@ export type SourceCourse = {
 	url: string;
 };
 
+export type SourceCurriculum = {
+	courseCode: string;
+	code: string;
+	labels: string[];
+	common: boolean;
+};
+
 export type SourceYear = {
 	academicYear: string;
 	courses: SourceCourse[];
 	activities: SourceActivity[];
 	mandatory: MandatoryIndex;
+	curricula: SourceCurriculum[];
 };
 
 function text(value: string | undefined | null): string | null {
@@ -120,6 +128,8 @@ export async function fetchCourses(year: string): Promise<SourceCourse[]> {
 type RawPlan = {
 	percorsi?: {
 		pdsCod?: string;
+		des_it?: string;
+		comune?: boolean;
 		anni?: {
 			anno?: number;
 			insegnamenti?: {
@@ -139,7 +149,11 @@ type RawPlan = {
 async function fetchPlan(
 	year: string,
 	course: SourceCourse
-): Promise<{ activities: SourceActivity[]; mandatory: [string, boolean][] }> {
+): Promise<{
+	activities: SourceActivity[];
+	mandatory: [string, boolean][];
+	curricula: SourceCurriculum[];
+}> {
 	let plan: RawPlan | undefined;
 	try {
 		const raw = (await cached(`plan-${year}-${course.id}`, () =>
@@ -148,13 +162,25 @@ async function fetchPlan(
 		plan = Array.isArray(raw) ? raw[0] : raw;
 	} catch {
 		// A course not published that year has no plan.
-		return { activities: [], mandatory: [] };
+		return { activities: [], mandatory: [], curricula: [] };
 	}
 
 	const activities: SourceActivity[] = [];
 	const mandatory: [string, boolean][] = [];
+	const curricula = new Map<string, SourceCurriculum>();
 
 	for (const path of plan?.percorsi ?? []) {
+		const code = text(path.pdsCod);
+		if (code) {
+			const curriculum = curricula.get(code) ?? {
+				courseCode: course.code,
+				code,
+				labels: [],
+				common: Boolean(path.comune),
+			};
+			if (path.des_it) curriculum.labels.push(path.des_it);
+			curricula.set(code, curriculum);
+		}
 		for (const planYear of path.anni ?? []) {
 			for (const group of planYear.insegnamenti ?? []) {
 				for (const activity of group.attivita ?? []) {
@@ -172,7 +198,8 @@ async function fetchPlan(
 						teachingPeriod: text(activity.periodo_didattico_it),
 						ssd: null,
 						evaluation: null,
-						curriculum: text(path.pdsCod),
+						curriculum: code,
+						group: text(group.cod),
 					});
 					mandatory.push([
 						pairKey(course.code, normaliseCatalogueCode(activity.adCod)),
@@ -183,7 +210,7 @@ async function fetchPlan(
 		}
 	}
 
-	return { activities, mandatory };
+	return { activities, mandatory, curricula: [...curricula.values()] };
 }
 
 export async function fetchYear(
@@ -192,6 +219,7 @@ export async function fetchYear(
 ): Promise<SourceYear> {
 	const courses = await fetchCourses(year);
 	const activities: SourceActivity[] = [];
+	const curricula: SourceCurriculum[] = [];
 	const seen = new Map<string, Set<boolean>>();
 
 	let done = 0;
@@ -199,6 +227,7 @@ export async function fetchYear(
 		if (course.id) {
 			const plan = await fetchPlan(year, course);
 			activities.push(...plan.activities);
+			curricula.push(...plan.curricula);
 			for (const [k, compulsory] of plan.mandatory) {
 				const values = seen.get(k) ?? new Set<boolean>();
 				values.add(compulsory);
@@ -213,6 +242,7 @@ export async function fetchYear(
 		courses,
 		activities,
 		mandatory: new Map([...seen].map(([k, values]) => [k, [...values]])),
+		curricula,
 	};
 }
 

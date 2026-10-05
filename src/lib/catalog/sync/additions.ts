@@ -120,6 +120,7 @@ export function planCatalogueAdditions(
 			classId: string;
 			courseCode: string;
 			code: string;
+			name: string;
 		}[];
 	},
 	source: {
@@ -131,11 +132,13 @@ export function planCatalogueAdditions(
 	const courseIdByCode = new Map(local.courses.map(c => [c.code, c.id]));
 	const held = new Set<string>();
 	const linked = new Set<string>();
+	const names = new Set<string>();
 	const classIdsByCode = new Map<string, Set<string>>();
 	for (const row of local.courseClasses) {
 		const code = normaliseCatalogueCode(row.code);
 		held.add(pairKey(row.courseCode, code));
 		linked.add(`${row.courseId}\u0000${row.classId}`);
+		names.add(`${row.courseId}\u0000${row.name.toLowerCase()}`);
 		const ids = classIdsByCode.get(code) ?? new Set<string>();
 		ids.add(row.classId);
 		classIdsByCode.set(code, ids);
@@ -178,14 +181,16 @@ export function planCatalogueAdditions(
 		const courseId = courseIdByCode.get(first.courseCode)!;
 		const existing = classIdsByCode.get(first.code);
 		const classId = existing?.size === 1 ? [...existing][0]! : null;
-		if (classId && linked.has(`${courseId}\u0000${classId}`)) {
-			result.skipped.alreadyLinked++;
-			continue;
-		}
-
 		const name = toCatalogueTitle(
 			consensus(activities.map(a => a.name)).value ?? first.name
 		);
+		if (
+			(classId && linked.has(`${courseId}\u0000${classId}`)) ||
+			names.has(`${courseId}\u0000${name.toLowerCase()}`)
+		) {
+			result.skipped.alreadyLinked++;
+			continue;
+		}
 		result.additions.push({
 			courseId,
 			courseCode: first.courseCode,

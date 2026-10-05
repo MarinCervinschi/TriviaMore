@@ -39,6 +39,7 @@ function source(over: Partial<SourceActivity> = {}): SourceActivity {
 		ssd: "FIS/01",
 		evaluation: "Voto Finale",
 		curriculum: "16-315-2",
+		group: "OO",
 		...over,
 	};
 }
