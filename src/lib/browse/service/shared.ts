@@ -4,14 +4,13 @@ import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
 import { accessibleSectionsSql, readsPrivateSections } from "@/lib/auth/checks";
-import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
-
 import {
 	classColumns,
 	courseClassColumns,
 	courseColumns,
 	departmentColumns,
-} from "../columns";
+} from "@/lib/catalog/columns";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
 const DEFAULT_PAGE_SIZE = 10;
 

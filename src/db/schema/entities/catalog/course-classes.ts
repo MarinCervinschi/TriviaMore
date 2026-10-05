@@ -13,6 +13,7 @@ import {
 import { catalogSchema } from "../../common";
 import { classes } from "./classes";
 import { courses } from "./courses";
+import { evaluationTypeEnum } from "./enums";
 
 export const courseClasses = catalogSchema
 	.table(
@@ -25,6 +26,9 @@ export const courseClasses = catalogSchema
 			mandatory: boolean().default(false).notNull(),
 			catalogueUrl: text("catalogue_url"),
 			curriculum: text(),
+			evaluation: evaluationTypeEnum(),
+			taf: text(),
+			teachingPeriod: text("teaching_period"),
 			position: integer().default(0).notNull(),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()

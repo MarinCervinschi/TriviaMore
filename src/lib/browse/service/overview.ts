@@ -10,10 +10,10 @@ import {
 	questions,
 	sections,
 } from "@/db/schema";
+import { locationColumns } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
 
-import { locationColumns } from "../columns";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "../constants";
 import type { BrowseOverview, CampusLocation, PlatformStats } from "../types";
 
