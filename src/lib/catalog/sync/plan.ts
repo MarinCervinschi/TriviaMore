@@ -15,6 +15,19 @@ export function mapEvaluation(label: string | null): Evaluation | null {
 	return label ? (EVALUATION[label] ?? null) : null;
 }
 
+const PLAN_ACTIVITY =
+	/(^|[^\p{L}])(prova finale|tirocini[oa]?|traineeship|internship|stage|final exam(ination)?|tesi|ofa|obblighi formativi|verifica (della )?preparazione|ulteriori (attività|conoscenze|competenze)|altre attività|a scelta)($|[^\p{L}])/iu;
+
+/** Whether a plan row is a class to study: `null` when its evaluation is not known yet. */
+export function classifyTeaching(
+	name: string,
+	evaluation: Evaluation | null
+): boolean | null {
+	if (PLAN_ACTIVITY.test(name)) return false;
+	if (evaluation === null) return null;
+	return evaluation === "GRADED";
+}
+
 /** The most frequent non-null value; `contested` when more than one was seen. */
 export function consensus<T>(values: (T | null)[]): {
 	value: T | null;
@@ -73,9 +86,11 @@ export type LocalCourseClass = {
 	classId: string;
 	courseCode: string;
 	code: string;
+	name: string;
 	evaluation: Evaluation | null;
 	taf: string | null;
 	teachingPeriod: string | null;
+	isTeaching: boolean | null;
 };
 
 export type SourceDepartment = { code: string; name: string };
@@ -95,7 +110,7 @@ export type SourceAttributes = {
 
 type CourseSet = Partial<Omit<LocalCourse, "id" | "code">>;
 type CourseClassSet = Partial<
-	Pick<LocalCourseClass, "evaluation" | "taf" | "teachingPeriod">
+	Pick<LocalCourseClass, "evaluation" | "taf" | "teachingPeriod" | "isTeaching">
 >;
 
 export type CatalogueUpdates = {
@@ -198,21 +213,28 @@ export function planCatalogueUpdates(
 		const k = pairKey(row.courseCode, normaliseCatalogueCode(row.code));
 		const activities = activitiesByPair.get(k);
 		const attributes = source.attributes.get(k);
-		if (!activities && !attributes) {
-			updates.unmatched.courseClasses++;
-			continue;
+		const sourced = Boolean(activities || attributes);
+		if (!sourced) updates.unmatched.courseClasses++;
+
+		const next: CourseClassSet = sourced
+			? {
+					evaluation: latest(
+						(attributes ?? []).map(a => ({
+							academicYear: a.academicYear,
+							value: mapEvaluation(a.evaluation),
+						}))
+					).value,
+					taf: consensus((activities ?? []).map(a => a.taf)).value,
+					teachingPeriod: consensus((activities ?? []).map(a => a.teachingPeriod))
+						.value,
+				}
+			: {};
+		if (row.isTeaching === null) {
+			const classified = classifyTeaching(row.name, next.evaluation ?? row.evaluation);
+			if (classified !== null) next.isTeaching = classified;
 		}
 
-		const set = changes(row, {
-			evaluation: latest(
-				(attributes ?? []).map(a => ({
-					academicYear: a.academicYear,
-					value: mapEvaluation(a.evaluation),
-				}))
-			).value,
-			taf: consensus((activities ?? []).map(a => a.taf)).value,
-			teachingPeriod: consensus((activities ?? []).map(a => a.teachingPeriod)).value,
-		});
+		const set = changes(row, next);
 		if (Object.keys(set).length > 0) {
 			updates.courseClasses.push({
 				courseId: row.courseId,

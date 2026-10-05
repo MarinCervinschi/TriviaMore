@@ -260,6 +260,13 @@
       "when": 1791220054270,
       "tag": "0036_normalise_class_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791222299353,
+      "tag": "0037_course_class_is_teaching",
+      "breakpoints": true
     }
   ]
 }
