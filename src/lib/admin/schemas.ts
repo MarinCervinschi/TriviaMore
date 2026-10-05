@@ -5,7 +5,6 @@ import {
 	questionMcRefinement,
 } from "@/lib/shared/question-schema";
 
-// Department
 export const departmentSchema = z.object({
 	name: z
 		.string()
@@ -37,7 +36,6 @@ export const departmentSchema = z.object({
 		.optional(),
 });
 
-// Course
 export const courseSchema = z.object({
 	name: z
 		.string()
@@ -79,7 +77,6 @@ export const courseSchema = z.object({
 		.optional(),
 });
 
-// Class (universal container — course-specific fields are in courseClassSchema)
 export const classSchema = z.object({
 	name: z
 		.string()
@@ -104,7 +101,6 @@ export const classSchema = z.object({
 		.optional(),
 });
 
-// Course-class junction (per-course metadata for a class)
 export const courseClassSchema = z.object({
 	course_id: z.string().min(1, "Il corso è obbligatorio"),
 	class_id: z.string().min(1, "La classe è obbligatoria"),
@@ -140,7 +136,6 @@ export const courseClassSchema = z.object({
 		.optional(),
 });
 
-// Section
 export const sectionSchema = z.object({
 	name: z
 		.string()
@@ -161,15 +156,12 @@ export const sectionSchema = z.object({
 		.optional(),
 });
 
-// Question (extends shared fields with section_id)
 const questionBaseSchema = questionFieldsSchema.extend({
 	section_id: z.string().min(1, "La sezione è obbligatoria"),
 });
 
-// Question with refinement (for create forms)
 export const questionSchema = questionBaseSchema.superRefine(questionMcRefinement);
 
-// Type exports
 export type DepartmentInput = z.infer<typeof departmentSchema>;
 export type CourseInput = z.infer<typeof courseSchema>;
 export type ClassInput = z.infer<typeof classSchema>;
@@ -177,7 +169,6 @@ export type CourseClassInput = z.infer<typeof courseClassSchema>;
 export type SectionInput = z.infer<typeof sectionSchema>;
 export type QuestionInput = z.infer<typeof questionSchema>;
 
-// Update schemas (partial, without parent FK)
 export const updateDepartmentSchema = departmentSchema.partial();
 export const updateCourseSchema = courseSchema.partial().omit({ department_id: true });
 export const updateClassSchema = classSchema.partial();
@@ -195,8 +186,6 @@ export type UpdateClassInput = z.infer<typeof updateClassSchema>;
 export type UpdateCourseClassInput = z.infer<typeof updateCourseClassSchema>;
 export type UpdateSectionInput = z.infer<typeof updateSectionSchema>;
 export type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>;
-
-// ─── Server-side validation schemas ───
 
 export const idSchema = z.object({
 	id: z.string().min(1, "ID obbligatorio"),

@@ -32,8 +32,6 @@ import {
 	updateUserRoleFn,
 } from "./api";
 
-// ─── Departments ───
-
 export function useCreateDepartment(onSuccess?: () => void) {
 	return useMutationWithToast(createDepartmentFn, {
 		successMessage: "Dipartimento creato con successo",
@@ -57,8 +55,6 @@ export function useDeleteDepartment(onSuccess?: () => void) {
 		onSuccess,
 	});
 }
-
-// ─── Courses ───
 
 export function useCreateCourse(onSuccess?: () => void) {
 	return useMutationWithToast(createCourseFn, {
@@ -84,8 +80,6 @@ export function useDeleteCourse(onSuccess?: () => void) {
 	});
 }
 
-// ─── Classes ───
-
 export function useUpdateClass(onSuccess?: () => void) {
 	return useMutationWithToast(updateClassFn, {
 		successMessage: "Classe aggiornata con successo",
@@ -101,8 +95,6 @@ export function useDeleteClass(onSuccess?: () => void) {
 		onSuccess,
 	});
 }
-
-// ─── Course-Class Junction ───
 
 export function useUpdateCourseClass(onSuccess?: () => void) {
 	return useMutationWithToast(updateCourseClassFn, {
@@ -120,8 +112,6 @@ export function useCreateExamSimulationSentinel(onSuccess?: () => void) {
 		undo: (_input, section) => deleteSectionFn({ data: { id: section.id } }),
 	});
 }
-
-// ─── Sections ───
 
 export function useCreateSection(onSuccess?: () => void) {
 	return useMutationWithToast(createSectionFn, {
@@ -161,8 +151,6 @@ export function useDeleteSection(onSuccess?: () => void) {
 		onSuccess,
 	});
 }
-
-// ─── Questions ───
 
 export function useCreateQuestion(onSuccess?: () => void) {
 	return useMutationWithToast(createQuestionFn, {
@@ -206,8 +194,6 @@ export function useDeleteQuestion(onSuccess?: () => void) {
 		onSuccess,
 	});
 }
-
-// ─── Users ───
 
 const USER_INVALIDATE_KEYS = [
 	["admin", "users"],

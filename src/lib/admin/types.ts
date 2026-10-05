@@ -53,7 +53,6 @@ export type AdminClassDetail = {
 	hasExamSimulation: boolean;
 };
 
-// Breadcrumb above a section or a question, through the primary course.
 export type AdminParentChain = {
 	classCode: string;
 	courseName: string;
@@ -87,8 +86,6 @@ export type AdminQuestionDetail = Omit<AdminQuestion, "sectionId"> & {
 	parent: AdminParentChain | null;
 };
 
-// Content tree for sidebar navigation. Names only: the tree renders labels and
-// child counts, nothing else.
 export type ContentTreeDepartment = {
 	id: string;
 	name: string;
@@ -112,7 +109,6 @@ export type ContentTreeSection = {
 	name: string;
 };
 
-// Admin dashboard stats
 export type AdminStats = {
 	departmentCount: number;
 	courseCount: number;
@@ -121,14 +117,11 @@ export type AdminStats = {
 	questionCount: number;
 };
 
-// Admin permissions
 export type AdminPermissions = {
 	role: UserRole;
 	managedDepartmentIds: string[];
 	maintainedCourseIds: string[];
 };
-
-// ─── User Management ───
 
 export type { UserRole };
 
