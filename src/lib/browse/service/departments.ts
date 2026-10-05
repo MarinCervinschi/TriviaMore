@@ -2,8 +2,12 @@ import { asc, eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { courseClasses, courses, departmentLocations, departments } from "@/db/schema";
+import {
+	courseColumns,
+	departmentColumns,
+	locationColumns,
+} from "@/lib/catalog/columns";
 
-import { courseColumns, departmentColumns, locationColumns } from "../columns";
 import type { BrowseDepartment, CampusLocation, DepartmentWithCourses } from "../types";
 import { findDepartmentByCode } from "./shared";
 

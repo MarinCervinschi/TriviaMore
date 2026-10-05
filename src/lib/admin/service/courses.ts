@@ -3,6 +3,7 @@ import { and, asc, count, eq, ne, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
 import { requireSuperadmin } from "@/lib/auth/guards";
+import { courseColumns, departmentColumns } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { Conflict, NotFound, rethrowUniqueViolation } from "@/lib/server/errors";
 
@@ -18,26 +19,9 @@ export async function getAdminCourseDetail(id: string): Promise<AdminCourseDetai
 
 	const [course] = await db
 		.select({
-			id: courses.id,
-			name: courses.name,
-			code: courses.code,
-			description: courses.description,
-			departmentId: courses.departmentId,
-			location: courses.location,
-			cfu: courses.cfu,
-			position: courses.position,
-			courseType: courses.courseType,
-			createdAt: courses.createdAt,
-			updatedAt: courses.updatedAt,
+			...courseColumns,
 			department: {
-				id: departments.id,
-				name: departments.name,
-				code: departments.code,
-				description: departments.description,
-				area: departments.area,
-				position: departments.position,
-				createdAt: departments.createdAt,
-				updatedAt: departments.updatedAt,
+				...departmentColumns,
 			},
 		})
 		.from(courses)

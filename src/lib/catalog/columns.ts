@@ -16,6 +16,7 @@ export const departmentColumns = {
 	code: departments.code,
 	description: departments.description,
 	area: departments.area,
+	catalogueCode: departments.catalogueCode,
 	position: departments.position,
 	createdAt: departments.createdAt,
 	updatedAt: departments.updatedAt,
@@ -31,6 +32,11 @@ export const courseColumns = {
 	cfu: courses.cfu,
 	position: courses.position,
 	courseType: courses.courseType,
+	nationalCode: courses.nationalCode,
+	degreeClass: courses.degreeClass,
+	teachingLanguage: courses.teachingLanguage,
+	restrictedAccess: courses.restrictedAccess,
+	catalogueUrl: courses.catalogueUrl,
 	createdAt: courses.createdAt,
 	updatedAt: courses.updatedAt,
 };
@@ -40,6 +46,7 @@ export const classColumns = {
 	name: classes.name,
 	description: classes.description,
 	cfu: classes.cfu,
+	ssd: classes.ssd,
 	position: classes.position,
 	createdAt: classes.createdAt,
 	updatedAt: classes.updatedAt,
@@ -51,6 +58,9 @@ export const courseClassColumns = {
 	mandatory: courseClasses.mandatory,
 	catalogueUrl: courseClasses.catalogueUrl,
 	curriculum: courseClasses.curriculum,
+	evaluation: courseClasses.evaluation,
+	taf: courseClasses.taf,
+	teachingPeriod: courseClasses.teachingPeriod,
 	position: courseClasses.position,
 };
 

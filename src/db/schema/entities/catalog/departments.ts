@@ -12,6 +12,7 @@ export const departments = catalogSchema
 			code: text().notNull(),
 			description: text(),
 			area: departmentAreaEnum(),
+			catalogueCode: text("catalogue_code"),
 			position: integer().default(0).notNull(),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
@@ -26,6 +27,7 @@ export const departments = catalogSchema
 				table.position.asc().nullsLast().op("int4_ops")
 			),
 			unique("departments_code_key").on(table.code),
+			unique("departments_catalogue_code_key").on(table.catalogueCode),
 		]
 	)
 	.enableRLS();

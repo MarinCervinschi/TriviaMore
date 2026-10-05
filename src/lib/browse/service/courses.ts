@@ -3,8 +3,8 @@ import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { classes, courseClasses, courses, departments } from "@/db/schema";
+import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
 
-import { classColumns, courseClassColumns } from "../columns";
 import type {
 	CampusLocation,
 	CourseType,
