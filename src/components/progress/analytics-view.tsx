@@ -19,16 +19,6 @@ import { MetricExplorer } from "./metric-explorer";
 import { MetricKpis } from "./metric-kpis";
 import { WhenYouStudyCard } from "./study-rhythm";
 
-/**
- * The analytics page itself — everything but the data loading, so the same layout
- * that ships is the one the story renders. The window (period and mode) lives
- * here and is handed down: a card that owns its own copy of these two would put a
- * second, disagreeing pair of chips on the page.
- *
- * The grid answers to its own column with container queries, not to the window:
- * the content column is 1216px inside the rail's gutter, and viewport
- * breakpoints would be measuring the wrong box.
- */
 export function AnalyticsView({
 	daily,
 	flashcardDays,
@@ -48,21 +38,13 @@ export function AnalyticsView({
 	attempts: AttemptHistoryEntry[];
 	today?: Date;
 	title?: ReactNode;
-	/** A chip beside the title: the kind of thing the page is about. */
 	badge?: ReactNode;
-	/** The line under the title: where this entity sits. */
 	meta?: ReactNode;
 	period: ExplorerPeriod;
 	mode: ExplorerMode;
-	/** The section's tab row, which the page's own head would otherwise carry. */
 	tabs?: TabNavItem[];
-	/** Controls for the head. The overview leaves it empty: the shell header has them. */
 	actions?: ReactNode;
-	/**
-	 * Extra cards for the grid, each carrying its own `col-span`. The entity pages
-	 * add mastery and their recent attempts here; the overview adds nothing, which
-	 * is what took it from nine blocks to five.
-	 */
+	/** Extra grid cards, each carrying its own `col-span`. */
 	children?: ReactNode;
 }) {
 	const now = useMemo(() => today ?? new Date(), [today]);

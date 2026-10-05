@@ -41,7 +41,6 @@ function Sparkline({ points }: { points: (number | null)[] }) {
 	const w = 96;
 	const h = 28;
 	const pad = 2;
-	// A gap keeps its place on the x axis: the point is dropped, its slot is not.
 	const drawn = points.flatMap((p, i) => (p === null ? [] : [{ value: p, i }]));
 	if (drawn.length < 2) return null;
 	const values = drawn.map(point => point.value);
@@ -104,11 +103,8 @@ export function ProgressSummary({
 	today,
 }: {
 	daily: DailyStudyStat[];
-	/** Injected in stories to keep them deterministic; the app uses now. */
 	today?: Date;
 }) {
-	// A week is often a single session, or none: the year is the window that has
-	// something to show on a home page.
 	const [period, setPeriod] = useState<SummaryPeriod>("year");
 	const summary = buildStudySummary(daily, period, today ?? new Date());
 

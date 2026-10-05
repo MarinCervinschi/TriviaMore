@@ -7,8 +7,6 @@ import { FLASHCARD_QUESTIONS } from "@/components/quiz/fixtures";
 import { FlashcardQuestionCard } from "./flashcard-question-card";
 import { FlashcardResults } from "./flashcard-results";
 
-// The card itself and the screen a session ends on. The card reaches the bookmark server function,
-// which is why it had no story until the stub landed.
 const meta = {
 	title: "Flashcard/Sessione",
 	parameters: { layout: "padded", session: { role: "STUDENT" } },
@@ -29,7 +27,6 @@ function Card({ index, flipped }: { index: number; flipped?: boolean }) {
 	);
 }
 
-/** Front and back side by side — click either to turn it. */
 export const Card_: Story = {
 	name: "La carta",
 	render: () => (
@@ -40,7 +37,6 @@ export const Card_: Story = {
 	),
 };
 
-/** A long answer with an explanation under it: the back is where the card runs out of room. */
 export const LongAnswer: Story = {
 	name: "Risposta lunga",
 	render: () => (
@@ -65,7 +61,6 @@ export const Results: Story = {
 	),
 };
 
-/** Nothing turned: the summary has to say so rather than showing an empty list. */
 export const NothingStudied: Story = {
 	name: "Nessuna carta girata",
 	parameters: { layout: "fullscreen" },

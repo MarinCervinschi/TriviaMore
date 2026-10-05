@@ -36,7 +36,6 @@ export const Both: Story = {
 	render: () => <Harness quiz={142} cards={142} />,
 };
 
-/** Only one half available — the tab for the other should not offer itself. */
 export const QuizOnly: Story = {
 	name: "Solo quiz",
 	render: () => <Harness quiz={40} cards={0} />,

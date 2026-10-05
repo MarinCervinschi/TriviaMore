@@ -15,11 +15,6 @@ import { DeckCoverage } from "./deck-coverage";
 import { STUDY_ATTEMPT } from "./fixtures";
 import { GradeBandScale } from "./grade-band-scale";
 
-/**
- * What a finished attempt says about itself before any of the detail: the grade
- * against the five bands, the counts, and — for a flashcard session, which has no
- * grade — how much of the deck was turned over.
- */
 const meta = {
 	title: "Risultati/Esito",
 	parameters: { layout: "padded" },
@@ -30,7 +25,6 @@ type Story = StoryObj<typeof meta>;
 
 const SCORES = [12.4, 20.1, 26.4, 29, 32.5];
 
-/** One per band, so the marker, the lit segment and the note can be read against each other. */
 export const Bands: Story = {
 	name: "Le cinque fasce",
 	render: () => (
@@ -50,11 +44,6 @@ export const Bands: Story = {
 	),
 };
 
-/**
- * The scale in the place it is meant for: the right half of the outcome panel,
- * beside the grade. The counts below split the questions left blank out of the
- * wrong ones — with a penalty they are not worth the same thing.
- */
 export const Outcome: Story = {
 	name: "Il pannello dell'esito",
 	render: () => (
@@ -114,7 +103,6 @@ export const Outcome: Story = {
 	),
 };
 
-/** A flashcard session has no grade, so coverage is the headline. */
 export const Coverage: Story = {
 	name: "La copertura del mazzo",
 	render: () => (

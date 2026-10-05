@@ -5,10 +5,6 @@ import type { DepartmentLocation, OverviewLocation } from "@/lib/browse/types";
 import { DepartmentMap } from "./department-map";
 import { OverviewMap } from "./overview-map";
 
-/**
- * The two campus maps. They draw through Leaflet on real tiles, so they can only be judged in the
- * browser — and the tiles follow the theme, which is the thing worth checking when a colour moves.
- */
 const meta = {
 	title: "Browse/Mappe",
 	parameters: { layout: "padded" },
@@ -74,7 +70,6 @@ export const Department: Story = {
 	render: () => <DepartmentMap locations={DIEF} />,
 };
 
-/** One location: the map still fits its bounds, which is the case that used to zoom to the whole planet. */
 export const SingleLocation: Story = {
 	name: "Una sola sede",
 	render: () => <DepartmentMap locations={[DIEF[0]]} />,

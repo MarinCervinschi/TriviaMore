@@ -44,15 +44,9 @@ const DENSITY_CLASS = {
 
 export type DataTableProps<TData extends RowData> = {
 	table: DataTableInstance<TData>;
-	/** Rendered above the table, typically a `<DataTableToolbar>`. */
 	toolbar?: ReactNode;
-	/** Replaces the table when there are no rows to show. */
 	empty?: ReactNode;
-	/**
-	 * Makes each row navigable. Return a bare `<Link>` — the arrow column, its
-	 * label and the hover styling are added here. Return null for a row with
-	 * nowhere to go: its arrow cell stays empty so the column keeps its shape.
-	 */
+	/** Return a bare `<Link>`, or null for a row with nowhere to go. */
 	rowLink?: (row: TData) => ReactElement | null;
 	density?: keyof typeof DENSITY_CLASS;
 	showPagination?: boolean;

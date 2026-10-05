@@ -18,7 +18,7 @@ import { AchievementMedal } from "./achievement-medal";
 
 const LIMIT = 3;
 
-/** Choosing the medals the dashboard shows. Order is the order they are picked in. */
+/** Picks the medals the dashboard shows, in the order they are clicked. */
 export function PinPicker({
 	open,
 	onOpenChange,
@@ -33,7 +33,6 @@ export function PinPicker({
 	const [picked, setPicked] = useState<string[]>([]);
 	const pin = usePinAchievements();
 
-	// Reopening starts from what is saved, not from a half-finished edit.
 	useEffect(() => {
 		if (open) setPicked(pinned.map(entry => entry.key));
 	}, [open, pinned]);

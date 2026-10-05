@@ -68,9 +68,8 @@ export function MetricBlock({
 }
 
 type TimeBlockProps = {
-	/** Total minutes for the session, or null for unlimited. */
+	/** null means unlimited. */
 	minutes: number | null;
-	/** Number of questions/cards in the session, used for per-question hint. */
 	questionCount: number;
 };
 
@@ -154,7 +153,6 @@ export function EvalBlock({ mode, questionCount }: EvalBlockProps) {
 			</div>
 
 			<div className="flex flex-col gap-3">
-				{/* Punteggio max — total prominent + per-question secondary */}
 				<ScorePair
 					label="Punteggio max"
 					totalValue={`+${maxScaled}`}

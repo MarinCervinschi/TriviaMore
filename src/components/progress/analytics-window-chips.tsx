@@ -17,11 +17,6 @@ const MODES: ChipOption<ExplorerMode>[] = [
 	{ value: "EXAM_SIMULATION", label: "Solo esame" },
 ];
 
-/**
- * The window every analytics page reads from the URL. Presentational on purpose:
- * the shell's header wires it from loose search params, the entity pages from their
- * own typed route — the state is the URL either way, so there is only one of it.
- */
 export function AnalyticsWindowChips({
 	period,
 	mode,

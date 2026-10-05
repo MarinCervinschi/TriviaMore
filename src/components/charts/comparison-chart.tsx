@@ -19,17 +19,14 @@ import { CHART_SURFACE, type ChartSeries, seriesConfig } from "./palette";
 
 export type ComparisonChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	data: TDatum[];
-	/** The category axis — a section, a department, a difficulty. */
 	categoryKey: Extract<keyof TDatum, string>;
 	series: ChartSeries<TDatum>[];
 	orientation?: "vertical" | "horizontal";
 	stacked?: boolean;
 	height?: number;
-	/** Per-bar colour, for a single series whose colour carries meaning. */
 	barColor?: (datum: TDatum) => string;
-	/** Prints the value at the end of each bar. Only for a single series. */
+	/** Prints each bar's value. Single series only. */
 	showValues?: boolean;
-	/** A muted rail behind each bar, so the mark reads as "filled to here". */
 	showTrack?: boolean;
 	categoryWidth?: number;
 	valueFormatter?: (value: number) => string;
@@ -38,10 +35,6 @@ export type ComparisonChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 
 const ANIMATION_MS = 420;
 
-/**
- * Magnitude across categories. `horizontal` lays the bars left-to-right, which is
- * what long category names need; `vertical` is the default column chart.
- */
 export function ComparisonChart<TDatum>({
 	data,
 	categoryKey,
@@ -62,7 +55,6 @@ export function ComparisonChart<TDatum>({
 	const config = seriesConfig(series);
 	const showLegend = series.length > 1;
 	const isHorizontal = orientation === "horizontal";
-	// A rail behind every bar of a group would read as clutter.
 	const track = showTrack && !stacked && series.length === 1;
 
 	const categoryAxis = (
@@ -104,7 +96,6 @@ export function ComparisonChart<TDatum>({
 					margin={{ left: 4, right: showValues ? 32 : 8, top: 8 }}
 				>
 					<ChartDefs scope={scope} series={series} brandFirst />
-					{/* Solid hairline, only across the value axis. */}
 					<CartesianGrid
 						vertical={isHorizontal}
 						horizontal={!isHorizontal}
@@ -127,10 +118,7 @@ export function ComparisonChart<TDatum>({
 							key={item.key}
 							dataKey={item.key}
 							stackId={stacked ? "stack" : undefined}
-							// A semantic colour, or one chosen per bar, is never gradient-washed:
-							// the wash would shift the very hue that carries the meaning.
 							fill={seriesFill(scope, item, Boolean(barColor))}
-							// 4px rounded end on the data side only; the baseline stays square.
 							radius={isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]}
 							maxBarSize={40}
 							background={track ? { fill: "hsl(var(--muted))", radius: 4 } : undefined}

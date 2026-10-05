@@ -3,10 +3,7 @@ import { forwardRef } from "react";
 import IconBase from "@solar-icons/react/lib/IconBase";
 import type { Icon, IconProps } from "@solar-icons/react/lib/types";
 
-// Solar carries ✕, ＋, −, ✓ and ● only wrapped in a circle or a square, and these marks are
-// interface punctuation rather than iconography — a circled tick inside a square checkbox is wrong.
-// Drawn on Solar's IconBase so they inherit its 1.5 stroke, 1em sizing and automatic aria-hidden,
-// and are therefore interchangeable with a real icon at the call site.
+// Solar draws these marks only inside a circle or a square, so they are drawn here on its IconBase.
 
 export const CloseGlyph: Icon = forwardRef<SVGSVGElement, IconProps>((props, ref) => (
 	<IconBase ref={ref} {...props} iconName="close-glyph">

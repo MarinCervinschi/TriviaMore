@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-/** The avatar is a slot, so the chooser can change without touching this. */
 export function ProfileStep({
 	name,
 	onNameChange,

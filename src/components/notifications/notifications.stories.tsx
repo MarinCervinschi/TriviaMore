@@ -14,11 +14,6 @@ import { NotificationItem } from "./notification-item";
 import { NotificationList } from "./notification-list";
 import { NotificationPopover } from "./notification-popover";
 
-/**
- * The notification stack. `NotificationList` and `NotificationPopover` read the `["notifications"]`
- * query, and the rail badges read the unread counts — all three are seeded through
- * `parameters.queryData`, so the mutations still throw if you click them and the render is real.
- */
 const meta = {
 	title: "Notifications/Notifiche",
 	parameters: { layout: "padded", session: { role: "STUDENT" } },
@@ -119,7 +114,6 @@ function make(
 
 const ALL = TYPES.map((type, i) => make(type, i, i > 2));
 
-/** Every type, unread on the left and read on the right: the icon and the dot are the only difference. */
 export const Item: Story = {
 	name: "La voce, tutti i tipi",
 	render: () => (
@@ -177,7 +171,7 @@ export const Popover: Story = {
 	),
 };
 
-/** The bell's dot and Novità's count, at 3 and past 99 where the pill caps. */
+/** The counts at 3 and past 99, where the pill caps. */
 export const RailBadges: Story = {
 	name: "Gli indicatori di non letto",
 	parameters: {

@@ -12,11 +12,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * Slot 1 carries the brand ramp — the same orange→coral stops as the CTAs and
- * the quiz progress bar. Every other series fades its own hue instead, so a
- * colour that means something is never washed into a different one.
- */
 export const BrandRampAndOwnHue: Story = {
 	render: () => (
 		<div className="grid gap-6 md:grid-cols-2">
@@ -41,11 +36,6 @@ export const BrandRampAndOwnHue: Story = {
 	),
 };
 
-/**
- * Texture is opt-in and never decoration. Here it marks the folded bucket, which
- * is not a real category — a sixth hue would both mislead and fail the palette
- * separation checks.
- */
 export const HatchedMeansSomething: Story = {
 	render: () => (
 		<div className="grid gap-6 md:grid-cols-2">
@@ -71,7 +61,6 @@ export const HatchedMeansSomething: Story = {
 	),
 };
 
-/** A flat fill, for when the plot has to stay as quiet as possible. */
 export const Solid: Story = {
 	render: () => (
 		<ComparisonChart

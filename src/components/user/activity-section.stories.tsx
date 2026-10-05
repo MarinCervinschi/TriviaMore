@@ -51,7 +51,6 @@ const ATTEMPTS = [
 
 const meta = {
 	title: "User/Activity",
-	// Render inside the dashboard's own `.container`, so the width matches the page.
 	parameters: { layout: "fullscreen" },
 	decorators: [
 		Story => (
@@ -65,12 +64,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The last sittings, with the way through to the full history. */
 export const Default: Story = {
 	render: () => <ActivitySection attempts={ATTEMPTS} total={42} />,
 };
 
-/** No completed quizzes yet. */
 export const Empty: Story = {
 	render: () => <ActivitySection attempts={[]} />,
 };

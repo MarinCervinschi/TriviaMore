@@ -22,11 +22,7 @@ type Group = {
 	time: number;
 };
 
-/**
- * Rolls the sections up to the chosen level. The time is re-weighted by answers,
- * never averaged over averages: a section with four answers must not weigh as
- * much as one with four hundred.
- */
+/** Rolls sections up to the chosen level, weighting time by answers. */
 function group(sections: SectionAccuracy[], by: Grouping): Group[] {
 	const groups = new Map<string, Group>();
 	for (const section of sections) {
@@ -52,12 +48,6 @@ function group(sections: SectionAccuracy[], by: Grouping): Group[] {
 	return [...groups.values()];
 }
 
-/**
- * Speed against precision, one mark per subject: the quadrants say whether a weak
- * area is weak because it is rushed or because it is hard. Sections without a
- * recorded time cannot be placed and are left out — said in the footer, not
- * silently dropped.
- */
 export function SpeedAccuracy({ sections }: { sections: SectionAccuracy[] }) {
 	const [by, setBy] = useState<Grouping>("section");
 
@@ -73,8 +63,6 @@ export function SpeedAccuracy({ sections }: { sections: SectionAccuracy[] }) {
 				weight: entry.total,
 			})),
 			guides: {
-				// The two means, weighted by answers: the quadrants read "against your
-				// own average", which is the only baseline this data can offer.
 				x:
 					answers === 0
 						? undefined

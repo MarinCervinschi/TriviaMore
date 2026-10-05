@@ -8,8 +8,6 @@ import { AdminPageHeader } from "./admin-page-header";
 import { AdminRowActions } from "./admin-row-actions";
 import { BrowsePublicButton } from "./browse-public-button";
 
-// The pieces every admin page is framed with. The row actions carry the object's name, which is what
-// keeps a table from reading as twenty identical "Modifica".
 const meta = {
 	title: "Admin/Blocchi",
 	parameters: { layout: "padded", session: { role: "SUPERADMIN" } },
@@ -35,10 +33,7 @@ export const Header: Story = {
 	),
 };
 
-/**
- * With and without a label. Without, a table of twenty rows offers twenty controls all announced as
- * "Modifica" — which satisfies 4.1.2 and is still unusable.
- */
+/** Without a label, every row's control is announced as "Modifica". */
 export const RowActions: Story = {
 	name: "Azioni di riga",
 	render: () => (

@@ -31,7 +31,6 @@ function InfoDot({ children }: { children: React.ReactNode }) {
 	);
 }
 
-// Pure SVG: the gauge has to render identically on the server and the client.
 function TickGauge({
 	pct,
 	color,
@@ -58,8 +57,7 @@ function TickGauge({
 					const a = ((180 - (180 * i) / (ticks - 1)) * Math.PI) / 180;
 					const dx = Math.cos(a);
 					const dy = -Math.sin(a);
-					// Round the trig output: Math.cos/sin differ in the last ULP between
-					// Node and the browser, which trips React's hydration check.
+					// Rounded, because Math.cos and Math.sin differ in the last ULP between Node and the browser.
 					const round = (n: number) => Math.round(n * 1000) / 1000;
 					return (
 						<line
@@ -83,11 +81,6 @@ function TickGauge({
 	);
 }
 
-/**
- * Mastery in one narrow column: the gauge on top and the difficulty bars under it.
- * For a dashboard grid, where this sits beside a wide chart and has to reach its
- * height without spreading sideways.
- */
 export function MasteryCard({ mastery }: { mastery: UserMastery }) {
 	const total = mastery.byDifficulty.reduce((sum, row) => sum + row.total, 0);
 	const correct = mastery.byDifficulty.reduce((sum, row) => sum + row.correct, 0);
@@ -105,8 +98,6 @@ export function MasteryCard({ mastery }: { mastery: UserMastery }) {
 						</InfoDot>
 					</span>
 				}
-				// Short enough not to wrap at the narrow width: the band then matches the
-				// two-line header of the wide card beside it, and the panels line up.
 				description="Accuratezza per difficoltà"
 				texture="top"
 				className="h-full"

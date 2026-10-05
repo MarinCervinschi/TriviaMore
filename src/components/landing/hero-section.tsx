@@ -22,15 +22,12 @@ export function HeroSection({
 
 	return (
 		<section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden">
-			{/* Mesh gradient background */}
-
 			<motion.div
 				className="container py-24 text-center sm:py-32"
 				variants={container}
 				initial="hidden"
 				animate="visible"
 			>
-				{/* Badge */}
 				<motion.div
 					className="border-primary/20 bg-primary/5 text-brand mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
@@ -79,7 +76,6 @@ export function HeroSection({
 					</Button>
 				</motion.div>
 
-				{/* Stats row */}
 				<motion.div
 					className="text-muted-foreground mt-16 flex flex-wrap items-center justify-center gap-8 text-sm sm:gap-12"
 					variants={item}

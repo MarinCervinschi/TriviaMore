@@ -70,7 +70,7 @@ export function ContactForm() {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
-				{/* Honeypot: hidden from users, bots tend to fill it */}
+				{/* Honeypot, hidden from users; bots tend to fill it. */}
 				<input
 					type="text"
 					tabIndex={-1}

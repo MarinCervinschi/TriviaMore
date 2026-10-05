@@ -29,7 +29,6 @@ import { FormSubmitButton } from "./form-submit-button";
 import { MultipleChoiceOptions } from "./multiple-choice-options";
 import { QuestionContentField } from "./question-content-field";
 
-// Form-level schema (options as {id, text} objects)
 const questionFormSchema = z.object({
 	content: z
 		.string()
@@ -122,13 +121,11 @@ export function QuestionForm({
 	}
 
 	function handleSubmit(values: QuestionFormValues) {
-		// Convert {id, text} options back to the format the server expects
 		const serverOptions =
 			values.options && values.question_type !== "SHORT_ANSWER"
 				? values.options.map(o => o.text)
 				: null;
 
-		// Map correct_answer from option ids to option texts so it matches DB options
 		let serverCorrectAnswer = values.correct_answer;
 		if (values.options && values.question_type !== "SHORT_ANSWER") {
 			const idToText = new Map(values.options.map(o => [o.id, o.text]));
@@ -149,7 +146,6 @@ export function QuestionForm({
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4">
-				{/* Content with preview */}
 				<QuestionContentField
 					control={
 						form.control as unknown as import("react-hook-form").Control<FieldValues>
@@ -228,7 +224,6 @@ export function QuestionForm({
 					/>
 				</div>
 
-				{/* Multiple choice options */}
 				{questionType === "MULTIPLE_CHOICE" && (
 					<MultipleChoiceOptions
 						control={
@@ -247,7 +242,6 @@ export function QuestionForm({
 					/>
 				)}
 
-				{/* True/False */}
 				{questionType === "TRUE_FALSE" && (
 					<FormField
 						control={form.control}
@@ -275,7 +269,6 @@ export function QuestionForm({
 					/>
 				)}
 
-				{/* Short answer */}
 				{questionType === "SHORT_ANSWER" && (
 					<FormField
 						control={form.control}

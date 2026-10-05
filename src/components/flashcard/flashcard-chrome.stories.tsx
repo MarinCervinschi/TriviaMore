@@ -7,8 +7,6 @@ import { FlashcardNavigation } from "./flashcard-navigation";
 import { FlashcardProgress } from "./flashcard-progress";
 import { FlashcardSidebar, FlashcardSidebarContent } from "./flashcard-sidebar";
 
-// The frame around a flashcard session. Unlike the quiz there is no timer and no answer: progress is
-// how many cards you have turned.
 const meta = {
 	title: "Flashcard/Chrome",
 	parameters: { layout: "padded" },
@@ -92,7 +90,6 @@ export const Sidebar_: Story = {
 	render: () => <Sidebar />,
 };
 
-/** The same list inside its aside, which is what the play route mounts from `lg` up. */
 export const SidebarAside: Story = {
 	name: "La colonna laterale",
 	parameters: { layout: "fullscreen" },

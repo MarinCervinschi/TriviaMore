@@ -19,7 +19,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** Hooks cannot run in a `render` arrow, so the live version is its own component. */
 function LivePreview() {
 	const [code, setCode] = useState("404");
 

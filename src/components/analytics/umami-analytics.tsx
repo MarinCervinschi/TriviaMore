@@ -3,11 +3,7 @@ import { useEffect } from "react";
 const UMAMI_SRC = import.meta.env.VITE_UMAMI_SRC as string | undefined;
 const UMAMI_WEBSITE_ID = import.meta.env.VITE_UMAMI_WEBSITE_ID as string | undefined;
 
-/**
- * Loads the self-hosted Umami tracking script in production once its env vars
- * are set. Umami is cookieless, so it runs without the cookie-consent gate.
- * No-op in dev builds and when the env vars are missing.
- */
+/** Loads Umami in production only; Umami sets no cookies, so it needs no consent gate. */
 export function UmamiAnalytics() {
 	useEffect(() => {
 		if (!import.meta.env.PROD) return;

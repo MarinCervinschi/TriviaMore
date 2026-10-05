@@ -29,8 +29,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Logged-in variants (the CTA is a plain button). The logged-out CTA renders a
-// TanStack Router <Link>, which needs a router provider Storybook doesn't have.
 export const Quiz: Story = {};
 
 export const Flashcard: Story = {

@@ -8,7 +8,6 @@ const BASE = {
 	pinPosition: null,
 } satisfies Partial<AchievementView>;
 
-// Fixed: a story that re-dates itself cannot be compared against the one beside it.
 export const UNLOCKED_AT = "2026-09-04T10:20:00.000Z";
 
 export const ACHIEVEMENTS: AchievementView[] = [
@@ -95,7 +94,6 @@ export const ACHIEVEMENTS: AchievementView[] = [
 	},
 ];
 
-/** Every icon key the v1 catalogue uses. */
 export const CATALOGUE_ICONS: {
 	icon: string;
 	accent: string;
@@ -118,7 +116,6 @@ export const CATALOGUE_ICONS: {
 	{ icon: "star", shape: "diamond", accent: "muted", label: "founder" },
 ];
 
-/** What the strip and the summary both read. */
 export const OVERVIEW: AchievementsOverview = {
 	categories: [
 		{

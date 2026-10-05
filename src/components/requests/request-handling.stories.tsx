@@ -11,8 +11,6 @@ import { PresetReplies } from "./preset-replies";
 import { ReportButton } from "./report-button";
 import { ReportQuestionDialog } from "./report-question-dialog";
 
-// The other half: reporting a question, and an admin acting on a proposal. Both reach mutations through
-// server functions, so submitting from a story throws by design — the stub says so out loud.
 const meta = {
 	title: "Requests/Handling",
 	parameters: { layout: "padded", session: { role: "SUPERADMIN" } },
@@ -54,7 +52,7 @@ function Presets() {
 	);
 }
 
-/** A canned reply is a starting point, not a send: picking one fills the field and stops there. */
+/** Picking a canned reply fills the field and sends nothing. */
 export const Presets_: Story = {
 	name: "Le risposte pronte",
 	render: () => <Presets />,
@@ -84,7 +82,6 @@ export const ReportDialog: Story = {
 	render: () => <Report />,
 };
 
-/** A long stem: the dialog quotes the question, so this is where it has to wrap rather than overflow. */
 export const ReportLong: Story = {
 	name: "Segnalare, domanda lunga",
 	parameters: { layout: "centered" },
@@ -116,7 +113,6 @@ export const TriggerSignedOut: Story = {
 	),
 };
 
-/** The shared pill both request badges are built on — colour and icon come from the caller's map. */
 export const Badge: Story = {
 	name: "La pill di configurazione",
 	render: () => (

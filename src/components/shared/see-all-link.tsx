@@ -6,10 +6,6 @@ import { Link } from "@tanstack/react-router";
 import type { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
-/**
- * The "and the rest is over here" link a block carries in its header or footer.
- * Always the button's `sm`, so it never out-weighs the block it hangs off.
- */
 export function SeeAllLink({
 	icon: Icon,
 	children,

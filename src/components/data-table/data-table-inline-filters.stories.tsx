@@ -25,14 +25,6 @@ type StorySearch = DataTableSearch & {
 	visibility?: string;
 };
 
-/**
- * The inline filter surface, faithful to the ReUI original: a filter-icon button
- * top-right that opens a two-page menu (search a field → tick its values), and a
- * removable segmented chip per active facet on the left — `campo │ operatore ▾ │
- * valori ▾ │ ×`. The operator «è uno di / non è uno di» actually filters (see
- * `facet-filter`). Enabled with `filterVariant="inline"` on the toolbar; the
- * column's `meta.facet` stays the single source of truth.
- */
 const meta = {
 	title: "Data Table/Filtri inline",
 	parameters: { layout: "padded" },
@@ -160,7 +152,6 @@ function InlineTable({
 	);
 }
 
-/** Just the chips + add control, to show the two sizes in isolation. */
 function InlineBar({
 	initial = {},
 	size = "default",
@@ -177,22 +168,17 @@ function InlineBar({
 	);
 }
 
-/** Nothing added: search on the left, the filter icon top-right, the columns button. */
 export const Vuoto: Story = {
 	name: "Vuoto",
 	render: () => <InlineTable />,
 };
 
-/**
- * Two active facets as chips on the left — one includes, one excludes («non è uno
- * di», seeded from `?course=!Algoritmi`); the filter icon stays top-right.
- */
+/** Two active facets as chips, one included and one excluded. */
 export const ConFiltri: Story = {
 	name: "Con filtri attivi",
 	render: () => <InlineTable initial={{ difficulty: "HARD", course: "!Algoritmi" }} />,
 };
 
-/** The two toolbar variants: always-on dashed buttons vs. the icon + chips. */
 export const Confronto: Story = {
 	name: "Confronto varianti",
 	render: () => (
@@ -213,7 +199,7 @@ export const Confronto: Story = {
 	),
 };
 
-/** The chip and control at both sizes; the app uses `sm`. */
+/** The chip and the control at both sizes; the app uses `sm`. */
 export const Taglie: Story = {
 	name: "Taglie",
 	render: () => (

@@ -18,8 +18,7 @@ import { StarIcon } from "@solar-icons/react/bold/star";
 import type { Icon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
-// All three maps fall back rather than throw: a badge added from the SQL
-// console with an unmapped key still has to render.
+// A badge added from the SQL console can carry a key no map knows, so every lookup falls back.
 const ICONS: Record<string, Icon> = {
 	bolt: BoltIcon,
 	bookmark: BookmarkIcon,
@@ -37,8 +36,7 @@ const ICONS: Record<string, Icon> = {
 	star: StarIcon,
 };
 
-// Generated offline and kept as constants: trigonometry at render differs in the
-// last bit between container and browser, which breaks hydration.
+// Precomputed because trigonometry at render differs in the last bit between server and browser and breaks hydration.
 const SHAPES: Record<string, string> = {
 	seal: "M50.0,10.0 A10.35,10.35 0 0 1 70.0,15.36 A10.35,10.35 0 0 1 84.64,30.0 A10.35,10.35 0 0 1 90.0,50.0 A10.35,10.35 0 0 1 84.64,70.0 A10.35,10.35 0 0 1 70.0,84.64 A10.35,10.35 0 0 1 50.0,90.0 A10.35,10.35 0 0 1 30.0,84.64 A10.35,10.35 0 0 1 15.36,70.0 A10.35,10.35 0 0 1 10.0,50.0 A10.35,10.35 0 0 1 15.36,30.0 A10.35,10.35 0 0 1 30.0,15.36 A10.35,10.35 0 0 1 50.0,10.0 Z",
 	shield: "M50,6 L88,20 C88,52 76,78 50,94 C24,78 12,52 12,20 Z",
@@ -59,8 +57,7 @@ type Accent = {
 	stroke: string;
 };
 
-// The glyph is `text-card`, never a white literal: white measures 2.83 on
-// chart-3 in dark and fails 1.4.11's 3:1, while `card` flips with the theme.
+// The glyph uses `text-card` because white fails 3:1 on chart-3 in dark mode.
 const ACCENTS: Record<string, Accent> = {
 	"chart-1": {
 		ink: "text-chart-1-ink",
@@ -146,10 +143,6 @@ export type AchievementMedalProps = {
 	className?: string;
 };
 
-/**
- * A silhouette per category, lit from the top left; a locked one keeps the same
- * shape in grey, and its glyph, because a padlock would hide what the goal is.
- */
 export function AchievementMedal({
 	icon,
 	accent,
@@ -194,7 +187,6 @@ export function AchievementMedal({
 			<span
 				className={cn(
 					"absolute inset-0 grid place-items-center",
-					// Solid: at /70 the glyph measured 2.02:1 on its own silhouette, under 3:1.
 					locked ? "text-muted-foreground" : "text-card"
 				)}
 			>
@@ -204,7 +196,7 @@ export function AchievementMedal({
 			{numeral && !locked && (
 				<span
 					className={cn(
-						// A ring: `globals.css` sets `border-color` on `*` outside any layer.
+						// A ring because `globals.css` sets `border-color` on `*` outside any layer.
 						"text-card ring-card absolute -right-0.5 -bottom-0.5 inline-flex items-center justify-center rounded-full font-medium tabular-nums ring-2",
 						accentClasses.numeral,
 						dimensions.numeral

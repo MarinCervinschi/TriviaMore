@@ -3,13 +3,6 @@ import type { ReactNode } from "react";
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav";
 import { cn } from "@/lib/utils";
 
-/**
- * Every page's head: the name of the page with its controls beside it. It says what
- * the page is in one line and gives the rest of the fold to the data.
- *
- * The trail is not here — the shell's `AppHeader` carries it, so it stays put while
- * the page scrolls and cannot go missing on a page that forgot to render one.
- */
 export function PageToolbar({
 	title,
 	badge,
@@ -20,13 +13,9 @@ export function PageToolbar({
 	className,
 }: {
 	title?: ReactNode;
-	/** A chip beside the title — what kind of thing this page is about. */
 	badge?: ReactNode;
-	/** The line under the title: where the entity sits, what it covers. */
 	meta?: ReactNode;
-	/** Figures about the page, reading as one line: "12 totali · 3 in revisione". */
 	metrics?: { label: string; value: string | number }[];
-	/** The sections this page is one of — entries the sidebar no longer carries. */
 	tabs?: TabNavItem[];
 	actions?: ReactNode;
 	className?: string;

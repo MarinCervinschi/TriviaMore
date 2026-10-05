@@ -17,7 +17,6 @@ import { type StudyRhythm as Rhythm, computeStudyRhythm } from "@/lib/user/rhyth
 import type { AttemptHistoryEntry } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 
-/** Shape only, for the render before hydration — every figure reads as a dash. */
 const PENDING: Rhythm = {
 	currentStreak: 0,
 	longestStreak: 0,
@@ -65,12 +64,6 @@ function HourBars({ byHour, peakHour }: { byHour: number[]; peakHour: number | n
 	);
 }
 
-/**
- * The hour histogram on its own, for the analytics grid: when you study, plus the
- * two figures that qualify it — the peak hour and how much your grades scatter.
- * Both are read in the **viewer's** timezone, which the server does not share, so
- * they only appear once hydrated.
- */
 export function WhenYouStudyCard({
 	attempts,
 	today,

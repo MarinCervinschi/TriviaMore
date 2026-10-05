@@ -1,12 +1,4 @@
-/**
- * The decorative tints of D4, in one place instead of a map per component.
- *
- * These stay on the raw palette on purpose — the categorical ramp was built, compared side by side and
- * rejected on the look. See the addendum under D4. They are therefore theme-constant and outside the
- * contrast gate, which is the price and is accepted.
- *
- * A slot is picked by the caller and carries no meaning: the label and the icon say what the tile is.
- */
+// On the raw palette on purpose, so these are theme-constant and outside the contrast gate.
 export type DecorativeTint = {
 	badge: string;
 	icon: string;

@@ -4,7 +4,6 @@ import type { DailyStudyStat } from "@/lib/user/types";
 
 import { ProgressSummary } from "./progress-summary";
 
-// Fixed "today" so the windows land on the fixtures deterministically.
 const TODAY = new Date("2026-08-16T12:00:00Z");
 
 function daysAgo(n: number) {

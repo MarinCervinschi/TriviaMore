@@ -7,19 +7,13 @@ import { IconTile } from "@/components/ui/icon-tile";
 import { buildGradeDistribution, medianScore } from "@/lib/user/grade-distribution";
 import { formatGradeOutOf33 } from "@/lib/utils/grading";
 
-/**
- * How the grades are spread across the bands the app already colours by — the
- * shape a trend line cannot show: two 24s and two 33s average the same as four
- * 28s, and only this says which of the two happened. The median sits in the hole
- * rather than the mean, because it survives a couple of disastrous days.
- */
+/** The grades by band, with the median in the middle. */
 export function GradeDistribution({
 	scores,
 	actions,
 	variant,
 }: {
 	scores: number[];
-	/** The card's own controls — an export button, a range switch. */
 	actions?: ReactNode;
 	variant?: DonutChartProps["variant"];
 }) {

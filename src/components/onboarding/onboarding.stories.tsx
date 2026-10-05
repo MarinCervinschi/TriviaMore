@@ -56,10 +56,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * The whole three-step flow, driven by local state. No mutation is wired: a story
- * has no server, so "Conferma" only advances the rail.
- */
 function WizardExample({
 	withSuggestions = true,
 	courses = FIM_COURSES,
@@ -79,8 +75,6 @@ function WizardExample({
 	const [uploaded, setUploaded] = useState<string | null>(null);
 
 	const choices = avatarChoices(page);
-	// An upload wins over a picked seed, as it does in the app: the story has no
-	// server, so it previews the file locally rather than doing nothing at all.
 	const avatarUri = uploaded ?? choices.find(choice => choice.seed === seed)?.dataUri;
 	const chosen = [departmentId, courseId, name.trim() || null][step];
 	const copy = COPY[step] ?? COPY[2]!;
@@ -216,7 +210,6 @@ export const LaRotaia: Story = {
 	),
 };
 
-/** Every step reached, so all of them are clickable except the one you are on. */
 export const LaRotaiaCliccabile: Story = {
 	name: "La rotaia, cliccabile",
 	render: () => {
@@ -266,8 +259,7 @@ const ENROLLMENT = {
 	startYear: null,
 };
 
-/** The longest name in the catalogue — 70 characters, against 28 on average.
- *  The lab judges the surfaces on the worst case, not on "Informatica". */
+/** The longest name in the catalogue, 70 characters. */
 const LONG_ENROLLMENT = {
 	...ENROLLMENT,
 	courseId: "83-313",
@@ -278,8 +270,7 @@ const LONG_ENROLLMENT = {
 	departmentCode: "DESU",
 };
 
-/** The dashboard nudge, which is what reaches accounts made before the wizard.
- *  It sits beside the profile in the hero, so it is shown at that width. */
+/** The dashboard prompt for accounts made before the wizard, at its width in the hero. */
 export const IlPromemoria: Story = {
 	name: "Il promemoria in dashboard",
 	render: () => (
@@ -299,8 +290,7 @@ export const IlCorsoInDashboard: Story = {
 	),
 };
 
-/** The 70-character worst case in the catalogue, which is where the two lines
- *  and the tooltip earn their keep. Hover the name. */
+/** The 70-character worst case. Hover the name for the tooltip. */
 export const IlCorsoPiuLungo: Story = {
 	name: "Il corso dal nome piu lungo",
 	render: () => (
@@ -334,7 +324,7 @@ export const InImpostazioniVuoto: Story = {
 	),
 };
 
-/** The avatar doubles as the way to change it, on the dashboard and in settings. */
+/** The avatar is also the control that changes it, on the dashboard and in settings. */
 export const IlCambioAvatar: Story = {
 	name: "Il cambio avatar, dalla dashboard",
 	render: () => (

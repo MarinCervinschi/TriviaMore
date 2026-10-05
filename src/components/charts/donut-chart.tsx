@@ -18,43 +18,28 @@ import { ChartDefs, seriesFill } from "./chart-defs";
 import { CHART_NEUTRAL, chartColor } from "./palette";
 
 export type DonutDatum = {
-	/** Stable identity for the slice — the colour follows this, never the rank. */
+	/** Stable identity; the slice's colour follows it. */
 	key: string;
 	label: string;
 	value: number;
-	/** Overrides the categorical slot, for a slice whose colour carries meaning. */
 	color?: string;
-	/** `hatched` marks a slice that is not a real category — the folded tail. */
 	fill?: "solid" | "gradient" | "hatched";
 };
 
 export type DonutChartProps = Omit<ChartCardProps, "children" | "footer"> & {
 	data: DonutDatum[];
-	/** The noun under the centre total: "corsi", "domande". */
 	unitLabel: string;
 	size?: number;
-	/** Hides the legend list under the ring. */
 	hideLegend?: boolean;
-	/**
-	 * `ring` is the thin donut with the total in the middle. `petals` is thicker and
-	 * cuts the slices apart with rounded ends — for a distribution, where the arcs
-	 * are the reading and the counts belong to the legend and the tooltip.
-	 */
 	variant?: "ring" | "petals";
-	/** A figure that belongs above the ring — a total, a headline count. */
 	header?: ReactNode;
-	/** What sits in the hole. Defaults to the total and the unit. */
+	/** Defaults to the total and the unit. */
 	center?: { value: ReactNode; caption?: string };
-	/** A caveat under the legend, behind a rule: how to read the slices. */
 	note?: ReactNode;
 	emptyMessage?: string;
 };
 
-/**
- * Parts of a whole, with the total in the middle. Past five slices the tail
- * should be folded into a single "Altro" datum by the caller — a sixth hue would
- * not survive the palette's separation checks.
- */
+/** Parts of a whole. Fold anything past five slices with `foldDonutTail` first. */
 export function DonutChart({
 	data,
 	unitLabel,
@@ -194,7 +179,6 @@ export function DonutChart({
 	);
 }
 
-/** Folds everything past `limit` into a single neutral "Altro" slice. */
 export function foldDonutTail(
 	data: DonutDatum[],
 	limit = 5,
@@ -210,7 +194,6 @@ export function foldDonutTail(
 			label,
 			value: tail.reduce((sum, entry) => sum + entry.value, 0),
 			color: CHART_NEUTRAL,
-			// Texture, because this slice is a bucket rather than a real category.
 			fill: "hatched",
 		},
 	];

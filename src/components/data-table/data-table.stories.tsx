@@ -98,10 +98,8 @@ function EmptyExample() {
 	);
 }
 
-/** Dense rows, an actions column and no row navigation — the admin layout. */
 export const Admin: Story = { render: () => <AdminExample /> };
 
-/** Roomy rows with a trailing arrow column that makes each row navigable. */
 export const Browse: Story = { render: () => <BrowseExample /> };
 
 export const Empty: Story = { render: () => <EmptyExample /> };
