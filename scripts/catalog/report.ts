@@ -46,7 +46,7 @@ function table(findings: Finding[], limit: number): string[] {
 	return lines;
 }
 
-/** What we hold, against the catalogue as a whole rather than against one year. */
+/** Coverage against every published year. */
 export function renderCoverage(coverage: Coverage, total: number): string {
 	const pct = (n: number) => (total ? `${((100 * n) / total).toFixed(1)}%` : "—");
 	return [
@@ -64,7 +64,7 @@ export function renderCoverage(coverage: Coverage, total: number): string {
 	].join("\n");
 }
 
-/** The drift against a single year, which is what a sync would have to reconcile. */
+/** Drift against each year on its own. */
 export function renderSummary(diffs: CatalogDiff[]): string {
 	const lines = [
 		"| Anno | Coppie in catalogo | Agganciate | Solo da noi | Solo in catalogo | Campi diversi |",

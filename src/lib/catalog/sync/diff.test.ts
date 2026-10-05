@@ -35,6 +35,7 @@ function source(over: Partial<SourceActivity> = {}): SourceActivity {
 		cfu: 6,
 		classYear: 1,
 		taf: "Base",
+		teachingPeriod: "Primo Ciclo Semestrale",
 		ssd: "FIS/01",
 		evaluation: "Voto Finale",
 		curriculum: "16-315-2",
@@ -103,8 +104,6 @@ describe("diffCatalog", () => {
 		expect(kinds(diff).sort()).toEqual(["cfu", "classYear"]);
 	});
 
-	// Deriving it from the TAF said 237 of our rows were wrong and they were not:
-	// a *Caratterizzante* sits happily in a group the student chooses from.
 	it("says nothing about the compulsory flag without the plan", () => {
 		const diff = diffCatalog([local({ mandatory: false })], [source()], AA);
 		expect(diff.findings).toEqual([]);
@@ -129,8 +128,6 @@ describe("diffCatalog", () => {
 		expect(diff.findings).toEqual([]);
 	});
 
-	// The catalogue disagrees with itself across curricula — the same class is
-	// worth 3 CFU in one plan and 9 in another. Ours matching any of them is fine.
 	it("accepts a value the catalogue carries in one of its curricula", () => {
 		const diff = diffCatalog(
 			[local({ cfu: 3 })],
@@ -176,7 +173,6 @@ describe("diffCatalog", () => {
 		const c = coverage(ours, theirs);
 		expect(c.known).toBe(2);
 		expect(c.unknown).toEqual([]);
-		// Each year accounts for one of the two: the spread, not a score.
 		expect(c.byYear).toEqual([
 			{ academicYear: "2025", matched: 1 },
 			{ academicYear: "2027", matched: 1 },

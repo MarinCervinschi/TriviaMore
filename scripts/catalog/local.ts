@@ -1,6 +1,4 @@
-// Our own catalogue, read through a connection that cannot write: the `READ ONLY`
-// transaction is what makes "this script only looks" something the database
-// enforces. An import, if it ever comes, needs its own command and connection.
+// Reads our catalogue inside a READ ONLY transaction, so this script cannot write.
 import { Pool } from "pg";
 
 import type { LocalClass } from "../../src/lib/catalog/sync/diff.ts";
