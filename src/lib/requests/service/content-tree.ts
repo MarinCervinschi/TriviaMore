@@ -24,10 +24,7 @@ export type RequestTargetTree = {
 	}[];
 }[];
 
-// Target picker for the request form. It used to run on the RLS client, where
-// `sections_select USING (can_access_section(id))` hid private sections; on a
-// service-role connection that filter has to be spelled out, or the picker would
-// list the name of every private section to every user.
+// No policy filters private sections here, so the picker has to.
 export async function getContentTree(
 	userId: string | null
 ): Promise<RequestTargetTree> {
@@ -69,8 +66,7 @@ export async function getContentTree(
 		.innerJoin(courses, eq(courses.departmentId, departments.id))
 		.innerJoin(courseClasses, eq(courseClasses.courseId, courses.id))
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
-		// Visibility filters the sections, not the classes above them: a class with
-		// no sections yet is exactly what a "propose a new section" request targets.
+		// Visibility filters sections only, because a class with none is what a new-section request targets.
 		.leftJoin(sections, and(eq(sections.classId, classes.id), visibleSection))
 		.orderBy(
 			asc(departments.position),
