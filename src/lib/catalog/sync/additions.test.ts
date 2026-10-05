@@ -19,13 +19,14 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		ssd: null,
 		evaluation: null,
 		curriculum: "A",
+		group: "OO",
 		...over,
 	};
 }
 
 const COURSES = [
-	{ id: "c1", code: "16-315" },
-	{ id: "c2", code: "20-312" },
+	{ id: "c1", code: "16-315", name: "Altro" },
+	{ id: "c2", code: "20-312", name: "Altro" },
 ];
 
 function attributes(
@@ -99,7 +100,13 @@ describe("planCatalogueAdditions", () => {
 			{
 				courses: COURSES,
 				courseClasses: [
-					{ courseId: "c2", classId: "k9", courseCode: "20-312", code: "TIROC-1" },
+					{
+						courseId: "c2",
+						classId: "k9",
+						courseCode: "20-312",
+						code: "TIROC-1",
+						name: "Altro",
+					},
 				],
 			},
 			{
@@ -116,11 +123,17 @@ describe("planCatalogueAdditions", () => {
 			{
 				courses: COURSES,
 				courseClasses: [
-					{ courseId: "c1", classId: "k1", courseCode: "16-315", code: "MN1-1351" },
+					{
+						courseId: "c1",
+						classId: "k1",
+						courseCode: "16-315",
+						code: "MN1-1351",
+						name: "Altro",
+					},
 				],
 			},
 			{
-				activities: [activity({ code: "MN1-1351" })],
+				activities: [activity({ code: "MN1-1351", name: "Altro" })],
 				mandatory: new Map(),
 				attributes: new Map([attributes("MN1-1351", "Voto Finale")]),
 			}
@@ -145,8 +158,44 @@ describe("planCatalogueAdditions", () => {
 			{
 				courses: COURSES,
 				courseClasses: [
-					{ courseId: "c1", classId: "k9", courseCode: "16-315", code: "OLD-1" },
-					{ courseId: "c2", classId: "k9", courseCode: "20-312", code: "TIROC-1" },
+					{
+						courseId: "c1",
+						classId: "k9",
+						courseCode: "16-315",
+						code: "OLD-1",
+						name: "Altro",
+					},
+					{
+						courseId: "c2",
+						classId: "k9",
+						courseCode: "20-312",
+						code: "TIROC-1",
+						name: "Altro",
+					},
+				],
+			},
+			{
+				activities: [activity()],
+				mandatory: new Map(),
+				attributes: new Map([attributes("TIROC-1", "Giudizio Finale")]),
+			}
+		);
+		expect(plan.additions).toEqual([]);
+		expect(plan.skipped.alreadyLinked).toBe(1);
+	});
+
+	it("does not add a class this course already holds under the same name", () => {
+		const plan = planCatalogueAdditions(
+			{
+				courses: COURSES,
+				courseClasses: [
+					{
+						courseId: "c1",
+						classId: "k9",
+						courseCode: "16-315",
+						code: "OLD-1",
+						name: "Tirocinio",
+					},
 				],
 			},
 			{

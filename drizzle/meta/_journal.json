@@ -267,6 +267,20 @@
       "when": 1791222299353,
       "tag": "0037_course_class_is_teaching",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791229736996,
+      "tag": "0038_course_plans",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791229738268,
+      "tag": "0039_course_plans_triggers",
+      "breakpoints": true
     }
   ]
 }

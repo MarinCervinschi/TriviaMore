@@ -21,6 +21,8 @@ export * from "./entities/catalog/department-locations";
 export * from "./entities/catalog/courses";
 export * from "./entities/catalog/classes";
 export * from "./entities/catalog/course-classes";
+export * from "./entities/catalog/course-curricula";
+export * from "./entities/catalog/course-plans";
 export * from "./entities/catalog/sections";
 export * from "./entities/catalog/questions";
 export * from "./entities/catalog/relations";

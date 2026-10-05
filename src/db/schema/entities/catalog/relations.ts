@@ -11,6 +11,8 @@ import { quizQuestions } from "../quiz/quiz-questions";
 import { quizzes } from "../quiz/quizzes";
 import { classes } from "./classes";
 import { courseClasses } from "./course-classes";
+import { courseCurricula } from "./course-curricula";
+import { coursePlans } from "./course-plans";
 import { courses } from "./courses";
 import { departmentLocations } from "./department-locations";
 import { departments } from "./departments";
@@ -80,4 +82,21 @@ export const questionsRelations = relations(questions, ({ one, many }) => ({
 	bookmarks: many(bookmarks),
 	quizQuestions: many(quizQuestions),
 	answerAttempts: many(answerAttempts),
+}));
+
+export const coursePlansRelations = relations(coursePlans, ({ one }) => ({
+	course: one(courses, { fields: [coursePlans.courseId], references: [courses.id] }),
+	class: one(classes, { fields: [coursePlans.classId], references: [classes.id] }),
+	curriculum: one(courseCurricula, {
+		fields: [coursePlans.curriculumId],
+		references: [courseCurricula.id],
+	}),
+}));
+
+export const courseCurriculaRelations = relations(courseCurricula, ({ one, many }) => ({
+	course: one(courses, {
+		fields: [courseCurricula.courseId],
+		references: [courses.id],
+	}),
+	plans: many(coursePlans),
 }));
