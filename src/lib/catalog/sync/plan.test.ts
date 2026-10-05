@@ -26,6 +26,7 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		evaluation: null,
 		curriculum: "A",
 		group: "OO",
+		catalogueUrl: null,
 		...over,
 	};
 }
@@ -41,6 +42,7 @@ function courseClass(over: Partial<LocalCourseClass> = {}): LocalCourseClass {
 		taf: null,
 		teachingPeriod: null,
 		isTeaching: true,
+		catalogueUrl: null,
 		...over,
 	};
 }
@@ -131,6 +133,39 @@ describe("planCatalogueUpdates", () => {
 			taf: "Base",
 			teachingPeriod: "Primo Ciclo Semestrale",
 		});
+	});
+
+	it("fills a missing catalogue page with the first curriculum's", () => {
+		const plan = planCatalogueUpdates(
+			{ ...EMPTY_LOCAL, courseClasses: [courseClass()] },
+			{
+				...EMPTY_SOURCE,
+				activities: [
+					activity({
+						curriculum: "16-315-2",
+						catalogueUrl: "https://x/af/2026?pds=16-315-2",
+					}),
+					activity({
+						curriculum: "16-315-1",
+						catalogueUrl: "https://x/af/2026?pds=16-315-1",
+					}),
+				],
+			}
+		);
+		expect(plan.courseClasses[0]!.set.catalogueUrl).toBe(
+			"https://x/af/2026?pds=16-315-1"
+		);
+	});
+
+	it("keeps a catalogue page already stored", () => {
+		const plan = planCatalogueUpdates(
+			{
+				...EMPTY_LOCAL,
+				courseClasses: [courseClass({ catalogueUrl: "https://x/af/2025" })],
+			},
+			{ ...EMPTY_SOURCE, activities: [activity({ catalogueUrl: "https://x/af/2026" })] }
+		);
+		expect(plan.courseClasses[0]?.set.catalogueUrl).toBeUndefined();
 	});
 
 	it("matches a stored code against a source one written with spaces", () => {
