@@ -1,5 +1,4 @@
-// Compares our catalogue against the one the university publishes, and says what
-// moved. Read-only on both sides: it writes a report and nothing else.
+// Compares our catalogue with the official one and writes a report. Read-only.
 //
 //   pnpm catalog:diff                        confronta contro l'anno corrente
 //   pnpm catalog:diff --anno 2024            un altro anno
@@ -47,7 +46,6 @@ if (unknownYear) {
 
 const years: SourceYear[] = [];
 for (const year of wanted) {
-	// Only on a terminal: piped into a file, a carriage return is just noise.
 	const fetched = await fetchYear(year, (done, total) => {
 		if (process.stdout.isTTY) {
 			process.stdout.write(`\rScarico i piani ${year}… ${done}/${total} corsi`);
@@ -69,8 +67,6 @@ const cover = coverage(
 	years.flatMap(year => year.activities)
 );
 
-// A guard, not a section of the report — and expect it to fire on a past year:
-// the catalogue renumbers its course codes, so ours only match the current one.
 const known = new Set(detail?.courses.map(course => course.code) ?? []);
 const unknownCourses = detail
 	? local.courses.filter(course => !known.has(course.code))

@@ -32,6 +32,7 @@
 		"smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
 		"smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts",
 		"catalog:diff": "infisical run --recursive -- tsx scripts/catalog/diff.ts",
+		"catalog:sync": "infisical run --recursive -- tsx scripts/catalog/sync.ts",
 		"achievements:replay": "infisical run --recursive -- tsx scripts/achievements/replay.ts",
 		"achievements:backfill": "infisical run --recursive -- tsx scripts/achievements/backfill-rollups.ts",
 		"achievements:reconcile": "infisical run --recursive -- tsx scripts/achievements/reconcile.ts"

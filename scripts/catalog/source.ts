@@ -1,34 +1,34 @@
-// The official catalogue, as the university's CINECA instance publishes it.
-// Public, unauthenticated, no key.
-//
-// Composition comes from the plan endpoint, one call per course per year.
-// `POST /ricercaInsegnamenti` returns every year at once and is tempting, but it
-// carries only what is offered that year — a third of the plan on the health
-// professions — and reading composition from it makes our catalogue look broken.
+// Composition comes from the per-course plan, because ricercaInsegnamenti holds only what is offered in a year.
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
+import { normaliseCatalogueCode } from "../../src/lib/catalog/codes.ts";
 import type {
 	MandatoryIndex,
 	SourceActivity,
 } from "../../src/lib/catalog/sync/diff.ts";
 import { pairKey } from "../../src/lib/catalog/sync/diff.ts";
 
-const BASE = "https://unimore.coursecatalogue.cineca.it/api/v1";
+const SITE = "https://unimore.coursecatalogue.cineca.it";
+const BASE = `${SITE}/api/v1`;
 const CACHE_DIR = join(process.cwd(), ".cache", "catalog");
 
-/** The group a plan files its compulsory activities under; the rest are choices. */
+/** The plan group code for «Obbligatori». */
 const COMPULSORY_GROUP = "OO";
 
 export type SourceCourse = {
 	academicYear: string;
-	/** The catalogue's own id, which the plan endpoint is addressed by. */
+	/** The catalogue's internal id, which addresses the plan endpoint. */
 	id: string;
 	code: string;
 	name: string;
 	codicione: string | null;
 	cfu: number | null;
 	courseType: string | null;
+	degreeClass: string | null;
+	teachingLanguage: string | null;
+	restrictedAccess: boolean | null;
+	url: string;
 };
 
 export type SourceYear = {
@@ -58,8 +58,7 @@ async function cached<T>(name: string, load: () => Promise<T>): Promise<T> {
 async function get(path: string): Promise<unknown> {
 	const response = await fetch(`${BASE}/${path}`);
 	const body = await response.text();
-	// An unrouted path falls through to the SPA and answers HTML with a 200, so
-	// the status alone proves nothing.
+	// An unrouted path answers the SPA's HTML with a 200.
 	if (body.startsWith("<")) throw new Error(`Nessun endpoint: ${path}`);
 	return JSON.parse(body) as unknown;
 }
@@ -81,6 +80,9 @@ type RawCourse = {
 	codicione?: string;
 	crediti?: number | null;
 	tipo_corso_cod?: string;
+	classe_cod?: string;
+	lingua_cod?: string;
+	tipoAccesso?: string;
 };
 
 export async function fetchCourses(year: string): Promise<SourceCourse[]> {
@@ -99,6 +101,16 @@ export async function fetchCourses(year: string): Promise<SourceCourse[]> {
 					codicione: text(course.codicione),
 					cfu: course.crediti ?? null,
 					courseType: text(course.tipo_corso_cod),
+					degreeClass: text(course.classe_cod),
+					teachingLanguage: text(course.lingua_cod),
+					// `P` is accesso programmato, a capped intake.
+					restrictedAccess:
+						course.tipoAccesso === "P"
+							? true
+							: course.tipoAccesso === "L"
+								? false
+								: null,
+					url: `${SITE}/corsi/${course.aa ?? year}/${course.cod}`,
 				}))
 			)
 		)
@@ -117,6 +129,7 @@ type RawPlan = {
 					des_it?: string;
 					crediti?: number | null;
 					tafDes_it?: string;
+					periodo_didattico_it?: string;
 				}[];
 			}[];
 		}[];
@@ -134,7 +147,7 @@ async function fetchPlan(
 		)) as RawPlan | RawPlan[];
 		plan = Array.isArray(raw) ? raw[0] : raw;
 	} catch {
-		// Not published that year: say nothing about it rather than report it gone.
+		// A course not published that year has no plan.
 		return { activities: [], mandatory: [] };
 	}
 
@@ -151,17 +164,18 @@ async function fetchPlan(
 						courseCode: course.code,
 						courseName: course.name,
 						codicione: course.codicione,
-						code: activity.adCod,
+						code: normaliseCatalogueCode(activity.adCod),
 						name: activity.des_it ?? "",
 						cfu: activity.crediti ?? null,
 						classYear: planYear.anno ?? null,
 						taf: text(activity.tafDes_it),
+						teachingPeriod: text(activity.periodo_didattico_it),
 						ssd: null,
 						evaluation: null,
 						curriculum: text(path.pdsCod),
 					});
 					mandatory.push([
-						pairKey(course.code, activity.adCod),
+						pairKey(course.code, normaliseCatalogueCode(activity.adCod)),
 						group.cod === COMPULSORY_GROUP,
 					]);
 				}
@@ -172,7 +186,6 @@ async function fetchPlan(
 	return { activities, mandatory };
 }
 
-/** One academic year of the catalogue, plan by plan. */
 export async function fetchYear(
 	year: string,
 	onProgress?: (done: number, total: number) => void
@@ -201,4 +214,66 @@ export async function fetchYear(
 		activities,
 		mandatory: new Map([...seen].map(([k, values]) => [k, [...values]])),
 	};
+}
+
+export type ActivityAttributes = {
+	academicYear: string;
+	evaluation: string | null;
+	ssd: string | null;
+};
+
+const NO_SSD = "NN";
+
+/** `valutazione` and `ssd` per pair, read from every year because later plan years are published later. */
+export async function fetchActivityAttributes(): Promise<
+	Map<string, ActivityAttributes[]>
+> {
+	type Raw = {
+		aa?: string;
+		cdsCod?: string;
+		adCod?: string;
+		isMod?: boolean;
+		valutazione_it?: string;
+		ssd?: string;
+	};
+
+	const rows = await cached("attributes", async () => {
+		const response = await fetch(`${BASE}/ricercaInsegnamenti`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			// The server ignores the year and returns all of them.
+			body: JSON.stringify({ anno: "2025" }),
+		});
+		const raw = (await response.json()) as Raw[];
+		return raw
+			.filter(row => !row.isMod && row.cdsCod && row.adCod)
+			.map(row => ({
+				key: pairKey(row.cdsCod!, normaliseCatalogueCode(row.adCod!)),
+				academicYear: row.aa ?? "",
+				evaluation: text(row.valutazione_it),
+				ssd: text(row.ssd) === NO_SSD ? null : text(row.ssd),
+			}));
+	});
+
+	const index = new Map<string, ActivityAttributes[]>();
+	for (const row of rows) {
+		const list = index.get(row.key) ?? [];
+		list.push({
+			academicYear: row.academicYear,
+			evaluation: row.evaluation,
+			ssd: row.ssd,
+		});
+		index.set(row.key, list);
+	}
+	return index;
+}
+
+export async function fetchDepartments(): Promise<{ code: string; name: string }[]> {
+	const rows = (await cached("departments", () => get("ricercaDipartimenti"))) as {
+		dip_cod?: string;
+		dip_des_it?: string;
+	}[];
+	return rows
+		.filter(row => row.dip_cod && row.dip_des_it)
+		.map(row => ({ code: row.dip_cod!, name: row.dip_des_it! }));
 }

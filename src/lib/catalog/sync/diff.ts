@@ -1,9 +1,3 @@
-/**
- * Compares our catalogue against the one the university publishes. Pure — the
- * fetching, the database read and the printing live in `scripts/catalog/`.
- */
-
-/** One activity of one course plan, projected from the official catalogue. */
 export type SourceActivity = {
 	academicYear: string;
 	courseCode: string;
@@ -14,6 +8,7 @@ export type SourceActivity = {
 	cfu: number | null;
 	classYear: number | null;
 	taf: string | null;
+	teachingPeriod: string | null;
 	ssd: string | null;
 	evaluation: string | null;
 	curriculum: string | null;
@@ -61,11 +56,7 @@ export type DiffSummary = {
 
 export type CatalogDiff = { summary: DiffSummary; findings: Finding[] };
 
-/**
- * The compulsory flags the plans file a pair under — plural, because a class can
- * be compulsory in one curriculum and optional in another. Not derivable from the
- * TAF, so without this the comparison is skipped rather than guessed.
- */
+/** Every compulsory flag the plans give a pair; a class can be compulsory in one curriculum and optional in another. */
 export type MandatoryIndex = Map<string, boolean[]>;
 
 export const pairKey = (courseCode: string, code: string) =>
@@ -82,10 +73,6 @@ function normaliseName(value: string): string {
 		.toLowerCase();
 }
 
-/**
- * A pair appears once per curriculum and the curricula disagree — 3 CFU in one,
- * 9 in another — so a field is reported only when our value matches none of them.
- */
 function collapse(activities: SourceActivity[]) {
 	const groups = new Map<string, SourceActivity[]>();
 	for (const activity of activities) {
@@ -101,6 +88,7 @@ function describe(values: Set<string | number | boolean | null>): string {
 	return [...values].map(value => (value === null ? "—" : String(value))).join(" | ");
 }
 
+/** The source's values when ours is none of them, else `null`. */
 function compareField<T extends string | number | boolean | null>(
 	ours: T,
 	theirs: T[],
@@ -210,16 +198,11 @@ export function diffCatalog(
 export type Coverage = {
 	/** Our rows the catalogue knows in at least one year. */
 	known: number;
-	/** Our rows no published year carries — the ones a sync has to decide about. */
 	unknown: LocalClass[];
-	/** How many of our rows each year accounts for; they overlap on purpose. */
+	/** Rows matched per year; a row can match several years, so these do not sum. */
 	byYear: { academicYear: string; matched: number }[];
 };
 
-/**
- * Our catalogue has no year of its own, so what we hold is measured against *any*
- * published year. The per-year figures are the spread, not a score.
- */
 export function coverage(local: LocalClass[], source: SourceActivity[]): Coverage {
 	const years = [...new Set(source.map(activity => activity.academicYear))].sort();
 	const byYear = new Map<string, Set<string>>(years.map(year => [year, new Set()]));
