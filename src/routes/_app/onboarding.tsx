@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { LayersIcon } from "@solar-icons/react/linear/layers";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
@@ -14,13 +15,16 @@ import { OnboardingRecap } from "@/components/onboarding/onboarding-recap";
 import type { OnboardingStep } from "@/components/onboarding/onboarding-steps";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { ProfileStep } from "@/components/onboarding/profile-step";
+import { StartYearSelect } from "@/components/onboarding/start-year-select";
 import { OnboardingSkeleton } from "@/components/skeletons";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { requireAuthFn } from "@/lib/auth/api";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
 import { avatarQueries } from "@/lib/avatar/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
+import { academicYearOf, formatAcademicYear } from "@/lib/catalog/academic-year";
 import { useSetEnrollment } from "@/lib/crm/mutations";
 import { requireLegalAcceptanceFn } from "@/lib/legal/api";
 import { seoHead } from "@/lib/seo";
@@ -68,6 +72,7 @@ function OnboardingPage() {
 	const [furthest, setFurthest] = useState(0);
 	const [departmentId, setDepartmentId] = useState<string | null>(null);
 	const [courseId, setCourseId] = useState<string | null>(null);
+	const [startYear, setStartYear] = useState(() => academicYearOf(new Date()));
 	const [name, setName] = useState(user?.name ?? "");
 	const [page, setPage] = useState(0);
 	const [seed, setSeed] = useState<string | null>(null);
@@ -112,7 +117,7 @@ function OnboardingPage() {
 		if (!courseId) return;
 
 		try {
-			await setEnrollment.mutateAsync({ courseId });
+			await setEnrollment.mutateAsync({ courseId, startYear });
 			await updateProfile.mutateAsync({ name: name.trim() });
 			if (seed) await setGeneratedAvatar.mutateAsync(seed);
 		} catch {
@@ -159,7 +164,18 @@ function OnboardingPage() {
 					)}
 
 					{step === 1 && (
-						<CoursePicker options={courses} value={courseId} onSelect={setCourseId} />
+						<div className="flex flex-col gap-4">
+							<CoursePicker options={courses} value={courseId} onSelect={setCourseId} />
+							<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+								<Label htmlFor="start-year">Anno di immatricolazione</Label>
+								<StartYearSelect
+									id="start-year"
+									value={startYear}
+									onChange={setStartYear}
+									className="w-36"
+								/>
+							</div>
+						</div>
 					)}
 
 					{step >= 2 && (
@@ -180,6 +196,12 @@ function OnboardingPage() {
 										label: "Corso",
 										icon: DiplomaIcon,
 										value: courses.find(item => item.id === courseId)?.name ?? null,
+										onEdit: () => go(1),
+									},
+									{
+										label: "Immatricolazione",
+										icon: CalendarIcon,
+										value: formatAcademicYear(startYear),
 										onEdit: () => go(1),
 									},
 									{
