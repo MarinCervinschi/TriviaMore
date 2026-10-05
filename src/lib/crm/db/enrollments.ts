@@ -5,8 +5,6 @@ import { enrollments } from "@/db/schema";
 
 import type { Enrollment } from "../types";
 
-// Shared by the guard and the service. Only the row: the joined view model the
-// UI reads is built in the service.
 export async function findCurrentEnrollment(
 	db: DbOrTx,
 	userId: string
@@ -45,8 +43,7 @@ export async function updateEnrollmentDetails(
 	id: string,
 	values: { curriculum?: string | null; startYear?: number | null }
 ): Promise<void> {
-	// The wizard sends neither field, so the patch is routinely empty — and
-	// Drizzle throws "No values to set" rather than doing nothing.
+	// The patch is often empty, and Drizzle throws "No values to set" on an empty `.set()`.
 	const patch = Object.fromEntries(
 		Object.entries(values).filter(([, value]) => value !== undefined)
 	);
