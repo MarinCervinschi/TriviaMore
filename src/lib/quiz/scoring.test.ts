@@ -44,7 +44,6 @@ describe("calculateAnswerScore", () => {
 	});
 
 	it("does not count a superset as an exact match", () => {
-		// All correct answers given, but with an extra wrong one: not exact.
 		const result = calculateAnswerScore(["a", "x"], ["a"], mode());
 		expect(result.isCorrect).toBe(false);
 	});

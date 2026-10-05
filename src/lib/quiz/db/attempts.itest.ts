@@ -158,8 +158,6 @@ describe("findOpenAttemptForUser", () => {
 			expect(await findOpenAttemptForUser(tx, scope.owner)).toBeUndefined();
 		}));
 
-	// The inner join is what does this: deleting the quiz nulls `quiz_id`, and an
-	// attempt with nothing to resume must not stand in the way of a new quiz.
 	it("ignores an attempt whose quiz is gone", () =>
 		withRollback(async tx => {
 			const scope = await seedQuizScope(tx);
@@ -252,8 +250,6 @@ describe("deleteStaleOpenAttempts", () => {
 			expect(await survivors(tx, [fresh])).toEqual([fresh]);
 		}));
 
-	// The reason the horizon reads `last_seen_at` and not `started_at`: a quiz
-	// picked up again every day is in use, however long ago it was begun.
 	it("leaves an old attempt alone when it was just resumed", () =>
 		withRollback(async tx => {
 			const scope = await seedQuizScope(tx);
@@ -267,8 +263,6 @@ describe("deleteStaleOpenAttempts", () => {
 			expect(await survivors(tx, [resumed])).toEqual([resumed]);
 		}));
 
-	// A cutoff is not an authorization check: nothing but the user id keeps the
-	// reap off another student's unfinished quiz.
 	it("never touches another user's stale attempt", () =>
 		withRollback(async tx => {
 			const scope = await seedQuizScope(tx);

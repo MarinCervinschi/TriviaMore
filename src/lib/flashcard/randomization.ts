@@ -1,5 +1,4 @@
-// Linear congruential generator: the selection has to be reproducible from the
-// seed carried in the session id, so Math.random() is not an option.
+// Seeded, because the selection is rebuilt from the seed in the session id.
 function seededRandom(seed: number): () => number {
 	let state = seed;
 	return () => {

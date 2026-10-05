@@ -9,12 +9,7 @@ import { ABANDONED_ATTEMPT_TTL_HOURS } from "../constants";
 
 const ABANDONED_BEFORE = sql`now() - make_interval(hours => ${ABANDONED_ATTEMPT_TTL_HOURS}::int)`;
 
-/**
- * Whether an insert lost the race for this user's one open attempt. The partial
- * unique index is what holds that invariant — a read-then-write check in the
- * service cannot — and drizzle wraps the driver error, so the SQLSTATE is on the
- * cause rather than on what was thrown.
- */
+/** Whether an insert lost the race for the user's one open attempt; the SQLSTATE is on the cause. */
 export function isOpenAttemptViolation(error: unknown): boolean {
 	for (let cause: unknown = error, depth = 0; cause && depth < 4; depth++) {
 		if (typeof cause !== "object") return false;
@@ -36,12 +31,7 @@ export async function insertAttempt(
 	return attempt;
 }
 
-/**
- * This user's open attempt on this quiz, if any — and, in the same round trip, the
- * proof that they are still using it. Opening the quiz page is what keeps the
- * horizon from collecting work in progress: `started_at` cannot say that, since an
- * attempt resumed every day for a week still started a week ago.
- */
+/** The open attempt, marked as seen in the same round trip. */
 export async function touchOpenAttempt(db: DbOrTx, userId: string, quizId: string) {
 	const [attempt] = await db
 		.update(quizAttempts)
@@ -57,13 +47,7 @@ export async function touchOpenAttempt(db: DbOrTx, userId: string, quizId: strin
 	return attempt?.id;
 }
 
-/**
- * The one quiz this user has left unfinished, if any. Joining `quizzes` drops an
- * attempt whose section was deleted: its `quiz_id` is null, so there is nothing to
- * resume and nothing to block a new quiz with — the horizon collects it instead.
- * `isStale` is decided here rather than by the caller so that the row and the
- * reaper agree on one clock.
- */
+/** The user's unfinished attempt; one whose quiz was deleted is left out. */
 export async function findOpenAttemptForUser(db: DbOrTx, userId: string) {
 	const [attempt] = await db
 		.select({
@@ -149,10 +133,6 @@ export async function deleteAttempt(db: DbOrTx, attemptId: string) {
 	await db.delete(quizAttempts).where(eq(quizAttempts.id, attemptId));
 }
 
-/**
- * Drops this user's unfinished attempts left open past the horizon and reports the
- * quizzes they held, so the caller can collect the ones nobody else attempted.
- */
 export async function deleteStaleOpenAttempts(
 	db: DbOrTx,
 	userId: string
@@ -217,13 +197,7 @@ export async function findAnswers(db: DbOrTx, attemptId: string) {
 	return rows.map(row => ({ ...row, questionId: row.questionId! }));
 }
 
-// The user dashboard's "recent activity". Lives here because it reads quiz
-// tables, even though the user domain is what renders it.
-/**
- * Every completed attempt, newest first, optionally scoped and capped. The joins
- * are left joins on purpose: an attempt whose section was deleted still happened,
- * and the row has to survive it — the callers render it as "sezione eliminata".
- */
+/** Completed attempts, newest first; left joins keep an attempt whose section was deleted. */
 export async function findCompletedAttemptHistory(
 	db: DbOrTx,
 	userId: string,
@@ -248,8 +222,7 @@ export async function findCompletedAttemptHistory(
 			courseCode: primaryCourse.courseCode,
 			departmentCode: primaryCourse.departmentCode,
 			id: quizAttempts.id,
-			// Null once the quiz is gone, which is what makes the result page
-			// unreachable — the row survives, its result does not.
+			// Null once the quiz is gone.
 			quizId: quizAttempts.quizId,
 			score: quizAttempts.score,
 			timeSpent: quizAttempts.timeSpent,
@@ -305,12 +278,7 @@ export async function findAttemptWithChain(db: DbOrTx, attemptId: string) {
 	return attempt;
 }
 
-/**
- * Every completed attempt this user made on one section, in one mode, oldest
- * first — with the answers each one recorded, which is what turns a duration into
- * a pace. The mode is part of the filter on purpose: a timed simulation with a
- * penalty and an untimed study run are not the same measurement.
- */
+/** Oldest first, filtered by mode because a timed simulation and a study run measure different things. */
 export async function findSectionAttempts(
 	db: DbOrTx,
 	params: {
