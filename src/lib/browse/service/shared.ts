@@ -1,9 +1,10 @@
-import { and, count, eq, ilike, inArray, ne } from "drizzle-orm";
+import { and, count, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
 import { accessibleSectionsSql, readsPrivateSections } from "@/lib/auth/checks";
+import { normaliseCatalogueCode } from "@/lib/catalog/codes";
 import {
 	classColumns,
 	courseClassColumns,
@@ -26,10 +27,7 @@ export function toFtsQuery(input: string): string {
 		.join(" & ");
 }
 
-/**
- * The sections of each class that this viewer could actually open — the figure a
- * catalogue list shows, which has to agree with what the class page then lists.
- */
+/** Sections of each class this viewer could open, keyed by class id. */
 export async function countVisibleSectionsByClass(
 	db: DbOrTx,
 	classIds: string[],
@@ -105,7 +103,8 @@ export async function resolveClassByCodes(
 		.where(
 			and(
 				eq(courseClasses.courseId, parent.course.id),
-				ilike(courseClasses.code, classCode)
+				// `ilike` reads `_` as a wildcard, and 418 codes contain one.
+				sql`lower(${courseClasses.code}) = ${normaliseCatalogueCode(classCode).toLowerCase()}`
 			)
 		)
 		.limit(1);

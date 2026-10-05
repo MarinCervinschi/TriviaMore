@@ -253,6 +253,13 @@
       "when": 1791220038614,
       "tag": "0035_catalogue_source_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1791220054270,
+      "tag": "0036_normalise_class_codes",
+      "breakpoints": true
     }
   ]
 }
