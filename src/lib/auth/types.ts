@@ -5,8 +5,7 @@ import type { profiles } from "@/db/schema";
 export type Profile = typeof profiles.$inferSelect;
 export type UserRole = Profile["role"];
 
-// The subset of the profile every authenticated surface needs. `email` is
-// nullable on the row but always set for a user who can log in.
+// `email` is nullable on the row but always set for a user who can log in.
 export type AuthUser = {
 	id: string;
 	email: string;
