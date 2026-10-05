@@ -2,11 +2,7 @@ import { type SQL, sql } from "drizzle-orm";
 
 import type { MasteryScope } from "../schemas";
 
-/**
- * Narrows a snapshot `section_id` column to a content scope, via the snapshot →
- * live chain (a section never moves class/course, so this stays stable). A
- * course means the sections whose class's *primary* course is that course.
- */
+/** A course matches the sections whose class's primary course it is. */
 export function sectionScopeSql(scope: MasteryScope | undefined, col: SQL): SQL {
 	if (!scope) return sql``;
 	if (scope.level === "section") return sql` and ${col} = ${scope.id}`;

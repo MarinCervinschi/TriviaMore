@@ -15,7 +15,6 @@ export type AnalyticsWindowSearch = {
 	modalita?: ExplorerMode;
 };
 
-/** The window as page state: in the URL, so the route can narrow the mastery query on it. */
 export function useAnalyticsWindow(search: AnalyticsWindowSearch, from: string) {
 	const navigate = useNavigate({ from: from as never });
 	const period = search.periodo ?? "year";

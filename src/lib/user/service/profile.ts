@@ -11,9 +11,7 @@ import { getRecentClasses } from "./classes";
 
 const RECENT_ATTEMPTS_LIMIT = 5;
 
-// One query for the dashboard counters. `average_score` is the mean of the
-// per-section averages, ignoring the zeros a section gets before its first
-// completed run.
+// `average_score` is the mean of the per-section averages, ignoring sections with no completed run.
 async function getStats(userId: string): Promise<UserStats> {
 	const [row] = await getDb()
 		.select({
@@ -73,11 +71,7 @@ export async function updateProfile(
 	userId: string,
 	input: { name: string; image?: string | null }
 ) {
-	// `set_profiles_updated_at` maintains updated_at.
-	//
-	// An absent `image` leaves the stored one alone; only an explicit null clears
-	// it. Sending `?? null` here wiped the avatar of anyone who saved just a name,
-	// which is exactly what the onboarding does.
+	// An absent `image` leaves the stored one alone; only an explicit null clears it.
 	await getDb()
 		.update(profiles)
 		.set({
@@ -86,8 +80,7 @@ export async function updateProfile(
 		})
 		.where(eq(profiles.id, userId));
 
-	// The name is duplicated into the auth user's metadata, which is what OAuth
-	// and the email templates read.
+	// Duplicated into the auth user's metadata, which OAuth and the email templates read.
 	await createServerSupabaseClient().auth.updateUser({
 		data: { name: input.name },
 	});

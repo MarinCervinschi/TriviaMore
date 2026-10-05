@@ -2,8 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { computeStudyRhythm } from "./rhythm";
 
-// Local Aug 24 2026, noon — dates are built from local components too, so the
-// round-trip through ISO is timezone-stable.
+// Built from local components, so the ISO round-trip is timezone-stable.
 const TODAY = new Date(2026, 7, 24, 12, 0, 0);
 
 function iso(day: number, hour = 12): string {

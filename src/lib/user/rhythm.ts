@@ -7,7 +7,7 @@ export type ScoreConsistency = {
 	/** Population standard deviation of the recent scores. */
 	stdev: number;
 	count: number;
-	/** Fewer than three samples — not a confident signal; say so in the UI. */
+	/** Fewer than three samples. */
 	thin: boolean;
 };
 
@@ -35,12 +35,6 @@ function consistencyOf(scores: number[]): ScoreConsistency {
 	return { mean, stdev: Math.sqrt(variance), count, thin: count < 3 };
 }
 
-/**
- * Study rhythm from the completed-attempt timestamps: streaks and active days
- * (as whole local calendar days), the hour-of-day distribution, and the score
- * consistency over the most recent runs. Pure — `today` is injected so it is
- * deterministic in tests and stories.
- */
 export function computeStudyRhythm(
 	attempts: RhythmAttempt[],
 	today: Date,
@@ -56,9 +50,7 @@ export function computeStudyRhythm(
 
 	const todayIndex = localDayIndex(today);
 
-	// A streak is unbroken while today is still open: anchor it to today if
-	// active, otherwise to yesterday, so a day without a quiz yet doesn't read
-	// as a broken streak until it actually ends.
+	// Anchored to yesterday when today has no quiz yet, so an open day does not break the streak.
 	let currentStreak = 0;
 	const anchor = dayIndices.has(todayIndex)
 		? todayIndex
