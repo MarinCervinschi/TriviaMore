@@ -7,6 +7,10 @@ export const courseCodesSchema = z.object({
 	courseCode: z.string().min(1),
 });
 
+export const courseViewSchema = courseCodesSchema.extend({
+	cohort: z.number().int().optional(),
+});
+
 export const classCodesSchema = courseCodesSchema.extend({
 	classCode: z.string().min(1),
 });

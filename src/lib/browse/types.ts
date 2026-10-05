@@ -48,14 +48,6 @@ export type BrowseCourse = Course & {
 	classCount: number;
 };
 
-// A class seen from inside a course: junction fields merged into the class.
-// `position` drops out of the class side — in a course listing it always means
-// the position inside that course.
-export type BrowseClassInCourse = Omit<Class, "position"> &
-	CourseClassInfo & {
-		sectionCount: number;
-	};
-
 export type BrowseSection = Section & {
 	questionCount: number;
 	quizQuestionCount: number;
@@ -75,14 +67,34 @@ export type PlanActivity = {
 	name: string;
 	cfu: number | null;
 	classYear: number;
+	curricula: string[];
 };
+
+/** A class of a cohort's plan; `link` is the class code our pages use, null when we do not hold the class. */
+export type PlanClass = {
+	id: string;
+	code: string;
+	link: string | null;
+	name: string;
+	description: string | null;
+	cfu: number | null;
+	classYear: number;
+	sectionCount: number;
+	// Compulsory in every curriculum that lists the class.
+	mandatory: boolean;
+	curricula: { code: string; mandatory: boolean }[];
+};
+
+export type CourseCurriculum = { code: string; name: string };
 
 export type CourseWithClasses = Course & {
 	department: Department;
-	classes: BrowseClassInCourse[];
+	// The cohort whose plan the lists follow; null when the course has no plan.
+	cohort: number | null;
+	cohorts: number[];
+	curricula: CourseCurriculum[];
+	classes: PlanClass[];
 	activities: PlanActivity[];
-	// The academic year whose official offering the lists follow; null when the course has no plan for it.
-	offeringYear: number | null;
 };
 
 export type ClassWithSections = Class & {

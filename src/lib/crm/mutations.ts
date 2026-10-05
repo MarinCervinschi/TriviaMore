@@ -11,6 +11,8 @@ export function useSetEnrollment() {
 		mutationFn: (data: SetEnrollmentInput) => setEnrollmentFn({ data }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["crm"] });
+			// The course page opens on the student's own cohort.
+			queryClient.invalidateQueries({ queryKey: ["browse", "course"] });
 			toast.success("Corso di studi salvato");
 		},
 		onError: (error: Error) => {

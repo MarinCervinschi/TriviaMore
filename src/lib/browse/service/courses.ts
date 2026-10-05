@@ -1,15 +1,23 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, exists, ne, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, coursePlans, courses, departments } from "@/db/schema";
+import {
+	classes,
+	courseClasses,
+	courseCurricula,
+	coursePlans,
+	courses,
+	departments,
+	sections,
+} from "@/db/schema";
 import { academicYearOf } from "@/lib/catalog/academic-year";
 import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
-import {
-	offeredCourseClassSql,
-	studiableCourseClassSql,
-} from "@/lib/catalog/db/course-classes";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import { findEnrollmentByCourse } from "@/lib/crm/db/enrollments";
 
+import { buildPlanView, pickCohort } from "../plan-view";
 import type {
 	CampusLocation,
 	CourseType,
@@ -27,37 +35,103 @@ import {
 export async function getCourseWithClasses(
 	userId: string | null,
 	deptCode: string,
-	courseCode: string
+	courseCode: string,
+	requestedCohort?: number
 ): Promise<CourseWithClasses | null> {
 	const resolved = await resolveCourseByCodes(deptCode, courseCode);
 	if (!resolved) return null;
 
 	const db = getDb();
-	const year = academicYearOf(new Date());
-	const [rows, [plan]] = await Promise.all([
+	const courseId = resolved.course.id;
+	const [cohortRows, enrollment] = await Promise.all([
 		db
-			.select({
-				class: classColumns,
-				courseClass: courseClassColumns,
-				studiable: sql<boolean>`${studiableCourseClassSql(db, year)}`,
-			})
-			.from(courseClasses)
-			.innerJoin(classes, eq(classes.id, courseClasses.classId))
+			.selectDistinct({ cohort: courseCurricula.cohort })
+			.from(courseCurricula)
+			.where(eq(courseCurricula.courseId, courseId)),
+		userId ? findEnrollmentByCourse(db, userId, courseId) : undefined,
+	]);
+	const cohorts = cohortRows.map(row => row.cohort).sort((a, b) => b - a);
+	const cohort = pickCohort(cohorts, {
+		requested: requestedCohort,
+		enrolled: enrollment?.isCurrent ? enrollment.startYear : null,
+		current: academicYearOf(new Date()),
+	});
+
+	const base = { ...resolved.course, department: resolved.department, cohorts };
+	if (cohort === null) {
+		return { ...base, cohort: null, ...(await currentCatalogue(userId, courseId)) };
+	}
+
+	const hasContent = exists(
+		db
+			.select({ one: sql`1` })
+			.from(sections)
 			.where(
 				and(
-					eq(courseClasses.courseId, resolved.course.id),
-					offeredCourseClassSql(db, year)
+					eq(sections.classId, coursePlans.classId),
+					ne(sections.name, EXAM_SIMULATION_SECTION)
 				)
 			)
-			.orderBy(asc(courseClasses.classYear), asc(courseClasses.position)),
+	);
+	const [curricula, rows] = await Promise.all([
 		db
-			.select({ id: coursePlans.id })
-			.from(coursePlans)
+			.select({
+				code: courseCurricula.code,
+				name: courseCurricula.name,
+				common: courseCurricula.common,
+			})
+			.from(courseCurricula)
 			.where(
-				and(eq(coursePlans.courseId, resolved.course.id), eq(coursePlans.cohort, year))
+				and(eq(courseCurricula.courseId, courseId), eq(courseCurricula.cohort, cohort))
 			)
-			.limit(1),
+			.orderBy(asc(courseCurricula.code)),
+		db
+			.select({
+				code: coursePlans.code,
+				name: coursePlans.name,
+				cfu: coursePlans.cfu,
+				classYear: coursePlans.classYear,
+				mandatory: coursePlans.mandatory,
+				evaluation: coursePlans.evaluation,
+				curriculum: courseCurricula.code,
+				classId: coursePlans.classId,
+				link: courseClasses.code,
+				description: classes.description,
+				isTeaching: courseClasses.isTeaching,
+				hasContent: sql<boolean>`${hasContent}`,
+				position: courseClasses.position,
+			})
+			.from(coursePlans)
+			.innerJoin(courseCurricula, eq(courseCurricula.id, coursePlans.curriculumId))
+			.leftJoin(classes, eq(classes.id, coursePlans.classId))
+			.leftJoin(
+				courseClasses,
+				and(
+					eq(courseClasses.courseId, coursePlans.courseId),
+					eq(courseClasses.classId, coursePlans.classId)
+				)
+			)
+			.where(and(eq(coursePlans.courseId, courseId), eq(coursePlans.cohort, cohort))),
 	]);
+
+	const classIds = [...new Set(rows.map(row => row.classId).filter(id => id !== null))];
+	const counts = await countVisibleSectionsByClass(db, classIds, userId);
+	return { ...base, cohort, ...buildPlanView(rows, curricula, counts) };
+}
+
+/** The curated catalogue, for a course the official catalogue has no plan for. */
+async function currentCatalogue(userId: string | null, courseId: string) {
+	const db = getDb();
+	const rows = await db
+		.select({
+			class: classColumns,
+			courseClass: courseClassColumns,
+			studiable: sql<boolean>`${studiableCourseClassSql(db)}`,
+		})
+		.from(courseClasses)
+		.innerJoin(classes, eq(classes.id, courseClasses.classId))
+		.where(eq(courseClasses.courseId, courseId))
+		.orderBy(asc(courseClasses.classYear), asc(courseClasses.position));
 
 	const studiable = rows.filter(row => row.studiable);
 	const counts = await countVisibleSectionsByClass(
@@ -67,22 +141,28 @@ export async function getCourseWithClasses(
 	);
 
 	return {
-		...resolved.course,
-		department: resolved.department,
-		classes: studiable.map(row => ({
-			...row.class,
-			...row.courseClass,
-			sectionCount: counts.get(row.class.id) ?? 0,
+		curricula: [],
+		classes: studiable.map(({ class: cls, courseClass }) => ({
+			id: courseClass.code,
+			code: courseClass.code,
+			link: courseClass.code,
+			name: cls.name,
+			description: cls.description,
+			cfu: cls.cfu,
+			classYear: courseClass.classYear,
+			sectionCount: counts.get(cls.id) ?? 0,
+			mandatory: courseClass.mandatory,
+			curricula: [],
 		})),
 		activities: rows
 			.filter(row => !row.studiable)
 			.map(row => ({
-				id: row.class.id,
+				id: row.courseClass.code,
 				name: row.class.name,
 				cfu: row.class.cfu,
 				classYear: row.courseClass.classYear,
+				curricula: [],
 			})),
-		offeringYear: plan ? year : null,
 	};
 }
 
