@@ -2,14 +2,18 @@ import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
+import { StartYearSelect } from "@/components/onboarding/start-year-select";
 import { Button } from "@/components/ui/button";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
+import { Label } from "@/components/ui/label";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { useSetEnrollment } from "@/lib/crm/mutations";
 import { crmQueries } from "@/lib/crm/queries";
 
 export function EnrollmentCard() {
 	const { data: enrollment, isPending } = useQuery(crmQueries.currentEnrollment());
+	const setEnrollment = useSetEnrollment();
 
 	return (
 		<InsetCard texture="top" textureAlpha={0.12}>
@@ -51,6 +55,26 @@ export function EnrollmentCard() {
 						<Link to="/onboarding">{enrollment ? "Cambia" : "Collega un corso"}</Link>
 					</Button>
 				</div>
+
+				{enrollment && (
+					<div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t pt-5">
+						<div>
+							<Label htmlFor="enrollment-start-year">Anno di immatricolazione</Label>
+							<p className="text-muted-foreground text-sm">
+								Decide il piano di studi della tua coorte
+							</p>
+						</div>
+						<StartYearSelect
+							id="enrollment-start-year"
+							value={enrollment.startYear}
+							onChange={startYear =>
+								setEnrollment.mutate({ courseId: enrollment.courseId, startYear })
+							}
+							disabled={setEnrollment.isPending}
+							className="w-36"
+						/>
+					</div>
+				)}
 			</div>
 		</InsetCard>
 	);

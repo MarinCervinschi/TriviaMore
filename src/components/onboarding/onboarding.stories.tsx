@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -25,7 +26,10 @@ import {
 } from "@/components/onboarding/onboarding-steps";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { ProfileStep } from "@/components/onboarding/profile-step";
+import { StartYearSelect } from "@/components/onboarding/start-year-select";
+import { Label } from "@/components/ui/label";
 import { AvatarEditor } from "@/components/user/avatar-editor";
+import { formatAcademicYear } from "@/lib/catalog/academic-year";
 
 const STEPS: OnboardingStep[] = [
 	{ id: "department", label: "Dipartimento" },
@@ -69,6 +73,7 @@ function WizardExample({
 	const [furthest, setFurthest] = useState(startAt);
 	const [departmentId, setDepartmentId] = useState<string | null>(null);
 	const [courseId, setCourseId] = useState<string | null>(null);
+	const [startYear, setStartYear] = useState(2026);
 	const [name, setName] = useState("Marin Cervinschi");
 	const [page, setPage] = useState(0);
 	const [seed, setSeed] = useState<string | null>(null);
@@ -110,12 +115,23 @@ function WizardExample({
 					/>
 				)}
 				{step === 1 && (
-					<CoursePicker
-						options={courses}
-						suggestions={withSuggestions ? SUGGESTED_COURSES : []}
-						value={courseId}
-						onSelect={setCourseId}
-					/>
+					<div className="flex flex-col gap-4">
+						<CoursePicker
+							options={courses}
+							suggestions={withSuggestions ? SUGGESTED_COURSES : []}
+							value={courseId}
+							onSelect={setCourseId}
+						/>
+						<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+							<Label htmlFor="start-year">Anno di immatricolazione</Label>
+							<StartYearSelect
+								id="start-year"
+								value={startYear}
+								onChange={setStartYear}
+								className="w-36"
+							/>
+						</div>
+					</div>
 				)}
 				{step >= 2 && (
 					<div className="flex flex-col gap-5">
@@ -135,6 +151,12 @@ function WizardExample({
 									label: "Corso",
 									icon: DiplomaIcon,
 									value: courses.find(item => item.id === courseId)?.name ?? null,
+									onEdit: () => go(1),
+								},
+								{
+									label: "Immatricolazione",
+									icon: CalendarIcon,
+									value: formatAcademicYear(startYear),
 									onEdit: () => go(1),
 								},
 							]}
@@ -304,6 +326,18 @@ export const InImpostazioni: Story = {
 	name: "In impostazioni, con un corso",
 	parameters: {
 		queryData: [[["crm", "current-enrollment"], ENROLLMENT]],
+	},
+	render: () => (
+		<div className="max-w-3xl">
+			<EnrollmentCard />
+		</div>
+	),
+};
+
+export const InImpostazioniConAnno: Story = {
+	name: "In impostazioni, con l'anno di immatricolazione",
+	parameters: {
+		queryData: [[["crm", "current-enrollment"], { ...ENROLLMENT, startYear: 2024 }]],
 	},
 	render: () => (
 		<div className="max-w-3xl">
