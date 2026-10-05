@@ -60,8 +60,6 @@ export async function createNotification(
 	]);
 }
 
-// Notifies everyone with authority over a content request's target: superadmins,
-// the maintainers of the owning course and the admins of the owning department.
 export async function notifyAdminsInScope(
 	db: DbOrTx,
 	request: NotificationTarget & { id: string; title: string },

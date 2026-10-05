@@ -79,7 +79,6 @@ describe("questionMcRefinement", () => {
 	});
 });
 
-// Zod is a peer of the validation contract; a smoke check keeps the import honest.
 it("uses the same zod instance the schema was built with", () => {
 	expect(questionFieldsSchema).toBeInstanceOf(z.ZodObject);
 });
