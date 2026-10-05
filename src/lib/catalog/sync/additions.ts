@@ -3,6 +3,7 @@ import { type MandatoryIndex, type SourceActivity, pairKey } from "./diff";
 import {
 	type Evaluation,
 	type SourceAttributes,
+	catalogueUrlOf,
 	classifyTeaching,
 	consensus,
 	latest,
@@ -104,6 +105,7 @@ export type CatalogueAddition = {
 	taf: string | null;
 	teachingPeriod: string | null;
 	isTeaching: boolean;
+	catalogueUrl: string | null;
 };
 
 export type CatalogueAdditions = {
@@ -206,6 +208,7 @@ export function planCatalogueAdditions(
 			taf: consensus(activities.map(a => a.taf)).value,
 			teachingPeriod: consensus(activities.map(a => a.teachingPeriod)).value,
 			isTeaching: classifyTeaching(name, evaluation) ?? true,
+			catalogueUrl: catalogueUrlOf(activities),
 		});
 	}
 

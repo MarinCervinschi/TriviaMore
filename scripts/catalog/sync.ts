@@ -85,6 +85,7 @@ async function readLocal() {
 				taf: courseClasses.taf,
 				teachingPeriod: courseClasses.teachingPeriod,
 				isTeaching: courseClasses.isTeaching,
+				catalogueUrl: courseClasses.catalogueUrl,
 			})
 			.from(courseClasses)
 			.innerJoin(courses, eq(courses.id, courseClasses.courseId))
@@ -355,6 +356,7 @@ async function applyAdditions(plan: CatalogueAdditions) {
 				taf: row.taf,
 				teachingPeriod: row.teachingPeriod,
 				isTeaching: row.isTeaching,
+				catalogueUrl: row.catalogueUrl,
 				position,
 			});
 		}

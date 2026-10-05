@@ -13,6 +13,7 @@ export type SourceActivity = {
 	evaluation: string | null;
 	curriculum: string | null;
 	group: string | null;
+	catalogueUrl: string | null;
 };
 
 export type LocalClass = {

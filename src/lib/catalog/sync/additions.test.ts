@@ -20,6 +20,7 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		evaluation: null,
 		curriculum: "A",
 		group: "OO",
+		catalogueUrl: null,
 		...over,
 	};
 }
@@ -206,5 +207,17 @@ describe("planCatalogueAdditions", () => {
 		);
 		expect(plan.additions).toEqual([]);
 		expect(plan.skipped.alreadyLinked).toBe(1);
+	});
+
+	it("carries the catalogue page of the added class", () => {
+		const plan = planCatalogueAdditions(
+			{ courses: COURSES, courseClasses: [] },
+			{
+				activities: [activity({ catalogueUrl: "https://x/af/2026?ad=TIROC-1" })],
+				mandatory: new Map(),
+				attributes: new Map([attributes("TIROC-1", "Giudizio Finale")]),
+			}
+		);
+		expect(plan.additions[0]!.catalogueUrl).toBe("https://x/af/2026?ad=TIROC-1");
 	});
 });

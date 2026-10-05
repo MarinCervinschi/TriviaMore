@@ -48,6 +48,13 @@ export function consensus<T>(values: (T | null)[]): {
 	return { value, contested: counts.size > 1 };
 }
 
+/** The page of the first curriculum that lists the activity, so the pick does not depend on the order the plans arrive in. */
+export function catalogueUrlOf(activities: SourceActivity[]): string | null {
+	const listed = activities.filter(a => a.catalogueUrl);
+	listed.sort((a, b) => (a.curriculum ?? "").localeCompare(b.curriculum ?? ""));
+	return listed[0]?.catalogueUrl ?? null;
+}
+
 /** The consensus within the most recent year that has a value. */
 export function latest<T>(observations: { academicYear: string; value: T | null }[]): {
 	value: T | null;
@@ -91,6 +98,7 @@ export type LocalCourseClass = {
 	taf: string | null;
 	teachingPeriod: string | null;
 	isTeaching: boolean | null;
+	catalogueUrl: string | null;
 };
 
 export type SourceDepartment = { code: string; name: string };
@@ -110,7 +118,10 @@ export type SourceAttributes = {
 
 type CourseSet = Partial<Omit<LocalCourse, "id" | "code">>;
 type CourseClassSet = Partial<
-	Pick<LocalCourseClass, "evaluation" | "taf" | "teachingPeriod" | "isTeaching">
+	Pick<
+		LocalCourseClass,
+		"evaluation" | "taf" | "teachingPeriod" | "isTeaching" | "catalogueUrl"
+	>
 >;
 
 export type CatalogueUpdates = {
@@ -229,6 +240,10 @@ export function planCatalogueUpdates(
 						.value,
 				}
 			: {};
+		if (row.catalogueUrl === null && activities) {
+			const url = catalogueUrlOf(activities);
+			if (url) next.catalogueUrl = url;
+		}
 		if (row.isTeaching === null) {
 			const classified = classifyTeaching(row.name, next.evaluation ?? row.evaluation);
 			if (classified !== null) next.isTeaching = classified;

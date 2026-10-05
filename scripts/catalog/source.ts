@@ -138,6 +138,8 @@ type RawPlan = {
 					adCod?: string;
 					des_it?: string;
 					crediti?: number | null;
+					aa?: string;
+					ordinamento_aa?: number;
 					tafDes_it?: string;
 					periodo_didattico_it?: string;
 				}[];
@@ -145,6 +147,23 @@ type RawPlan = {
 		}[];
 	}[];
 };
+
+function activityUrl(
+	cohort: string,
+	courseCode: string,
+	curriculum: string | null,
+	activity: { adCod?: string; aa?: string; ordinamento_aa?: number }
+): string | null {
+	if (!curriculum || !activity.adCod) return null;
+	const query = new URLSearchParams({
+		corso: courseCode,
+		annoOrdinamento: String(activity.ordinamento_aa ?? cohort),
+		pds: curriculum,
+		coorte: cohort,
+		ad: activity.adCod,
+	});
+	return `${SITE}/af/${activity.aa ?? cohort}?${query}`;
+}
 
 async function fetchPlan(
 	year: string,
@@ -200,6 +219,7 @@ async function fetchPlan(
 						evaluation: null,
 						curriculum: code,
 						group: text(group.cod),
+						catalogueUrl: activityUrl(year, course.code, code, activity),
 					});
 					mandatory.push([
 						pairKey(course.code, normaliseCatalogueCode(activity.adCod)),
