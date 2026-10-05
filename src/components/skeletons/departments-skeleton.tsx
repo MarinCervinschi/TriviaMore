@@ -93,11 +93,14 @@ export function DepartmentDetailSkeleton() {
 export function CourseDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento corso…" className="pb-8">
-			<BrowsePageHeaderSkeleton badges={3} stats={1} />
+			<BrowsePageHeaderSkeleton badges={4} stats={1} />
 			<div className="container">
 				<div className="mb-4 flex flex-wrap items-center justify-between gap-4">
 					<SkeletonFilterBar chips={4} />
-					<Skeleton className="h-10 w-48 rounded-xl" />
+					<div className="flex gap-2">
+						<Skeleton className="h-10 w-44 rounded-xl" />
+						<Skeleton className="h-10 w-48 rounded-xl" />
+					</div>
 				</div>
 				<SkeletonSearchInput className="mb-6" />
 

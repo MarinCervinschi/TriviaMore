@@ -29,8 +29,9 @@ import {
 } from "@/components/ui/select";
 import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { inCurriculum, isMandatory } from "@/lib/browse/plan-view";
 import { browseQueries } from "@/lib/browse/queries";
-import type { BrowseClassInCourse } from "@/lib/browse/types";
+import type { PlanClass } from "@/lib/browse/types";
 import { formatAcademicYear } from "@/lib/catalog/academic-year";
 import { breadcrumbJsonLd, courseJsonLd } from "@/lib/json-ld";
 import { seoHead } from "@/lib/seo";
@@ -43,10 +44,12 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
 		q: dataTableFilterField,
 		year: z.coerce.number().int().optional().catch(undefined),
 		curriculum: dataTableFilterField,
+		coorte: z.coerce.number().int().optional().catch(undefined),
 	}),
-	loader: async ({ context, params }) => {
+	loaderDeps: ({ search }) => ({ coorte: search.coorte }),
+	loader: async ({ context, params, deps }) => {
 		const data = await context.queryClient.ensureQueryData(
-			browseQueries.course(params.department, params.course)
+			browseQueries.course(params.department, params.course, deps.coorte)
 		);
 		if (!data) throw notFound();
 		return data;
@@ -87,7 +90,22 @@ export const Route = createFileRoute("/_app/browse/$department/$course/")({
 	),
 });
 
-const column = createDataTableColumns<BrowseClassInCourse>();
+const column = createDataTableColumns<PlanClass>();
+
+function ClassName({ entry }: { entry: PlanClass }) {
+	return (
+		<>
+			<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
+				{entry.name}
+			</span>
+			{entry.description && (
+				<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+					{entry.description}
+				</p>
+			)}
+		</>
+	);
+}
 
 function buildColumns(deptCode: string, courseCode: string) {
 	const linkParams = (classCode: string) => ({
@@ -100,22 +118,18 @@ function buildColumns(deptCode: string, courseCode: string) {
 		column.accessor("name", {
 			header: "Nome",
 			meta: { label: "Nome", headerClassName: "w-[40%]" },
-			cell: ({ row }) => (
-				<Link
-					to="/browse/$department/$course/$class"
-					params={linkParams(row.original.code)}
-					className="block"
-				>
-					<span className="text-foreground group-hover:text-brand block font-medium transition-colors">
-						{row.original.name}
-					</span>
-					{row.original.description && (
-						<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
-							{row.original.description}
-						</p>
-					)}
-				</Link>
-			),
+			cell: ({ row }) =>
+				row.original.link ? (
+					<Link
+						to="/browse/$department/$course/$class"
+						params={linkParams(row.original.link)}
+						className="block"
+					>
+						<ClassName entry={row.original} />
+					</Link>
+				) : (
+					<ClassName entry={row.original} />
+				),
 		}),
 		column.accessor("code", {
 			header: "Codice",
@@ -139,14 +153,19 @@ function buildColumns(deptCode: string, courseCode: string) {
 		column.accessor("sectionCount", {
 			header: "Sezioni",
 			meta: { label: "Sezioni", align: "center" },
-			cell: ({ row }) => (
-				<span className="text-muted-foreground text-sm">
-					<span className="text-foreground font-semibold">
-						{row.original.sectionCount}
-					</span>{" "}
-					{row.original.sectionCount === 1 ? "sezione" : "sezioni"}
-				</span>
-			),
+			cell: ({ row }) =>
+				row.original.link ? (
+					<span className="text-muted-foreground text-sm">
+						<span className="text-foreground font-semibold">
+							{row.original.sectionCount}
+						</span>{" "}
+						{row.original.sectionCount === 1 ? "sezione" : "sezioni"}
+					</span>
+				) : (
+					<span className="text-muted-foreground/70 text-xs">
+						Non ancora su TriviaMore
+					</span>
+				),
 		}),
 	];
 }
@@ -158,7 +177,7 @@ function ClassTable({
 	courseCode,
 	paginated = false,
 }: {
-	classes: BrowseClassInCourse[];
+	classes: PlanClass[];
 	columns: ReturnType<typeof buildColumns>;
 	deptCode: string;
 	courseCode: string;
@@ -175,17 +194,19 @@ function ClassTable({
 		<DataTable
 			table={table}
 			showPagination={paginated}
-			rowLink={row => (
-				<Link
-					to="/browse/$department/$course/$class"
-					params={{
-						department: deptCode.toLowerCase(),
-						course: courseCode.toLowerCase(),
-						class: row.code.toLowerCase(),
-					}}
-					aria-label={`Apri ${row.name}`}
-				/>
-			)}
+			rowLink={row =>
+				row.link ? (
+					<Link
+						to="/browse/$department/$course/$class"
+						params={{
+							department: deptCode.toLowerCase(),
+							course: courseCode.toLowerCase(),
+							class: row.link.toLowerCase(),
+						}}
+						aria-label={`Apri ${row.name}`}
+					/>
+				) : null
+			}
 		/>
 	);
 }
@@ -193,8 +214,10 @@ function ClassTable({
 function CoursePage() {
 	const { department: deptCode, course: courseCode } = Route.useParams();
 	const navigate = useNavigate({ from: Route.fullPath });
-	const { q, year, curriculum } = Route.useSearch();
-	const { data: course } = useSuspenseQuery(browseQueries.course(deptCode, courseCode));
+	const { q, year, curriculum, coorte } = Route.useSearch();
+	const { data: course } = useSuspenseQuery(
+		browseQueries.course(deptCode, courseCode, coorte)
+	);
 
 	const [searchInput, setSearchInput] = useDebouncedSearchParam(q, next =>
 		navigate({ search: prev => ({ ...prev, q: next }) })
@@ -212,22 +235,19 @@ function CoursePage() {
 		[classes]
 	);
 
-	const availableCurricula = useMemo(
-		() =>
-			[
-				...new Set(classes.map(c => c.curriculum).filter((c): c is string => !!c)),
-			].sort(),
-		[classes]
-	);
+	const curricula = useMemo(() => course?.curricula ?? [], [course]);
+	const activeCurriculum = curricula.some(c => c.code === curriculum)
+		? curriculum
+		: undefined;
 
 	const preFiltered = useMemo(
 		() =>
 			classes.filter(
 				c =>
 					(year === undefined || c.classYear === year) &&
-					(curriculum === undefined || c.curriculum === curriculum)
+					inCurriculum(c, activeCurriculum)
 			),
-		[classes, year, curriculum]
+		[classes, year, activeCurriculum]
 	);
 
 	const searched = useMemo(() => {
@@ -243,12 +263,28 @@ function CoursePage() {
 		return (course?.activities ?? []).filter(
 			a =>
 				(year === undefined || a.classYear === year) &&
+				inCurriculum(a, activeCurriculum) &&
 				(query === "" || a.name.toLowerCase().includes(query))
 		);
-	}, [course, year, q]);
+	}, [course, year, q, activeCurriculum]);
+
+	const activityNotes = useMemo(() => {
+		const names = new Map(curricula.map(c => [c.code, c.name]));
+		const notes = new Map<string, string>();
+		if (activeCurriculum !== undefined || curricula.length < 2) return notes;
+		for (const activity of activities) {
+			if (activity.curricula.length < curricula.length) {
+				notes.set(
+					activity.id,
+					activity.curricula.map(c => names.get(c) ?? c).join(", ")
+				);
+			}
+		}
+		return notes;
+	}, [activities, curricula, activeCurriculum]);
 
 	const groupedClasses = useMemo(() => {
-		const byYear = new Map<number, BrowseClassInCourse[]>();
+		const byYear = new Map<number, PlanClass[]>();
 		for (const c of preFiltered) {
 			byYear.set(c.classYear, [...(byYear.get(c.classYear) ?? []), c]);
 		}
@@ -256,10 +292,10 @@ function CoursePage() {
 			.sort(([a], [b]) => a - b)
 			.map(([groupYear, yearClasses]) => ({
 				year: groupYear,
-				mandatory: yearClasses.filter(c => c.mandatory),
-				elective: yearClasses.filter(c => !c.mandatory),
+				mandatory: yearClasses.filter(c => isMandatory(c, activeCurriculum)),
+				elective: yearClasses.filter(c => !isMandatory(c, activeCurriculum)),
 			}));
-	}, [preFiltered]);
+	}, [preFiltered, activeCurriculum]);
 
 	if (!course) return null;
 
@@ -303,9 +339,9 @@ function CoursePage() {
 								{course.cfu} CFU
 							</Badge>
 						)}
-						{course.offeringYear && (
+						{course.cohort !== null && (
 							<Badge variant="outline" className="text-xs">
-								Offerta {formatAcademicYear(course.offeringYear)}
+								Coorte {formatAcademicYear(course.cohort)}
 							</Badge>
 						)}
 					</>
@@ -348,31 +384,62 @@ function CoursePage() {
 						</div>
 					)}
 
-					{availableCurricula.length > 0 && (
-						<Select
-							value={curriculum ?? "all"}
-							onValueChange={value =>
-								navigate({
-									search: prev => ({
-										...prev,
-										curriculum: value === "all" ? undefined : value,
-									}),
-								})
-							}
-						>
-							<SelectTrigger className="w-auto max-w-[300px] min-w-[200px]">
-								<SelectValue placeholder="Tutti i curriculum" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="all">Tutti i curriculum</SelectItem>
-								{availableCurricula.map(cur => (
-									<SelectItem key={cur} value={cur}>
-										{cur}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					)}
+					<div className="flex flex-wrap items-center gap-2">
+						{course.cohort !== null && course.cohorts.length > 1 && (
+							<Select
+								value={String(course.cohort)}
+								onValueChange={value =>
+									navigate({
+										search: prev => ({
+											...prev,
+											coorte: Number(value),
+											curriculum: undefined,
+										}),
+									})
+								}
+							>
+								<SelectTrigger className="w-auto min-w-[170px]" aria-label="Coorte">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{course.cohorts.map(option => (
+										<SelectItem key={option} value={String(option)}>
+											Coorte {formatAcademicYear(option)}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						)}
+
+						{curricula.length > 1 && (
+							<Select
+								value={activeCurriculum ?? "all"}
+								onValueChange={value =>
+									navigate({
+										search: prev => ({
+											...prev,
+											curriculum: value === "all" ? undefined : value,
+										}),
+									})
+								}
+							>
+								<SelectTrigger
+									className="w-auto max-w-[300px] min-w-[200px]"
+									aria-label="Curriculum"
+								>
+									<SelectValue placeholder="Tutti i curriculum" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">Tutti i curriculum</SelectItem>
+									{curricula.map(option => (
+										<SelectItem key={option.code} value={option.code}>
+											{option.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						)}
+					</div>
 				</div>
 
 				<SearchFilter
@@ -432,7 +499,7 @@ function CoursePage() {
 					/>
 				)}
 
-				<PlanActivities activities={activities} />
+				<PlanActivities activities={activities} notes={activityNotes} />
 			</div>
 		</div>
 	);

@@ -105,11 +105,61 @@ export const Activities: Story = {
 	render: () => (
 		<PlanActivities
 			activities={[
-				{ id: "a1", name: "Obblighi Formativi Aggiuntivi", cfu: 0, classYear: 1 },
-				{ id: "a2", name: "Tirocinio", cfu: 12, classYear: 3 },
-				{ id: "a3", name: "Prova Finale", cfu: 6, classYear: 3 },
-				{ id: "a4", name: "Tirocinio/Attività Progettuale", cfu: null, classYear: 3 },
+				{
+					id: "a1",
+					name: "Obblighi Formativi Aggiuntivi",
+					cfu: 0,
+					classYear: 1,
+					curricula: [],
+				},
+				{ id: "a2", name: "Tirocinio", cfu: 12, classYear: 3, curricula: [] },
+				{ id: "a3", name: "Prova Finale", cfu: 6, classYear: 3, curricula: [] },
+				{
+					id: "a4",
+					name: "Tirocinio/Attività Progettuale",
+					cfu: null,
+					classYear: 3,
+					curricula: [],
+				},
 			]}
+		/>
+	),
+};
+
+/** With no curriculum chosen, an activity that only some curricula list says which. */
+export const ActivitiesWithCurricula: Story = {
+	name: "Altre attività del piano, con i curriculum",
+	render: () => (
+		<PlanActivities
+			activities={[
+				{
+					id: "b1",
+					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
+					cfu: 3,
+					classYear: 1,
+					curricula: ["C1"],
+				},
+				{
+					id: "b2",
+					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
+					cfu: 0,
+					classYear: 1,
+					curricula: ["C2"],
+				},
+				{
+					id: "b3",
+					name: "Prova Finale",
+					cfu: 18,
+					classYear: 2,
+					curricula: ["C1", "C2"],
+				},
+			]}
+			notes={
+				new Map([
+					["b1", "Applications"],
+					["b2", "Large Scale"],
+				])
+			}
 		/>
 	),
 };

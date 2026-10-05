@@ -1,7 +1,14 @@
 import { InsetCard } from "@/components/ui/inset-card";
 import type { PlanActivity } from "@/lib/browse/types";
 
-export function PlanActivities({ activities }: { activities: PlanActivity[] }) {
+export function PlanActivities({
+	activities,
+	notes,
+}: {
+	activities: PlanActivity[];
+	// The curricula an activity belongs to, for one that not every curriculum lists.
+	notes?: Map<string, string>;
+}) {
 	if (activities.length === 0) return null;
 
 	return (
@@ -17,7 +24,15 @@ export function PlanActivities({ activities }: { activities: PlanActivity[] }) {
 						key={activity.id}
 						className="flex items-baseline justify-between gap-4 px-4 py-2.5 text-sm"
 					>
-						<span className="min-w-0 truncate">{activity.name}</span>
+						<span className="min-w-0 truncate">
+							{activity.name}
+							{notes?.get(activity.id) && (
+								<span className="text-muted-foreground">
+									{" "}
+									· {notes.get(activity.id)}
+								</span>
+							)}
+						</span>
 						<span className="text-muted-foreground shrink-0 tabular-nums">
 							{activity.classYear}° anno
 							{activity.cfu !== null && ` · ${activity.cfu} CFU`}
