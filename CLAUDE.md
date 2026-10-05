@@ -147,10 +147,13 @@ Two rules that are not negotiable:
   `docs/DESIGN_DECISIONS.md` (D1–D26) and the system as it stands in `docs/DESIGN_SYSTEM.md`; **token
   values live in `src/styles/globals.css` and nowhere else.** A colour change must clear
   `src/styles/contrast.test.ts`, which fails `pnpm test` on a regression.
-- **Comments are forbidden by default.** Code must read on its own. Two exceptions only, both used
-  with maximum caution: a doc comment where one is genuinely needed, and a *strictly necessary* `why`
-  — a non-obvious constraint, security rule or workaround whose absence would mislead. Both in
-  English. Never restate the code or narrate what a line does. When in doubt, no comment.
+- **Comments are forbidden by default, and every one is a single line.** A one-line TSDoc only where
+  the signature cannot say it; a one-line `//` only where the line would look wrong without it. No
+  history, no redirects, no section labels, English only. The reasoning goes in the commit, the PR or
+  the issue. **For any comment, use the `code-comments` skill.**
+- **For any text someone else reads — UI copy, commits, PRs, issues, docs, comments — use the
+  `plain-writing` skill.** It bans the tics that mark text as generated, and its last pass is not
+  optional.
 - Prefer editing an existing file over adding one; match the surrounding style.
 - When a route has a `pendingComponent`, update the matching skeleton in
   `src/components/skeletons/` whenever you change the page layout.
