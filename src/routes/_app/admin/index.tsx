@@ -59,8 +59,7 @@ function AdminDashboard() {
 	const { user } = useAuth();
 	const isSuperadmin = user?.role === "SUPERADMIN";
 	const { data: stats } = useSuspenseQuery(adminQueries.stats());
-	// User stats are SUPERADMIN-only (getAdminUserStatsFn). Running this query as
-	// a MAINTAINER/ADMIN would trigger requireSuperadmin's redirect to /user.
+	// requireSuperadmin redirects anyone else to /user, so only a superadmin runs this query.
 	const { data: userStats } = useQuery({
 		...adminQueries.userStats(),
 		enabled: isSuperadmin,
@@ -113,7 +112,6 @@ function AdminDashboard() {
 				description="Panoramica della piattaforma"
 			/>
 
-			{/* Content stats */}
 			<p className="text-brand eyebrow mb-4">Contenuti</p>
 			<div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 				{contentCards.map(card => (
@@ -128,7 +126,6 @@ function AdminDashboard() {
 				))}
 			</div>
 
-			{/* User stats */}
 			{userStats && (
 				<>
 					<p className="text-brand eyebrow mb-4">Utenti e utilizzo</p>
@@ -174,7 +171,6 @@ function AdminDashboard() {
 				</>
 			)}
 
-			{/* My maintained courses */}
 			{(myCourses ?? []).length > 0 && (
 				<div className="mt-8">
 					<p className="text-brand eyebrow mb-4">I miei corsi mantenuti</p>

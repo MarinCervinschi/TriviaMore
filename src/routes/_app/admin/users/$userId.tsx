@@ -58,9 +58,6 @@ function AdminUserDetailPage() {
 	const { user: currentUser } = useAuth();
 	const isSuperadmin = currentUser?.role === "SUPERADMIN";
 
-	// Action visibility follows the role hierarchy: a department admin is an
-	// ADMIN-level concept, a course maintainer is MAINTAINER-level. Students see
-	// neither — the role must be raised first.
 	const canManageDepartments = user.role === "ADMIN" || user.role === "SUPERADMIN";
 	const canMaintainCourses =
 		user.role === "MAINTAINER" || user.role === "ADMIN" || user.role === "SUPERADMIN";
@@ -78,7 +75,6 @@ function AdminUserDetailPage() {
 	const addSectionAccess = useAddSectionAccess();
 	const removeSectionAccess = useRemoveSectionAccess();
 
-	// Available items for assignment
 	const { data: departments } = useQuery(adminQueries.departments());
 	const { data: allCourses } = useQuery(adminQueries.allCourses());
 	const { data: privateSections } = useQuery(adminQueries.privateSections());
@@ -110,7 +106,6 @@ function AdminUserDetailPage() {
 			/>
 
 			<div className="grid gap-6">
-				{/* Profile + Stats */}
 				<div className="grid gap-6 md:grid-cols-2">
 					<InsetCard title="Profilo">
 						<div className="p-6">
@@ -203,7 +198,6 @@ function AdminUserDetailPage() {
 					</InsetCard>
 				</div>
 
-				{/* Department Admin assignments — ADMIN+ only */}
 				{canManageDepartments && (
 					<InsetCard
 						title={
@@ -283,7 +277,6 @@ function AdminUserDetailPage() {
 					</InsetCard>
 				)}
 
-				{/* Course Maintainer assignments — MAINTAINER+ only */}
 				{canMaintainCourses && (
 					<InsetCard
 						title={
@@ -363,7 +356,6 @@ function AdminUserDetailPage() {
 					</InsetCard>
 				)}
 
-				{/* Section Access */}
 				<InsetCard
 					title={
 						<span className="flex items-center gap-2">
@@ -446,7 +438,6 @@ function AdminUserDetailPage() {
 				</InsetCard>
 			</div>
 
-			{/* Role change confirmation */}
 			<ConfirmationDialog
 				open={!!roleConfirm}
 				onOpenChange={open => !open && setRoleConfirm(null)}

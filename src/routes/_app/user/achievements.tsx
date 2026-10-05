@@ -59,8 +59,7 @@ function AchievementsPage() {
 		);
 	}
 
-	// An unknown category falls back to the first: a tab is navigation, not a filter
-	// that can legitimately match nothing.
+	// An unknown category falls back to the first, because a tab must not match nothing.
 	const active =
 		data.categories.find(group => group.category === categoria) ?? data.categories[0]!;
 

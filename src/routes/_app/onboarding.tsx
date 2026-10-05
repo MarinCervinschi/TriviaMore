@@ -116,7 +116,7 @@ function OnboardingPage() {
 			await updateProfile.mutateAsync({ name: name.trim() });
 			if (seed) await setGeneratedAvatar.mutateAsync(seed);
 		} catch {
-			// Each mutation toasts its own message; the wizard stays where it is.
+			// Each mutation shows its own toast, and the wizard stays where it is.
 			return;
 		}
 
@@ -206,9 +206,7 @@ function OnboardingPage() {
 										onSelect={setSeed}
 										onShuffle={() => setPage(current => current + 1)}
 										onUpload={file => {
-											// Clearing the seed is the fix, not a tidy-up: the preview
-											// prefers it over the stored image, and the confirm step
-											// would re-apply it over the photo just uploaded.
+											// Clearing the seed matters, because the preview prefers it over the uploaded image.
 											uploadAvatar.mutate(file, { onSuccess: () => setSeed(null) });
 										}}
 										isLoading={choices.isFetching}

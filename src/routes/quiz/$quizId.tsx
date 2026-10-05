@@ -35,8 +35,7 @@ export const Route = createFileRoute("/quiz/$quizId")({
 	},
 	pendingComponent: QuizPlaySkeleton,
 	component: QuizPage,
-	// This route lives outside the app shell, so the not-found page brings its
-	// own band.
+	// Outside the app shell, so the not-found page brings its own band.
 	notFoundComponent: () => (
 		<NotFoundPage
 			title="Quiz non disponibile"
@@ -68,10 +67,7 @@ function QuizPage() {
 	const isExitingRef = useRef(false);
 	const lastFlushRef = useRef(0);
 
-	// Leaving any other way — the back arrow, a nav link — would abandon the attempt
-	// silently, so route it through the same confirmation the Esci button uses.
-	// `enableBeforeUnload` covers closing the tab, where the browser only lets us
-	// warn — and that is the exit the draft exists for.
+	// Every other way out goes through the same confirmation the Esci button uses.
 	const blocker = useBlocker({
 		shouldBlockFn: () => !isCompletingRef.current && !isExitingRef.current,
 		enableBeforeUnload: () => !isCompletingRef.current && !isExitingRef.current,
@@ -88,8 +84,7 @@ function QuizPage() {
 		const blank = quiz.questions.map(q => ({ questionId: q.id, answer: [] }));
 		const draft = quiz.attemptId ? readQuizDraft(quiz.attemptId) : null;
 
-		// The refs are what a flush reads, and a flush can beat these state updates
-		// to the draft — so they are filled in here, not by the effect below.
+		// Filled here, because a flush can beat these state updates to the draft.
 		if (draft) {
 			const saved = new Map(draft.answers.map(a => [a.questionId, a.answer]));
 			const restored = blank.map(a => ({
@@ -123,8 +118,6 @@ function QuizPage() {
 		});
 	}, [quiz]);
 
-	// The refs are the one source the draft is written from, so answering updates
-	// them and then flushes through the same path every other caller uses.
 	useEffect(() => {
 		if (!draftLoaded) return;
 		answersRef.current = { answers: userAnswers, currentIndex };
@@ -134,8 +127,7 @@ function QuizPage() {
 	const handleTick = useCallback(
 		(elapsedSeconds: number) => {
 			elapsedRef.current = elapsedSeconds;
-			// A hidden tab is throttled, so ticks arrive in jumps: pace the flush by
-			// how far the clock actually moved rather than by a modulo it can skip.
+			// Paced by elapsed time, because a hidden tab's ticks arrive in jumps.
 			if (elapsedSeconds - lastFlushRef.current < 5) return;
 			lastFlushRef.current = elapsedSeconds;
 			flushDraft();
@@ -143,8 +135,7 @@ function QuizPage() {
 		[flushDraft]
 	);
 
-	// Closing the tab runs no React cleanup, so the last seconds of the clock would
-	// otherwise never reach the draft.
+	// Closing the tab runs no React cleanup, so the clock is flushed on pagehide.
 	useEffect(() => {
 		window.addEventListener("pagehide", flushDraft);
 		return () => window.removeEventListener("pagehide", flushDraft);
@@ -174,7 +165,6 @@ function QuizPage() {
 				},
 			});
 			clearQuizDraft();
-			// Invalidate user data caches so dashboard shows updated stats
 			queryClient.invalidateQueries({ queryKey: ["user"] });
 			queryClient.invalidateQueries({ queryKey: ["quiz", "open-attempt"] });
 
@@ -211,9 +201,7 @@ function QuizPage() {
 		if (quiz?.attemptId) {
 			try {
 				await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } });
-			} catch {
-				// Ignore cancel errors
-			}
+			} catch {}
 		}
 
 		queryClient.invalidateQueries({ queryKey: ["quiz", "open-attempt"] });
@@ -221,9 +209,7 @@ function QuizPage() {
 		else navigate({ to: "/" });
 	}, [quiz, navigate, blocker, queryClient]);
 
-	// Radix closes the dialog on confirm too, so the exit flag is what tells the
-	// two apart: dismissing means staying and releases the blocked navigation,
-	// confirming must leave it alone for `confirmExit` to proceed with.
+	// Radix closes the dialog on confirm too, so the exit flag tells dismissal from confirmation.
 	const closeExitDialog = useCallback(
 		(open: boolean) => {
 			setShowExitDialog(open);
@@ -249,7 +235,6 @@ function QuizPage() {
 		}
 	}, []);
 
-	// Keyboard shortcuts
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === "ArrowRight" && currentIndex < (quiz?.questions.length ?? 0) - 1) {
@@ -263,8 +248,6 @@ function QuizPage() {
 	}, [currentIndex, quiz?.questions.length]);
 
 	const exam = quiz.section.name === EXAM_SIMULATION_SECTION;
-	// The exam sentinel is a stable id, not a place the student recognises: a
-	// simulation is over its class, and that is the name worth showing.
 	const quizContext: QuizContext = exam
 		? { kind: "exam", name: quiz.section.className }
 		: { kind: "section", name: quiz.section.name };
