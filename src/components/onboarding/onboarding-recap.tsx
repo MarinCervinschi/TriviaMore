@@ -35,7 +35,7 @@ export function OnboardingRecap({
 			<dl className="flex flex-col gap-2 text-sm">
 				{entries.map(entry => (
 					<div key={entry.label} className="flex items-center gap-3">
-						<dt className="text-muted-foreground flex w-32 shrink-0 items-center gap-2">
+						<dt className="text-muted-foreground flex w-40 shrink-0 items-center gap-2">
 							<entry.icon className="size-4 shrink-0" aria-hidden />
 							{entry.label}
 						</dt>
