@@ -114,12 +114,15 @@ export function planCohortPlans(
 	);
 
 	const classInCourse = new Map<string, string>();
-	const classByName = new Map<string, string>();
+	const classIdsByName = new Map<string, Set<string>>();
 	const classIdsByCode = new Map<string, Set<string>>();
 	for (const row of local.courseClasses) {
 		const code = normaliseCatalogueCode(row.code);
 		classInCourse.set(key(row.courseId, code), row.classId);
-		classByName.set(key(row.courseId, nameKey(row.name)), row.classId);
+		const nameKeyOf = key(row.courseId, nameKey(row.name));
+		const named = classIdsByName.get(nameKeyOf) ?? new Set<string>();
+		named.add(row.classId);
+		classIdsByName.set(nameKeyOf, named);
 		const ids = classIdsByCode.get(code) ?? new Set<string>();
 		ids.add(row.classId);
 		classIdsByCode.set(code, ids);
@@ -130,7 +133,8 @@ export function planCohortPlans(
 		if (sameCourse) return sameCourse;
 		const elsewhere = classIdsByCode.get(code);
 		if (elsewhere?.size === 1) return [...elsewhere][0]!;
-		return classByName.get(key(courseId, nameKey(name))) ?? null;
+		const named = classIdsByName.get(key(courseId, nameKey(name)));
+		return named?.size === 1 ? [...named][0]! : null;
 	};
 
 	const matchCourses = (cohort: SourceCohort) => {
