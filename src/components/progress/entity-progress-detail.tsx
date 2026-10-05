@@ -16,12 +16,6 @@ import { MasteryCard } from "./mastery-card";
 import { RecentAttempts } from "./recent-attempts";
 import { SpeedAccuracy } from "./speed-accuracy";
 
-/**
- * One entity's analytics — a section, an insegnamento or a course. It is the same
- * page as `/user/analytics` with its inputs already scoped, so it stays the same
- * page as that one changes; only the two cards that compare *across* the scope
- * are dropped.
- */
 export function EntityProgressDetail({
 	kindLabel,
 	name,
@@ -43,7 +37,6 @@ export function EntityProgressDetail({
 	daily: DailyStudyStat[];
 	flashcardDays?: DailyFlashcardDay[];
 	mastery: UserMastery;
-	/** False on a section: there are no sub-sections to break down. */
 	showSections: boolean;
 	period: ExplorerPeriod;
 	mode: ExplorerMode;
@@ -84,7 +77,6 @@ export function EntityProgressDetail({
 				badge={<Badge variant="secondary">{kindLabel}</Badge>}
 				meta={context}
 			>
-				{/* One entity, so no rollup: the tree would have a single branch. */}
 				<div className={showSections ? "@[900px]:col-span-4" : "@[900px]:col-span-12"}>
 					<MasteryCard mastery={mastery} />
 				</div>

@@ -1,8 +1,6 @@
 import type { FlashcardQuestion } from "@/lib/flashcard/types";
 import type { QuizQuestion } from "@/lib/quiz/types";
 
-// Fixed content, no randomness: a story that reshuffles stops being a comparison. One question per
-// type and per difficulty, plus the long ones — that is where wrapping and truncation go wrong.
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
 	{
 		id: "q-multi",

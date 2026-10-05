@@ -1,16 +1,12 @@
 import { changelogFrontmatterSchema } from "./schemas";
 import type { ChangelogEntry } from "./types";
 
-// Vite-resolves all markdown changelogs at build time as raw strings.
 const rawFiles = import.meta.glob("../../content/changelogs/*.md", {
 	query: "?raw",
 	import: "default",
 	eager: true,
 }) as Record<string, string>;
 
-// Minimal frontmatter parser: expects a leading `---\n...\n---\n` block
-// with `key: value` lines. Values are returned as raw strings; zod
-// validates the resulting object.
 function parseFrontmatter(
 	raw: string,
 	source: string
@@ -28,7 +24,6 @@ function parseFrontmatter(
 	}
 
 	const head = raw.slice(3, closeIndex).trim();
-	// Skip the closing `---` and any trailing newline so the body starts clean
 	const bodyStart = raw.indexOf("\n", closeIndex + 4);
 	const body = bodyStart === -1 ? "" : raw.slice(bodyStart + 1).trim();
 
@@ -59,7 +54,6 @@ function buildEntries(): ChangelogEntry[] {
 		entries.push({ ...meta, body });
 	}
 
-	// Most recent first
 	entries.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 	return entries;
 }

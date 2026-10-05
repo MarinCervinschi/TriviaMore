@@ -1,7 +1,6 @@
 import { DonutChart } from "@/components/charts";
 
-// Match the COURSE_TYPE_CONFIG badge palette used across the app, so a course
-// type keeps the same colour in a badge and in the ring.
+// The same colours as the course-type badges.
 const TYPE_COLORS: Record<string, string> = {
 	BACHELOR: "var(--color-chart-2)",
 	MASTER: "var(--color-chart-3)",

@@ -3,8 +3,7 @@ import { inArray, sql } from "drizzle-orm";
 import type { DbOrTx } from "@/db";
 import { questions } from "@/db/schema";
 
-// Question types are split by study mode: quizzes are graded automatically, so
-// they only take the closed-answer types; flashcards take the open ones.
+// Quizzes are graded automatically, so they take only the closed-answer types.
 export const QUIZ_QUESTION_TYPES = ["MULTIPLE_CHOICE", "TRUE_FALSE"] as const;
 export const FLASHCARD_QUESTION_TYPE = "SHORT_ANSWER" as const;
 
@@ -14,7 +13,6 @@ type SectionQuestionCounts = {
 	flashcard: number;
 };
 
-// Grouped so that a listing costs one query instead of three per section.
 export async function countQuestionsBySection(
 	db: DbOrTx,
 	sectionIds: string[]

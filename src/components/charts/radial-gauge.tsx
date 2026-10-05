@@ -12,19 +12,15 @@ const config = { value: { label: "Valore" } } satisfies ChartConfig;
 export type RadialGaugeProps = {
 	value: number;
 	max?: number;
-	/** The big number in the middle. Defaults to `value` of `max`. */
+	/** Defaults to `value` of `max`. */
 	label?: string;
 	caption?: string;
-	/** A semantic colour. Left unset, the ring uses the brand ramp. */
+	/** When unset, the ring uses the brand ramp. */
 	color?: string;
 	size?: number;
 	className?: string;
 };
 
-/**
- * One value against its maximum. A gauge earns its place only when the maximum
- * is meaningful — for a bare count, a stat tile reads faster than a ring.
- */
 export function RadialGauge({
 	value,
 	max = 100,
@@ -36,7 +32,6 @@ export function RadialGauge({
 }: RadialGaugeProps) {
 	const scope = `gauge-${useId().replace(/:/g, "")}`;
 	const clamped = Math.max(0, Math.min(value, max));
-	// No explicit colour means the brand ring, the same ramp as the quiz bar.
 	const slice = { key: "value", color };
 	const data = [{ name: "value", value: clamped, fill: seriesFill(scope, slice) }];
 

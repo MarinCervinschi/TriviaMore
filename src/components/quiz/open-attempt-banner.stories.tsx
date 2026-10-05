@@ -19,13 +19,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Cancelling really calls the server function, which the Storybook stub throws from. */
+/** Cancelling calls the server function, which throws in Storybook. */
 export const Banner: Story = {
 	name: "Il banner, prima di una simulazione",
 	render: () => <OpenAttemptBanner attempt={OPEN_ATTEMPT} />,
 };
 
-/** The dashboard form, inside the bar that hosts it. */
 export const Status: Story = {
 	name: "La riga di stato",
 	render: () => (

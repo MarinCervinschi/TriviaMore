@@ -42,11 +42,8 @@ function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
 	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
 	const { data: openAttempt } = useQuery(quizQueries.openAttempt());
-	// Not suspense, and not in the loader: the dashboard is the page a student
-	// lands on, and an additive feature must never be able to take it down.
+	// Not suspense and not in the loader, so this feature can never take the dashboard down.
 	const { data: achievements } = useQuery(achievementQueries.all());
-	// Same reasoning: a missing enrolment is a nudge, never a reason for the
-	// dashboard to fail to render.
 	const { data: enrollment, isSuccess: enrollmentLoaded } = useQuery(
 		crmQueries.currentEnrollment()
 	);
@@ -92,7 +89,6 @@ function DashboardPage() {
 	);
 }
 
-/** Everything temporary in one row, so two notices are not two objects. */
 function DashboardStatus({
 	openAttempt,
 	askEnrollment,
@@ -126,7 +122,6 @@ function DashboardStatus({
 	);
 }
 
-/** The declared course beside the greeting — an attribute, so a line and not a badge (D6). */
 function EnrollmentChip({ enrollment }: { enrollment: CurrentEnrollment }) {
 	return (
 		<Link

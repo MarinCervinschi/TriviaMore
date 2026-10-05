@@ -73,8 +73,7 @@ function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
 			header: "Anno",
 			meta: { label: "Anno", align: "center" },
 		}),
-		// Already excludes the exam-simulation sentinel, and the private sections a
-		// maintainer cannot manage.
+		// Already excludes the exam sentinel and the private sections a maintainer cannot manage.
 		column.accessor("sectionCount", {
 			header: "Sezioni",
 			meta: { label: "Sezioni", align: "center" },

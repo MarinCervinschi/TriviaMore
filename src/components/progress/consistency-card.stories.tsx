@@ -4,7 +4,6 @@ import { ConsistencyCard } from "./consistency-card";
 import { ATTEMPTS, DAILY, FLASHCARD_DAYS, TODAY } from "./fixtures";
 import { WhenYouStudyCard } from "./study-rhythm";
 
-// The two widths this row gets on the page: eight columns and four.
 const WIDE = 805;
 const NARROW = 395;
 
@@ -39,7 +38,7 @@ export const Quando: Story = {
 	),
 };
 
-/** La riga della pagina: la heatmap larga e l'istogramma stretto, affiancati. */
+/** The page's row, with the wide heatmap beside the narrow histogram. */
 export const LaRiga: Story = {
 	name: "La riga",
 	render: () => (
@@ -59,7 +58,7 @@ export const LaRiga: Story = {
 	),
 };
 
-/** Un utente nuovo: nessun quadretto, nessuna serie, e le cifre restano trattini. */
+/** A new user, with no squares, no series, and dashes for the figures. */
 export const Vuoto: Story = {
 	render: () => (
 		<div className="flex items-stretch gap-4" style={{ width: WIDE + NARROW + 16 }}>

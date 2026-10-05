@@ -10,10 +10,6 @@ type AnimatedProps = {
 	className?: string;
 };
 
-/**
- * Stagger orchestrator. Wrap a list of {@link AnimatedBlock} children to
- * cascade their entrance once the dialog opens.
- */
 export function AnimatedStack({ children, className }: AnimatedProps) {
 	const prefersReduced = useReducedMotion();
 	return (
@@ -28,7 +24,6 @@ export function AnimatedStack({ children, className }: AnimatedProps) {
 	);
 }
 
-/** Single block participating in the parent {@link AnimatedStack}. */
 export function AnimatedBlock({ children, className }: AnimatedProps) {
 	const prefersReduced = useReducedMotion();
 	return (

@@ -15,31 +15,14 @@ import {
 import type { UserMetrics } from "../types";
 import { toUserMetrics } from "./metrics";
 
-/**
- * Every metric computed from the raw history, which is the only authoritative
- * source. This is no longer what a read or an unlock runs — `readMetricSnapshots`
- * serves those from the rollups — but it is what proves the rollups right, so it
- * stays in lockstep with them and with the thresholds in `../constants`.
- *
- * Cost is proportional to the user's entire history, which is exactly why it was
- * demoted: run it from `pnpm achievements:reconcile` or a backfill, not on a
- * request path.
- *
- * `ENROLLMENT_DECLARED` is the exception to "recompute from history": the
- * enrolment table *is* the history, it holds one row per career, and there is no
- * rollup to prove right — both sides read it, so they cannot disagree.
- *
- * A day is Europe/Rome throughout, while the analytics page groups in UTC and the
- * rhythm card in the viewer's zone. And RLS filters nothing on this connection:
- * `target` is what keeps one user's attempts out of another's totals.
- */
+/** Every metric from the raw history; its cost grows with the user's history, so keep it off request paths. */
 export async function recomputeMetricSnapshots(
 	db: DbOrTx,
 	userId?: string
 ): Promise<UserMetrics[]> {
 	const scoped = userId ? sql` where p.id = ${userId}` : sql``;
 
-	// The stored rank is what this checks, so it is recomputed rather than read.
+	// Recomputed, because the stored rank is what this checks.
 	const signup = userId
 		? sql`select t.user_id,
 			       (select count(*)

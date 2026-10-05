@@ -15,9 +15,7 @@ export interface CourseOption extends PickerOption {
 
 const KIND_ORDER: CourseKind[] = ["BACHELOR", "MASTER", "SINGLE_CYCLE"];
 
-/** Only the types the department actually offers get a segment: five of thirteen
- *  run single-cycle degrees, and a segment that selects nothing is worse than
- *  one fewer. */
+/** Only the course types the department offers get a segment. */
 export function CoursePicker({
 	options,
 	suggestions = [],

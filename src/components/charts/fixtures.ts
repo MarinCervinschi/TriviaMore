@@ -1,8 +1,3 @@
-/**
- * Deterministic sample data for the chart stories. No `Math.random`: a story
- * that reshuffles on every render is useless for comparing two variants.
- */
-
 const MONTHS = ["Set", "Ott", "Nov", "Dic", "Gen", "Feb", "Mar", "Apr"];
 
 export const monthlyActivity = MONTHS.map((mese, index) => ({
@@ -77,7 +72,6 @@ export const difficultyBySection = {
 	],
 };
 
-/** Several study years, so the heatmap's year picker has something to filter. */
 export function studyActivity(startIso = "2022-01-01", endIso = "2026-08-08") {
 	const start = new Date(`${startIso}T00:00:00Z`);
 	const end = new Date(`${endIso}T00:00:00Z`);

@@ -29,10 +29,7 @@ export type FunnelChartProps = Omit<ChartCardProps, "children" | "footer"> & {
 	emptyMessage?: string;
 };
 
-/**
- * Drop-off through ordered stages. Stages must be genuinely nested — every stage
- * a subset of the one before it — or the shrinking width lies.
- */
+/** Each stage must be a subset of the one before it. */
 export function FunnelChart({
 	stages,
 	height = 260,

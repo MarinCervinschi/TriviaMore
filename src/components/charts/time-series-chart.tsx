@@ -27,7 +27,6 @@ import { CHART_SURFACE, type ChartSeries, seriesConfig } from "./palette";
 
 export type TimeSeriesChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	data: TDatum[];
-	/** The category axis — a month, a date, a session number. */
 	xKey: Extract<keyof TDatum, string>;
 	series: ChartSeries<TDatum>[];
 	variant?: "area" | "line";
@@ -37,16 +36,11 @@ export type TimeSeriesChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	valueFormatter?: (value: number) => string;
 	xFormatter?: (value: string) => string;
 	emptyMessage?: string;
-	/** Bridge gaps (null values) so a sparse series stays one continuous shape. */
 	connectNulls?: boolean;
 };
 
 const ANIMATION_MS = 420;
 
-/**
- * Change over time: one line or filled area per series. Never two y-scales — a
- * second measure of a different magnitude belongs in its own chart.
- */
 export function TimeSeriesChart<TDatum>({
 	data,
 	xKey,
@@ -67,8 +61,6 @@ export function TimeSeriesChart<TDatum>({
 	const showLegend = series.length > 1;
 
 	const axes = [
-		// Solid hairlines: a dashed grid reads as a threshold or a projection when
-		// it is only chrome.
 		<CartesianGrid key="grid" vertical={false} stroke="hsl(var(--border))" />,
 		<XAxis
 			key="x"
@@ -125,8 +117,6 @@ export function TimeSeriesChart<TDatum>({
 								type="monotone"
 								dataKey={item.key}
 								stackId={stacked ? "stack" : undefined}
-								// Stacked bands are separated by the surface, so the boundary
-								// reads as a gap instead of one colour meeting another.
 								stroke={stacked ? CHART_SURFACE : `var(--color-${item.key})`}
 								strokeWidth={2}
 								strokeLinecap="round"

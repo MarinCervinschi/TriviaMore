@@ -6,11 +6,6 @@ import type {
 	UserMastery,
 } from "@/lib/user/types";
 
-/**
- * One coherent student, for the stories: every figure is derived from the same
- * attempts, so the headline count, the tree, the calendar and the recent list can
- * never disagree with each other. Seeded — no `Math.random`, no argless `Date`.
- */
 export const TODAY = new Date("2026-04-18T12:00:00Z");
 const TODAY_DAY = Math.floor(Date.parse("2026-04-18T00:00:00Z") / 86_400_000);
 
@@ -140,7 +135,6 @@ const CATALOG: Place[] = [
 	),
 ];
 
-/** How well the student knows each section, and how fast they answer there. */
 const SKILL: Record<string, { accuracy: number; seconds: number }> = {
 	s1: { accuracy: 0.71, seconds: 41 },
 	s2: { accuracy: 0.54, seconds: 22 },
@@ -158,7 +152,6 @@ export const ATTEMPTS: AttemptHistoryEntry[] = [];
 
 for (let back = 0; back < 250; back++) {
 	const day = new Date((TODAY_DAY - back) * 86_400_000);
-	// Bursts around the exam sessions, quiet months in between.
 	const busy = [0, 1, 3, 8, 9].includes(day.getUTCMonth());
 	if (rnd() > (busy ? 0.42 : 0.08)) continue;
 
@@ -166,7 +159,6 @@ for (let back = 0; back < 250; back++) {
 	for (let i = 0; i < sittings; i++) {
 		const spot = CATALOG[Math.floor(rnd() * CATALOG.length)]!;
 		const skill = SKILL[spot.sectionId]!;
-		// The grade tracks the section's accuracy, with a couple of points of noise.
 		const score = Math.max(
 			12,
 			Math.min(33, Math.round(skill.accuracy * 33 + (rnd() - 0.5) * 5))
@@ -190,7 +182,6 @@ for (let back = 0; back < 250; back++) {
 
 export const SCORES = ATTEMPTS.map(attempt => attempt.score);
 
-/** The server aggregates per UTC day and mode; the fixture does the same. */
 export const DAILY: DailyStudyStat[] = (() => {
 	const byKey = new Map<string, DailyStudyStat>();
 	for (const attempt of ATTEMPTS) {
@@ -238,7 +229,6 @@ const ANSWERS = SECTIONS.reduce((sum, section) => sum + section.total, 0);
 export const MASTERY: UserMastery = {
 	totalAnswers: ANSWERS,
 	avgSecondsPerQuestion: 31,
-	// Easy questions carry the accuracy up, hard ones pull it down.
 	byDifficulty: [
 		{
 			key: "EASY",
@@ -263,7 +253,6 @@ export const MASTERY: UserMastery = {
 	strongSections: SECTIONS.filter(s => s.correct / s.total >= 0.75).slice(0, 6),
 };
 
-/** On days with no quiz, so the story shows whether the calendar counts them. */
 export const FLASHCARD_DAYS: DailyFlashcardDay[] = (() => {
 	const quizDays = new Set(DAILY.map(row => row.date));
 	const days: DailyFlashcardDay[] = [];

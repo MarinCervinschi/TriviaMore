@@ -10,18 +10,6 @@ import { PageToolbar } from "@/components/shared/page-toolbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-/**
- * Four page heads, and D13's decision *not* to merge them mostly still holds — what
- * changed is why. The shell's header carries the trail now, so a page under it opens
- * with a name and its controls: that is `PageToolbar`, and `AdminPageHeader` is it
- * plus a way back up the catalogue.
- *
- * The two that stay their own are the two that are not screens under the shell:
- * **Browse** keeps its landing proportions because those pages are public and a guest
- * sees them with no shell at all, and **Legal** because those pages are documents.
- *
- * Seeing them together is how that stays a decision instead of drift.
- */
 const meta = {
 	title: "Page Headers/Confronto",
 	parameters: { layout: "fullscreen" },
@@ -34,7 +22,6 @@ const TITLE = "Analisi matematica I";
 const DESCRIPTION =
 	"Ingegneria Informatica · Modena. Sei sezioni, centoquarantadue domande.";
 
-/** The base: what a page under the app shell opens with. */
 export const Toolbar: Story = {
 	name: "PageToolbar",
 	render: () => (
@@ -52,7 +39,6 @@ export const Toolbar: Story = {
 	),
 };
 
-/** Its own head, at landing proportions — and its own trail, since a guest gets no shell. */
 export const Browse: Story = {
 	render: () => (
 		<BrowsePageHeader
@@ -78,7 +64,6 @@ export const Browse: Story = {
 	),
 };
 
-/** Admin adds a way back up the catalogue, which the deep entity pages need. */
 export const Admin: Story = {
 	render: () => (
 		<div className="container pt-6">
@@ -94,7 +79,6 @@ export const Admin: Story = {
 	),
 };
 
-/** The other that did not converge, and should not: a document, not a screen. */
 export const Legal: Story = {
 	render: () => (
 		<div className="container max-w-6xl pt-8">
@@ -109,7 +93,6 @@ export const Legal: Story = {
 	),
 };
 
-/** The same content through all of them — the only way to see drift from decision. */
 export const TuttiInsieme: Story = {
 	name: "Tutti insieme, stesso contenuto",
 	render: () => (
@@ -170,7 +153,7 @@ export const TuttiInsieme: Story = {
 	),
 };
 
-/** Where the actions outgrow the row: they wrap under the title rather than squeeze it. */
+/** Actions that outgrow the row wrap under the title. */
 export const ToolbarControlli: Story = {
 	name: "Molte azioni",
 	render: () => (

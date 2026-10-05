@@ -10,7 +10,6 @@ export function QuizPlaySkeleton() {
 			className="relative isolate flex h-screen flex-col"
 		>
 			<PageBand />
-			{/* Header */}
 			<div className="bg-card flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
 				<div className="flex items-center gap-3">
 					<Skeleton className="h-9 w-9 rounded-xl" />
@@ -23,7 +22,6 @@ export function QuizPlaySkeleton() {
 			</div>
 
 			<div className="flex flex-1 overflow-hidden">
-				{/* Sidebar */}
 				<aside className="bg-card hidden w-64 shrink-0 border-r p-4 lg:block">
 					<Skeleton className="mb-4 h-4 w-32" />
 					<div className="grid grid-cols-5 gap-2">
@@ -34,12 +32,10 @@ export function QuizPlaySkeleton() {
 				</aside>
 
 				<div className="flex flex-1 flex-col overflow-hidden">
-					{/* Progress */}
 					<div className="bg-card border-b px-4 py-2 sm:px-6">
 						<Skeleton className="h-2 w-full rounded-full" />
 					</div>
 
-					{/* Question card */}
 					<div className="flex-1 overflow-y-auto p-6 sm:p-8">
 						<div className="mx-auto max-w-3xl space-y-6">
 							<div className="flex items-center gap-3">
@@ -63,7 +59,6 @@ export function QuizPlaySkeleton() {
 				</div>
 			</div>
 
-			{/* Navigation */}
 			<div className="bg-card flex items-center justify-between border-t px-4 py-3 sm:px-6">
 				<Skeleton className="h-9 w-24 rounded-xl" />
 				<Skeleton className="h-9 w-32 rounded-xl" />
@@ -79,7 +74,6 @@ export function FlashcardSkeleton() {
 			className="relative isolate flex h-screen flex-col"
 		>
 			<PageBand />
-			{/* Header */}
 			<div className="bg-card flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
 				<div className="flex items-center gap-3">
 					<Skeleton className="h-9 w-9 rounded-xl" />
@@ -89,7 +83,6 @@ export function FlashcardSkeleton() {
 			</div>
 
 			<div className="flex flex-1 overflow-hidden">
-				{/* Sidebar */}
 				<aside className="bg-card hidden w-64 shrink-0 border-r p-4 lg:block">
 					<Skeleton className="mb-4 h-4 w-32" />
 					<div className="space-y-2">
@@ -100,19 +93,16 @@ export function FlashcardSkeleton() {
 				</aside>
 
 				<div className="flex flex-1 flex-col overflow-hidden">
-					{/* Progress */}
 					<div className="bg-card border-b px-4 py-2 sm:px-6">
 						<Skeleton className="h-2 w-full rounded-full" />
 					</div>
 
-					{/* Card */}
 					<div className="flex flex-1 items-center justify-center p-6 sm:p-12">
 						<Skeleton className="h-[420px] w-full max-w-2xl rounded-3xl" />
 					</div>
 				</div>
 			</div>
 
-			{/* Navigation */}
 			<div className="bg-card flex items-center justify-between border-t px-4 py-3 sm:px-6">
 				<Skeleton className="h-9 w-24 rounded-xl" />
 				<Skeleton className="h-9 w-32 rounded-xl" />
@@ -125,7 +115,6 @@ export function QuizResultsSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento risultati…" className="container py-8">
 			<div className="mx-auto max-w-4xl space-y-6">
-				{/* Outcome — the trail above it moved to the shell header */}
 				<SkeletonInset header>
 					<div className="flex flex-col sm:flex-row">
 						<div className="flex-1 p-7">
@@ -158,7 +147,6 @@ export function QuizResultsSkeleton() {
 					</div>
 				</SkeletonInset>
 
-				{/* Pace and difficulty */}
 				<div className="grid gap-6 sm:grid-cols-2">
 					{Array.from({ length: 2 }).map((_, i) => (
 						<SkeletonInset key={i} header footer>
@@ -172,7 +160,6 @@ export function QuizResultsSkeleton() {
 					))}
 				</div>
 
-				{/* Trend */}
 				<SkeletonInset header>
 					<div className="flex flex-col sm:flex-row">
 						<div className="border-border/60 space-y-3 border-b p-5 sm:w-60 sm:border-r sm:border-b-0">
@@ -192,7 +179,6 @@ export function QuizResultsSkeleton() {
 					</div>
 				</SkeletonInset>
 
-				{/* Review */}
 				<div className="space-y-3.5">
 					<div className="flex items-center justify-between gap-4">
 						<Skeleton className="h-7 w-48" />
@@ -212,7 +198,6 @@ export function QuizResultsSkeleton() {
 					</div>
 				</div>
 
-				{/* CTA */}
 				<div className="flex justify-center gap-3 pt-2 pb-8">
 					<Skeleton className="h-11 w-40 rounded-xl" />
 					<Skeleton className="h-11 w-44 rounded-xl" />

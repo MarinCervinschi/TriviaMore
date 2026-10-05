@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 
 import { useDebounce } from "@/hooks/useDebounce";
 
-/**
- * Keeps a text input responsive while its value lives in a search param: typing
- * updates local state, and only the settled value is pushed to the URL. External
- * changes (back/forward, a cleared filter) flow back into the input.
- */
 export function useDebouncedSearchParam(
 	value: string | undefined,
 	onCommit: (next: string | undefined) => void,

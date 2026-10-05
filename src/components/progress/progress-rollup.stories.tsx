@@ -22,7 +22,6 @@ const COURSES: RollupCourse[] = [
 				sections: [
 					{ id: "s1", name: "Limiti", quizzes: 5, avgGrade: 28, timeSpent: 1_500_000 },
 					{ id: "s2", name: "Integrali", quizzes: 3, avgGrade: 25, timeSpent: 900_000 },
-					// The exam sentinel: rendered as a non-clickable, translated row.
 					{
 						id: "sx",
 						name: EXAM_SIMULATION_SECTION,

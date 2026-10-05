@@ -46,8 +46,6 @@ export function SliderWithInput({
 		onChange(Math.min(max, Math.max(min, n)));
 	};
 
-	// A range of one is not a choice: a section with a single question would otherwise render a slider
-	// and a number field that can only ever hold the value they already show.
 	const fixed = min >= max;
 
 	return (
@@ -93,7 +91,7 @@ export function SliderWithInput({
 }
 
 type TimeTickRowProps = {
-	/** Discrete time steps in minutes; an extra ∞ tick is rendered at index === steps.length. */
+	/** Minutes; an extra ∞ tick follows the last step. */
 	steps: readonly number[];
 	index: number;
 	onChange: (index: number) => void;

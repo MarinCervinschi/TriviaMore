@@ -10,11 +10,6 @@ import { LoginForm } from "./login-form";
 import { OAuthButtons } from "./oauth-buttons";
 import { RegisterForm } from "./register-form";
 
-/**
- * The two auth pages, assembled the way the routes assemble them. Submitting reaches a stubbed server
- * function and fails with a toast, which is the honest behaviour here: what these stories are for is
- * the shell, the field spacing and the validation states.
- */
 const meta = {
 	title: "Auth/Accesso",
 	parameters: { layout: "fullscreen", session: null },
@@ -95,7 +90,6 @@ export const Register: Story = {
 	),
 };
 
-/** The shell on its own: band, logo, theme toggle, back link — everything around the form. */
 export const Shell: Story = {
 	name: "Il guscio",
 	render: () => (

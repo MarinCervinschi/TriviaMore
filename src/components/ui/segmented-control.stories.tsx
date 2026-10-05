@@ -7,10 +7,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { SegmentedControl } from "./segmented-control";
 
-/**
- * The filter that shows every choice at once. Two sizes: the default for a desktop
- * toolbar, `lg` where a finger has to hit it.
- */
 const meta = {
 	title: "UI/SegmentedControl",
 	parameters: { layout: "centered" },
@@ -43,7 +39,6 @@ export const Default: Story = {
 	render: () => <Example />,
 };
 
-/** Without counts, and at the touch size the phone layouts use. */
 export const Touch: Story = {
 	name: "Formato touch",
 	render: () => (
@@ -69,10 +64,7 @@ function Plain() {
 	);
 }
 
-/**
- * Icons in place of words, for a control too narrow to spell them — the sidebar's
- * theme switch. The label still carries the accessible name.
- */
+/** Icons in place of words; the label still gives the accessible name. */
 export const SoloIcone: Story = {
 	name: "Solo icone",
 	render: () => <Theme />,

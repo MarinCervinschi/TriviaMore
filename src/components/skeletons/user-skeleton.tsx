@@ -13,10 +13,9 @@ export function UserDashboardSkeleton() {
 			label="Caricamento dashboard…"
 			className="container space-y-8 pt-6 pb-8"
 		>
-			{/* No status bar and no course chip: neither query is in the loader. */}
+			{/* No status bar or course chip, because neither query is in the loader. */}
 			<Skeleton className="h-8 w-56" />
 
-			{/* Progress summary */}
 			<div className="bg-card rounded-2xl border p-6 shadow-sm">
 				<div className="mb-6 flex items-center justify-between">
 					<Skeleton className="h-5 w-40" />
@@ -33,14 +32,12 @@ export function UserDashboardSkeleton() {
 				</div>
 			</div>
 
-			{/* Recent classes */}
 			<div className="space-y-4">
 				<Skeleton className="h-3 w-24" />
 				<Skeleton className="h-7 w-64" />
 				<SkeletonTable rows={3} columns={4} />
 			</div>
 
-			{/* Activity: the last sittings, inside the inset card */}
 			<div className="space-y-4">
 				<div>
 					<Skeleton className="h-4 w-24" />
@@ -83,10 +80,7 @@ function SkeletonCard({ height }: { height: number }) {
 	);
 }
 
-/**
- * The analytics page: no hero — a toolbar, the four headline cards, then the grid
- * of pairs. It has to match `AnalyticsView`, or the page jumps when it arrives.
- */
+/** Must match `AnalyticsView`, or the page jumps when it arrives. */
 export function AnalyticsSkeleton() {
 	return (
 		<SkeletonRoot
@@ -136,7 +130,6 @@ export function AnalyticsSkeleton() {
 	);
 }
 
-/** No breadcrumb and no rollup, unlike `AnalyticsSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
 		<SkeletonRoot
@@ -169,7 +162,6 @@ export function EntityProgressSkeleton() {
 				))}
 			</div>
 
-			{/* Same rows as the full page, less the tree and the section scatter. */}
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
 				<div className="lg:col-span-8">
 					<SkeletonCard height={340} />
@@ -330,7 +322,6 @@ export function SettingsSkeleton() {
 			<div className="container space-y-6 py-6">
 				<SkeletonToolbar />
 
-				{/* Profile form */}
 				<div className="bg-card rounded-3xl border p-6 sm:p-8">
 					<Skeleton className="mb-2 h-6 w-1/3" />
 					<Skeleton className="mb-6 h-4 w-1/2" />
@@ -362,7 +353,6 @@ export function SettingsSkeleton() {
 					<Skeleton className="mt-6 h-10 w-36 rounded-xl" />
 				</div>
 
-				{/* Stats */}
 				<div>
 					<Skeleton className="mb-1 h-6 w-48" />
 					<Skeleton className="mb-4 h-4 w-2/3" />
@@ -373,7 +363,6 @@ export function SettingsSkeleton() {
 					</div>
 				</div>
 
-				{/* Account details */}
 				<div className="bg-card rounded-3xl border p-6 sm:p-8">
 					<Skeleton className="mb-2 h-6 w-40" />
 					<Skeleton className="mb-6 h-4 w-1/2" />
@@ -394,7 +383,6 @@ export function SettingsSkeleton() {
 	);
 }
 
-/** Mirrors `/user/achievements`: breadcrumb, the two summary panels, tabs, one group. */
 export function AchievementsSkeleton() {
 	return (
 		<SkeletonRoot

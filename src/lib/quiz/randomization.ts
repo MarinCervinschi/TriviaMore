@@ -1,4 +1,3 @@
-/** Fisher-Yates shuffle — returns a new shuffled array */
 export function shuffleArray<T>(array: T[]): T[] {
 	const shuffled = [...array];
 	for (let i = shuffled.length - 1; i > 0; i--) {
@@ -8,7 +7,6 @@ export function shuffleArray<T>(array: T[]): T[] {
 	return shuffled;
 }
 
-/** Select `count` random items from array without duplicates */
 export function selectRandomItems<T>(array: T[], count: number): T[] {
 	if (count >= array.length) return shuffleArray(array);
 

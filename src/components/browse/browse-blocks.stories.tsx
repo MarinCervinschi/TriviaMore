@@ -10,8 +10,6 @@ import { ExpandableDescription } from "./expandable-description";
 import { PlanActivities } from "./plan-activities";
 import { SearchFilter } from "./search-filter";
 
-// The small parts a browse page is framed with: where you are, what to do when there is nothing, and
-// how a long description behaves.
 const meta = {
 	title: "Browse/Blocchi",
 	parameters: { layout: "padded" },

@@ -3,8 +3,7 @@ type MaintainerInviteDefaultsInput = {
 	inviteeName?: string | null;
 };
 
-// Builds the default, editable subject + body for a maintainer invitation.
-// Kept client-safe (pure string logic) so the admin dialog can prefill it.
+// Pure string logic, so the admin dialog can prefill it.
 export function buildMaintainerInviteDefaults({
 	courseName,
 	inviteeName,
@@ -45,8 +44,6 @@ function escapeHtml(str: string): string {
 		.replace(/'/g, "&#39;");
 }
 
-// Wraps the (possibly edited) plain-text body into the branded TriviaMore shell.
-// Only the body is user-editable; the header and footer stay fixed.
 export function renderMaintainerInviteHtml({
 	body,
 	courseName,

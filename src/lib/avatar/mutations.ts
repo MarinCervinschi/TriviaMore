@@ -9,7 +9,7 @@ import {
 import { resizeForAvatar } from "./resize";
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp"] as const;
-/** The picked file, before downscaling — the stored one is a fraction of this. */
+/** The picked file, before downscaling. */
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 
 function invalidateProfile(queryClient: ReturnType<typeof useQueryClient>) {
@@ -30,8 +30,7 @@ export function useSetGeneratedAvatar() {
 	});
 }
 
-/** Three moves, because the bucket has no write policy: the server names and
- *  signs, the browser sends the bytes, the server commits the result. */
+/** The server signs the upload, the browser sends the bytes, and the server commits them. */
 export function useUploadAvatar() {
 	const queryClient = useQueryClient();
 

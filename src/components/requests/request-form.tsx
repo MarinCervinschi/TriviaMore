@@ -48,7 +48,6 @@ export function RequestForm({
 		defaultTargetSectionId ? "questions" : defaultTargetClassId ? "section" : null
 	);
 
-	// Target selection
 	const [selectedDeptId, setSelectedDeptId] = useState("");
 	const [selectedCourseId, setSelectedCourseId] = useState("");
 	const [selectedClassId, setSelectedClassId] = useState(defaultTargetClassId ?? "");
@@ -56,16 +55,13 @@ export function RequestForm({
 		defaultTargetSectionId ?? ""
 	);
 
-	// Section form
 	const [sectionName, setSectionName] = useState("");
 	const [sectionDesc, setSectionDesc] = useState("");
 
-	// Questions form
 	const [questions, setQuestions] = useState<SubmittedQuestion[]>([
 		{ ...EMPTY_QUESTION },
 	]);
 
-	// File upload form
 	const [file, setFile] = useState<File | null>(null);
 	const [fileComment, setFileComment] = useState("");
 	const [uploading, setUploading] = useState(false);
@@ -156,7 +152,6 @@ export function RequestForm({
 
 	const isPending = createRequest.isPending || uploading;
 
-	// ─── Step 1: Choose type ───
 	if (step === 1) {
 		return (
 			<div className="space-y-4">
@@ -195,7 +190,6 @@ export function RequestForm({
 		);
 	}
 
-	// ─── Step 2: Pick target ───
 	if (step === 2) {
 		const needsSection = type === "questions";
 
@@ -272,7 +266,6 @@ export function RequestForm({
 		);
 	}
 
-	// ─── Step 3: Content form ───
 	return (
 		<div className="space-y-4">
 			{!hasPrefilledTarget && (

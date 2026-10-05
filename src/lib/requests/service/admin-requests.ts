@@ -30,8 +30,6 @@ export async function getAdminRequests(): Promise<AdminContentRequest[]> {
 	const { scopeCourseIds } = await requireRequestAdmin();
 	const db = getDb();
 
-	// Scoping in the query rather than after the fetch: a maintainer of one course
-	// used to receive every request in the database and filter in memory.
 	if (scopeCourseIds && scopeCourseIds.size === 0) return [];
 
 	const rows = await db
@@ -82,8 +80,6 @@ export async function getRequestDetail(
 	const db = getDb();
 	const request = await findRequestOrThrow(db, id);
 
-	// The owner sees their own request; anyone else needs admin access, and a
-	// maintainer has to be in scope. Only admins get the profiles.
 	let author = null;
 	let handledByUser = null;
 	if (request.userId !== userId) {
@@ -177,10 +173,7 @@ export async function approveRequest(id: string) {
 		const target = await findRequestOrThrow(tx, id);
 		await assertInScope(tx, scopeCourseIds, target);
 
-		// Atomic claim: PENDING → APPROVED in one statement, so two concurrent
-		// clicks cannot both go on to insert catalog content. Inside a transaction a
-		// later failure undoes the claim, which is why the previous implementation
-		// needed a manual rollback to leave the request handleable.
+		// Atomic claim, so two concurrent approvals cannot both insert content.
 		const [claimed] = await tx
 			.update(contentRequests)
 			.set({ status: "APPROVED", handledBy: admin.id, handledAt: sql`now()` })

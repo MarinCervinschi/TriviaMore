@@ -45,7 +45,6 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
 
 	return (
 		<section className="relative py-20 sm:py-28">
-			{/* Background */}
 			<div className="bg-muted/30 pointer-events-none absolute inset-0 -z-10" />
 
 			<div className="container">
@@ -65,7 +64,6 @@ export function FeaturesSection({ features }: { features: FeatureCard[] }) {
 					</p>
 				</motion.div>
 
-				{/* Bento-style grid: 2 large + 2 small */}
 				<motion.div
 					ref={gridRef}
 					className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2"

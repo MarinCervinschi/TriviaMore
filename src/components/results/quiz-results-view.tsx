@@ -26,21 +26,11 @@ import { ScoreLedgerCard } from "./score-ledger-card";
 
 const ACTION_CLASS = "border-border/60 bg-card size-8 rounded-lg border";
 
-/**
- * The results page itself, without the data loading — so the layout that ships is
- * the one the story renders.
- *
- * The two shapes it takes come from the evaluation mode, not from the quiz mode:
- * a run that can lose points gets the ledger that says where they went, and one
- * that cannot has no use for it.
- */
 export function QuizResultsView({ result }: { result: QuizAttemptResult }) {
 	const summary = useMemo(() => summariseAttempt(result), [result]);
 	const { section, timeLimit } = result.quiz;
 	const history = result.history;
 
-	// The exam sentinel is a stable id, not a place: an exam simulation belongs to
-	// its class, and that is where both its history and its "go back" point.
 	const sentinel = section.name === EXAM_SIMULATION_SECTION;
 	const backPath = sentinel ? classBrowsePath(section) : section.path;
 	const backLabel = sentinel ? "Torna all'insegnamento" : "Torna alla sezione";

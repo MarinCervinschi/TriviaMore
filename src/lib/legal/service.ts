@@ -25,8 +25,7 @@ export async function getAcceptanceStatus(
 	};
 }
 
-// Records TERMS + PRIVACY for a user, capturing IP and user-agent when a request
-// context is available. Called during signup too, before the user is authed.
+/** Also called during signup, before the user is authenticated. */
 export async function insertLegalAcceptances(
 	userId: string,
 	termsVersion = CURRENT_TERMS_VERSION,
@@ -36,15 +35,13 @@ export async function insertLegalAcceptances(
 	let userAgent: string | null = null;
 	try {
 		userAgent = getRequestHeader("user-agent") ?? null;
-		// Cloudflare's own header first: it appends the true IP to the END of
-		// X-Forwarded-For, so the first entry — what `getRequestIP` returns — is
-		// whatever the client chose to send.
+		// Cloudflare's header first, because the first X-Forwarded-For entry is whatever the client sent.
 		ipAddress =
 			getRequestHeader("cf-connecting-ip") ??
 			getRequestIP({ xForwardedFor: true }) ??
 			null;
 	} catch {
-		// Request helpers throw outside a request context; leave both null.
+		// Request helpers throw outside a request context.
 	}
 
 	await getDb()

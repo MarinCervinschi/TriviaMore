@@ -68,8 +68,7 @@ function findEvaluationMode(db: DbOrTx, id: string) {
 		.then(rows => rows[0]);
 }
 
-// The mode a quiz falls back to when the client sends none. Ordered by creation
-// so the default is stable instead of whatever the planner returns first.
+// Ordered by creation, so the default is stable.
 function findDefaultEvaluationModeId(db: DbOrTx) {
 	return db
 		.select({ id: evaluationModes.id })
@@ -106,8 +105,6 @@ function shuffleOptions(
 	return shuffleArray(options);
 }
 
-// Which sections a run draws from: its own, or every section of the class the
-// user can reach when simulating the exam.
 async function resolveSourceSections(
 	userId: string,
 	input: StartQuizInput
@@ -120,11 +117,7 @@ async function resolveSourceSections(
 	return accessibleSectionIdsInClass(userId, section.classId);
 }
 
-/**
- * Discards what this user walked away from: past the horizon an open attempt is
- * scrap holding a quiz nothing can reach. Lazy so it needs no scheduler, and
- * best-effort — failing to take out the rubbish must not block a quiz.
- */
+/** Best-effort: a failure here never blocks a quiz. */
 async function reapAbandonedAttempts(userId: string): Promise<void> {
 	try {
 		await getDb().transaction(async tx => {
@@ -155,9 +148,7 @@ export async function getOpenAttempt(userId: string): Promise<OpenAttempt | null
 	if (!attempt) return null;
 	if (!attempt.isStale) return toOpenAttempt(attempt);
 
-	// Every screen that offers the attempt back reads through here, and the gate in
-	// `startQuiz` is the only other reaper — so without this the student would be
-	// shown a quiz the horizon has already written off, with no way past it.
+	// Reaped here too, or the student is offered a quiz the horizon has already written off.
 	await reapAbandonedAttempts(userId);
 	const remaining = await findOpenAttemptForUser(db, userId);
 	return remaining ? toOpenAttempt(remaining) : null;
@@ -171,8 +162,7 @@ export async function startQuiz(
 
 	await assertSectionAccess(db, userId, input.sectionId);
 
-	// Reap before the gate, or an attempt the user forgot about would lock them
-	// out of starting anything until they came back and dealt with it by hand.
+	// Reaped before the gate, or a forgotten attempt locks the user out.
 	await reapAbandonedAttempts(userId);
 	if (await findOpenAttemptForUser(db, userId)) throw new Conflict(QUIZ_IN_PROGRESS);
 
@@ -190,8 +180,6 @@ export async function startQuiz(
 
 	const selected = selectRandomItems(pool, input.questionCount);
 
-	// One transaction: a quiz without its questions, or without the attempt that
-	// owns it, is unreachable garbage the user cannot resume or delete.
 	try {
 		return await db.transaction(async tx => {
 			const quiz = await insertQuiz(tx, {
@@ -212,8 +200,7 @@ export async function startQuiz(
 			return { quizId: quiz.id, attemptId: attempt.id };
 		});
 	} catch (error) {
-		// The gate above is a read, so two starts racing it both pass; the index is
-		// what decides, and this gives its violation the answer the gate would have.
+		// Two starts can both pass the read gate; the unique index decides.
 		if (!isOpenAttemptViolation(error)) throw error;
 		throw new Conflict(QUIZ_IN_PROGRESS);
 	}
@@ -229,8 +216,7 @@ export async function getQuiz(
 	const quiz = await findQuizWithChain(db, quizId);
 	if (!quiz) return null;
 
-	// quizId comes from the URL, so re-check the section it belongs to rather
-	// than trusting that whoever created the quiz is the one fetching it.
+	// quizId comes from the URL, so the section is re-checked.
 	await assertSectionAccess(db, userId, quiz.sectionId);
 
 	const order = await findQuizQuestionOrder(db, quizId);
@@ -330,10 +316,7 @@ export async function completeQuiz(
 		});
 
 		if (!claimed) {
-			// Either the attempt is not this user's, does not exist, or a concurrent
-			// request already completed it. Only the last is a success, and it has to
-			// stay one so a retry lands on the results page; the other two answer
-			// alike, so a stranger's id cannot be told apart from a deleted one.
+			// Only an attempt completed by a concurrent request is a success; the other cases answer alike.
 			const existing = await findAttempt(tx, input.quizAttemptId);
 			if (existing?.userId !== userId || !existing.completedAt) {
 				throw new Conflict(ATTEMPT_GONE);
@@ -341,10 +324,7 @@ export async function completeQuiz(
 			return { attemptId: input.quizAttemptId };
 		}
 
-		// Grading needs the quiz. Deleting a section cascades its quizzes and nulls
-		// this attempt's quiz_id, so returning early here would commit the claim —
-		// completed, score 0, no answers — and freeze that into the user's history.
-		// Throwing rolls the claim back and leaves the attempt open instead.
+		// Throwing rolls the claim back; returning would commit a completed attempt with score 0.
 		if (!claimed.quizId) throw new Conflict(QUIZ_GONE);
 
 		const quiz = await findQuizSectionAndMode(tx, claimed.quizId);
@@ -370,8 +350,7 @@ export async function completeQuiz(
 			quizMode: quiz.quizMode,
 		});
 
-		// In the transaction, not after it: a rollup that can fail independently of
-		// the attempt it describes is drift waiting to happen.
+		// In the transaction, so the rollup cannot drift from the attempt.
 		await applyQuizActivity(tx, {
 			userId,
 			sectionId: quiz.sectionId,
@@ -384,8 +363,7 @@ export async function completeQuiz(
 		return { attemptId: input.quizAttemptId };
 	});
 
-	// Awaited, not fired and forgotten: the unlock is announced in this response.
-	// It runs after the commit and cannot throw, so the quiz is never at risk.
+	// Awaited, because the unlock is announced in this response.
 	const unlocked = await evaluateAchievementsSafely(userId);
 
 	return { ...result, unlocked };
@@ -401,8 +379,7 @@ export async function cancelQuiz(userId: string, attemptId: string): Promise<voi
 	});
 }
 
-// Eight columns is what the card can plot without the labels colliding; the tail
-// is the part worth reading anyway.
+// Eight columns fit on the card before the labels collide.
 const HISTORY_POINTS = 8;
 
 function buildHistory(

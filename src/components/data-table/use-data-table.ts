@@ -16,10 +16,6 @@ import type { DataTableColumn, DataTableFeatures, DataTableInstance } from "./fe
 
 export const DATA_TABLE_PAGE_SIZE = 10;
 
-/**
- * The search params every data table understands. A route adds one extra
- * `string` key per faceted column, named after the column id.
- */
 export type DataTableSearch = {
 	q?: string;
 	page?: number;
@@ -196,8 +192,7 @@ export function useDataTable<
 		getRowId,
 		globalFilterFn,
 		meta: { resetFilters },
-		// Toggling a header cycles asc/desc without a third "unsorted" step, so a
-		// table with a default sort can never end up in a state the URL cannot express.
+		// No unsorted step, because the URL cannot tell it apart from never sorted.
 		enableSortingRemoval: false,
 		manualPagination: Boolean(manual),
 		manualSorting: Boolean(manual),

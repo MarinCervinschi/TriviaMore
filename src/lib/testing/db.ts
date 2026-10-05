@@ -4,10 +4,7 @@ import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
 
-// The integration tier runs only against a local database. A rolled-back
-// transaction still opens a real connection, so a stray TEST_DATABASE_URL must
-// never be allowed to reach the shared production database: this guard refuses
-// any non-local host outright.
+// Refuses any non-local host, so a stray TEST_DATABASE_URL never reaches production.
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "0.0.0.0"]);
 const DEFAULT_TEST_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
@@ -47,9 +44,7 @@ export async function closeTestDb() {
 type TestDb = ReturnType<typeof getTestDb>;
 export type TestTx = Parameters<Parameters<TestDb["transaction"]>[0]>[0];
 
-// Runs the body inside a transaction that is always rolled back. Tests never
-// persist anything and never need to clean up after one another — the same
-// guarantee `pnpm smoke:writes` relies on.
+/** Runs the body in a transaction that is always rolled back. */
 export async function withRollback<T>(body: (tx: TestTx) => Promise<T>): Promise<T> {
 	const database = getTestDb();
 	let result: T;

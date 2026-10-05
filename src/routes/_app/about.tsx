@@ -89,7 +89,6 @@ function AboutPage() {
 
 	return (
 		<div className="relative">
-			{/* Hero */}
 			<section className="relative py-16 sm:py-24">
 				<motion.div
 					ref={heroRef}
@@ -120,7 +119,6 @@ function AboutPage() {
 				</motion.div>
 			</section>
 
-			{/* Mission — full-width accent band */}
 			<section className="bg-muted/30 relative border-y">
 				<motion.div
 					ref={missionRef}
@@ -165,7 +163,6 @@ function AboutPage() {
 				</motion.div>
 			</section>
 
-			{/* Values — Bento grid */}
 			<section className="py-16 sm:py-24">
 				<div className="container">
 					<div className="mb-12 text-center sm:mb-16">
@@ -219,7 +216,6 @@ function AboutPage() {
 				</div>
 			</section>
 
-			{/* Tech Stack — Orbiting animation */}
 			<section className="bg-muted/20 border-y py-16 sm:py-24">
 				<div className="container">
 					<div className="mb-10 text-center">
@@ -255,7 +251,6 @@ function AboutPage() {
 				</div>
 			</section>
 
-			{/* CTA — gradient card full-width */}
 			<section className="relative py-16 sm:py-24">
 				<div className="container">
 					<InsetCard className="border-primary/20">

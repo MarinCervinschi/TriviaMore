@@ -12,14 +12,12 @@ import { cn } from "@/lib/utils";
 export interface PickerOption {
 	id: string;
 	name: string;
-	/** Right-aligned, secondary: a course type and its CFU, a campus, a count. */
 	meta?: string;
-	/** Matched by the search on top of the name — a code, an acronym. */
+	/** Matched by the search besides the name, such as a code or an acronym. */
 	keywords?: string;
 }
 
-/** Suggestions come first under their own heading and are left out of "Tutti",
- *  so an option is offered once whichever group it lands in. */
+/** Suggestions come first and are left out of "Tutti", so each option appears once. */
 export function OnboardingPicker({
 	options,
 	suggestions = [],

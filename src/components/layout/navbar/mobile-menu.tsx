@@ -39,7 +39,6 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
 		);
 	}
 
-	// Dropdown: main link + children indented
 	return (
 		<>
 			{item.to ? (

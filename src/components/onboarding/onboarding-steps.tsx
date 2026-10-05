@@ -6,8 +6,7 @@ export interface OnboardingStep {
 	label: string;
 }
 
-/** Clickable only up to `maxReachable`, the furthest step actually reached:
- *  going back must not become a way of skipping ahead past a choice. */
+/** Steps are clickable only up to `maxReachable`. */
 export function OnboardingSteps({
 	steps,
 	current,

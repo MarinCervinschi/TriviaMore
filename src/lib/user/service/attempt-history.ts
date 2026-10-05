@@ -16,11 +16,7 @@ export async function getAttemptHistory(
 	return rows.map(row => ({ ...row, completedAt: row.completedAt! }));
 }
 
-/**
- * Stars an attempt, or clears it. The user id is part of the predicate rather
- * than a check before it: one statement, and someone else's attempt simply does
- * not match — there is nothing to leak by trying.
- */
+/** The user id is in the predicate, so someone else's attempt simply does not match. */
 export async function setAttemptFavorite(
 	userId: string,
 	attemptId: string,

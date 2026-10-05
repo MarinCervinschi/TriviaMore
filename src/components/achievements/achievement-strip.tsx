@@ -12,7 +12,6 @@ import { AchievementMedal, achievementInk } from "./achievement-medal";
 
 const RECENT = 3;
 
-/** The dashboard's slice: the last few unlocked, plus the closest goal. */
 export function AchievementStrip({ overview }: { overview: AchievementsOverview }) {
 	const recent = overview.categories
 		.flatMap(group => group.achievements)

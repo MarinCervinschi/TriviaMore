@@ -30,8 +30,7 @@ export const quizAttempts = quizSchema
 			startedAt: timestamp("started_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
 				.notNull(),
-			// What the abandonment horizon measures. `started_at` cannot: an attempt
-			// resumed daily for a week is in use, however long ago it was begun.
+			// The abandonment horizon measures this, because a resumed attempt is in use however old it is.
 			lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
 				.notNull(),
@@ -61,8 +60,7 @@ export const quizAttempts = quizSchema
 			index("idx_quiz_attempts_user_favorite")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`is_favorite`),
-			// Unique, not merely indexed: one open attempt per user is an invariant the
-			// database holds, so two concurrent starts cannot both pass the read gate.
+			// Unique, so two concurrent starts cannot both pass the read gate.
 			uniqueIndex("idx_quiz_attempts_user_open")
 				.using("btree", table.userId.asc().nullsLast().op("uuid_ops"))
 				.where(sql`completed_at IS NULL`),

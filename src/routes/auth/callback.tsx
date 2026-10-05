@@ -3,8 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-/** Signing up and signing back in arrive on the same callback, and only the
- *  first one is signed in by the request that created the account. */
+/** Sign-up and sign-in share this callback; only a sign-up lands within this window of account creation. */
 const NEW_ACCOUNT_WINDOW_MS = 10_000;
 
 const exchangeCodeFn = createServerFn({ method: "GET" })

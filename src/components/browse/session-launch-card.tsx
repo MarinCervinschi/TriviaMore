@@ -21,10 +21,6 @@ const accents = {
 	},
 } as const;
 
-// Shared shell for the quiz and flashcard launch cards on a section page. The
-// two differed only by accent, icon, and copy; the icon badge, the count line,
-// and the sign-in-aware call to action are identical. Callers keep the auth
-// query and the lazy dialog and pass `isAuthenticated` + `onStart` in.
 export function SessionLaunchCard({
 	accent,
 	icon: Icon,

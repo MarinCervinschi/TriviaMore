@@ -53,8 +53,7 @@ export async function signup(input: RegisterInput): Promise<SignupResult> {
 	if (error) return { success: false, error: error.message };
 	if (!data.user) return { success: false, error: "Registrazione fallita" };
 
-	// Supabase returns 200 with an empty identities array when the email is
-	// already registered (anti-enumeration). No confirmation email is sent.
+	// Supabase returns 200 with no identities when the email is already registered, and sends no email.
 	if (data.user.identities?.length === 0) {
 		return { success: false, error: "Email già registrata" };
 	}

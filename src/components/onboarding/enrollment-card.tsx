@@ -8,7 +8,6 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { crmQueries } from "@/lib/crm/queries";
 
-/** The settings view of the enrolment: what is declared, and the way back in. */
 export function EnrollmentCard() {
 	const { data: enrollment, isPending } = useQuery(crmQueries.currentEnrollment());
 

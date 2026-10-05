@@ -79,19 +79,12 @@ export function EmptyState({
 	);
 }
 
-/**
- * The empty message for a panel that already has its own frame — a table's card, a chart's card.
- * `EmptyState` *is* the frame; this one goes inside someone else's.
- *
- * It replaces DataTableEmpty and ChartEmpty, which were the same three lines in two files, eight
- * pixels of padding apart.
- */
+/** The empty message inside a panel that already has its own frame. */
 export function InlineEmpty({
 	children = "Nessun dato da mostrare.",
 	action,
 }: {
 	children?: ReactNode;
-	/** A way out of the empty state — clearing the filters, most often. */
 	action?: ReactNode;
 }) {
 	return (

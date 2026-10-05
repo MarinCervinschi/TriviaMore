@@ -13,7 +13,6 @@ export interface BreadcrumbSegment {
 	href: string;
 }
 
-/** One glyph per level of the catalogue, in the order the routes nest them. */
 const LEVEL_ICONS: Icon[] = [
 	CompassIcon,
 	BuildingsIcon,
@@ -29,8 +28,7 @@ export function BrowseBreadcrumb({
 	segments: BreadcrumbSegment[];
 	current: string;
 }) {
-	// No home crumb here: these pages are public, and a guest has no dashboard to
-	// go back to — the trail starts where the catalogue does.
+	// No home crumb, because a guest has no dashboard to go back to.
 	const items: Crumb[] = [
 		...segments.map((segment, index) => ({
 			label: segment.label,

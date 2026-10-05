@@ -43,14 +43,13 @@ export const Small: Story = {
 	render: () => <Harness maxQuestions={3} />,
 };
 
-/** No evaluation modes seeded: the picker and its info card should simply not appear. */
 export const NoEvalModes: Story = {
 	name: "Senza modalità di valutazione",
 	parameters: { queryData: [] },
 	render: () => <Harness maxQuestions={40} />,
 };
 
-/** With a quiz already open the config never appears: the way out is offered instead. */
+/** With a quiz already open, the dialog offers the way out instead of the config. */
 export const Blocked: Story = {
 	name: "Con un quiz già in corso",
 	parameters: { queryData: [...EVAL_MODES_SEED, ...OPEN_ATTEMPT_SEED] },

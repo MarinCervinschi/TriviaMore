@@ -89,7 +89,6 @@ export function ReportQuestionDialog({
 				</DialogHeader>
 
 				<div className="space-y-4">
-					{/* Reason checkboxes */}
 					<div className="space-y-2">
 						{REASONS.map(reason => {
 							const checked = reasons.includes(reason.id);
@@ -119,7 +118,6 @@ export function ReportQuestionDialog({
 						})}
 					</div>
 
-					{/* Comment */}
 					<div className="space-y-1.5">
 						<label className="text-sm font-medium">
 							Commento {commentRequired ? "(obbligatorio)" : "(opzionale)"}

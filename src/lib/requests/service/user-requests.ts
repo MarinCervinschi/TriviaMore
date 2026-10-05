@@ -49,8 +49,6 @@ export async function getUserRequests(
 	}));
 }
 
-// Fills in the hierarchy above whatever the user picked, so scoping and
-// breadcrumbs have every level available without walking the catalog again.
 async function resolveTarget(
 	input: CreateRequestInput,
 	reportedQuestionId: string | null
@@ -81,8 +79,6 @@ async function resolveTarget(
 
 	if (!classId) return { sectionId, classId, courseId: null, departmentId: null };
 
-	// The primary course of the class, the same rule breadcrumbs and notification
-	// routing use.
 	const [link] = await db
 		.select({ courseId: courses.id, departmentId: courses.departmentId })
 		.from(courseClasses)
@@ -109,8 +105,7 @@ export async function createRequest(
 		submitted.type === "report" ? submitted.question_id : null
 	);
 
-	// The request and the notifications it triggers land together: an admin
-	// notified about a request that failed to insert would link to nothing.
+	// One transaction, so no admin is notified about a request that failed to insert.
 	return getDb().transaction(async tx => {
 		const [request] = await tx
 			.insert(contentRequests)
@@ -218,8 +213,7 @@ export async function deleteReport(userId: string, id: string) {
 			);
 		}
 
-		// The admin notifications pointing at it go with it, or they would link to a
-		// request that no longer exists.
+		// Its admin notifications go too, or they would link to nothing.
 		await tx
 			.delete(notifications)
 			.where(

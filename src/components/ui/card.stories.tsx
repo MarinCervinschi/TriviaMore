@@ -52,12 +52,7 @@ export const Panel: Story = {
 	),
 };
 
-/**
- * D27/D28's surface texture: a pixel field placed by `placement`. The page already carries the dot
- * band, so the card wears this instead — sitting on the content, not the empty corner; on content-rich
- * cards drop `alpha` to keep it light but present. Its parent needs `relative overflow-hidden`. Look in
- * both themes.
- */
+/** A pixel field placed by `placement`; its parent needs `relative overflow-hidden`. */
 export const Texture: Story = {
 	name: "CardTexture",
 	render: () => (

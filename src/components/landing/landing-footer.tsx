@@ -8,12 +8,10 @@ import type { FooterSection } from "./data";
 export function LandingFooter({ sections }: { sections: FooterSection[] }) {
 	return (
 		<footer className="relative border-t">
-			{/* Subtle gradient background */}
 			<div className="from-muted/40 to-muted/60 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b" />
 
 			<div className="container py-16">
 				<div className="grid grid-cols-2 gap-6 sm:gap-8 md:grid-cols-4">
-					{/* Brand column */}
 					<div className="col-span-2 md:col-span-1">
 						<Link to="/" className="mb-4 inline-block">
 							<Logo size="md" />

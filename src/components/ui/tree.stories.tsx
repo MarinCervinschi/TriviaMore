@@ -16,7 +16,6 @@ type Story = StoryObj<typeof meta>;
 
 type Node = { level: number; name: string; state?: "open" | "closed" };
 
-// A fixed expansion mirroring ReUI's reference — only the visible rows.
 const NODES: Node[] = [
 	{ level: 0, name: "Leads", state: "open" },
 	{ level: 1, name: "New Lead" },
@@ -31,8 +30,6 @@ const NODES: Node[] = [
 	{ level: 0, name: "Support", state: "closed" },
 ];
 
-// For each ancestor level: does that ancestor have a later sibling below? (→ the
-// vertical continues). The deepest level decides `└` (last child) vs `├`.
 function guidesFor(nodes: Node[], i: number): boolean[] {
 	const level = nodes[i]!.level;
 	const out: boolean[] = [];

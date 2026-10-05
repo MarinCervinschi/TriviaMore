@@ -106,7 +106,6 @@ function BookmarkCard({
 
 	return (
 		<div className="bg-card overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-md">
-			{/* Collapsed header — always visible */}
 			<button
 				onClick={() => setOpen(!open)}
 				className="hover:bg-muted/30 flex w-full items-center justify-between gap-3 p-4 text-left transition-colors"
@@ -129,10 +128,8 @@ function BookmarkCard({
 				</div>
 			</button>
 
-			{/* Expanded content */}
 			{open && (
 				<div className="space-y-4 border-t px-4 pt-3 pb-4">
-					{/* Meta info */}
 					<div className="flex flex-wrap items-center justify-between gap-2">
 						<div className="flex flex-wrap gap-1">
 							<span className="bg-muted/50 text-muted-foreground rounded-full px-2 py-0.5 text-xs">
@@ -168,7 +165,6 @@ function BookmarkCard({
 						</div>
 					</div>
 
-					{/* Options */}
 					{bookmark.options && (
 						<ul className="space-y-1.5">
 							{parseOptions(bookmark.options).map((option, index) => (
@@ -192,7 +188,6 @@ function BookmarkCard({
 						</ul>
 					)}
 
-					{/* Short answer */}
 					{bookmark.questionType === "SHORT_ANSWER" && (
 						<div className="rounded-xl bg-green-500/10 p-4">
 							<p className="mb-1 text-xs font-semibold text-green-600 dark:text-green-400">
@@ -207,7 +202,6 @@ function BookmarkCard({
 						</div>
 					)}
 
-					{/* Explanation */}
 					{bookmark.explanation && (
 						<div className="rounded-xl bg-blue-500/10 p-4">
 							<p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">

@@ -9,12 +9,7 @@ import {
 
 import { profiles } from "./profiles";
 
-/**
- * The additive half of a user's metrics: every column is `+= n` from one event,
- * so the order events arrive in never changes the result and a reconciliation is
- * a plain comparison. Anything that needs a set or a window lives in the
- * companion rollups, never here.
- */
+/** Every column is `+= n` from one event, so arrival order never changes the result. */
 export const userStats = pgTable(
 	"user_stats",
 	{
@@ -25,8 +20,7 @@ export const userStats = pgTable(
 		flashcardSessions: integer("flashcard_sessions").default(0).notNull(),
 		approvedRequests: integer("approved_requests").default(0).notNull(),
 		totalTimeMs: bigint("total_time_ms", { mode: "number" }).default(0).notNull(),
-		// Distinct questions, not answers: the counter only moves when
-		// `user_question_stats` gains the row that makes it true.
+		// Distinct questions, moved only when `user_question_stats` gains the row.
 		hardCorrect: integer("hard_correct").default(0).notNull(),
 		bookmarkedThenCorrect: integer("bookmarked_then_correct").default(0).notNull(),
 		updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })

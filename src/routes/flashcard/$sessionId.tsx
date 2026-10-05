@@ -31,8 +31,7 @@ export const Route = createFileRoute("/flashcard/$sessionId")({
 	},
 	pendingComponent: FlashcardSkeleton,
 	component: FlashcardPage,
-	// This route lives outside the app shell, so the not-found page brings its
-	// own band.
+	// Outside the app shell, so the not-found page brings its own band.
 	notFoundComponent: () => (
 		<NotFoundPage
 			title="Sessione non disponibile"
@@ -59,7 +58,6 @@ function FlashcardPage() {
 	const handleFlip = useCallback(() => {
 		setIsFlipped(prev => {
 			if (!prev) {
-				// Flipping to back — mark as studied
 				setStudiedCards(s => {
 					const next = new Set(s);
 					next.add(currentIndex);
@@ -123,7 +121,6 @@ function FlashcardPage() {
 		};
 	}, [session]);
 
-	// Keyboard shortcuts
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (showResults) return;

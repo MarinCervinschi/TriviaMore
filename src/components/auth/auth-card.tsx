@@ -18,7 +18,6 @@ export function AuthCard({
 }) {
 	return (
 		<div className="relative flex min-h-screen items-center justify-center px-4 py-12">
-			{/* Mesh gradient background */}
 			<PageBand level="public" />
 
 			<div className="fixed top-4 right-4 z-10">
@@ -26,7 +25,6 @@ export function AuthCard({
 			</div>
 
 			<div className="w-full max-w-md">
-				{/* Back link */}
 				<div className="mb-6 flex justify-center">
 					<Link
 						to="/"
@@ -37,9 +35,7 @@ export function AuthCard({
 					</Link>
 				</div>
 
-				{/* Glass card */}
 				<div className="bg-card/80 dark:bg-card/60 overflow-hidden rounded-3xl border border-white/10 p-8 shadow-2xl backdrop-blur-xl dark:border-white/5">
-					{/* Logo + title */}
 					<div className="mb-8 text-center">
 						<div className="mb-4 flex justify-center">
 							<Logo size="lg" />
