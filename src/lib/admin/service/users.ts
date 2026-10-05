@@ -109,8 +109,7 @@ export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
 			db
 				.select({
 					totalQuizzes: count(),
-					// Cast, because `avg` returns numeric and the driver hands numeric
-					// back as a string.
+					// Cast, because the driver returns `numeric` as a string.
 					averageScore: sql<number | null>`avg(${quizAttempts.score})::float8`,
 					lastQuizAt: sql<string | null>`max(${quizAttempts.completedAt})`,
 				})
@@ -166,9 +165,7 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
 	};
 }
 
-// Demotion drops the scope assignments the new role no longer permits: an
-// orphaned grant is invisible behind the role-based UI gate but still counts as
-// authority everywhere the scope is read. Role and cleanup move together.
+/** Demotion also drops the scope assignments the new role no longer permits. */
 export async function updateUserRole({ id, role }: UserRoleInput) {
 	await requireSuperadmin();
 
@@ -348,8 +345,7 @@ export async function removeSectionAccess(input: SectionAccessInput) {
 		);
 }
 
-// Auth stays on supabase-js: the profile row is deleted by the cascade from
-// auth.users.
+// The profile row is deleted by the cascade from auth.users.
 export async function deleteUser(id: string) {
 	const currentUser = await requireSuperadmin();
 	if (currentUser.id === id) {
@@ -362,7 +358,6 @@ export async function deleteUser(id: string) {
 	}
 }
 
-// Every course in the catalog, for the maintainer and invite pickers.
 export async function getAllCourses() {
 	await requireAdmin();
 

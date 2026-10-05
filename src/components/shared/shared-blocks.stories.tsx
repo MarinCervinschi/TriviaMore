@@ -15,10 +15,6 @@ import { SeeAllLink } from "@/components/shared/see-all-link";
 import { ContentHierarchyDiagram } from "./content-hierarchy-diagram";
 import { DeltaBadge } from "./delta-badge";
 
-/**
- * The pieces that belong to no feature: the hierarchy explainer, the filter pills, the user
- * breadcrumb, and the two full-page states.
- */
 const meta = {
 	title: "Shared/Blocchi",
 	parameters: { layout: "padded" },
@@ -27,7 +23,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The five levels of the catalog, the diagram the landing page and the request form both show. */
 export const Hierarchy: Story = {
 	name: "La gerarchia",
 	render: () => (
@@ -57,7 +52,7 @@ function Pills({ label }: { label?: string }) {
 	);
 }
 
-/** Nothing selected means «Tutti» is active: the empty string is the state, not a missing one. */
+/** An empty string means «Tutti» is active. */
 export const Pill: Story = {
 	name: "Le pill dei filtri",
 	render: () => (
@@ -68,10 +63,6 @@ export const Pill: Story = {
 	),
 };
 
-/**
- * The trails the shell's header draws. They are derived from the matched routes by
- * `useRouteCrumbs`, not written by a page, so this shows the shapes it produces.
- */
 export const Breadcrumb: Story = {
 	name: "Il breadcrumb utente",
 	render: () => (
@@ -118,10 +109,6 @@ export const Soon: Story = {
 	render: () => <ComingSoon />,
 };
 
-/**
- * The "and the rest is over here" link, at the one size every block uses. The four
- * call sites had drifted into four recipes; this is what they all render now.
- */
 export const SeeAll: Story = {
 	name: "Il link «vedi tutto»",
 	render: () => (
@@ -139,7 +126,7 @@ export const SeeAll: Story = {
 	),
 };
 
-/** The change pill every metric shares. `null` renders nothing — see the last cell. */
+/** `null` renders nothing, as in the last cell. */
 export const Delta: Story = {
 	name: "Il delta",
 	render: () => (

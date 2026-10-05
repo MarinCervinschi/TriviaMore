@@ -2,12 +2,7 @@ import { date, foreignKey, integer, pgTable, primaryKey, uuid } from "drizzle-or
 
 import { profiles } from "./profiles";
 
-/**
- * One row per active day, in Europe/Rome — the zone the streak is counted in.
- * The streak and the active weeks are derived from this at read time: a year of
- * study is ~365 rows, so the windowing that used to run over the whole answer
- * history is now cheap enough to leave as a query, with no state to keep in sync.
- */
+/** One row per active day, in Europe/Rome. */
 export const userDayActivity = pgTable(
 	"user_day_activity",
 	{

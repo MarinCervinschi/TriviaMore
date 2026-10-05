@@ -1,8 +1,3 @@
-// Runs every read path migrated in #90 against the live database, so a broken
-// query surfaces here instead of in the browser. It only asserts that the SQL
-// executes and returns a plausible shape — the UI check stays manual.
-//
-//   pnpm smoke:reads
 import { sql } from "drizzle-orm";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
@@ -79,7 +74,6 @@ async function check(name: string, run: () => Promise<unknown>) {
 
 const db = getDb();
 
-// Sample identifiers from the live catalog so the checks hit real rows.
 const [sample] = await db
 	.execute<{
 		dept_code: string;
@@ -117,8 +111,7 @@ const userId = sample.user_id;
 
 await check("browse.getDepartments", async () => {
 	const rows = await getDepartments();
-	// A Postgres array of a custom enum type comes back as a raw string unless it
-	// is cast; the UI then spreads it character by character.
+	// An array of a custom enum comes back as a raw string unless the query casts it.
 	for (const row of rows) {
 		if (!Array.isArray(row.campusLocations)) {
 			throw new Error(
@@ -213,9 +206,7 @@ if (userId) {
 	await check("achievements.getAchievements", () =>
 		getAchievements(userId, { heal: false })
 	);
-	// Unscoped too: the replay runs it that way over every user at once.
 	await check("achievements.readMetricSnapshots", () => readMetricSnapshots(db));
-	// The reconciler's side of the same measures, straight from the history.
 	await check("achievements.recomputeMetricSnapshots", () =>
 		recomputeMetricSnapshots(db)
 	);
@@ -256,8 +247,7 @@ if (userId) {
 	console.log("· notifications / legal — skipped, no profile");
 }
 
-// changelogs is absent on purpose: its version list comes from
-// `import.meta.glob`, which only exists under Vite.
+// changelogs is left out because `import.meta.glob` only exists under Vite.
 
 await check("sitemap.buildSitemap", async () => {
 	const xml = await buildSitemap();

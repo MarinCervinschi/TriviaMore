@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-/**
- * Shared question field validation — used by both admin and user submission schemas.
- * Admin extends with section_id; requests uses as-is.
- */
 export const questionFieldsSchema = z.object({
 	content: z
 		.string()
@@ -33,7 +29,6 @@ export const questionFieldsSchema = z.object({
 	}),
 });
 
-/** MC questions must have at least 2 options */
 export const questionMcRefinement = (
 	data: z.infer<typeof questionFieldsSchema>,
 	ctx: z.RefinementCtx

@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 	window.addEventListener("vite:preloadError", () => {
 		const key = "tm:preload-reloaded-at";
 		const last = Number(sessionStorage.getItem(key) ?? 0);
-		if (Date.now() - last < 10_000) return; // already reloaded just now — avoid loops
+		if (Date.now() - last < 10_000) return;
 		sessionStorage.setItem(key, String(Date.now()));
 		window.location.reload();
 	});
@@ -48,8 +48,7 @@ export function getRouter() {
 		routeTree,
 		context: { queryClient },
 		scrollRestoration: true,
-		// The app shell scrolls its own panel, not the window, so a new page has to be
-		// sent to the top by selector — scrolling the window reaches nothing there.
+		// The shell scrolls its own panel, so a new page is sent to the top by selector.
 		scrollToTopSelectors: ['[data-scroll-restoration-id="app-panel"]'],
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
@@ -57,9 +56,7 @@ export function getRouter() {
 		defaultPendingMinMs: 500,
 		defaultPendingComponent: LoadingPage,
 		defaultNotFoundComponent: () => <NotFoundPage withBand={false} />,
-		// Same resolution as notFound: a route's errorComponent, then this, then TanStack's own
-		// inline-styled "Something went wrong!". It never walks up, so __root's covered only errors
-		// thrown by root itself.
+		// A route's errorComponent, then this; it never walks up to __root's.
 		defaultErrorComponent: ({ error }) => <ErrorPage error={error} withBand={false} />,
 	});
 

@@ -11,8 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { InsetCard } from "@/components/ui/inset-card";
 
-/** The frame every step is shown in. It owns no step state — the route does —
- *  so the same frame serves the signup flow and a later edit. */
 export function OnboardingWizard({
 	steps,
 	current,
@@ -31,7 +29,6 @@ export function OnboardingWizard({
 }: {
 	steps: OnboardingStep[];
 	current: number;
-	/** The furthest step reached, so the rail can send the user back to it. */
 	maxReachable?: number;
 	onStepSelect?: (index: number) => void;
 	title: string;

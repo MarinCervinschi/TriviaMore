@@ -2,12 +2,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 
 import type { ChartFill } from "./chart-defs";
 
-/**
- * The categorical slots, in the order they were validated. Assign them in this
- * order and never cycle: slot order is what keeps adjacent series apart under
- * colour-vision deficiency. Past the fifth series, fold the tail into a single
- * "Altro" bucket rather than inventing a sixth hue.
- */
+/** Assign in this order and never cycle; past five series, fold the tail into one bucket. */
 export const CHART_SLOTS = [
 	"var(--color-chart-1)",
 	"var(--color-chart-2)",
@@ -18,10 +13,8 @@ export const CHART_SLOTS = [
 
 export const CHART_SLOT_COUNT = CHART_SLOTS.length;
 
-/** The neutral used for a folded "Altro" bucket and for de-emphasised marks. */
 export const CHART_NEUTRAL = "var(--color-muted-foreground)";
 
-/** The surface colour marks are separated against — the 2px gap in a stack. */
 export const CHART_SURFACE = "var(--color-card)";
 
 export function chartColor(index: number): string {
@@ -29,20 +22,12 @@ export function chartColor(index: number): string {
 }
 
 export type ChartSeries<TDatum> = {
-	/** The datum property this series reads. */
 	key: Extract<keyof TDatum, string>;
 	label: string;
-	/** Defaults to the next categorical slot. Set it only for a semantic series. */
 	color?: string;
-	/**
-	 * `gradient` (default) washes the series colour; `solid` is flat; `hatched`
-	 * is the 45° texture — opt-in only, for a series that means something extra
-	 * (a partial period, a folded bucket) or as the print / CVD fallback.
-	 */
 	fill?: ChartFill;
 };
 
-/** Builds the `ChartConfig` the shared wrapper needs, assigning slots in order. */
 export function seriesConfig<TDatum>(series: ChartSeries<TDatum>[]): ChartConfig {
 	return series.reduce<ChartConfig>((config, item, index) => {
 		config[item.key] = { label: item.label, color: item.color ?? chartColor(index) };

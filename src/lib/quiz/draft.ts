@@ -9,9 +9,6 @@ export type QuizDraft = {
 
 const KEY = "trivia-more:quiz-draft";
 
-// One attempt can be open at a time, so one slot is enough: a draft naming another
-// attempt is stale by construction and gets overwritten rather than merged.
-
 function isUserAnswer(value: unknown): value is UserAnswer {
 	if (typeof value !== "object" || value === null) return false;
 	const { questionId, answer } = value as Partial<UserAnswer>;
@@ -22,9 +19,7 @@ function isUserAnswer(value: unknown): value is UserAnswer {
 	);
 }
 
-// Half a draft is worse than none: a missing index or clock reaches the page as
-// NaN, which renders no question and submits a `timeSpent` the schema rejects and
-// so leaves the attempt open. A slot that does not answer every field is not one.
+// A slot missing any field is rejected, because a NaN index or clock leaves the attempt open.
 export function readQuizDraft(attemptId: string): QuizDraft | null {
 	try {
 		const raw = localStorage.getItem(KEY);
@@ -45,7 +40,7 @@ export function writeQuizDraft(draft: QuizDraft): void {
 	try {
 		localStorage.setItem(KEY, JSON.stringify(draft));
 	} catch {
-		// A blocked or full store costs the resume, not the quiz.
+		// A blocked or full store costs the resume.
 	}
 }
 
@@ -53,6 +48,6 @@ export function clearQuizDraft(): void {
 	try {
 		localStorage.removeItem(KEY);
 	} catch {
-		// As above.
+		// A blocked or full store costs the resume.
 	}
 }

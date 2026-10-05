@@ -7,12 +7,9 @@ export interface RecapEntry {
 	label: string;
 	icon: Icon;
 	value: string | null;
-	/** Jumps back to the step that sets it, when the rail is not enough. */
 	onEdit?: () => void;
 }
 
-/** The only place the answers are visible at once, which is where a wrong
- *  department is actually noticed. */
 export function OnboardingRecap({
 	name,
 	imageUrl,

@@ -5,9 +5,6 @@ import { Button } from "@/components/ui/button";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 
-/** What reaches the accounts made before the wizard existed: they never see it
- *  at signup, so the dashboard is the only place left to ask. Sized to sit
- *  beside the profile in the hero, not to span the page. */
 export function EnrollmentPrompt() {
 	return (
 		<InsetCard className="w-full lg:w-80 lg:shrink-0" panelClassName="p-3.5">

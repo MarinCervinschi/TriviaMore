@@ -9,13 +9,6 @@ import { cn } from "@/lib/utils";
 import { BookmarkButton } from "./bookmark-button";
 import { QuestionHeader } from "./question-header";
 
-/**
- * The question and its answers. The two used to weigh the same — both at
- * `prose-sm`, and the options carrying `border-2` against the question's single
- * hairline, so the thing to read looked lighter than the things to pick. The
- * question now takes the weight and a step up in size; the options take the
- * app's ordinary card edge.
- */
 export function QuestionCard({
 	question,
 	questionNumber,
@@ -72,9 +65,6 @@ export function QuestionCard({
 				{options.map((option, index) => {
 					const selected = selectedAnswers.includes(option.id);
 
-					// Two wide pressables, so they are sized as controls: `rounded-xl` is the
-					// step a button takes, and the label stays under the question rather than
-					// over it.
 					if (trueFalse) {
 						return (
 							<button

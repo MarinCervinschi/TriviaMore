@@ -17,8 +17,6 @@ export type Totals = {
 	answersCorrect: number;
 };
 
-// Each bucket keeps the two modes apart, so "Entrambi" can plot them as two
-// series while a single mode reads its own side.
 export type Split = { studio: Totals; esame: Totals };
 /** `startDay` is the bucket's first day, so a time axis can place its tick. */
 export type LabeledBucket = Split & { label: string; startDay: number };
@@ -48,18 +46,13 @@ export function combineTotals(a: Totals, b: Totals): Totals {
 	return t;
 }
 
-/** The totals a mode reads: one side, or both summed for "Entrambi". */
 export function pickTotals(split: Split, mode: ExplorerMode): Totals {
 	if (mode === "STUDY") return split.studio;
 	if (mode === "EXAM_SIMULATION") return split.esame;
 	return combineTotals(split.studio, split.esame);
 }
 
-/**
- * `flow` metrics are sums, so an empty bucket really is zero. `quality` metrics
- * are ratios: an empty bucket has no value at all, and the two families cannot
- * be plotted the same way without inventing data.
- */
+/** `flow` metrics are sums, so an empty bucket is zero; `quality` metrics are ratios with no value there. */
 export const METRIC_FAMILY: Record<MetricKey, "flow" | "quality"> = {
 	quizzes: "flow",
 	time: "flow",
@@ -67,7 +60,7 @@ export const METRIC_FAMILY: Record<MetricKey, "flow" | "quality"> = {
 	accuracy: "quality",
 };
 
-/** An aggregate over a whole window — the figure on a tab. Zero when empty. */
+/** Zero when the window is empty. */
 export function metricValue(t: Totals, key: MetricKey): number {
 	switch (key) {
 		case "quizzes":
@@ -81,11 +74,7 @@ export function metricValue(t: Totals, key: MetricKey): number {
 	}
 }
 
-/**
- * One plotted point. A ratio with nothing to average is `null`, never 0: a 0
- * there reads as "media 0/33" in a period with no quizzes, which is a claim the
- * data never made.
- */
+/** `null` for a ratio with nothing to average. */
 export function metricPoint(t: Totals, key: MetricKey): number | null {
 	switch (key) {
 		case "quizzes":
@@ -103,9 +92,7 @@ function epochDay(iso: string): number {
 	return Math.floor(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000);
 }
 
-// Buckets are keyed in UTC but `format` reads the host timezone, so it is handed
-// the same calendar day as a *local* Date — otherwise a browser west of UTC
-// labels the bucket differently from the server and hydration mismatches.
+// Buckets are keyed in UTC, so the day goes to `format` as a local Date, or hydration mismatches.
 export function formatDayLabel(day: number): string {
 	const utc = new Date(day * 86_400_000);
 	const local = new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate());
@@ -149,12 +136,7 @@ function into(bucket: Split, stat: DailyStudyStat) {
 	addRow(stat.quizMode === "STUDY" ? bucket.studio : bucket.esame, stat);
 }
 
-/**
- * Windows mode-split daily stats into labeled buckets for the chart, plus the
- * previous equal window for the tab deltas. `today` is injected so the function
- * stays pure. Week is 7 daily buckets, month 4 weekly, year 12 monthly, all the
- * full calendar-month span of the data.
- */
+/** Week is 7 daily buckets, month 4 weekly, year 12 monthly; `previous` is the window before. */
 export function buildMetricWindow(
 	daily: DailyStudyStat[],
 	period: ExplorerPeriod,
@@ -213,7 +195,7 @@ export function buildMetricWindow(
 
 export type DayTotals = { day: number; split: Split };
 
-/** Mode-split totals per day inside the range, ordered, empty days omitted. */
+/** Ordered, with empty days omitted. */
 export function dayTotals(
 	daily: DailyStudyStat[],
 	{ fromDay, toDay }: DayRange
@@ -234,18 +216,11 @@ export function dayTotals(
 		.map(([day, split]) => ({ day, split }));
 }
 
-/** The series a mode plots: one per side for "Entrambi", otherwise just "value". */
 function qualitySeriesKeys(mode: ExplorerMode): string[] {
 	return mode === "both" ? ["studio", "esame"] : ["value"];
 }
 
-/**
- * The quality plot, at day resolution rather than per bucket: `<key>` is that
- * day's own average — absent on a day the side did not study — and `<key>Cum`
- * the running average up to that day, which holds flat across a gap, because an
- * average does not move when nothing is added to it. A closing row at the end of
- * the window carries the last running value so the line reaches the right edge.
- */
+/** `<key>` is the day's average and `<key>Cum` the running one; a closing row reaches the window's end. */
 export function buildQualityRows(
 	daily: DailyStudyStat[],
 	key: MetricKey,
@@ -286,11 +261,7 @@ export function buildQualityRows(
 	return rows;
 }
 
-/**
- * The y range for a quality metric, anchored to the bands `getGradeColor`
- * already draws: the axis stays interpretable — "this is the 27+ band" — while
- * the movement still shows, which a fixed 0–33 squashes into the top sixth.
- */
+/** Anchored to the grade bands, so the axis stays readable. */
 export function qualityDomain(key: MetricKey, values: number[]): [number, number] {
 	const steps = key === "accuracy" ? [0, 25, 50, 75] : [0, 18, 24, 27];
 	const top = key === "accuracy" ? 100 : 33;
@@ -307,11 +278,7 @@ export type MetricKpi = {
 	delta: number | null;
 };
 
-/**
- * The four headline figures for a window, each with the same window before it.
- * The delta is `null` — not 0 — when nothing came before: no baseline is not the
- * same measurement as no change, and the badge has to be able to say so.
- */
+/** The delta is `null` when nothing came before. */
 export function buildMetricKpis(
 	daily: DailyStudyStat[],
 	period: ExplorerPeriod,
@@ -335,7 +302,7 @@ export function buildMetricKpis(
 	});
 }
 
-/** The first day of a window, as an epoch day; `all` has no floor. */
+/** An epoch day; `all` has no floor. */
 function windowStartDay(period: ExplorerPeriod, today: Date): number {
 	const todayDay = epochDay(today.toISOString());
 	if (period === "week") return todayDay - 6;
@@ -349,7 +316,6 @@ function windowStartDay(period: ExplorerPeriod, today: Date): number {
 	return Number.NEGATIVE_INFINITY;
 }
 
-/** The attempts a window and a mode keep, filtered in the browser rather than refetched. */
 export function attemptsInWindow<
 	T extends { completedAt: string; quizMode: QuizMode | null },
 >(attempts: T[], period: ExplorerPeriod, mode: ExplorerMode, today: Date): T[] {
@@ -360,7 +326,6 @@ export function attemptsInWindow<
 	});
 }
 
-/** The window's first day as a calendar date, for a query that must narrow the same way. */
 export function windowFromDate(
 	period: ExplorerPeriod,
 	today: Date

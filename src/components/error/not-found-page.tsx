@@ -40,7 +40,6 @@ export function NotFoundPage({
 				initial="hidden"
 				animate="visible"
 			>
-				{/* Floating question mark */}
 				<motion.div
 					className="mb-6"
 					animate={prefersReduced ? undefined : { y: [0, -10, 0] }}
@@ -69,7 +68,6 @@ export function NotFoundPage({
 					{message}
 				</motion.p>
 
-				{/* Buttons */}
 				<motion.div className="mt-10 flex gap-3" variants={item}>
 					<Button asChild>
 						<Link to="/">

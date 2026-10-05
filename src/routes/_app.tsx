@@ -17,8 +17,7 @@ export const Route = createFileRoute("/_app")({
 			queryKey: ["auth", "session"],
 			queryFn: () => getSessionFn(),
 		});
-		// Read here rather than in the component: the value has to be the same one the
-		// server rendered with, and the loader's result is what gets sent along with it.
+		// In the loader, so the value matches the one the server rendered with.
 		return { sidebarOpen: readSidebarOpen() };
 	},
 	component: AppLayout,
@@ -48,17 +47,9 @@ function AppLayout() {
 			<AppSidebar />
 			<SidebarInset
 				id="main-content"
-				// Inside the panel the content fills it: an 80rem column centred in a wide
-				// panel leaves the gutters the shell was meant to remove. Bottom nav
-				// clearance on mobile (h-16 + iOS safe area).
 				className="isolate pb-[calc(4rem+env(safe-area-inset-bottom))] [--app-header-h:3rem] [--container-max:none] md:pb-0"
 			>
-				{/*
-				 * Starts below the header, so the bar stays clean and the dots' own fade
-				 * begins where they do. Absolute so the band scrolls with the content
-				 * instead of enclosing it, and behind it: `isolate` on the panel is what
-				 * lets -z-10 sit above the panel's own `bg-card` rather than under it.
-				 */}
+				{/* `isolate` on the panel lets -z-10 sit above the panel's own `bg-card`. */}
 				<div
 					aria-hidden
 					className="pointer-events-none absolute inset-x-0 top-(--app-header-h) bottom-0 -z-10 overflow-hidden"
@@ -67,12 +58,7 @@ function AppLayout() {
 				</div>
 				<AppHeader />
 
-				{/*
-				 * Content is measured, chrome is not. 80rem sits in the 1200–1440px the
-				 * guidance gives for an application: past it a fixed-column card grid
-				 * shows the same cards wider, not more of them. A page whose width
-				 * genuinely carries information opts out with `--container-max: none`.
-				 */}
+				{/* 80rem caps an application's content; a page opts out with `--container-max: none`. */}
 				<div className="[--container-max:80rem]">
 					<Outlet />
 				</div>

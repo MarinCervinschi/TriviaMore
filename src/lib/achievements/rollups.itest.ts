@@ -42,7 +42,6 @@ async function createQuestion(
 	return row.id;
 }
 
-/** One completed attempt with its answers — the history a rollup must match. */
 async function recordAttempt(
 	tx: TestTx,
 	params: {
@@ -87,7 +86,7 @@ async function snapshots(tx: TestTx, userId: string) {
 	return { stored: stored!.metrics, computed: computed!.metrics };
 }
 
-/** Everything except the rank, which the rollup path fills lazily by design. */
+/** Everything except the rank, which the rollup path fills lazily. */
 function comparable(metrics: MetricSnapshot) {
 	const { SIGNUP_RANK: _rank, ...rest } = metrics;
 	return rest;
@@ -158,8 +157,6 @@ describe("user rollups agree with the history they derive from", () => {
 
 			const { stored, computed } = await snapshots(tx, scope.owner);
 			expect(comparable(stored)).toEqual(comparable(computed));
-			// The same HARD question three times is one distinct question, and the
-			// improvement is the first-to-last delta over three runs.
 			expect(stored.HARD_CORRECT).toBe(1);
 			expect(stored.QUIZZES_COMPLETED).toBe(3);
 			expect(stored.MAX_SECTION_IMPROVEMENT).toBe(20);
@@ -228,8 +225,6 @@ describe("user rollups agree with the history they derive from", () => {
 		});
 	});
 
-	// The one metric with no rollup: both sides read crm.enrollments, so this
-	// asserts the rule rather than the agreement — which holds by construction.
 	it("declares an enrolment, and follows the current one", async () => {
 		await withRollback(async tx => {
 			const scope = await seedQuizScope(tx);
@@ -245,7 +240,6 @@ describe("user rollups agree with the history they derive from", () => {
 			expect(after.stored.ENROLLMENT_DECLARED).toBe(1);
 			expect(after.computed.ENROLLMENT_DECLARED).toBe(1);
 
-			// A row kept only as history does not count as a declaration.
 			const row = await findCurrentEnrollment(tx, scope.owner);
 			await setEnrollmentCurrent(tx, row!.id, false);
 

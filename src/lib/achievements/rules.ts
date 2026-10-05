@@ -10,17 +10,14 @@ export function meetsRule(rule: AchievementRule, snapshot: MetricSnapshot): bool
 	return rule.comparator === "LTE" ? value <= rule.threshold : value >= rule.threshold;
 }
 
-/**
- * `null` wherever a bar would lie: a "lower is better" rule has no ramp, and one
- * pinned at 0% by a binary threshold reads as broken rather than as a goal.
- */
+/** `null` for a "lower is better" rule and for a binary threshold, which have no bar. */
 export function progressOf(
 	rule: AchievementRule,
 	snapshot: MetricSnapshot
 ): AchievementProgress | null {
 	if (rule.comparator === "LTE" || rule.threshold <= 1) return null;
 
-	// MAX_SECTION_IMPROVEMENT is a delta and goes negative: "-4 di 6" reads as a bug.
+	// MAX_SECTION_IMPROVEMENT is a delta and can go negative.
 	const value = Math.max(0, snapshot[rule.metric]);
 	return {
 		value,
@@ -29,10 +26,6 @@ export function progressOf(
 	};
 }
 
-/**
- * The whole engine. Pure, so a replay over every user and a single unlock after
- * one quiz run the same code.
- */
 export function evaluate(
 	rules: AchievementRule[],
 	snapshot: MetricSnapshot,
@@ -43,11 +36,7 @@ export function evaluate(
 		.map(rule => ({ key: rule.key, metricValue: snapshot[rule.metric] }));
 }
 
-/**
- * Reaching tier III also satisfies I and II, so a first evaluation can unlock a
- * whole family at once. Only the top tier of each is worth a notification; the
- * others are already visible on the page.
- */
+/** Keeps only the top tier of each family, since one evaluation can unlock several. */
 export function notifiableUnlocks(
 	unlocks: AchievementUnlock[],
 	rules: AchievementRule[]

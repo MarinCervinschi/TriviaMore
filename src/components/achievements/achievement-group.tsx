@@ -9,10 +9,6 @@ import { AchievementTile } from "./achievement-tile";
 export const ACHIEVEMENT_FILTERS = ["tutti", "sbloccati", "in-corso"] as const;
 export type AchievementFilter = (typeof ACHIEVEMENT_FILTERS)[number];
 
-/**
- * One category as a grid of medals. It owns the filtering, so the header count and
- * the body cannot drift apart.
- */
 export function AchievementGroup({
 	category,
 	achievements,

@@ -5,8 +5,7 @@ import { formatDate } from "@/lib/utils/format";
 
 import { AchievementMedal, achievementStroke } from "./achievement-medal";
 
-// Precomputed, as `ScoreRing` and `TickArc` are: trigonometry at render breaks
-// hydration. The box is reserved on every tile so the grid never jumps.
+// Precomputed because trigonometry at render breaks hydration.
 const CRADLE = [
 	[10.0, 50.0, 3.0, 50.0],
 	[10.68, 57.35, 3.8, 58.64],
@@ -28,7 +27,6 @@ const CRADLE = [
 	[90.0, 50.0, 97.0, 50.0],
 ] as const;
 
-/** One achievement, on the page rather than in a card: the medal is the object. */
 export function AchievementTile({
 	achievement,
 	onOpen,

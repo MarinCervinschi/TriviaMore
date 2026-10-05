@@ -61,13 +61,7 @@ function getHeadingText(children: React.ReactNode): string {
 	return "";
 }
 
-/**
- * Orchestrates the visual structure of each legal page: decorative
- * backdrop, hero with metadata, sticky table of contents on desktop,
- * typography-optimized content card, and cross-navigation footer.
- * The first h1 and the version/updated lines in the markdown source
- * are stripped because they are surfaced in the hero instead.
- */
+/** Strips the markdown's first h1 and its version lines, which the hero shows. */
 export function LegalDocLayout({ markdown, meta }: LegalDocLayoutProps) {
 	const cleanedMarkdown = useMemo(() => {
 		return markdown

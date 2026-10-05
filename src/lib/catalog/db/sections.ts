@@ -25,8 +25,7 @@ export async function findSectionsInClass(db: DbOrTx, classId: string) {
 		.orderBy(asc(sections.position));
 }
 
-// Section plus the whole hierarchy above it, resolved through the primary
-// course of its class. Replaces the chain the `_detail` views used to carry.
+/** A section and the hierarchy above it, through its class's primary course. */
 export async function findSectionChain(db: DbOrTx, sectionId: string) {
 	const primaryCourse = primaryCourseByClass(db);
 

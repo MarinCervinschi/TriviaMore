@@ -101,8 +101,7 @@ type SectionRow = ClassWithSections["sections"][number];
 
 const column = createDataTableColumns<SectionRow>();
 
-// The slug is generated from the name, which is NOT NULL, so it is only
-// nullable as far as the column definition is concerned.
+// The slug comes from a NOT NULL name, so it is null only by the column type.
 const sectionParams = (
 	deptCode: string,
 	courseCode: string,
@@ -278,8 +277,6 @@ function ClassPage() {
 								{classData.courseClass.mandatory ? "Obbligatorio" : "A scelta"}
 							</Badge>
 						)}
-						{/* Anno, CFU, sede e curriculum sono attributi, non stati: una riga di
-						    metadati si legge meglio di una fila di pill tutte uguali. */}
 						<span className="text-muted-foreground text-xs">
 							{[
 								classData.courseClass?.classYear &&

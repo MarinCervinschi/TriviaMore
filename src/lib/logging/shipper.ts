@@ -1,14 +1,11 @@
 import { type LogEvent, render, toClef } from "./clef";
 
-// Batching to Seq's CLEF endpoint. Nothing here may block a request or throw
-// into one: a logging backend that is down has to cost log lines, never
-// latency and never a 500.
+// Nothing here may block a request or throw into one.
 
 const FLUSH_MS = 2_000;
 const MAX_BATCH_EVENTS = 100;
 const MAX_BATCH_BYTES = 256_000;
-// Past this the process is holding more log data than Seq is accepting.
-// Dropping is the only option that cannot turn an outage into an OOM.
+// Dropping past this cap keeps a Seq outage from becoming an OOM.
 const MAX_QUEUE_EVENTS = 10_000;
 const FAILURE_REPORT_MS = 30_000;
 
@@ -23,8 +20,7 @@ let flushing = false;
 let lastFailureAt = 0;
 let hooked = false;
 
-// `null` means no SEQ_URL, so events go to the console instead — the path
-// contributors without Infisical run on.
+// `null` means no SEQ_URL, so events go to the console.
 function resolveTarget(): Target | null {
 	if (target !== undefined) return target;
 	const base = process.env.SEQ_URL?.trim();
@@ -57,8 +53,7 @@ function reportFailure(reason: string, lost: number): void {
 
 function scheduleFlush(): void {
 	if (timer) return;
-	// Unref'd so a script that has finished its work still exits; `beforeExit`
-	// below is what actually gets those last events out.
+	// Unref'd so a finished script still exits; `beforeExit` flushes the rest.
 	timer = setTimeout(() => void flush(), FLUSH_MS);
 	timer.unref?.();
 }
@@ -95,8 +90,7 @@ export async function flush(): Promise<void> {
 			console.warn(`[log] dropped ${droppedBefore} events: queue full`);
 		}
 	} catch (error) {
-		// A failed batch is discarded rather than requeued: retrying a backlog
-		// against a Seq that is down grows the queue until the process dies.
+		// Discarded, because requeueing against a Seq that is down grows the queue until the process dies.
 		reportFailure(error instanceof Error ? error.message : String(error), batch.length);
 	} finally {
 		flushing = false;
@@ -110,9 +104,7 @@ function hookShutdown(): void {
 
 	for (const signal of ["SIGTERM", "SIGINT"] as const) {
 		process.once(signal, () => {
-			// Re-raised after the flush so the default disposition still applies —
-			// `once` has already removed this listener by then. Swallowing the signal
-			// would leave the container hanging on every redeploy.
+			// Re-raised after the flush, or the container hangs on every redeploy.
 			void flush().finally(() => process.kill(process.pid, signal));
 		});
 	}

@@ -6,8 +6,6 @@ import { BookmarkButton } from "./bookmark-button";
 import { QUIZ_QUESTIONS } from "./fixtures";
 import { QuestionCard } from "./question-card";
 
-// The card a quiz is answered in. It reaches the report and bookmark server functions, which is why it
-// had no story until the stub landed — signed in and out are both worth seeing.
 const meta = {
 	title: "Question Cards/QuestionCard",
 	parameters: { layout: "padded", session: { role: "STUDENT" } },
@@ -29,7 +27,6 @@ function Card({ index }: { index: number }) {
 	);
 }
 
-/** One per question type: the answer control changes shape with it. */
 export const EveryType: Story = {
 	name: "Ogni tipo di domanda",
 	render: () => (
@@ -41,7 +38,6 @@ export const EveryType: Story = {
 	),
 };
 
-/** More than one correct answer, and a long stem — where wrapping and the hint both get tested. */
 export const MultipleCorrect: Story = {
 	name: "Più risposte corrette",
 	render: () => (
@@ -61,7 +57,6 @@ export const SignedOut: Story = {
 	),
 };
 
-/** The bookmark toggle on its own, in both states: the filled icon is the whole feedback. */
 export const Bookmark: Story = {
 	name: "Il segnalibro",
 	parameters: {

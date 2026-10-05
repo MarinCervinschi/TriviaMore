@@ -12,12 +12,6 @@ interface LegalTocProps {
 	className?: string;
 }
 
-/**
- * Sticky sidebar table of contents. Items are extracted from the `##`
- * headings of the source markdown. Visible on large viewports; the
- * mobile layout omits it — headings themselves remain navigable via
- * the document scroll.
- */
 export function LegalToc({ items, className }: LegalTocProps) {
 	if (items.length === 0) return null;
 

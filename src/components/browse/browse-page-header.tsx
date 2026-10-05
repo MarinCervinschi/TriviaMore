@@ -28,12 +28,9 @@ export function BrowsePageHeader({
 	return (
 		<section className="relative w-full pt-6 pb-6 sm:pt-8 sm:pb-8">
 			<div className="container">
-				{/* A guest has no shell header to put the trail in; signed in, it is there. */}
+				{/* Signed in, the trail is in the shell header instead. */}
 				{!isAuthenticated && breadcrumb}
 
-				{/* Top row: icon left, actions right. On mobile, actions wrap below
-            so the title block underneath always has full width and never gets
-            squeezed by buttons. */}
 				{(Icon || actions) && (
 					<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 						{Icon ? (

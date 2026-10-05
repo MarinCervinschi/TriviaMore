@@ -25,7 +25,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { browseQueries } from "@/lib/browse/queries";
 import { seoHead } from "@/lib/seo";
 
-/** How many of each kind the combined view shows before handing over to a tab. */
 const PREVIEW = 5;
 const PAGE_SIZE = 20;
 
@@ -68,9 +67,6 @@ function SearchPage() {
 	const [text, setText] = useState(search.q ?? "");
 	const debounced = useDebounce(text, 250);
 
-	// The field owns the typing, the URL owns the search: push once the typing
-	// settles, and follow the URL when it changes from elsewhere (a chip, the back
-	// button) rather than fighting it.
 	useEffect(() => {
 		if ((search.q ?? "") !== debounced) {
 			update({ q: debounced || undefined });
@@ -127,9 +123,7 @@ function SearchPage() {
 			obbligatori: undefined,
 		});
 
-	// Both kinds run their own query — the two full-text indexes have no shared
-	// score, so a single ranked list would need one invented. Grouped, each stays
-	// the query it already was.
+	// Separate queries, because the two full-text indexes have no shared score.
 	const wantsCourses = kind !== "insegnamenti";
 	const wantsClasses = kind !== "corsi";
 
@@ -193,21 +187,12 @@ function SearchPage() {
 				/>
 			</div>
 
-			{/*
-			 * Tabs and chips share one wrapping flow, so the chips sit beside the tabs
-			 * while there is room and drop below only when there is not. The funnel is
-			 * outside it: dragged along by the wrap, the one control that is always
-			 * needed would be the one that moves.
-			 */}
+			{/* The funnel sits outside the wrapping flow, so it never moves. */}
 			<div className="flex items-end justify-between gap-3">
 				<div className="flex min-w-0 flex-wrap items-end gap-x-4 gap-y-2">
 					<TabNav label="Tipo di risultato" tabs={tabs} />
 					{activeCount > 0 && (
-						/*
-						 * mb-1, not mb-2: with items-end a tab sits pb-2.5 above the row
-						 * bottom, so the centre of its 20px line is 20px up. A 32px chip
-						 * needs 4px of margin to put its own centre there.
-						 */
+						/* mb-1 puts a 32px chip's centre on the tabs' text line. */
 						<div className="mb-1 flex flex-wrap items-center gap-1.5">
 							<SearchFilterChips
 								values={filters}
@@ -312,10 +297,6 @@ function total(a: number | undefined, b: number | undefined) {
 	return (a ?? 0) + (b ?? 0);
 }
 
-/**
- * One kind's results. With both on screen, a kind that matched nothing says so in
- * a line rather than taking the whole page: the other one still has results.
- */
 function Group({
 	label,
 	icon: Icon,

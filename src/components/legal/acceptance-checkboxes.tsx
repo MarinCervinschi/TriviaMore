@@ -13,11 +13,6 @@ interface AcceptanceCheckboxesProps {
 	disabled?: boolean;
 }
 
-/**
- * Controlled two-checkbox block used both in the registration form
- * and on the /legal/accept re-acceptance page. The parent component
- * owns state and validation; this component is purely presentational.
- */
 export function AcceptanceCheckboxes({
 	termsAccepted,
 	privacyAccepted,

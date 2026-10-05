@@ -6,12 +6,7 @@ import { profiles, sectionAccess, sections } from "@/db/schema";
 import { findSectionById } from "@/lib/catalog/db/sections";
 import { Forbidden } from "@/lib/server/errors";
 
-// Application-layer replacement for the catalog.can_access_section() RLS helper.
-// Reads now run on a service-role Drizzle connection, where the database no
-// longer filters private sections: these checks are the only thing left between
-// a section id in a URL and its questions.
-//
-// `db` first so the same check runs standalone or inside a caller's transaction.
+// With RLS bypassed, these checks are the only thing between a section id in a URL and its questions.
 
 async function grantedSectionIds(db: DbOrTx, userId: string, sectionIds: string[]) {
 	const rows = await db
@@ -26,8 +21,7 @@ async function grantedSectionIds(db: DbOrTx, userId: string, sectionIds: string[
 	return rows.map(row => row.sectionId);
 }
 
-// The third arm of the old `can_access_section()`. MAINTAINER is deliberately out:
-// its scope stops at public content.
+// MAINTAINER is left out, because its scope stops at public content.
 export async function readsPrivateSections(db: DbOrTx, userId: string | null) {
 	if (!userId) return false;
 
@@ -39,11 +33,7 @@ export async function readsPrivateSections(db: DbOrTx, userId: string | null) {
 	return row?.role === "ADMIN" || row?.role === "SUPERADMIN";
 }
 
-/**
- * `filterAccessibleSections` as a predicate, so a count and the list it labels
- * cannot drift. The exam-simulation sentinel is a catalogue rule, not an access
- * one: the caller excludes it.
- */
+/** `filterAccessibleSections` as a predicate; the caller excludes the exam sentinel. */
 export function accessibleSectionsSql(
 	db: DbOrTx,
 	userId: string | null,
@@ -92,8 +82,6 @@ export async function assertSectionAccess(
 	}
 }
 
-// Batch form for the paths that span a whole class — a per-section round trip
-// would turn one query into dozens.
 export async function filterAccessibleSections(
 	db: DbOrTx,
 	userId: string | null,

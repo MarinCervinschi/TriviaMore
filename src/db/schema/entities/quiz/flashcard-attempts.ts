@@ -19,7 +19,7 @@ export const flashcardAttempts = quizSchema
 			id: uuid().defaultRandom().primaryKey().notNull(),
 			userId: uuid("user_id").notNull(),
 			sectionId: uuid("section_id"),
-			// The session URL is replayable: this is the idempotency key.
+			// The idempotency key, because the session URL can be replayed.
 			sessionId: text("session_id"),
 			cardsReviewed: integer("cards_reviewed"),
 			completedAt: timestamp("completed_at", {

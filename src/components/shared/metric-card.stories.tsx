@@ -34,7 +34,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** No baseline to compare against: the pill disappears rather than reading "0%". */
+/** With no baseline the pill disappears. */
 export const SenzaDelta: Story = {
 	name: "Senza confronto",
 	args: { delta: null, comparison: undefined },
@@ -52,7 +52,6 @@ export const InCalo: Story = {
 	},
 };
 
-/** The row as the analytics page lays it out: four measurements, four baselines. */
 export const Riga: Story = {
 	name: "La riga della pagina",
 	render: () => (
@@ -96,11 +95,7 @@ export const Riga: Story = {
 	),
 };
 
-/**
- * The two card anatomies side by side: `StatCard` is a decorative tile for a
- * count, `MetricCard` a measurement that carries its own baseline.
- */
-/** The pixel field, moved around the card — `null` leaves it bare. */
+/** The pixel field moved around the card; `null` leaves it bare. */
 export const Texture: Story = {
 	name: "La texture",
 	render: () => (

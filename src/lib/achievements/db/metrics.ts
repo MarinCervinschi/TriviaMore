@@ -8,8 +8,6 @@ import type { UserMetrics } from "../types";
 
 type MetricRow = Record<string, string | number | null>;
 
-/** The one place a row becomes a snapshot, so the rollup read and the recompute
- *  can never disagree about a null. */
 export function toUserMetrics(row: MetricRow): UserMetrics {
 	return {
 		userId: String(row.user_id),
@@ -29,7 +27,7 @@ export function toUserMetrics(row: MetricRow): UserMetrics {
 			BOOKMARKED_THEN_CORRECT: Number(row.bookmarked_then_correct ?? 0),
 			APPROVED_REQUESTS: Number(row.approved_requests ?? 0),
 			ENROLLMENT_DECLARED: Number(row.enrollment_declared ?? 0),
-			// Compared with LTE, so a missing rank is the worst value, not 0 — the best.
+			// Compared with LTE, so a missing rank is the worst value.
 			SIGNUP_RANK:
 				row.signup_rank === null || row.signup_rank === undefined
 					? Number.POSITIVE_INFINITY
@@ -38,20 +36,6 @@ export function toUserMetrics(row: MetricRow): UserMetrics {
 	};
 }
 
-/**
- * Every metric for a user, read from the rollups rather than from the history
- * that produced them. Eight counters come straight off `user_stats`; the four
- * that need a set come off `user_section_stats`, whose size is bounded by the
- * catalogue; the two calendar ones are windowed over `user_day_activity`, which
- * is one row per active day.
- *
- * The shape of the result is unchanged, deliberately: `evaluate` is pure and
- * still runs the same over a live unlock and a replay. What changed is that the
- * cost no longer grows with how long a student has been studying.
- *
- * Authority still belongs to `recomputeMetricSnapshots`; this is the derived
- * read, and `pnpm achievements:reconcile` is what keeps the two honest.
- */
 export async function readMetricSnapshots(
 	db: DbOrTx,
 	userId?: string

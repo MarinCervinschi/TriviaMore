@@ -10,10 +10,6 @@ import type { AchievementView } from "@/lib/achievements/types";
 
 import { AchievementMedal } from "./achievement-medal";
 
-/**
- * The medals the student chose, beside their role. The tooltip is never the
- * accessible name — Radix wires it as `aria-describedby` — so each carries its own.
- */
 export function PinnedAchievements({ pinned }: { pinned: AchievementView[] }) {
 	if (pinned.length === 0) return null;
 
@@ -26,8 +22,7 @@ export function PinnedAchievements({ pinned }: { pinned: AchievementView[] }) {
 			>
 				{pinned.map(entry => (
 					<Tooltip key={entry.key}>
-						{/* A span, not the default button: a button inside an anchor is
-						    invalid, and the anchor is what carries the navigation. */}
+						{/* A span because a button inside an anchor is invalid HTML. */}
 						<TooltipTrigger asChild>
 							<span className="inline-flex">
 								<AchievementMedal

@@ -19,8 +19,6 @@ import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
 import { avatarQueries } from "@/lib/avatar/queries";
 import { cn } from "@/lib/utils";
 
-/** The picture doubles as the way to change it, so the dashboard and settings
- *  do not each need their own form. */
 export function AvatarEditor({
 	imageUrl,
 	initials,
@@ -48,7 +46,7 @@ export function AvatarEditor({
 		try {
 			if (seed) await setGenerated.mutateAsync(seed);
 		} catch {
-			// The mutation toasts its own message; the dialog stays open to retry.
+			// The mutation shows its own toast, and the dialog stays open to retry.
 			return;
 		}
 		setOpen(false);

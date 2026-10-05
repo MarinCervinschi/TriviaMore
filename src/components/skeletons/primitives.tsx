@@ -5,10 +5,6 @@ import { cn } from "@/lib/utils";
 
 type Common = { className?: string };
 
-/**
- * Root wrapper for page-level skeletons. Announces a busy state to assistive
- * tech and provides a visually hidden status message for screen readers.
- */
 export function SkeletonRoot({
 	children,
 	className,
@@ -67,11 +63,6 @@ export function SkeletonAvatar({ className, size = 40 }: Common & { size?: numbe
 	);
 }
 
-/**
- * The compact page head: title, the line under it, and the figures. It mirrors
- * `PageToolbar`, which is what every page opens with now that the shell carries
- * the trail — so no crumb is drawn here.
- */
 export function SkeletonToolbar({
 	withMetrics = 0,
 	withActions = false,
@@ -100,7 +91,6 @@ export function SkeletonToolbar({
 	);
 }
 
-/** The app's framed surface: a muted frame holding a card panel, with optional bands. */
 export function SkeletonInset({
 	header,
 	footer,
@@ -206,7 +196,6 @@ export function SkeletonTable({
 }) {
 	return (
 		<SkeletonInset className={className} header={toolbar} footer={pagination}>
-			{/* Header */}
 			<div
 				className="bg-muted/30 grid gap-4 border-b px-6 py-3"
 				style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
@@ -215,7 +204,6 @@ export function SkeletonTable({
 					<Skeleton key={i} className="h-3.5 w-3/4" />
 				))}
 			</div>
-			{/* Rows */}
 			<div className="divide-y">
 				{Array.from({ length: rows }).map((_, r) => (
 					<div

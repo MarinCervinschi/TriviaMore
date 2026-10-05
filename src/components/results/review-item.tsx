@@ -45,21 +45,6 @@ function IndexChip({ index }: { index: number }) {
 	);
 }
 
-/**
- * One question in the review list. Closed it is a row; open it is an `InsetCard`,
- * so the question sits on the frame, the options on the panel and the explanation
- * on the frame again — the three parts read as three parts without a rule between
- * them.
- *
- * The header carries the verdict and nothing else: an icon, its points, the
- * chevron. Everything that is about the question rather than the outcome — the
- * difficulty, the bookmark, the report — sits in a strip at the top of the panel,
- * where it is in reach only while the question is actually open.
- *
- * `actions` is a slot rather than the buttons themselves: the bookmark and the
- * report both mutate, and keeping them out leaves this component renderable
- * anywhere.
- */
 export function ReviewItem({
 	index,
 	question,
@@ -73,9 +58,8 @@ export function ReviewItem({
 	question: ReviewQuestion;
 	userAnswer: string[];
 	verdict: ReviewVerdict;
-	/** The answer's contribution on the 0–33 scale. */
+	/** On the 0–33 scale. */
 	scaledScore: number;
-	/** Bookmark and report, when the caller can supply them. */
 	actions?: ReactNode;
 	defaultOpen?: boolean;
 }) {
@@ -87,8 +71,7 @@ export function ReviewItem({
 		: null;
 	const VerdictIcon = skin.icon;
 
-	// Colour and icon carry the verdict for anyone looking; the word is still there
-	// for anyone listening (WCAG 1.4.1 — `title` is a tooltip, not a name).
+	// The word is for screen readers, because `title` is a tooltip and names nothing.
 	const outcome = (
 		<span
 			className={cn(
@@ -155,8 +138,7 @@ export function ReviewItem({
 					{title}
 					<div className="flex shrink-0 items-center gap-3">
 						{outcome}
-						{/* A second hit target for the row's own control: not in the tab order,
-						    and never announced twice. */}
+						{/* A second hit target for the row's control, kept out of the tab order and the accessibility tree. */}
 						<button
 							type="button"
 							aria-hidden

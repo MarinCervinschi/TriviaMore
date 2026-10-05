@@ -7,11 +7,6 @@ import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constan
 import type { SearchClassResult, SearchCourseResult } from "@/lib/browse/types";
 import { cn } from "@/lib/utils";
 
-/**
- * One row of the unified search, in the two shapes the catalogue has. They share a
- * frame so a mixed list reads as one list: glyph, name, where it sits, then the
- * figures — and the glyph is what says which of the two you are looking at.
- */
 function Row({
 	to,
 	params,

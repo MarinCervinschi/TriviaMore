@@ -10,7 +10,6 @@ import type { DailyStudyStat } from "@/lib/user/types";
 
 import { FORMAT, METRICS } from "./metric-explorer";
 
-/** The chart slot each metric wears, matching the tab it belongs to. */
 const TINT: Record<string, string> = {
 	quizzes: "text-chart-1",
 	grade: "text-chart-3",
@@ -18,11 +17,6 @@ const TINT: Record<string, string> = {
 	time: "text-chart-4",
 };
 
-/**
- * The four headline figures at the top of the page, each against the same window
- * before it. They read the same totals the Andamento tabs do, so a figure here
- * and the tab below it can never disagree.
- */
 export function MetricKpis({
 	daily,
 	period = "year",
@@ -41,8 +35,6 @@ export function MetricKpis({
 	);
 
 	return (
-		// Its own `@container`, so the row answers to the column it is dropped into
-		// rather than to the window: two up on a phone, four across the page.
 		<div className="@container">
 			<div className="grid gap-4 @[340px]:grid-cols-2 @[900px]:grid-cols-4">
 				{kpis.map(kpi => {

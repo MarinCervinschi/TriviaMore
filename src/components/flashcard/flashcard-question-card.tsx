@@ -25,7 +25,6 @@ export function FlashcardQuestionCard({
 					isFlipped ? "[transform:rotateY(180deg)]" : ""
 				}`}
 			>
-				{/* Front */}
 				<div className="bg-card max-h-[80vh] min-h-[400px] overflow-y-auto rounded-2xl border p-6 wrap-anywhere shadow-sm [backface-visibility:hidden] sm:p-8">
 					<QuestionHeader
 						number={questionNumber}
@@ -52,7 +51,6 @@ export function FlashcardQuestionCard({
 					</div>
 				</div>
 
-				{/* Back */}
 				<div className="border-primary/20 from-primary/5 via-card to-card absolute inset-0 max-h-[80vh] min-h-[400px] [transform:rotateY(180deg)] overflow-y-auto rounded-2xl border bg-gradient-to-br p-6 wrap-anywhere shadow-sm [backface-visibility:hidden] sm:p-8">
 					<div className="flex items-center justify-between pb-6">
 						<span className="text-brand text-sm font-medium">Risposta</span>

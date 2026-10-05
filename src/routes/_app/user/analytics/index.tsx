@@ -35,7 +35,6 @@ function AnalyticsPage() {
 	const { data: daily } = useSuspenseQuery(userQueries.studyStats());
 	const { data: flashcardDays } = useSuspenseQuery(userQueries.flashcardDays());
 
-	// No hero on this page: the breadcrumb names it and the space goes to the data.
 	return (
 		<div className="container space-y-6 py-6 pb-10 [--container-max:none]">
 			{attempts.length === 0 ? (

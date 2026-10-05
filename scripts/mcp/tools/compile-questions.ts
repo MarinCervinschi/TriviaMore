@@ -13,8 +13,6 @@ import {
 import { QuestionsArraySchema } from "../lib/schemas.ts";
 import { json } from "../lib/utils.ts";
 
-// Merge the two parsed sides into question objects. Option letters are resolved to the exact
-// option string here, so correct_answer matches byte-for-byte by construction.
 function build(questions: ParsedQuestion[], answers: Map<number, ParsedAnswer>) {
 	const errors: string[] = [];
 	const objects: unknown[] = [];

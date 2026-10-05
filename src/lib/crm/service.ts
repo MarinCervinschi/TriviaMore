@@ -53,8 +53,7 @@ export async function hasEnrollment(userId: string): Promise<boolean> {
 	return (await findCurrentEnrollment(getDb(), userId)) !== undefined;
 }
 
-/** Re-selecting a course held before promotes that row rather than inserting a
- *  second one, so what hangs off its id survives switching back and forth. */
+/** Re-selecting a course held before promotes that row instead of inserting another. */
 export async function setEnrollment(
 	userId: string,
 	input: SetEnrollmentInput
@@ -90,8 +89,7 @@ export async function setEnrollment(
 		return saved;
 	});
 
-	// After the commit, never inside it: the evaluation has to see the row, and a
-	// failed unlock must not roll back the enrolment that earned it.
+	// After the commit, so the evaluation sees the row and a failed unlock cannot roll it back.
 	evaluateAchievementsInBackground(userId);
 
 	return enrollment;

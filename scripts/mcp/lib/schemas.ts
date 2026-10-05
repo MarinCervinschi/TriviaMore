@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Mirrors src/lib/shared/question-schema.ts (without section_id; UI injects it)
 export const QuestionInputSchema = z
 	.object({
 		content: z.string().min(10).max(2000).trim(),

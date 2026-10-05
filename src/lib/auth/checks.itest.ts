@@ -44,7 +44,6 @@ describe("canAccessSection", () => {
 	it("treats a grant as scoped to its own section", () =>
 		withRollback(async tx => {
 			const scope = await seedSectionAccessScope(tx);
-			// The student is granted `privateGranted`; that must not leak to a sibling.
 			expect(await canAccessSection(tx, scope.student, scope.privateDenied)).toBe(
 				false
 			);
@@ -58,7 +57,6 @@ describe("canAccessSection", () => {
 			);
 		}));
 
-	// The arm the move off RLS dropped, which left a superadmin on an empty page.
 	it("lets an admin and a superadmin into an ungranted private section", () =>
 		withRollback(async tx => {
 			const scope = await seedSectionAccessScope(tx);

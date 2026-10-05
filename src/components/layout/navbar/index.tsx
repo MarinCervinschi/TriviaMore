@@ -34,7 +34,6 @@ function DesktopNavLink({ item }: { item: Extract<NavItem, { type: "link" }> }) 
 	);
 }
 
-// Hover dropdown with a clickable main link
 function DesktopNavDropdown({
 	item,
 }: {
@@ -57,7 +56,6 @@ function DesktopNavDropdown({
 
 	return (
 		<div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-			{/* Trigger — clickable link + chevron */}
 			{item.to ? (
 				<Link
 					to={item.to}
@@ -94,7 +92,6 @@ function DesktopNavDropdown({
 				</button>
 			)}
 
-			{/* Dropdown panel */}
 			{open && (
 				<div className="absolute top-full left-0 z-50 pt-2">
 					<div className="bg-popover animate-in fade-in-0 zoom-in-95 min-w-[240px] overflow-hidden rounded-xl border p-1 shadow-lg duration-150">
@@ -140,7 +137,6 @@ export function Navbar() {
 			<div className="container flex h-16 items-center">
 				<NavLogo />
 
-				{/* Desktop nav */}
 				<nav className="ml-8 hidden md:flex md:gap-1">
 					{navItems.map((item, i) => (
 						<DesktopNavItem

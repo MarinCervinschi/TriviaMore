@@ -15,10 +15,6 @@ import { formatTimeSpent } from "@/lib/utils/quiz-results";
 import { FavoriteStar } from "./favorite-star";
 import { ScoreRing } from "./score-ring";
 
-/**
- * The little a row needs, so both the full history entry and the dashboard's
- * lighter recent attempt fit without either being widened.
- */
 export type RecentAttemptRow = {
 	id: string;
 	score: number;
@@ -33,11 +29,6 @@ export type RecentAttemptRow = {
 	timeSpent?: number | null;
 };
 
-/**
- * The last few sittings, as a list rather than a table: there is nothing to sort
- * or filter here, and the full table already lives at the history page. The grade
- * is said once, by the ring — a column of rings reads before any figure does.
- */
 export function RecentAttempts({
 	attempts,
 	limit = 5,
@@ -45,7 +36,7 @@ export function RecentAttempts({
 }: {
 	attempts: RecentAttemptRow[];
 	limit?: number;
-	/** The whole count, when the list is only a window onto it. */
+	/** The full count, when the list shows only part of it. */
 	total?: number;
 }) {
 	const recent = attempts.slice(0, limit);
@@ -67,7 +58,6 @@ export function RecentAttempts({
 				) : (
 					<ul className="divide-border/60 divide-y">
 						{recent.map(attempt => {
-							// The codes place the quiz, the class names it: there is room for both.
 							const place = [
 								attempt.departmentCode,
 								attempt.courseCode,
@@ -124,7 +114,6 @@ export function RecentAttempts({
 	);
 }
 
-/** The two lines of a row, linked to the result when the quiz still exists. */
 function Body({
 	name,
 	place,

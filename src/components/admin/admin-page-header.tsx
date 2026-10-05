@@ -15,10 +15,6 @@ type AdminPageHeaderProps = {
 	actions?: React.ReactNode;
 };
 
-/**
- * The admin head is `PageToolbar` plus the one thing the rest of the app has no use
- * for: a way back up the catalogue, which the deep entity pages are reached through.
- */
 export function AdminPageHeader({
 	title,
 	description,

@@ -106,7 +106,6 @@ function BrowsePage() {
 
 	return (
 		<div className="relative">
-			{/* Hero + toolbar — single tight block */}
 			<section
 				ref={deptRef}
 				id="dipartimenti"
@@ -129,7 +128,6 @@ function BrowsePage() {
 					</p>
 				</motion.div>
 
-				{/* Toolbar: search + area pills */}
 				<div className="mt-8 space-y-3">
 					<SearchFilter
 						value={search}
@@ -163,7 +161,6 @@ function BrowsePage() {
 					)}
 				</div>
 
-				{/* Grid */}
 				<div className="mt-6">
 					{filteredDepartments.length === 0 ? (
 						<BrowseEmptyState message="Nessun dipartimento corrisponde ai filtri." />
@@ -187,7 +184,6 @@ function BrowsePage() {
 				</div>
 			</section>
 
-			{/* Hierarchy diagram — full-bleed band */}
 			<section ref={hierarchyRef} className="relative overflow-hidden py-14 sm:py-20">
 				<div className="bg-muted/40 pointer-events-none absolute inset-0 -z-10" />
 
@@ -212,7 +208,6 @@ function BrowsePage() {
 				</div>
 			</section>
 
-			{/* Data deep-dive — bento */}
 			<section ref={dataRef} className="container pt-4 pb-16">
 				<motion.div
 					variants={withReducedMotion(fadeInUp, prefersReduced)}
@@ -235,15 +230,12 @@ function BrowsePage() {
 					</div>
 				</motion.div>
 
-				{/* Bento grid: 3 rows × 3 cols. Each row sizes to its tallest cell;
-            companion cells use h-full to fill, so no empty zones. */}
 				<motion.div
 					variants={withReducedMotion(staggerContainer, prefersReduced)}
 					initial="hidden"
 					animate={dataVisible ? "visible" : "hidden"}
 					className="grid gap-3 sm:gap-4 lg:grid-cols-3"
 				>
-					{/* Row 1: Map (cs2) + Course-type donut */}
 					<motion.div
 						variants={withReducedMotion(staggerItem, prefersReduced)}
 						className="min-w-0 lg:col-span-2 [&>*]:h-full"
@@ -268,7 +260,6 @@ function BrowsePage() {
 							<CourseTypeDonutChart data={overview.coursesByType} />
 						</Suspense>
 					</motion.div>
-					{/* Row 2: Department bar (cs2) + Question-type donut */}
 					<motion.div
 						variants={withReducedMotion(staggerItem, prefersReduced)}
 						className="min-w-0 lg:col-span-2 [&>*]:h-full"
@@ -293,7 +284,6 @@ function BrowsePage() {
 							<QuestionTypeDonutChart data={overview.questionsByType} />
 						</Suspense>
 					</motion.div>
-					{/* Row 3: Campus radial + Top classes (cs2) */}
 					<motion.div
 						variants={withReducedMotion(staggerItem, prefersReduced)}
 						className="min-w-0 [&>*]:h-full"

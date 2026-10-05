@@ -19,10 +19,6 @@ export const Default: Story = {
 	),
 };
 
-/**
- * Past five slices a sixth hue would not survive the palette's separation
- * checks, so the tail folds into one neutral "Altro" instead.
- */
 export const FoldedTail: Story = {
 	render: () => (
 		<div className="w-80">

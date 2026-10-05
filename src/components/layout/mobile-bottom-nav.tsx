@@ -150,13 +150,11 @@ function ProfileSheet({
 				side="bottom"
 				className="max-h-[85vh] overflow-y-auto rounded-t-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
 			>
-				{/* Grab handle */}
 				<div
 					aria-hidden
 					className="bg-muted-foreground/30 mx-auto mb-3 h-1 w-9 rounded-full"
 				/>
 
-				{/* User card */}
 				<div className="bg-muted/50 mb-4 flex items-center gap-3 rounded-2xl p-3">
 					<Avatar className="h-12 w-12">
 						<AvatarImage src={user?.image ?? undefined} alt={user?.name ?? "Utente"} />
@@ -170,7 +168,6 @@ function ProfileSheet({
 					</div>
 				</div>
 
-				{/* Tools */}
 				<p className="text-muted-foreground eyebrow mb-2 px-1">Strumenti</p>
 				<div className="grid grid-cols-2 gap-2">
 					<ToolTile
@@ -207,7 +204,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Account */}
 				<p className="text-muted-foreground eyebrow mb-2 px-1">Account</p>
 				<div className="flex flex-col gap-1">
 					<Link
@@ -230,7 +226,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Theme */}
 				<div className="bg-muted/30 flex items-center justify-between rounded-xl px-3 py-2">
 					<span className="text-muted-foreground text-sm font-medium">Tema</span>
 					<ThemeToggle />
@@ -238,7 +233,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Legal footer */}
 				<div className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 pb-3 text-xs">
 					<Link
 						to="/legal/terms"
@@ -265,7 +259,6 @@ function ProfileSheet({
 					</Link>
 				</div>
 
-				{/* Logout */}
 				<button
 					type="button"
 					onClick={() => {

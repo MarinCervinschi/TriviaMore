@@ -36,7 +36,6 @@ export function LogoIcon({ className, size = 24 }: LogoIconProps) {
 			fill="none"
 			className={cn("text-brand", className)}
 		>
-			{/* Brain/question paths */}
 			<path
 				d="M17.306 11.252a5.294 5.294 0 1 0-10.588 0 5.237 5.237 0 0 0 .584 2.37A5.28 5.28 0 0 0 8.836 23.958"
 				stroke="currentColor"
@@ -66,7 +65,6 @@ export function LogoIcon({ className, size = 24 }: LogoIconProps) {
 				strokeMiterlimit="10"
 			/>
 
-			{/* Connection lines */}
 			<polyline
 				points="19 16.01 30.5 16.01 32.521 13.99"
 				stroke="currentColor"
@@ -120,11 +118,9 @@ export function LogoIcon({ className, size = 24 }: LogoIconProps) {
 				strokeMiterlimit="10"
 			/>
 
-			{/* Dots */}
 			<circle cx="11" cy="20" r="1" fill="currentColor" />
 			<circle cx="11.792" cy="43.5" r="1" fill="currentColor" />
 
-			{/* Answer circles */}
 			<circle
 				cx="41.479"
 				cy="10"

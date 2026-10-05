@@ -4,11 +4,6 @@ import { Link } from "@tanstack/react-router";
 
 import { changelogQueries } from "@/lib/changelogs/queries";
 
-/**
- * A row in the profile popover. It used to be a slot in the rail, which put a
- * release note at the same level as the study destinations — read once per release,
- * and never at the moment you are looking for it.
- */
 export function ChangelogMegaphoneRow({ onNavigate }: { onNavigate?: () => void }) {
 	const { data: unreadVersions = [] } = useQuery(changelogQueries.unreadVersions());
 	const unreadCount = unreadVersions.length;

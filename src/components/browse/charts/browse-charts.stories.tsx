@@ -5,8 +5,6 @@ import { CourseTypeDonutChart } from "./course-type-donut-chart";
 import { DepartmentBarChart } from "./department-bar-chart";
 import { QuestionTypeDonutChart } from "./question-type-donut-chart";
 
-// The four charts on the browse overview. Recharts measures its container, so these need real width —
-// and note that a green build proves nothing here: ResponsiveContainer draws no SVG at all in jsdom.
 const meta = {
 	title: "Browse/Charts",
 	parameters: { layout: "padded" },
@@ -54,7 +52,6 @@ export const All: Story = {
 	),
 };
 
-/** One bar and one slice: the axis labels and the legend still have to make sense. */
 export const Sparse: Story = {
 	name: "Con un dato solo",
 	render: () => (

@@ -48,9 +48,6 @@ async function findCards(db: DbOrTx, sectionIds: string[]) {
 		.where(inSections(sectionIds));
 }
 
-// A "user" session draws from one section, an "exam" session from every section
-// of the class the user can reach. The sentinel section the exam hangs off is
-// itself empty, so it never contributes questions.
 async function sourceSections(
 	userId: string,
 	mode: FlashcardMode,
@@ -133,8 +130,7 @@ export async function getFlashcardSession(
 	const session = decodeSessionId(rawSessionId);
 	if (!session) return null;
 
-	// The section id travels in the URL, so this is the gate, not a re-check of
-	// something already verified when the session was created.
+	// The section id comes from the URL, so this is the access gate.
 	const db = getDb();
 	await assertSectionAccess(db, userId, session.sectionId);
 

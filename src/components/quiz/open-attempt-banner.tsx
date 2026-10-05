@@ -72,8 +72,7 @@ function useAttemptActions(attempt: OpenAttempt) {
 }
 
 function AttemptWhere({ attempt }: { attempt: OpenAttempt }): ReactNode {
-	// The instant is formatted in the reader's zone, which the server container does
-	// not share: rendering it before hydration mismatches by the whole offset.
+	// The instant is formatted in the reader's zone, which the server does not share.
 	const isHydrated = useIsHydrated();
 
 	return (
@@ -119,7 +118,6 @@ export function OpenAttemptBanner({
 	);
 }
 
-/** The same attempt as one line. No instant: saying when costs the card's hydration gate. */
 export function OpenAttemptStatus({ attempt }: { attempt: OpenAttempt }) {
 	const { label, confirmation, askDiscard, discarding } = useAttemptActions(attempt);
 

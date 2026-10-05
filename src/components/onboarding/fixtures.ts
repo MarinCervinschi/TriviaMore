@@ -1,7 +1,6 @@
 import type { CourseOption } from "@/components/onboarding/course-picker";
 import type { PickerOption } from "@/components/onboarding/onboarding-picker";
 
-/** Real UniMore departments, so the story shows the lengths the layout must hold. */
 export const DEPARTMENTS: PickerOption[] = [
 	{
 		id: "demb",
@@ -83,7 +82,6 @@ export const DEPARTMENTS: PickerOption[] = [
 	},
 ];
 
-/** The courses of FIM, with the total CFU the picker shows as meta. */
 export const FIM_COURSES: CourseOption[] = [
 	{
 		id: "16-311",
@@ -129,7 +127,6 @@ export const FIM_COURSES: CourseOption[] = [
 	},
 ];
 
-/** DSV is one of the five departments that also runs single-cycle courses. */
 export const DSV_COURSES: CourseOption[] = [
 	{
 		id: "dsv-1",
@@ -182,7 +179,6 @@ export const DSV_COURSES: CourseOption[] = [
 	},
 ];
 
-/** What a returning user's saved classes would surface, once that query exists. */
 export const SUGGESTED_DEPARTMENTS: PickerOption[] = [
 	DEPARTMENTS[9]!,
 	DEPARTMENTS[11]!,

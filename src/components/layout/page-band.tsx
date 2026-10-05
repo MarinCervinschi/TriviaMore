@@ -1,19 +1,12 @@
 import { cn } from "@/lib/utils";
 
 interface PageBandProps {
-	/** `public` is the same band with both intensities turned up — not a second system. */
 	level?: "app" | "public";
-	/** Drops the orb and leaves the dot field. Off inside the app shell, for now. */
 	glow?: boolean;
 	className?: string;
 }
 
-// Put this first inside a `relative isolate` wrapper: it sits behind the page's own content on
-// -z-10, and `isolate` keeps that from escaping.
-//
-// Two layers because the two devices need the same axis but not the same reach: the dots fade
-// vertically over the band's own height, which is what makes every dense surface below it flat, and
-// the orb needs a little more room than that or its radial gets clipped instead of faded.
+/** Put it first inside a `relative isolate` wrapper; it sits behind the content on -z-10. */
 export function PageBand({ level = "app", glow = true, className }: PageBandProps) {
 	const isPublic = level === "public";
 

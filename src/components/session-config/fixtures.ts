@@ -1,7 +1,5 @@
 import type { EvaluationMode, OpenAttempt } from "@/lib/quiz/types";
 
-// Seeded into ["quiz", "evaluation-modes"] by the session dialog stories. Fixed ids and no randomness:
-// a story that reshuffles is useless for comparing two variants.
 export const EVAL_MODES: EvaluationMode[] = [
 	{
 		id: "mode-standard",

@@ -31,11 +31,7 @@ function Sample({ label, children }: { label: string; children: ReactNode }) {
 	);
 }
 
-/**
- * Pannelli neutri sempre; è l'icona a portare il colore — `text-brand` ovunque, `text-danger` nei
- * contesti di errore. Sopra una card si passa `**:data-[slot=icon-stack-layer]:fill-card` così le
- * facce si fondono con la superficie. Da guardare in entrambi i temi.
- */
+/** Over a card, pass `**:data-[slot=icon-stack-layer]:fill-card` so the faces blend into the surface. */
 export const UsiReali: Story = {
 	name: "Usi reali",
 	render: () => (

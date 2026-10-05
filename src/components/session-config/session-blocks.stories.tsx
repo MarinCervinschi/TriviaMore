@@ -26,9 +26,6 @@ import {
 } from "./summary-blocks";
 import { SummaryPanel } from "./summary-panel";
 
-// Everything the three session dialogs are assembled from, under one entry: a change to a block is
-// meant to be visible as a change to the dialog that uses it, and nine sidebar entries for one feature
-// buried that.
 const meta = {
 	title: "Session Dialogs/Blocchi",
 	parameters: { layout: "padded" },
@@ -70,7 +67,7 @@ export const Cornice: Story = {
 	render: () => <ShellHarness />,
 };
 
-/** Mid-submit: the action has to say it is working and stop taking a second click. */
+/** Mid-submit, the action says it is working and ignores a second click. */
 export const CorniceInInvio: Story = {
 	name: "La cornice, in invio",
 	parameters: { layout: "centered" },
@@ -130,7 +127,7 @@ function FlashcardHarness({ max }: { max: number }) {
 	);
 }
 
-/** Form and summary side by side, as the dialog renders them: a change to one is a change to both. */
+/** Form and summary side by side, as the dialog renders them. */
 export const Campi: Story = {
 	name: "I campi e il riepilogo",
 	render: () => (
@@ -141,7 +138,7 @@ export const Campi: Story = {
 	),
 };
 
-/** Fewer than two evaluation modes and the picker hides itself — one choice is not a choice. */
+/** With fewer than two evaluation modes the picker hides itself. */
 export const CampiAlLimite: Story = {
 	name: "I campi al limite",
 	render: () => (
@@ -217,7 +214,6 @@ export const BlocchiRiepilogo: Story = {
 	),
 };
 
-/** The sweep is the point: it has to read at a glance across every step the picker offers. */
 export const Quadrante: Story = {
 	name: "Il quadrante",
 	render: () => (
@@ -241,7 +237,7 @@ export const Quadrante: Story = {
 	),
 };
 
-/** Honours prefers-reduced-motion through motion.ts: with the OS setting on, the blocks just appear. */
+/** With reduced motion on in the OS, the blocks just appear. */
 export const Ingresso: Story = {
 	name: "L'ingresso",
 	render: () => (

@@ -35,16 +35,11 @@ type Facet = {
 	title: string;
 	icon: Icon;
 	options: Option[];
-	/** Which of the two kinds this one narrows, when it is not both. */
+	/** The one kind this facet narrows; unset when it narrows both. */
 	scope?: string;
 	parse?: (value: string) => SearchFilterValues[Key];
 };
 
-/**
- * The catalogue's facets, each carrying what it narrows. Department and campus cut
- * both kinds; the rest belong to one — which is why picking a year empties the
- * courses, and naming the scope in the menu is what makes that legible.
- */
 function facetsOf(departments: BrowseDepartment[], years: number[]): Facet[] {
 	return [
 		{
@@ -94,7 +89,6 @@ function facetsOf(departments: BrowseDepartment[], years: number[]): Facet[] {
 	];
 }
 
-/** The funnel: one submenu per facet, the shape the tables already use. */
 export function SearchFilterMenu({
 	values,
 	departments,
@@ -111,7 +105,7 @@ export function SearchFilterMenu({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				{/* rounded-lg, not the Button default: at 32px a 16px radius is a circle. */}
+				{/* At 32px the Button's 16px radius would draw a circle. */}
 				<Button
 					variant="outline"
 					size="sm"
@@ -159,11 +153,7 @@ export function SearchFilterMenu({
 	);
 }
 
-/**
- * One removable chip per active facet. It renders a fragment so the chips share
- * their parent's wrapping flow — inside a wrapper of their own they took a line to
- * themselves and left whatever follows them stranded.
- */
+/** Renders a fragment, so the chips wrap inside the parent's flow. */
 export function SearchFilterChips({
 	values,
 	departments,

@@ -9,14 +9,6 @@ import { notificationQueries } from "@/lib/notifications/queries";
 
 import { NotificationPopover } from "./notification-popover";
 
-/**
- * Sits in the sidebar's header beside the brand, not in the menu — a row of its own
- * cost more vertical space than the thing is worth. Collapsed it keeps the same box
- * as a menu button, so it lands on the icons' axis.
- *
- * The unread state is a dot rather than a count: there is no room for a number next
- * to a 16px glyph, and the number is in the popover anyway.
- */
 export function SidebarNotificationBell() {
 	const [open, setOpen] = useState(false);
 	const { isMobile } = useSidebar();

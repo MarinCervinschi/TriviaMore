@@ -1,6 +1,6 @@
 import { DonutChart } from "@/components/charts";
 
-// Match the Quiz/Flashcard badges used elsewhere.
+// The same colours as the Quiz and Flashcard badges.
 const TYPE_COLORS: Record<string, string> = {
 	QUIZ: "var(--color-chart-2)",
 	FLASHCARD: "var(--color-chart-3)",

@@ -1,7 +1,6 @@
 import type { Icon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
-/** A divided row of headline figures, sitting at the foot of a panel. */
 export function FigureRow({
 	children,
 	className,

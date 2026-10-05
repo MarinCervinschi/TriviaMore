@@ -1,11 +1,4 @@
-// Flashcard sessions are stateless: everything needed to rebuild one is encoded
-// in its id, so nothing is written to the database when a session starts.
-//
-//   {mode}.{seed}.{base64url(sectionId:cardCount)}
-//
-// The seed drives the deterministic shuffle, so a reload shows the same cards
-// in the same order. Nothing here is trusted: the section id is
-// attacker-controlled and goes through the access gate on every read.
+// `{mode}.{seed}.{base64url(sectionId:cardCount)}`; the section id is untrusted and gated on every read.
 
 export type FlashcardMode = "user" | "exam";
 

@@ -31,28 +31,15 @@ import {
 	departmentBrowsePath,
 } from "@/lib/catalog/paths";
 
-/**
- * The trail is derived from the matched routes, not rendered by the page.
- *
- * A page cannot put its own crumbs into the shell's header without a context, and a
- * context only fills once the page has committed — which leaves the bar empty for a
- * frame on every navigation. `useMatches` resolves before paint, and on the server.
- */
 type CrumbCtx = { loaderData: unknown; params: Record<string, string> };
 
 type CrumbDef = {
 	label: string | ((ctx: CrumbCtx) => string);
 	icon?: Icon;
-	/**
-	 * Levels the URL implies but the route tree does not nest. `analytics/class/$id`
-	 * is a sibling of `analytics/`, not its child, and the four browse levels are all
-	 * siblings too — without this the trail would jump straight from the dashboard to
-	 * the name of a section.
-	 */
+	/** Levels the URL implies but the route tree does not nest. */
 	parents?: Crumb[] | ((ctx: CrumbCtx) => Crumb[]);
 };
 
-/** Reads a nested string off loader data without trusting its shape. */
 const dig = (value: unknown, path: string): string | undefined => {
 	let current = value;
 	for (const key of path.split(".")) {
@@ -62,11 +49,7 @@ const dig = (value: unknown, path: string): string | undefined => {
 	return typeof current === "string" && current.length > 0 ? current : undefined;
 };
 
-/**
- * The analytics detail loaders resolve a `Promise.all`, so their data is a tuple and
- * the entity's name only exists on the first entry of its attempt history — there is
- * no `name` anywhere to read.
- */
+// The detail loaders return a tuple, and the name exists only on the first attempt entry.
 const fromFirstAttempt = (data: unknown, field: string, fallback: string) => {
 	const first = Array.isArray(data) && Array.isArray(data[0]) ? data[0][0] : undefined;
 	const value =
@@ -99,7 +82,6 @@ const ADMIN_USERS: Crumb = {
 	icon: UsersGroupRoundedIcon,
 };
 
-/** The admin catalogue levels, each linked by the id its own route takes. */
 const adminDepartment = (data: unknown, at: string): Crumb[] => {
 	const name = dig(data, `${at}.name`);
 	const id = dig(data, `${at}.id`);
@@ -145,7 +127,6 @@ const adminClass = (data: unknown, nameAt: string, idAt: string): Crumb[] => {
 		: [];
 };
 
-/** The catalogue's ancestors, addressed by route params so the links stay typed. */
 const department = (ctx: CrumbCtx, path: string): Crumb => ({
 	label: dig(ctx.loaderData, path) ?? "Dipartimento",
 	to: "/browse/$department",
@@ -171,11 +152,6 @@ const classCrumb = (ctx: CrumbCtx, path: string): Crumb => ({
 	icon: BookIcon,
 });
 
-/**
- * A result's trail is the catalogue chain of the section it was taken from. The
- * path helpers are pure string work, so the same routes a query builds are the
- * ones this points at.
- */
 function resultParents(data: unknown): Crumb[] {
 	const chain = {
 		departmentCode: dig(data, "quiz.section.departmentCode") ?? null,
@@ -238,8 +214,6 @@ const CRUMBS: Record<string, CrumbDef> = {
 		parents: [ANALYTICS],
 	},
 
-	// Browse also renders a trail of its own, for the guests who get no shell to
-	// put one in — `BrowsePageHeader` drops it as soon as there is a header here.
 	"/_app/browse/": { label: "Esplora", icon: CompassIcon },
 	"/_app/browse/$department/": {
 		label: ctx => dig(ctx.loaderData, "name") ?? "Dipartimento",
@@ -280,9 +254,6 @@ const CRUMBS: Record<string, CrumbDef> = {
 		parents: ctx => resultParents(ctx.loaderData),
 	},
 
-	// Every admin page had an empty header: the section carried a hand-rolled
-	// «Indietro» of one level instead of a trail. Its routes address entities by id,
-	// so a link needs the id out of the data, not the params.
 	"/_app/admin/": { label: "Gestione", icon: ShieldIcon },
 	"/_app/admin/departments/": {
 		label: "Dipartimenti",
@@ -318,8 +289,7 @@ const CRUMBS: Record<string, CrumbDef> = {
 		icon: DocumentTextIcon,
 		parents: ctx => [
 			ADMIN,
-			// The section carries its parents' names but only the course's id, so the
-			// department above it is named without being a link.
+			// The section carries only the course's id, so the department is named without a link.
 			...(dig(ctx.loaderData, "parent.departmentName")
 				? [
 						{
@@ -380,7 +350,6 @@ const CRUMBS: Record<string, CrumbDef> = {
 	"/_app/contact": { label: "Contatti", icon: LetterIcon },
 };
 
-/** Every trail in the app shell starts at the dashboard; it is the only fixed root. */
 const DASHBOARD_ROUTE = "/_app/user/";
 const DASHBOARD: Crumb = { label: "Dashboard", to: "/user", icon: HomeIcon };
 
@@ -410,11 +379,9 @@ export function useRouteCrumbs(): Crumb[] {
 
 	if (trail.length === 0) return [];
 
-	// On the dashboard itself the route already produced that crumb.
 	const onDashboard = matches.some(match => match.routeId === DASHBOARD_ROUTE);
 	const items = onDashboard ? trail : [DASHBOARD, ...trail];
 
-	// The page you are on is not a link to itself.
 	return items.map((crumb, index) =>
 		index === items.length - 1 ? { ...crumb, to: undefined, params: undefined } : crumb
 	);

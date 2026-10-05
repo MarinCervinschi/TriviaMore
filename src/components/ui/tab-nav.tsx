@@ -7,30 +7,19 @@ import { cn } from "@/lib/utils";
 type Common = {
 	key: string;
 	label: string;
-	/** A count beside the label — the size of what the tab holds. */
 	badge?: ReactNode;
 };
 
-/** A tab is either a route of its own, or a slice of the page you are already on. */
 export type TabNavItem = Common &
 	({ to: LinkProps["to"] } | { active: boolean; onSelect: () => void });
 
 const TAB =
 	"focus-visible:ring-ring relative inline-flex shrink-0 items-center gap-2 px-1 pb-2.5 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none";
 
-/**
- * Underlined tabs, for the row under a page's title. Distinct from `Tabs`, which is
- * the enclosed pill set: this one marks the selected item alone and can navigate,
- * so it stands in for sidebar entries a page has absorbed.
- *
- * There is deliberately no rule along the row — over the dot field it reads as
- * neither a boundary nor decoration.
- */
 export function TabNav({ label, tabs }: { label: string; tabs: TabNavItem[] }) {
 	const matchRoute = useMatchRoute();
 
 	return (
-		// Both properties, as `CalendarHeatmap` does: the row scrolls without a bar.
 		<div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 			<div role="tablist" aria-label={label} className="flex w-max gap-6">
 				{tabs.map(tab => {
@@ -54,10 +43,7 @@ export function TabNav({ label, tabs }: { label: string; tabs: TabNavItem[] }) {
 									{tab.badge}
 								</span>
 							)}
-							{/*
-							 * A span, not a border: `globals.css` sets `border-color` on `*`
-							 * outside any layer, so `border-transparent` never applies.
-							 */}
+							{/* A span because `globals.css` sets `border-color` on `*` outside any layer. */}
 							{current && (
 								<span
 									aria-hidden

@@ -29,8 +29,7 @@ function publicUrl(path: string): string {
 	return data.publicUrl;
 }
 
-/** Ten changes must leave one object, not ten. An OAuth picture lives on
- *  Google, so it is forgotten rather than deleted. */
+/** An OAuth picture lives on Google, so it is forgotten instead of deleted. */
 async function removePreviousAvatar(userId: string, current: string | null) {
 	if (!current) return;
 	const marker = `/${BUCKET}/${userId}/`;
@@ -59,8 +58,7 @@ async function commitAvatar(userId: string, path: string): Promise<string> {
 	return url;
 }
 
-/** The SVG is produced here and never accepted from the browser: the bucket is
- *  public, so bytes the client chose would be active content we host. */
+// Generated here and never accepted from the browser, because the bucket is public.
 export async function setGeneratedAvatar(
 	userId: string,
 	seed: string
@@ -79,8 +77,7 @@ export async function setGeneratedAvatar(
 	return commitAvatar(userId, path);
 }
 
-/** The bucket has no write policy, so a signed token is the only way in — and
- *  the path is the server's to choose, never the client's. */
+/** The path is chosen by the server, never by the client. */
 export async function createAvatarUploadUrl(userId: string, contentType: string) {
 	const path = `${userId}/${crypto.randomUUID()}.${EXTENSION[contentType] ?? "bin"}`;
 

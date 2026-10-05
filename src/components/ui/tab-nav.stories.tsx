@@ -4,11 +4,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { TabNav } from "./tab-nav";
 
-/**
- * Underlined tabs for the row under a page's title. The other tab set, `Tabs`, is
- * the enclosed pill group — this one marks the selected item alone and carries no
- * rule along the row, so it survives the page band's dots behind it.
- */
 const meta = {
 	title: "UI/TabNav",
 	component: TabNav,
@@ -18,7 +13,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Route tabs: each is a page of its own, and the current route selects one. */
+/** Route tabs, each a page of its own. */
 export const Rotte: Story = {
 	name: "Tab di navigazione",
 	parameters: { path: "/user/analytics/courses" },
@@ -33,7 +28,7 @@ export const Rotte: Story = {
 	},
 };
 
-/** Slices of one page, with the count of what each holds. */
+/** Slices of one page, with counts. */
 export const Filtri: Story = {
 	name: "Tab di filtro, con conteggi",
 	args: { label: "Categorie", tabs: [] },
@@ -60,7 +55,6 @@ function Filtered() {
 	);
 }
 
-/** More tabs than the row can hold: it scrolls sideways, without a visible bar. */
 export const Overflow: Story = {
 	name: "Riga che trabocca",
 	args: { label: "Sezioni", tabs: [] },

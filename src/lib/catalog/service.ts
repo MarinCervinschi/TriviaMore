@@ -3,8 +3,6 @@ import { filterAccessibleSections } from "@/lib/auth/checks";
 
 import { findSectionsInClass } from "./db/sections";
 
-// Sections of a class the user is allowed to study, used by every "whole class"
-// entry point: exam simulation and exam flashcards.
 export async function accessibleSectionIdsInClass(
 	userId: string | null,
 	classId: string

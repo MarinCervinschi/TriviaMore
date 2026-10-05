@@ -8,10 +8,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { findProfile } from "./db/profiles";
 import type { AuthUser } from "./types";
 
-// Plain functions, not server functions: they are called from inside other
-// handlers dozens of times, where an RPC-shaped call would be a round trip to
-// ourselves. The `api/require-*.ts` wrappers exist for route `beforeLoad`, which
-// also runs in the browser.
+// Plain functions, because a server function called from another handler is a round trip to ourselves.
 
 export function toAuthUser(profile: {
 	id: string;
@@ -38,8 +35,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
 
 	if (error || !user) return null;
 
-	// Only the id: an email on every event would put a personal identifier in
-	// Seq for the whole retention window.
+	// Only the id, so no email reaches Seq.
 	attachUser(user.id);
 
 	const profile = await findProfile(getDb(), user.id);

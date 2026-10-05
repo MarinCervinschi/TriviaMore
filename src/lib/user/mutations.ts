@@ -77,8 +77,6 @@ export function useUpdateProfile() {
 	});
 }
 
-// TODO: implement useDeleteAccount when proper RLS DELETE policies are in place
-
 export function useToggleBookmark() {
 	const queryClient = useQueryClient();
 
@@ -108,11 +106,6 @@ export function useToggleBookmark() {
 	});
 }
 
-/**
- * Stars an attempt, through the shared wrapper: the success toast, the undo and
- * the error path all come from there. A toggle is its own inverse, so the undo is
- * the same call with the value flipped back.
- */
 export function useAttemptFavorite() {
 	return useMutationWithToast<{ attemptId: string; isFavorite: boolean }, unknown>(
 		setAttemptFavoriteFn,

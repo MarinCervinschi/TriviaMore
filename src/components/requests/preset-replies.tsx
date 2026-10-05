@@ -3,7 +3,6 @@ type PresetRepliesProps = {
 	onPick: (text: string) => void;
 };
 
-// Quick-insert chips that append a canned reply to a note textarea.
 export function PresetReplies({ presets, onPick }: PresetRepliesProps) {
 	if (presets.length === 0) return null;
 

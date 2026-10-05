@@ -38,7 +38,6 @@ export const updateProfileSchema = z.object({
 
 export const attemptFavoriteSchema = z.object({
 	attemptId: z.string().uuid(),
-	// The wanted value, not a blind flip: an optimistic click that arrives twice
-	// must land on the same state, not undo itself.
+	// The wanted value, so a click that arrives twice lands on the same state.
 	isFavorite: z.boolean(),
 });

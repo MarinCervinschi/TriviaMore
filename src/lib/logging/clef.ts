@@ -1,7 +1,4 @@
-// Compact Log Event Format — the wire format Seq ingests. Keys beginning with
-// `@` are reserved by the format, so a property whose own name starts with one
-// is escaped by doubling it. Seq renders `@mt` against the properties itself,
-// which is why no rendered message is sent.
+// Keys starting with `@` are reserved by CLEF, so a property name starting with one is escaped by doubling it.
 
 export type LogLevel = "Debug" | "Information" | "Warning" | "Error";
 
@@ -158,7 +155,7 @@ export function toClef(event: LogEvent): string {
 	return JSON.stringify(payload);
 }
 
-// Seq renders the template server-side; this is only for the console fallback.
+// Only for the console fallback; Seq renders the template itself.
 export function render(template: string, properties: LogProperties): string {
 	return template.replace(/\{(\w+)(?::[^}]*)?\}/g, (match, name: string) =>
 		name in properties ? String(properties[name]) : match

@@ -29,14 +29,6 @@ function Bullet() {
 	return <span className="bg-muted-foreground/30 size-1 rounded-full" aria-hidden />;
 }
 
-/**
- * The verdict, before any of the detail: the grade, where it falls on the five
- * bands, what the evaluation mode paid for each answer, and the counts.
- *
- * Blank answers get their own figure rather than being folded into the wrong
- * ones. Under a penalty they are not the same event — one costs points and the
- * other does not — and a student who left three questions has to see that.
- */
 export function ResultsHero({
 	result,
 	summary,
@@ -49,7 +41,6 @@ export function ResultsHero({
 	const { quizMode, timeLimit, evaluationMode } = result.quiz;
 	const exam = quizMode === "EXAM_SIMULATION";
 	const ModeIcon = exam ? ClipboardCheckIcon : BookMinimalisticIcon;
-	// `quizzes.time_limit` is stored in minutes, the same unit the timer counts down from.
 	const minutes = timeLimit;
 	const showPartial = evaluationMode.partialCreditEnabled || summary.partial > 0;
 

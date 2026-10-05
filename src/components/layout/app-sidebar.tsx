@@ -60,7 +60,6 @@ import {
 
 const ACTIVE_ROW = "data-[active=true]:text-brand";
 
-/** Stands in for the group labels once they are hidden, and only then. */
 function RailDot() {
 	return (
 		<div
@@ -72,11 +71,7 @@ function RailDot() {
 	);
 }
 
-/**
- * A destination, or a parent that nests. A parent is never highlighted itself: its
- * own page is the first of its children, so lighting both would mark two rows for
- * one location.
- */
+/** A destination, or a parent that nests; a parent is never highlighted itself. */
 function NavRow({ item }: { item: NavItem }) {
 	const matchRoute = useMatchRoute();
 	const { state, isMobile } = useSidebar();
@@ -87,12 +82,7 @@ function NavRow({ item }: { item: NavItem }) {
 	);
 	const sectionActive = ownActive || childActive;
 
-	/*
-	 * Opens whenever you land inside the section, wherever you came from. A
-	 * `defaultOpen` applies only on mount, so arriving from the dashboard left the
-	 * group shut. Adjusted during render rather than in an effect, which would paint
-	 * it closed for a frame first.
-	 */
+	// Adjusted during render, because an effect would paint the group closed for a frame.
 	const [groupOpen, setGroupOpen] = useState(sectionActive);
 	const [flyoutOpen, setFlyoutOpen] = useState(false);
 	const [wasActive, setWasActive] = useState(sectionActive);
@@ -122,14 +112,7 @@ function NavRow({ item }: { item: NavItem }) {
 		);
 	}
 
-	/*
-	 * Collapsed the children go in a flyout: there is no width for a submenu, and
-	 * opening the first child for the user would be a guess.
-	 *
-	 * No `tooltip` here on purpose — `SidebarMenuButton` wraps itself in one, and
-	 * `PopoverTrigger asChild` would then clone its props onto the tooltip wrapper
-	 * instead of the button. The flyout names the section itself.
-	 */
+	// No `tooltip`, or `PopoverTrigger asChild` clones its props onto the tooltip wrapper instead of the button.
 	if (isCollapsed) {
 		return (
 			<SidebarMenuItem>
@@ -188,7 +171,7 @@ function NavRow({ item }: { item: NavItem }) {
 					<SidebarMenuSub>
 						{item.children.map(child => {
 							const ChildIcon = child.icon;
-							// Exact: the parent matches fuzzily, so every child would light up.
+							// Exact, because a fuzzy match would light up every child.
 							const active = !!matchRoute({ to: child.to, fuzzy: false });
 							return (
 								<SidebarMenuSubItem key={child.to}>

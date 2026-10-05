@@ -20,11 +20,7 @@ function shortId() {
 	return crypto.randomUUID().slice(0, 8);
 }
 
-// profiles.id references auth.users.id, so a profile needs a backing auth user.
-// GoTrue's auth.users defaults every column but the id, and an on-insert trigger
-// then creates the matching profile with the default STUDENT role. The role is
-// reset by delete + insert rather than update: a BEFORE UPDATE trigger on
-// profiles guards role changes and is off-limits to a plain fixture.
+// Inserting an auth user fires a trigger that creates its profile with the STUDENT role.
 export async function createUser(
 	tx: TestTx,
 	role: AuthUser["role"] = "MAINTAINER"
@@ -74,8 +70,7 @@ async function createSection(
 	tx: TestTx,
 	classId: string,
 	isPublic: boolean,
-	// slug is generated from the name and is unique per class, so the name must
-	// differ between sibling sections.
+	// slug is generated from the name and unique per class, so sibling names must differ.
 	name = `Sezione ${shortId()}`
 ): Promise<string> {
 	const [row] = await tx
@@ -96,8 +91,6 @@ export type MaintainerScope = {
 	sectionOutOfScope: string;
 };
 
-// A minimal catalog graph exercising the MAINTAINER scoping rules: one course
-// the user maintains and one they do not, each with its own class and sections.
 export async function seedMaintainerScope(tx: TestTx): Promise<MaintainerScope> {
 	const maintainer = await createUser(tx, "MAINTAINER");
 	const departmentId = await createDepartment(tx);
@@ -135,9 +128,6 @@ export type SectionAccessScope = {
 	privateDenied: string;
 };
 
-// A student with one explicit grant, plus a public section and a private
-// section they cannot reach: the three cases the section-access gate turns on.
-// The other roles come along because the gate reads the role too.
 export async function seedSectionAccessScope(tx: TestTx): Promise<SectionAccessScope> {
 	const student = await createUser(tx, "STUDENT");
 	const maintainer = await createUser(tx, "MAINTAINER");
@@ -172,8 +162,6 @@ export type SectionCountScope = {
 	sentinel: string;
 };
 
-// One class carrying every kind of section at once: the shape that made the
-// catalogue count disagree with the list beside it.
 export async function seedSectionCountScope(tx: TestTx): Promise<SectionCountScope> {
 	const student = await createUser(tx, "STUDENT");
 	const admin = await createUser(tx, "ADMIN");

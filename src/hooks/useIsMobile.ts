@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-/**
- * True below the `md` breakpoint, matching Tailwind's own boundary.
- *
- * False on the server and through hydration — there is no viewport to measure,
- * so anything branching on it renders the desktop shape first and swaps after.
- */
+/** True below `md`; false on the server and through hydration. */
 export function useIsMobile(): boolean {
 	const [isMobile, setIsMobile] = useState(false);
 

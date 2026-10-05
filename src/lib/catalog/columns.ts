@@ -6,9 +6,7 @@ import {
 	departments,
 } from "@/db/schema";
 
-// Explicit column maps instead of `select()`: they keep the generated `fts`
-// tsvector out of every payload and make each view model's shape obvious at the
-// query site.
+// Explicit column maps keep the generated `fts` tsvector out of every payload.
 
 export const departmentColumns = {
 	id: departments.id,

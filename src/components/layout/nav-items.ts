@@ -16,22 +16,13 @@ export interface NavItem {
 	icon: Icon;
 	label: string;
 	fuzzy: boolean;
-	/**
-	 * Nests in the rail: inline when the sidebar is open, in a flyout when it is
-	 * collapsed. The first child is the parent's own page, so the row still leads
-	 * somewhere if the flyout is dismissed.
-	 *
-	 * Reach for this only where the parts are separate lists. Where they are views
-	 * of one thing — analytics — the page carries a `TabNav` instead and the rail
-	 * keeps a single row.
-	 */
+	/** The first child is the parent's own page. */
 	children?: Omit<NavItem, "fuzzy">[];
 }
 
-/** A page's tab row. The sidebar shows only the first of each set. */
+/** A page's tab row; the sidebar shows only the first of each set. */
 export type TabItem = { key: string; label: string; to: LinkProps["to"] };
 
-/** The only item above the groups: it is where every trail starts. */
 export const HOME_ITEM: NavItem = {
 	to: "/user",
 	icon: HomeIcon,
@@ -39,11 +30,6 @@ export const HOME_ITEM: NavItem = {
 	fuzzy: false,
 };
 
-/**
- * What belongs to the student, and the group that comes first — it is what someone
- * signed in opens the app for. Traguardi and Segnalibri are children rather than
- * rows of their own: neither is reached often enough to hold a slot.
- */
 export const STUDY_ITEMS: NavItem[] = [
 	{
 		to: "/user/classes",
@@ -55,7 +41,6 @@ export const STUDY_ITEMS: NavItem[] = [
 	{ to: "/user/bookmarks", icon: BookmarkIcon, label: "Segnalibri", fuzzy: false },
 ];
 
-/** Tabs on every analytics page, Traguardi included — all read as "come sto andando". */
 export const ANALYTICS_TABS: TabItem[] = [
 	{ key: "overview", label: "Panoramica", to: "/user/analytics" },
 	{ key: "courses", label: "Per corso", to: "/user/analytics/courses" },
@@ -63,13 +48,11 @@ export const ANALYTICS_TABS: TabItem[] = [
 	{ key: "achievements", label: "Traguardi", to: "/user/achievements" },
 ];
 
-/** The catalogue — the same pages a guest can reach, hence its own group. */
 export const CATALOG_ITEMS: NavItem[] = [
 	{ to: "/browse", icon: CompassIcon, label: "Esplora", fuzzy: false },
 	{ to: "/search", icon: MagnifierIcon, label: "Cerca", fuzzy: false },
 ];
 
-/** Something you do rather than consult, so it sits with the tools at the bottom. */
 export const REQUESTS_ITEM: NavItem = {
 	to: "/user/requests",
 	icon: InboxIcon,
@@ -84,7 +67,6 @@ export const ADMIN_ITEM: NavItem = {
 	fuzzy: true,
 };
 
-/** The bottom nav's handful, drawn from the same lists the rail shows. */
 export const MOBILE_ITEMS: NavItem[] = [
 	HOME_ITEM,
 	CATALOG_ITEMS[0]!,

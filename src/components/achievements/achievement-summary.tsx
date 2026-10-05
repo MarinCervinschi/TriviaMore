@@ -25,7 +25,6 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 	);
 }
 
-/** The fixed head of the page: standing, pinned medals, and the closest goals. */
 export function AchievementSummary({
 	unlocked,
 	total,

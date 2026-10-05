@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { AvatarChoice } from "@/lib/avatar/types";
 import { cn } from "@/lib/utils";
 
-/** Previews go through `<img>`: the SVG is ours, but an image element cannot
- *  run one either way, and that is the property worth keeping. */
+// Previews use `<img>`, because an image element cannot run a script in the SVG.
 export function AvatarChooser({
 	choices,
 	selectedSeed,

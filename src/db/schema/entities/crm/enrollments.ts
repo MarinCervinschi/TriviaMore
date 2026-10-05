@@ -14,16 +14,7 @@ import { crmSchema } from "../../common";
 import { courses } from "../catalog/courses";
 import { profiles } from "../public/profiles";
 
-/**
- * The student's declared degree programme — the root the whole CRM hangs off.
- * Not `user_classes`, which records saved classes: derived, deletable, and free
- * to span several courses.
- *
- * Many rows per user, at most one `is_current` and at most one per course, so a
- * bachelor → master move keeps the old career and switching back promotes the
- * row the exams already hang off. `restrict` on the course: deleting one that
- * students are enrolled in must fail loudly, not cascade a career away.
- */
+/** Many rows per user, with at most one `is_current` and at most one per course. */
 export const enrollments = crmSchema
 	.table(
 		"enrollments",

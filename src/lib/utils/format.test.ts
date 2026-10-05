@@ -9,8 +9,7 @@ import {
 	formatTime,
 } from "./format";
 
-// A fixed instant, so the assertions do not drift with the clock. Times are
-// asserted loosely because the runner's zone is not the reader's.
+// Times are asserted loosely, because the runner's zone is not the reader's.
 const AUG_2026 = new Date("2026-08-09T14:30:00Z");
 const DEC_2025 = new Date("2025-12-02T09:00:00Z");
 
@@ -53,8 +52,7 @@ describe("formatDayMonth", () => {
 });
 
 describe("formatNumber", () => {
-	// Italian groups from five digits up, so 1240 stays unseparated while 12400
-	// does not. Pinned because it looks like a bug the first time you meet it.
+	// Italian groups from five digits up.
 	it("leaves four-digit numbers unseparated", () => {
 		expect(formatNumber(1240)).toBe("1240");
 	});

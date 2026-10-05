@@ -22,12 +22,7 @@ export type NotificationScope = {
 	departmentIds: string[];
 };
 
-// Every course a class is taught in, with its department. A class shared across
-// courses resolves to all of them on purpose: `classInMaintainedScope` grants a
-// maintainer authority over a class if *any* of its courses is one they
-// maintain, so anyone who can act on the target has to hear about it. The
-// previous implementation took an unordered `limit 1` and silently dropped the
-// rest.
+// Every course of the class, because a maintainer of any of them has authority over it.
 async function coursesOfClass(db: DbOrTx, classId: string) {
 	return db
 		.select({
@@ -76,8 +71,6 @@ export async function findNotificationScope(
 	return { courseIds: [...courseIds], departmentIds: [...departmentIds] };
 }
 
-// Every superadmin, plus the maintainers of the courses in scope and the admins
-// of their departments. One query, deduplicated by construction.
 export async function findNotificationRecipients(
 	db: DbOrTx,
 	scope: NotificationScope

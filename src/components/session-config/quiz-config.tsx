@@ -11,9 +11,6 @@ import {
 } from "./session-form-blocks";
 import { EvalBlock, MetricBlock, TimeBlock } from "./summary-blocks";
 
-// The quiz configuration form and its live summary, shared by the quiz start
-// dialog and the exam dialog's quiz tab. State lives in the parent dialog.
-
 export function QuizConfigFields({
 	questionCount,
 	setQuestionCount,
@@ -34,9 +31,7 @@ export function QuizConfigFields({
 	setEvalModeId: (v: string) => void;
 	evalModes: EvaluationMode[] | undefined;
 	selectedEvalMode: EvaluationMode | undefined;
-	/** The most this session may draw: the section's own total, capped. */
 	maxQuestions: number;
-	/** How many exist, so the hint never claims "all" while showing the ceiling. */
 	available?: number;
 }) {
 	const total = available ?? maxQuestions;

@@ -95,11 +95,7 @@ export const Icone: Story = {
 	),
 };
 
-/**
- * A badge inserted from the SQL console can name an icon or an accent that no map
- * knows yet. Both fall back instead of throwing — otherwise "add a badge without
- * a deploy" would be false.
- */
+/** An icon and an accent that no map knows, as a badge added from the SQL console can have. */
 export const Fallback: Story = {
 	name: "Il ripiego di un traguardo non mappato",
 	render: () => (
@@ -143,10 +139,7 @@ export const Gruppi: Story = {
 	),
 };
 
-/**
- * Il caso che la barra non deve avere: una regola binaria ferma a zero. Una barra
- * a 0% si legge come rotta, non come un obiettivo.
- */
+/** A binary rule at zero shows no bar, since a bar at 0% reads as broken. */
 export const Binario: Story = {
 	name: "Binario contro a soglie, affiancati",
 	render: () => (
@@ -175,7 +168,7 @@ export const Striscia: Story = {
 	render: () => <AchievementStrip overview={OVERVIEW} />,
 };
 
-/** Con un solo traguardo sbloccato la striscia non si svuota: mostra comunque il prossimo. */
+/** With one achievement unlocked, the strip still shows the next goal. */
 export const StrisciaMagra: Story = {
 	name: "La striscia con quasi nulla da mostrare",
 	render: () => (
@@ -196,10 +189,6 @@ export const InEvidenza: Story = {
 	),
 };
 
-/**
- * Il dettaglio. La catena dei livelli è il motivo per cui vale la pena aprirlo:
- * una tessera dice dove sei, la catena dice quanto manca alla fine della famiglia.
- */
 export const Dettaglio: Story = {
 	name: "Il popup di dettaglio",
 	render: () => <DetailExample />,
@@ -216,10 +205,7 @@ function DetailExample() {
 	);
 }
 
-/**
- * Il selettore dei pin. La mutation lancia se si salva — le api sono stubbate in
- * Storybook — e va bene così: la story è onesta su cosa non ha.
- */
+/** Saving throws, because the server functions are stubbed in Storybook. */
 export const Pin: Story = {
 	name: "Scegliere i traguardi in evidenza",
 	render: () => (

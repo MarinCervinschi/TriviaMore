@@ -13,15 +13,12 @@ type Story = StoryObj<typeof meta>;
 
 const activity = studyActivity();
 
-/**
- * Controlled by `view`: `"rolling"` is the last 12 months. Magnitude on a
- * sequential ramp — never the categorical slots. Hover a cell; both themes.
- */
+/** The last 12 months. */
 export const Rolling: Story = {
 	render: () => <CalendarHeatmap data={activity} view="rolling" endDate="2026-08-08" />,
 };
 
-/** A whole calendar year, Jan–Dec — the current year shows the rest as empty. */
+/** A whole calendar year; in the current year the days to come are empty. */
 export const Anno: Story = {
 	render: () => <CalendarHeatmap data={activity} view={2026} endDate="2026-08-08" />,
 };
@@ -32,7 +29,7 @@ export const Empty: Story = {
 	),
 };
 
-/** Senza cornice: la griglia nuda, per una card che ne fornisce già una. */
+/** The bare grid, for a card that already provides a frame. */
 export const SenzaCornice: Story = {
 	name: "Senza cornice",
 	render: () => <CalendarHeatmap data={activity} view="rolling" endDate="2026-08-08" />,

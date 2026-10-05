@@ -8,9 +8,9 @@ export function QuizTimer({
 	onTick,
 	onTimeUp,
 }: {
-	/** Countdown limit in minutes; null = open-ended chronometer counting up. */
+	/** Minutes; null counts up with no limit. */
 	timeLimitMinutes: number | null;
-	/** Seconds already spent in earlier sittings, restored from the draft. */
+	/** Seconds spent in earlier sittings. */
 	resumeFromSeconds?: number;
 	onTick?: (elapsedSeconds: number) => void;
 	onTimeUp: () => void;
@@ -31,11 +31,7 @@ export function QuizTimer({
 		setElapsed(resumeFromSeconds);
 	}, [resumeFromSeconds]);
 
-	// Elapsed is read off the wall clock instead of counted in ticks: an interval
-	// that restarts drops its partial second and a hidden tab is throttled to one
-	// tick a minute, so a count drifts below the real duration — which is both what
-	// `timeSpent` records and what the exam countdown enforces. The handlers live in
-	// refs so a new `onTimeUp` identity cannot restart the interval.
+	// Read off the wall clock, because a hidden tab is throttled and a tick count drifts.
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const next = Math.floor((Date.now() - anchorRef.current) / 1000);

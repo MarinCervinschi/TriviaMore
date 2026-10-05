@@ -1,9 +1,3 @@
-// Exercises the write side of #90 — start, complete, cancel — against the live
-// schema, inside a transaction that is rolled back at the end. Nothing is
-// persisted, which is the point: every db/ function takes a `DbOrTx`, so the
-// whole flow runs on a handle the caller controls.
-//
-//   pnpm smoke:writes
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { TransactionRollbackError } from "drizzle-orm/errors";
 
@@ -177,7 +171,6 @@ try {
 				graded?.quizMode === "STUDY"
 		);
 
-		// flashcard: one row per session, and replaying its id records nothing more.
 		const flashcardSession = `smoke-${seed.section_id}`;
 		for (let i = 0; i < 2; i++) {
 			await insertFlashcardAttempt(tx, {
@@ -233,8 +226,7 @@ try {
 			picked.map(question => question.id)
 		);
 
-		// Completed first: the partial unique index allows one open attempt per user,
-		// so the quiz can only be held by a second attempt that is already finished.
+		// The partial unique index allows one open attempt per user, so this one is already completed.
 		const doneAttempt = await insertAttempt(tx, {
 			userId: seed.user_id,
 			quizId: staleQuiz.id,
@@ -275,9 +267,7 @@ try {
 			.where(eq(quizzes.id, staleQuiz.id));
 		expect("reap: a quiz another attempt holds is kept", heldQuiz.length === 1);
 
-		// Two courses the seed profile has never been enrolled in. The unique index
-		// is on (user_id, course_id) and ignores is_current, so a demoted row from
-		// an earlier career collides just as hard as the live one.
+		// The unique index on (user_id, course_id) ignores is_current, so a demoted row collides too.
 		const heldCourses = await tx
 			.select({ courseId: enrollments.courseId })
 			.from(enrollments)
@@ -293,16 +283,12 @@ try {
 		if (pair.length === 2) {
 			const [first, second] = pair as [{ id: string }, { id: string }];
 
-			// One current row per user, so step aside before adding ours. Everything
-			// here is inside the transaction that is rolled back at the end.
 			if (held) await setEnrollmentCurrent(tx, held.id, false);
 
 			await insertEnrollment(tx, { userId: seed.user_id, courseId: first.id });
 			const opened = await findCurrentEnrollment(tx, seed.user_id);
 			expect("enrolment: the first one is current", opened?.courseId === first.id);
 
-			// Switching course demotes the old row instead of deleting it, so the
-			// exam record built on its id survives.
 			if (opened) await setEnrollmentCurrent(tx, opened.id, false);
 			await insertEnrollment(tx, { userId: seed.user_id, courseId: second.id });
 			const switched = await findCurrentEnrollment(tx, seed.user_id);
@@ -315,7 +301,6 @@ try {
 				(await findEnrollmentByCourse(tx, seed.user_id, first.id)) !== undefined
 			);
 
-			// Switching back promotes the original row rather than adding a third.
 			if (switched) await setEnrollmentCurrent(tx, switched.id, false);
 			const previous = await findEnrollmentByCourse(tx, seed.user_id, first.id);
 			if (previous) await setEnrollmentCurrent(tx, previous.id, true);
@@ -325,8 +310,6 @@ try {
 				back?.id === opened?.id && back?.courseId === first.id
 			);
 
-			// The wizard sends only a course, so the details patch is empty and
-			// `.set({})` would throw "No values to set" — it must be a no-op.
 			let emptyPatchThrew = false;
 			try {
 				await updateEnrollmentDetails(tx, back!.id, {
@@ -346,8 +329,6 @@ try {
 		tx.rollback();
 	});
 } catch (error) {
-	// Drizzle signals an explicit rollback by throwing; anything else is a real
-	// failure.
 	if (!(error instanceof TransactionRollbackError)) {
 		console.error(error);
 		await closeDb();

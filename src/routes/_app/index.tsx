@@ -29,8 +29,7 @@ export const Route = createFileRoute("/_app/")({
 		if (session) {
 			throw redirect({ to: "/user" });
 		}
-		// Fire-and-forget prefetch — does not block route render so the static
-		// landing renders immediately; the stats section uses Suspense locally.
+		// Not awaited, so the static landing renders at once.
 		void context.queryClient.prefetchQuery(browseQueries.platformStats());
 	},
 	head: () => ({

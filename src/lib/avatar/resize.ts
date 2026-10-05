@@ -1,8 +1,6 @@
 const MAX_EDGE = 512;
 const QUALITY = 0.85;
 
-/** A camera roll holds 3–8 MB images and an avatar is drawn at 40–96 px, so the
- *  original is never what gets stored — nor what the bucket limit measures. */
 export async function resizeForAvatar(file: File): Promise<Blob> {
 	const bitmap = await createImageBitmap(file);
 
