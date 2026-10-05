@@ -41,7 +41,6 @@ function coloredSvg(color: string): string {
 
 function whiteSvgOnBg(bgColor: string, size: number): Buffer {
 	const svg = coloredSvg("#ffffff");
-	// Wrap with a background rect
 	const withBg = svg.replace(
 		/<svg([^>]*)>/,
 		`<svg$1><rect width="48" height="48" rx="8" fill="${bgColor}"/>`
@@ -49,11 +48,8 @@ function whiteSvgOnBg(bgColor: string, size: number): Buffer {
 	return renderPng(withBg, size);
 }
 
-// --- Generate all assets ---
-
 const svg = coloredSvg(LOGO_COLOR);
 
-// 1. favicon sizes (16, 32, 48) for ICO
 const faviconSizes = [16, 24, 32, 48];
 const faviconPngs: Buffer[] = [];
 for (const size of faviconSizes) {
@@ -63,19 +59,16 @@ for (const size of faviconSizes) {
 	console.log(`Generated: favicon-${size}.png`);
 }
 
-// 2. PWA icons (transparent bg)
 for (const size of [192, 512]) {
 	const png = renderPng(svg, size);
 	writeFileSync(resolve(publicDir, `logo${size}.png`), png);
 	console.log(`Generated: logo${size}.png`);
 }
 
-// 3. Apple touch icon (180x180, white on colored bg for visibility)
 const applePng = whiteSvgOnBg(LOGO_COLOR, 180);
 writeFileSync(resolve(publicDir, "apple-touch-icon.png"), applePng);
 console.log("Generated: apple-touch-icon.png");
 
-// 4. OG default image (1200x630, logo centered on white bg)
 const ogWidth = 1200;
 const ogHeight = 630;
 const logoSize = 280;
@@ -100,7 +93,6 @@ const ogPng = renderPng(ogSvg, ogWidth);
 writeFileSync(resolve(publicDir, "og-default.png"), ogPng);
 console.log("Generated: og-default.png");
 
-// 5. SVG favicon (scalable, for modern browsers)
 const faviconSvg = coloredSvg(LOGO_COLOR)
 	.replace(/<\?xml[^?]*\?>/, "")
 	.replace(/width="800px" height="800px"/, 'width="32" height="32"');
