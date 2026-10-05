@@ -31,6 +31,7 @@ import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
 import type { BrowseClassInCourse } from "@/lib/browse/types";
+import { formatAcademicYear } from "@/lib/catalog/academic-year";
 import { breadcrumbJsonLd, courseJsonLd } from "@/lib/json-ld";
 import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -300,6 +301,11 @@ function CoursePage() {
 						{course.cfu && (
 							<Badge variant="secondary" className="text-xs">
 								{course.cfu} CFU
+							</Badge>
+						)}
+						{course.offeringYear && (
+							<Badge variant="outline" className="text-xs">
+								Offerta {formatAcademicYear(course.offeringYear)}
 							</Badge>
 						)}
 					</>
