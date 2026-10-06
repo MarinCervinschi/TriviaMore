@@ -25,6 +25,8 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		evaluation: null,
 		curriculum: "16-315-1",
 		group: "OO",
+		groupLabel: "Obbligatori",
+		groupPosition: 0,
 		catalogueUrl: null,
 		...over,
 	};
@@ -92,6 +94,9 @@ function stored(over: Partial<StoredPlanRow> = {}): StoredPlanRow {
 		cfu: 9,
 		classYear: 1,
 		mandatory: true,
+		groupCode: "OO",
+		groupLabel: "Obbligatori",
+		groupPosition: 0,
 		evaluation: null,
 		taf: "Base",
 		teachingPeriod: "Primo Semestre",
@@ -191,6 +196,27 @@ describe("planCohortPlans", () => {
 			attributes: NO_ATTRIBUTES,
 		});
 		expect(changes.plans.inserts[0]!.classId).toBe("k1");
+	});
+
+	it("keeps each row's choice group", () => {
+		const changes = planCohortPlans(LOCAL, {
+			cohorts: [
+				cohort(2023, [
+					activity({
+						group: "F",
+						groupLabel: "Livello inglese B2 3cfu + tirocinio 9cfu",
+						groupPosition: 2,
+					}),
+				]),
+			],
+			attributes: NO_ATTRIBUTES,
+		});
+		expect(changes.plans.inserts[0]).toMatchObject({
+			mandatory: false,
+			groupCode: "F",
+			groupLabel: "Livello inglese B2 3cfu + tirocinio 9cfu",
+			groupPosition: 2,
+		});
 	});
 
 	it("does not fall back to a name two of the course's classes share", () => {

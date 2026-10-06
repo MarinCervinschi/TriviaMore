@@ -6,3 +6,6 @@ export const EXAM_SIMULATION_LABEL = "Simulazione d'esame";
 export function sectionDisplayName(name: string): string {
 	return name === EXAM_SIMULATION_SECTION ? EXAM_SIMULATION_LABEL : name;
 }
+
+/** The plan group of the compulsory classes; every other group is a choice. */
+export const COMPULSORY_GROUP = "OO";

@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import { normaliseCatalogueCode } from "../../src/lib/catalog/codes.ts";
+import { COMPULSORY_GROUP } from "../../src/lib/catalog/constants.ts";
 import type {
 	MandatoryIndex,
 	SourceActivity,
@@ -12,9 +13,6 @@ import { pairKey } from "../../src/lib/catalog/sync/diff.ts";
 const SITE = "https://unimore.coursecatalogue.cineca.it";
 const BASE = `${SITE}/api/v1`;
 const CACHE_DIR = join(process.cwd(), ".cache", "catalog");
-
-/** The plan group code for «Obbligatori». */
-const COMPULSORY_GROUP = "OO";
 
 export type SourceCourse = {
 	academicYear: string;
@@ -134,6 +132,8 @@ type RawPlan = {
 			anno?: number;
 			insegnamenti?: {
 				cod?: string;
+				ordine?: number;
+				label_it?: string;
 				attivita?: {
 					adCod?: string;
 					des_it?: string;
@@ -219,6 +219,8 @@ async function fetchPlan(
 						evaluation: null,
 						curriculum: code,
 						group: text(group.cod),
+						groupLabel: text(group.label_it),
+						groupPosition: group.ordine ?? null,
 						catalogueUrl: activityUrl(year, course.code, code, activity),
 					});
 					mandatory.push([

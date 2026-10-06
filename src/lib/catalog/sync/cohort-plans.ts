@@ -1,4 +1,5 @@
 import { normaliseCatalogueCode } from "../codes";
+import { COMPULSORY_GROUP } from "../constants";
 import { toCatalogueTitle } from "./additions";
 import { curriculumName } from "./curricula";
 import { type SourceActivity, pairKey } from "./diff";
@@ -9,8 +10,6 @@ import {
 	latest,
 	mapEvaluation,
 } from "./plan";
-
-const COMPULSORY_GROUP = "OO";
 
 export type CurriculumRow = {
 	courseId: string;
@@ -32,6 +31,9 @@ export type PlanRow = {
 	cfu: number | null;
 	classYear: number;
 	mandatory: boolean;
+	groupCode: string | null;
+	groupLabel: string | null;
+	groupPosition: number | null;
 	evaluation: Evaluation | null;
 	taf: string | null;
 	teachingPeriod: string | null;
@@ -64,6 +66,9 @@ const PLAN_FIELDS = [
 	"cfu",
 	"classYear",
 	"mandatory",
+	"groupCode",
+	"groupLabel",
+	"groupPosition",
 	"evaluation",
 	"taf",
 	"teachingPeriod",
@@ -204,6 +209,9 @@ export function planCohortPlans(
 				classYear,
 				mandatory:
 					consensus(activities.map(a => a.group === COMPULSORY_GROUP)).value ?? false,
+				groupCode: consensus(activities.map(a => a.group)).value,
+				groupLabel: consensus(activities.map(a => a.groupLabel)).value,
+				groupPosition: consensus(activities.map(a => a.groupPosition)).value,
 				evaluation: latest(
 					attributesOf(courseId, first.code).map(a => ({
 						academicYear: a.academicYear,

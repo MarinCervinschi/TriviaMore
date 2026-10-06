@@ -13,6 +13,8 @@ export type SourceActivity = {
 	evaluation: string | null;
 	curriculum: string | null;
 	group: string | null;
+	groupLabel: string | null;
+	groupPosition: number | null;
 	catalogueUrl: string | null;
 };
 
