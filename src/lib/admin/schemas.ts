@@ -124,11 +124,6 @@ export const courseClassSchema = z.object({
 		.url("L'URL del catalogo non è valido")
 		.optional()
 		.or(z.literal("")),
-	curriculum: z
-		.string()
-		.max(500, "Il curriculum non può superare i 500 caratteri")
-		.optional()
-		.or(z.literal("")),
 	position: z
 		.number()
 		.int("La posizione deve essere un numero intero")

@@ -48,7 +48,6 @@ export async function getAdminCourseDetail(id: string): Promise<AdminCourseDetai
 			classYear: courseClasses.classYear,
 			mandatory: courseClasses.mandatory,
 			catalogueUrl: courseClasses.catalogueUrl,
-			curriculum: courseClasses.curriculum,
 			position: courseClasses.position,
 			sectionCount: count(sections.id),
 		})

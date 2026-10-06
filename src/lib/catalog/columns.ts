@@ -55,7 +55,6 @@ export const courseClassColumns = {
 	classYear: courseClasses.classYear,
 	mandatory: courseClasses.mandatory,
 	catalogueUrl: courseClasses.catalogueUrl,
-	curriculum: courseClasses.curriculum,
 	evaluation: courseClasses.evaluation,
 	taf: courseClasses.taf,
 	teachingPeriod: courseClasses.teachingPeriod,

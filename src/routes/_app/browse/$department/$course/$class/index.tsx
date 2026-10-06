@@ -285,7 +285,6 @@ function ClassPage() {
 								classData.course.location &&
 									(CAMPUS_LOCATION_CONFIG[classData.course.location]?.short ??
 										classData.course.location),
-								classData.courseClass?.curriculum,
 							]
 								.filter(Boolean)
 								.join(" · ")}

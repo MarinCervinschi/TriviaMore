@@ -12,7 +12,7 @@ export type Department = typeof departments.$inferSelect;
 export type Course = Omit<typeof courses.$inferSelect, "fts">;
 export type CourseClassInfo = Pick<
 	typeof courseClasses.$inferSelect,
-	"code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
+	"code" | "classYear" | "mandatory" | "catalogueUrl" | "position"
 >;
 
 export type AdminDepartment = Department & { courseCount: number };
