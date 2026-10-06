@@ -74,7 +74,8 @@ const PLAN_FIELDS = [
 	"teachingPeriod",
 ] as const;
 
-const CURRICULUM_FIELDS = ["name", "common"] as const;
+// A stored name may have been corrected by hand, so the sync names a curriculum only when it creates it.
+const CURRICULUM_FIELDS = ["common"] as const;
 
 const nameKey = (name: string) => name.toLowerCase().replace(/\s+/g, " ").trim();
 const key = (...parts: (string | number)[]) => parts.join("\u0000");
@@ -167,6 +168,15 @@ export function planCohortPlans(
 			courseCode => source.attributes.get(pairKey(courseCode, code)) ?? []
 		);
 
+	const latestName = new Map<string, { cohort: number; name: string }>();
+	for (const stored of local.curricula) {
+		const k = key(stored.courseId, stored.code);
+		const current = latestName.get(k);
+		if (!current || stored.cohort > current.cohort) {
+			latestName.set(k, { cohort: stored.cohort, name: stored.name });
+		}
+	}
+
 	const curricula = new Map<string, CurriculumRow>();
 	const plans = new Map<string, PlanRow>();
 	const covered = new Set<string>();
@@ -231,12 +241,14 @@ export function planCohortPlans(
 				courseId: course.id,
 				cohort: cohort.cohort,
 				code: curriculum.code,
-				name: curriculumName(
-					curriculum.labels,
-					course.name,
-					curriculum.code,
-					curriculum.common
-				),
+				name:
+					latestName.get(key(course.id, curriculum.code))?.name ??
+					curriculumName(
+						curriculum.labels,
+						course.name,
+						curriculum.code,
+						curriculum.common
+					),
 				common: curriculum.common,
 			});
 		}

@@ -148,6 +148,20 @@ describe("planCohortPlans", () => {
 		]);
 	});
 
+	it("keeps a stored name, and gives it to the same curriculum of a new cohort", () => {
+		const changes = planCohortPlans(
+			{ ...LOCAL, curricula: [storedCurriculum({ name: "Sistemi" })] },
+			{
+				cohorts: [cohort(2023, [activity()]), cohort(2024, [activity()])],
+				attributes: NO_ATTRIBUTES,
+			}
+		);
+		expect(changes.curricula.updates).toEqual([]);
+		expect(changes.curricula.inserts.map(c => [c.cohort, c.name])).toEqual([
+			[2024, "Sistemi"],
+		]);
+	});
+
 	it("collapses the schemas of one curriculum into one row", () => {
 		const changes = planCohortPlans(LOCAL, {
 			cohorts: [cohort(2023, [activity(), activity(), activity({ cfu: 6 })])],
