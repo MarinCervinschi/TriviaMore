@@ -7,8 +7,10 @@ import { COMPULSORY_GROUP } from "../../src/lib/catalog/constants.ts";
 import type {
 	MandatoryIndex,
 	SourceActivity,
+	SyllabusRef,
 } from "../../src/lib/catalog/sync/diff.ts";
 import { pairKey } from "../../src/lib/catalog/sync/diff.ts";
+import type { RawSyllabusBlock } from "../../src/lib/catalog/sync/syllabi.ts";
 
 const SITE = "https://unimore.coursecatalogue.cineca.it";
 const BASE = `${SITE}/api/v1`;
@@ -125,6 +127,7 @@ export async function fetchCourses(year: string): Promise<SourceCourse[]> {
 
 type RawPlan = {
 	percorsi?: {
+		pdsId?: string;
 		pdsCod?: string;
 		des_it?: string;
 		comune?: boolean;
@@ -135,7 +138,10 @@ type RawPlan = {
 				ordine?: number;
 				label_it?: string;
 				attivita?: {
+					cod?: string;
 					adCod?: string;
+					corso_cod?: string;
+					corso_percorso_id?: number;
 					des_it?: string;
 					crediti?: number | null;
 					aa?: string;
@@ -163,6 +169,29 @@ function activityUrl(
 		ad: activity.adCod,
 	});
 	return `${SITE}/af/${activity.aa ?? cohort}?${query}`;
+}
+
+function syllabusRef(
+	cohort: string,
+	courseId: string,
+	pathId: string | undefined,
+	activity: {
+		cod?: string;
+		aa?: string;
+		ordinamento_aa?: number;
+		corso_cod?: string;
+		corso_percorso_id?: number;
+	}
+): SyllabusRef | null {
+	const curriculumId = activity.corso_percorso_id ?? pathId;
+	if (!activity.cod || curriculumId === undefined) return null;
+	return {
+		offerYear: Number(activity.aa ?? cohort),
+		activityId: activity.cod,
+		ordinanceYear: activity.ordinamento_aa ?? Number(cohort),
+		curriculumId: String(curriculumId),
+		courseId: activity.corso_cod ?? courseId,
+	};
 }
 
 async function fetchPlan(
@@ -222,6 +251,7 @@ async function fetchPlan(
 						groupLabel: text(group.label_it),
 						groupPosition: group.ordine ?? null,
 						catalogueUrl: activityUrl(year, course.code, code, activity),
+						syllabusRef: syllabusRef(year, course.id, path.pdsId, activity),
 					});
 					mandatory.push([
 						pairKey(course.code, normaliseCatalogueCode(activity.adCod)),
@@ -328,4 +358,26 @@ export async function fetchDepartments(): Promise<{ code: string; name: string }
 	return rows
 		.filter(row => row.dip_cod && row.dip_des_it)
 		.map(row => ({ code: row.dip_cod!, name: row.dip_des_it! }));
+}
+
+/** The raw syllabus blocks of an activity, or null when the catalogue has none for that offering. */
+export async function fetchSyllabus(
+	ref: SyllabusRef
+): Promise<RawSyllabusBlock[] | null> {
+	const path = [
+		ref.offerYear,
+		ref.activityId,
+		ref.ordinanceYear,
+		ref.curriculumId,
+		ref.courseId,
+	].join("/");
+	const raw = await cached(`syllabus/${path.replaceAll("/", "-")}`, async () => {
+		const response = await fetch(`${BASE}/insegnamento-offerta/${path}`);
+		const body = await response.text();
+		// A missing offering answers a plain-text 404.
+		return body.startsWith("{")
+			? (JSON.parse(body) as { testiTotali?: RawSyllabusBlock[] })
+			: null;
+	});
+	return raw?.testiTotali ?? null;
 }

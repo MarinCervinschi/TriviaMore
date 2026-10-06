@@ -288,6 +288,20 @@
       "when": 1791232830373,
       "tag": "0040_course_plan_groups",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791271644968,
+      "tag": "0041_class_syllabi",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1791271646537,
+      "tag": "0042_class_syllabi_trigger",
+      "breakpoints": true
     }
   ]
 }

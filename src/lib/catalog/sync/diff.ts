@@ -16,6 +16,16 @@ export type SourceActivity = {
 	groupLabel: string | null;
 	groupPosition: number | null;
 	catalogueUrl: string | null;
+	syllabusRef: SyllabusRef | null;
+};
+
+/** The ids the catalogue addresses an activity's syllabus with, in one offering year. */
+export type SyllabusRef = {
+	offerYear: number;
+	activityId: string;
+	ordinanceYear: number;
+	curriculumId: string;
+	courseId: string;
 };
 
 export type LocalClass = {
