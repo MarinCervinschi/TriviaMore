@@ -13,6 +13,7 @@ export function BrowsePageHeader({
 	description,
 	badges,
 	stats,
+	tabs,
 	actions,
 }: {
 	breadcrumb?: ReactNode;
@@ -21,6 +22,8 @@ export function BrowsePageHeader({
 	description?: string | null;
 	badges?: ReactNode;
 	stats?: { label: string; value: number }[];
+	/** Takes the place of the stats, for a page whose body switches between views. */
+	tabs?: ReactNode;
 	actions?: ReactNode;
 }) {
 	const { isAuthenticated } = useAuth();
@@ -62,7 +65,8 @@ export function BrowsePageHeader({
 					{badges && (
 						<div className="mt-4 flex flex-wrap items-center gap-2">{badges}</div>
 					)}
-					{stats && stats.length > 0 && (
+					{tabs && <div className="mt-6">{tabs}</div>}
+					{!tabs && stats && stats.length > 0 && (
 						<div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
 							{stats.map((stat, i) => (
 								<div key={stat.label} className="flex items-center gap-2">
