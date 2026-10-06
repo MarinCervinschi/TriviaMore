@@ -28,6 +28,7 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		groupLabel: "Obbligatori",
 		groupPosition: 0,
 		catalogueUrl: null,
+		syllabusRef: null,
 		...over,
 	};
 }

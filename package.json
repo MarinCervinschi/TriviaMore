@@ -33,6 +33,7 @@
 		"smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts",
 		"catalog:diff": "infisical run --recursive -- tsx scripts/catalog/diff.ts",
 		"catalog:sync": "infisical run --recursive -- tsx scripts/catalog/sync.ts",
+		"catalog:syllabi": "infisical run --recursive -- tsx scripts/catalog/syllabi.ts",
 		"catalog:recover-names": "infisical run --recursive -- tsx scripts/catalog/recover-curriculum-names.ts",
 		"achievements:replay": "infisical run --recursive -- tsx scripts/achievements/replay.ts",
 		"achievements:backfill": "infisical run --recursive -- tsx scripts/achievements/backfill-rollups.ts",
