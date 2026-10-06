@@ -1,6 +1,7 @@
+import { COMPULSORY_GROUP } from "@/lib/catalog/constants";
 import { type Evaluation, classifyTeaching } from "@/lib/catalog/sync/plan";
 
-import type { CourseCurriculum, PlanActivity, PlanClass } from "./types";
+import type { CourseCurriculum, PlanActivity, PlanClass, PlanGroup } from "./types";
 
 export type PlanViewRow = {
 	code: string;
@@ -8,6 +9,9 @@ export type PlanViewRow = {
 	cfu: number | null;
 	classYear: number;
 	mandatory: boolean;
+	groupCode: string | null;
+	groupLabel: string | null;
+	groupPosition: number | null;
 	evaluation: Evaluation | null;
 	curriculum: string;
 	classId: string | null;
@@ -36,6 +40,17 @@ export function pickCohort(
 	const earlier = cohorts.filter(cohort => cohort <= current);
 	const pool = earlier.length > 0 ? earlier : cohorts;
 	return pool.length > 0 ? Math.max(...pool) : null;
+}
+
+function groupOf(row: PlanViewRow): PlanGroup | null {
+	return row.groupLabel === null
+		? null
+		: { code: row.groupCode, label: row.groupLabel, position: row.groupPosition ?? 0 };
+}
+
+function sharedGroup(rows: PlanViewRow[]): PlanGroup | null {
+	const labels = new Set(rows.map(row => row.groupLabel));
+	return labels.size === 1 ? groupOf(rows[0]!) : null;
 }
 
 /** One entry per plan code across the curricula; the common trunk is left out when the course has curricula proper. */
@@ -81,9 +96,11 @@ export function buildPlanView(
 				classYear: first.classYear,
 				sectionCount: first.classId ? (sectionCounts.get(first.classId) ?? 0) : 0,
 				mandatory: group.every(row => row.mandatory),
+				group: sharedGroup(group),
 				curricula: group.map(row => ({
 					code: row.curriculum,
 					mandatory: row.mandatory,
+					group: groupOf(row),
 				})),
 			});
 		} else {
@@ -92,16 +109,45 @@ export function buildPlanView(
 				name: first.name,
 				cfu: first.cfu,
 				classYear: first.classYear,
+				group: sharedGroup(group),
 				curricula: group.map(row => row.curriculum),
 			});
 		}
 	}
+
+	// Activities of one choice group are alternatives, so they stay next to each other.
+	activities.sort(
+		(a, b) =>
+			a.classYear - b.classYear ||
+			(a.group?.position ?? Number.MAX_SAFE_INTEGER) -
+				(b.group?.position ?? Number.MAX_SAFE_INTEGER)
+	);
 
 	return {
 		curricula: shown.map(({ code, name }) => ({ code, name })),
 		classes,
 		activities,
 	};
+}
+
+const COMPULSORY: PlanGroup = {
+	code: COMPULSORY_GROUP,
+	label: "Obbligatori",
+	position: -1,
+};
+const ELECTIVE: PlanGroup = {
+	code: null,
+	label: "A scelta",
+	position: Number.MAX_SAFE_INTEGER,
+};
+
+/** The group a class falls in under the curriculum filter; without a group from the plan, compulsory or elective. */
+export function groupFor(entry: PlanClass, curriculum?: string): PlanGroup {
+	const group =
+		curriculum === undefined
+			? entry.group
+			: (entry.curricula.find(c => c.code === curriculum)?.group ?? null);
+	return group ?? (isMandatory(entry, curriculum) ? COMPULSORY : ELECTIVE);
 }
 
 export function isMandatory(entry: PlanClass, curriculum?: string): boolean {

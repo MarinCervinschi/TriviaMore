@@ -61,12 +61,17 @@ export type DepartmentWithCourses = Department & {
 	locations: DepartmentLocation[];
 };
 
+/** A group of the plan; `position` orders the groups of a year. */
+export type PlanGroup = { code: string | null; label: string; position: number };
+
 /** A plan entry that is not a class to study, such as a traineeship or the final exam. */
 export type PlanActivity = {
 	id: string;
 	name: string;
 	cfu: number | null;
 	classYear: number;
+	// The group every curriculum puts it in; null when they disagree.
+	group: PlanGroup | null;
 	curricula: string[];
 };
 
@@ -82,7 +87,8 @@ export type PlanClass = {
 	sectionCount: number;
 	// Compulsory in every curriculum that lists the class.
 	mandatory: boolean;
-	curricula: { code: string; mandatory: boolean }[];
+	group: PlanGroup | null;
+	curricula: { code: string; mandatory: boolean; group: PlanGroup | null }[];
 };
 
 export type CourseCurriculum = { code: string; name: string };

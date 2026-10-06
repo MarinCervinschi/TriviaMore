@@ -110,15 +110,31 @@ export const Activities: Story = {
 					name: "Obblighi Formativi Aggiuntivi",
 					cfu: 0,
 					classYear: 1,
+					group: null,
 					curricula: [],
 				},
-				{ id: "a2", name: "Tirocinio", cfu: 12, classYear: 3, curricula: [] },
-				{ id: "a3", name: "Prova Finale", cfu: 6, classYear: 3, curricula: [] },
+				{
+					id: "a2",
+					name: "Tirocinio",
+					cfu: 12,
+					classYear: 3,
+					group: null,
+					curricula: [],
+				},
+				{
+					id: "a3",
+					name: "Prova Finale",
+					cfu: 6,
+					classYear: 3,
+					group: null,
+					curricula: [],
+				},
 				{
 					id: "a4",
 					name: "Tirocinio/Attività Progettuale",
 					cfu: null,
 					classYear: 3,
+					group: null,
 					curricula: [],
 				},
 			]}
@@ -126,9 +142,20 @@ export const Activities: Story = {
 	),
 };
 
-/** With no curriculum chosen, an activity that only some curricula list says which. */
-export const ActivitiesWithCurricula: Story = {
-	name: "Altre attività del piano, con i curriculum",
+const B2_3 = {
+	code: "F",
+	label: "Livello inglese B2 3cfu + tirocinio 9cfu",
+	position: 2,
+};
+const B2_0 = {
+	code: "F",
+	label: "Livello inglese B2 0cfu + tirocinio 12cfu",
+	position: 3,
+};
+
+/** Two choice groups offer the same activities with different credits, so each row names its group. */
+export const ActivitiesWithGroups: Story = {
+	name: "Altre attività del piano, con i gruppi a scelta",
 	render: () => (
 		<PlanActivities
 			activities={[
@@ -137,29 +164,42 @@ export const ActivitiesWithCurricula: Story = {
 					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
 					cfu: 3,
 					classYear: 1,
+					group: B2_3,
 					curricula: ["C1"],
 				},
 				{
 					id: "b2",
-					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
-					cfu: 0,
+					name: "Tirocinio/Attività Progettuale",
+					cfu: 9,
 					classYear: 1,
-					curricula: ["C2"],
+					group: B2_3,
+					curricula: ["C1"],
 				},
 				{
 					id: "b3",
+					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
+					cfu: 0,
+					classYear: 1,
+					group: B2_0,
+					curricula: ["C1"],
+				},
+				{
+					id: "b4",
+					name: "Tirocinio/Attività Progettuale",
+					cfu: 12,
+					classYear: 1,
+					group: B2_0,
+					curricula: ["C1"],
+				},
+				{
+					id: "b5",
 					name: "Prova Finale",
 					cfu: 18,
 					classYear: 2,
+					group: { code: "OO", label: "Obbligatori", position: 0 },
 					curricula: ["C1", "C2"],
 				},
 			]}
-			notes={
-				new Map([
-					["b1", "Applications"],
-					["b2", "Large Scale"],
-				])
-			}
 		/>
 	),
 };
