@@ -25,7 +25,6 @@ type EnrolledClass = {
 	classYear: number | null;
 	mandatory: boolean | null;
 	catalogueUrl: string | null;
-	curriculum: string | null;
 	courseId: string;
 	courseName: string;
 	courseCode: string;

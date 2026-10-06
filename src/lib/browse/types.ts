@@ -34,7 +34,7 @@ export type DepartmentLocation = Pick<
 // row rather than the class itself.
 export type CourseClassInfo = Pick<
 	typeof courseClasses.$inferSelect,
-	"code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
+	"code" | "classYear" | "mandatory" | "catalogueUrl" | "position"
 >;
 
 // Listing types

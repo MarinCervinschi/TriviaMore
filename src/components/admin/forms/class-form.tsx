@@ -22,7 +22,6 @@ const classWithJunctionSchema = classSchema.merge(
 		code: true,
 		class_year: true,
 		mandatory: true,
-		curriculum: true,
 	})
 );
 
@@ -30,7 +29,6 @@ type JunctionDefaults = {
 	code?: string;
 	class_year?: number;
 	mandatory?: boolean;
-	curriculum?: string;
 };
 
 type ClassFormProps = {
@@ -50,7 +48,6 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 			code: junction?.code ?? "",
 			class_year: junction?.class_year ?? 1,
 			mandatory: junction?.mandatory ?? false,
-			curriculum: junction?.curriculum ?? "",
 		},
 	});
 
@@ -146,19 +143,6 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 										<Checkbox checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 									<FormLabel className="font-normal">Obbligatorio</FormLabel>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="curriculum"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Curriculum</FormLabel>
-									<FormControl>
-										<Input placeholder="es. Applicazioni (opzionale)" {...field} />
-									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>

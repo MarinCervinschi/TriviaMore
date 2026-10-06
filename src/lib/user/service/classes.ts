@@ -24,7 +24,6 @@ const enrolledClassColumns = {
 	classYear: courseClasses.classYear,
 	mandatory: courseClasses.mandatory,
 	catalogueUrl: courseClasses.catalogueUrl,
-	curriculum: courseClasses.curriculum,
 	courseId: courses.id,
 	courseName: courses.name,
 	courseCode: courses.code,

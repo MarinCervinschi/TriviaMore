@@ -209,7 +209,7 @@ function AdminCourseDetailPage() {
 						<DialogTitle>Nuovo insegnamento</DialogTitle>
 					</DialogHeader>
 					<ClassForm
-						junction={{ code: "", class_year: 1, mandatory: false, curriculum: "" }}
+						junction={{ code: "", class_year: 1, mandatory: false }}
 						onSubmit={async formData => {
 							setCreatePending(true);
 							try {
@@ -221,7 +221,6 @@ function AdminCourseDetailPage() {
 										code: formData.code || cls.name.substring(0, 10).toUpperCase(),
 										class_year: formData.class_year ?? 1,
 										mandatory: formData.mandatory ?? false,
-										curriculum: formData.curriculum || "",
 									},
 								});
 								toast.success("Insegnamento creato e collegato al corso");
