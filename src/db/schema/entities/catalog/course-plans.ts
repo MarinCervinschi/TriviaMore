@@ -32,6 +32,10 @@ export const coursePlans = catalogSchema
 			cfu: integer(),
 			classYear: integer("class_year").notNull(),
 			mandatory: boolean().default(false).notNull(),
+			// `OO` is the compulsory group; every other code is a choice with its own label.
+			groupCode: text("group_code"),
+			groupLabel: text("group_label"),
+			groupPosition: integer("group_position"),
 			evaluation: evaluationTypeEnum(),
 			taf: text(),
 			teachingPeriod: text("teaching_period"),

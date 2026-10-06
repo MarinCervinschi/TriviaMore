@@ -20,6 +20,8 @@ function activity(over: Partial<SourceActivity> = {}): SourceActivity {
 		evaluation: null,
 		curriculum: "A",
 		group: "OO",
+		groupLabel: "Obbligatori",
+		groupPosition: 0,
 		catalogueUrl: null,
 		...over,
 	};

@@ -281,6 +281,13 @@
       "when": 1791229738268,
       "tag": "0039_course_plans_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791232830373,
+      "tag": "0040_course_plan_groups",
+      "breakpoints": true
     }
   ]
 }

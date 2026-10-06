@@ -40,6 +40,8 @@ function source(over: Partial<SourceActivity> = {}): SourceActivity {
 		evaluation: "Voto Finale",
 		curriculum: "16-315-2",
 		group: "OO",
+		groupLabel: "Obbligatori",
+		groupPosition: 0,
 		catalogueUrl: null,
 		...over,
 	};
