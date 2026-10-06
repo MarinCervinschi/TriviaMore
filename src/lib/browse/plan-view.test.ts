@@ -4,6 +4,7 @@ import {
 	type PlanViewCurriculum,
 	type PlanViewRow,
 	buildPlanView,
+	groupFor,
 	inCurriculum,
 	isMandatory,
 	pickCohort,
@@ -16,6 +17,9 @@ function row(over: Partial<PlanViewRow> = {}): PlanViewRow {
 		cfu: 9,
 		classYear: 1,
 		mandatory: true,
+		groupCode: "OO",
+		groupLabel: "Obbligatori",
+		groupPosition: 0,
 		evaluation: "GRADED",
 		curriculum: "C1",
 		classId: "k1",
@@ -69,9 +73,9 @@ describe("buildPlanView", () => {
 			new Map([["k1", 3]])
 		);
 		expect(view.classes).toHaveLength(1);
-		expect(view.classes[0]!.curricula).toEqual([
-			{ code: "C1", mandatory: true },
-			{ code: "C2", mandatory: false },
+		expect(view.classes[0]!.curricula.map(c => [c.code, c.mandatory])).toEqual([
+			["C1", true],
+			["C2", false],
 		]);
 		expect(view.classes[0]!.sectionCount).toBe(3);
 	});
@@ -136,6 +140,25 @@ describe("buildPlanView", () => {
 		]);
 	});
 
+	it("keeps the activities of one choice group together", () => {
+		const b2 = (cfu: number, position: number, code: string) =>
+			row({
+				code,
+				name: code.startsWith("B") ? "Livello B2" : "Tirocinio",
+				cfu,
+				isTeaching: false,
+				groupCode: "F",
+				groupLabel: `Gruppo ${position}`,
+				groupPosition: position,
+			});
+		const view = buildPlanView(
+			[b2(3, 1, "B3"), b2(0, 2, "B0"), b2(6, 1, "T6"), b2(9, 2, "T9")],
+			CURRICULA,
+			new Map()
+		);
+		expect(view.activities.map(a => a.id)).toEqual(["B3", "T6", "B0", "T9"]);
+	});
+
 	it("orders by year, then by our position", () => {
 		const view = buildPlanView(
 			[
@@ -173,5 +196,36 @@ describe("isMandatory", () => {
 		expect(inCurriculum(entry, "C2")).toBe(true);
 		expect(inCurriculum(entry, "C3")).toBe(false);
 		expect(inCurriculum(entry)).toBe(true);
+	});
+});
+
+describe("groupFor", () => {
+	const choice = {
+		groupCode: "F",
+		groupLabel: "A scelta del CdS (fra 1 e 12 CFU)",
+		groupPosition: 2,
+	};
+
+	it("uses the group every curriculum agrees on", () => {
+		const entry = buildPlanView(
+			[
+				row({ ...choice, mandatory: false }),
+				row({ ...choice, mandatory: false, curriculum: "C2" }),
+			],
+			CURRICULA,
+			new Map()
+		).classes[0]!;
+		expect(groupFor(entry).label).toBe("A scelta del CdS (fra 1 e 12 CFU)");
+	});
+
+	it("reads the chosen curriculum's group, and falls back when they disagree", () => {
+		const entry = buildPlanView(
+			[row(), row({ ...choice, mandatory: false, curriculum: "C2" })],
+			CURRICULA,
+			new Map()
+		).classes[0]!;
+		expect(groupFor(entry, "C1").label).toBe("Obbligatori");
+		expect(groupFor(entry, "C2").label).toBe("A scelta del CdS (fra 1 e 12 CFU)");
+		expect(groupFor(entry).label).toBe("A scelta");
 	});
 });

@@ -92,6 +92,9 @@ export async function getCourseWithClasses(
 				cfu: coursePlans.cfu,
 				classYear: coursePlans.classYear,
 				mandatory: coursePlans.mandatory,
+				groupCode: coursePlans.groupCode,
+				groupLabel: coursePlans.groupLabel,
+				groupPosition: coursePlans.groupPosition,
 				evaluation: coursePlans.evaluation,
 				curriculum: courseCurricula.code,
 				classId: coursePlans.classId,
@@ -152,6 +155,7 @@ async function currentCatalogue(userId: string | null, courseId: string) {
 			classYear: courseClass.classYear,
 			sectionCount: counts.get(cls.id) ?? 0,
 			mandatory: courseClass.mandatory,
+			group: null,
 			curricula: [],
 		})),
 		activities: rows
@@ -161,6 +165,7 @@ async function currentCatalogue(userId: string | null, courseId: string) {
 				name: row.class.name,
 				cfu: row.class.cfu,
 				classYear: row.courseClass.classYear,
+				group: null,
 				curricula: [],
 			})),
 	};

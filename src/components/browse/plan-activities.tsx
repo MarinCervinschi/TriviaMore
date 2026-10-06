@@ -1,5 +1,6 @@
 import { InsetCard } from "@/components/ui/inset-card";
 import type { PlanActivity } from "@/lib/browse/types";
+import { COMPULSORY_GROUP } from "@/lib/catalog/constants";
 
 export function PlanActivities({
 	activities,
@@ -24,12 +25,19 @@ export function PlanActivities({
 						key={activity.id}
 						className="flex items-baseline justify-between gap-4 px-4 py-2.5 text-sm"
 					>
-						<span className="min-w-0 truncate">
-							{activity.name}
-							{notes?.get(activity.id) && (
-								<span className="text-muted-foreground">
-									{" "}
-									· {notes.get(activity.id)}
+						<span className="min-w-0">
+							<span className="block truncate">
+								{activity.name}
+								{notes?.get(activity.id) && (
+									<span className="text-muted-foreground">
+										{" "}
+										· {notes.get(activity.id)}
+									</span>
+								)}
+							</span>
+							{activity.group && activity.group.code !== COMPULSORY_GROUP && (
+								<span className="text-muted-foreground block truncate text-xs">
+									{activity.group.label}
 								</span>
 							)}
 						</span>

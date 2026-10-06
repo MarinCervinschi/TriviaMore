@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
-import { inCurriculum, isMandatory } from "@/lib/browse/plan-view";
+import { groupFor, inCurriculum } from "@/lib/browse/plan-view";
 import { browseQueries } from "@/lib/browse/queries";
 import type { PlanClass } from "@/lib/browse/types";
 import { formatAcademicYear } from "@/lib/catalog/academic-year";
@@ -290,11 +290,22 @@ function CoursePage() {
 		}
 		return [...byYear.entries()]
 			.sort(([a], [b]) => a - b)
-			.map(([groupYear, yearClasses]) => ({
-				year: groupYear,
-				mandatory: yearClasses.filter(c => isMandatory(c, activeCurriculum)),
-				elective: yearClasses.filter(c => !isMandatory(c, activeCurriculum)),
-			}));
+			.map(([groupYear, yearClasses]) => {
+				const blocks = new Map<
+					string,
+					{ label: string; position: number; classes: PlanClass[] }
+				>();
+				for (const c of yearClasses) {
+					const group = groupFor(c, activeCurriculum);
+					const block = blocks.get(group.label) ?? { ...group, classes: [] };
+					block.classes.push(c);
+					blocks.set(group.label, block);
+				}
+				return {
+					year: groupYear,
+					blocks: [...blocks.values()].sort((a, b) => a.position - b.position),
+				};
+			});
 	}, [preFiltered, activeCurriculum]);
 
 	if (!course) return null;
@@ -451,44 +462,26 @@ function CoursePage() {
 				{searched.length === 0 ? (
 					<BrowseEmptyState message="Nessun insegnamento trovato." />
 				) : isGroupedView ? (
-					groupedClasses.map(group => {
-						const hasBoth = group.mandatory.length > 0 && group.elective.length > 0;
-						return (
-							<section key={group.year} className="mt-8 first:mt-4">
-								<h2 className="mb-4 text-lg font-semibold">Anno {group.year}</h2>
-								{group.mandatory.length > 0 && (
-									<>
-										{hasBoth && (
-											<h3 className="text-muted-foreground mb-2 text-sm font-medium">
-												Obbligatori
-											</h3>
-										)}
-										<ClassTable
-											classes={group.mandatory}
-											columns={columns}
-											deptCode={deptCode}
-											courseCode={courseCode}
-										/>
-									</>
-								)}
-								{group.elective.length > 0 && (
-									<>
-										{hasBoth && (
-											<h3 className="text-muted-foreground mt-4 mb-2 text-sm font-medium">
-												A scelta
-											</h3>
-										)}
-										<ClassTable
-											classes={group.elective}
-											columns={columns}
-											deptCode={deptCode}
-											courseCode={courseCode}
-										/>
-									</>
-								)}
-							</section>
-						);
-					})
+					groupedClasses.map(group => (
+						<section key={group.year} className="mt-8 first:mt-4">
+							<h2 className="mb-4 text-lg font-semibold">Anno {group.year}</h2>
+							{group.blocks.map(block => (
+								<div key={block.label} className="mt-4 first:mt-0">
+									{group.blocks.length > 1 && (
+										<h3 className="text-muted-foreground mb-2 text-sm font-medium">
+											{block.label}
+										</h3>
+									)}
+									<ClassTable
+										classes={block.classes}
+										columns={columns}
+										deptCode={deptCode}
+										courseCode={courseCode}
+									/>
+								</div>
+							))}
+						</section>
+					))
 				) : (
 					<ClassTable
 						classes={searched}
