@@ -112,6 +112,7 @@ export type ClassWithSections = Class & {
 		totalQuizQuestions: number;
 		totalFlashcardQuestions: number;
 	};
+	syllabus: ClassSyllabus | null;
 };
 
 export type SectionDetail = Section & {
@@ -214,3 +215,16 @@ export interface PaginatedResult<T> {
 
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>;
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>;
+
+/** A class's official syllabus, as the catalogue publishes it. */
+export type ClassSyllabus = {
+	academicYear: number;
+	catalogueUrl: string | null;
+	objectives: string | null;
+	contents: string | null;
+	prerequisites: string | null;
+	assessment: string | null;
+	readings: string | null;
+	teachingMethods: string | null;
+	outcomes: string | null;
+};

@@ -2,7 +2,14 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
+import {
+	classSyllabi,
+	classes,
+	courseClasses,
+	courses,
+	departments,
+	sections,
+} from "@/db/schema";
 import { filterAccessibleSections } from "@/lib/auth/checks";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
@@ -22,6 +29,25 @@ import {
 	resolveClassByCodes,
 	toFtsQuery,
 } from "./shared";
+
+async function findSyllabus(classId: string) {
+	const [row] = await getDb()
+		.select({
+			academicYear: classSyllabi.academicYear,
+			catalogueUrl: classSyllabi.catalogueUrl,
+			objectives: classSyllabi.objectives,
+			contents: classSyllabi.contents,
+			prerequisites: classSyllabi.prerequisites,
+			assessment: classSyllabi.assessment,
+			readings: classSyllabi.readings,
+			teachingMethods: classSyllabi.teachingMethods,
+			outcomes: classSyllabi.outcomes,
+		})
+		.from(classSyllabi)
+		.where(eq(classSyllabi.classId, classId))
+		.limit(1);
+	return row ?? null;
+}
 
 function findExamSimulationSection(classId: string) {
 	return getDb()
@@ -99,6 +125,7 @@ export async function getClassWithSections(
 		course: { ...course, department },
 		sections: sectionList,
 		examSimulation,
+		syllabus: await findSyllabus(cls.id),
 	};
 }
 

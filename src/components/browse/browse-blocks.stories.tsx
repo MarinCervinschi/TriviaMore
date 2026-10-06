@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 
 import { BrowseBreadcrumb } from "./browse-breadcrumb";
 import { BrowseContributeState, BrowseEmptyState } from "./browse-empty-state";
+import { ClassSyllabus } from "./class-syllabus";
 import { ExpandableDescription } from "./expandable-description";
 import { PlanActivities } from "./plan-activities";
 import { SearchFilter } from "./search-filter";
+import { FULL_SYLLABUS, PARTIAL_SYLLABUS } from "./syllabus-fixtures";
 
 const meta = {
 	title: "Browse/Blocchi",
@@ -201,5 +203,24 @@ export const ActivitiesWithGroups: Story = {
 				},
 			]}
 		/>
+	),
+};
+
+export const Syllabus: Story = {
+	name: "Programma ufficiale",
+	render: () => (
+		<div className="max-w-5xl">
+			<ClassSyllabus syllabus={FULL_SYLLABUS} />
+		</div>
+	),
+};
+
+/** A syllabus with only some fields published lists only those. */
+export const SyllabusPartial: Story = {
+	name: "Programma ufficiale, incompleto",
+	render: () => (
+		<div className="max-w-5xl">
+			<ClassSyllabus syllabus={PARTIAL_SYLLABUS} />
+		</div>
 	),
 };

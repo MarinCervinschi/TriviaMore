@@ -17,6 +17,7 @@ import { BrowseAdminButton } from "@/components/admin/browse-admin-button";
 import { BrowseBreadcrumb } from "@/components/browse/browse-breadcrumb";
 import { BrowseContributeState } from "@/components/browse/browse-empty-state";
 import { BrowsePageHeader } from "@/components/browse/browse-page-header";
+import { ClassSyllabus } from "@/components/browse/class-syllabus";
 import { SearchFilter } from "@/components/browse/search-filter";
 import {
 	DataTable,
@@ -30,6 +31,7 @@ import { ClassDetailSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
+import { TabNav } from "@/components/ui/tab-nav";
 import { useAuth } from "@/hooks/useAuth";
 import { useDebouncedSearchParam } from "@/hooks/useDebouncedSearchParam";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
@@ -55,6 +57,7 @@ export const Route = createFileRoute("/_app/browse/$department/$course/$class/")
 		page: z.coerce.number().int().min(1).optional().catch(undefined),
 		sort: dataTableFilterField,
 		dir: z.enum(["asc", "desc"]).optional().catch(undefined),
+		scheda: z.enum(["sezioni", "programma"]).optional().catch(undefined),
 	}),
 	loader: async ({ context, params }) => {
 		void context.queryClient.prefetchQuery(quizQueries.evaluationModes());
@@ -182,6 +185,11 @@ function ClassPage() {
 	const { data: classData } = useSuspenseQuery(
 		browseQueries.class(deptCode, courseCode, classCode)
 	);
+
+	// A class with no sections yet opens on its syllabus, which is then the page's only content.
+	const tab =
+		classData?.syllabus &&
+		(search.scheda ?? (classData.sections.length > 0 ? "sezioni" : "programma"));
 
 	const [searchInput, setSearchInput] = useDebouncedSearchParam(search.q, next =>
 		navigate({ search: prev => ({ ...prev, q: next, page: undefined }) })
@@ -312,6 +320,30 @@ function ClassPage() {
 						value: totalQuestions,
 					},
 				]}
+				tabs={
+					tab && (
+						<TabNav
+							label="Contenuto dell'insegnamento"
+							tabs={[
+								{
+									key: "sections",
+									label: "Sezioni",
+									badge: classData.sections.length,
+									active: tab === "sezioni",
+									onSelect: () =>
+										navigate({ search: prev => ({ ...prev, scheda: "sezioni" }) }),
+								},
+								{
+									key: "syllabus",
+									label: "Programma",
+									active: tab === "programma",
+									onSelect: () =>
+										navigate({ search: prev => ({ ...prev, scheda: "programma" }) }),
+								},
+							]}
+						/>
+					)
+				}
 				actions={
 					<>
 						<BrowseAdminButton
@@ -347,35 +379,41 @@ function ClassPage() {
 				}
 			/>
 			<div className="container">
-				{classData.examSimulation &&
-					(classData.examSimulation.totalQuizQuestions > 0 ||
-						classData.examSimulation.totalFlashcardQuestions > 0) && (
-						<ExamSimulationSection
-							examSimulation={classData.examSimulation}
-							isAuthenticated={isAuthenticated}
-						/>
-					)}
-				<SearchFilter
-					value={searchInput}
-					onChange={setSearchInput}
-					placeholder="Cerca sezioni..."
-				/>
-				{classData.sections.length === 0 ? (
-					<BrowseContributeState message="Nessuna sezione disponibile per questo insegnamento.">
-						<RequestFormDialog defaultTargetClassId={classData.id} />
-					</BrowseContributeState>
+				{tab === "programma" && classData.syllabus ? (
+					<ClassSyllabus syllabus={classData.syllabus} />
 				) : (
-					<DataTable
-						table={table}
-						empty={<InlineEmpty>Nessuna sezione trovata.</InlineEmpty>}
-						rowLink={row => (
-							<Link
-								to="/browse/$department/$course/$class/$section"
-								params={sectionParams(deptCode, courseCode, classCode, row)}
-								aria-label={`Apri ${row.name}`}
+					<>
+						{classData.examSimulation &&
+							(classData.examSimulation.totalQuizQuestions > 0 ||
+								classData.examSimulation.totalFlashcardQuestions > 0) && (
+								<ExamSimulationSection
+									examSimulation={classData.examSimulation}
+									isAuthenticated={isAuthenticated}
+								/>
+							)}
+						<SearchFilter
+							value={searchInput}
+							onChange={setSearchInput}
+							placeholder="Cerca sezioni..."
+						/>
+						{classData.sections.length === 0 ? (
+							<BrowseContributeState message="Nessuna sezione disponibile per questo insegnamento.">
+								<RequestFormDialog defaultTargetClassId={classData.id} />
+							</BrowseContributeState>
+						) : (
+							<DataTable
+								table={table}
+								empty={<InlineEmpty>Nessuna sezione trovata.</InlineEmpty>}
+								rowLink={row => (
+									<Link
+										to="/browse/$department/$course/$class/$section"
+										params={sectionParams(deptCode, courseCode, classCode, row)}
+										aria-label={`Apri ${row.name}`}
+									/>
+								)}
 							/>
 						)}
-					/>
+					</>
 				)}
 			</div>
 		</div>
