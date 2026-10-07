@@ -9,6 +9,8 @@
 	},
 	"scripts": {
 		"dev": "infisical run --recursive -- vite dev --port 3000",
+		"console:dev": "pnpm --filter @triviamore/admin-console dev",
+		"console:build": "pnpm --filter @triviamore/admin-console build",
 		"dev:staging": "infisical run --recursive --env=staging -- vite dev --port 3000",
 		"dev:prod": "infisical run --recursive --env=prod -- vite dev --port 3000",
 		"dev:no-secrets": "vite dev --port 3000",
