@@ -1,7 +1,14 @@
+import { getRequestUrl } from "@tanstack/react-start/server";
+
 import type { LoginInput } from "@/lib/auth/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-import type { ConsoleSession, LoginResult } from "./types";
+import type {
+	ConsoleSession,
+	GoogleSignInResult,
+	LoginResult,
+	OAuthFailure,
+} from "./types";
 
 const NOT_OWNER = "Questo account non può accedere alla console.";
 
@@ -35,6 +42,30 @@ export async function login(input: LoginInput): Promise<LoginResult> {
 		return { success: false, error: NOT_OWNER };
 	}
 	return { success: true };
+}
+
+/** Where Google sends the owner back: this console's own origin, so it works the same locally and on the tailnet. */
+export async function googleSignInUrl(): Promise<GoogleSignInResult> {
+	const { origin } = getRequestUrl();
+	const { data, error } = await createServerSupabaseClient().auth.signInWithOAuth({
+		provider: "google",
+		options: { redirectTo: `${origin}/auth/callback` },
+	});
+	if (error || !data.url)
+		return { success: false, error: "Accesso con Google non disponibile." };
+	return { success: true, url: data.url };
+}
+
+/** Finishes a Google sign-in; an account that is not the owner's is signed out before it reaches the console. */
+export async function completeOAuth(code: string): Promise<OAuthFailure | null> {
+	const supabase = createServerSupabaseClient();
+	const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+	if (error || !data.user) return "failed";
+	if (!ownerIds().has(data.user.id)) {
+		await supabase.auth.signOut();
+		return "not-owner";
+	}
+	return null;
 }
 
 export async function logout(): Promise<void> {
