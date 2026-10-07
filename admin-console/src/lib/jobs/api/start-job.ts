@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireOwner } from "~/lib/auth/service";
 
-import { startJob } from "../service";
+import { startJob } from "../service/runs";
 
 export const startJobFn = createServerFn({ method: "POST" })
 	.inputValidator(

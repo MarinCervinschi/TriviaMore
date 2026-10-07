@@ -34,18 +34,40 @@ export function runQueuedJob(
 	return exclusive(() => execute(definition, job));
 }
 
+/** A scheduled job arrives without a row, so it gets one here, the way the console records a manual run. */
+async function runIdOf(
+	definition: JobDefinition,
+	job: Job<QueuedRun>
+): Promise<string> {
+	if ("runId" in job.data) return job.data.runId;
+	const { scheduleKey, params, dryRun } = job.data.schedule;
+	const [created] = await dbFor("staging")
+		.insert(jobRuns)
+		.values({
+			job: definition.name,
+			params,
+			dryRun,
+			trigger: "SCHEDULE",
+			scheduleKey,
+			queueJobId: job.id,
+		})
+		.returning({ id: jobRuns.id });
+	return created!.id;
+}
+
 async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<void> {
 	const db = dbFor("staging");
+	const runId = await runIdOf(definition, job);
 	// Claimed in one statement, so an edit from the console lands either before it or not at all.
 	const [run] = await db
 		.update(jobRuns)
 		.set({ status: "RUNNING", startedAt: now() })
-		.where(and(eq(jobRuns.id, job.data.runId), eq(jobRuns.status, "QUEUED")))
+		.where(and(eq(jobRuns.id, runId), eq(jobRuns.status, "QUEUED")))
 		.returning();
 	if (!run) {
 		log.warn("Job {Job} run {RunId} is no longer queued", {
 			Job: definition.name,
-			RunId: job.data.runId,
+			RunId: runId,
 		});
 		return;
 	}

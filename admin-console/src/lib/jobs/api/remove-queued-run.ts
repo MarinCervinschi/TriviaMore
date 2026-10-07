@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireOwner } from "~/lib/auth/service";
 
-import { removeQueuedRun } from "../service";
+import { removeQueuedRun } from "../service/runs";
 
 export const removeQueuedRunFn = createServerFn({ method: "POST" })
 	.inputValidator(z.object({ id: z.string().uuid() }))

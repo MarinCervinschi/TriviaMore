@@ -2,8 +2,15 @@ import { PgBoss } from "pg-boss";
 
 import { log } from "@/lib/logging/server";
 
-/** The payload of a queued job: everything else lives on the run's row in ops.job_runs. */
-export type QueuedRun = { runId: string };
+/** What a schedule hands the worker each time it fires; the worker records the run itself. */
+export type ScheduledRun = {
+	scheduleKey: string;
+	params: Record<string, string | number | boolean | null>;
+	dryRun: boolean;
+};
+
+/** The payload of a queued job: a manual run already has its row in ops.job_runs, a scheduled one does not yet. */
+export type QueuedRun = { runId: string } | { schedule: ScheduledRun };
 
 export const QUEUE_OPTIONS = {
 	policy: "singleton",
