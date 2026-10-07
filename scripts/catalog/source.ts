@@ -14,7 +14,12 @@ import type { RawSyllabusBlock } from "../../src/lib/catalog/sync/syllabi.ts";
 
 const SITE = "https://unimore.coursecatalogue.cineca.it";
 const BASE = `${SITE}/api/v1`;
-const CACHE_DIR = join(process.cwd(), ".cache", "catalog");
+let cacheDir = join(process.cwd(), ".cache", "catalog");
+
+/** Points the response cache elsewhere; a job gives each run its own, so a scheduled run never reads an old response. */
+export function setCacheDir(dir: string) {
+	cacheDir = dir;
+}
 
 export type SourceCourse = {
 	academicYear: string;
@@ -52,7 +57,7 @@ function text(value: string | undefined | null): string | null {
 }
 
 async function cached<T>(name: string, load: () => Promise<T>): Promise<T> {
-	const file = join(CACHE_DIR, `${name}.json`);
+	const file = join(cacheDir, `${name}.json`);
 	try {
 		return JSON.parse(await readFile(file, "utf8")) as T;
 	} catch {
