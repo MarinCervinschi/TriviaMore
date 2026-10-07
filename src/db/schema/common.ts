@@ -4,6 +4,7 @@ export const catalogSchema = pgSchema("catalog");
 export const quizSchema = pgSchema("quiz");
 export const internalSchema = pgSchema("internal");
 export const crmSchema = pgSchema("crm");
+export const opsSchema = pgSchema("ops");
 
 export const tsvector = customType<{ data: string }>({
 	dataType() {
