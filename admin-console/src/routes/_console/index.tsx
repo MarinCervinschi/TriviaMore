@@ -7,7 +7,7 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { ConsolePage } from "~/components/console-page";
 import { type Status, StatusBadge } from "~/components/status-badge";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_console/")({
 	component: DashboardPage,
 });
 

@@ -16,6 +16,31 @@ pnpm console:build
 
 Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 
+## Environment
+
+`pnpm dev` runs through Infisical, like the app; the console reads these on the server only.
+
+| Variable | Used for |
+|---|---|
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app |
+| `CONSOLE_OWNER_IDS` | comma-separated user ids allowed in; anyone else is signed out at once |
+| `STAGING_DATABASE_URL` | the staging database, read and write |
+| `PRODUCTION_READONLY_DATABASE_URL` | production, through a role with `default_transaction_read_only = on` |
+
+Without `CONSOLE_OWNER_IDS` nobody can sign in. A database variable left out shows as *non configurata* on
+Impostazioni → Connessioni, which also flags a production credential that can write.
+
+## Docker
+
+The image builds from the repository root, because the console imports the app's components:
+
+```bash
+docker build -f admin-console/Dockerfile .
+```
+
+It needs no secrets to build. At start, `docker-entrypoint.sh` exchanges the Infisical machine identity for a
+token and runs the server on port 3100.
+
 ## How it is built
 
 Same stack as the app: TanStack Start (React 19, Vite, Nitro) and Tailwind v4.
@@ -26,6 +51,9 @@ Same stack as the app: TanStack Start (React 19, Vite, Nitro) and Tailwind v4.
   A new page is a route under `src/routes/` plus an entry there.
 - The section sidebar remembers whether it is open in the `console_section_sidebar` cookie, so the server
   renders it in the right state.
+- Every page sits under the `_console` layout, whose `beforeLoad` sends anyone but the owner to `/login`.
+  An endpoint that touches data calls `requireOwner()` itself, because a server function can be called
+  without its page.
 
 ## The shell
 

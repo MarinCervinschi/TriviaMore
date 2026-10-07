@@ -17,16 +17,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/providers/theme-provider";
 
 import { NotFound } from "~/components/not-found";
-import { ConsoleShell } from "~/components/shell/console-shell";
-import { readSectionSidebarOpen } from "~/lib/section-sidebar-state";
 import consoleCss from "~/styles/console.css?url";
 
 // Runs before paint, so a dark theme never flashes light first; same script as the app.
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=window.matchMedia('(prefers-color-scheme:dark)').matches;var r=t==='system'?(d?'dark':'light'):t;document.documentElement.classList.toggle('dark',r==='dark');document.documentElement.style.colorScheme=r;}catch(e){}})();`;
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-	// In the loader, so the value matches the one the server rendered with.
-	loader: () => ({ sidebarOpen: readSectionSidebarOpen() }),
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
@@ -63,14 +59,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 
 function RootLayout() {
-	const { sidebarOpen } = Route.useLoaderData();
-
 	return (
 		<ThemeProvider defaultTheme="system">
 			<TooltipProvider delayDuration={200}>
-				<ConsoleShell defaultSidebarOpen={sidebarOpen}>
-					<Outlet />
-				</ConsoleShell>
+				<Outlet />
 				<Toaster />
 			</TooltipProvider>
 		</ThemeProvider>

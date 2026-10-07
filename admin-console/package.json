@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --port 3100",
+		"dev": "infisical run --recursive -- vite dev --port 3100",
 		"build": "vite build",
 		"start": "node .output/server/index.mjs",
 		"typecheck": "tsc --noEmit"
@@ -17,12 +17,15 @@
 		"@tanstack/react-router": "1.168.3",
 		"@tanstack/react-router-ssr-query": "1.166.10",
 		"@tanstack/react-start": "1.167.5",
+		"pg": "8.22.0",
 		"react": "19.2.4",
-		"react-dom": "19.2.4"
+		"react-dom": "19.2.4",
+		"zod": "4.3.6"
 	},
 	"devDependencies": {
 		"@tailwindcss/vite": "4.2.2",
 		"@types/node": "22.19.15",
+		"@types/pg": "8.20.3",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@vitejs/plugin-react": "5.2.0",

@@ -9,136 +9,154 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ActivityRouteImport } from './routes/activity'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as StagingIndexRouteImport } from './routes/staging/index'
-import { Route as SourcesIndexRouteImport } from './routes/sources/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as JobsIndexRouteImport } from './routes/jobs/index'
-import { Route as StagingPromotionsRouteImport } from './routes/staging/promotions'
-import { Route as SourcesTimetablesRouteImport } from './routes/sources/timetables'
-import { Route as SourcesSyllabiRouteImport } from './routes/sources/syllabi'
-import { Route as SourcesExamsRouteImport } from './routes/sources/exams'
-import { Route as SourcesCatalogRouteImport } from './routes/sources/catalog'
-import { Route as SettingsAccessRouteImport } from './routes/settings/access'
-import { Route as JobsSchedulesRouteImport } from './routes/jobs/schedules'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ConsoleRouteRouteImport } from './routes/_console/route'
+import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
+import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
+import { Route as ConsoleStagingIndexRouteImport } from './routes/_console/staging/index'
+import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
+import { Route as ConsoleSettingsIndexRouteImport } from './routes/_console/settings/index'
+import { Route as ConsoleJobsIndexRouteImport } from './routes/_console/jobs/index'
+import { Route as ConsoleStagingPromotionsRouteImport } from './routes/_console/staging/promotions'
+import { Route as ConsoleSourcesTimetablesRouteImport } from './routes/_console/sources/timetables'
+import { Route as ConsoleSourcesSyllabiRouteImport } from './routes/_console/sources/syllabi'
+import { Route as ConsoleSourcesExamsRouteImport } from './routes/_console/sources/exams'
+import { Route as ConsoleSourcesCatalogRouteImport } from './routes/_console/sources/catalog'
+import { Route as ConsoleSettingsAccessRouteImport } from './routes/_console/settings/access'
+import { Route as ConsoleJobsSchedulesRouteImport } from './routes/_console/jobs/schedules'
 
-const ActivityRoute = ActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const ConsoleRouteRoute = ConsoleRouteRouteImport.update({
+  id: '/_console',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const StagingIndexRoute = StagingIndexRouteImport.update({
+const ConsoleActivityRoute = ConsoleActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleStagingIndexRoute = ConsoleStagingIndexRouteImport.update({
   id: '/staging/',
   path: '/staging/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const SourcesIndexRoute = SourcesIndexRouteImport.update({
+const ConsoleSourcesIndexRoute = ConsoleSourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
+const ConsoleSettingsIndexRoute = ConsoleSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const JobsIndexRoute = JobsIndexRouteImport.update({
+const ConsoleJobsIndexRoute = ConsoleJobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const StagingPromotionsRoute = StagingPromotionsRouteImport.update({
-  id: '/staging/promotions',
-  path: '/staging/promotions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SourcesTimetablesRoute = SourcesTimetablesRouteImport.update({
-  id: '/sources/timetables',
-  path: '/sources/timetables',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SourcesSyllabiRoute = SourcesSyllabiRouteImport.update({
+const ConsoleStagingPromotionsRoute =
+  ConsoleStagingPromotionsRouteImport.update({
+    id: '/staging/promotions',
+    path: '/staging/promotions',
+    getParentRoute: () => ConsoleRouteRoute,
+  } as any)
+const ConsoleSourcesTimetablesRoute =
+  ConsoleSourcesTimetablesRouteImport.update({
+    id: '/sources/timetables',
+    path: '/sources/timetables',
+    getParentRoute: () => ConsoleRouteRoute,
+  } as any)
+const ConsoleSourcesSyllabiRoute = ConsoleSourcesSyllabiRouteImport.update({
   id: '/sources/syllabi',
   path: '/sources/syllabi',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const SourcesExamsRoute = SourcesExamsRouteImport.update({
+const ConsoleSourcesExamsRoute = ConsoleSourcesExamsRouteImport.update({
   id: '/sources/exams',
   path: '/sources/exams',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const SourcesCatalogRoute = SourcesCatalogRouteImport.update({
+const ConsoleSourcesCatalogRoute = ConsoleSourcesCatalogRouteImport.update({
   id: '/sources/catalog',
   path: '/sources/catalog',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const SettingsAccessRoute = SettingsAccessRouteImport.update({
+const ConsoleSettingsAccessRoute = ConsoleSettingsAccessRouteImport.update({
   id: '/settings/access',
   path: '/settings/access',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const JobsSchedulesRoute = JobsSchedulesRouteImport.update({
+const ConsoleJobsSchedulesRoute = ConsoleJobsSchedulesRouteImport.update({
   id: '/jobs/schedules',
   path: '/jobs/schedules',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/jobs/schedules': typeof JobsSchedulesRoute
-  '/settings/access': typeof SettingsAccessRoute
-  '/sources/catalog': typeof SourcesCatalogRoute
-  '/sources/exams': typeof SourcesExamsRoute
-  '/sources/syllabi': typeof SourcesSyllabiRoute
-  '/sources/timetables': typeof SourcesTimetablesRoute
-  '/staging/promotions': typeof StagingPromotionsRoute
-  '/jobs/': typeof JobsIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/sources/': typeof SourcesIndexRoute
-  '/staging/': typeof StagingIndexRoute
+  '/': typeof ConsoleIndexRoute
+  '/login': typeof LoginRoute
+  '/activity': typeof ConsoleActivityRoute
+  '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
+  '/settings/access': typeof ConsoleSettingsAccessRoute
+  '/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/sources/exams': typeof ConsoleSourcesExamsRoute
+  '/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
+  '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
+  '/staging/promotions': typeof ConsoleStagingPromotionsRoute
+  '/jobs/': typeof ConsoleJobsIndexRoute
+  '/settings/': typeof ConsoleSettingsIndexRoute
+  '/sources/': typeof ConsoleSourcesIndexRoute
+  '/staging/': typeof ConsoleStagingIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/jobs/schedules': typeof JobsSchedulesRoute
-  '/settings/access': typeof SettingsAccessRoute
-  '/sources/catalog': typeof SourcesCatalogRoute
-  '/sources/exams': typeof SourcesExamsRoute
-  '/sources/syllabi': typeof SourcesSyllabiRoute
-  '/sources/timetables': typeof SourcesTimetablesRoute
-  '/staging/promotions': typeof StagingPromotionsRoute
-  '/jobs': typeof JobsIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/sources': typeof SourcesIndexRoute
-  '/staging': typeof StagingIndexRoute
+  '/login': typeof LoginRoute
+  '/activity': typeof ConsoleActivityRoute
+  '/': typeof ConsoleIndexRoute
+  '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
+  '/settings/access': typeof ConsoleSettingsAccessRoute
+  '/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/sources/exams': typeof ConsoleSourcesExamsRoute
+  '/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
+  '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
+  '/staging/promotions': typeof ConsoleStagingPromotionsRoute
+  '/jobs': typeof ConsoleJobsIndexRoute
+  '/settings': typeof ConsoleSettingsIndexRoute
+  '/sources': typeof ConsoleSourcesIndexRoute
+  '/staging': typeof ConsoleStagingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/jobs/schedules': typeof JobsSchedulesRoute
-  '/settings/access': typeof SettingsAccessRoute
-  '/sources/catalog': typeof SourcesCatalogRoute
-  '/sources/exams': typeof SourcesExamsRoute
-  '/sources/syllabi': typeof SourcesSyllabiRoute
-  '/sources/timetables': typeof SourcesTimetablesRoute
-  '/staging/promotions': typeof StagingPromotionsRoute
-  '/jobs/': typeof JobsIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/sources/': typeof SourcesIndexRoute
-  '/staging/': typeof StagingIndexRoute
+  '/_console': typeof ConsoleRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_console/activity': typeof ConsoleActivityRoute
+  '/_console/': typeof ConsoleIndexRoute
+  '/_console/jobs/schedules': typeof ConsoleJobsSchedulesRoute
+  '/_console/settings/access': typeof ConsoleSettingsAccessRoute
+  '/_console/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/_console/sources/exams': typeof ConsoleSourcesExamsRoute
+  '/_console/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
+  '/_console/sources/timetables': typeof ConsoleSourcesTimetablesRoute
+  '/_console/staging/promotions': typeof ConsoleStagingPromotionsRoute
+  '/_console/jobs/': typeof ConsoleJobsIndexRoute
+  '/_console/settings/': typeof ConsoleSettingsIndexRoute
+  '/_console/sources/': typeof ConsoleSourcesIndexRoute
+  '/_console/staging/': typeof ConsoleStagingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/activity'
     | '/jobs/schedules'
     | '/settings/access'
@@ -153,8 +171,9 @@ export interface FileRouteTypes {
     | '/staging/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/login'
     | '/activity'
+    | '/'
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
@@ -168,147 +187,177 @@ export interface FileRouteTypes {
     | '/staging'
   id:
     | '__root__'
-    | '/'
-    | '/activity'
-    | '/jobs/schedules'
-    | '/settings/access'
-    | '/sources/catalog'
-    | '/sources/exams'
-    | '/sources/syllabi'
-    | '/sources/timetables'
-    | '/staging/promotions'
-    | '/jobs/'
-    | '/settings/'
-    | '/sources/'
-    | '/staging/'
+    | '/_console'
+    | '/login'
+    | '/_console/activity'
+    | '/_console/'
+    | '/_console/jobs/schedules'
+    | '/_console/settings/access'
+    | '/_console/sources/catalog'
+    | '/_console/sources/exams'
+    | '/_console/sources/syllabi'
+    | '/_console/sources/timetables'
+    | '/_console/staging/promotions'
+    | '/_console/jobs/'
+    | '/_console/settings/'
+    | '/_console/sources/'
+    | '/_console/staging/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ActivityRoute: typeof ActivityRoute
-  JobsSchedulesRoute: typeof JobsSchedulesRoute
-  SettingsAccessRoute: typeof SettingsAccessRoute
-  SourcesCatalogRoute: typeof SourcesCatalogRoute
-  SourcesExamsRoute: typeof SourcesExamsRoute
-  SourcesSyllabiRoute: typeof SourcesSyllabiRoute
-  SourcesTimetablesRoute: typeof SourcesTimetablesRoute
-  StagingPromotionsRoute: typeof StagingPromotionsRoute
-  JobsIndexRoute: typeof JobsIndexRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
-  SourcesIndexRoute: typeof SourcesIndexRoute
-  StagingIndexRoute: typeof StagingIndexRoute
+  ConsoleRouteRoute: typeof ConsoleRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/activity': {
-      id: '/activity'
-      path: '/activity'
-      fullPath: '/activity'
-      preLoaderRoute: typeof ActivityRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_console': {
+      id: '/_console'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ConsoleRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_console/': {
+      id: '/_console/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/staging/': {
-      id: '/staging/'
+    '/_console/activity': {
+      id: '/_console/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ConsoleActivityRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/staging/': {
+      id: '/_console/staging/'
       path: '/staging'
       fullPath: '/staging/'
-      preLoaderRoute: typeof StagingIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleStagingIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/sources/': {
-      id: '/sources/'
+    '/_console/sources/': {
+      id: '/_console/sources/'
       path: '/sources'
       fullPath: '/sources/'
-      preLoaderRoute: typeof SourcesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSourcesIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/settings/': {
-      id: '/settings/'
+    '/_console/settings/': {
+      id: '/_console/settings/'
       path: '/settings'
       fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSettingsIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/jobs/': {
-      id: '/jobs/'
+    '/_console/jobs/': {
+      id: '/_console/jobs/'
       path: '/jobs'
       fullPath: '/jobs/'
-      preLoaderRoute: typeof JobsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleJobsIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/staging/promotions': {
-      id: '/staging/promotions'
+    '/_console/staging/promotions': {
+      id: '/_console/staging/promotions'
       path: '/staging/promotions'
       fullPath: '/staging/promotions'
-      preLoaderRoute: typeof StagingPromotionsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleStagingPromotionsRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/sources/timetables': {
-      id: '/sources/timetables'
+    '/_console/sources/timetables': {
+      id: '/_console/sources/timetables'
       path: '/sources/timetables'
       fullPath: '/sources/timetables'
-      preLoaderRoute: typeof SourcesTimetablesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSourcesTimetablesRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/sources/syllabi': {
-      id: '/sources/syllabi'
+    '/_console/sources/syllabi': {
+      id: '/_console/sources/syllabi'
       path: '/sources/syllabi'
       fullPath: '/sources/syllabi'
-      preLoaderRoute: typeof SourcesSyllabiRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSourcesSyllabiRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/sources/exams': {
-      id: '/sources/exams'
+    '/_console/sources/exams': {
+      id: '/_console/sources/exams'
       path: '/sources/exams'
       fullPath: '/sources/exams'
-      preLoaderRoute: typeof SourcesExamsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSourcesExamsRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/sources/catalog': {
-      id: '/sources/catalog'
+    '/_console/sources/catalog': {
+      id: '/_console/sources/catalog'
       path: '/sources/catalog'
       fullPath: '/sources/catalog'
-      preLoaderRoute: typeof SourcesCatalogRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSourcesCatalogRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/settings/access': {
-      id: '/settings/access'
+    '/_console/settings/access': {
+      id: '/_console/settings/access'
       path: '/settings/access'
       fullPath: '/settings/access'
-      preLoaderRoute: typeof SettingsAccessRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleSettingsAccessRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
-    '/jobs/schedules': {
-      id: '/jobs/schedules'
+    '/_console/jobs/schedules': {
+      id: '/_console/jobs/schedules'
       path: '/jobs/schedules'
       fullPath: '/jobs/schedules'
-      preLoaderRoute: typeof JobsSchedulesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleJobsSchedulesRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
   }
 }
 
+interface ConsoleRouteRouteChildren {
+  ConsoleActivityRoute: typeof ConsoleActivityRoute
+  ConsoleIndexRoute: typeof ConsoleIndexRoute
+  ConsoleJobsSchedulesRoute: typeof ConsoleJobsSchedulesRoute
+  ConsoleSettingsAccessRoute: typeof ConsoleSettingsAccessRoute
+  ConsoleSourcesCatalogRoute: typeof ConsoleSourcesCatalogRoute
+  ConsoleSourcesExamsRoute: typeof ConsoleSourcesExamsRoute
+  ConsoleSourcesSyllabiRoute: typeof ConsoleSourcesSyllabiRoute
+  ConsoleSourcesTimetablesRoute: typeof ConsoleSourcesTimetablesRoute
+  ConsoleStagingPromotionsRoute: typeof ConsoleStagingPromotionsRoute
+  ConsoleJobsIndexRoute: typeof ConsoleJobsIndexRoute
+  ConsoleSettingsIndexRoute: typeof ConsoleSettingsIndexRoute
+  ConsoleSourcesIndexRoute: typeof ConsoleSourcesIndexRoute
+  ConsoleStagingIndexRoute: typeof ConsoleStagingIndexRoute
+}
+
+const ConsoleRouteRouteChildren: ConsoleRouteRouteChildren = {
+  ConsoleActivityRoute: ConsoleActivityRoute,
+  ConsoleIndexRoute: ConsoleIndexRoute,
+  ConsoleJobsSchedulesRoute: ConsoleJobsSchedulesRoute,
+  ConsoleSettingsAccessRoute: ConsoleSettingsAccessRoute,
+  ConsoleSourcesCatalogRoute: ConsoleSourcesCatalogRoute,
+  ConsoleSourcesExamsRoute: ConsoleSourcesExamsRoute,
+  ConsoleSourcesSyllabiRoute: ConsoleSourcesSyllabiRoute,
+  ConsoleSourcesTimetablesRoute: ConsoleSourcesTimetablesRoute,
+  ConsoleStagingPromotionsRoute: ConsoleStagingPromotionsRoute,
+  ConsoleJobsIndexRoute: ConsoleJobsIndexRoute,
+  ConsoleSettingsIndexRoute: ConsoleSettingsIndexRoute,
+  ConsoleSourcesIndexRoute: ConsoleSourcesIndexRoute,
+  ConsoleStagingIndexRoute: ConsoleStagingIndexRoute,
+}
+
+const ConsoleRouteRouteWithChildren = ConsoleRouteRoute._addFileChildren(
+  ConsoleRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ActivityRoute: ActivityRoute,
-  JobsSchedulesRoute: JobsSchedulesRoute,
-  SettingsAccessRoute: SettingsAccessRoute,
-  SourcesCatalogRoute: SourcesCatalogRoute,
-  SourcesExamsRoute: SourcesExamsRoute,
-  SourcesSyllabiRoute: SourcesSyllabiRoute,
-  SourcesTimetablesRoute: SourcesTimetablesRoute,
-  StagingPromotionsRoute: StagingPromotionsRoute,
-  JobsIndexRoute: JobsIndexRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
-  SourcesIndexRoute: SourcesIndexRoute,
-  StagingIndexRoute: StagingIndexRoute,
+  ConsoleRouteRoute: ConsoleRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

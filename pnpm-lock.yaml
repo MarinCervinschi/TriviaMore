@@ -312,12 +312,18 @@ importers:
       '@tanstack/react-start':
         specifier: 1.167.5
         version: 1.167.5(crossws@0.4.4(srvx@0.11.13))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
+      pg:
+        specifier: 8.22.0
+        version: 8.22.0
       react:
         specifier: 19.2.4
         version: 19.2.4
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.2.2
@@ -325,6 +331,9 @@ importers:
       '@types/node':
         specifier: 22.19.15
         version: 22.19.15
+      '@types/pg':
+        specifier: 8.20.3
+        version: 8.20.3
       '@types/react':
         specifier: 19.2.14
         version: 19.2.14
