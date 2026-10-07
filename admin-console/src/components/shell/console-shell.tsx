@@ -9,6 +9,7 @@ import { LogoIcon } from "@/components/ui/logo";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import type { ConsoleAccount } from "~/lib/auth/types";
 import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, itemOf, sectionOf } from "~/lib/nav";
 import { writeSectionSidebarOpen } from "~/lib/section-sidebar-state";
@@ -21,11 +22,11 @@ import { SectionSidebar } from "./section-sidebar";
 export function ConsoleShell({
 	children,
 	defaultSidebarOpen,
-	email,
+	account,
 }: {
 	children: ReactNode;
 	defaultSidebarOpen: boolean;
-	email: string | null;
+	account: ConsoleAccount;
 }) {
 	const pathname = useRouterState({ select: state => state.location.pathname });
 	const section = sectionOf(pathname);
@@ -44,7 +45,7 @@ export function ConsoleShell({
 
 	return (
 		<div className="bg-sidebar text-sidebar-foreground flex h-svh">
-			<Rail active={section} email={email} />
+			<Rail active={section} account={account} />
 
 			<div
 				id="main-content"
