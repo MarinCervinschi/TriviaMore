@@ -1,41 +1,11 @@
-import { Pool } from "pg";
+import { CONNECTION_ENV, poolFor } from "~/lib/db/client";
 
 import type { ConnectionId, ConnectionStatus } from "./types";
 
-const CONNECTIONS: {
-	id: ConnectionId;
-	label: string;
-	env: string;
-	expectReadOnly: boolean;
-}[] = [
-	{
-		id: "staging",
-		label: "Staging",
-		env: "STAGING_DATABASE_URL",
-		expectReadOnly: false,
-	},
-	{
-		id: "production",
-		label: "Produzione",
-		env: "PRODUCTION_READONLY_DATABASE_URL",
-		expectReadOnly: true,
-	},
+const CONNECTIONS: { id: ConnectionId; label: string; expectReadOnly: boolean }[] = [
+	{ id: "staging", label: "Staging", expectReadOnly: false },
+	{ id: "production", label: "Produzione", expectReadOnly: true },
 ];
-
-const pools = new Map<ConnectionId, Pool>();
-
-function poolFor(id: ConnectionId, url: string): Pool {
-	const existing = pools.get(id);
-	if (existing) return existing;
-	const pool = new Pool({
-		connectionString: url,
-		max: 2,
-		connectionTimeoutMillis: 5000,
-	});
-	pool.on("error", () => pools.delete(id));
-	pools.set(id, pool);
-	return pool;
-}
 
 function targetOf(url: string): string | null {
 	try {
@@ -50,9 +20,11 @@ function targetOf(url: string): string | null {
 export async function probeConnections(): Promise<ConnectionStatus[]> {
 	return Promise.all(
 		CONNECTIONS.map(async connection => {
-			const url = process.env[connection.env];
+			const env = CONNECTION_ENV[connection.id];
+			const url = process.env[env];
 			const base = {
 				...connection,
+				env,
 				target: url ? targetOf(url) : null,
 				latencyMs: null,
 				database: null,
@@ -60,11 +32,12 @@ export async function probeConnections(): Promise<ConnectionStatus[]> {
 				readOnly: null,
 				error: null,
 			};
-			if (!url) return { ...base, state: "unconfigured" as const };
+			const pool = poolFor(connection.id);
+			if (!pool) return { ...base, state: "unconfigured" as const };
 
 			const started = performance.now();
 			try {
-				const { rows } = await poolFor(connection.id, url).query<{
+				const { rows } = await pool.query<{
 					database: string;
 					version: string;
 					read_only: string;

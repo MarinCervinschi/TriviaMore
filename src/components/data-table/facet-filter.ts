@@ -20,12 +20,13 @@ export function writeFacet(exclude: boolean, values: string[]): string[] | undef
 	return [FACET_NOT + values[0], ...values.slice(1)];
 }
 
-/** Matches a row whose value is one of the selected, negated by the `!` marker. */
+/** Matches a row whose value, or any of its values, is one of the selected, negated by the `!` marker. */
 export const facetFilterFn = constructFilterFn({
 	filter: (dataValue: unknown, filterValue: unknown) => {
 		const { exclude, values } = readFacet(filterValue);
 		if (values.length === 0) return true;
-		const has = values.includes(String(dataValue ?? ""));
+		const rowValues = Array.isArray(dataValue) ? dataValue : [dataValue];
+		const has = rowValues.some(value => values.includes(String(value ?? "")));
 		return exclude ? !has : has;
 	},
 	autoRemove: (value: unknown) => !Array.isArray(value) || value.length === 0,

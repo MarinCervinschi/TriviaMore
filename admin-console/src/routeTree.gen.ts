@@ -20,8 +20,8 @@ import { Route as ConsoleSettingsIndexRouteImport } from './routes/_console/sett
 import { Route as ConsoleJobsIndexRouteImport } from './routes/_console/jobs/index'
 import { Route as ConsoleStagingPromotionsRouteImport } from './routes/_console/staging/promotions'
 import { Route as ConsoleSourcesTimetablesRouteImport } from './routes/_console/sources/timetables'
-import { Route as ConsoleSourcesSyllabiRouteImport } from './routes/_console/sources/syllabi'
 import { Route as ConsoleSourcesExamsRouteImport } from './routes/_console/sources/exams'
+import { Route as ConsoleSourcesClassesRouteImport } from './routes/_console/sources/classes'
 import { Route as ConsoleSourcesCatalogRouteImport } from './routes/_console/sources/catalog'
 import { Route as ConsoleSettingsAccessRouteImport } from './routes/_console/settings/access'
 import { Route as ConsoleJobsSchedulesRouteImport } from './routes/_console/jobs/schedules'
@@ -82,14 +82,14 @@ const ConsoleSourcesTimetablesRoute =
     path: '/sources/timetables',
     getParentRoute: () => ConsoleRouteRoute,
   } as any)
-const ConsoleSourcesSyllabiRoute = ConsoleSourcesSyllabiRouteImport.update({
-  id: '/sources/syllabi',
-  path: '/sources/syllabi',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
 const ConsoleSourcesExamsRoute = ConsoleSourcesExamsRouteImport.update({
   id: '/sources/exams',
   path: '/sources/exams',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleSourcesClassesRoute = ConsoleSourcesClassesRouteImport.update({
+  id: '/sources/classes',
+  path: '/sources/classes',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
 const ConsoleSourcesCatalogRoute = ConsoleSourcesCatalogRouteImport.update({
@@ -116,8 +116,8 @@ export interface FileRoutesByFullPath {
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
   '/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/sources/classes': typeof ConsoleSourcesClassesRoute
   '/sources/exams': typeof ConsoleSourcesExamsRoute
-  '/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
   '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
   '/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/jobs/': typeof ConsoleJobsIndexRoute
@@ -133,8 +133,8 @@ export interface FileRoutesByTo {
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
   '/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/sources/classes': typeof ConsoleSourcesClassesRoute
   '/sources/exams': typeof ConsoleSourcesExamsRoute
-  '/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
   '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
   '/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/jobs': typeof ConsoleJobsIndexRoute
@@ -152,8 +152,8 @@ export interface FileRoutesById {
   '/_console/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/_console/settings/access': typeof ConsoleSettingsAccessRoute
   '/_console/sources/catalog': typeof ConsoleSourcesCatalogRoute
+  '/_console/sources/classes': typeof ConsoleSourcesClassesRoute
   '/_console/sources/exams': typeof ConsoleSourcesExamsRoute
-  '/_console/sources/syllabi': typeof ConsoleSourcesSyllabiRoute
   '/_console/sources/timetables': typeof ConsoleSourcesTimetablesRoute
   '/_console/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/_console/jobs/': typeof ConsoleJobsIndexRoute
@@ -171,8 +171,8 @@ export interface FileRouteTypes {
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
+    | '/sources/classes'
     | '/sources/exams'
-    | '/sources/syllabi'
     | '/sources/timetables'
     | '/staging/promotions'
     | '/jobs/'
@@ -188,8 +188,8 @@ export interface FileRouteTypes {
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
+    | '/sources/classes'
     | '/sources/exams'
-    | '/sources/syllabi'
     | '/sources/timetables'
     | '/staging/promotions'
     | '/jobs'
@@ -206,8 +206,8 @@ export interface FileRouteTypes {
     | '/_console/jobs/schedules'
     | '/_console/settings/access'
     | '/_console/sources/catalog'
+    | '/_console/sources/classes'
     | '/_console/sources/exams'
-    | '/_console/sources/syllabi'
     | '/_console/sources/timetables'
     | '/_console/staging/promotions'
     | '/_console/jobs/'
@@ -301,18 +301,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleSourcesTimetablesRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/_console/sources/syllabi': {
-      id: '/_console/sources/syllabi'
-      path: '/sources/syllabi'
-      fullPath: '/sources/syllabi'
-      preLoaderRoute: typeof ConsoleSourcesSyllabiRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
     '/_console/sources/exams': {
       id: '/_console/sources/exams'
       path: '/sources/exams'
       fullPath: '/sources/exams'
       preLoaderRoute: typeof ConsoleSourcesExamsRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/classes': {
+      id: '/_console/sources/classes'
+      path: '/sources/classes'
+      fullPath: '/sources/classes'
+      preLoaderRoute: typeof ConsoleSourcesClassesRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
     '/_console/sources/catalog': {
@@ -345,8 +345,8 @@ interface ConsoleRouteRouteChildren {
   ConsoleJobsSchedulesRoute: typeof ConsoleJobsSchedulesRoute
   ConsoleSettingsAccessRoute: typeof ConsoleSettingsAccessRoute
   ConsoleSourcesCatalogRoute: typeof ConsoleSourcesCatalogRoute
+  ConsoleSourcesClassesRoute: typeof ConsoleSourcesClassesRoute
   ConsoleSourcesExamsRoute: typeof ConsoleSourcesExamsRoute
-  ConsoleSourcesSyllabiRoute: typeof ConsoleSourcesSyllabiRoute
   ConsoleSourcesTimetablesRoute: typeof ConsoleSourcesTimetablesRoute
   ConsoleStagingPromotionsRoute: typeof ConsoleStagingPromotionsRoute
   ConsoleJobsIndexRoute: typeof ConsoleJobsIndexRoute
@@ -361,8 +361,8 @@ const ConsoleRouteRouteChildren: ConsoleRouteRouteChildren = {
   ConsoleJobsSchedulesRoute: ConsoleJobsSchedulesRoute,
   ConsoleSettingsAccessRoute: ConsoleSettingsAccessRoute,
   ConsoleSourcesCatalogRoute: ConsoleSourcesCatalogRoute,
+  ConsoleSourcesClassesRoute: ConsoleSourcesClassesRoute,
   ConsoleSourcesExamsRoute: ConsoleSourcesExamsRoute,
-  ConsoleSourcesSyllabiRoute: ConsoleSourcesSyllabiRoute,
   ConsoleSourcesTimetablesRoute: ConsoleSourcesTimetablesRoute,
   ConsoleStagingPromotionsRoute: ConsoleStagingPromotionsRoute,
   ConsoleJobsIndexRoute: ConsoleJobsIndexRoute,
