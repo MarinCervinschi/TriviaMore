@@ -132,6 +132,7 @@ function CatalogPage() {
 		data: courses,
 		columns,
 		getRowId: row => row.id,
+		resizableColumns: true,
 		searchFn: (course, query) =>
 			course.name.toLowerCase().includes(query) ||
 			course.code.toLowerCase().includes(query),
