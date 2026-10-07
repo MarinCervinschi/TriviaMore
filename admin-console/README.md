@@ -20,14 +20,14 @@ Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 
 `pnpm dev` runs through Infisical, like the app; the console reads these on the server only.
 
-| Variable | Used for |
-|---|---|
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app |
-| `CONSOLE_OWNER_IDS` | comma-separated user ids allowed in; anyone else is signed out at once |
-| `STAGING_DATABASE_URL` | the staging database, read and write |
-| `PRODUCTION_READONLY_DATABASE_URL` | production, through a role with `default_transaction_read_only = on` |
+| Variable                                      | Used for                                                               |
+| --------------------------------------------- | ---------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app                 |
+| `CONSOLE_OWNER_IDS`                           | comma-separated user ids allowed in; anyone else is signed out at once |
+| `STAGING_DATABASE_URL`                        | the staging database, read and write                                   |
+| `PRODUCTION_READONLY_DATABASE_URL`            | production, through a role with `default_transaction_read_only = on`   |
 
-Without `CONSOLE_OWNER_IDS` nobody can sign in. A database variable left out shows as *non configurata* on
+Without `CONSOLE_OWNER_IDS` nobody can sign in. A database variable left out shows as _non configurata_ on
 Impostazioni → Connessioni, which also flags a production credential that can write.
 
 ## Docker

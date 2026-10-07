@@ -48,6 +48,8 @@ export type DataTableProps<TData extends RowData> = {
 	empty?: ReactNode;
 	/** Return a bare `<Link>`, or null for a row with nowhere to go. */
 	rowLink?: (row: TData) => ReactElement | null;
+	/** Makes the whole row a pointer target; keep `rowLink` too, since a row cannot take keyboard focus. */
+	onRowClick?: (row: TData) => void;
 	density?: keyof typeof DENSITY_CLASS;
 	showPagination?: boolean;
 	className?: string;
@@ -58,6 +60,7 @@ export function DataTable<TData extends RowData>({
 	toolbar,
 	empty,
 	rowLink,
+	onRowClick,
 	density = "comfortable",
 	showPagination = true,
 	className,
@@ -114,7 +117,17 @@ export function DataTable<TData extends RowData>({
 							{rows.map(row => {
 								const link = rowLink?.(row.original);
 								return (
-									<TableRow key={row.id} className="group">
+									<TableRow
+										key={row.id}
+										className={cn("group", onRowClick && "cursor-pointer")}
+										onClick={
+											onRowClick &&
+											(event => {
+												if ((event.target as Element).closest("a, button")) return;
+												onRowClick(row.original);
+											})
+										}
+									>
 										{row.getVisibleCells().map(cell => {
 											const meta = cell.column.columnDef.meta;
 											return (

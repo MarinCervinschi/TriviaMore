@@ -61,7 +61,7 @@ export const NAV: NavSection[] = [
 				label: "Catalogo",
 				items: [
 					{ label: "Corsi e piani", to: "/sources/catalog", icon: DiplomaIcon },
-					{ label: "Programmi", to: "/sources/syllabi", icon: DocumentTextIcon },
+					{ label: "Insegnamenti", to: "/sources/classes", icon: DocumentTextIcon },
 				],
 			},
 			{

@@ -1,93 +1,116 @@
-import { PlayCircleIcon } from "@solar-icons/react/linear/play-circle";
-import { createFileRoute } from "@tanstack/react-router";
+import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { Button } from "@/components/ui/button";
 import { InsetCard } from "@/components/ui/inset-card";
+import { formatAcademicYear } from "@/lib/catalog/academic-year";
 
 import { ConsolePage } from "~/components/console-page";
+import { FigureCard } from "~/components/figure-card";
 import { type Status, StatusBadge } from "~/components/status-badge";
+import { catalogQueries } from "~/lib/catalog/queries";
+import { formatDateTime, formatNumber, formatPercent } from "~/lib/format";
 
 export const Route = createFileRoute("/_console/")({
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(catalogQueries.overview()),
 	component: DashboardPage,
 });
 
-// Sample figures until the dashboard reads the databases (#197).
-const FIGURES = [
-	{ label: "Insegnamenti", value: "2.578", hint: "nel catalogo" },
-	{ label: "Programmi ufficiali", value: "2.176", hint: "84% degli insegnamenti" },
-	{ label: "Righe di piano", value: "28.087", hint: "coorti 2021–2026" },
-	{ label: "Job oggi", value: "0", hint: "nessuna esecuzione" },
-];
-
-const SOURCES: { name: string; detail: string; status: Status; label: string }[] = [
-	{
-		name: "Catalogo CINECA",
-		detail: "Corsi, piani e curriculum",
-		status: "success",
-		label: "Allineato",
-	},
-	{
-		name: "Programmi",
-		detail: "Syllabus degli insegnamenti",
-		status: "success",
-		label: "Allineato",
-	},
-	{
-		name: "Orari",
-		detail: "EasyAcademy e pagine di ingegneria",
-		status: "neutral",
-		label: "Da integrare",
-	},
-	{
-		name: "Appelli",
-		detail: "Bacheca di Esse3",
-		status: "neutral",
-		label: "Da integrare",
-	},
-];
-
-const RUNS: { job: string; when: string; status: Status; label: string }[] = [
-	{ job: "catalog:sync", when: "Esempio", status: "success", label: "Completato" },
-	{ job: "catalog:syllabi", when: "Esempio", status: "success", label: "Completato" },
-	{ job: "catalog:diff", when: "Esempio", status: "warning", label: "Differenze" },
-];
-
 function DashboardPage() {
+	const { data: overview } = useSuspenseQuery(catalogQueries.overview());
+	const coverage =
+		overview.studiable > 0 ? overview.studiableWithSyllabus / overview.studiable : null;
+
+	const sources: {
+		name: string;
+		detail: string;
+		to?: string;
+		status: Status;
+		label: string;
+	}[] = [
+		{
+			name: "Catalogo CINECA",
+			detail: `Piani aggiornati il ${formatDateTime(overview.plansUpdatedAt)}`,
+			to: "/sources/catalog",
+			status: overview.plansUpdatedAt ? "success" : "neutral",
+			label: overview.plansUpdatedAt ? "Importato" : "Vuoto",
+		},
+		{
+			name: "Schede insegnamento",
+			detail: `Schede aggiornate il ${formatDateTime(overview.syllabiUpdatedAt)}`,
+			to: "/sources/classes",
+			status: overview.syllabiUpdatedAt ? "success" : "neutral",
+			label: overview.syllabiUpdatedAt ? "Importato" : "Vuoto",
+		},
+		{
+			name: "Orari",
+			detail: "EasyAcademy e pagine di ingegneria",
+			status: "neutral",
+			label: "Da integrare",
+		},
+		{
+			name: "Appelli",
+			detail: "Bacheca di Esse3",
+			status: "neutral",
+			label: "Da integrare",
+		},
+	];
+
 	return (
 		<ConsolePage
 			title="Panoramica"
-			description="Lo stato delle fonti dati e dei job. I numeri sono di esempio, finché la dashboard non legge i database."
-			actions={
-				<Button size="sm" disabled>
-					<PlayCircleIcon className="size-4" />
-					Avvia un job
-				</Button>
-			}
+			description="Lo stato dei dati nello staging: quanti sono e quando sono stati importati l'ultima volta."
 		>
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-				{FIGURES.map(figure => (
-					<InsetCard key={figure.label} title={figure.label}>
-						<div className="p-4">
-							<p className="text-2xl font-bold tabular-nums">{figure.value}</p>
-							<p className="text-muted-foreground mt-0.5 text-xs">{figure.hint}</p>
-						</div>
-					</InsetCard>
-				))}
+				<FigureCard
+					label="Insegnamenti"
+					value={formatNumber(overview.classes)}
+					hint={`${formatNumber(overview.studiable)} studiabili nell'offerta corrente`}
+				/>
+				<FigureCard
+					label="Schede insegnamento"
+					value={formatNumber(overview.syllabi)}
+					hint={`${formatPercent(coverage)} degli insegnamenti studiabili`}
+				/>
+				<FigureCard
+					label="Righe di piano"
+					value={formatNumber(overview.planRows)}
+					hint={
+						overview.firstCohort && overview.lastCohort
+							? `coorti ${formatAcademicYear(overview.firstCohort)} – ${formatAcademicYear(overview.lastCohort)}`
+							: "nessun piano importato"
+					}
+				/>
+				<FigureCard
+					label="Corsi"
+					value={formatNumber(overview.courses)}
+					hint={`${formatNumber(overview.curricula)} curriculum in tutte le coorti`}
+				/>
 			</div>
 
 			<div className="grid gap-4 lg:grid-cols-2">
 				<InsetCard
 					title="Fonti dati"
-					description="Quando ogni fonte è stata letta l'ultima volta."
+					description="Da dove vengono i dati, e quando sono arrivati."
 				>
 					<ul className="divide-y">
-						{SOURCES.map(source => (
+						{sources.map(source => (
 							<li
 								key={source.name}
 								className="flex items-center justify-between gap-4 px-4 py-3"
 							>
 								<div className="min-w-0">
-									<p className="truncate text-sm font-medium">{source.name}</p>
+									{source.to ? (
+										<Link
+											to={source.to}
+											className="hover:text-brand truncate text-sm font-medium transition-colors motion-reduce:transition-none"
+										>
+											{source.name}
+										</Link>
+									) : (
+										<p className="truncate text-sm font-medium">{source.name}</p>
+									)}
 									<p className="text-muted-foreground truncate text-xs">
 										{source.detail}
 									</p>
@@ -102,20 +125,14 @@ function DashboardPage() {
 					title="Ultime esecuzioni"
 					description="I job lanciati dalla console, dal più recente."
 				>
-					<ul className="divide-y">
-						{RUNS.map(run => (
-							<li
-								key={run.job}
-								className="flex items-center justify-between gap-4 px-4 py-3"
-							>
-								<div className="min-w-0">
-									<p className="truncate font-mono text-sm">{run.job}</p>
-									<p className="text-muted-foreground text-xs">{run.when}</p>
-								</div>
-								<StatusBadge status={run.status}>{run.label}</StatusBadge>
-							</li>
-						))}
-					</ul>
+					<div className="flex flex-col items-center px-6 py-10 text-center">
+						<ChecklistMinimalisticIcon className="text-muted-foreground mb-2 size-6" />
+						<p className="text-sm font-medium">Nessuna esecuzione</p>
+						<p className="text-muted-foreground mt-1 max-w-xs text-xs">
+							I job si avviano dalla console quando arriva il worker. Per ora girano da
+							terminale, con <code className="font-mono">pnpm catalog:sync</code>.
+						</p>
+					</div>
 				</InsetCard>
 			</div>
 		</ConsolePage>

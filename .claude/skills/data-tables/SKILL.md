@@ -95,7 +95,7 @@ the reset button appears. Because those params are not column ids, list them in 
 
 ### `DataTable` props
 
-`toolbar`, `empty`, `rowLink`, `density` (`comfortable` default / `compact`), `bordered` (default
+`toolbar`, `empty`, `rowLink`, `onRowClick`, `density` (`comfortable` default / `compact`), `bordered` (default
 true — pass `false` inside a `Card`), `showPagination`.
 
 `rowLink` takes a **bare** `<Link>`: `row => <Link to="…" params={…} aria-label={`Apri ${row.name}`} />`.
@@ -103,6 +103,10 @@ The arrow cell, its column and the hover animation are added for you. Do not ren
 arrow column — that implicit column is exactly what made the old `BrowseTable` unsafe. Return **null**
 for a row that has nowhere to go — a deleted target, say — and its arrow cell stays empty while the
 column keeps its shape.
+
+`onRowClick` makes the whole row a pointer target, skipping clicks that land on a link or a button
+inside it. A row cannot take focus, so pair it with a `rowLink` to the same place: the console opens
+its detail sheets this way, both writing `?detail=<id>` to the URL.
 
 ## State: URL or local
 
@@ -141,6 +145,10 @@ and rejected as not worth the noise.
 **Search across several fields.** The default global filter is per-column `includesString`, so a cell
 that renders name *and* email only matches on its accessor. Pass `searchFn: (row, query) => …` and it
 replaces the default with a row-level predicate. `query` arrives lowercased and trimmed.
+
+**A facet over a list** (a class listed in two departments): make the accessor return the
+`string[]`, keep `filterFn: "facet"` — it matches when any value is selected — and add
+`getUniqueValues: row => row.departments` so the popover counts each value, not each combination.
 
 **A table with no pagination** (a short, complete list): `showPagination={false}` and
 `pageSize: Math.max(rows.length, 1)`. The `max` matters — a page size of 0 breaks the row model.
