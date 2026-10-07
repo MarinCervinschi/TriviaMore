@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { GoogleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InsetCard } from "@/components/ui/inset-card";
@@ -10,7 +11,13 @@ import { Label } from "@/components/ui/label";
 import { LogoIcon } from "@/components/ui/logo";
 import { PasswordInput } from "@/components/ui/password-input";
 
-import { getSessionFn, loginFn } from "~/lib/auth/api";
+import { getSessionFn, googleSignInFn, loginFn } from "~/lib/auth/api";
+import type { OAuthFailure } from "~/lib/auth/types";
+
+const OAUTH_ERRORS: Record<OAuthFailure, string> = {
+	"not-owner": "Questo account non può accedere alla console.",
+	failed: "Accesso con Google non riuscito.",
+};
 
 // Only a path inside the console, so the parameter cannot send the owner to another site.
 const internalPath = z
@@ -20,7 +27,10 @@ const internalPath = z
 	.catch(undefined);
 
 export const Route = createFileRoute("/login")({
-	validateSearch: z.object({ redirect: internalPath }),
+	validateSearch: z.object({
+		redirect: internalPath,
+		error: z.enum(["not-owner", "failed"]).optional().catch(undefined),
+	}),
 	beforeLoad: async ({ search }) => {
 		if (await getSessionFn()) throw redirect({ to: search.redirect ?? "/" });
 	},
@@ -30,8 +40,10 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
 	const router = useRouter();
-	const { redirect: target } = Route.useSearch();
-	const [error, setError] = useState<string | null>(null);
+	const { redirect: target, error: oauthError } = Route.useSearch();
+	const [error, setError] = useState<string | null>(
+		oauthError ? OAUTH_ERRORS[oauthError] : null
+	);
 	const [pending, setPending] = useState(false);
 
 	async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -57,6 +69,18 @@ function LoginPage() {
 		} finally {
 			setPending(false);
 		}
+	}
+
+	async function signInWithGoogle() {
+		setPending(true);
+		setError(null);
+		const result = await googleSignInFn();
+		if (!result.success) {
+			setError(result.error);
+			setPending(false);
+			return;
+		}
+		window.location.assign(result.url);
 	}
 
 	return (
@@ -96,6 +120,23 @@ function LoginPage() {
 
 					<Button type="submit" className="w-full" disabled={pending}>
 						{pending ? "Accesso in corso…" : "Accedi"}
+					</Button>
+
+					<div className="text-muted-foreground flex items-center gap-3 text-xs">
+						<span className="bg-border h-px flex-1" />
+						oppure
+						<span className="bg-border h-px flex-1" />
+					</div>
+
+					<Button
+						type="button"
+						variant="outline"
+						className="w-full"
+						disabled={pending}
+						onClick={() => void signInWithGoogle()}
+					>
+						<GoogleIcon className="mr-2 size-4" />
+						Continua con Google
 					</Button>
 				</form>
 			</InsetCard>

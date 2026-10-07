@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConsoleRouteRouteImport } from './routes/_console/route'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
 import { Route as ConsoleStagingIndexRouteImport } from './routes/_console/staging/index'
 import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
@@ -38,6 +39,11 @@ const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConsoleActivityRoute = ConsoleActivityRouteImport.update({
   id: '/activity',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
   '/login': typeof LoginRoute
   '/activity': typeof ConsoleActivityRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
   '/sources/catalog': typeof ConsoleSourcesCatalogRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/activity': typeof ConsoleActivityRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/': typeof ConsoleIndexRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_console': typeof ConsoleRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/_console/activity': typeof ConsoleActivityRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/_console/': typeof ConsoleIndexRoute
   '/_console/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/_console/settings/access': typeof ConsoleSettingsAccessRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/activity'
+    | '/auth/callback'
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/activity'
+    | '/auth/callback'
     | '/'
     | '/jobs/schedules'
     | '/settings/access'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_console'
     | '/login'
     | '/_console/activity'
+    | '/auth/callback'
     | '/_console/'
     | '/_console/jobs/schedules'
     | '/_console/settings/access'
@@ -207,6 +219,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   ConsoleRouteRoute: typeof ConsoleRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof ConsoleIndexRouteImport
       parentRoute: typeof ConsoleRouteRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_console/activity': {
       id: '/_console/activity'
@@ -358,6 +378,7 @@ const ConsoleRouteRouteWithChildren = ConsoleRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   ConsoleRouteRoute: ConsoleRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
