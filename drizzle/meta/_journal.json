@@ -302,6 +302,27 @@
       "when": 1791271646537,
       "tag": "0042_class_syllabi_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791381901981,
+      "tag": "0043_ops_job_runs",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1791382261520,
+      "tag": "0044_pgboss_queue",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1791382275692,
+      "tag": "0045_ops_grants",
+      "breakpoints": true
     }
   ]
 }

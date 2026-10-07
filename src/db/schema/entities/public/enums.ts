@@ -61,3 +61,13 @@ export const achievementComparatorEnum = pgEnum("achievement_comparator", [
   "GTE",
   "LTE",
 ])
+
+export const jobRunStatusEnum = pgEnum("job_run_status", [
+  "QUEUED",
+  "RUNNING",
+  "SUCCEEDED",
+  "FAILED",
+  "CANCELLED",
+])
+
+export const jobRunTriggerEnum = pgEnum("job_run_trigger", ["MANUAL", "SCHEDULE"])
