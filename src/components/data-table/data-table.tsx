@@ -128,7 +128,7 @@ export function DataTable<TData extends RowData>({
 					<Table className={sized ? "table-fixed" : undefined}>
 						<TableHeader>
 							{table.getHeaderGroups().map(headerGroup => (
-								<TableRow key={headerGroup.id} className="group/head bg-muted/50">
+								<TableRow key={headerGroup.id} className="bg-muted/50">
 									{headerGroup.headers.map(header => {
 										const meta = header.column.columnDef.meta;
 										const align = meta?.align ?? "left";
@@ -143,7 +143,7 @@ export function DataTable<TData extends RowData>({
 												style={sized ? { width: header.getSize() } : undefined}
 												className={cn(
 													"text-muted-foreground eyebrow h-auto whitespace-nowrap",
-													resizable && "relative",
+													resizable && "group/column relative",
 													sized && "overflow-hidden text-ellipsis",
 													cellPadding,
 													ALIGN_CLASS[align],
@@ -168,9 +168,10 @@ export function DataTable<TData extends RowData>({
 														onDoubleClick={() => table.resetColumnSizing(true)}
 														onKeyDown={event => resizeByKey(header, event)}
 														className={cn(
-															"focus-visible:bg-brand absolute inset-y-0 right-0 w-1.5 cursor-col-resize touch-none bg-transparent outline-none select-none",
-															"group-hover/head:bg-border hover:bg-brand/60!",
-															header.column.getIsResizing() && "bg-brand!"
+															"absolute inset-y-0 right-0 w-2 cursor-col-resize touch-none outline-none select-none",
+															"after:absolute after:inset-y-2 after:right-0 after:w-0.5 after:rounded-full after:bg-transparent",
+															"group-hover/column:after:bg-foreground/60 hover:after:bg-foreground focus-visible:after:bg-ring",
+															header.column.getIsResizing() && "after:bg-foreground!"
 														)}
 													/>
 												)}
