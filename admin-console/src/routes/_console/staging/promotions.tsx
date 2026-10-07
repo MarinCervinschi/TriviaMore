@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ComingSoon } from "~/components/coming-soon";
 import { ConsolePage } from "~/components/console-page";
 
-export const Route = createFileRoute("/staging/promotions")({
+export const Route = createFileRoute("/_console/staging/promotions")({
 	component: PromotionsPage,
 });
 

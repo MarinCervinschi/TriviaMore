@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ComingSoon } from "~/components/coming-soon";
 import { ConsolePage } from "~/components/console-page";
 
-export const Route = createFileRoute("/sources/catalog")({
+export const Route = createFileRoute("/_console/sources/catalog")({
 	component: CatalogPage,
 });
 

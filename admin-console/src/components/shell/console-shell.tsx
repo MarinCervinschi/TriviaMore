@@ -1,12 +1,15 @@
 import { type ReactNode, useState } from "react";
 
+import { Logout2Icon } from "@solar-icons/react/linear/logout-2";
 import { useRouterState } from "@tanstack/react-router";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { Button } from "@/components/ui/button";
 import { LogoIcon } from "@/components/ui/logo";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, itemOf, sectionOf } from "~/lib/nav";
 import { writeSectionSidebarOpen } from "~/lib/section-sidebar-state";
 
@@ -18,9 +21,11 @@ import { SectionSidebar } from "./section-sidebar";
 export function ConsoleShell({
 	children,
 	defaultSidebarOpen,
+	email,
 }: {
 	children: ReactNode;
 	defaultSidebarOpen: boolean;
+	email: string | null;
 }) {
 	const pathname = useRouterState({ select: state => state.location.pathname });
 	const section = sectionOf(pathname);
@@ -28,6 +33,7 @@ export function ConsoleShell({
 
 	const [sidebarOpen, setSidebarOpen] = useState(defaultSidebarOpen);
 	const [menuOpen, setMenuOpen] = useState(false);
+	const signOut = useSignOut();
 
 	const toggleSidebar = () => {
 		setSidebarOpen(open => {
@@ -38,7 +44,7 @@ export function ConsoleShell({
 
 	return (
 		<div className="bg-sidebar text-sidebar-foreground flex h-svh">
-			<Rail active={section} />
+			<Rail active={section} email={email} />
 
 			<div
 				id="main-content"
@@ -90,6 +96,15 @@ export function ConsoleShell({
 						<LogoIcon size={22} />
 						<SheetTitle className="flex-1 text-sm font-semibold">Console</SheetTitle>
 						<ThemeToggle className="size-8" />
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-8"
+							aria-label="Esci"
+							onClick={() => void signOut()}
+						>
+							<Logout2Icon className="size-4" />
+						</Button>
 					</div>
 					<div className="h-[calc(100%-3rem)] overflow-y-auto">
 						{NAV.map(entry => (

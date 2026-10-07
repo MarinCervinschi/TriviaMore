@@ -16,13 +16,14 @@ import { LogoIcon } from "@/components/ui/logo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, type NavSection } from "~/lib/nav";
 
 const RAIL_ITEM =
 	"focus-visible:ring-ring flex size-9 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2 motion-reduce:transition-none";
 
 /** The always-collapsed column of sections; a section's name shows on hover. */
-export function Rail({ active }: { active: NavSection }) {
+export function Rail({ active, email }: { active: NavSection; email: string | null }) {
 	return (
 		<aside className="hidden w-16 shrink-0 flex-col items-center gap-3 py-3 md:flex">
 			<Link
@@ -61,13 +62,15 @@ export function Rail({ active }: { active: NavSection }) {
 
 			<div className="flex flex-col items-center gap-1">
 				<ThemeToggle className="text-sidebar-foreground/70 size-9" />
-				<AccountMenu />
+				<AccountMenu email={email} />
 			</div>
 		</aside>
 	);
 }
 
-function AccountMenu() {
+function AccountMenu({ email }: { email: string | null }) {
+	const signOut = useSignOut();
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -80,11 +83,16 @@ function AccountMenu() {
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent side="right" align="end" className="w-48">
-				<DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
-					Proprietario della console
+				<DropdownMenuLabel className="font-normal">
+					<span className="block text-xs font-medium">Proprietario della console</span>
+					{email && (
+						<span className="text-muted-foreground block truncate text-xs">
+							{email}
+						</span>
+					)}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem disabled>
+				<DropdownMenuItem onSelect={() => void signOut()}>
 					<Logout2Icon className="size-4" />
 					Esci
 				</DropdownMenuItem>
