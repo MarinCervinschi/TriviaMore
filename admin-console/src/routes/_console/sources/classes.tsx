@@ -187,6 +187,7 @@ function ClassesPage() {
 		data: classes,
 		columns,
 		getRowId: row => row.id,
+		resizableColumns: true,
 		searchFn: (row, query) =>
 			row.name.toLowerCase().includes(query) ||
 			(row.code?.toLowerCase().includes(query) ?? false),
