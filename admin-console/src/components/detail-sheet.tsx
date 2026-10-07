@@ -27,6 +27,11 @@ export function DetailSheet({
 				<Dialog.Overlay className="bg-background/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50" />
 				<Dialog.Content
 					{...(!description && { "aria-describedby": undefined })}
+					// Focus lands on the panel, so opening it with the mouse does not ring the close button.
+					onOpenAutoFocus={event => {
+						event.preventDefault();
+						(event.currentTarget as HTMLElement).focus();
+					}}
 					className="bg-popover text-popover-foreground border-border/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right fixed inset-y-2 right-2 z-50 flex w-[calc(100%-1rem)] max-w-md flex-col rounded-2xl border shadow-lg duration-300 outline-none"
 				>
 					<div className="border-b px-5 pt-5 pr-12 pb-4">

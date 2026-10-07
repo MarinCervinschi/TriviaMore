@@ -21,3 +21,14 @@ export const formatNumber = (value: number) => NUMBER.format(value);
 
 export const formatPercent = (share: number | null) =>
 	share === null ? "—" : PERCENT.format(share);
+
+/** `1 min 30 s`, `45 s`, `—` while the end is unknown. */
+export function formatDuration(startIso: string | null, endIso: string | null): string {
+	if (!startIso || !endIso) return "—";
+	const seconds = Math.max(
+		0,
+		Math.round((Date.parse(endIso) - Date.parse(startIso)) / 1000)
+	);
+	const minutes = Math.floor(seconds / 60);
+	return minutes > 0 ? `${minutes} min ${seconds % 60} s` : `${seconds} s`;
+}
