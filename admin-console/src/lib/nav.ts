@@ -1,6 +1,7 @@
 import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
+import { CodeSquareIcon } from "@solar-icons/react/linear/code-square";
 import { DatabaseIcon } from "@solar-icons/react/linear/database";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
@@ -33,6 +34,8 @@ export type NavSection = {
 	/** The path every page of the section starts with. */
 	base: string;
 	groups: NavGroup[];
+	/** The page fills the panel and brings its own navigation, so the section sidebar is left out. */
+	fullBleed?: boolean;
 };
 
 export const NAV: NavSection[] = [
@@ -80,6 +83,19 @@ export const NAV: NavSection[] = [
 						badge: "Spike",
 					},
 				],
+			},
+		],
+	},
+	{
+		id: "apis",
+		label: "API delle fonti",
+		icon: CodeSquareIcon,
+		base: "/apis",
+		fullBleed: true,
+		groups: [
+			{
+				label: "API delle fonti",
+				items: [{ label: "API delle fonti", to: "/apis", icon: CodeSquareIcon }],
 			},
 		],
 	},

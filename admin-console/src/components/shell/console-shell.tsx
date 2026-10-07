@@ -58,34 +58,38 @@ export function ConsoleShell({
 				/>
 
 				<div className="relative flex min-h-0 flex-1">
-					<div
-						className={cn(
-							"border-border/50 hidden shrink-0 overflow-hidden transition-[width] duration-200 motion-reduce:transition-none md:block",
-							sidebarOpen ? "w-56 border-r" : "w-0"
-						)}
-					>
-						<div className="h-full w-56">
-							<SectionSidebar section={section} pathname={pathname} />
-						</div>
-					</div>
+					{!section.fullBleed && (
+						<>
+							<div
+								className={cn(
+									"border-border/50 hidden shrink-0 overflow-hidden transition-[width] duration-200 motion-reduce:transition-none md:block",
+									sidebarOpen ? "w-56 border-r" : "w-0"
+								)}
+							>
+								<div className="h-full w-56">
+									<SectionSidebar section={section} pathname={pathname} />
+								</div>
+							</div>
 
-					<button
-						type="button"
-						onClick={toggleSidebar}
-						aria-expanded={sidebarOpen}
-						aria-label={
-							sidebarOpen
-								? "Chiudi la barra della sezione"
-								: "Apri la barra della sezione"
-						}
-						className={cn(
-							"group focus-visible:ring-ring absolute top-1/2 z-10 hidden h-12 w-3 -translate-y-1/2 items-center justify-center rounded-full outline-none focus-visible:ring-2 md:flex",
-							"transition-[left] duration-200 motion-reduce:transition-none",
-							sidebarOpen ? "left-[calc(14rem-0.375rem)]" : "left-0.5"
-						)}
-					>
-						<span className="bg-border group-hover:bg-muted-foreground/60 h-8 w-1 rounded-full transition-colors motion-reduce:transition-none" />
-					</button>
+							<button
+								type="button"
+								onClick={toggleSidebar}
+								aria-expanded={sidebarOpen}
+								aria-label={
+									sidebarOpen
+										? "Chiudi la barra della sezione"
+										: "Apri la barra della sezione"
+								}
+								className={cn(
+									"group focus-visible:ring-ring absolute top-1/2 z-10 hidden h-12 w-3 -translate-y-1/2 items-center justify-center rounded-full outline-none focus-visible:ring-2 md:flex",
+									"transition-[left] duration-200 motion-reduce:transition-none",
+									sidebarOpen ? "left-[calc(14rem-0.375rem)]" : "left-0.5"
+								)}
+							>
+								<span className="bg-border group-hover:bg-muted-foreground/60 h-8 w-1 rounded-full transition-colors motion-reduce:transition-none" />
+							</button>
+						</>
+					)}
 
 					<main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
 				</div>
