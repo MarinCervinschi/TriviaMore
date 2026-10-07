@@ -126,10 +126,10 @@ function buildColumns(
 		}),
 		column.accessor(sheetOf, {
 			id: "sheet",
-			header: "Scheda",
+			header: "Anno scheda",
 			filterFn: "facet",
 			meta: {
-				label: "Scheda",
+				label: "Anno scheda",
 				align: "right",
 				facet: { options: sheets, icon: DocumentTextIcon },
 			},
