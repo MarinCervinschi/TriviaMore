@@ -2,6 +2,7 @@ import { RefreshIcon } from "@solar-icons/react/linear/refresh";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { InsetCard } from "@/components/ui/inset-card";
 
@@ -33,7 +34,7 @@ function ConnectionsPage() {
 					onClick={() => void refetch()}
 					disabled={isFetching}
 				>
-					<RefreshIcon className="size-4" />
+					{isFetching ? <Spinner /> : <RefreshIcon className="size-4" />}
 					{isFetching ? "Controllo…" : "Ricontrolla"}
 				</Button>
 			}

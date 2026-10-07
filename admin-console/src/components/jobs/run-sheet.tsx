@@ -1,6 +1,9 @@
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -66,13 +69,20 @@ export function RunSheet({
 					<>
 						<Button
 							size="sm"
-							variant="outline"
+							variant="ghost"
+							className="text-danger hover:text-danger mr-auto"
 							disabled={remove.isPending}
 							onClick={() => remove.mutate(run.id)}
 						>
+							{remove.isPending ? (
+								<Spinner />
+							) : (
+								<TrashBinMinimalisticIcon className="size-4" />
+							)}
 							Rimuovi dalla coda
 						</Button>
 						<Button size="sm" onClick={() => onEdit(run)}>
+							<Pen2Icon className="size-4" />
 							Modifica
 						</Button>
 					</>
