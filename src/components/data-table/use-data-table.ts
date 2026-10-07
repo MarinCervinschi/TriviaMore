@@ -45,6 +45,8 @@ export type UseDataTableOptions<
 	urlState?: DataTableUrlState<TSearch>;
 	manual?: { pageCount: number; rowCount: number };
 	extraResetKeys?: string[];
+	/** Lets the reader drag a header edge to set a column's width; off unless a table asks for it. */
+	resizableColumns?: boolean;
 };
 
 function columnIdOf(column: DataTableColumn<any>): string | undefined {
@@ -68,6 +70,7 @@ export function useDataTable<
 	urlState,
 	manual,
 	extraResetKeys,
+	resizableColumns = false,
 }: UseDataTableOptions<TData, TSearch>): DataTableInstance<TData> {
 	const [localSearch, setLocalSearch] = useState<SearchBag>({});
 	const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>(
@@ -194,6 +197,9 @@ export function useDataTable<
 		meta: { resetFilters },
 		// No unsorted step, because the URL cannot tell it apart from never sorted.
 		enableSortingRemoval: false,
+		enableColumnResizing: resizableColumns,
+		defaultColumn: { minSize: 48 },
+		columnResizeMode: "onChange",
 		manualPagination: Boolean(manual),
 		manualSorting: Boolean(manual),
 		manualFiltering: Boolean(manual),
