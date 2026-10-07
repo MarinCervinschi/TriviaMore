@@ -1,4 +1,4 @@
-import { ArrowRightUpIcon } from "@solar-icons/react/linear/arrow-right-up";
+import { SquareArrowRightUpIcon } from "@solar-icons/react/linear/square-arrow-right-up";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,8 @@ export function ClassSheet({
 				data?.syllabus?.catalogueUrl && (
 					<Button asChild size="sm" variant="outline">
 						<a href={data.syllabus.catalogueUrl} target="_blank" rel="noreferrer">
+							<SquareArrowRightUpIcon className="size-4" />
 							Scheda sul catalogo
-							<ArrowRightUpIcon className="size-4" />
 						</a>
 					</Button>
 				)

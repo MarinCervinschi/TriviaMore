@@ -3,7 +3,7 @@ import { type FormEvent, useState } from "react";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { GoogleIcon } from "@/components/icons";
+import { GoogleIcon, Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InsetCard } from "@/components/ui/inset-card";
@@ -119,6 +119,7 @@ function LoginPage() {
 					)}
 
 					<Button type="submit" className="w-full" disabled={pending}>
+						{pending && <Spinner />}
 						{pending ? "Accesso in corso…" : "Accedi"}
 					</Button>
 
@@ -135,7 +136,7 @@ function LoginPage() {
 						disabled={pending}
 						onClick={() => void signInWithGoogle()}
 					>
-						<GoogleIcon className="mr-2 size-4" />
+						<GoogleIcon className="size-4" />
 						Continua con Google
 					</Button>
 				</form>

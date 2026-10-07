@@ -1,4 +1,5 @@
-import { ArrowRightUpIcon } from "@solar-icons/react/linear/arrow-right-up";
+import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
+import { SquareArrowRightUpIcon } from "@solar-icons/react/linear/square-arrow-right-up";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
@@ -43,14 +44,15 @@ export function CourseSheet({
 						{data.catalogueUrl && (
 							<Button asChild size="sm" variant="outline">
 								<a href={data.catalogueUrl} target="_blank" rel="noreferrer">
+									<SquareArrowRightUpIcon className="size-4" />
 									Catalogo
-									<ArrowRightUpIcon className="size-4" />
 								</a>
 							</Button>
 						)}
 						<Button asChild size="sm">
 							<Link to="/sources/classes" search={{ course: data.code }}>
-								I suoi insegnamenti ({formatNumber(data.classes)})
+								<DocumentTextIcon className="size-4" />I suoi insegnamenti (
+								{formatNumber(data.classes)})
 							</Link>
 						</Button>
 					</>
