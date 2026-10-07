@@ -22,7 +22,7 @@ function ConsoleLayout() {
 	const { session } = Route.useRouteContext();
 
 	return (
-		<ConsoleShell defaultSidebarOpen={sidebarOpen} email={session.email}>
+		<ConsoleShell defaultSidebarOpen={sidebarOpen} account={session}>
 			<Outlet />
 		</ConsoleShell>
 	);

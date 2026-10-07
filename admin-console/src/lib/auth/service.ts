@@ -1,9 +1,14 @@
 import { getRequestUrl } from "@tanstack/react-start/server";
+import { eq } from "drizzle-orm";
 
+import { profiles } from "@/db/schema";
 import type { LoginInput } from "@/lib/auth/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+import { dbFor } from "~/lib/db/client";
+
 import type {
+	ConsoleAccount,
 	ConsoleSession,
 	GoogleSignInResult,
 	LoginResult,
@@ -29,6 +34,22 @@ export async function getConsoleSession(): Promise<ConsoleSession | null> {
 	} = await createServerSupabaseClient().auth.getUser();
 	if (error || !user || !ownerIds().has(user.id)) return null;
 	return { userId: user.id, email: user.email ?? null };
+}
+
+/** The owner with their profile, read from staging; a missing or unreachable profile still signs them in. */
+export async function getConsoleAccount(): Promise<ConsoleAccount | null> {
+	const session = await getConsoleSession();
+	if (!session) return null;
+	let profile: { name: string | null; image: string | null } | undefined;
+	try {
+		[profile] = await dbFor("staging")
+			.select({ name: profiles.name, image: profiles.image })
+			.from(profiles)
+			.where(eq(profiles.id, session.userId));
+	} catch {
+		profile = undefined;
+	}
+	return { ...session, name: profile?.name ?? null, image: profile?.image ?? null };
 }
 
 export async function login(input: LoginInput): Promise<LoginResult> {

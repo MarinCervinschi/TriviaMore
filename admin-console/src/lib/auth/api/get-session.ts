@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
-import { getConsoleSession } from "../service";
+import { getConsoleAccount } from "../service";
 
 export const getSessionFn = createServerFn({ method: "GET" }).handler(() =>
-	getConsoleSession()
+	getConsoleAccount()
 );

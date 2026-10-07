@@ -1,9 +1,8 @@
 import { Logout2Icon } from "@solar-icons/react/linear/logout-2";
-import { UserCircleIcon } from "@solar-icons/react/linear/user-circle";
 import { Link } from "@tanstack/react-router";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,8 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogoIcon } from "@/components/ui/logo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { getInitials } from "@/lib/user/utils";
 import { cn } from "@/lib/utils";
 
+import type { ConsoleAccount } from "~/lib/auth/types";
 import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, type NavSection } from "~/lib/nav";
 
@@ -23,7 +24,13 @@ const RAIL_ITEM =
 	"focus-visible:ring-ring flex size-9 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2 motion-reduce:transition-none";
 
 /** The always-collapsed column of sections; a section's name shows on hover. */
-export function Rail({ active, email }: { active: NavSection; email: string | null }) {
+export function Rail({
+	active,
+	account,
+}: {
+	active: NavSection;
+	account: ConsoleAccount;
+}) {
 	return (
 		<aside className="hidden w-16 shrink-0 flex-col items-center gap-3 py-3 md:flex">
 			<Link
@@ -62,32 +69,35 @@ export function Rail({ active, email }: { active: NavSection; email: string | nu
 
 			<div className="flex flex-col items-center gap-1">
 				<ThemeToggle className="text-sidebar-foreground/70 size-9" />
-				<AccountMenu email={email} />
+				<AccountMenu account={account} />
 			</div>
 		</aside>
 	);
 }
 
-function AccountMenu({ email }: { email: string | null }) {
+function AccountMenu({ account }: { account: ConsoleAccount }) {
 	const signOut = useSignOut();
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<button type="button" aria-label="Account" className={RAIL_ITEM}>
-					<Avatar className="size-7">
-						<AvatarFallback>
-							<UserCircleIcon className="text-sidebar-foreground/70 size-4" />
+					<Avatar className="size-8 rounded-lg">
+						<AvatarImage src={account.image ?? undefined} alt="" />
+						<AvatarFallback className="bg-primary/10 text-brand text-2xs rounded-lg font-semibold">
+							{getInitials(account)}
 						</AvatarFallback>
 					</Avatar>
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent side="right" align="end" className="w-48">
 				<DropdownMenuLabel className="font-normal">
-					<span className="block text-xs font-medium">Proprietario della console</span>
-					{email && (
+					<span className="block truncate text-xs font-medium">
+						{account.name ?? "Proprietario della console"}
+					</span>
+					{account.email && (
 						<span className="text-muted-foreground block truncate text-xs">
-							{email}
+							{account.email}
 						</span>
 					)}
 				</DropdownMenuLabel>
