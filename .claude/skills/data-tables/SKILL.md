@@ -150,6 +150,14 @@ replaces the default with a row-level predicate. `query` arrives lowercased and 
 `string[]`, keep `filterFn: "facet"` — it matches when any value is selected — and add
 `getUniqueValues: row => row.departments` so the popover counts each value, not each combination.
 
+**Resizable columns** are opt-in: `useDataTable({ …, resizableColumns: true })`. Each header gets a
+handle on its right edge — drag it, or focus it and use the arrow keys; a double click restores
+every width. Until the first resize the table keeps its automatic layout; that first drag freezes every
+column at the width it renders at, switches to `table-fixed` and adds an empty filler column that
+takes the leftover space. Set `enableResizing: false` on a column that should not move (an actions
+column) and `minSize` where 48px is too narrow. Widths stay local and are lost on reload, like column
+visibility.
+
 **A table with no pagination** (a short, complete list): `showPagination={false}` and
 `pageSize: Math.max(rows.length, 1)`. The `max` matters — a page size of 0 breaks the row model.
 

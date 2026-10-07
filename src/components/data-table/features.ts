@@ -1,6 +1,8 @@
 import {
 	columnFacetingFeature,
 	columnFilteringFeature,
+	columnResizingFeature,
+	columnSizingFeature,
 	columnVisibilityFeature,
 	createColumnHelper,
 	createFacetedRowModel,
@@ -51,6 +53,8 @@ export type DataTableMeta = {
 export const dataTableFeatures = tableFeatures({
 	columnFacetingFeature,
 	columnFilteringFeature,
+	columnResizingFeature,
+	columnSizingFeature,
 	columnVisibilityFeature,
 	globalFilteringFeature,
 	rowPaginationFeature,
