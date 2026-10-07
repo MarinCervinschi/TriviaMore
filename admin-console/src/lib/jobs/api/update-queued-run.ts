@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireOwner } from "~/lib/auth/service";
 
-import { updateQueuedRun } from "../service";
+import { updateQueuedRun } from "../service/runs";
 
 export const updateQueuedRunFn = createServerFn({ method: "POST" })
 	.inputValidator(

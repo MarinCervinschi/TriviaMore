@@ -1,7 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getRunFn, getWorkerStatusFn, listJobsFn, listRunsFn } from "./api";
-import type { JobRun } from "./types";
+import {
+	getRunFn,
+	getSchedulerOverviewFn,
+	getWorkerStatusFn,
+	listJobsFn,
+	listRunsFn,
+	previewCronFn,
+} from "./api";
+import type { JobRun, TimelineWindow } from "./types";
 
 const ACTIVE_REFRESH_MS = 3000;
 const IDLE_REFRESH_MS = 30_000;
@@ -30,6 +37,18 @@ export const jobQueries = {
 		queryOptions({
 			queryKey: ["jobs", "worker"],
 			queryFn: () => getWorkerStatusFn(),
+			refetchInterval: IDLE_REFRESH_MS,
+		}),
+	preview: (cron: string) =>
+		queryOptions({
+			queryKey: ["jobs", "cron-preview", cron],
+			queryFn: () => previewCronFn({ data: { cron } }),
+			staleTime: 60_000,
+		}),
+	overview: (window: TimelineWindow) =>
+		queryOptions({
+			queryKey: ["jobs", "schedules", "overview", window],
+			queryFn: () => getSchedulerOverviewFn({ data: { window } }),
 			refetchInterval: IDLE_REFRESH_MS,
 		}),
 };

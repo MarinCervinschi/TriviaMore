@@ -23,7 +23,7 @@ import { ConsolePage } from "~/components/console-page";
 import { RunSheet } from "~/components/jobs/run-sheet";
 import { RUN_STATUS, RunStatusBadge } from "~/components/jobs/run-status-badge";
 import { StartJobSheet } from "~/components/jobs/start-job-sheet";
-import { WorkerStatusLine } from "~/components/jobs/worker-status";
+import { WorkerBar } from "~/components/jobs/worker-status";
 import { formatDateTime, formatDuration } from "~/lib/format";
 import { jobQueries } from "~/lib/jobs/queries";
 import type { JobRun } from "~/lib/jobs/types";
@@ -157,7 +157,7 @@ function RunsPage() {
 				</Button>
 			}
 		>
-			<WorkerStatusLine />
+			<WorkerBar />
 
 			<DataTable
 				table={table}

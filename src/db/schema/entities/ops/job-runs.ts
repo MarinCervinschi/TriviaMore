@@ -18,6 +18,8 @@ export const jobRuns = opsSchema
 			status: jobRunStatusEnum().default("QUEUED").notNull(),
 			trigger: jobRunTriggerEnum().default("MANUAL").notNull(),
 			requestedBy: uuid("requested_by"),
+			/** The pg-boss schedule key, for a run a schedule started. */
+			scheduleKey: text("schedule_key"),
 			queueJobId: uuid("queue_job_id"),
 			summary: jsonb().$type<Record<string, number | string>>(),
 			error: text(),

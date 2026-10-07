@@ -5,6 +5,7 @@ import { flush } from "@/lib/logging/shipper";
 
 import { QUEUE_OPTIONS, type QueuedRun } from "~/lib/jobs/queue";
 import { JOBS } from "~/lib/jobs/registry";
+import { syncSchedules } from "~/lib/jobs/service/schedules";
 
 import { abandonRuns } from "./abandon";
 import { inFlight, runQueuedJob } from "./run";
@@ -33,7 +34,12 @@ for (const job of JOBS) {
 		}
 	);
 }
-log.info("Worker started with {JobCount} jobs", { JobCount: JOBS.length });
+const synced = await syncSchedules();
+log.info("Worker started with {JobCount} jobs and {ScheduleCount} active schedules", {
+	JobCount: JOBS.length,
+	ScheduleCount: synced.activated,
+	StraySchedules: synced.removed,
+});
 
 async function shutdown(signal: string) {
 	log.info("Worker stopping on {Signal}", { Signal: signal });

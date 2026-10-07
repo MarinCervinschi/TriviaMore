@@ -3,12 +3,14 @@ import { z } from "zod";
 
 import { requireOwner } from "~/lib/auth/service";
 
-import { startJob } from "../service/runs";
+import { saveSchedule } from "../service/schedules";
 
-export const startJobFn = createServerFn({ method: "POST" })
+export const saveScheduleFn = createServerFn({ method: "POST" })
 	.inputValidator(
 		z.object({
+			key: z.string().uuid().optional(),
 			job: z.string(),
+			cron: z.string().max(200),
 			params: z.record(
 				z.string(),
 				z.union([z.string(), z.number(), z.boolean(), z.null()])
@@ -18,5 +20,5 @@ export const startJobFn = createServerFn({ method: "POST" })
 	)
 	.handler(async ({ data }) => {
 		const owner = await requireOwner();
-		return startJob(data, owner.userId);
+		return saveSchedule(data, owner.userId);
 	});

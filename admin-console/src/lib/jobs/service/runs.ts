@@ -4,8 +4,8 @@ import { jobRuns } from "@/db/schema";
 
 import { dbFor } from "~/lib/db/client";
 
-import { queueSender } from "./queue";
-import { JOBS, jobByName } from "./registry";
+import { queueSender } from "../queue";
+import { JOBS, jobByName } from "../registry";
 import type {
 	JobInfo,
 	JobParams,
@@ -13,7 +13,7 @@ import type {
 	RunChangeResult,
 	StartJobResult,
 	WorkerStatus,
-} from "./types";
+} from "../types";
 
 const ALREADY_STARTED = "L'esecuzione è già partita: non si può più cambiare.";
 

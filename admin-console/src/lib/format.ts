@@ -32,3 +32,15 @@ export function formatDuration(startIso: string | null, endIso: string | null): 
 	const minutes = Math.floor(seconds / 60);
 	return minutes > 0 ? `${minutes} min ${seconds % 60} s` : `${seconds} s`;
 }
+
+/** `tra 5 min`, `tra 3 h`, `tra 2 g`, measured from `nowIso` so the server and the browser agree. */
+export function formatRelativeFuture(nowIso: string, atIso: string): string {
+	const minutes = Math.max(
+		0,
+		Math.round((Date.parse(atIso) - Date.parse(nowIso)) / 60_000)
+	);
+	if (minutes < 60) return `tra ${minutes} min`;
+	const hours = Math.round(minutes / 60);
+	if (hours < 48) return `tra ${hours} h`;
+	return `tra ${Math.round(hours / 24)} g`;
+}
