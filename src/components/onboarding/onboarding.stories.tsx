@@ -277,7 +277,8 @@ const ENROLLMENT = {
 	departmentId: "fim",
 	departmentName: "Dipartimento di Scienze Fisiche, Informatiche e Matematiche",
 	departmentCode: "FIM",
-	curriculum: null,
+	curriculumId: null,
+	curriculumName: null,
 	startYear: null,
 };
 

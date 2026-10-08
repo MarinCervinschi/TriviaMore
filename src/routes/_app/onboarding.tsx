@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { BranchingPathsUpIcon } from "@solar-icons/react/linear/branching-paths-up";
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
 import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
@@ -10,6 +11,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { getInitials } from "@/components/layout/nav-items";
 import { AvatarChooser } from "@/components/onboarding/avatar-chooser";
 import { type CourseOption, CoursePicker } from "@/components/onboarding/course-picker";
+import { CurriculumSelect } from "@/components/onboarding/curriculum-select";
 import { OnboardingPicker } from "@/components/onboarding/onboarding-picker";
 import { OnboardingRecap } from "@/components/onboarding/onboarding-recap";
 import type { OnboardingStep } from "@/components/onboarding/onboarding-steps";
@@ -26,6 +28,7 @@ import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
 import { academicYearOf, formatAcademicYear } from "@/lib/catalog/academic-year";
 import { useSetEnrollment } from "@/lib/crm/mutations";
+import { crmQueries } from "@/lib/crm/queries";
 import { requireLegalAcceptanceFn } from "@/lib/legal/api";
 import { seoHead } from "@/lib/seo";
 import { useUpdateProfile } from "@/lib/user/mutations";
@@ -73,6 +76,7 @@ function OnboardingPage() {
 	const [departmentId, setDepartmentId] = useState<string | null>(null);
 	const [courseId, setCourseId] = useState<string | null>(null);
 	const [startYear, setStartYear] = useState(() => academicYearOf(new Date()));
+	const [curriculumId, setCurriculumId] = useState<string | null>(null);
 	const [name, setName] = useState(user?.name ?? "");
 	const [page, setPage] = useState(0);
 	const [seed, setSeed] = useState<string | null>(null);
@@ -82,6 +86,11 @@ function OnboardingPage() {
 		enabled: departmentId !== null,
 	});
 	const choices = useQuery(avatarQueries.choices(page));
+	const curriculumOptions =
+		useQuery({
+			...crmQueries.curriculumOptions(courseId ?? "", startYear),
+			enabled: courseId !== null,
+		}).data ?? [];
 
 	const setEnrollment = useSetEnrollment();
 	const updateProfile = useUpdateProfile();
@@ -117,7 +126,7 @@ function OnboardingPage() {
 		if (!courseId) return;
 
 		try {
-			await setEnrollment.mutateAsync({ courseId, startYear });
+			await setEnrollment.mutateAsync({ courseId, startYear, curriculumId });
 			await updateProfile.mutateAsync({ name: name.trim() });
 			if (seed) await setGeneratedAvatar.mutateAsync(seed);
 		} catch {
@@ -165,16 +174,38 @@ function OnboardingPage() {
 
 					{step === 1 && (
 						<div className="flex flex-col gap-4">
-							<CoursePicker options={courses} value={courseId} onSelect={setCourseId} />
+							<CoursePicker
+								options={courses}
+								value={courseId}
+								onSelect={id => {
+									setCourseId(id);
+									setCurriculumId(null);
+								}}
+							/>
 							<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
 								<Label htmlFor="start-year">Anno di immatricolazione</Label>
 								<StartYearSelect
 									id="start-year"
 									value={startYear}
-									onChange={setStartYear}
+									onChange={year => {
+										setStartYear(year);
+										setCurriculumId(null);
+									}}
 									className="w-36"
 								/>
 							</div>
+							{curriculumOptions.length > 0 && (
+								<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+									<Label htmlFor="curriculum">Curriculum</Label>
+									<CurriculumSelect
+										id="curriculum"
+										options={curriculumOptions}
+										value={curriculumId}
+										onChange={setCurriculumId}
+										className="w-56"
+									/>
+								</div>
+							)}
 						</div>
 					)}
 
@@ -204,6 +235,18 @@ function OnboardingPage() {
 										value: formatAcademicYear(startYear),
 										onEdit: () => go(1),
 									},
+									...(curriculumOptions.length > 0
+										? [
+												{
+													label: "Curriculum",
+													icon: BranchingPathsUpIcon,
+													value:
+														curriculumOptions.find(option => option.id === curriculumId)
+															?.name ?? null,
+													onEdit: () => go(1),
+												},
+											]
+										: []),
 									{
 										label: "Tipo",
 										icon: LayersIcon,

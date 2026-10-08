@@ -41,7 +41,7 @@ export async function setEnrollmentCurrent(
 export async function updateEnrollmentDetails(
 	db: DbOrTx,
 	id: string,
-	values: { curriculum?: string | null; startYear?: number | null }
+	values: { curriculumId?: string | null; startYear?: number | null }
 ): Promise<void> {
 	// The patch is often empty, and Drizzle throws "No values to set" on an empty `.set()`.
 	const patch = Object.fromEntries(
@@ -57,9 +57,17 @@ export async function insertEnrollment(
 	values: {
 		userId: string;
 		courseId: string;
-		curriculum?: string | null;
+		curriculumId?: string | null;
 		startYear?: number | null;
 	}
 ): Promise<void> {
 	await db.insert(enrollments).values(values);
+}
+
+export async function updateEnrollmentSettings(
+	db: DbOrTx,
+	id: string,
+	careerSettings: Record<string, number>
+): Promise<void> {
+	await db.update(enrollments).set({ careerSettings }).where(eq(enrollments.id, id));
 }

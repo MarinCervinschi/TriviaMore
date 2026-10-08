@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/server/middleware/auth";
 
 import { setEnrollmentSchema } from "../schemas";
-import { setEnrollment } from "../service";
+import { setEnrollment } from "../service/enrollment";
 
 export const setEnrollmentFn = createServerFn({ method: "POST" })
 	.middleware([authMiddleware])
