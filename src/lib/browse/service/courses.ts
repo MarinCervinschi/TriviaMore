@@ -15,6 +15,7 @@ import { academicYearOf } from "@/lib/catalog/academic-year";
 import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import { listCohorts, listCurricula } from "@/lib/catalog/db/course-curricula";
 import { findEnrollmentByCourse } from "@/lib/crm/db/enrollments";
 
 import { buildPlanView, pickCohort } from "../plan-view";
@@ -43,14 +44,10 @@ export async function getCourseWithClasses(
 
 	const db = getDb();
 	const courseId = resolved.course.id;
-	const [cohortRows, enrollment] = await Promise.all([
-		db
-			.selectDistinct({ cohort: courseCurricula.cohort })
-			.from(courseCurricula)
-			.where(eq(courseCurricula.courseId, courseId)),
+	const [cohorts, enrollment] = await Promise.all([
+		listCohorts(db, courseId),
 		userId ? findEnrollmentByCourse(db, userId, courseId) : undefined,
 	]);
-	const cohorts = cohortRows.map(row => row.cohort).sort((a, b) => b - a);
 	const cohort = pickCohort(cohorts, {
 		requested: requestedCohort,
 		enrolled: enrollment?.isCurrent ? enrollment.startYear : null,
@@ -74,17 +71,7 @@ export async function getCourseWithClasses(
 			)
 	);
 	const [curricula, rows] = await Promise.all([
-		db
-			.select({
-				code: courseCurricula.code,
-				name: courseCurricula.name,
-				common: courseCurricula.common,
-			})
-			.from(courseCurricula)
-			.where(
-				and(eq(courseCurricula.courseId, courseId), eq(courseCurricula.cohort, cohort))
-			)
-			.orderBy(asc(courseCurricula.code)),
+		listCurricula(db, courseId, cohort),
 		db
 			.select({
 				code: coursePlans.code,
