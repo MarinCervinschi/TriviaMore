@@ -22,7 +22,10 @@ import {
 	getPlatformStats,
 } from "../../src/lib/browse/service/overview.ts";
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts";
-import { getCurrentEnrollment, hasEnrollment } from "../../src/lib/crm/service.ts";
+import {
+	getCurrentEnrollment,
+	hasEnrollment,
+} from "../../src/lib/crm/service/enrollment.ts";
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts";
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts";
 import {

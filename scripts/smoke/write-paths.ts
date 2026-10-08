@@ -313,7 +313,7 @@ try {
 			let emptyPatchThrew = false;
 			try {
 				await updateEnrollmentDetails(tx, back!.id, {
-					curriculum: undefined,
+					curriculumId: undefined,
 					startYear: undefined,
 				});
 			} catch {

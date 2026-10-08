@@ -1,3 +1,10 @@
+export { addCareerExamFn } from "./add-career-exam";
+export { getCareerFn } from "./get-career";
 export { getCurrentEnrollmentFn } from "./get-current-enrollment";
+export { getCurriculumOptionsFn } from "./get-curriculum-options";
+export { prefillCareerFn } from "./prefill-career";
+export { removeCareerExamFn } from "./remove-career-exam";
 export { requireEnrollmentFn } from "./require-enrollment";
 export { setEnrollmentFn } from "./set-enrollment";
+export { updateCareerExamFn } from "./update-career-exam";
+export { updateCareerSettingsFn } from "./update-career-settings";

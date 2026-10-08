@@ -2,6 +2,7 @@ import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
+import { CurriculumSelect } from "@/components/onboarding/curriculum-select";
 import { StartYearSelect } from "@/components/onboarding/start-year-select";
 import { Button } from "@/components/ui/button";
 import { IconTile } from "@/components/ui/icon-tile";
@@ -14,6 +15,14 @@ import { crmQueries } from "@/lib/crm/queries";
 export function EnrollmentCard() {
 	const { data: enrollment, isPending } = useQuery(crmQueries.currentEnrollment());
 	const setEnrollment = useSetEnrollment();
+	const curriculumOptions =
+		useQuery({
+			...crmQueries.curriculumOptions(
+				enrollment?.courseId ?? "",
+				enrollment?.startYear ?? 0
+			),
+			enabled: Boolean(enrollment?.courseId && enrollment.startYear),
+		}).data ?? [];
 
 	return (
 		<InsetCard texture="top" textureAlpha={0.12}>
@@ -72,6 +81,27 @@ export function EnrollmentCard() {
 							}
 							disabled={setEnrollment.isPending}
 							className="w-36"
+						/>
+					</div>
+				)}
+
+				{enrollment && curriculumOptions.length > 0 && (
+					<div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t pt-5">
+						<div>
+							<Label htmlFor="enrollment-curriculum">Curriculum</Label>
+							<p className="text-muted-foreground text-sm">
+								Decide gli insegnamenti del tuo piano oltre al tronco comune
+							</p>
+						</div>
+						<CurriculumSelect
+							id="enrollment-curriculum"
+							options={curriculumOptions}
+							value={enrollment.curriculumId}
+							onChange={curriculumId =>
+								setEnrollment.mutate({ courseId: enrollment.courseId, curriculumId })
+							}
+							disabled={setEnrollment.isPending}
+							className="w-56"
 						/>
 					</div>
 				)}

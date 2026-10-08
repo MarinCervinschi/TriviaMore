@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { authMiddleware } from "@/lib/server/middleware/auth";
 
-import { getCurrentEnrollment } from "../service";
+import { getCurrentEnrollment } from "../service/enrollment";
 
 export const getCurrentEnrollmentFn = createServerFn({ method: "GET" })
 	.middleware([authMiddleware])

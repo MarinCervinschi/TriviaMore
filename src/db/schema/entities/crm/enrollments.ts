@@ -4,13 +4,14 @@ import {
 	foreignKey,
 	index,
 	integer,
-	text,
+	jsonb,
 	timestamp,
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
 import { crmSchema } from "../../common";
+import { courseCurricula } from "../catalog/course-curricula";
 import { courses } from "../catalog/courses";
 import { profiles } from "../public/profiles";
 
@@ -22,8 +23,14 @@ export const enrollments = crmSchema
 			id: uuid().defaultRandom().primaryKey().notNull(),
 			userId: uuid("user_id").notNull(),
 			courseId: uuid("course_id").notNull(),
-			curriculum: text(),
+			/** The curriculum of the enrolment's cohort, from the official plan. */
+			curriculumId: uuid("curriculum_id"),
 			startYear: integer("start_year"),
+			/** The grading rules and the committee's points, validated by `careerSettingsSchema`. */
+			careerSettings: jsonb("career_settings")
+				.$type<Record<string, number>>()
+				.default({})
+				.notNull(),
 			isCurrent: boolean("is_current").default(true).notNull(),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
@@ -51,6 +58,11 @@ export const enrollments = crmSchema
 				foreignColumns: [courses.id],
 				name: "enrollments_course_id_fkey",
 			}).onDelete("restrict"),
+			foreignKey({
+				columns: [table.curriculumId],
+				foreignColumns: [courseCurricula.id],
+				name: "enrollments_curriculum_id_fkey",
+			}).onDelete("set null"),
 		]
 	)
 	.enableRLS();

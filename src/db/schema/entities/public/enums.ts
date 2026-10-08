@@ -71,3 +71,9 @@ export const jobRunStatusEnum = pgEnum("job_run_status", [
 ])
 
 export const jobRunTriggerEnum = pgEnum("job_run_trigger", ["MANUAL", "SCHEDULE"])
+
+export const careerExamStatusEnum = pgEnum("career_exam_status", [
+  "PLANNED",
+  "PASSED",
+  "REJECTED",
+])
