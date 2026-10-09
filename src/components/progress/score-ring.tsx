@@ -8,14 +8,20 @@ const MAX_SCORE = 33;
 
 export function ScoreRing({
 	score,
+	label,
+	max = MAX_SCORE,
 	size = 36,
 	className,
 }: {
 	score: number;
+	/** Where the ring closes; the quiz scale by default. */
+	max?: number;
+	/** Defaults to the rounded score. */
+	label?: string;
 	size?: number;
 	className?: string;
 }) {
-	const share = Math.max(0, Math.min(1, score / MAX_SCORE));
+	const share = Math.max(0, Math.min(1, score / max));
 	const filled = Math.round(share * CIRCUMFERENCE * 100) / 100;
 
 	return (
@@ -43,8 +49,8 @@ export function ScoreRing({
 					strokeDasharray={`${filled} ${CIRCUMFERENCE}`}
 				/>
 			</svg>
-			<span className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums">
-				{Math.round(score)}
+			<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold tabular-nums">
+				{label ?? Math.round(score)}
 			</span>
 		</span>
 	);
