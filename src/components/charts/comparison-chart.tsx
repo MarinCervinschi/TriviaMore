@@ -30,6 +30,8 @@ export type ComparisonChartProps<TDatum> = Omit<ChartCardProps, "children"> & {
 	showTrack?: boolean;
 	categoryWidth?: number;
 	valueFormatter?: (value: number) => string;
+	/** For counts: the value axis never shows a fraction. */
+	wholeValues?: boolean;
 	emptyMessage?: string;
 };
 
@@ -47,6 +49,7 @@ export function ComparisonChart<TDatum>({
 	showTrack = true,
 	categoryWidth = 130,
 	valueFormatter,
+	wholeValues = false,
 	emptyMessage,
 	...card
 }: ComparisonChartProps<TDatum>) {
@@ -66,6 +69,7 @@ export function ComparisonChart<TDatum>({
 			axisLine={false}
 			tickMargin={10}
 			tickFormatter={isHorizontal ? valueFormatter : undefined}
+			allowDecimals={isHorizontal ? !wholeValues : undefined}
 		/>
 	);
 
@@ -78,6 +82,7 @@ export function ComparisonChart<TDatum>({
 			axisLine={false}
 			width={isHorizontal ? categoryWidth : 40}
 			tickFormatter={isHorizontal ? undefined : valueFormatter}
+			allowDecimals={isHorizontal ? undefined : !wholeValues}
 		/>
 	);
 
