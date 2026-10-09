@@ -1,6 +1,7 @@
 import { BookIcon } from "@solar-icons/react/linear/book";
 import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
 import { CompassIcon } from "@solar-icons/react/linear/compass";
 import { ConfettiIcon } from "@solar-icons/react/linear/confetti";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
@@ -15,9 +16,11 @@ import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { LibraryIcon } from "@solar-icons/react/linear/library";
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { MedalRibbonStarIcon } from "@solar-icons/react/linear/medal-ribbon-star";
+import { NotebookIcon } from "@solar-icons/react/linear/notebook";
 import { QuestionSquareIcon } from "@solar-icons/react/linear/question-square";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
+import { TargetIcon } from "@solar-icons/react/linear/target";
 import { UserIcon } from "@solar-icons/react/linear/user";
 import { UsersGroupRoundedIcon } from "@solar-icons/react/linear/users-group-rounded";
 import { isMatch, useMatches } from "@tanstack/react-router";
@@ -64,6 +67,7 @@ const ANALYTICS: Crumb = {
 	to: "/user/analytics",
 	icon: GraphUpIcon,
 };
+const CAREER: Crumb = { label: "Carriera", to: "/user/career", icon: NotebookIcon };
 const BROWSE: Crumb = { label: "Esplora", to: "/browse", icon: CompassIcon };
 const ADMIN: Crumb = { label: "Gestione", to: "/admin", icon: ShieldIcon };
 const ADMIN_DEPARTMENTS: Crumb = {
@@ -186,6 +190,18 @@ const CRUMBS: Record<string, CrumbDef> = {
 	},
 	"/_app/user/notifications": { label: "Notifiche", icon: InboxIcon },
 	"/_app/user/settings": { label: "Impostazioni", icon: SettingsIcon },
+
+	"/_app/user/career/": { label: "Carriera", icon: NotebookIcon },
+	"/_app/user/career/exams": {
+		label: "Libretto",
+		icon: ChecklistMinimalisticIcon,
+		parents: [CAREER],
+	},
+	"/_app/user/career/forecast": {
+		label: "Previsione",
+		icon: TargetIcon,
+		parents: [CAREER],
+	},
 
 	"/_app/user/analytics/": { label: "Analytics", icon: GraphUpIcon },
 	"/_app/user/analytics/courses": {
