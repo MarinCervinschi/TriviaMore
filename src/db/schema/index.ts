@@ -46,6 +46,9 @@ export * from "./entities/internal/relations";
 
 export * from "./entities/crm/enrollments";
 export * from "./entities/crm/career-exams";
+export * from "./entities/crm/exam-sittings";
+export * from "./entities/crm/calendar-events";
+export * from "./entities/crm/tasks";
 export * from "./entities/crm/relations";
 
 export * from "./entities/ops/job-runs";

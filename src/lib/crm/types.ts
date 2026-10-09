@@ -1,6 +1,6 @@
-import type { careerExams, courses, enrollments } from "@/db/schema";
+import type { careerExams, courses, enrollments, examSittings } from "@/db/schema";
 
-import type { CareerSettings } from "./schemas";
+import type { CareerSettings, EntryColor } from "./schemas";
 
 export type Enrollment = typeof enrollments.$inferSelect;
 export type NewEnrollment = typeof enrollments.$inferInsert;
@@ -67,4 +67,64 @@ export interface Career {
 	settings: CareerSettings;
 	/** False until the student saves the rules once; until then they are the defaults. */
 	settingsSaved: boolean;
+}
+
+export type ExamSitting = typeof examSittings.$inferSelect;
+
+/** An appello with the exam it belongs to, as the calendar draws it. */
+export interface CalendarSitting {
+	id: string;
+	examId: string;
+	examName: string;
+	examPassed: boolean;
+	date: string;
+	label: string | null;
+	importance: number;
+	chosen: boolean;
+}
+
+/** A personal event; times are "HH:MM". */
+export interface CalendarPersonalEvent {
+	id: string;
+	title: string;
+	date: string;
+	/** Inclusive, for an event on more than one day. */
+	endDate: string | null;
+	startTime: string | null;
+	endTime: string | null;
+	notes: string | null;
+	/** An RFC 5545 rule, without the "RRULE:" prefix. */
+	recurrence: string | null;
+	color: EntryColor | null;
+	examId: string | null;
+	examName: string | null;
+}
+
+/** An exam of the record that an appello, an event or a task can point to. */
+export interface CalendarExamOption {
+	id: string;
+	name: string;
+	cfu: number;
+	passed: boolean;
+}
+
+/** A to-do on a day of the calendar. Times are "HH:MM". */
+export interface CalendarTask {
+	id: string;
+	title: string;
+	notes: string | null;
+	dueDate: string;
+	dueTime: string | null;
+	endTime: string | null;
+	done: boolean;
+	color: EntryColor | null;
+	examId: string | null;
+	examName: string | null;
+}
+
+export interface CalendarData {
+	sittings: CalendarSitting[];
+	events: CalendarPersonalEvent[];
+	tasks: CalendarTask[];
+	exams: CalendarExamOption[];
 }

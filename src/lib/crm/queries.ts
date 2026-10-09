@@ -2,7 +2,12 @@ import { queryOptions } from "@tanstack/react-query";
 
 import { STALE_TIME } from "@/lib/shared/cache";
 
-import { getCareerFn, getCurrentEnrollmentFn, getCurriculumOptionsFn } from "./api";
+import {
+	getCalendarFn,
+	getCareerFn,
+	getCurrentEnrollmentFn,
+	getCurriculumOptionsFn,
+} from "./api";
 
 export const crmQueries = {
 	currentEnrollment: () =>
@@ -21,6 +26,12 @@ export const crmQueries = {
 		queryOptions({
 			queryKey: ["crm", "career"],
 			queryFn: () => getCareerFn(),
+			staleTime: STALE_TIME.STANDARD,
+		}),
+	calendar: () =>
+		queryOptions({
+			queryKey: ["crm", "calendar"],
+			queryFn: () => getCalendarFn(),
 			staleTime: STALE_TIME.STANDARD,
 		}),
 };

@@ -81,8 +81,110 @@ export const setCareerChoicesSchema = z.object({
 		.max(100),
 });
 
-export const careerExamIdSchema = z.object({ id: z.string().uuid() });
+export const idSchema = z.object({ id: z.string().uuid() });
 
 export type AddCareerExamInput = z.infer<typeof addCareerExamSchema>;
 export type UpdateCareerExamInput = z.infer<typeof updateCareerExamSchema>;
 export type SetCareerChoicesInput = z.infer<typeof setCareerChoicesSchema>;
+
+const isoDay = z.string().date();
+const clock = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Orario non valido");
+
+export const createSittingSchema = z.object({
+	examId: z.string().uuid(),
+	date: isoDay,
+	label: z.string().trim().max(40).nullable().optional(),
+	importance: z.number().int().min(1).max(3).default(2),
+	chosen: z.boolean().default(false),
+});
+
+export const updateSittingSchema = z.object({
+	id: z.string().uuid(),
+	date: isoDay.optional(),
+	label: z.string().trim().max(40).nullable().optional(),
+	importance: z.number().int().min(1).max(3).optional(),
+	chosen: z.boolean().optional(),
+});
+
+export const ENTRY_COLORS = [
+	"chart-1",
+	"chart-2",
+	"chart-3",
+	"chart-4",
+	"chart-5",
+] as const;
+export type EntryColor = (typeof ENTRY_COLORS)[number];
+
+const color = z.enum(ENTRY_COLORS).nullable().optional();
+
+const eventFields = {
+	title: z.string().trim().min(1).max(120),
+	date: isoDay,
+	endDate: isoDay.nullable().optional(),
+	startTime: clock.nullable().optional(),
+	endTime: clock.nullable().optional(),
+	notes: z.string().trim().max(2000).nullable().optional(),
+	examId: z.string().uuid().nullable().optional(),
+	color,
+	recurrence: z
+		.string()
+		.regex(
+			/^FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)(;[A-Z]+=[A-Z0-9,+-]+)*$/,
+			"Ripetizione non valida"
+		)
+		.max(200)
+		.nullable()
+		.optional(),
+};
+
+const timesInOrder = (value: {
+	date?: string;
+	endDate?: string | null;
+	startTime?: string | null;
+	endTime?: string | null;
+}) => {
+	if (value.endDate && value.date && value.endDate <= value.date) return false;
+	if (!value.endTime) return true;
+	return (
+		Boolean(value.startTime) &&
+		(Boolean(value.endDate) || value.endTime > value.startTime!)
+	);
+};
+
+export const createEventSchema = z
+	.object(eventFields)
+	.refine(timesInOrder, "La fine viene prima dell'inizio");
+
+export const updateEventSchema = z
+	.object({ id: z.string().uuid(), ...eventFields })
+	.partial({ title: true, date: true });
+
+export type CreateSittingInput = z.infer<typeof createSittingSchema>;
+export type UpdateSittingInput = z.infer<typeof updateSittingSchema>;
+export type CreateEventInput = z.infer<typeof createEventSchema>;
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;
+
+const taskFields = {
+	title: z.string().trim().min(1).max(200),
+	notes: z.string().trim().max(2000).nullable().optional(),
+	dueDate: isoDay,
+	dueTime: clock.nullable().optional(),
+	endTime: clock.nullable().optional(),
+	done: z.boolean().optional(),
+	color,
+	examId: z.string().uuid().nullable().optional(),
+};
+
+const endAfterStart = (value: { dueTime?: string | null; endTime?: string | null }) =>
+	!value.endTime || (Boolean(value.dueTime) && value.endTime > value.dueTime!);
+
+export const createTaskSchema = z
+	.object(taskFields)
+	.refine(endAfterStart, "La fine viene prima dell'inizio");
+
+export const updateTaskSchema = z
+	.object({ id: z.string().uuid(), ...taskFields })
+	.partial({ title: true, dueDate: true });
+
+export type CreateTaskInput = z.infer<typeof createTaskSchema>;
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;

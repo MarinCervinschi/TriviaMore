@@ -22,6 +22,7 @@ import {
 	getPlatformStats,
 } from "../../src/lib/browse/service/overview.ts";
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts";
+import { getCalendar } from "../../src/lib/crm/service/calendar.ts";
 import {
 	getCurrentEnrollment,
 	hasEnrollment,
@@ -244,6 +245,7 @@ if (userId) {
 	await check("avatar.getAvatarChoices", async () => getAvatarChoices(userId));
 	await check("crm.getCurrentEnrollment", () => getCurrentEnrollment(userId));
 	await check("crm.hasEnrollment", () => hasEnrollment(userId));
+	await check("crm.getCalendar", () => getCalendar(userId));
 	await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId));
 	await check("legal.getAcceptanceHistory", () => getAcceptanceHistory(userId));
 } else {
