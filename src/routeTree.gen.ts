@@ -45,7 +45,9 @@ import { Route as AppLegalPrivacyRouteImport } from './routes/_app/legal/privacy
 import { Route as AppLegalDeclinedRouteImport } from './routes/_app/legal/declined'
 import { Route as AppLegalCookiesRouteImport } from './routes/_app/legal/cookies'
 import { Route as AppLegalAcceptRouteImport } from './routes/_app/legal/accept'
+import { Route as AppUserCareerRouteRouteImport } from './routes/_app/user/career/route'
 import { Route as AppUserRequestsIndexRouteImport } from './routes/_app/user/requests/index'
+import { Route as AppUserCareerIndexRouteImport } from './routes/_app/user/career/index'
 import { Route as AppUserAnalyticsIndexRouteImport } from './routes/_app/user/analytics/index'
 import { Route as AppSearchCoursesIndexRouteImport } from './routes/_app/search/courses/index'
 import { Route as AppSearchClassesIndexRouteImport } from './routes/_app/search/classes/index'
@@ -54,6 +56,8 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
+import { Route as AppUserCareerForecastRouteImport } from './routes/_app/user/career/forecast'
+import { Route as AppUserCareerExamsRouteImport } from './routes/_app/user/career/exams'
 import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
 import { Route as AppUserAnalyticsCoursesRouteImport } from './routes/_app/user/analytics/courses'
 import { Route as AppQuizResultsAttemptIdRouteImport } from './routes/_app/quiz.results.$attemptId'
@@ -253,10 +257,20 @@ const AppLegalAcceptRoute = AppLegalAcceptRouteImport.update({
   path: '/accept',
   getParentRoute: () => AppLegalRouteRoute,
 } as any)
+const AppUserCareerRouteRoute = AppUserCareerRouteRouteImport.update({
+  id: '/career',
+  path: '/career',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
 const AppUserRequestsIndexRoute = AppUserRequestsIndexRouteImport.update({
   id: '/requests/',
   path: '/requests/',
   getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserCareerIndexRoute = AppUserCareerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppUserCareerRouteRoute,
 } as any)
 const AppUserAnalyticsIndexRoute = AppUserAnalyticsIndexRouteImport.update({
   id: '/analytics/',
@@ -301,6 +315,16 @@ const AppAdminDepartmentsIndexRoute =
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
   } as any)
+const AppUserCareerForecastRoute = AppUserCareerForecastRouteImport.update({
+  id: '/forecast',
+  path: '/forecast',
+  getParentRoute: () => AppUserCareerRouteRoute,
+} as any)
+const AppUserCareerExamsRoute = AppUserCareerExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
+  getParentRoute: () => AppUserCareerRouteRoute,
+} as any)
 const AppUserAnalyticsHistoryRoute = AppUserAnalyticsHistoryRouteImport.update({
   id: '/analytics/history',
   path: '/analytics/history',
@@ -429,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
+  '/user/career': typeof AppUserCareerRouteRouteWithChildren
   '/legal/accept': typeof AppLegalAcceptRoute
   '/legal/cookies': typeof AppLegalCookiesRoute
   '/legal/declined': typeof AppLegalDeclinedRoute
@@ -455,6 +480,8 @@ export interface FileRoutesByFullPath {
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
+  '/user/career/exams': typeof AppUserCareerExamsRoute
+  '/user/career/forecast': typeof AppUserCareerForecastRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -463,6 +490,7 @@ export interface FileRoutesByFullPath {
   '/search/classes/': typeof AppSearchClassesIndexRoute
   '/search/courses/': typeof AppSearchCoursesIndexRoute
   '/user/analytics/': typeof AppUserAnalyticsIndexRoute
+  '/user/career/': typeof AppUserCareerIndexRoute
   '/user/requests/': typeof AppUserRequestsIndexRoute
   '/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
   '/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
@@ -518,6 +546,8 @@ export interface FileRoutesByTo {
   '/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
+  '/user/career/exams': typeof AppUserCareerExamsRoute
+  '/user/career/forecast': typeof AppUserCareerForecastRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -526,6 +556,7 @@ export interface FileRoutesByTo {
   '/search/classes': typeof AppSearchClassesIndexRoute
   '/search/courses': typeof AppSearchCoursesIndexRoute
   '/user/analytics': typeof AppUserAnalyticsIndexRoute
+  '/user/career': typeof AppUserCareerIndexRoute
   '/user/requests': typeof AppUserRequestsIndexRoute
   '/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
   '/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
@@ -559,6 +590,7 @@ export interface FileRoutesById {
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/user/career': typeof AppUserCareerRouteRouteWithChildren
   '/_app/legal/accept': typeof AppLegalAcceptRoute
   '/_app/legal/cookies': typeof AppLegalCookiesRoute
   '/_app/legal/declined': typeof AppLegalDeclinedRoute
@@ -585,6 +617,8 @@ export interface FileRoutesById {
   '/_app/quiz/results/$attemptId': typeof AppQuizResultsAttemptIdRoute
   '/_app/user/analytics/courses': typeof AppUserAnalyticsCoursesRoute
   '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
+  '/_app/user/career/exams': typeof AppUserCareerExamsRoute
+  '/_app/user/career/forecast': typeof AppUserCareerForecastRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -593,6 +627,7 @@ export interface FileRoutesById {
   '/_app/search/classes/': typeof AppSearchClassesIndexRoute
   '/_app/search/courses/': typeof AppSearchCoursesIndexRoute
   '/_app/user/analytics/': typeof AppUserAnalyticsIndexRoute
+  '/_app/user/career/': typeof AppUserCareerIndexRoute
   '/_app/user/requests/': typeof AppUserRequestsIndexRoute
   '/_app/user/analytics/class/$id': typeof AppUserAnalyticsClassIdRoute
   '/_app/user/analytics/course/$id': typeof AppUserAnalyticsCourseIdRoute
@@ -626,6 +661,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
+    | '/user/career'
     | '/legal/accept'
     | '/legal/cookies'
     | '/legal/declined'
@@ -652,6 +688,8 @@ export interface FileRouteTypes {
     | '/quiz/results/$attemptId'
     | '/user/analytics/courses'
     | '/user/analytics/history'
+    | '/user/career/exams'
+    | '/user/career/forecast'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -660,6 +698,7 @@ export interface FileRouteTypes {
     | '/search/classes/'
     | '/search/courses/'
     | '/user/analytics/'
+    | '/user/career/'
     | '/user/requests/'
     | '/user/analytics/class/$id'
     | '/user/analytics/course/$id'
@@ -715,6 +754,8 @@ export interface FileRouteTypes {
     | '/quiz/results/$attemptId'
     | '/user/analytics/courses'
     | '/user/analytics/history'
+    | '/user/career/exams'
+    | '/user/career/forecast'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -723,6 +764,7 @@ export interface FileRouteTypes {
     | '/search/classes'
     | '/search/courses'
     | '/user/analytics'
+    | '/user/career'
     | '/user/requests'
     | '/user/analytics/class/$id'
     | '/user/analytics/course/$id'
@@ -755,6 +797,7 @@ export interface FileRouteTypes {
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
     | '/_app/'
+    | '/_app/user/career'
     | '/_app/legal/accept'
     | '/_app/legal/cookies'
     | '/_app/legal/declined'
@@ -781,6 +824,8 @@ export interface FileRouteTypes {
     | '/_app/quiz/results/$attemptId'
     | '/_app/user/analytics/courses'
     | '/_app/user/analytics/history'
+    | '/_app/user/career/exams'
+    | '/_app/user/career/forecast'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -789,6 +834,7 @@ export interface FileRouteTypes {
     | '/_app/search/classes/'
     | '/_app/search/courses/'
     | '/_app/user/analytics/'
+    | '/_app/user/career/'
     | '/_app/user/requests/'
     | '/_app/user/analytics/class/$id'
     | '/_app/user/analytics/course/$id'
@@ -1070,12 +1116,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLegalAcceptRouteImport
       parentRoute: typeof AppLegalRouteRoute
     }
+    '/_app/user/career': {
+      id: '/_app/user/career'
+      path: '/career'
+      fullPath: '/user/career'
+      preLoaderRoute: typeof AppUserCareerRouteRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
     '/_app/user/requests/': {
       id: '/_app/user/requests/'
       path: '/requests'
       fullPath: '/user/requests/'
       preLoaderRoute: typeof AppUserRequestsIndexRouteImport
       parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/career/': {
+      id: '/_app/user/career/'
+      path: '/'
+      fullPath: '/user/career/'
+      preLoaderRoute: typeof AppUserCareerIndexRouteImport
+      parentRoute: typeof AppUserCareerRouteRoute
     }
     '/_app/user/analytics/': {
       id: '/_app/user/analytics/'
@@ -1132,6 +1192,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/departments/'
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
+    }
+    '/_app/user/career/forecast': {
+      id: '/_app/user/career/forecast'
+      path: '/forecast'
+      fullPath: '/user/career/forecast'
+      preLoaderRoute: typeof AppUserCareerForecastRouteImport
+      parentRoute: typeof AppUserCareerRouteRoute
+    }
+    '/_app/user/career/exams': {
+      id: '/_app/user/career/exams'
+      path: '/exams'
+      fullPath: '/user/career/exams'
+      preLoaderRoute: typeof AppUserCareerExamsRouteImport
+      parentRoute: typeof AppUserCareerRouteRoute
     }
     '/_app/user/analytics/history': {
       id: '/_app/user/analytics/history'
@@ -1321,7 +1395,23 @@ const AppLegalRouteRouteWithChildren = AppLegalRouteRoute._addFileChildren(
   AppLegalRouteRouteChildren,
 )
 
+interface AppUserCareerRouteRouteChildren {
+  AppUserCareerExamsRoute: typeof AppUserCareerExamsRoute
+  AppUserCareerForecastRoute: typeof AppUserCareerForecastRoute
+  AppUserCareerIndexRoute: typeof AppUserCareerIndexRoute
+}
+
+const AppUserCareerRouteRouteChildren: AppUserCareerRouteRouteChildren = {
+  AppUserCareerExamsRoute: AppUserCareerExamsRoute,
+  AppUserCareerForecastRoute: AppUserCareerForecastRoute,
+  AppUserCareerIndexRoute: AppUserCareerIndexRoute,
+}
+
+const AppUserCareerRouteRouteWithChildren =
+  AppUserCareerRouteRoute._addFileChildren(AppUserCareerRouteRouteChildren)
+
 interface AppUserRouteRouteChildren {
+  AppUserCareerRouteRoute: typeof AppUserCareerRouteRouteWithChildren
   AppUserAchievementsRoute: typeof AppUserAchievementsRoute
   AppUserBookmarksRoute: typeof AppUserBookmarksRoute
   AppUserClassesRoute: typeof AppUserClassesRoute
@@ -1339,6 +1429,7 @@ interface AppUserRouteRouteChildren {
 }
 
 const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
+  AppUserCareerRouteRoute: AppUserCareerRouteRouteWithChildren,
   AppUserAchievementsRoute: AppUserAchievementsRoute,
   AppUserBookmarksRoute: AppUserBookmarksRoute,
   AppUserClassesRoute: AppUserClassesRoute,

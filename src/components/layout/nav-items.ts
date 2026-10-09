@@ -5,6 +5,7 @@ import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 import { HomeIcon } from "@solar-icons/react/linear/home";
 import { InboxIcon } from "@solar-icons/react/linear/inbox";
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
+import { NotebookIcon } from "@solar-icons/react/linear/notebook";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import type { LinkProps } from "@tanstack/react-router";
 
@@ -37,6 +38,7 @@ export const STUDY_ITEMS: NavItem[] = [
 		label: "I miei insegnamenti",
 		fuzzy: false,
 	},
+	{ to: "/user/career", icon: NotebookIcon, label: "Carriera", fuzzy: true },
 	{ to: "/user/analytics", icon: GraphUpIcon, label: "Analytics", fuzzy: true },
 	{ to: "/user/bookmarks", icon: BookmarkIcon, label: "Segnalibri", fuzzy: false },
 ];
@@ -46,6 +48,12 @@ export const ANALYTICS_TABS: TabItem[] = [
 	{ key: "courses", label: "Per corso", to: "/user/analytics/courses" },
 	{ key: "history", label: "Storico", to: "/user/analytics/history" },
 	{ key: "achievements", label: "Traguardi", to: "/user/achievements" },
+];
+
+export const CAREER_TABS: TabItem[] = [
+	{ key: "overview", label: "Panoramica", to: "/user/career" },
+	{ key: "exams", label: "Libretto", to: "/user/career/exams" },
+	{ key: "forecast", label: "Previsione", to: "/user/career/forecast" },
 ];
 
 export const CATALOG_ITEMS: NavItem[] = [
@@ -71,7 +79,7 @@ export const MOBILE_ITEMS: NavItem[] = [
 	HOME_ITEM,
 	CATALOG_ITEMS[0]!,
 	STUDY_ITEMS[0]!,
-	STUDY_ITEMS[1]!,
+	STUDY_ITEMS[2]!,
 ];
 
 export function useIsAdmin() {
