@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
+	SkeletonInset,
 	SkeletonRoot,
 	SkeletonStatBlock,
 	SkeletonTable,
@@ -456,6 +457,59 @@ export function AchievementsSkeleton() {
 							<Skeleton className="h-3 w-16" />
 						</div>
 					))}
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}
+
+/** Must match `CareerShell` around the overview, the tab the route opens on. */
+export function CareerSkeleton() {
+	return (
+		<SkeletonRoot
+			label="Caricamento carriera…"
+			className="container space-y-6 py-6 pb-10"
+		>
+			<div className="flex flex-wrap items-start justify-between gap-3">
+				<Skeleton className="h-8 w-40" />
+				<Skeleton className="h-8 w-40 rounded-xl" />
+			</div>
+
+			<SkeletonInset>
+				<div className="space-y-5 p-5">
+					<div className="flex items-start gap-4">
+						<Skeleton className="hidden size-12 rounded-xl sm:block" />
+						<div className="flex-1 space-y-2">
+							<Skeleton className="h-6 w-72 max-w-full" />
+							<Skeleton className="h-4 w-96 max-w-full" />
+						</div>
+						<Skeleton className="h-8 w-36 rounded-xl" />
+					</div>
+					<div className="grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-4">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<div key={i} className="space-y-1.5">
+								<Skeleton className="h-3 w-16" />
+								<Skeleton className="h-4 w-24" />
+							</div>
+						))}
+					</div>
+				</div>
+			</SkeletonInset>
+
+			<div className="flex gap-6">
+				{Array.from({ length: 3 }).map((_, i) => (
+					<Skeleton key={i} className="h-5 w-20" />
+				))}
+			</div>
+
+			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+				<div className="space-y-6">
+					<SkeletonCard height={64} />
+					<SkeletonCard height={104} />
+				</div>
+				<SkeletonCard height={220} />
+				<div className="lg:col-span-2">
+					<SkeletonCard height={300} />
 				</div>
 			</div>
 		</SkeletonRoot>
