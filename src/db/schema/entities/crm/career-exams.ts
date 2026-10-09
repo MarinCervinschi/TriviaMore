@@ -26,12 +26,14 @@ export const careerExams = crmSchema
 			classId: uuid("class_id"),
 			/** The activity code in the plan it was prefilled from; null for a free entry. */
 			planCode: text("plan_code"),
-			/** The plan's choice group it fills; null for a mandatory exam or a free entry. */
+			/** The key (`code:position`) of the plan's choice group it fills; null for a mandatory exam or a free entry. */
 			groupCode: text("group_code"),
 			name: text().notNull(),
 			cfu: integer().notNull(),
 			classYear: integer("class_year"),
 			graded: boolean().default(true).notNull(),
+			/** Taken at another university, an Erasmus exchange or a transfer; only on an entry typed by hand. */
+			external: boolean().default(false).notNull(),
 			status: careerExamStatusEnum().default("PLANNED").notNull(),
 			grade: integer(),
 			honours: boolean().default(false).notNull(),

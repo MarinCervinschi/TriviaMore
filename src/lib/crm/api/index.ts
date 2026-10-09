@@ -5,6 +5,7 @@ export { getCurriculumOptionsFn } from "./get-curriculum-options";
 export { prefillCareerFn } from "./prefill-career";
 export { removeCareerExamFn } from "./remove-career-exam";
 export { requireEnrollmentFn } from "./require-enrollment";
+export { setCareerChoicesFn } from "./set-career-choices";
 export { setEnrollmentFn } from "./set-enrollment";
 export { updateCareerExamFn } from "./update-career-exam";
 export { updateCareerSettingsFn } from "./update-career-settings";

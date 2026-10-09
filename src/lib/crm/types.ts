@@ -5,7 +5,8 @@ import type { CareerSettings } from "./schemas";
 export type Enrollment = typeof enrollments.$inferSelect;
 export type NewEnrollment = typeof enrollments.$inferInsert;
 
-type CourseType = (typeof courses.$inferSelect)["courseType"];
+type CourseRow = typeof courses.$inferSelect;
+type CourseType = CourseRow["courseType"];
 
 export interface CurrentEnrollment {
 	id: string;
@@ -40,9 +41,21 @@ export interface CareerChoiceGroup {
 	chosen: string[];
 }
 
+/** The enrolment's course as the Carriera header shows it. */
+export interface CareerCourse {
+	id: string;
+	name: string;
+	cfu: number | null;
+	courseType: CourseType;
+	location: CourseRow["location"];
+	degreeClass: string | null;
+	teachingLanguage: string | null;
+	catalogueUrl: string | null;
+	department: { id: string; name: string; code: string };
+}
+
 export interface Career {
-	courseName: string;
-	courseCfu: number | null;
+	course: CareerCourse;
 	cohort: number | null;
 	curriculumName: string | null;
 	/** Why the plan cannot prefill the record yet, when it cannot. */
@@ -52,4 +65,6 @@ export interface Career {
 	exams: CareerExam[];
 	choiceGroups: CareerChoiceGroup[];
 	settings: CareerSettings;
+	/** False until the student saves the rules once; until then they are the defaults. */
+	settingsSaved: boolean;
 }

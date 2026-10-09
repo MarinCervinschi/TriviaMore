@@ -5,6 +5,7 @@ import {
 	addCareerExamFn,
 	prefillCareerFn,
 	removeCareerExamFn,
+	setCareerChoicesFn,
 	setEnrollmentFn,
 	updateCareerExamFn,
 	updateCareerSettingsFn,
@@ -12,6 +13,7 @@ import {
 import type {
 	AddCareerExamInput,
 	CareerSettings,
+	SetCareerChoicesInput,
 	SetEnrollmentInput,
 	UpdateCareerExamInput,
 } from "./schemas";
@@ -65,7 +67,24 @@ export const useAddCareerExam = () =>
 	);
 
 export const useUpdateCareerExam = () =>
-	useCareerMutation((data: UpdateCareerExamInput) => updateCareerExamFn({ data }));
+	useCareerMutation(
+		(data: UpdateCareerExamInput) => updateCareerExamFn({ data }),
+		() => "Esame salvato"
+	);
+
+export const useSetCareerChoices = () =>
+	useCareerMutation(
+		(data: SetCareerChoicesInput) => setCareerChoicesFn({ data }),
+		({ added, removed }) => {
+			if (added + removed === 0) return "Le scelte erano già queste";
+			const parts = [
+				added > 0 && (added === 1 ? "un esame aggiunto" : `${added} esami aggiunti`),
+				removed > 0 && (removed === 1 ? "un esame tolto" : `${removed} esami tolti`),
+			].filter(Boolean);
+			const text = parts.join(", ");
+			return text.charAt(0).toUpperCase() + text.slice(1);
+		}
+	);
 
 export const useRemoveCareerExam = () =>
 	useCareerMutation(
@@ -76,5 +95,5 @@ export const useRemoveCareerExam = () =>
 export const useUpdateCareerSettings = () =>
 	useCareerMutation(
 		(data: CareerSettings) => updateCareerSettingsFn({ data }),
-		() => "Impostazioni di calcolo salvate"
+		() => "Regole di calcolo salvate"
 	);
