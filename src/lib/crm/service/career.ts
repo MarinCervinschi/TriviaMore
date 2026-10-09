@@ -2,7 +2,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 
 import type { DbOrTx } from "@/db";
 import { getDb } from "@/db";
-import { careerExams, coursePlans, courses } from "@/db/schema";
+import { careerExams, classes, coursePlans, courses, departments } from "@/db/schema";
 import { listCurricula } from "@/lib/catalog/db/course-curricula";
 import { Invalid, NotFound } from "@/lib/server/errors";
 
@@ -10,6 +10,7 @@ import { findCurrentEnrollment, updateEnrollmentSettings } from "../db/enrollmen
 import {
 	type AddCareerExamInput,
 	type CareerSettings,
+	type SetCareerChoicesInput,
 	type UpdateCareerExamInput,
 	careerSettingsSchema,
 } from "../schemas";
@@ -93,18 +94,21 @@ async function planOf(
 	};
 }
 
+/** A plan reuses one group code for every choice group of a year, so the position tells them apart. */
+const groupKeyOf = (row: Pick<PlanRow, "groupCode" | "groupPosition">) =>
+	`${row.groupCode}:${row.groupPosition ?? 0}`;
+
 function choiceGroupsOf(rows: PlanRow[], exams: CareerExam[]): CareerChoiceGroup[] {
 	const groups = new Map<string, CareerChoiceGroup>();
 	for (const row of rows) {
 		if (row.mandatory || !row.groupCode || !row.cfu) continue;
-		const group = groups.get(row.groupCode) ?? {
-			code: row.groupCode,
+		const key = groupKeyOf(row);
+		const group = groups.get(key) ?? {
+			code: key,
 			label: row.groupLabel,
 			classYear: row.classYear,
 			options: [],
-			chosen: exams
-				.filter(exam => exam.groupCode === row.groupCode)
-				.map(exam => exam.id),
+			chosen: exams.filter(exam => exam.groupCode === key).map(exam => exam.id),
 		};
 		group.options.push({
 			planCode: row.code,
@@ -112,7 +116,7 @@ function choiceGroupsOf(rows: PlanRow[], exams: CareerExam[]): CareerChoiceGroup
 			cfu: row.cfu,
 			graded: row.graded,
 		});
-		groups.set(row.groupCode, group);
+		groups.set(key, group);
 	}
 	return [...groups.values()];
 }
@@ -138,16 +142,31 @@ export async function getCareer(userId: string): Promise<Career> {
 	const enrollment = await requireCurrentEnrollment(db, userId);
 	const [[course], plan, exams] = await Promise.all([
 		db
-			.select({ name: courses.name, cfu: courses.cfu })
+			.select({
+				id: courses.id,
+				name: courses.name,
+				cfu: courses.cfu,
+				courseType: courses.courseType,
+				location: courses.location,
+				degreeClass: courses.degreeClass,
+				teachingLanguage: courses.teachingLanguage,
+				catalogueUrl: courses.catalogueUrl,
+				department: {
+					id: departments.id,
+					name: departments.name,
+					code: departments.code,
+				},
+			})
 			.from(courses)
+			.innerJoin(departments, eq(departments.id, courses.departmentId))
 			.where(eq(courses.id, enrollment.courseId)),
 		planOf(db, enrollment),
 		listExams(db, enrollment.id),
 	]);
 
+	if (!course) throw new NotFound("Corso non trovato");
 	return {
-		courseName: course?.name ?? "",
-		courseCfu: course?.cfu ?? null,
+		course,
 		cohort: enrollment.startYear,
 		curriculumName: plan.curriculumName,
 		planGap: plan.gap,
@@ -155,6 +174,7 @@ export async function getCareer(userId: string): Promise<Career> {
 		exams,
 		choiceGroups: choiceGroupsOf(plan.rows, exams),
 		settings: settingsOf(enrollment),
+		settingsSaved: Object.keys(enrollment.careerSettings ?? {}).length > 0,
 	};
 }
 
@@ -198,31 +218,97 @@ export async function addCareerExam(
 	if ("planCode" in input) {
 		const { rows } = await planOf(db, enrollment);
 		const row = rows.find(
-			r => r.code === input.planCode && r.groupCode === input.groupCode
+			r =>
+				r.code === input.planCode && !r.mandatory && groupKeyOf(r) === input.groupCode
 		);
 		if (!row || !row.cfu) throw new Invalid("Questo insegnamento non è nel tuo piano");
 		values = {
 			enrollmentId: enrollment.id,
 			classId: row.classId,
 			planCode: row.code,
-			groupCode: row.groupCode,
+			groupCode: groupKeyOf(row),
 			name: row.name,
 			cfu: row.cfu,
 			classYear: row.classYear,
 			graded: row.graded,
 		};
 	} else {
+		if (input.classId) {
+			const [known] = await db
+				.select({ id: classes.id })
+				.from(classes)
+				.where(eq(classes.id, input.classId));
+			if (!known) throw new NotFound("Insegnamento non trovato");
+		}
 		values = {
 			enrollmentId: enrollment.id,
+			classId: input.classId ?? null,
 			name: input.name,
 			cfu: input.cfu,
 			classYear: input.classYear ?? null,
 			graded: input.graded,
+			external: !input.classId && input.external,
 		};
 	}
 
 	const [exam] = await db.insert(careerExams).values(values).returning();
 	return exam!;
+}
+
+/** Makes each listed choice group hold exactly the given plan exams; a removed one leaves the record with its grade. */
+export async function setCareerChoices(
+	userId: string,
+	input: SetCareerChoicesInput
+): Promise<{ added: number; removed: number }> {
+	return getDb().transaction(async tx => {
+		const enrollment = await requireCurrentEnrollment(tx, userId);
+		const { rows } = await planOf(tx, enrollment);
+		const exams = await listExams(tx, enrollment.id);
+		let added = 0;
+		let removed = 0;
+
+		for (const choice of input.choices) {
+			const options = rows.filter(
+				row => !row.mandatory && row.cfu && groupKeyOf(row) === choice.groupCode
+			);
+			if (options.length === 0) throw new Invalid("Questo gruppo non è nel tuo piano");
+			const wanted = new Set(choice.planCodes);
+			if ([...wanted].some(code => !options.some(row => row.code === code))) {
+				throw new Invalid("Questo insegnamento non è nel gruppo");
+			}
+
+			const held = exams.filter(exam => exam.groupCode === choice.groupCode);
+			const drop = held.filter(exam => !exam.planCode || !wanted.has(exam.planCode));
+			if (drop.length > 0) {
+				await tx.delete(careerExams).where(
+					inArray(
+						careerExams.id,
+						drop.map(exam => exam.id)
+					)
+				);
+			}
+			const missing = options.filter(
+				row => wanted.has(row.code) && !held.some(exam => exam.planCode === row.code)
+			);
+			if (missing.length > 0) {
+				await tx.insert(careerExams).values(
+					missing.map(row => ({
+						enrollmentId: enrollment.id,
+						classId: row.classId,
+						planCode: row.code,
+						groupCode: choice.groupCode,
+						name: row.name,
+						cfu: row.cfu!,
+						classYear: row.classYear,
+						graded: row.graded,
+					}))
+				);
+			}
+			added += missing.length;
+			removed += drop.length;
+		}
+		return { added, removed };
+	});
 }
 
 /** The rules a row must keep after any change: a grade only on a passed or rejected graded exam, honours only on a 30. */
@@ -255,6 +341,13 @@ export async function updateCareerExam(
 			Object.entries(patch).filter(([, value]) => value !== undefined)
 		) as Partial<CareerExam>;
 		const next = { ...current, ...changes };
+		// Name, CFU and kind come from the plan or the catalogue unless the student typed the exam.
+		if (current.planCode !== null || current.classId !== null) {
+			next.name = current.name;
+			next.cfu = current.cfu;
+			next.graded = current.graded;
+			next.external = current.external;
+		}
 		// Leaving the passed state, or the graded kind, takes the grade with it.
 		if (next.status === "PLANNED" || !next.graded) {
 			next.grade = null;
@@ -272,6 +365,7 @@ export async function updateCareerExam(
 				cfu: next.cfu,
 				classYear: next.classYear,
 				graded: next.graded,
+				external: next.external,
 				status: next.status,
 				grade: next.grade,
 				honours: next.honours,

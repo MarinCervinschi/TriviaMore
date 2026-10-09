@@ -48,6 +48,9 @@ export const addCareerExamSchema = z.union([
 		cfu: examCfu,
 		classYear: z.number().int().min(1).max(6).nullable().optional(),
 		graded: z.boolean().default(true),
+		/** The catalogue class it was picked from, when it was not typed by hand. */
+		classId: z.string().uuid().nullable().optional(),
+		external: z.boolean().default(false),
 	}),
 	z.object({ groupCode: z.string().min(1), planCode: z.string().min(1) }),
 ]);
@@ -58,13 +61,28 @@ export const updateCareerExamSchema = z.object({
 	cfu: examCfu.optional(),
 	classYear: z.number().int().min(1).max(6).nullable().optional(),
 	graded: z.boolean().optional(),
+	external: z.boolean().optional(),
 	status: z.enum(["PLANNED", "PASSED", "REJECTED"]).optional(),
 	grade: z.number().int().min(18).max(30).nullable().optional(),
 	honours: z.boolean().optional(),
 	examDate: z.string().date().nullable().optional(),
 });
 
+/** The full pick for some choice groups: what is listed stays or is added, the rest of each group goes. */
+export const setCareerChoicesSchema = z.object({
+	choices: z
+		.array(
+			z.object({
+				groupCode: z.string().min(1),
+				planCodes: z.array(z.string().min(1)).max(50),
+			})
+		)
+		.min(1)
+		.max(100),
+});
+
 export const careerExamIdSchema = z.object({ id: z.string().uuid() });
 
 export type AddCareerExamInput = z.infer<typeof addCareerExamSchema>;
 export type UpdateCareerExamInput = z.infer<typeof updateCareerExamSchema>;
+export type SetCareerChoicesInput = z.infer<typeof setCareerChoicesSchema>;
