@@ -1,7 +1,6 @@
 import { type ReactNode, useState } from "react";
 
 import { BookIcon } from "@solar-icons/react/linear/book";
-import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
 import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { DisketteIcon } from "@solar-icons/react/linear/diskette";
@@ -9,17 +8,15 @@ import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { RestartIcon } from "@solar-icons/react/linear/restart";
 import { TrashBinMinimalisticIcon } from "@solar-icons/react/linear/trash-bin-minimalistic";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 
+import { DateField } from "@/components/calendar/date-field";
 import { type Icon, PlusGlyph, Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { IconTile } from "@/components/ui/icon-tile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
 	Select,
@@ -30,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import {
 	Sheet,
+	SheetBody,
 	SheetContent,
 	SheetDescription,
 	SheetFooter,
@@ -54,7 +52,6 @@ import { GradeRing, Stepper } from "./career-controls";
 import {
 	HONOURS_STEP,
 	choiceLabel,
-	formatExamDate,
 	formatGrade,
 	formatStep,
 	yearLabel,
@@ -181,7 +178,7 @@ export function ExamSheet({
 }) {
 	return (
 		<Sheet open={Boolean(exam)} onOpenChange={open => !open && onClose()}>
-			<SheetContent className="flex w-full flex-col gap-6 overflow-y-auto sm:max-w-md">
+			<SheetContent layout="panel" className="sm:max-w-md">
 				{exam && (
 					<ExamForm
 						key={exam.id}
@@ -237,69 +234,6 @@ function GradePicker({
 	);
 }
 
-const parseDay = (value: string) => {
-	const [year, month, day] = value.split("-").map(Number);
-	return new Date(year!, month! - 1, day);
-};
-
-function DateField({
-	value,
-	onChange,
-}: {
-	value: string;
-	onChange: (value: string) => void;
-}) {
-	const [open, setOpen] = useState(false);
-	const selected = value ? parseDay(value) : undefined;
-	const pick = (day: Date | undefined) => {
-		onChange(day ? format(day, "yyyy-MM-dd") : "");
-		setOpen(false);
-	};
-
-	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					id="exam-date"
-					variant="outline"
-					className={cn(
-						"w-56 justify-start font-normal",
-						!value && "text-muted-foreground"
-					)}
-				>
-					<CalendarMinimalisticIcon className="size-4" />
-					{value ? formatExamDate(value) : "Scegli la data"}
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent className="w-auto p-0" align="start">
-				<Calendar
-					mode="single"
-					captionLayout="dropdown"
-					startMonth={new Date(2000, 0)}
-					endMonth={new Date()}
-					disabled={{ after: new Date() }}
-					selected={selected}
-					defaultMonth={selected}
-					onSelect={pick}
-				/>
-				<div className="border-border flex justify-between gap-2 border-t p-2">
-					<Button
-						variant="ghost"
-						size="sm"
-						disabled={!value}
-						onClick={() => pick(undefined)}
-					>
-						Togli la data
-					</Button>
-					<Button variant="outline" size="sm" onClick={() => pick(new Date())}>
-						Oggi
-					</Button>
-				</div>
-			</PopoverContent>
-		</Popover>
-	);
-}
-
 function ExamForm({
 	exam,
 	years,
@@ -345,7 +279,7 @@ function ExamForm({
 
 	return (
 		<>
-			<SheetHeader className="flex-row items-start gap-4 space-y-0 pr-8">
+			<SheetHeader className="flex-row items-start gap-4 space-y-0">
 				<div className="min-w-0 flex-1 space-y-1.5">
 					<SheetTitle className="text-pretty">{exam.name}</SheetTitle>
 					<SheetDescription>
@@ -364,85 +298,94 @@ function ExamForm({
 					<GradeRing step={shown} size={52} />
 				)}
 			</SheetHeader>
-
-			<div className="flex flex-col gap-6">
-				<Field label="Esito">
-					<SegmentedControl
-						label="Esito"
-						value={status}
-						onChange={setStatus}
-						options={STATUS_OPTIONS}
-						className="flex w-full [&>button]:flex-1 [&>button]:justify-center"
-					/>
-				</Field>
-
-				{withGrade && (
-					<div className="space-y-2">
-						<div className="flex items-baseline justify-between gap-3">
-							<Label>{status === "REJECTED" ? "Voto che hai rifiutato" : "Voto"}</Label>
-							{status === "REJECTED" && (
-								<span className="text-muted-foreground text-xs">facoltativo</span>
-							)}
-						</div>
-						<GradePicker
-							value={shown}
-							onChange={setStep}
-							allowHonours={status === "PASSED"}
+			<SheetBody className="flex flex-col gap-6">
+				<div className="flex flex-col gap-6">
+					<Field label="Esito">
+						<SegmentedControl
+							label="Esito"
+							value={status}
+							onChange={setStatus}
+							options={STATUS_OPTIONS}
+							className="flex w-full [&>button]:flex-1 [&>button]:justify-center"
 						/>
-					</div>
-				)}
-
-				{status !== "PLANNED" && (
-					<Field label="Data dell'esame" htmlFor="exam-date">
-						<DateField value={examDate} onChange={setExamDate} />
 					</Field>
-				)}
 
-				{offPlan && (
-					<div className="flex flex-col gap-5 border-t pt-5">
-						{typed && (
-							<Field label="Nome" htmlFor="exam-name">
-								<Input
-									id="exam-name"
-									value={name}
-									onChange={event => setName(event.target.value)}
-									className="w-full"
-								/>
-							</Field>
-						)}
-						<div className="flex flex-wrap gap-6">
+					{withGrade && (
+						<div className="space-y-2">
+							<div className="flex items-baseline justify-between gap-3">
+								<Label>
+									{status === "REJECTED" ? "Voto che hai rifiutato" : "Voto"}
+								</Label>
+								{status === "REJECTED" && (
+									<span className="text-muted-foreground text-xs">facoltativo</span>
+								)}
+							</div>
+							<GradePicker
+								value={shown}
+								onChange={setStep}
+								allowHonours={status === "PASSED"}
+							/>
+						</div>
+					)}
+
+					{status !== "PLANNED" && (
+						<Field label="Data dell'esame" htmlFor="exam-date">
+							<DateField id="exam-date" value={examDate} onChange={setExamDate} />
+						</Field>
+					)}
+
+					{offPlan && (
+						<div className="flex flex-col gap-5 border-t pt-5">
 							{typed && (
-								<Field label="CFU">
-									<Stepper label="CFU" value={cfu} onChange={setCfu} min={1} max={60} />
+								<Field label="Nome" htmlFor="exam-name">
+									<Input
+										id="exam-name"
+										value={name}
+										onChange={event => setName(event.target.value)}
+										className="w-full"
+									/>
 								</Field>
 							)}
-							<Field label="Anno" htmlFor="exam-year">
-								<YearSelect
-									id="exam-year"
-									value={classYear}
-									onChange={setClassYear}
-									years={years}
-								/>
-							</Field>
+							<div className="flex flex-wrap gap-6">
+								{typed && (
+									<Field label="CFU">
+										<Stepper
+											label="CFU"
+											value={cfu}
+											onChange={setCfu}
+											min={1}
+											max={60}
+										/>
+									</Field>
+								)}
+								<Field label="Anno" htmlFor="exam-year">
+									<YearSelect
+										id="exam-year"
+										value={classYear}
+										onChange={setClassYear}
+										years={years}
+									/>
+								</Field>
+							</div>
+							{typed && (
+								<>
+									<label className="flex items-center gap-2 text-sm">
+										<Switch checked={graded} onCheckedChange={setGraded} />
+										Ha un voto in trentesimi
+									</label>
+									<ExternalCheck
+										id="exam-external"
+										checked={external}
+										onChange={setExternal}
+									/>
+								</>
+							)}
 						</div>
-						{typed && (
-							<>
-								<label className="flex items-center gap-2 text-sm">
-									<Switch checked={graded} onCheckedChange={setGraded} />
-									Ha un voto in trentesimi
-								</label>
-								<ExternalCheck
-									id="exam-external"
-									checked={external}
-									onChange={setExternal}
-								/>
-							</>
-						)}
-					</div>
-				)}
-			</div>
+					)}
+				</div>
+			</SheetBody>
 
-			<SheetFooter className="mt-auto flex-row gap-2">
+			<SheetFooter className="flex-row">
 				<Button
 					variant="ghost"
 					className="text-danger hover:text-danger mr-auto"
@@ -492,7 +435,7 @@ export function AddExamSheet({
 }) {
 	return (
 		<Sheet open={open} onOpenChange={next => !next && onClose()}>
-			<SheetContent className="flex w-full flex-col gap-6 overflow-y-auto sm:max-w-lg">
+			<SheetContent layout="panel" className="sm:max-w-lg">
 				{open && <AddExamForm career={career} onClose={onClose} />}
 			</SheetContent>
 		</Sheet>
@@ -657,87 +600,92 @@ function AddExamForm({ career, onClose }: { career: Career; onClose: () => void 
 				<SheetTitle>Aggiungi un esame</SheetTitle>
 				<SheetDescription>Per gli esami fuori dal piano.</SheetDescription>
 			</SheetHeader>
-
-			{choosing ? (
-				<>
-					<ClassSearch career={career} onPick={pick} />
-					<button
-						type="button"
-						onClick={() => setManual(true)}
-						className="text-muted-foreground hover:text-foreground self-start text-sm underline-offset-4 transition-colors hover:underline motion-reduce:transition-none"
-					>
-						Non lo trovi? Inseriscilo a mano
-					</button>
-				</>
-			) : (
-				<div className="flex flex-col gap-5">
-					{picked ? (
-						<div className="bg-muted/50 flex items-center gap-3 rounded-xl px-3 py-2.5">
-							<IconTile size="sm" variant="soft" className="text-chart-2-ink shrink-0">
-								<BookIcon />
-							</IconTile>
-							<p className="min-w-0 flex-1 text-sm">
-								<span className="block font-medium text-pretty">{picked.name}</span>
-								<span className="text-muted-foreground block text-xs">
-									{picked.cfu} CFU · {picked.context}
-								</span>
-							</p>
-							<Button variant="ghost" size="sm" onClick={back}>
-								Cambia
-							</Button>
-						</div>
-					) : (
-						<Field label="Nome" htmlFor="new-exam-name">
-							<Input
-								id="new-exam-name"
-								value={name}
-								placeholder="Inglese B2"
-								onChange={event => setName(event.target.value)}
-								className="w-full"
-							/>
-						</Field>
-					)}
-					<div className="flex flex-wrap gap-6">
-						{manual && (
-							<Field label="CFU">
-								<Stepper label="CFU" value={cfu} onChange={setCfu} min={1} max={60} />
-							</Field>
-						)}
-						<Field label="Anno" htmlFor="new-exam-year">
-							<YearSelect
-								id="new-exam-year"
-								value={classYear}
-								onChange={setClassYear}
-								years={yearCount(career)}
-							/>
-						</Field>
-					</div>
-					{manual && (
-						<>
-							<label className="flex items-center gap-2 text-sm">
-								<Switch checked={graded} onCheckedChange={setGraded} />
-								Ha un voto in trentesimi
-							</label>
-							<ExternalCheck
-								id="new-exam-external"
-								checked={external}
-								onChange={setExternal}
-							/>
-						</>
-					)}
-					{manual && (
+			<SheetBody className="flex flex-col gap-6">
+				{choosing ? (
+					<>
+						<ClassSearch career={career} onPick={pick} />
 						<button
 							type="button"
-							onClick={back}
+							onClick={() => setManual(true)}
 							className="text-muted-foreground hover:text-foreground self-start text-sm underline-offset-4 transition-colors hover:underline motion-reduce:transition-none"
 						>
-							Torna alla ricerca
+							Non lo trovi? Inseriscilo a mano
 						</button>
-					)}
-				</div>
-			)}
+					</>
+				) : (
+					<div className="flex flex-col gap-5">
+						{picked ? (
+							<div className="bg-muted/50 flex items-center gap-3 rounded-xl px-3 py-2.5">
+								<IconTile
+									size="sm"
+									variant="soft"
+									className="text-chart-2-ink shrink-0"
+								>
+									<BookIcon />
+								</IconTile>
+								<p className="min-w-0 flex-1 text-sm">
+									<span className="block font-medium text-pretty">{picked.name}</span>
+									<span className="text-muted-foreground block text-xs">
+										{picked.cfu} CFU · {picked.context}
+									</span>
+								</p>
+								<Button variant="ghost" size="sm" onClick={back}>
+									Cambia
+								</Button>
+							</div>
+						) : (
+							<Field label="Nome" htmlFor="new-exam-name">
+								<Input
+									id="new-exam-name"
+									value={name}
+									placeholder="Inglese B2"
+									onChange={event => setName(event.target.value)}
+									className="w-full"
+								/>
+							</Field>
+						)}
+						<div className="flex flex-wrap gap-6">
+							{manual && (
+								<Field label="CFU">
+									<Stepper label="CFU" value={cfu} onChange={setCfu} min={1} max={60} />
+								</Field>
+							)}
+							<Field label="Anno" htmlFor="new-exam-year">
+								<YearSelect
+									id="new-exam-year"
+									value={classYear}
+									onChange={setClassYear}
+									years={yearCount(career)}
+								/>
+							</Field>
+						</div>
+						{manual && (
+							<>
+								<label className="flex items-center gap-2 text-sm">
+									<Switch checked={graded} onCheckedChange={setGraded} />
+									Ha un voto in trentesimi
+								</label>
+								<ExternalCheck
+									id="new-exam-external"
+									checked={external}
+									onChange={setExternal}
+								/>
+							</>
+						)}
+						{manual && (
+							<button
+								type="button"
+								onClick={back}
+								className="text-muted-foreground hover:text-foreground self-start text-sm underline-offset-4 transition-colors hover:underline motion-reduce:transition-none"
+							>
+								Torna alla ricerca
+							</button>
+						)}
+					</div>
+				)}
+			</SheetBody>
 
-			<SheetFooter className="mt-auto flex-row justify-end gap-2">
+			<SheetFooter className="flex-row justify-end">
 				<Button variant="outline" onClick={onClose}>
 					Annulla
 				</Button>
@@ -784,7 +732,7 @@ export function ChoicesSheet({
 }) {
 	return (
 		<Sheet open={year !== undefined} onOpenChange={open => !open && onClose()}>
-			<SheetContent className="flex w-full flex-col gap-5 sm:max-w-lg">
+			<SheetContent layout="panel" className="sm:max-w-lg">
 				{year !== undefined && (
 					<ChoicesForm key={year} career={career} scope={year} onClose={onClose} />
 				)}
@@ -849,62 +797,65 @@ function ChoicesForm({
 					Gli esami spuntati entrano nel libretto come da sostenere.
 				</SheetDescription>
 			</SheetHeader>
-			<div className="-mx-6 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6">
-				{years.map(year => (
-					<div key={year} className="flex flex-col gap-4">
-						{scope === "all" && (
-							<h3 className="eyebrow text-muted-foreground">{yearLabel(year)}</h3>
-						)}
-						{groups
-							.filter(group => group.classYear === year)
-							.map(group => (
-								<section key={group.code} className="space-y-2">
-									<h4 className="text-sm font-semibold">{choiceLabel(group)}</h4>
-									<ul className="divide-border/60 divide-y rounded-xl border">
-										{group.options.map(option => {
-											const id = `choice-${group.code}-${option.planCode}`;
-											const held = examOf(option.planCode);
-											const losing =
-												held &&
-												held.status !== "PLANNED" &&
-												!picked.has(option.planCode);
-											return (
-												<li key={option.planCode}>
-													<label
-														htmlFor={id}
-														className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors motion-reduce:transition-none"
-													>
-														<Checkbox
-															id={id}
-															checked={picked.has(option.planCode)}
-															onCheckedChange={on =>
-																toggle(option.planCode, on === true)
-															}
-														/>
-														<span className="min-w-0 flex-1">
-															<span className="block text-sm text-pretty">
-																{option.name}
-															</span>
-															{losing && (
-																<span className="text-warning block text-xs">
-																	Togliendolo perdi l'esito registrato
+			<SheetBody className="flex flex-col gap-6">
+				<div className="flex flex-col gap-6">
+					{years.map(year => (
+						<div key={year} className="flex flex-col gap-4">
+							{scope === "all" && (
+								<h3 className="eyebrow text-muted-foreground">{yearLabel(year)}</h3>
+							)}
+							{groups
+								.filter(group => group.classYear === year)
+								.map(group => (
+									<section key={group.code} className="space-y-2">
+										<h4 className="text-sm font-semibold">{choiceLabel(group)}</h4>
+										<ul className="divide-border/60 divide-y rounded-xl border">
+											{group.options.map(option => {
+												const id = `choice-${group.code}-${option.planCode}`;
+												const held = examOf(option.planCode);
+												const losing =
+													held &&
+													held.status !== "PLANNED" &&
+													!picked.has(option.planCode);
+												return (
+													<li key={option.planCode}>
+														<label
+															htmlFor={id}
+															className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors motion-reduce:transition-none"
+														>
+															<Checkbox
+																id={id}
+																checked={picked.has(option.planCode)}
+																onCheckedChange={on =>
+																	toggle(option.planCode, on === true)
+																}
+															/>
+															<span className="min-w-0 flex-1">
+																<span className="block text-sm text-pretty">
+																	{option.name}
 																</span>
-															)}
-														</span>
-														<span className="text-muted-foreground text-xs tabular-nums">
-															{option.cfu} CFU
-														</span>
-													</label>
-												</li>
-											);
-										})}
-									</ul>
-								</section>
-							))}
-					</div>
-				))}
-			</div>
-			<SheetFooter className="flex-col gap-3 border-t pt-4 sm:flex-col sm:justify-start sm:space-x-0">
+																{losing && (
+																	<span className="text-warning block text-xs">
+																		Togliendolo perdi l'esito registrato
+																	</span>
+																)}
+															</span>
+															<span className="text-muted-foreground text-xs tabular-nums">
+																{option.cfu} CFU
+															</span>
+														</label>
+													</li>
+												);
+											})}
+										</ul>
+									</section>
+								))}
+						</div>
+					))}
+				</div>
+			</SheetBody>
+
+			<SheetFooter className="flex-col gap-3 sm:flex-col sm:justify-start">
 				{missing !== null && (
 					<p
 						role="status"

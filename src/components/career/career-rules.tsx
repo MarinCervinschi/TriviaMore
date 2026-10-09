@@ -8,6 +8,7 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sheet,
+	SheetBody,
 	SheetContent,
 	SheetDescription,
 	SheetFooter,
@@ -85,7 +86,7 @@ export function RulesSheet({
 }) {
 	return (
 		<Sheet open={open} onOpenChange={next => !next && onClose()}>
-			<SheetContent className="flex w-full flex-col gap-6 overflow-y-auto sm:max-w-md">
+			<SheetContent layout="panel" className="sm:max-w-md">
 				{open && <RulesForm career={career} onClose={onClose} />}
 			</SheetContent>
 		</Sheet>
@@ -110,96 +111,97 @@ function RulesForm({ career, onClose }: { career: Career; onClose: () => void })
 					Sono nel regolamento della prova finale del tuo corso.
 				</SheetDescription>
 			</SheetHeader>
-
-			{!career.settingsSaved && (
-				<p className="bg-warning/10 ring-warning/20 rounded-xl px-3 py-2.5 text-sm text-pretty ring-1 ring-inset">
-					<span className="font-medium">Non le hai ancora impostate.</span>{" "}
-					<span className="text-muted-foreground">
-						Finché non le salvi, il voto di laurea si calcola solo dalla media.
-					</span>
-				</p>
-			)}
-
-			<section className="flex flex-col gap-4">
-				<h3 className="text-sm font-semibold">La lode</h3>
-				<Row label="Quanto vale nella media" hint="Di solito vale 30">
-					<SegmentedControl
-						label="Valore della lode"
-						value={String(settings.honoursGrade) as (typeof HONOURS)[number]}
-						onChange={value => set("honoursGrade", Number(value))}
-						size="sm"
-						options={HONOURS.map(value => ({ value, label: value }))}
-					/>
-				</Row>
-				<Row label="Punti per ogni lode" hint="Aggiunti alla base di laurea">
-					<Stepper
-						label="Punti per ogni lode"
-						value={settings.honoursBonus}
-						onChange={value => set("honoursBonus", value)}
-						min={0}
-						max={2}
-						step={0.25}
-					>
-						<span className="text-sm font-semibold">
-							{formatFigure(settings.honoursBonus)}
+			<SheetBody className="flex flex-col gap-6">
+				{!career.settingsSaved && (
+					<p className="bg-warning/10 ring-warning/20 rounded-xl px-3 py-2.5 text-sm text-pretty ring-1 ring-inset">
+						<span className="font-medium">Non le hai ancora impostate.</span>{" "}
+						<span className="text-muted-foreground">
+							Finché non le salvi, il voto di laurea si calcola solo dalla media.
 						</span>
-					</Stepper>
-				</Row>
-				<Row label="Fino a un massimo di" hint="Il totale dei punti per le lodi">
-					<Stepper
-						label="Tetto dei punti per le lodi"
-						value={settings.honoursBonusCap}
-						onChange={value => set("honoursBonusCap", value)}
-						min={0}
-						max={10}
-						step={0.5}
-					>
-						<span className="text-sm font-semibold">
-							{formatFigure(settings.honoursBonusCap)}
-						</span>
-					</Stepper>
-				</Row>
-			</section>
+					</p>
+				)}
 
-			<Separator />
-
-			<section className="flex flex-col gap-4">
-				<h3 className="text-sm font-semibold">I punti della commissione</h3>
-				{POINTS.map(point => (
-					<Row key={point.key} label={point.label} hint={point.hint}>
+				<section className="flex flex-col gap-4">
+					<h3 className="text-sm font-semibold">La lode</h3>
+					<Row label="Quanto vale nella media" hint="Di solito vale 30">
+						<SegmentedControl
+							label="Valore della lode"
+							value={String(settings.honoursGrade) as (typeof HONOURS)[number]}
+							onChange={value => set("honoursGrade", Number(value))}
+							size="sm"
+							options={HONOURS.map(value => ({ value, label: value }))}
+						/>
+					</Row>
+					<Row label="Punti per ogni lode" hint="Aggiunti alla base di laurea">
 						<Stepper
-							label={point.label}
-							value={settings[point.key]}
-							onChange={value => set(point.key, value)}
+							label="Punti per ogni lode"
+							value={settings.honoursBonus}
+							onChange={value => set("honoursBonus", value)}
 							min={0}
-							max={point.max}
-							step={0.5}
+							max={2}
+							step={0.25}
 						>
 							<span className="text-sm font-semibold">
-								{formatFigure(settings[point.key])}
+								{formatFigure(settings.honoursBonus)}
 							</span>
 						</Stepper>
 					</Row>
-				))}
-			</section>
+					<Row label="Fino a un massimo di" hint="Il totale dei punti per le lodi">
+						<Stepper
+							label="Tetto dei punti per le lodi"
+							value={settings.honoursBonusCap}
+							onChange={value => set("honoursBonusCap", value)}
+							min={0}
+							max={10}
+							step={0.5}
+						>
+							<span className="text-sm font-semibold">
+								{formatFigure(settings.honoursBonusCap)}
+							</span>
+						</Stepper>
+					</Row>
+				</section>
 
-			<div className="bg-muted/50 mt-auto flex flex-col gap-1.5 rounded-xl px-4 py-3 text-sm">
-				<div className="flex justify-between gap-4">
-					<span className="text-muted-foreground">Base di laurea</span>
-					<span className="tabular-nums">
-						{formatFigure(before.base)} → <strong>{formatFigure(after.base)}</strong>
-					</span>
-				</div>
-				<div className="flex justify-between gap-4">
-					<span className="text-muted-foreground">Voto finale stimato</span>
-					<span className="tabular-nums">
-						{before.projectedFinal?.rounded ?? "—"} →{" "}
-						<strong>{after.projectedFinal?.rounded ?? "—"}</strong>
-					</span>
-				</div>
-			</div>
+				<Separator />
 
-			<SheetFooter className="flex-row justify-end gap-2">
+				<section className="flex flex-col gap-4">
+					<h3 className="text-sm font-semibold">I punti della commissione</h3>
+					{POINTS.map(point => (
+						<Row key={point.key} label={point.label} hint={point.hint}>
+							<Stepper
+								label={point.label}
+								value={settings[point.key]}
+								onChange={value => set(point.key, value)}
+								min={0}
+								max={point.max}
+								step={0.5}
+							>
+								<span className="text-sm font-semibold">
+									{formatFigure(settings[point.key])}
+								</span>
+							</Stepper>
+						</Row>
+					))}
+				</section>
+
+				<div className="bg-muted/50 mt-auto flex flex-col gap-1.5 rounded-xl px-4 py-3 text-sm">
+					<div className="flex justify-between gap-4">
+						<span className="text-muted-foreground">Base di laurea</span>
+						<span className="tabular-nums">
+							{formatFigure(before.base)} → <strong>{formatFigure(after.base)}</strong>
+						</span>
+					</div>
+					<div className="flex justify-between gap-4">
+						<span className="text-muted-foreground">Voto finale stimato</span>
+						<span className="tabular-nums">
+							{before.projectedFinal?.rounded ?? "—"} →{" "}
+							<strong>{after.projectedFinal?.rounded ?? "—"}</strong>
+						</span>
+					</div>
+				</div>
+			</SheetBody>
+
+			<SheetFooter className="flex-row justify-end">
 				<Button variant="outline" onClick={onClose}>
 					Annulla
 				</Button>

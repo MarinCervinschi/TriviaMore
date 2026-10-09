@@ -54,7 +54,7 @@ export function UserMenu() {
 				{USER_MENU_LINKS.map(link => (
 					<DropdownMenuItem key={link.to} asChild>
 						<Link to={link.to}>
-							{link.icon && <link.icon className="mr-2 h-4 w-4" />}
+							{link.icon && <link.icon className="h-4 w-4" />}
 							{link.label}
 						</Link>
 					</DropdownMenuItem>
@@ -64,7 +64,7 @@ export function UserMenu() {
 					onClick={() => logout.mutate({})}
 					className="text-danger focus:text-danger"
 				>
-					<Logout3Icon className="mr-2 h-4 w-4" />
+					<Logout3Icon />
 					Esci
 				</DropdownMenuItem>
 			</DropdownMenuContent>
