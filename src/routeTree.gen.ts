@@ -38,6 +38,7 @@ import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings
 import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
 import { Route as AppUserClassesRouteImport } from './routes/_app/user/classes'
+import { Route as AppUserCalendarRouteImport } from './routes/_app/user/calendar'
 import { Route as AppUserBookmarksRouteImport } from './routes/_app/user/bookmarks'
 import { Route as AppUserAchievementsRouteImport } from './routes/_app/user/achievements'
 import { Route as AppLegalTermsRouteImport } from './routes/_app/legal/terms'
@@ -220,6 +221,11 @@ const AppUserNotificationsRoute = AppUserNotificationsRouteImport.update({
 const AppUserClassesRoute = AppUserClassesRouteImport.update({
   id: '/classes',
   path: '/classes',
+  getParentRoute: () => AppUserRouteRoute,
+} as any)
+const AppUserCalendarRoute = AppUserCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => AppUserRouteRoute,
 } as any)
 const AppUserBookmarksRoute = AppUserBookmarksRouteImport.update({
@@ -461,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof AppLegalTermsRoute
   '/user/achievements': typeof AppUserAchievementsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
+  '/user/calendar': typeof AppUserCalendarRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
@@ -527,6 +534,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof AppLegalTermsRoute
   '/user/achievements': typeof AppUserAchievementsRoute
   '/user/bookmarks': typeof AppUserBookmarksRoute
+  '/user/calendar': typeof AppUserCalendarRoute
   '/user/classes': typeof AppUserClassesRoute
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
@@ -598,6 +606,7 @@ export interface FileRoutesById {
   '/_app/legal/terms': typeof AppLegalTermsRoute
   '/_app/user/achievements': typeof AppUserAchievementsRoute
   '/_app/user/bookmarks': typeof AppUserBookmarksRoute
+  '/_app/user/calendar': typeof AppUserCalendarRoute
   '/_app/user/classes': typeof AppUserClassesRoute
   '/_app/user/notifications': typeof AppUserNotificationsRoute
   '/_app/user/progress': typeof AppUserProgressRoute
@@ -669,6 +678,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/user/achievements'
     | '/user/bookmarks'
+    | '/user/calendar'
     | '/user/classes'
     | '/user/notifications'
     | '/user/progress'
@@ -735,6 +745,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/user/achievements'
     | '/user/bookmarks'
+    | '/user/calendar'
     | '/user/classes'
     | '/user/notifications'
     | '/user/progress'
@@ -805,6 +816,7 @@ export interface FileRouteTypes {
     | '/_app/legal/terms'
     | '/_app/user/achievements'
     | '/_app/user/bookmarks'
+    | '/_app/user/calendar'
     | '/_app/user/classes'
     | '/_app/user/notifications'
     | '/_app/user/progress'
@@ -1065,6 +1077,13 @@ declare module '@tanstack/react-router' {
       path: '/classes'
       fullPath: '/user/classes'
       preLoaderRoute: typeof AppUserClassesRouteImport
+      parentRoute: typeof AppUserRouteRoute
+    }
+    '/_app/user/calendar': {
+      id: '/_app/user/calendar'
+      path: '/calendar'
+      fullPath: '/user/calendar'
+      preLoaderRoute: typeof AppUserCalendarRouteImport
       parentRoute: typeof AppUserRouteRoute
     }
     '/_app/user/bookmarks': {
@@ -1414,6 +1433,7 @@ interface AppUserRouteRouteChildren {
   AppUserCareerRouteRoute: typeof AppUserCareerRouteRouteWithChildren
   AppUserAchievementsRoute: typeof AppUserAchievementsRoute
   AppUserBookmarksRoute: typeof AppUserBookmarksRoute
+  AppUserCalendarRoute: typeof AppUserCalendarRoute
   AppUserClassesRoute: typeof AppUserClassesRoute
   AppUserNotificationsRoute: typeof AppUserNotificationsRoute
   AppUserProgressRoute: typeof AppUserProgressRoute
@@ -1432,6 +1452,7 @@ const AppUserRouteRouteChildren: AppUserRouteRouteChildren = {
   AppUserCareerRouteRoute: AppUserCareerRouteRouteWithChildren,
   AppUserAchievementsRoute: AppUserAchievementsRoute,
   AppUserBookmarksRoute: AppUserBookmarksRoute,
+  AppUserCalendarRoute: AppUserCalendarRoute,
   AppUserClassesRoute: AppUserClassesRoute,
   AppUserNotificationsRoute: AppUserNotificationsRoute,
   AppUserProgressRoute: AppUserProgressRoute,

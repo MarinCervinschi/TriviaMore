@@ -1,4 +1,5 @@
 import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
+import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { CompassIcon } from "@solar-icons/react/linear/compass";
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
@@ -39,6 +40,7 @@ export const STUDY_ITEMS: NavItem[] = [
 		fuzzy: false,
 	},
 	{ to: "/user/career", icon: NotebookIcon, label: "Carriera", fuzzy: true },
+	{ to: "/user/calendar", icon: CalendarIcon, label: "Calendario", fuzzy: false },
 	{ to: "/user/analytics", icon: GraphUpIcon, label: "Analytics", fuzzy: true },
 	{ to: "/user/bookmarks", icon: BookmarkIcon, label: "Segnalibri", fuzzy: false },
 ];
@@ -79,7 +81,7 @@ export const MOBILE_ITEMS: NavItem[] = [
 	HOME_ITEM,
 	CATALOG_ITEMS[0]!,
 	STUDY_ITEMS[0]!,
-	STUDY_ITEMS[2]!,
+	STUDY_ITEMS[3]!,
 ];
 
 export function useIsAdmin() {

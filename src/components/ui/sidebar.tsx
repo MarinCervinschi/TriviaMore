@@ -34,7 +34,8 @@ const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 type SidebarContextProps = {
 	state: "expanded" | "collapsed";
 	open: boolean;
-	setOpen: (open: boolean) => void;
+	/** `persist: false` folds or unfolds for one page without touching the saved choice. */
+	setOpen: (open: boolean, options?: { persist?: boolean }) => void;
 	openMobile: boolean;
 	setOpenMobile: (open: boolean) => void;
 	isMobile: boolean;
@@ -71,7 +72,7 @@ function SidebarProvider({
 	const [_open, _setOpen] = React.useState(defaultOpen);
 	const open = openProp ?? _open;
 	const setOpen = React.useCallback(
-		(value: boolean | ((value: boolean) => boolean)) => {
+		(value: boolean | ((value: boolean) => boolean), { persist = true } = {}) => {
 			const openState = typeof value === "function" ? value(open) : value;
 			if (setOpenProp) {
 				setOpenProp(openState);
@@ -79,7 +80,9 @@ function SidebarProvider({
 				_setOpen(openState);
 			}
 
-			document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+			if (persist) {
+				document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+			}
 		},
 		[setOpenProp, open]
 	);

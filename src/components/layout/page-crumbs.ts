@@ -1,6 +1,7 @@
 import { BookIcon } from "@solar-icons/react/linear/book";
 import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
 import { BuildingsIcon } from "@solar-icons/react/linear/buildings";
+import { CalendarIcon } from "@solar-icons/react/linear/calendar";
 import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
 import { CompassIcon } from "@solar-icons/react/linear/compass";
 import { ConfettiIcon } from "@solar-icons/react/linear/confetti";
@@ -191,6 +192,7 @@ const CRUMBS: Record<string, CrumbDef> = {
 	"/_app/user/notifications": { label: "Notifiche", icon: InboxIcon },
 	"/_app/user/settings": { label: "Impostazioni", icon: SettingsIcon },
 
+	"/_app/user/calendar": { label: "Calendario", icon: CalendarIcon },
 	"/_app/user/career/": { label: "Carriera", icon: NotebookIcon },
 	"/_app/user/career/exams": {
 		label: "Libretto",
