@@ -515,3 +515,34 @@ export function CareerSkeleton() {
 		</SkeletonRoot>
 	);
 }
+
+/** Must match the calendar page: the sidebar, then the toolbar over the calendar card, at full height. */
+export function CalendarSkeleton() {
+	return (
+		<SkeletonRoot label="Caricamento calendario…" className="px-4 py-4 md:px-6">
+			<div className="flex h-[calc(100dvh-var(--app-header-h)-3rem)] min-h-[36rem] gap-6">
+				<div className="hidden w-64 shrink-0 space-y-6 pt-1 md:block">
+					<Skeleton className="h-10 w-24 rounded-xl" />
+					<Skeleton className="h-64 w-full rounded-xl" />
+					<div className="space-y-2">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<Skeleton key={i} className="h-6 w-full" />
+						))}
+					</div>
+				</div>
+				<div className="flex min-w-0 flex-1 flex-col">
+					<div className="flex items-center gap-2 pb-3">
+						<Skeleton className="h-8 w-8 rounded-lg" />
+						<Skeleton className="h-8 w-16 rounded-full" />
+						<Skeleton className="h-8 w-16 rounded-xl" />
+						<Skeleton className="h-7 w-48" />
+						<Skeleton className="ml-auto h-8 w-28 rounded-xl" />
+					</div>
+					<SkeletonInset className="min-h-0 flex-1">
+						<Skeleton className="h-full w-full rounded-none" />
+					</SkeletonInset>
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}

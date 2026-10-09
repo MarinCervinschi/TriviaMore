@@ -35,6 +35,7 @@ import {
 	AnalyticsSkeleton,
 	AttemptHistorySkeleton,
 	BookmarksSkeleton,
+	CalendarSkeleton,
 	CareerSkeleton,
 	EntityProgressSkeleton,
 	NotificationsSkeleton,
@@ -123,6 +124,9 @@ export const User: Story = {
 			</Labelled>
 			<Labelled label="BookmarksSkeleton">
 				<BookmarksSkeleton />
+			</Labelled>
+			<Labelled label="CalendarSkeleton">
+				<CalendarSkeleton />
 			</Labelled>
 			<Labelled label="CareerSkeleton">
 				<CareerSkeleton />
