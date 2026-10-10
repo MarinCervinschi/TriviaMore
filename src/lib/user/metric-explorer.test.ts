@@ -141,7 +141,6 @@ describe("buildQualityRows", () => {
 	it("keeps one row per day with data, plus a closing row at the window end", () => {
 		const { range } = buildMetricWindow(daily, "week", TODAY);
 		const rows = buildQualityRows(daily, "grade", "STUDY", range);
-		// 04-18 *is* the window end, so no extra closing row is added.
 		expect(rows.map(r => r.value)).toEqual([30, 20]);
 	});
 
@@ -160,7 +159,6 @@ describe("buildQualityRows", () => {
 		const rows = buildQualityRows(mixed, "grade", "both", range);
 		expect(rows[0]!.esame).toBeNull();
 		expect(rows[1]!.studio).toBeNull();
-		// The study line holds its 30 through the day it did not run.
 		expect(rows[1]!.studioCum).toBe(30);
 	});
 

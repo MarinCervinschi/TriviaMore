@@ -34,7 +34,6 @@ export type QuizSection = {
 	className: string;
 	courseName: string | null;
 	departmentName: string | null;
-	/** The codes the browse routes are built from — a breadcrumb needs the ancestors, not just this level. */
 	departmentCode: string | null;
 	courseCode: string | null;
 	classCode: string | null;
@@ -58,22 +57,16 @@ export type UserAnswer = {
 	score?: number;
 };
 
-/**
- * This attempt's place in the run of attempts on the same section, in the same
- * mode. The series stops at this attempt: the page is about this one, so "5º
- * tentativo" and "nuovo massimo" mean what they say even when the student has
- * since run the section again.
- */
+/** The series stops at this attempt, even if the section was run again since. */
 export type AttemptHistory = {
-	/** Oldest first, this attempt last. Capped — the tail is what is worth plotting. */
+	/** Oldest first, this attempt last, capped. */
 	points: { attemptId: string; score: number; completedAt: string }[];
-	/** Mean grade over the run up to and including this attempt. */
+	/** Mean grade up to and including this attempt. */
 	average: number;
-	/** Which attempt this is, counting from the first. */
 	position: number;
-	/** True only when there was something to beat and this attempt beat it. */
+	/** True only when there was an earlier score and this attempt beat it. */
 	isPersonalBest: boolean;
-	/** Mean seconds per answered question over the EARLIER attempts — null when there are none. */
+	/** Over the earlier attempts; null when there are none. */
 	avgSecondsPerQuestion: number | null;
 };
 

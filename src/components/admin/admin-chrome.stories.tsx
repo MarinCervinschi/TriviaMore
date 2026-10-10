@@ -10,11 +10,6 @@ import { AdminSidebar } from "./admin-sidebar";
 import { BrowseAdminButton } from "./browse-admin-button";
 import { MaintainerInviteDialog } from "./maintainer-invite-dialog";
 
-/**
- * The admin chrome, which is role-shaped: the sidebar hides the users section and the content tree from
- * a MAINTAINER, and `BrowseAdminButton` appears for them only on a course they maintain. Both read
- * their data from queries, seeded here, so the three roles are one story each rather than a description.
- */
 const meta = {
 	title: "Admin/Chrome",
 	parameters: { layout: "fullscreen" },
@@ -109,7 +104,7 @@ export const SidebarAdmin: Story = {
 	),
 };
 
-/** No users section, no content tree: a maintainer manages courses, which live in the dashboard. */
+/** A maintainer gets no users section and no content tree. */
 export const SidebarMaintainer: Story = {
 	name: "La sidebar, MAINTAINER",
 	parameters: seeded("MAINTAINER"),
@@ -120,7 +115,7 @@ export const SidebarMaintainer: Story = {
 	),
 };
 
-/** A maintainer sees the button only when `courseId` is one of theirs — c1 yes, c2 no. */
+/** The button shows on c1, a course this maintainer has, and not on c2. */
 export const AdminButton: Story = {
 	name: "Il bottone di gestione",
 	parameters: { ...seeded("MAINTAINER"), layout: "padded" },

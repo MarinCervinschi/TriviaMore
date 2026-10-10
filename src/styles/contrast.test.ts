@@ -1,7 +1,4 @@
-/**
- * The contrast gate. A pair needing less than 4.5:1 is added with the floor it does need and a
- * reason; a row is never deleted to make this pass.
- */
+/** A pair below 4.5:1 is added with its own floor and a reason; a row is never deleted to make this pass. */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
@@ -82,7 +79,7 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["warning", "muted", 4.5, "text-warning on muted"],
 	["info", "background", 4.5, "text-info"],
 	["info", "muted", 4.5, "text-info on muted"],
-	// Against the real foreground token, not white: that difference once hid a failing 4.33.
+	// Against the real foreground token, because white once hid a failing 4.33.
 	["primary-foreground", "primary", 4.5, "the primary button's label"],
 	["destructive-foreground", "destructive", 4.5, "the destructive button's label"],
 	["success-foreground", "success", 4.5, "a success fill's label"],
@@ -93,9 +90,6 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["chart-3-ink", "muted", 4.5, "a category pill's label"],
 	["chart-4-ink", "muted", 4.5, "a category pill's label"],
 	["chart-5-ink", "muted", 4.5, "a category pill's label"],
-	// The tier numeral on a medal: `bg-current` takes the accent, and the glyph is
-	// the card token used as ink. Both halves flip with the theme, so the pair holds
-	// in each — which is exactly what has to be proven rather than assumed.
 	["card", "chart-1-ink", 4.5, "the tier numeral on a medal"],
 	["card", "chart-2-ink", 4.5, "the tier numeral on a medal"],
 	["card", "chart-3-ink", 4.5, "the tier numeral on a medal"],
@@ -103,16 +97,12 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["card", "chart-5-ink", 4.5, "the tier numeral on a medal"],
 	["card", "brand", 4.5, "the tier numeral on a contribution medal"],
 	["card", "muted-foreground", 4.5, "the tier numeral on a colourless medal"],
-	// A solid medal's glyph on the ramp's FILL: a graphic, so 1.4.11's 3:1. `card`
-	// rather than a white literal — white measures 2.83 on chart-3 in dark and
-	// fails, because the fills lighten there while white cannot.
+	// `card` because white measures 2.83 on chart-3 in dark mode.
 	["card", "chart-1", 3, "a solid medal's glyph"],
 	["card", "chart-2", 3, "a solid medal's glyph"],
 	["card", "chart-3", 3, "a solid medal's glyph"],
 	["card", "chart-4", 3, "a solid medal's glyph"],
 	["card", "chart-5", 3, "a solid medal's glyph"],
-	// The rollup's level icons: a graphic, so 1.4.11's 3:1, and the fill rather than
-	// the ink — which is why these are the fills' only gated rows.
 	["chart-2", "muted", 3, "a level icon in the progress rollup"],
 	["chart-4", "muted", 3, "a level icon in the progress rollup"],
 	["chart-5", "muted", 3, "a level icon in the progress rollup"],
@@ -124,12 +114,6 @@ const PAIRS: [fg: string, bg: string, floor: number, what: string][] = [
 	["border", "card", 1.2, "a card's own border"],
 ];
 
-/**
- * Pairs whose background is a translucent token composited over a surface. A locked
- * medal is the case that needs this: both halves are `muted-foreground`, at two
- * different alphas, so neither is a token pair the table above can express — and a
- * fresh account sees the locked state on nearly every medal.
- */
 const COMPOSITE_PAIRS: [
 	fg: string,
 	bgFg: string,

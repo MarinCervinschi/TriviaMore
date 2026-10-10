@@ -20,7 +20,6 @@ export function ContentExplorer() {
 
 			<div className="container">
 				<div className="grid items-center gap-12 lg:grid-cols-2">
-					{/* Left — heading */}
 					<motion.div
 						ref={headingRef}
 						variants={fadeUp}
@@ -54,7 +53,6 @@ export function ContentExplorer() {
 						</div>
 					</motion.div>
 
-					{/* Right — visual tree diagram */}
 					<ContentHierarchyDiagram />
 				</div>
 			</div>

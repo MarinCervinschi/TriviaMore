@@ -86,6 +86,22 @@ function BrowseExample() {
 	);
 }
 
+function ResizableExample() {
+	const table = useDataTable({
+		data: SECTIONS,
+		columns,
+		pageSize: 5,
+	});
+
+	return (
+		<DataTable
+			table={table}
+			rowLink={row => <Link to="/browse" aria-label={`Apri ${row.name}`} />}
+			toolbar={<DataTableToolbar table={table} searchPlaceholder="Cerca sezioni..." />}
+		/>
+	);
+}
+
 function EmptyExample() {
 	const table = useDataTable({ data: [] as Section[], columns });
 
@@ -98,10 +114,14 @@ function EmptyExample() {
 	);
 }
 
-/** Dense rows, an actions column and no row navigation — the admin layout. */
 export const Admin: Story = { render: () => <AdminExample /> };
 
-/** Roomy rows with a trailing arrow column that makes each row navigable. */
 export const Browse: Story = { render: () => <BrowseExample /> };
+
+/** Drag a header's right edge, or focus it and use the arrows; a double click restores the widths. */
+export const Resizable: Story = {
+	name: "Colonne ridimensionabili",
+	render: () => <ResizableExample />,
+};
 
 export const Empty: Story = { render: () => <EmptyExample /> };

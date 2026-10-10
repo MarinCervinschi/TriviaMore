@@ -2,8 +2,13 @@ import { asc, eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { courseClasses, courses, departmentLocations, departments } from "@/db/schema";
+import {
+	courseColumns,
+	departmentColumns,
+	locationColumns,
+} from "@/lib/catalog/columns";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 
-import { courseColumns, departmentColumns, locationColumns } from "../columns";
 import type { BrowseDepartment, CampusLocation, DepartmentWithCourses } from "../types";
 import { findDepartmentByCode } from "./shared";
 
@@ -49,7 +54,10 @@ export async function getDepartmentWithCourses(
 		getDb()
 			.select({
 				...courseColumns,
-				classCount: sql<number>`count(${courseClasses.classId})`.mapWith(Number),
+				classCount:
+					sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(getDb())})`.mapWith(
+						Number
+					),
 			})
 			.from(courses)
 			.leftJoin(courseClasses, eq(courseClasses.courseId, courses.id))
@@ -64,7 +72,13 @@ export async function getDepartmentWithCourses(
 
 export async function getDepartmentCourseList(departmentId: string) {
 	return getDb()
-		.select({ id: courses.id, name: courses.name, code: courses.code })
+		.select({
+			id: courses.id,
+			name: courses.name,
+			code: courses.code,
+			courseType: courses.courseType,
+			cfu: courses.cfu,
+		})
 		.from(courses)
 		.where(eq(courses.departmentId, departmentId))
 		.orderBy(asc(courses.name));

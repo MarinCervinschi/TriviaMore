@@ -12,11 +12,6 @@ interface LegalHeroProps {
 	lastUpdated: string;
 }
 
-/**
- * Hero block shown above each legal document. Provides at-a-glance
- * metadata (version, last-updated date) so users who re-accept after
- * a version bump immediately see what document they are viewing.
- */
 export function LegalHero({
 	icon: Icon,
 	title,

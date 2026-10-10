@@ -1277,6 +1277,99 @@ D25: **lifting or recolouring the card itself** — D28 moved the canvas, never 
 
 ---
 
+## D29 — The shell is a sidebar and an inset panel, and the band lives inside it
+
+**Decided 2026-09-20 (#148).** The floating 66px icon rail is replaced by the shadcn sidebar
+primitive in its **`inset`** variant: a sidebar on the canvas, and the page in a rounded panel a tone
+above it. That is D28 applied to the shell rather than to a card — canvas ≠ surface, at shell scale.
+
+**ReUI was evaluated and is not the source.** `reui.io/r/sidebar.json` answers **401**: it is behind a
+licence, and what it sells is shadcn's own API with paid app-shell blocks on top. The primitive is
+vendored from shadcn's **`new-york-v4`** registry — the unsuffixed style is still Tailwind v3
+(`w-[--sidebar-width]`, `theme(spacing.4)`) and does not compile here.
+
+- **Six `--sidebar-*` aliases, not a family.** They map onto tokens the app already has, so no colour
+  enters the system and the contrast gate needs no new row. D13 deleted 16 of these because nothing
+  read them; these six are exactly the six `sidebar.tsx` reads. `--sidebar` is the **canvas**.
+- **The 90px gutter is gone.** `--spacing-rail{,-inset,-gutter}` and `.full-bleed-band` went with it:
+  the panel *is* the column, so nothing needs to reach across a rail any more. The `container`'s cap
+  became `var(--container-max, 80rem)`, which the panel sets to `none` — an 80rem column centred in a
+  wide panel leaves exactly the gutters the shell was meant to remove. **Amended by D31:** the panel
+  still sets `none`, but the wrapper around the `Outlet` sets the measure back, so the trail stays
+  full width while the content does not.
+- **The band starts below the header, inside the panel.** D13 put one band in the shell because it was
+  the only place that spanned the gutter; with no gutter, the reason is different but the count is the
+  same. **The orb is off inside the app shell** (`glow={false}`) and kept for the public one.
+- **The panel is its own scroll port from `md` up**, so its top edge stays on screen. The router is
+  told by `scrollToTopSelectors`, or a new page inherits the previous scroll.
+
+**Rules out:** buying ReUI for a component shadcn gives away; a `--sidebar-*` family with values of its
+own; reinstating the rail gutter or `.full-bleed-band`; a page-level rule under a heading — over the
+dot field it reads as neither boundary nor decoration; `overflow-hidden` on the inset panel, which
+stops every `sticky` inside it.
+
+---
+
+## D30 — One search, and the kind of result is a filter on it
+
+**Decided 2026-09-20.** `/search/courses` and `/search/classes` become `/search`, with `tipo` as a
+search param and the old paths redirecting onto it. A course and a class are two shapes of one
+question — "what is there on this subject" — and asking it twice made the catalogue feel like two
+catalogues.
+
+- **Grouped, not merged.** Courses and classes have **separate full-text indexes with no shared
+  score**, so one ranked list would need a ranking invented for it — server work, and an order nobody
+  could explain. Grouped, `searchCourses` and `searchClasses` stay exactly the queries they were:
+  `Tutto` calls both, a focused tab calls one. Each tab carries its own total.
+- **The kind decides which filters exist**, which is why it is not merely one filter among the others.
+  Department and campus cut both; type is only a course's, year and mandatory only a class's. The
+  funnel names each one's scope, so a year emptying the courses reads as the rule rather than a fault.
+- **The filter is the tables' funnel**, rebuilt on the same primitives — at UI level, not by mounting a
+  table. It stays **single-select**: the tables' version filters loaded rows client-side and can offer
+  *is one of*; this one filters in SQL on one value per facet, and a multi-select that silently used
+  the first would be a lie. Multi-select is an `inArray` away, on both services, when it is wanted.
+- **A kind that matched nothing says so in a line**, not with the whole page: the other kind still has
+  results. This state does not exist in a single-kind search, and it is the one the split created.
+
+**Rules out:** a second search page for a third kind; a merged ranked list without a ranking that can
+be explained; a multi-select facet over a server that takes one value; a page-level empty state when
+only one of the two groups is empty.
+
+---
+
+## D31 — The content is measured, the chrome is not
+
+**Decided 2026-09-23.** D29 removed the `container`'s cap inside the panel, on the
+grounds that an 80rem column centred in a wide panel re-created the gutters the shell
+had just removed. On a 2560×1440 screen that turned out to be half the story: the
+dashboard and the catalogue read as **stretched**, because a card grid with a fixed
+column count shows the same cards wider, not more of them.
+
+**The cap comes back as a default, and wraps the `Outlet` rather than the panel.**
+`80rem` sits inside the 1200–1440px that the guidance gives an application. The panel
+keeps `--container-max: none`, so the header's trail still starts at the panel edge:
+the trail belongs to the shell, and indenting it to a column would read as page
+content. Both conventions exist in the wild — the header aligned to the body column,
+or full-bleed chrome over a measured body; this is the second.
+
+- **The question is whether width carries information**, not whether the page holds a
+  table. A twelve-column chart grid and a long attempt history earn their width; three
+  cards in a row do not.
+- **A page opts out with `[--container-max:none]`** on the element carrying
+  `container`. Today: analytics and its entity pages, the attempt history, I miei
+  insegnamenti, the admin layout.
+- **A default, not opt-in**, although the usual advice for a data dashboard is the
+  reverse. Under this criterion most pages want the measure, so the exceptions are
+  fewer than the adoptions would be — and a page written next is born right.
+- **A tab set shares one measure.** Traguardi lives in the analytics tab row, so it
+  opts out with the rest of that row: switching tab must not move the layout.
+
+**Rules out:** the cap on the panel, which would indent the trail; a cap on a page
+whose width is information; a second measure invented per page — one number, and an
+opt-out; a page in someone else's tab row choosing its own width.
+
+---
+
 ## The rules these decisions serve
 
 **Added 2026-08-09.** The decisions above are choices; these are the constraints they have to
@@ -1448,3 +1541,6 @@ is a CSS transition on state the user caused, and exactly two places earn it.
 | 2026-08-11 | D19–D20 close #152 and #154: ink tokens split from surfaces, undo for the reversible |
 | 2026-08-11 | D21–D22: one Italian word per catalog level; the focus ring declared once |
 | 2026-08-12 | D23 closes O5 — icon motion is CSS on user-caused state. **D9 reversed**: AutoAnimate not adopted, Framer stays the only motion dependency |
+| 2026-09-20 | D29 (#148): the shell becomes sidebar + inset panel; the 90px rail gutter, `.full-bleed-band` and the app-shell orb are retired |
+| 2026-09-20 | D30: the two catalogue searches become one, the kind a filter on it; the phone tiles D21 named fold into a single «Cerca» |
+| 2026-09-23 | D31 amends D29: the content takes an 80rem measure again, the chrome stays full width; opt out where width is information |

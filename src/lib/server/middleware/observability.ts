@@ -66,22 +66,17 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 			try {
 				const result = await next();
 				status = result.response.status;
-				// Lets a browser-side report name the exact request it came from.
-				// Some responses carry immutable headers, and a log line is never
-				// worth failing a request over.
+				// Some responses carry immutable headers, and a log line is never worth failing a request.
 				try {
 					result.response.headers.set("x-request-id", context.traceId);
-				} catch {
-					/* empty */
-				}
+				} catch {}
 				return result;
 			} catch (error) {
 				failure = error;
 				throw error;
 			} finally {
 				const elapsed = performance.now() - startedAt;
-				// Nothing was served, so there is no status to report: defaulting it
-				// to 500 made every scanner that hangs up look like a server error.
+				// Nothing was served, so there is no status to report.
 				const disconnected = status === undefined && isDisconnect(failure, request);
 				const properties = {
 					Method: request.method,

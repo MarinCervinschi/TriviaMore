@@ -26,6 +26,7 @@ function hasClassesFilter(p: SearchClassesParams): boolean {
 		p.query ||
 		p.departmentId ||
 		p.courseId ||
+		p.campus ||
 		p.classYear !== undefined ||
 		p.mandatory !== undefined
 	);
@@ -60,10 +61,10 @@ export const browseQueries = {
 			staleTime: STALE_TIME.SLOW,
 		}),
 
-	course: (deptCode: string, courseCode: string) =>
+	course: (deptCode: string, courseCode: string, cohort?: number) =>
 		queryOptions({
-			queryKey: ["browse", "course", deptCode, courseCode],
-			queryFn: () => getCourseWithClassesFn({ data: { deptCode, courseCode } }),
+			queryKey: ["browse", "course", deptCode, courseCode, cohort ?? null],
+			queryFn: () => getCourseWithClassesFn({ data: { deptCode, courseCode, cohort } }),
 			staleTime: STALE_TIME.SLOW,
 		}),
 

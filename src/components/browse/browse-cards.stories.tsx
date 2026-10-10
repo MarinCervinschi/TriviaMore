@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { DepartmentCard, type DepartmentCardData } from "./department-card";
 
-// The department card carries D4's decorative tint keyed to its area, and the area's icon beside it —
-// which is what keeps colour from being the only channel when two areas collapse under CVD.
 const meta = {
 	title: "Browse/DepartmentCard",
 	parameters: { layout: "padded" },
@@ -61,7 +59,7 @@ const DEPARTMENTS: DepartmentCardData[] = [
 	},
 ];
 
-/** All five areas at once, which is the only way to check the tints hold apart. */
+/** All five areas at once, to check that the tints hold apart. */
 export const AllAreas: Story = {
 	name: "Tutte le aree",
 	render: () => (
@@ -73,7 +71,6 @@ export const AllAreas: Story = {
 	),
 };
 
-/** No description, no area: the card has to hold its shape with the optional parts missing. */
 export const Bare: Story = {
 	name: "Senza descrizione né area",
 	render: () => (

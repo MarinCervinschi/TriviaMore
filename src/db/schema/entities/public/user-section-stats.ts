@@ -3,19 +3,12 @@ import { doublePrecision, foreignKey, integer, pgTable, primaryKey, timestamp, u
 import { sections } from "../catalog/sections";
 import { profiles } from "./profiles";
 
-/**
- * One row per section a user has finished a quiz in. Carries four metrics at
- * once — the three breadth counts and the improvement — and its size is bounded
- * by the catalogue rather than by how long the user has been studying.
- */
 export const userSectionStats = pgTable(
 	"user_section_stats",
 	{
 		userId: uuid("user_id").notNull(),
 		sectionId: uuid("section_id").notNull(),
 		runs: integer().default(0).notNull(),
-		// First and last by completion, which is what an improvement is measured
-		// between; both are kept so the delta survives a reordered replay.
 		firstScore: doublePrecision("first_score"),
 		lastScore: doublePrecision("last_score"),
 		firstAt: timestamp("first_at", { withTimezone: true, mode: "string" }),

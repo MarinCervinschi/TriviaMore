@@ -1,9 +1,9 @@
-import { cloneElement } from "react";
-import type { ReactElement, ReactNode } from "react";
+import { cloneElement, useRef } from "react";
+import type { KeyboardEvent, ReactElement, ReactNode } from "react";
 
 import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { FlexRender } from "@tanstack/react-table";
-import type { RowData } from "@tanstack/react-table";
+import type { Header, RowData } from "@tanstack/react-table";
 
 import { InsetCard } from "@/components/ui/inset-card";
 import {
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTablePagination } from "./data-table-pagination";
+import type { DataTableFeatures } from "./features";
 import type {
 	DataTableAlign,
 	DataTableBreakpoint,
@@ -37,6 +38,8 @@ const HIDE_BELOW_CLASS: Record<DataTableBreakpoint, string> = {
 	xl: "hidden xl:table-cell",
 };
 
+const MIN_COLUMN_WIDTH = 48;
+
 const DENSITY_CLASS = {
 	comfortable: "px-3 py-4 first:pl-6 last:pr-6",
 	compact: "px-3 py-3 first:pl-4 last:pr-4",
@@ -44,16 +47,12 @@ const DENSITY_CLASS = {
 
 export type DataTableProps<TData extends RowData> = {
 	table: DataTableInstance<TData>;
-	/** Rendered above the table, typically a `<DataTableToolbar>`. */
 	toolbar?: ReactNode;
-	/** Replaces the table when there are no rows to show. */
 	empty?: ReactNode;
-	/**
-	 * Makes each row navigable. Return a bare `<Link>` — the arrow column, its
-	 * label and the hover styling are added here. Return null for a row with
-	 * nowhere to go: its arrow cell stays empty so the column keeps its shape.
-	 */
+	/** Return a bare `<Link>`, or null for a row with nowhere to go. */
 	rowLink?: (row: TData) => ReactElement | null;
+	/** Makes the whole row a pointer target; keep `rowLink` too, since a row cannot take keyboard focus. */
+	onRowClick?: (row: TData) => void;
 	density?: keyof typeof DENSITY_CLASS;
 	showPagination?: boolean;
 	className?: string;
@@ -64,12 +63,53 @@ export function DataTable<TData extends RowData>({
 	toolbar,
 	empty,
 	rowLink,
+	onRowClick,
 	density = "comfortable",
 	showPagination = true,
 	className,
 }: DataTableProps<TData>) {
 	const rows = table.getRowModel().rows;
 	const cellPadding = DENSITY_CLASS[density];
+
+	const resizable = Boolean(table.options.enableColumnResizing);
+	const sized = resizable && Object.keys(table.state.columnSizing).length > 0;
+	const headerCells = useRef(new Map<string, HTMLTableCellElement>());
+
+	// The first resize freezes every column at the width it renders at, so nothing jumps to a default.
+	const freezeWidths = () => {
+		if (sized) return;
+		const widths: Record<string, number> = {};
+		for (const header of table.getFlatHeaders()) {
+			const width = headerCells.current.get(header.id)?.offsetWidth;
+			if (width) widths[header.column.id] = width;
+		}
+		table.setColumnSizing(widths);
+	};
+
+	const startResize = (
+		header: Header<DataTableFeatures, TData, unknown>,
+		event: unknown
+	) => {
+		freezeWidths();
+		header.getResizeHandler()(event);
+	};
+
+	const resizeByKey = (
+		header: Header<DataTableFeatures, TData, unknown>,
+		event: KeyboardEvent
+	) => {
+		const step = event.key === "ArrowRight" ? 16 : event.key === "ArrowLeft" ? -16 : 0;
+		if (!step) return;
+		event.preventDefault();
+		freezeWidths();
+		table.setColumnSizing(old => ({
+			...old,
+			[header.column.id]: Math.max(
+				header.column.columnDef.minSize ?? MIN_COLUMN_WIDTH,
+				(old[header.column.id] ?? header.getSize()) + step
+			),
+		}));
+	};
 
 	const showEmpty = rows.length === 0 && empty;
 	const showPager = showPagination && !showEmpty && table.getPageCount() > 1;
@@ -85,19 +125,32 @@ export function DataTable<TData extends RowData>({
 				empty
 			) : (
 				<div className="overflow-hidden">
-					<Table>
-						<TableHeader>
+					<Table
+						className={sized ? "table-fixed" : undefined}
+						containerClassName="scrollbar-hover max-h-[70dvh]"
+					>
+						<TableHeader className="sticky top-0 z-10">
 							{table.getHeaderGroups().map(headerGroup => (
-								<TableRow key={headerGroup.id} className="bg-muted/50">
+								<TableRow
+									key={headerGroup.id}
+									className="bg-[color-mix(in_oklab,var(--color-muted)_50%,var(--color-card))]"
+								>
 									{headerGroup.headers.map(header => {
 										const meta = header.column.columnDef.meta;
 										const align = meta?.align ?? "left";
 										return (
 											<TableHead
 												key={header.id}
+												ref={element => {
+													if (element) headerCells.current.set(header.id, element);
+													else headerCells.current.delete(header.id);
+												}}
 												colSpan={header.colSpan}
+												style={sized ? { width: header.getSize() } : undefined}
 												className={cn(
 													"text-muted-foreground eyebrow h-auto whitespace-nowrap",
+													resizable && "group/column relative",
+													sized && "overflow-hidden text-ellipsis",
 													cellPadding,
 													ALIGN_CLASS[align],
 													meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],
@@ -109,9 +162,29 @@ export function DataTable<TData extends RowData>({
 												) : (
 													<FlexRender header={header} />
 												)}
+												{resizable && header.column.getCanResize() && (
+													<div
+														role="separator"
+														aria-orientation="vertical"
+														aria-label={`Larghezza di ${meta?.label ?? header.column.id}`}
+														aria-valuenow={Math.round(header.getSize())}
+														tabIndex={0}
+														onMouseDown={event => startResize(header, event)}
+														onTouchStart={event => startResize(header, event)}
+														onDoubleClick={() => table.resetColumnSizing(true)}
+														onKeyDown={event => resizeByKey(header, event)}
+														className={cn(
+															"absolute inset-y-0 right-0 w-2 cursor-col-resize touch-none outline-none select-none",
+															"after:absolute after:inset-y-2 after:right-0 after:w-0.5 after:rounded-full after:bg-transparent",
+															"group-hover/column:after:bg-foreground/60 hover:after:bg-foreground focus-visible:after:bg-ring",
+															header.column.getIsResizing() && "after:bg-foreground!"
+														)}
+													/>
+												)}
 											</TableHead>
 										);
 									})}
+									{sized && <TableHead aria-hidden className="p-0" />}
 									{rowLink && <TableHead className="w-10 pr-6" />}
 								</TableRow>
 							))}
@@ -120,16 +193,28 @@ export function DataTable<TData extends RowData>({
 							{rows.map(row => {
 								const link = rowLink?.(row.original);
 								return (
-									<TableRow key={row.id} className="group">
+									<TableRow
+										key={row.id}
+										className={cn("group", onRowClick && "cursor-pointer")}
+										onClick={
+											onRowClick &&
+											(event => {
+												if ((event.target as Element).closest("a, button")) return;
+												onRowClick(row.original);
+											})
+										}
+									>
 										{row.getVisibleCells().map(cell => {
 											const meta = cell.column.columnDef.meta;
 											return (
 												<TableCell
 													key={cell.id}
 													className={cn(
+														"whitespace-nowrap",
 														cellPadding,
 														ALIGN_CLASS[meta?.align ?? "left"],
 														meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],
+														sized && "overflow-hidden",
 														meta?.cellClassName
 													)}
 												>
@@ -137,6 +222,7 @@ export function DataTable<TData extends RowData>({
 												</TableCell>
 											);
 										})}
+										{sized && <TableCell aria-hidden className="p-0" />}
 										{rowLink && (
 											<TableCell className="py-4 pr-6">
 												{link &&

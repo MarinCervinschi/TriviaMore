@@ -6,17 +6,12 @@ import type { MasteryScope } from "../schemas";
 import type { DailyFlashcardDay, DailyStudyStat } from "../types";
 import { sectionScopeSql } from "./scope";
 
-// Rows without a mode snapshot are dropped so the split stays clean (the #159
-// backfill covers every historical attempt). Optionally scoped to a section /
-// class / course. Callers window these client-side.
 export async function getDailyStudyStats(
 	userId: string,
 	scope?: MasteryScope
 ): Promise<DailyStudyStat[]> {
 	const db = getDb();
-	// Both sides scope on the ATTEMPT's section, as `getMastery` does: an exam
-	// simulation's answers carry the section each question came from, so
-	// `aa.section_id` would drop every one of them.
+	// The attempt's section, because scoping on `aa.section_id` would drop every exam simulation answer.
 	const scoped = sectionScopeSql(scope, sql`qa.section_id`);
 
 	const result = await db.execute<{
@@ -72,8 +67,7 @@ export async function getDailyStudyStats(
 	}));
 }
 
-// Kept out of `getDailyStudyStats`: a deck carries no grade and no verdicts, so
-// folding it into those rows would move every average they feed.
+// Separate, because a deck has no grade and folding it in would move every average.
 export async function getDailyFlashcardDays(
 	userId: string,
 	scope?: MasteryScope

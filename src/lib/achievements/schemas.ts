@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** At most three, because three is what the hero has room for. */
+/** At most three, the room the hero has. */
 export const pinAchievementsSchema = z.object({
 	keys: z.array(z.string().min(1).max(200)).max(3),
 });

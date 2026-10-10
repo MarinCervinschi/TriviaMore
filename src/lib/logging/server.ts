@@ -64,11 +64,7 @@ export const log = {
 		emit("Error", template, properties, error),
 };
 
-/**
- * A completed unit of work, as a span rather than a log line: Seq nests it under
- * the request it belongs to and shows where the time went. `startedAt` is the
- * ISO instant the work began — the event's own timestamp closes it.
- */
+/** `startedAt` is the ISO instant the work began; the event's timestamp closes it. */
 export function logSpan(params: {
 	level: LogLevel;
 	template: string;
@@ -104,7 +100,7 @@ export function logSpan(params: {
 	});
 }
 
-// `Source` is stamped here, not by the client, so it cannot be forged.
+// Stamped here, so the client cannot forge `Source`.
 export function shipBrowserEvent(event: {
 	level: LogLevel;
 	template: string;

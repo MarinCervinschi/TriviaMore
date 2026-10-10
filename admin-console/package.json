@@ -1,0 +1,46 @@
+{
+	"name": "@triviamore/admin-console",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "infisical run --recursive -- vite dev --port 3100",
+		"build": "vite build && pnpm build:worker",
+		"build:worker": "esbuild src/worker/main.ts --bundle --platform=node --target=node22 --format=esm --outfile=.output/worker.mjs --external:pg-native --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" --log-level=warning",
+		"start": "node .output/server/index.mjs",
+		"typecheck": "tsc --noEmit",
+		"worker": "infisical run --recursive -- tsx src/worker/main.ts"
+	},
+	"dependencies": {
+		"@fontsource/dm-mono": "5.3.0",
+		"@fontsource/dm-sans": "5.3.0",
+		"@fontsource/dm-serif-display": "5.3.0",
+		"@radix-ui/react-dialog": "1.1.15",
+		"@scalar/api-reference-react": "0.9.78",
+		"@solar-icons/react": "2.0.0",
+		"@tanstack/react-query": "5.95.2",
+		"@tanstack/react-router": "1.168.3",
+		"@tanstack/react-router-ssr-query": "1.166.10",
+		"@tanstack/react-start": "1.167.5",
+		"drizzle-orm": "0.45.2",
+		"jose": "6.2.2",
+		"pg": "8.22.0",
+		"pg-boss": "12.37.0",
+		"react": "19.2.4",
+		"react-dom": "19.2.4",
+		"zod": "4.3.6"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "4.2.2",
+		"@types/node": "22.19.15",
+		"@types/pg": "8.20.3",
+		"@types/react": "19.2.14",
+		"@types/react-dom": "19.2.3",
+		"@vitejs/plugin-react": "5.2.0",
+		"esbuild": "0.27.4",
+		"nitro": "3.0.260311-beta",
+		"tailwindcss": "4.2.2",
+		"tsx": "4.21.0",
+		"typescript": "5.9.3",
+		"vite": "7.3.1"
+	}
+}

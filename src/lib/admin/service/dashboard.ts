@@ -26,9 +26,7 @@ export async function getAdminStats(): Promise<AdminStats> {
 	const user = await requireAdmin();
 	const db = getDb();
 
-	// `sections_select` and `questions_select` were both gated on
-	// can_access_section(), so a maintainer never counted a private section or
-	// its questions. Nothing filters them now except this.
+	// No policy filters private sections now, so a maintainer's counts exclude them here.
 	const publicOnly = user.role === "MAINTAINER";
 	const isVisible = publicOnly ? eq(sections.isPublic, true) : undefined;
 
@@ -78,8 +76,6 @@ export async function getAdminPermissions(): Promise<AdminPermissions> {
 	};
 }
 
-// Courses the current user maintains, with names — used to show scoped links
-// in the admin sidebar instead of the full departments tree.
 export async function getMyMaintainedCourses() {
 	const user = await requireAdmin();
 
@@ -91,8 +87,6 @@ export async function getMyMaintainedCourses() {
 		.orderBy(asc(courses.name));
 }
 
-// One flat join, grouped here: the tree is four levels deep and small enough
-// that four round trips would cost more than the duplicated parent columns.
 export async function getContentTree(): Promise<ContentTreeDepartment[]> {
 	const user = await requireAdmin();
 
@@ -115,8 +109,7 @@ export async function getContentTree(): Promise<ContentTreeDepartment[]> {
 			sections,
 			and(
 				eq(sections.classId, classes.id),
-				// Private sections were hidden from a maintainer by `sections_select`;
-				// the join has to say so now.
+				// Nothing else hides private sections from a maintainer.
 				user.role === "MAINTAINER" ? eq(sections.isPublic, true) : undefined
 			)
 		)

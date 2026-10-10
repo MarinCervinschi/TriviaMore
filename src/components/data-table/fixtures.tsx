@@ -1,4 +1,3 @@
-// Shared by the DataTable story and the toolbar-parts story, so the two cannot drift apart.
 import { Badge } from "@/components/ui/badge";
 
 import { createDataTableColumns } from "./features";

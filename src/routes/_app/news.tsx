@@ -44,8 +44,7 @@ function NewsPage() {
 	const markRead = useMarkChangelogsRead();
 	const didMarkRef = useRef(false);
 
-	// Guests can read /news but have no per-user state — skip the mutation
-	// to avoid an authenticated-only server call that would always fail.
+	// Guests have no per-user state, so the mutation is skipped.
 	useEffect(() => {
 		if (didMarkRef.current) return;
 		if (!isAuthenticated) return;
@@ -64,7 +63,6 @@ function NewsPage() {
 
 	return (
 		<div className="relative">
-			{/* Hero */}
 			<section className="relative pt-16 pb-10 sm:pt-24 sm:pb-14">
 				<motion.div
 					ref={heroRef}
@@ -103,7 +101,6 @@ function NewsPage() {
 				</motion.div>
 			</section>
 
-			{/* Timeline */}
 			<section className="pb-24 sm:pb-32">
 				<div className="mx-auto max-w-3xl px-4 sm:px-6">
 					{CHANGELOGS.length === 0 ? (
@@ -120,7 +117,6 @@ function NewsPage() {
 							initial="hidden"
 							animate={listVisible ? "visible" : "hidden"}
 						>
-							{/* Vertical rail — gradient fades at top/bottom */}
 							<div
 								aria-hidden="true"
 								className="via-border pointer-events-none absolute top-2 bottom-2 left-[11px] w-px bg-gradient-to-b from-transparent to-transparent sm:left-[15px]"
@@ -137,7 +133,6 @@ function NewsPage() {
 										className="relative pb-12 pl-10 last:pb-0 sm:pl-14"
 										variants={item}
 									>
-										{/* Dot */}
 										<span
 											aria-hidden="true"
 											className={cn(
@@ -155,7 +150,6 @@ function NewsPage() {
 											/>
 										)}
 
-										{/* Meta row */}
 										<div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
 											<span className="text-foreground font-mono text-base font-bold tracking-tight">
 												v{entry.version}
@@ -184,7 +178,6 @@ function NewsPage() {
 											)}
 										</div>
 
-										{/* Card */}
 										<article
 											className={cn(
 												"group bg-card/50 relative overflow-hidden rounded-2xl border backdrop-blur-sm transition-all duration-300",
@@ -206,7 +199,6 @@ function NewsPage() {
 								);
 							})}
 
-							{/* Tail dot (timeline anchor) */}
 							<li aria-hidden="true" className="relative pl-10 sm:pl-14">
 								<span className="bg-border absolute top-0 left-[5px] size-[6px] rounded-full sm:left-[13px]" />
 							</li>

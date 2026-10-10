@@ -6,12 +6,6 @@ import type { MasteryBreakdown } from "@/lib/user/types";
 import type { TrendPoint } from "./attempt-trend-card";
 import type { ReviewQuestion } from "./review-item";
 
-/**
- * One attempt on «Alberi e grafi», 30 questions on the Standard evaluation mode:
- * 23 correct, 2 partial, 3 wrong, 2 left blank — 26.40 of 33, which reads 26.
- * Every fixture below is that same attempt, so the cards line up when they are
- * put side by side.
- */
 export const STUDY_ATTEMPT = {
 	score: 26.4,
 	questions: 30,
@@ -22,7 +16,6 @@ export const STUDY_ATTEMPT = {
 	unanswered: 2,
 };
 
-/** The same section in a simulation with a penalty: 16.50 of 33, which reads 17. */
 export const EXAM_ATTEMPT = {
 	score: 16.5,
 	questions: 30,
@@ -73,7 +66,7 @@ type ReviewFixture = {
 	scaledScore: number;
 };
 
-/** `parseOptions` uses the option text as its own id, so the answers are the texts. */
+/** The answers are option texts, because `parseOptions` uses the text as the id. */
 export const REVIEW_FIXTURES: ReviewFixture[] = [
 	{
 		question: {
@@ -175,11 +168,7 @@ const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
 const MAX_SCALE = 33;
 
-/**
- * Spreads the marks through the quiz instead of leaving every wrong answer at the
- * end. `i * 7 % n` is a bijection whenever 7 and n are coprime, so the result is a
- * permutation and the counts survive it.
- */
+// `i * 7 % n` is a permutation when 7 and n are coprime, so the counts survive it.
 function dealMarks(counts: {
 	correct: number;
 	partial: number;
@@ -195,11 +184,6 @@ function dealMarks(counts: {
 	return marks.map((_, index) => marks[(index * 7) % marks.length]!);
 }
 
-/**
- * A whole attempt, built from a fixed pattern rather than a random one: the same
- * thirty questions in the same order every time, so two stories side by side are
- * comparing the layout and not the data.
- */
 function buildAttempt({
 	id,
 	timeSpentMs,
@@ -216,11 +200,9 @@ function buildAttempt({
 	timeLimit: number | null;
 	quizMode: QuizMode;
 	penalty: boolean;
-	/** How the attempt went. The pattern and the grade both come from here, so they cannot drift apart. */
 	counts: { correct: number; partial: number; wrong: number; blank: number };
 	completedAt: string;
 	history: AttemptHistory | null;
-	/** The exam simulation runs against the per-class sentinel, not a real section. */
 	section?: QuizAttemptResult["quiz"]["section"];
 }): QuizAttemptResult {
 	const pattern = dealMarks(counts);
@@ -262,8 +244,6 @@ function buildAttempt({
 			];
 		}
 		if (mark === "p") {
-			// One right and one wrong, so the open row actually shows partial credit
-			// rather than a pick that looks correct and is scored as if it were not.
 			return [
 				{
 					questionId: question.id,

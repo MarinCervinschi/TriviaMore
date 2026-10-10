@@ -16,8 +16,7 @@ interface ThemeContextValue {
 	setTheme: (theme: Theme) => void;
 }
 
-/** Exported for the Storybook decorator: the real provider writes `.dark` on <html>, which is what
- * the theme toolbar owns, so a story supplies the context without the DOM side effect. */
+/** Exported so a Storybook decorator can supply the context without writing `.dark` on <html>. */
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "theme";
@@ -42,7 +41,7 @@ function applyTheme(resolved: "light" | "dark", disableTransition = true) {
 	root.classList.toggle("dark", resolved === "dark");
 
 	if (disableTransition) {
-		// Force reflow then re-enable transitions
+		// Forces a reflow before transitions are re-enabled.
 		void root.offsetHeight;
 		root.style.removeProperty("transition");
 	}
@@ -72,12 +71,10 @@ export function ThemeProvider({
 		localStorage.setItem(STORAGE_KEY, newTheme);
 	}, []);
 
-	// Apply theme to DOM
 	useEffect(() => {
 		applyTheme(resolvedTheme);
 	}, [resolvedTheme]);
 
-	// Listen for system theme changes
 	useEffect(() => {
 		if (theme !== "system") return;
 

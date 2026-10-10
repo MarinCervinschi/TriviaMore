@@ -6,8 +6,6 @@ import { MASTERY as RICH } from "./fixtures";
 import { MasteryCard } from "./mastery-card";
 import { SpeedAccuracy } from "./speed-accuracy";
 
-// The same student, with attempts that were never timed: no per-question figure,
-// and nothing to place on the speed axis.
 const NO_TIME: UserMastery = {
 	...RICH,
 	avgSecondsPerQuestion: null,
@@ -16,8 +14,7 @@ const NO_TIME: UserMastery = {
 
 const meta = {
 	title: "Progress/MasteryCard",
-	// Meta-level args, so the render-only stories below typecheck without
-	// restating a fixture they do not read.
+	// Meta-level args, so the render-only stories typecheck.
 	args: { mastery: RICH },
 	component: MasteryCard,
 	parameters: { layout: "fullscreen" },
@@ -40,11 +37,9 @@ export const SenzaTempi: Story = {
 	args: { mastery: NO_TIME },
 };
 
-// Le due larghezze che la pagina Analytics dà alle card di questa riga.
 const NARROW = 395;
 const WIDE = 805;
 
-/** La larghezza vera che la pagina Analytics dà alla card. */
 export const Verticale: Story = {
 	name: "Card verticale",
 	render: () => (
@@ -54,7 +49,6 @@ export const Verticale: Story = {
 	),
 };
 
-/** La riga vera della pagina: le due card affiancate, per giudicare le altezze. */
 export const AccantoAlGrafico: Story = {
 	name: "Accanto al grafico",
 	render: () => (

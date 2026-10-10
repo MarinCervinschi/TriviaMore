@@ -113,6 +113,19 @@ deploy hook, in any environment. Apply the migration first and deploy the code s
 expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
 Take a `pnpm db:dump` before touching a shared database.
 
+For a shared database, use `scripts/db/migrations.ts` instead of `pnpm db:migrate`. drizzle-kit runs
+every pending migration in one transaction and hides the SQL error when one fails, so a migration that
+adds an enum value next to one that uses it fails with no message. The script applies each migration
+in its own transaction, records it the way drizzle does, and prints the statement that broke:
+
+```bash
+export SUPABASE_DB_URL='postgresql://postgres:…@host:54322/postgres'   # the admin role
+pnpm exec tsx scripts/db/migrations.ts           # the last one applied, and what is pending
+pnpm exec tsx scripts/db/migrations.ts --apply   # apply them, one transaction each
+```
+
+It runs without `infisical run` on purpose: Infisical would replace the URL with the local one.
+
 The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
 role through `SUPABASE_DB_URL`.
 

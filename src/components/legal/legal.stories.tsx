@@ -8,8 +8,6 @@ import { LegalDocLayout } from "./legal-doc-layout";
 import { LegalRelatedDocs } from "./legal-related-docs";
 import { LegalToc } from "./legal-toc";
 
-// The legal pages: a markdown document with its metadata, its table of contents, and the acceptance
-// gate. The gate matters most — it is the one place a user is blocked until they act.
 const meta = {
 	title: "Legal/Pagine",
 	parameters: { layout: "fullscreen" },
@@ -115,7 +113,6 @@ function Gate({ withErrors }: { withErrors?: boolean }) {
 	);
 }
 
-/** Untouched and after a failed submit — the error text is the only thing that tells you why. */
 export const Acceptance: Story = {
 	name: "Il consenso",
 	parameters: { layout: "padded" },

@@ -6,19 +6,14 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { MasteryBreakdown } from "@/lib/user/types";
 
-/**
- * Where the points went, by difficulty. The verdict is frozen on the answer, so
- * this is the attempt as it was graded — not a re-read of the questions as they
- * stand now.
- */
+/** The points by difficulty, as the attempt was graded. */
 export function DifficultyAccuracyCard({
 	byDifficulty,
 	footer,
 	className,
 }: {
-	/** Easy to hard: the order is the caller's, and it is the order shown. */
+	/** Shown in the order given, easy to hard. */
 	byDifficulty: MasteryBreakdown[];
-	/** The one line worth drawing out of the three bars. */
 	footer?: ReactNode;
 	className?: string;
 }) {

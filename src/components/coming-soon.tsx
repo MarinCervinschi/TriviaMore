@@ -16,7 +16,6 @@ export function ComingSoon() {
 
 	return (
 		<div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-			{/* Mesh gradient background */}
 			<PageBand />
 
 			<motion.div
@@ -25,12 +24,10 @@ export function ComingSoon() {
 				initial="hidden"
 				animate="visible"
 			>
-				{/* Logo */}
 				<motion.div className="mb-10 flex justify-center" variants={item}>
 					<Logo size="lg" />
 				</motion.div>
 
-				{/* Badge */}
 				<motion.div
 					className="border-primary/20 bg-primary/5 text-brand mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
 					variants={item}
@@ -39,7 +36,6 @@ export function ComingSoon() {
 					<span>Versione 3.0 in arrivo</span>
 				</motion.div>
 
-				{/* Heading */}
 				<motion.h1
 					className="mb-6 text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl md:text-6xl"
 					variants={item}
@@ -49,7 +45,6 @@ export function ComingSoon() {
 					qualcosa di nuovo
 				</motion.h1>
 
-				{/* Description */}
 				<motion.p
 					className="text-muted-foreground mb-10 text-lg leading-relaxed sm:text-xl"
 					variants={item}
@@ -59,7 +54,6 @@ export function ComingSoon() {
 					Nuova piattaforma, stessa missione: aiutarti a studiare meglio.
 				</motion.p>
 
-				{/* Features preview */}
 				<motion.div
 					className="mb-10 flex flex-wrap items-center justify-center gap-3"
 					variants={item}
@@ -75,7 +69,6 @@ export function ComingSoon() {
 					))}
 				</motion.div>
 
-				{/* GitHub link */}
 				<motion.div variants={item}>
 					<Button
 						variant="outline"

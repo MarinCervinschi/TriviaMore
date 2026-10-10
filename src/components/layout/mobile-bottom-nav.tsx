@@ -1,12 +1,11 @@
 import { useState } from "react";
 
 import { BellIcon } from "@solar-icons/react/linear/bell";
-import { BookIcon } from "@solar-icons/react/linear/book";
-import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { FeedIcon } from "@solar-icons/react/linear/feed";
 import { InfoCircleIcon } from "@solar-icons/react/linear/info-circle";
 import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { Logout3Icon } from "@solar-icons/react/linear/logout-3";
+import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldIcon } from "@solar-icons/react/linear/shield";
 import { useQuery } from "@tanstack/react-query";
@@ -25,9 +24,8 @@ import { notificationQueries } from "@/lib/notifications/queries";
 import { cn } from "@/lib/utils";
 
 import {
-	ABOUT_ITEM,
 	ADMIN_ITEM,
-	NAV_ITEMS,
+	MOBILE_ITEMS,
 	type NavItem,
 	getInitials,
 	useIsAdmin,
@@ -152,13 +150,11 @@ function ProfileSheet({
 				side="bottom"
 				className="max-h-[85vh] overflow-y-auto rounded-t-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
 			>
-				{/* Grab handle */}
 				<div
 					aria-hidden
 					className="bg-muted-foreground/30 mx-auto mb-3 h-1 w-9 rounded-full"
 				/>
 
-				{/* User card */}
 				<div className="bg-muted/50 mb-4 flex items-center gap-3 rounded-2xl p-3">
 					<Avatar className="h-12 w-12">
 						<AvatarImage src={user?.image ?? undefined} alt={user?.name ?? "Utente"} />
@@ -172,7 +168,6 @@ function ProfileSheet({
 					</div>
 				</div>
 
-				{/* Tools */}
 				<p className="text-muted-foreground eyebrow mb-2 px-1">Strumenti</p>
 				<div className="grid grid-cols-2 gap-2">
 					<ToolTile
@@ -189,22 +184,11 @@ function ProfileSheet({
 						badge={unreadChangelogs}
 						onClose={close}
 					/>
+					<ToolTile to="/search" icon={MagnifierIcon} label="Cerca" onClose={close} />
 					<ToolTile
-						to="/search/courses"
-						icon={DiplomaIcon}
-						label="Corsi di laurea"
-						onClose={close}
-					/>
-					<ToolTile
-						to="/search/classes"
-						icon={BookIcon}
-						label="Insegnamenti"
-						onClose={close}
-					/>
-					<ToolTile
-						to={ABOUT_ITEM.to}
+						to="/about"
 						icon={InfoCircleIcon}
-						label={ABOUT_ITEM.label}
+						label="Chi siamo"
 						onClose={close}
 					/>
 					{isAdmin && (
@@ -220,7 +204,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Account */}
 				<p className="text-muted-foreground eyebrow mb-2 px-1">Account</p>
 				<div className="flex flex-col gap-1">
 					<Link
@@ -243,7 +226,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Theme */}
 				<div className="bg-muted/30 flex items-center justify-between rounded-xl px-3 py-2">
 					<span className="text-muted-foreground text-sm font-medium">Tema</span>
 					<ThemeToggle />
@@ -251,7 +233,6 @@ function ProfileSheet({
 
 				<Separator className="my-4" />
 
-				{/* Legal footer */}
 				<div className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 pb-3 text-xs">
 					<Link
 						to="/legal/terms"
@@ -278,7 +259,6 @@ function ProfileSheet({
 					</Link>
 				</div>
 
-				{/* Logout */}
 				<button
 					type="button"
 					onClick={() => {
@@ -326,7 +306,7 @@ export function MobileBottomNav() {
 			)}
 		>
 			<ul className="flex items-stretch justify-around px-1">
-				{NAV_ITEMS.map(item => (
+				{MOBILE_ITEMS.map(item => (
 					<BottomNavItem
 						key={item.to}
 						item={item}

@@ -19,7 +19,6 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
 
 	return (
 		<div>
-			{/* Header */}
 			<div className="flex items-center justify-between px-4 py-3">
 				<h3 className="text-sm font-semibold">Notifiche</h3>
 				{unread.length > 0 && (
@@ -37,7 +36,6 @@ export function NotificationPopover({ onClose }: { onClose: () => void }) {
 
 			<Separator />
 
-			{/* Notification list */}
 			{unread.length === 0 ? (
 				<div className="flex flex-col items-center gap-2 py-8 text-center">
 					<BellOffIcon className="text-muted-foreground/40 size-8" />

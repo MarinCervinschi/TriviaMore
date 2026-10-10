@@ -9,8 +9,6 @@ export function PlatformStatsSectionSkeleton() {
 			aria-label="Caricamento statistiche…"
 			className="relative overflow-hidden py-20 sm:py-28"
 		>
-			{/* Decorative orbs — match PlatformStatsSection */}
-
 			<div className="container">
 				<div className="mb-16 space-y-3 text-center">
 					<Skeleton className="mx-auto h-4 w-56 rounded-lg" />

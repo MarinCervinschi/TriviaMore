@@ -13,6 +13,7 @@ storybook-static
 
 # Generated
 src/routeTree.gen.ts
+admin-console/src/routeTree.gen.ts
 *.tsbuildinfo
 
 # Data layer (migrations + frozen archive are hand-managed)

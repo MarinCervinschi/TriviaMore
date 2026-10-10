@@ -1,8 +1,3 @@
-// Proves the rollups still agree with the history. Read-only unless asked:
-// looking must never change what it is looking at.
-//
-//   pnpm achievements:reconcile            report the drift
-//   pnpm achievements:reconcile --repair   report it, then rebuild
 import { closeDb } from "../../src/db/index.ts";
 import { reconcileAchievementMetrics } from "../../src/lib/achievements/service.ts";
 

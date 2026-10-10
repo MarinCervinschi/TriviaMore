@@ -2,8 +2,6 @@ import type { Icon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Config-map-driven outline pill shared by the request status/type badges: the
-// caller supplies the label, the (static) colour classes, and an optional icon.
 export function ConfigBadge({
 	label,
 	className,

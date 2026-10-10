@@ -3,11 +3,6 @@ import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Shared header for the quiz and flashcard question cards: the question number,
-// its difficulty badge, and a slot for the per-card actions (report / bookmark /
-// hint). Presentational and prop-only, so it renders in isolation — the card
-// bodies stay coupled to server functions, this extracted core does not.
-
 function difficultyBadgeClass(difficulty: string): string {
 	switch (difficulty) {
 		case "EASY":

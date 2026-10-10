@@ -10,8 +10,6 @@ import {
 	updateReportFn,
 } from "./api";
 
-// ─── User Mutations ───
-
 export function useCreateRequest(onSuccess?: () => void) {
 	return useMutationWithToast(createRequestFn, {
 		successMessage: "Proposta inviata con successo",
@@ -64,8 +62,6 @@ export function useDeleteReport(onSuccess?: () => void) {
 		onSuccess,
 	});
 }
-
-// ─── Admin Mutations ───
 
 export function useHandleRequest(onSuccess?: () => void) {
 	return useMutationWithToast(handleRequestFn, {

@@ -39,8 +39,6 @@ export async function getBookmarkedQuestionIds(userId: string): Promise<string[]
 	return rows.map(row => row.questionId);
 }
 
-// Insert-or-delete in one round trip each way: the previous check-then-write
-// could double-toggle on a fast double click.
 export async function toggleBookmark(
 	userId: string,
 	questionId: string

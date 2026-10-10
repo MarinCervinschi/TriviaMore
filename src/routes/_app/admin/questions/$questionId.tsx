@@ -32,13 +32,11 @@ function AdminQuestionPage() {
 	const navigate = useNavigate();
 	const isNew = questionId === "new";
 
-	// For existing questions, data is already in cache from loader
 	const { data: questionData } = useQuery({
 		...adminQueries.question(questionId),
 		enabled: !isNew,
 	});
 
-	// Extract sectionId from query params for new questions or from existing question
 	const searchParams = new URLSearchParams(
 		typeof window !== "undefined" ? window.location.search : ""
 	);

@@ -17,13 +17,13 @@ import {
 	SkeletonFilterBar,
 	SkeletonGridCard,
 	SkeletonHeading,
-	SkeletonHero,
 	SkeletonListRow,
 	SkeletonRoot,
 	SkeletonSearchInput,
 	SkeletonStatBlock,
 	SkeletonTable,
 	SkeletonText,
+	SkeletonToolbar,
 } from "./primitives";
 import {
 	FlashcardSkeleton,
@@ -35,6 +35,8 @@ import {
 	AnalyticsSkeleton,
 	AttemptHistorySkeleton,
 	BookmarksSkeleton,
+	CalendarSkeleton,
+	CareerSkeleton,
 	EntityProgressSkeleton,
 	NotificationsSkeleton,
 	SettingsSkeleton,
@@ -43,11 +45,6 @@ import {
 	UserRequestsSkeleton,
 } from "./user-skeleton";
 
-/**
- * Every `pendingComponent` in the app. These are the one kind of component that can drift silently:
- * nothing breaks when a page layout changes and its skeleton does not, you just get a jump on load.
- * Seeing them next to the pages they stand in for is the whole check.
- */
 const meta = {
 	title: "Skeletons/Pagine",
 	parameters: { layout: "fullscreen" },
@@ -128,6 +125,12 @@ export const User: Story = {
 			<Labelled label="BookmarksSkeleton">
 				<BookmarksSkeleton />
 			</Labelled>
+			<Labelled label="CalendarSkeleton">
+				<CalendarSkeleton />
+			</Labelled>
+			<Labelled label="CareerSkeleton">
+				<CareerSkeleton />
+			</Labelled>
 			<Labelled label="UserClassesSkeleton">
 				<UserClassesSkeleton />
 			</Labelled>
@@ -160,7 +163,6 @@ export const Others: Story = {
 	),
 };
 
-/** The pieces the page skeletons are built from, which is where a shape or a radius is decided. */
 export const Primitives: Story = {
 	name: "I mattoni",
 	parameters: { layout: "padded" },
@@ -203,19 +205,18 @@ export const Primitives: Story = {
 	),
 };
 
-/** The hero, whose three knobs are the only thing separating the browse levels from each other. */
-export const Hero: Story = {
-	name: "L'hero",
+export const Toolbar: Story = {
+	name: "La testata compatta",
 	render: () => (
 		<Group>
-			<Labelled label="nudo">
-				<SkeletonHero />
+			<Labelled label="solo titolo">
+				<SkeletonToolbar />
 			</Labelled>
-			<Labelled label="withBadges={2}">
-				<SkeletonHero withBadges={2} />
+			<Labelled label="withMetrics={2}">
+				<SkeletonToolbar withMetrics={2} />
 			</Labelled>
-			<Labelled label="withStats={3} withBreadcrumb">
-				<SkeletonHero withStats={3} withBreadcrumb />
+			<Labelled label="withActions">
+				<SkeletonToolbar withMetrics={1} withActions />
 			</Labelled>
 		</Group>
 	),

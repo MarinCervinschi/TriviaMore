@@ -5,15 +5,11 @@ import { Button } from "@/components/ui/button";
 
 import { GradeDistribution } from "./grade-distribution";
 
-// A fixed spread, so the ring never reshuffles between two looks.
 const SCORES = [
 	33, 32, 32, 31, 31, 31, 30, 30, 30, 30, 29, 29, 29, 28, 28, 28, 27, 27, 26, 26, 25,
 	24, 24, 23, 22, 19, 17,
 ];
 
-// The width the card actually gets on the page: the content column is 1216px
-// (1280 container less its padding, inside the rail's 90px gutter), twelve
-// columns with a 16px gap, and this card spans four of them.
 const PAGE_WIDTH = 395;
 
 const meta = {
@@ -42,13 +38,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = { name: "Tutte le bande" };
 
-/** A student who never dropped below 27: two slices, and no empty legend rows. */
 export const DueBande: Story = {
 	name: "Due bande",
 	args: { scores: [30, 29, 28, 31, 32, 30, 27, 33] },
 };
 
-/** L'altro anello: fette staccate con estremi arrotondati, senza il totale in mezzo. */
+/** The other ring, with detached rounded slices and no total in the middle. */
 export const Petali: Story = {
 	name: "Variante petals",
 	args: { variant: "petals" },

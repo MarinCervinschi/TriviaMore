@@ -3,8 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FlashcardCard } from "./flashcard-card";
 import { QuizCard } from "./quiz-card";
 
-// The two cards that open a session, in both auth states — signed out they invite you to log in, and
-// that is the branch most easily forgotten.
 const meta = {
 	title: "Launch Cards/Cards",
 	parameters: { layout: "padded" },
@@ -33,7 +31,7 @@ export const SignedOut: Story = {
 	render: () => <Pair count={142} />,
 };
 
-/** Zero questions and the card removes itself — an empty section should not offer a session. */
+/** With zero questions the card renders nothing. */
 export const Empty: Story = {
 	name: "Sezione vuota",
 	parameters: { session: { role: "STUDENT" } },

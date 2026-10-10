@@ -3,12 +3,7 @@ import { boolean, foreignKey, pgTable, primaryKey, uuid } from "drizzle-orm/pg-c
 import { questions } from "../catalog/questions";
 import { profiles } from "./profiles";
 
-/**
- * The set behind the two "distinct question" counters in `user_stats`. A row
- * exists only once a question has earned one of the flags, so this stays far
- * smaller than the answer history it replaces — and it is what lets an insert
- * that does nothing tell the counter not to move.
- */
+/** A row exists only once a question has earned one of the flags. */
 export const userQuestionStats = pgTable(
 	"user_question_stats",
 	{

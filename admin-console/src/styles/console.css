@@ -1,0 +1,5 @@
+@import "../../../src/styles/globals.css";
+
+/* The console renders the app's components, so Tailwind has to see their classes too. */
+@source "../../../src/components";
+@source "../";

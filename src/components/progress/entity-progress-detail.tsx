@@ -2,7 +2,6 @@ import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
 
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import type { ExplorerMode, ExplorerPeriod } from "@/lib/user/metric-explorer";
 import type {
 	AttemptHistoryEntry,
@@ -12,13 +11,11 @@ import type {
 } from "@/lib/user/types";
 
 import { AnalyticsView } from "./analytics-view";
+import { AnalyticsWindowChips } from "./analytics-window-chips";
+import { MasteryCard } from "./mastery-card";
+import { RecentAttempts } from "./recent-attempts";
+import { SpeedAccuracy } from "./speed-accuracy";
 
-/**
- * One entity's analytics — a section, an insegnamento or a course. It is the same
- * page as `/user/analytics` with its inputs already scoped, so it stays the same
- * page as that one changes; only the two cards that compare *across* the scope
- * are dropped.
- */
 export function EntityProgressDetail({
 	kindLabel,
 	name,
@@ -40,7 +37,6 @@ export function EntityProgressDetail({
 	daily: DailyStudyStat[];
 	flashcardDays?: DailyFlashcardDay[];
 	mastery: UserMastery;
-	/** False on a section: there are no sub-sections to break down. */
 	showSections: boolean;
 	period: ExplorerPeriod;
 	mode: ExplorerMode;
@@ -49,11 +45,7 @@ export function EntityProgressDetail({
 }) {
 	if (attempts.length === 0) {
 		return (
-			<div className="container space-y-4 py-6 pb-10">
-				<UserBreadcrumb
-					current={name}
-					trail={[{ label: "Analytics", to: "/user/analytics" }]}
-				/>
+			<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
 				<EmptyState
 					icon={GraphUpIcon}
 					title="Nessun dato"
@@ -66,28 +58,37 @@ export function EntityProgressDetail({
 	}
 
 	return (
-		<div className="container space-y-4 py-6 pb-10">
+		<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
 			<AnalyticsView
 				daily={daily}
 				flashcardDays={flashcardDays}
 				attempts={attempts}
-				mastery={mastery}
 				period={period}
 				mode={mode}
-				onPeriodChange={onPeriodChange}
-				onModeChange={onModeChange}
-				showRollup={false}
-				showSectionBreakdown={showSections}
-				breadcrumb={
-					<UserBreadcrumb
-						current={name}
-						trail={[{ label: "Analytics", to: "/user/analytics", icon: GraphUpIcon }]}
+				actions={
+					<AnalyticsWindowChips
+						period={period}
+						mode={mode}
+						onPeriodChange={onPeriodChange}
+						onModeChange={onModeChange}
 					/>
 				}
 				title={name}
 				badge={<Badge variant="secondary">{kindLabel}</Badge>}
 				meta={context}
-			/>
+			>
+				<div className={showSections ? "@[900px]:col-span-4" : "@[900px]:col-span-12"}>
+					<MasteryCard mastery={mastery} />
+				</div>
+				{showSections && (
+					<div className="@[900px]:col-span-8">
+						<SpeedAccuracy sections={mastery.sections} />
+					</div>
+				)}
+				<div className="@[900px]:col-span-12">
+					<RecentAttempts attempts={attempts} />
+				</div>
+			</AnalyticsView>
 		</div>
 	);
 }

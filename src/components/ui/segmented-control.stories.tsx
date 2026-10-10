@@ -1,13 +1,12 @@
 import { useState } from "react";
 
+import { MonitorIcon } from "@solar-icons/react/linear/monitor";
+import { MoonIcon } from "@solar-icons/react/linear/moon";
+import { Sun2Icon } from "@solar-icons/react/linear/sun-2";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { SegmentedControl } from "./segmented-control";
 
-/**
- * The filter that shows every choice at once. Two sizes: the default for a desktop
- * toolbar, `lg` where a finger has to hit it.
- */
 const meta = {
 	title: "UI/SegmentedControl",
 	parameters: { layout: "centered" },
@@ -40,7 +39,6 @@ export const Default: Story = {
 	render: () => <Example />,
 };
 
-/** Without counts, and at the touch size the phone layouts use. */
 export const Touch: Story = {
 	name: "Formato touch",
 	render: () => (
@@ -61,6 +59,29 @@ function Plain() {
 			options={[
 				{ value: "study", label: "Studio" },
 				{ value: "exam", label: "Simulazione d'esame" },
+			]}
+		/>
+	);
+}
+
+/** Icons in place of words; the label still gives the accessible name. */
+export const SoloIcone: Story = {
+	name: "Solo icone",
+	render: () => <Theme />,
+};
+
+function Theme() {
+	const [value, setValue] = useState<"light" | "dark" | "system">("system");
+	return (
+		<SegmentedControl
+			label="Tema"
+			value={value}
+			onChange={setValue}
+			iconOnly
+			options={[
+				{ value: "light", label: "Chiaro", icon: Sun2Icon },
+				{ value: "dark", label: "Scuro", icon: MoonIcon },
+				{ value: "system", label: "Sistema", icon: MonitorIcon },
 			]}
 		/>
 	);

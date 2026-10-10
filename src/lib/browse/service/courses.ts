@@ -1,10 +1,24 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, exists, ne, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
+import {
+	classes,
+	courseClasses,
+	courseCurricula,
+	coursePlans,
+	courses,
+	departments,
+	sections,
+} from "@/db/schema";
+import { academicYearOf } from "@/lib/catalog/academic-year";
+import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
+import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import { listCohorts, listCurricula } from "@/lib/catalog/db/course-curricula";
+import { findEnrollmentByCourse } from "@/lib/crm/db/enrollments";
 
-import { classColumns, courseClassColumns } from "../columns";
+import { buildPlanView, pickCohort } from "../plan-view";
 import type {
 	CampusLocation,
 	CourseType,
@@ -12,36 +26,135 @@ import type {
 	SearchCoursesParams,
 	SearchCoursesResponse,
 } from "../types";
-import { paginationOf, resolveCourseByCodes, toFtsQuery } from "./shared";
+import {
+	countVisibleSectionsByClass,
+	paginationOf,
+	resolveCourseByCodes,
+	toFtsQuery,
+} from "./shared";
 
 export async function getCourseWithClasses(
+	userId: string | null,
 	deptCode: string,
-	courseCode: string
+	courseCode: string,
+	requestedCohort?: number
 ): Promise<CourseWithClasses | null> {
 	const resolved = await resolveCourseByCodes(deptCode, courseCode);
 	if (!resolved) return null;
 
-	const rows = await getDb()
+	const db = getDb();
+	const courseId = resolved.course.id;
+	const [cohorts, enrollment] = await Promise.all([
+		listCohorts(db, courseId),
+		userId ? findEnrollmentByCourse(db, userId, courseId) : undefined,
+	]);
+	const cohort = pickCohort(cohorts, {
+		requested: requestedCohort,
+		enrolled: enrollment?.isCurrent ? enrollment.startYear : null,
+		current: academicYearOf(new Date()),
+	});
+
+	const base = { ...resolved.course, department: resolved.department, cohorts };
+	if (cohort === null) {
+		return { ...base, cohort: null, ...(await currentCatalogue(userId, courseId)) };
+	}
+
+	const hasContent = exists(
+		db
+			.select({ one: sql`1` })
+			.from(sections)
+			.where(
+				and(
+					eq(sections.classId, coursePlans.classId),
+					ne(sections.name, EXAM_SIMULATION_SECTION)
+				)
+			)
+	);
+	const [curricula, rows] = await Promise.all([
+		listCurricula(db, courseId, cohort),
+		db
+			.select({
+				code: coursePlans.code,
+				name: coursePlans.name,
+				cfu: coursePlans.cfu,
+				classYear: coursePlans.classYear,
+				mandatory: coursePlans.mandatory,
+				groupCode: coursePlans.groupCode,
+				groupLabel: coursePlans.groupLabel,
+				groupPosition: coursePlans.groupPosition,
+				evaluation: coursePlans.evaluation,
+				curriculum: courseCurricula.code,
+				classId: coursePlans.classId,
+				link: courseClasses.code,
+				description: classes.description,
+				isTeaching: courseClasses.isTeaching,
+				hasContent: sql<boolean>`${hasContent}`,
+				position: courseClasses.position,
+			})
+			.from(coursePlans)
+			.innerJoin(courseCurricula, eq(courseCurricula.id, coursePlans.curriculumId))
+			.leftJoin(classes, eq(classes.id, coursePlans.classId))
+			.leftJoin(
+				courseClasses,
+				and(
+					eq(courseClasses.courseId, coursePlans.courseId),
+					eq(courseClasses.classId, coursePlans.classId)
+				)
+			)
+			.where(and(eq(coursePlans.courseId, courseId), eq(coursePlans.cohort, cohort))),
+	]);
+
+	const classIds = [...new Set(rows.map(row => row.classId).filter(id => id !== null))];
+	const counts = await countVisibleSectionsByClass(db, classIds, userId);
+	return { ...base, cohort, ...buildPlanView(rows, curricula, counts) };
+}
+
+/** The curated catalogue, for a course the official catalogue has no plan for. */
+async function currentCatalogue(userId: string | null, courseId: string) {
+	const db = getDb();
+	const rows = await db
 		.select({
 			class: classColumns,
 			courseClass: courseClassColumns,
-			sectionCount: sql<number>`count(${sections.id})`.mapWith(Number),
+			studiable: sql<boolean>`${studiableCourseClassSql(db)}`,
 		})
 		.from(courseClasses)
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
-		.leftJoin(sections, eq(sections.classId, classes.id))
-		.where(eq(courseClasses.courseId, resolved.course.id))
-		.groupBy(classes.id, courseClasses.courseId, courseClasses.classId)
+		.where(eq(courseClasses.courseId, courseId))
 		.orderBy(asc(courseClasses.classYear), asc(courseClasses.position));
 
+	const studiable = rows.filter(row => row.studiable);
+	const counts = await countVisibleSectionsByClass(
+		db,
+		studiable.map(row => row.class.id),
+		userId
+	);
+
 	return {
-		...resolved.course,
-		department: resolved.department,
-		classes: rows.map(row => ({
-			...row.class,
-			...row.courseClass,
-			sectionCount: row.sectionCount,
+		curricula: [],
+		classes: studiable.map(({ class: cls, courseClass }) => ({
+			id: courseClass.code,
+			code: courseClass.code,
+			link: courseClass.code,
+			name: cls.name,
+			description: cls.description,
+			cfu: cls.cfu,
+			classYear: courseClass.classYear,
+			sectionCount: counts.get(cls.id) ?? 0,
+			mandatory: courseClass.mandatory,
+			group: null,
+			curricula: [],
 		})),
+		activities: rows
+			.filter(row => !row.studiable)
+			.map(row => ({
+				id: row.courseClass.code,
+				name: row.class.name,
+				cfu: row.class.cfu,
+				classYear: row.courseClass.classYear,
+				group: null,
+				curricula: [],
+			})),
 	};
 }
 
@@ -76,7 +189,10 @@ export async function searchCourses(
 			cfu: courses.cfu,
 			departmentCode: departments.code,
 			departmentName: departments.name,
-			classCount: sql<number>`count(${courseClasses.classId})`.mapWith(Number),
+			classCount:
+				sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(getDb())})`.mapWith(
+					Number
+				),
 			// Window function over the filtered set: the total comes back with the
 			// page instead of costing a second round trip.
 			total: sql<number>`count(*) over()`.mapWith(Number),

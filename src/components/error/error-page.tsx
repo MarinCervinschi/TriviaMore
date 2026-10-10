@@ -18,7 +18,7 @@ export function ErrorPage({
 	withBand = true,
 }: {
 	error: Error;
-	/** Off inside the `_app` shell, which paints the band already — two stack their alphas. */
+	/** Off inside the `_app` shell, which already paints the band. */
 	withBand?: boolean;
 }) {
 	const router = useRouter();
@@ -42,7 +42,6 @@ export function ErrorPage({
 				initial="hidden"
 				animate="visible"
 			>
-				{/* Icon with glow */}
 				<motion.div className="mb-6" variants={item}>
 					<IconStack>
 						<DangerTriangleIcon className="text-danger h-8 w-8" />
@@ -57,7 +56,6 @@ export function ErrorPage({
 					Si è verificato un errore imprevisto. Riprova o torna alla home.
 				</motion.p>
 
-				{/* Dev error message */}
 				{import.meta.env.DEV && error.message && (
 					<motion.pre
 						className="bg-muted/50 text-muted-foreground mt-6 max-w-lg overflow-auto rounded-2xl border p-4 text-left font-mono text-xs"
@@ -67,7 +65,6 @@ export function ErrorPage({
 					</motion.pre>
 				)}
 
-				{/* Buttons */}
 				<motion.div className="mt-10 flex gap-3" variants={item}>
 					<Button onClick={() => router.invalidate()}>
 						<RestartIcon className="mr-2 h-4 w-4" />

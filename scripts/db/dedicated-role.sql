@@ -7,7 +7,7 @@
 -- Why it exists: the app connects as `postgres` (superuser) today, which can read
 -- auth password hashes and vault secrets and drop anything. This role keeps the
 -- one power the app genuinely needs — BYPASSRLS, because authorization lives in
--- TypeScript and RLS is deny-all — while granting access only to the four
+-- TypeScript and RLS is deny-all — while granting access only to the
 -- application schemas and nothing in auth, storage or vault.
 --
 -- After running: set DATABASE_URL to this role in Infisical (per environment) and
@@ -16,16 +16,16 @@
 -- 1. The role. Replace the password before running; it must match DATABASE_URL.
 CREATE ROLE trivia_app WITH LOGIN PASSWORD '__SET_ME__' BYPASSRLS;
 
--- 2. Access to the four application schemas, and only those.
-GRANT USAGE ON SCHEMA public, catalog, quiz, internal TO trivia_app;
+-- 2. Access to the application schemas, and only those.
+GRANT USAGE ON SCHEMA public, catalog, quiz, internal, crm TO trivia_app;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public, catalog, quiz, internal TO trivia_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public, catalog, quiz, internal TO trivia_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public, catalog, quiz, internal, crm TO trivia_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public, catalog, quiz, internal, crm TO trivia_app;
 
 -- Future tables/sequences created by migrations (which run as postgres) too.
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public, catalog, quiz, internal
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public, catalog, quiz, internal, crm
   GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO trivia_app;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public, catalog, quiz, internal
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public, catalog, quiz, internal, crm
   GRANT USAGE, SELECT ON SEQUENCES TO trivia_app;
 
 -- 3. No grants on auth, storage or vault: the role is blocked from them by the

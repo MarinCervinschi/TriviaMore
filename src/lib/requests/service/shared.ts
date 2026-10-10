@@ -18,8 +18,7 @@ import { Forbidden, Invalid, NotFound } from "@/lib/server/errors";
 import { storedContentSchema } from "../schemas";
 import type { ContentRequest, RequestUser, SubmittedContent } from "../types";
 
-// Maintainers only see requests aimed at a course they maintain; ADMIN and
-// SUPERADMIN are unscoped, which `null` stands for.
+/** A `null` scope means ADMIN or SUPERADMIN, who are unscoped. */
 export async function requireRequestAdmin(): Promise<{
 	user: AuthUser;
 	scopeCourseIds: Set<string> | null;
@@ -31,11 +30,7 @@ export async function requireRequestAdmin(): Promise<{
 
 type RequestTarget = Pick<ContentRequest, "targetCourseId" | "targetSectionId">;
 
-// A maintainer must never see or touch a private section, and a request carries
-// the section's name in its label and its id in `approveRequest`'s insert. So a
-// request aimed at one is out of scope even when the course is not: it stays
-// with ADMIN and SUPERADMIN. Only a user holding explicit `section_access` can
-// file one, which is why this is reachable at all.
+// A request aimed at a private section stays with ADMIN and SUPERADMIN, whatever its course.
 export function requestScope(db: DbOrTx, scopeCourseIds: Set<string> | null) {
 	if (!scopeCourseIds) return undefined;
 	return and(
@@ -77,8 +72,7 @@ export async function assertInScope(
 	if (section && !section.isPublic) denied();
 }
 
-// submitted_content is jsonb, so its shape is only guaranteed at write time;
-// every read re-validates it.
+// jsonb is only checked at write time, so every read re-validates it.
 export function parseSubmittedContent(raw: unknown): SubmittedContent {
 	const result = storedContentSchema.safeParse(raw);
 	if (!result.success) throw new Invalid("Contenuto della proposta non valido");
@@ -108,12 +102,7 @@ type TargetIds = Pick<
 	"targetDepartmentId" | "targetCourseId" | "targetClassId" | "targetSectionId"
 >;
 
-// Breadcrumb of the target, built from the ids stored on the request rather than
-// re-derived from the hierarchy: those ids are also what scoping filters on, so
-// the label and the permission check can never disagree.
-//
-// Resolved for a whole list at once — the previous implementation ran up to four
-// queries per request inside a loop.
+// From the ids stored on the request, which scoping also filters on.
 export async function resolveTargetLabels(
 	db: DbOrTx,
 	requests: TargetIds[]

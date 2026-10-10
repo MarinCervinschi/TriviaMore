@@ -98,7 +98,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Insegnamento: Story = {};
 
-// A leaf section has no sub-sections to rank, so the weak/strong lists are off.
 export const Sezione: Story = {
 	args: {
 		kindLabel: "Sezione",

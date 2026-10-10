@@ -16,10 +16,6 @@ import type { DataTableColumn, DataTableFeatures, DataTableInstance } from "./fe
 
 export const DATA_TABLE_PAGE_SIZE = 10;
 
-/**
- * The search params every data table understands. A route adds one extra
- * `string` key per faceted column, named after the column id.
- */
 export type DataTableSearch = {
 	q?: string;
 	page?: number;
@@ -49,6 +45,8 @@ export type UseDataTableOptions<
 	urlState?: DataTableUrlState<TSearch>;
 	manual?: { pageCount: number; rowCount: number };
 	extraResetKeys?: string[];
+	/** Lets the reader drag a header edge to set a column's width; on by default, `false` for a table too narrow to need it. */
+	resizableColumns?: boolean;
 };
 
 function columnIdOf(column: DataTableColumn<any>): string | undefined {
@@ -72,6 +70,7 @@ export function useDataTable<
 	urlState,
 	manual,
 	extraResetKeys,
+	resizableColumns = true,
 }: UseDataTableOptions<TData, TSearch>): DataTableInstance<TData> {
 	const [localSearch, setLocalSearch] = useState<SearchBag>({});
 	const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>(
@@ -196,9 +195,11 @@ export function useDataTable<
 		getRowId,
 		globalFilterFn,
 		meta: { resetFilters },
-		// Toggling a header cycles asc/desc without a third "unsorted" step, so a
-		// table with a default sort can never end up in a state the URL cannot express.
+		// No unsorted step, because the URL cannot tell it apart from never sorted.
 		enableSortingRemoval: false,
+		enableColumnResizing: resizableColumns,
+		defaultColumn: { minSize: 48 },
+		columnResizeMode: "onChange",
 		manualPagination: Boolean(manual),
 		manualSorting: Boolean(manual),
 		manualFiltering: Boolean(manual),

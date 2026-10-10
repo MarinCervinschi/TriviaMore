@@ -16,8 +16,7 @@ import type { RecentClass, UserClass } from "../types";
 
 const RECENT_CLASSES_LIMIT = 6;
 
-// The junction row is a LEFT JOIN on purpose: a class can be unlinked from the
-// course a user saved it under, and the entry should survive without its code.
+// A LEFT JOIN, so an entry survives its class being unlinked from the saved course.
 const enrolledClassColumns = {
 	classId: classes.id,
 	className: classes.name,
@@ -25,7 +24,6 @@ const enrolledClassColumns = {
 	classYear: courseClasses.classYear,
 	mandatory: courseClasses.mandatory,
 	catalogueUrl: courseClasses.catalogueUrl,
-	curriculum: courseClasses.curriculum,
 	courseId: courses.id,
 	courseName: courses.name,
 	courseCode: courses.code,
@@ -111,8 +109,6 @@ export async function isClassSaved(
 	return row !== undefined;
 }
 
-// One upsert: the previous select-then-update could lose a visit when a class
-// was opened in two tabs at once.
 export async function updateRecentClass(
 	userId: string,
 	input: { classId: string; courseId: string }

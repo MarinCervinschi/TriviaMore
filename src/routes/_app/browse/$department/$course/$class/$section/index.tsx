@@ -145,7 +145,7 @@ function SectionPage() {
 					/>
 				}
 			/>
-			<div className="container pt-8">
+			<div className="container">
 				{section.quizQuestionCount === 0 && section.flashcardQuestionCount === 0 ? (
 					<BrowseContributeState message="Nessuna domanda disponibile per questa sezione.">
 						<RequestFormDialog

@@ -1,8 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
 
-import { courseCodesSchema } from "../schemas";
+import { optionalAuthMiddleware } from "@/lib/server/middleware/auth";
+
+import { courseViewSchema } from "../schemas";
 import { getCourseWithClasses } from "../service/courses";
 
 export const getCourseWithClassesFn = createServerFn({ method: "GET" })
-	.inputValidator(courseCodesSchema)
-	.handler(({ data }) => getCourseWithClasses(data.deptCode, data.courseCode));
+	.middleware([optionalAuthMiddleware])
+	.inputValidator(courseViewSchema)
+	.handler(({ data, context }) =>
+		getCourseWithClasses(
+			context.user?.id ?? null,
+			data.deptCode,
+			data.courseCode,
+			data.cohort
+		)
+	);

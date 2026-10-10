@@ -10,9 +10,6 @@ import { DataTableViewOptions } from "./data-table-view-options";
 import { SECTIONS, columns } from "./fixtures";
 import { useDataTable } from "./use-data-table";
 
-// The toolbar and its parts, on their own. This is the part of the table `tsc` proves nothing about:
-// a filter with the wrong filterFn compiles perfectly and silently matches nothing, so the only way to
-// know is to click one and watch the row count.
 const meta = {
 	title: "Data Table/Toolbar",
 	parameters: { layout: "padded" },
@@ -88,7 +85,6 @@ function Filters() {
 	);
 }
 
-/** Two facets side by side: the counts in the popover come from the data, not from a prop. */
 export const Facets: Story = { name: "I filtri a faccette", render: () => <Filters /> };
 
 function Headers() {
@@ -107,8 +103,7 @@ function Headers() {
 	);
 }
 
-/** A header cycles asc → desc → asc. There is no third unsorted state, because the URL cannot tell it
- *  apart from never-sorted. */
+/** A header cycles asc and desc, with no unsorted step. */
 export const Headers_: Story = {
 	name: "Intestazioni ordinabili",
 	render: () => <Headers />,
@@ -126,7 +121,6 @@ function Pager({ rows }: { rows: number }) {
 	return <DataTablePagination table={table} />;
 }
 
-/** One page and several: with a single page the control still has to read as finished, not broken. */
 export const Pagination: Story = {
 	name: "Impaginazione",
 	render: () => (

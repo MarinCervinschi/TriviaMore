@@ -22,22 +22,19 @@ export type ScatterDatum = {
 	label: string;
 	x: number;
 	y: number;
-	/** Relative weight, read as the mark's **area** — never its radius. */
+	/** Relative weight, drawn as the mark's area. */
 	weight?: number;
 };
 
 export type ScatterPlotProps = Omit<ChartCardProps, "children"> & {
 	data: ScatterDatum[];
-	/** Named in the tooltip; the axes themselves stay unlabelled. */
 	xLabel: string;
 	yLabel: string;
 	xFormatter?: (value: number) => string;
 	yFormatter?: (value: number) => string;
 	xDomain?: [number, number];
 	yDomain?: [number, number];
-	/** Dashed lines that cut the plot into quadrants — usually the two means. */
 	guides?: { x?: number; y?: number };
-	/** What the mark's area counts, named in the tooltip. */
 	weightLabel?: string;
 	color?: string;
 	height?: number;
@@ -48,11 +45,6 @@ const MIN_RADIUS = 4;
 const MAX_RADIUS = 13;
 const ANIMATION_MS = 420;
 
-/**
- * Two measurements against each other, one mark per subject. The weight rides on
- * the mark's area rather than its radius, or a subject with twice the answers
- * would read as four times the subject.
- */
 export function ScatterPlot({
 	data,
 	xLabel,

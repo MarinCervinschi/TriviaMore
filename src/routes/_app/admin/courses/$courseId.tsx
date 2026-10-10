@@ -73,8 +73,7 @@ function buildColumns(canManage: boolean, onDelete: (id: string) => void) {
 			header: "Anno",
 			meta: { label: "Anno", align: "center" },
 		}),
-		// Already excludes the exam-simulation sentinel, and the private sections a
-		// maintainer cannot manage.
+		// Already excludes the exam sentinel and the private sections a maintainer cannot manage.
 		column.accessor("sectionCount", {
 			header: "Sezioni",
 			meta: { label: "Sezioni", align: "center" },
@@ -210,7 +209,7 @@ function AdminCourseDetailPage() {
 						<DialogTitle>Nuovo insegnamento</DialogTitle>
 					</DialogHeader>
 					<ClassForm
-						junction={{ code: "", class_year: 1, mandatory: false, curriculum: "" }}
+						junction={{ code: "", class_year: 1, mandatory: false }}
 						onSubmit={async formData => {
 							setCreatePending(true);
 							try {
@@ -222,7 +221,6 @@ function AdminCourseDetailPage() {
 										code: formData.code || cls.name.substring(0, 10).toUpperCase(),
 										class_year: formData.class_year ?? 1,
 										mandatory: formData.mandatory ?? false,
-										curriculum: formData.curriculum || "",
 									},
 								});
 								toast.success("Insegnamento creato e collegato al corso");

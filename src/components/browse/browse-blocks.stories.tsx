@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 
 import { BrowseBreadcrumb } from "./browse-breadcrumb";
 import { BrowseContributeState, BrowseEmptyState } from "./browse-empty-state";
+import { ClassSyllabus } from "./class-syllabus";
 import { ExpandableDescription } from "./expandable-description";
+import { PlanActivities } from "./plan-activities";
 import { SearchFilter } from "./search-filter";
+import { FULL_SYLLABUS, PARTIAL_SYLLABUS } from "./syllabus-fixtures";
 
-// The small parts a browse page is framed with: where you are, what to do when there is nothing, and
-// how a long description behaves.
 const meta = {
 	title: "Browse/Blocchi",
 	parameters: { layout: "padded" },
@@ -99,4 +100,127 @@ function FilterHarness() {
 export const Search: Story = {
 	name: "Filtro di ricerca",
 	render: () => <FilterHarness />,
+};
+
+export const Activities: Story = {
+	name: "Altre attività del piano",
+	render: () => (
+		<PlanActivities
+			activities={[
+				{
+					id: "a1",
+					name: "Obblighi Formativi Aggiuntivi",
+					cfu: 0,
+					classYear: 1,
+					group: null,
+					curricula: [],
+				},
+				{
+					id: "a2",
+					name: "Tirocinio",
+					cfu: 12,
+					classYear: 3,
+					group: null,
+					curricula: [],
+				},
+				{
+					id: "a3",
+					name: "Prova Finale",
+					cfu: 6,
+					classYear: 3,
+					group: null,
+					curricula: [],
+				},
+				{
+					id: "a4",
+					name: "Tirocinio/Attività Progettuale",
+					cfu: null,
+					classYear: 3,
+					group: null,
+					curricula: [],
+				},
+			]}
+		/>
+	),
+};
+
+const B2_3 = {
+	code: "F",
+	label: "Livello inglese B2 3cfu + tirocinio 9cfu",
+	position: 2,
+};
+const B2_0 = {
+	code: "F",
+	label: "Livello inglese B2 0cfu + tirocinio 12cfu",
+	position: 3,
+};
+
+/** Two choice groups offer the same activities with different credits, so each row names its group. */
+export const ActivitiesWithGroups: Story = {
+	name: "Altre attività del piano, con i gruppi a scelta",
+	render: () => (
+		<PlanActivities
+			activities={[
+				{
+					id: "b1",
+					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
+					cfu: 3,
+					classYear: 1,
+					group: B2_3,
+					curricula: ["C1"],
+				},
+				{
+					id: "b2",
+					name: "Tirocinio/Attività Progettuale",
+					cfu: 9,
+					classYear: 1,
+					group: B2_3,
+					curricula: ["C1"],
+				},
+				{
+					id: "b3",
+					name: "Livello di Competenza Linguistica in Lingua Inglese B2",
+					cfu: 0,
+					classYear: 1,
+					group: B2_0,
+					curricula: ["C1"],
+				},
+				{
+					id: "b4",
+					name: "Tirocinio/Attività Progettuale",
+					cfu: 12,
+					classYear: 1,
+					group: B2_0,
+					curricula: ["C1"],
+				},
+				{
+					id: "b5",
+					name: "Prova Finale",
+					cfu: 18,
+					classYear: 2,
+					group: { code: "OO", label: "Obbligatori", position: 0 },
+					curricula: ["C1", "C2"],
+				},
+			]}
+		/>
+	),
+};
+
+export const Syllabus: Story = {
+	name: "Programma ufficiale",
+	render: () => (
+		<div className="max-w-5xl">
+			<ClassSyllabus syllabus={FULL_SYLLABUS} />
+		</div>
+	),
+};
+
+/** A syllabus with only some fields published lists only those. */
+export const SyllabusPartial: Story = {
+	name: "Programma ufficiale, incompleto",
+	render: () => (
+		<div className="max-w-5xl">
+			<ClassSyllabus syllabus={PARTIAL_SYLLABUS} />
+		</div>
+	),
 };

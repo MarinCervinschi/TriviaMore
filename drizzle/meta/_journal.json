@@ -204,6 +204,272 @@
       "when": 1789585068989,
       "tag": "0028_add_user_rollups",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1789822144151,
+      "tag": "0029_add_crm_enrollments",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1789822151880,
+      "tag": "0030_crm_grants_and_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1789827845696,
+      "tag": "0031_storage_avatars",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1789834972453,
+      "tag": "0032_enrollment_course_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1789835309374,
+      "tag": "0033_add_enrollment_declared_metric",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1789835394162,
+      "tag": "0034_onboarding_badge",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1791220038614,
+      "tag": "0035_catalogue_source_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1791220054270,
+      "tag": "0036_normalise_class_codes",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791222299353,
+      "tag": "0037_course_class_is_teaching",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791229736996,
+      "tag": "0038_course_plans",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791229738268,
+      "tag": "0039_course_plans_triggers",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791232830373,
+      "tag": "0040_course_plan_groups",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791271644968,
+      "tag": "0041_class_syllabi",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1791271646537,
+      "tag": "0042_class_syllabi_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791381901981,
+      "tag": "0043_ops_job_runs",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1791382261520,
+      "tag": "0044_pgboss_queue",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1791382275692,
+      "tag": "0045_ops_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1791389676624,
+      "tag": "0046_job_runs_schedule_key",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1791390350256,
+      "tag": "0047_ops_job_schedules",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1791390359457,
+      "tag": "0048_job_schedules_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1791474510924,
+      "tag": "0049_crm_career_exams",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1791474521457,
+      "tag": "0050_career_exams_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1791476502927,
+      "tag": "0051_drop_enrollment_curriculum_text",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1791556413438,
+      "tag": "0052_career_exams_external",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1791558625528,
+      "tag": "0053_crm_exam_sittings",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1791558634065,
+      "tag": "0054_exam_sittings_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1791559530281,
+      "tag": "0055_crm_calendar_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1791559531550,
+      "tag": "0056_calendar_events_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1791564507480,
+      "tag": "0057_calendar_events_span_and_repeat",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791569822122,
+      "tag": "0058_crm_tasks",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791569823491,
+      "tag": "0059_tasks_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791570055566,
+      "tag": "0060_calendar_colors",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1791620323990,
+      "tag": "0061_achievement_tiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1791620398548,
+      "tag": "0062_crm_achievement_metrics",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1791620475525,
+      "tag": "0063_crm_achievements",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791625740216,
+      "tag": "0064_job_run_changes",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791629083177,
+      "tag": "0065_ops_job_texts",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1791629617499,
+      "tag": "0066_job_run_stop",
+      "breakpoints": true
     }
   ]
 }

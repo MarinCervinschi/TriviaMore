@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { browserLogBatch } from "@/lib/logging/schemas";
 import { shipBrowserEvent } from "@/lib/logging/server";
 
-// Proxies browser log events to Seq: the ingestion key must never reach the bundle.
+// Proxies to Seq, so the ingestion key never reaches the bundle.
 
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 60;
@@ -11,7 +11,7 @@ const MAX_TRACKED_IPS = 10_000;
 
 type Bucket = { count: number; windowStart: number };
 
-// The IP is a rate-limit key only — it is never logged (personal data).
+// The IP is a rate-limit key only and is never logged.
 const buckets = new Map<string, Bucket>();
 
 function pruneExpired(now: number): void {

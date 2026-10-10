@@ -48,7 +48,7 @@ describe("writeFacet", () => {
 });
 
 describe("facetFilterFn", () => {
-	const run = (dataValue: string, filterValue: unknown) =>
+	const run = (dataValue: string | string[], filterValue: unknown) =>
 		facetFilterFn({ getValue: () => dataValue } as never, "col", filterValue);
 
 	it("keeps everything when no values are selected", () => {
@@ -64,5 +64,11 @@ describe("facetFilterFn", () => {
 		const value = writeFacet(true, ["a", "b"]);
 		expect(run("a", value)).toBe(false);
 		expect(run("c", value)).toBe(true);
+	});
+
+	it("matches an array row value when any of its values is selected", () => {
+		expect(run(["a", "b"], ["b"])).toBe(true);
+		expect(run(["a", "b"], ["c"])).toBe(false);
+		expect(run(["a", "b"], writeFacet(true, ["b"]))).toBe(false);
 	});
 });

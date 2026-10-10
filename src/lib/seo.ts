@@ -60,10 +60,7 @@ export function seoHead({
 			meta.push({ property: "og:url", content: canonicalUrl });
 		}
 
-		// TanStack Start reconnaissance pattern for SSR-rendered JSON-LD blocks.
-		// See @tanstack/react-router headContentUtils — the "script:ld+json" key
-		// is the only meta shape that emits <script type="application/ld+json">
-		// inline in the SSR <head>.
+		// The "script:ld+json" key is the only meta shape that emits inline JSON-LD in the SSR head.
 		if (jsonLd) {
 			const list = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
 			for (const data of list) {

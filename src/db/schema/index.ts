@@ -21,6 +21,9 @@ export * from "./entities/catalog/department-locations";
 export * from "./entities/catalog/courses";
 export * from "./entities/catalog/classes";
 export * from "./entities/catalog/course-classes";
+export * from "./entities/catalog/class-syllabi";
+export * from "./entities/catalog/course-curricula";
+export * from "./entities/catalog/course-plans";
 export * from "./entities/catalog/sections";
 export * from "./entities/catalog/questions";
 export * from "./entities/catalog/relations";
@@ -40,3 +43,14 @@ export * from "./entities/internal/section-access";
 export * from "./entities/internal/content-requests";
 export * from "./entities/internal/legal-acceptances";
 export * from "./entities/internal/relations";
+
+export * from "./entities/crm/enrollments";
+export * from "./entities/crm/career-exams";
+export * from "./entities/crm/exam-sittings";
+export * from "./entities/crm/calendar-events";
+export * from "./entities/crm/tasks";
+export * from "./entities/crm/relations";
+
+export * from "./entities/ops/job-runs";
+export * from "./entities/ops/job-schedules";
+export * from "./entities/ops/job-texts";

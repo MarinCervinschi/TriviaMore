@@ -44,7 +44,6 @@ describe("canAccessSection", () => {
 	it("treats a grant as scoped to its own section", () =>
 		withRollback(async tx => {
 			const scope = await seedSectionAccessScope(tx);
-			// The student is granted `privateGranted`; that must not leak to a sibling.
 			expect(await canAccessSection(tx, scope.student, scope.privateDenied)).toBe(
 				false
 			);
@@ -54,6 +53,23 @@ describe("canAccessSection", () => {
 		withRollback(async tx => {
 			const scope = await seedSectionAccessScope(tx);
 			expect(await canAccessSection(tx, scope.student, crypto.randomUUID())).toBe(
+				false
+			);
+		}));
+
+	it("lets an admin and a superadmin into an ungranted private section", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			expect(await canAccessSection(tx, scope.admin, scope.privateDenied)).toBe(true);
+			expect(await canAccessSection(tx, scope.superadmin, scope.privateDenied)).toBe(
+				true
+			);
+		}));
+
+	it("keeps a maintainer out of a private section", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			expect(await canAccessSection(tx, scope.maintainer, scope.privateDenied)).toBe(
 				false
 			);
 		}));
@@ -104,5 +120,43 @@ describe("filterAccessibleSections", () => {
 				scope.privateGranted,
 			]);
 			expect(allowed).toEqual(new Set([scope.publicSection]));
+		}));
+
+	it("keeps every private section for an admin, granted or not", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			const allowed = await filterAccessibleSections(tx, scope.admin, [
+				scope.publicSection,
+				scope.privateGranted,
+				scope.privateDenied,
+			]);
+			expect(allowed).toEqual(
+				new Set([scope.publicSection, scope.privateGranted, scope.privateDenied])
+			);
+		}));
+
+	it("agrees with canAccessSection on every role", () =>
+		withRollback(async tx => {
+			const scope = await seedSectionAccessScope(tx);
+			const sectionIds = [
+				scope.publicSection,
+				scope.privateGranted,
+				scope.privateDenied,
+			];
+
+			for (const userId of [
+				null,
+				scope.student,
+				scope.maintainer,
+				scope.admin,
+				scope.superadmin,
+			]) {
+				const allowed = await filterAccessibleSections(tx, userId, sectionIds);
+				for (const sectionId of sectionIds) {
+					expect(allowed.has(sectionId)).toBe(
+						await canAccessSection(tx, userId, sectionId)
+					);
+				}
+			}
 		}));
 });

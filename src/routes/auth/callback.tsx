@@ -3,11 +3,23 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+/** Sign-up and sign-in share this callback; only a sign-up lands within this window of account creation. */
+const NEW_ACCOUNT_WINDOW_MS = 10_000;
+
 const exchangeCodeFn = createServerFn({ method: "GET" })
 	.inputValidator((data: { code: string }) => data)
 	.handler(async ({ data }) => {
 		const supabase = createServerSupabaseClient();
-		await supabase.auth.exchangeCodeForSession(data.code);
+		const { data: exchanged } = await supabase.auth.exchangeCodeForSession(data.code);
+
+		const user = exchanged.user;
+		if (!user?.last_sign_in_at) return { isNewAccount: false };
+
+		return {
+			isNewAccount:
+				Date.parse(user.last_sign_in_at) - Date.parse(user.created_at) <
+				NEW_ACCOUNT_WINDOW_MS,
+		};
 	});
 
 export const Route = createFileRoute("/auth/callback")({
@@ -16,7 +28,8 @@ export const Route = createFileRoute("/auth/callback")({
 	}),
 	beforeLoad: async ({ search }) => {
 		if (search.code) {
-			await exchangeCodeFn({ data: { code: search.code } });
+			const { isNewAccount } = await exchangeCodeFn({ data: { code: search.code } });
+			if (isNewAccount) throw redirect({ to: "/onboarding" });
 		}
 		throw redirect({ to: "/" });
 	},

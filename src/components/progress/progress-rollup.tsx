@@ -264,7 +264,6 @@ export function ProgressRollup({ courses }: { courses: RollupCourse[] }) {
 										)}
 										<LevelIcon level={level} />
 										{node.name === EXAM_SIMULATION_SECTION ? (
-											// The exam sentinel isn't a real page — plain text, no link.
 											<span className="text-muted-foreground truncate">
 												{sectionDisplayName(node.name)}
 											</span>

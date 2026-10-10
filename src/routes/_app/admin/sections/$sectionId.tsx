@@ -81,7 +81,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			meta: {
 				label: "Contenuto",
 				headerClassName: "w-[50%]",
-				cellClassName: "max-w-xs",
+				cellClassName: "max-w-xs whitespace-normal",
 			},
 			cell: ({ row }) => (
 				<Link
@@ -165,7 +165,6 @@ function AdminSectionDetailPage() {
 	const { questions, parent, ...section } = data;
 	const sectionSlug = section.slug;
 
-	// Section access management (only for private sections)
 	const { data: accessUsers } = useQuery({
 		...adminQueries.sectionAccessUsers(sectionId),
 		enabled: !section.isPublic && isSuperadmin,
@@ -264,7 +263,6 @@ function AdminSectionDetailPage() {
 					</InsetCard>
 				</div>
 
-				{/* Section access management (private sections, SUPERADMIN only) */}
 				{!section.isPublic && isSuperadmin && (
 					<InsetCard
 						title={

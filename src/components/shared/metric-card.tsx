@@ -7,10 +7,7 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-// The figures inside the comparison line carry it — "vs **61** nel periodo
-// precedente" reads at a glance, the words only on a second pass. Splitting on a
-// capturing group puts every match on an odd index, which is why the parity is the
-// test: `FIGURE.test()` would walk `lastIndex` and alternate between calls.
+// A global regex's `test()` walks `lastIndex`, so matches are found by their odd index after `split`.
 const FIGURE = /(\d[\d.,/]*(?:%|pt|h|m|s)?)/gi;
 
 function withFigures(text: string): ReactNode[] {
@@ -25,11 +22,6 @@ function withFigures(text: string): ReactNode[] {
 	);
 }
 
-/**
- * A single headline figure with its change and what it is being compared against.
- * The sibling of `StatCard`: that one is a decorative tile for a count, this one
- * is a measurement — it always carries its baseline, so the number is readable.
- */
 export function MetricCard({
 	label,
 	value,
@@ -44,22 +36,17 @@ export function MetricCard({
 }: {
 	label: string;
 	value: string | number;
-	/** Rendered smaller and muted right after the value: "/33", "%". */
 	unit?: string;
 	icon?: Icon;
-	/** A chart slot class for the icon — the level's identity, not a status. */
 	tint?: string;
 	delta?: number | null;
 	deltaUnit?: "percent" | "points" | "raw";
-	/** The baseline in words: "vs 61 nel periodo precedente". Figures are lifted. */
 	comparison?: ReactNode;
-	/** Where the pixel field sits; `null` leaves the card bare. */
+	/** `null` leaves the card bare. */
 	texture?: TexturePlacement | null;
 	className?: string;
 }) {
 	return (
-		// No header band, and a slightly larger icon: the headline row reads as its
-		// own family, a step apart from the cards that carry a chart.
 		<InsetCard className={className} texture={texture}>
 			<div className="relative flex flex-1 flex-col gap-2.5 p-4">
 				<div className="flex items-center justify-between gap-2">

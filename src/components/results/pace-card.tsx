@@ -2,7 +2,6 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { cn } from "@/lib/utils";
 import { formatSeconds, formatTimeSpent } from "@/lib/utils/quiz-results";
 
-/** What the attempt's pace is read against. */
 export type PaceReference =
 	| { kind: "limit"; ms: number }
 	| { kind: "average"; seconds: number };
@@ -42,22 +41,12 @@ function Row({
 	);
 }
 
-/**
- * The attempt's pace: seconds per question, and the one number that makes it mean
- * something — the time limit in a simulation, the student's own average on the
- * section in study.
- *
- * Per-question timing is not recorded (the column went with migration 0017), so
- * the average is the attempt's total over the questions it had. That is all this
- * card ever claims.
- */
 export function PaceCard({
 	totalMs,
 	questions,
 	reference,
 	className,
 }: {
-	/** The whole attempt, in milliseconds — `quiz_attempts.time_spent`. */
 	totalMs: number | null;
 	questions: number;
 	reference?: PaceReference;
@@ -76,8 +65,7 @@ export function PaceCard({
 	const seconds = Math.round(totalMs / 1000);
 	const perQuestion = Math.round(seconds / questions);
 	const limit = reference?.kind === "limit" ? reference.ms : null;
-	// A limit is always a whole number of minutes, and `formatTimeSpent` would spell
-	// that "20m 0s".
+	// `formatTimeSpent` would print a whole number of minutes as "20m 0s".
 	const limitLabel = limit != null ? formatSeconds(Math.round(limit / 1000)) : null;
 
 	return (

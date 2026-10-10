@@ -86,7 +86,7 @@ export const Entrambe: Story = {
 	},
 };
 
-/** Le combinazioni affiancate: è così che si legge la coerenza tra card diverse. */
+/** The combinations side by side, to judge consistency across cards. */
 export const Combinazioni: Story = {
 	name: "Combinazioni",
 	render: () => (

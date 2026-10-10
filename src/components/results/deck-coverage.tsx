@@ -1,9 +1,5 @@
 import { cn } from "@/lib/utils";
 
-/**
- * The deck as cards, the ones turned over filled — a flashcard session has no
- * score, so the honest headline is how much of the deck was actually seen.
- */
 export function DeckCoverage({
 	total,
 	studied,

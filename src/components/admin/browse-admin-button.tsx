@@ -9,8 +9,7 @@ import { adminQueries } from "@/lib/admin/queries";
 type BrowseAdminButtonProps = {
 	to: string;
 	params?: Record<string, string>;
-	// A MAINTAINER sees the button only if this course is one they maintain;
-	// omit it (e.g. department page) to hide the button from maintainers.
+	/** When omitted, the button is hidden from maintainers. */
 	courseId?: string;
 };
 

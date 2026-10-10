@@ -15,8 +15,7 @@ const SECTION_LIMIT = 6;
 
 const DIFFICULTY_ORDER = ["EASY", "MEDIUM", "HARD"];
 
-// The class's canonical course, same rule as `primaryCourseByClass`: lowest
-// `position` wins. Inlined as a CTE so the aggregate can join it directly.
+// The class's primary course, where the lowest `position` wins.
 const PRIMARY_COURSE = sql`
 	select distinct on (cc.class_id)
 	       cc.class_id,
@@ -126,8 +125,7 @@ export async function getMastery(
 		accuracy: row.total === 0 ? 0 : row.correct / row.total,
 	}));
 
-	// Ties on accuracy (e.g. a wall of 0%) are broken by the sample size — more
-	// answers is a firmer signal — then by name, so the order is deterministic.
+	// Ties on accuracy break by sample size, then by name.
 	const byName = (a: (typeof ranked)[number], b: (typeof ranked)[number]) =>
 		(a.section.sectionName ?? "").localeCompare(b.section.sectionName ?? "");
 

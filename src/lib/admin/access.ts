@@ -8,24 +8,6 @@ import { requireAdmin } from "@/lib/auth/guards";
 import type { AuthUser } from "@/lib/auth/types";
 import { Forbidden, NotFound } from "@/lib/server/errors";
 
-// ─── Content authorization ───
-//
-// Role model for the admin catalog:
-//   • Departments + courses + classes (the structural catalog) are managed by
-//     ADMIN and SUPERADMIN. Maintainers are content-only and are rejected for
-//     these, and are redirected away from the corresponding admin pages.
-//   • Sections + questions are managed by ADMIN, SUPERADMIN and MAINTAINER.
-//     For a MAINTAINER, access is scoped: the owning class must belong to at
-//     least one course they maintain (a class can be shared across courses).
-//
-// ADMIN/SUPERADMIN remain unscoped. Nothing here runs under RLS, so every rule
-// the database used to enforce is spelled out.
-
-// ─── Scope predicates ───
-//
-// `db` first so the same predicate runs inside a transaction — which is what the
-// differential test against the pre-Drizzle implementation needs.
-
 export async function maintainedCourseIds(
 	db: DbOrTx,
 	userId: string
@@ -55,8 +37,7 @@ async function maintainsCourse(
 	return row !== undefined;
 }
 
-// A class can be taught in several courses; maintaining any one of them is
-// enough to grant authority over the class.
+// Maintaining any one course a class is taught in grants authority over the class.
 export async function classInMaintainedScope(
 	db: DbOrTx,
 	userId: string,
@@ -87,9 +68,7 @@ export async function sectionScope(
 	const [row] = await db
 		.select({
 			isPublic: sections.isPublic,
-			// Correlated on `sections.class_id`. Written with the query builder rather
-			// than a `sql` template because a template renders column references
-			// unqualified, and `class_id` exists on both sides of the join.
+			// The query builder qualifies `class_id`, which a `sql` template would render unqualified.
 			inScope: sql<boolean>`${exists(
 				db
 					.select({ one: sql`1` })
@@ -110,9 +89,6 @@ export async function sectionScope(
 	return row ?? null;
 }
 
-// ─── Write guards ───
-
-// Structural catalog (departments + courses + classes) — ADMIN+ only.
 export async function requireStructureManager(): Promise<AuthUser> {
 	const user = await requireAdmin();
 	if (user.role === "MAINTAINER") {
@@ -123,8 +99,6 @@ export async function requireStructureManager(): Promise<AuthUser> {
 	return user;
 }
 
-// No-op for ADMIN/SUPERADMIN; for a MAINTAINER, requires that the class belongs
-// to at least one course they maintain.
 async function assertClassScope(user: AuthUser, classId: string): Promise<void> {
 	if (user.role !== "MAINTAINER") return;
 	if (!(await classInMaintainedScope(getDb(), user.id, classId))) {
@@ -134,7 +108,6 @@ async function assertClassScope(user: AuthUser, classId: string): Promise<void> 
 	}
 }
 
-// Exposed for bulk operations that span multiple sections.
 export async function assertSectionScope(
 	user: AuthUser,
 	sectionId: string
@@ -143,8 +116,6 @@ export async function assertSectionScope(
 
 	const scope = await sectionScope(getDb(), user.id, sectionId);
 	if (!scope) throw new NotFound("Sezione non trovata");
-	// Private sections are access-controlled (superadmin domain); off-limits to
-	// maintainers.
 	if (!scope.isPublic) throw new Forbidden("Non puoi gestire sezioni private.");
 	if (!scope.inScope) {
 		throw new Forbidden(
@@ -185,11 +156,6 @@ export async function requireContentManagerForQuestion(
 	await assertSectionScope(user, question.sectionId);
 	return user;
 }
-
-// ─── Read-access guards for admin detail pages ───
-//
-// A MAINTAINER who opens a page outside the courses they maintain is redirected
-// back to the dashboard; departments are off-limits to maintainers entirely.
 
 export async function requireDepartmentAccess(): Promise<AuthUser> {
 	const user = await requireAdmin();

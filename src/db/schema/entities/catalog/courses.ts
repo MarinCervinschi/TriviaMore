@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	boolean,
 	foreignKey,
 	index,
 	integer,
@@ -26,6 +27,11 @@ export const courses = catalogSchema
 			cfu: integer(),
 			position: integer().default(0).notNull(),
 			courseType: courseTypeEnum("course_type").default("BACHELOR").notNull(),
+			nationalCode: text("national_code"),
+			degreeClass: text("degree_class"),
+			teachingLanguage: text("teaching_language"),
+			restrictedAccess: boolean("restricted_access"),
+			catalogueUrl: text("catalogue_url"),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
 				.notNull(),
@@ -51,6 +57,7 @@ export const courses = catalogSchema
 				name: "courses_department_id_fkey",
 			}).onDelete("cascade"),
 			unique("courses_code_department_id_key").on(table.code, table.departmentId),
+			unique("courses_national_code_key").on(table.nationalCode),
 		]
 	)
 	.enableRLS();

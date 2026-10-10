@@ -121,7 +121,6 @@ function ContactPage() {
 
 	return (
 		<div className="relative">
-			{/* Hero */}
 			<section className="relative py-16 sm:py-24">
 				<motion.div
 					ref={heroRef}
@@ -150,8 +149,7 @@ function ContactPage() {
 				</motion.div>
 			</section>
 
-			{/* Quick action links */}
-			<section className="full-bleed-band bg-muted/20 border-y">
+			<section className="bg-muted/20 border-y">
 				<motion.div
 					ref={linksRef}
 					className="container"
@@ -186,7 +184,6 @@ function ContactPage() {
 				</motion.div>
 			</section>
 
-			{/* Main content: Form + GitHub */}
 			<section className="py-16 sm:py-24">
 				<motion.div
 					ref={formRef}
@@ -196,7 +193,6 @@ function ContactPage() {
 					animate={formVisible ? "visible" : "hidden"}
 				>
 					<div className="grid gap-12 lg:grid-cols-5">
-						{/* Form — takes 3 cols */}
 						<motion.div className="lg:col-span-3" variants={item}>
 							<InsetCard>
 								<div className="relative p-6 sm:p-8">
@@ -218,9 +214,7 @@ function ContactPage() {
 							</InsetCard>
 						</motion.div>
 
-						{/* Sidebar — takes 2 cols */}
 						<motion.div className="space-y-6 lg:col-span-2" variants={item}>
-							{/* GitHub card */}
 							<InsetCard texture="tr">
 								<div className="relative p-6 sm:p-8">
 									<GithubIcon className="mb-4 h-10 w-10" />
@@ -244,7 +238,6 @@ function ContactPage() {
 								</div>
 							</InsetCard>
 
-							{/* Guidelines */}
 							<InsetCard texture="tr">
 								<div className="relative p-6 sm:p-8">
 									<h3 className="mb-4 text-lg font-semibold tracking-tight">
@@ -270,8 +263,7 @@ function ContactPage() {
 				</motion.div>
 			</section>
 
-			{/* FAQ — accordion style */}
-			<section className="full-bleed-band bg-muted/20 border-t py-16 sm:py-24">
+			<section className="bg-muted/20 border-t py-16 sm:py-24">
 				<motion.div
 					ref={faqRef}
 					className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8"

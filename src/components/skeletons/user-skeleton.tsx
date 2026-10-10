@@ -1,111 +1,68 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
-	SkeletonHero,
+	SkeletonInset,
 	SkeletonRoot,
 	SkeletonStatBlock,
 	SkeletonTable,
+	SkeletonToolbar,
 } from "./primitives";
-
-function UserBreadcrumbSkeleton() {
-	return (
-		<div className="border-border bg-background inline-flex items-center gap-2 rounded-xl border px-3 py-1.5">
-			<Skeleton className="size-4" />
-			<Skeleton className="size-3 rounded-full" />
-			<Skeleton className="h-4 w-24" />
-		</div>
-	);
-}
 
 export function UserDashboardSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento dashboard…" className="space-y-8 pb-8">
-			{/* Custom hero with avatar */}
-			<section className="relative w-full py-12 sm:py-16">
-				<div className="container">
-					<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-						<Skeleton className="h-24 w-24 shrink-0 rounded-full" />
-						<div className="flex-1 space-y-3">
-							<Skeleton className="h-9 w-2/3 sm:h-11" />
-							<Skeleton className="h-7 w-32 rounded-full" />
-							<div className="flex flex-wrap gap-4">
-								<Skeleton className="h-4 w-48" />
-								<Skeleton className="h-4 w-40" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+		<SkeletonRoot
+			label="Caricamento dashboard…"
+			className="container space-y-8 pt-6 pb-8"
+		>
+			{/* No status bar or course chip, because neither query is in the loader. */}
+			<Skeleton className="h-8 w-56" />
 
-			<div className="container space-y-8">
-				{/* No slot for the open-attempt banner: its query is not in the loader, so it
-				    cannot have resolved while this skeleton is on screen. */}
-				{/* Quick actions — icon + state */}
-				<div className="grid gap-4 sm:grid-cols-3">
-					{Array.from({ length: 3 }).map((_, i) => (
-						<div
-							key={i}
-							className="bg-card flex items-center gap-3 rounded-2xl border p-4 shadow-sm"
-						>
-							<Skeleton className="h-12 w-12 shrink-0 rounded-2xl" />
-							<div className="flex-1 space-y-2">
-								<Skeleton className="h-5 w-2/3" />
-								<Skeleton className="h-3.5 w-1/2" />
-							</div>
+			<div className="bg-card rounded-2xl border p-6 shadow-sm">
+				<div className="mb-6 flex items-center justify-between">
+					<Skeleton className="h-5 w-40" />
+					<Skeleton className="h-7 w-40 rounded-lg" />
+				</div>
+				<div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+					{Array.from({ length: 4 }).map((_, i) => (
+						<div key={i} className="space-y-2">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-8 w-16" />
+							<Skeleton className="h-4 w-16" />
 						</div>
 					))}
 				</div>
+			</div>
 
-				{/* Progress summary */}
-				<div className="bg-card rounded-2xl border p-6 shadow-sm">
-					<div className="mb-6 flex items-center justify-between">
-						<Skeleton className="h-5 w-40" />
-						<Skeleton className="h-7 w-40 rounded-lg" />
+			<div className="space-y-4">
+				<Skeleton className="h-3 w-24" />
+				<Skeleton className="h-7 w-64" />
+				<SkeletonTable rows={3} columns={4} />
+			</div>
+
+			<div className="space-y-4">
+				<div>
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="mt-1 h-6 w-40" />
+				</div>
+				<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+					<div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
+						<div className="space-y-1.5">
+							<Skeleton className="h-4 w-32" />
+							<Skeleton className="h-3 w-40" />
+						</div>
+						<Skeleton className="h-8 w-40 rounded-lg" />
 					</div>
-					<div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className="space-y-2">
-								<Skeleton className="h-4 w-24" />
-								<Skeleton className="h-8 w-16" />
-								<Skeleton className="h-4 w-16" />
+					<div className="bg-card border-border/50 space-y-4 rounded-xl border p-4">
+						{Array.from({ length: 5 }).map((_, i) => (
+							<div key={i} className="flex items-center gap-3">
+								<Skeleton className="size-9 rounded-full" />
+								<div className="flex-1 space-y-1.5">
+									<Skeleton className="h-4 w-2/3" />
+									<Skeleton className="h-3 w-1/2" />
+								</div>
+								<Skeleton className="h-4 w-14" />
 							</div>
 						))}
-					</div>
-				</div>
-
-				{/* Recent classes */}
-				<div className="space-y-4">
-					<Skeleton className="h-3 w-24" />
-					<Skeleton className="h-7 w-64" />
-					<SkeletonTable rows={3} columns={4} />
-				</div>
-
-				{/* Activity: the last sittings, inside the inset card */}
-				<div className="space-y-4">
-					<div>
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="mt-1 h-6 w-40" />
-					</div>
-					<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
-						<div className="flex items-center justify-between gap-4 px-3.5 py-2.5">
-							<div className="space-y-1.5">
-								<Skeleton className="h-4 w-32" />
-								<Skeleton className="h-3 w-40" />
-							</div>
-							<Skeleton className="h-8 w-40 rounded-lg" />
-						</div>
-						<div className="bg-card border-border/50 space-y-4 rounded-xl border p-4">
-							{Array.from({ length: 5 }).map((_, i) => (
-								<div key={i} className="flex items-center gap-3">
-									<Skeleton className="size-9 rounded-full" />
-									<div className="flex-1 space-y-1.5">
-										<Skeleton className="h-4 w-2/3" />
-										<Skeleton className="h-3 w-1/2" />
-									</div>
-									<Skeleton className="h-4 w-14" />
-								</div>
-							))}
-						</div>
 					</div>
 				</div>
 			</div>
@@ -124,10 +81,7 @@ function SkeletonCard({ height }: { height: number }) {
 	);
 }
 
-/**
- * The analytics page: no hero — a toolbar, the four headline cards, then the grid
- * of pairs. It has to match `AnalyticsView`, or the page jumps when it arrives.
- */
+/** Must match `AnalyticsView`, or the page jumps when it arrives. */
 export function AnalyticsSkeleton() {
 	return (
 		<SkeletonRoot
@@ -172,24 +126,11 @@ export function AnalyticsSkeleton() {
 				<div className="lg:col-span-4">
 					<SkeletonCard height={200} />
 				</div>
-				<div className="lg:col-span-4">
-					<SkeletonCard height={280} />
-				</div>
-				<div className="lg:col-span-8">
-					<SkeletonCard height={280} />
-				</div>
-				<div className="lg:col-span-12">
-					<SkeletonCard height={180} />
-				</div>
-				<div className="lg:col-span-12">
-					<SkeletonCard height={160} />
-				</div>
 			</div>
 		</SkeletonRoot>
 	);
 }
 
-/** No breadcrumb and no rollup, unlike `AnalyticsSkeleton` — the detail pages have neither. */
 export function EntityProgressSkeleton() {
 	return (
 		<SkeletonRoot
@@ -222,7 +163,6 @@ export function EntityProgressSkeleton() {
 				))}
 			</div>
 
-			{/* Same rows as the full page, less the tree and the section scatter. */}
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
 				<div className="lg:col-span-8">
 					<SkeletonCard height={340} />
@@ -284,10 +224,8 @@ export function AttemptHistorySkeleton() {
 export function BookmarksSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento segnalibri…" className="space-y-8 pb-8">
-			<SkeletonHero withStats={1} />
-
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
+			<div className="container space-y-6 py-6">
+				<SkeletonToolbar withMetrics={1} />
 
 				<div className="space-y-3">
 					{Array.from({ length: 6 }).map((_, i) => (
@@ -311,10 +249,8 @@ export function BookmarksSkeleton() {
 export function UserClassesSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento insegnamenti…" className="space-y-8 pb-8">
-			<SkeletonHero withStats={2} />
-
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
+			<div className="container space-y-6 py-6">
+				<SkeletonToolbar withMetrics={2} />
 
 				<SkeletonTable rows={6} columns={6} toolbar pagination />
 			</div>
@@ -325,9 +261,8 @@ export function UserClassesSkeleton() {
 export function NotificationsSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento notifiche…" className="space-y-8 pb-8">
-			<SkeletonHero />
-
-			<div className="container">
+			<div className="container space-y-6 py-6">
+				<SkeletonToolbar />
 				<div className="space-y-3">
 					{Array.from({ length: 5 }).map((_, i) => (
 						<div
@@ -352,9 +287,8 @@ export function NotificationsSkeleton() {
 export function UserRequestsSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento contributi…" className="space-y-8 pb-8">
-			<SkeletonHero />
-
-			<div className="container space-y-4">
+			<div className="container space-y-4 py-6">
+				<SkeletonToolbar />
 				<Skeleton className="h-12 w-full rounded-2xl" />
 
 				<div className="flex items-center justify-between">
@@ -386,12 +320,9 @@ export function UserRequestsSkeleton() {
 export function SettingsSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento impostazioni…" className="space-y-8 pb-8">
-			<SkeletonHero />
+			<div className="container space-y-6 py-6">
+				<SkeletonToolbar />
 
-			<div className="container space-y-6">
-				<UserBreadcrumbSkeleton />
-
-				{/* Profile form */}
 				<div className="bg-card rounded-3xl border p-6 sm:p-8">
 					<Skeleton className="mb-2 h-6 w-1/3" />
 					<Skeleton className="mb-6 h-4 w-1/2" />
@@ -423,7 +354,6 @@ export function SettingsSkeleton() {
 					<Skeleton className="mt-6 h-10 w-36 rounded-xl" />
 				</div>
 
-				{/* Stats */}
 				<div>
 					<Skeleton className="mb-1 h-6 w-48" />
 					<Skeleton className="mb-4 h-4 w-2/3" />
@@ -434,7 +364,6 @@ export function SettingsSkeleton() {
 					</div>
 				</div>
 
-				{/* Account details */}
 				<div className="bg-card rounded-3xl border p-6 sm:p-8">
 					<Skeleton className="mb-2 h-6 w-40" />
 					<Skeleton className="mb-6 h-4 w-1/2" />
@@ -455,7 +384,6 @@ export function SettingsSkeleton() {
 	);
 }
 
-/** Mirrors `/user/achievements`: breadcrumb, the two summary panels, tabs, one group. */
 export function AchievementsSkeleton() {
 	return (
 		<SkeletonRoot
@@ -529,6 +457,90 @@ export function AchievementsSkeleton() {
 							<Skeleton className="h-3 w-16" />
 						</div>
 					))}
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}
+
+/** Must match `CareerShell` around the overview, the tab the route opens on. */
+export function CareerSkeleton() {
+	return (
+		<SkeletonRoot
+			label="Caricamento carriera…"
+			className="container space-y-6 py-6 pb-10"
+		>
+			<div className="flex flex-wrap items-start justify-between gap-3">
+				<Skeleton className="h-8 w-40" />
+				<Skeleton className="h-8 w-40 rounded-xl" />
+			</div>
+
+			<SkeletonInset>
+				<div className="space-y-5 p-5">
+					<div className="flex items-start gap-4">
+						<Skeleton className="hidden size-12 rounded-xl sm:block" />
+						<div className="flex-1 space-y-2">
+							<Skeleton className="h-6 w-72 max-w-full" />
+							<Skeleton className="h-4 w-96 max-w-full" />
+						</div>
+						<Skeleton className="h-8 w-36 rounded-xl" />
+					</div>
+					<div className="grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-4">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<div key={i} className="space-y-1.5">
+								<Skeleton className="h-3 w-16" />
+								<Skeleton className="h-4 w-24" />
+							</div>
+						))}
+					</div>
+				</div>
+			</SkeletonInset>
+
+			<div className="flex gap-6">
+				{Array.from({ length: 3 }).map((_, i) => (
+					<Skeleton key={i} className="h-5 w-20" />
+				))}
+			</div>
+
+			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+				<div className="space-y-6">
+					<SkeletonCard height={64} />
+					<SkeletonCard height={104} />
+				</div>
+				<SkeletonCard height={220} />
+				<div className="lg:col-span-2">
+					<SkeletonCard height={300} />
+				</div>
+			</div>
+		</SkeletonRoot>
+	);
+}
+
+/** Must match the calendar page: the sidebar, then the toolbar over the calendar card, at full height. */
+export function CalendarSkeleton() {
+	return (
+		<SkeletonRoot label="Caricamento calendario…" className="px-4 py-4 md:px-6">
+			<div className="flex h-[calc(100dvh-var(--app-header-h)-3rem)] min-h-[36rem] gap-6">
+				<div className="hidden w-64 shrink-0 space-y-6 pt-1 md:block">
+					<Skeleton className="h-10 w-24 rounded-xl" />
+					<Skeleton className="h-64 w-full rounded-xl" />
+					<div className="space-y-2">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<Skeleton key={i} className="h-6 w-full" />
+						))}
+					</div>
+				</div>
+				<div className="flex min-w-0 flex-1 flex-col">
+					<div className="flex items-center gap-2 pb-3">
+						<Skeleton className="h-8 w-8 rounded-lg" />
+						<Skeleton className="h-8 w-16 rounded-full" />
+						<Skeleton className="h-8 w-16 rounded-xl" />
+						<Skeleton className="h-7 w-48" />
+						<Skeleton className="ml-auto h-8 w-28 rounded-xl" />
+					</div>
+					<SkeletonInset className="min-h-0 flex-1">
+						<Skeleton className="h-full w-full rounded-none" />
+					</SkeletonInset>
 				</div>
 			</div>
 		</SkeletonRoot>

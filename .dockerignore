@@ -9,6 +9,9 @@ node_modules
 .wrangler
 dist
 dist-ssr
+**/node_modules
+**/.output
+**/.tanstack
 
 .env
 .env.*

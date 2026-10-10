@@ -1,40 +1,48 @@
-import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
-import { BookmarkIcon } from "@solar-icons/react/linear/bookmark";
-import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
-import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
+import { useMemo, useState } from "react";
+
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
-import { InboxIcon } from "@solar-icons/react/linear/inbox";
-import { LetterIcon } from "@solar-icons/react/linear/letter";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
 
 import { AchievementStrip } from "@/components/achievements/achievement-strip";
 import { PinnedAchievements } from "@/components/achievements/pinned-achievements";
+import { refOf, toEntries } from "@/components/calendar/calendar-data";
+import { CalendarDayCard } from "@/components/calendar/calendar-day-card";
+import type { EntrySpan } from "@/components/calendar/calendar-model";
+import {
+	CalendarSheets,
+	type SheetTarget,
+	sheetFromQuick,
+	sheetOf,
+} from "@/components/calendar/calendar-sheets";
+import { QuickCreate, useQuickSave } from "@/components/calendar/quick-create";
+import { CareerCard } from "@/components/career/career-card";
 import {
 	DataTable,
 	createDataTableColumns,
 	useDataTable,
 } from "@/components/data-table";
 import { ProgressSummary } from "@/components/progress/progress-summary";
-import { OpenAttemptBanner } from "@/components/quiz/open-attempt-banner";
-import { decorativeTint } from "@/components/shared/decorative-tints";
+import { OpenAttemptStatus } from "@/components/quiz/open-attempt-banner";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { UserDashboardSkeleton } from "@/components/skeletons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IconTile } from "@/components/ui/icon-tile";
-import { InsetCard } from "@/components/ui/inset-card";
 import { ActivitySection } from "@/components/user/activity-section";
-import { UserHero } from "@/components/user/user-hero";
+import { DashboardBoard } from "@/components/user/dashboard-board";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { useUpdateTask } from "@/lib/crm/mutations";
+import { crmQueries } from "@/lib/crm/queries";
+import type { CalendarData } from "@/lib/crm/types";
 import { quizQueries } from "@/lib/quiz/queries";
+import type { OpenAttempt } from "@/lib/quiz/types";
 import { seoHead } from "@/lib/seo";
 import { userQueries } from "@/lib/user/queries";
 import type { RecentClass } from "@/lib/user/types";
-import { getDisplayName, getInitials, getRoleLabel } from "@/lib/user/utils";
-import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils/format";
+import { getDisplayName } from "@/lib/user/utils";
 
 export const Route = createFileRoute("/_app/user/")({
 	loader: ({ context }) =>
@@ -51,141 +59,149 @@ function DashboardPage() {
 	const { data: profile } = useSuspenseQuery(userQueries.profile());
 	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
 	const { data: openAttempt } = useQuery(quizQueries.openAttempt());
-	// Not suspense, and not in the loader: the dashboard is the page a student
-	// lands on, and an additive feature must never be able to take it down.
+	// Not suspense and not in the loader, so this feature can never take the dashboard down.
 	const { data: achievements } = useQuery(achievementQueries.all());
+	const { data: enrollment, isSuccess: enrollmentLoaded } = useQuery(
+		crmQueries.currentEnrollment()
+	);
+	const { data: career } = useQuery({
+		...crmQueries.career(),
+		enabled: Boolean(enrollment),
+	});
+	const { data: calendar } = useQuery(crmQueries.calendar());
+	const today = useToday();
 
 	if (!profile) return null;
 
 	const displayName = getDisplayName(profile);
-	const initials = getInitials(profile);
 
 	return (
-		<div className="space-y-8 pb-8">
-			{/* Hero */}
-			<UserHero icon={CupFirstIcon} title="" description="">
-				<div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-					<Avatar className="border-background ring-primary/20 h-16 w-16 shrink-0 border-4 shadow-xl ring-2 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
-						<AvatarImage src={profile.image ?? undefined} alt={displayName} />
-						<AvatarFallback className="bg-primary/10 text-brand text-xl font-bold sm:text-2xl">
-							{initials}
-						</AvatarFallback>
-					</Avatar>
-					<div className="min-w-0 flex-1">
-						<h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-							Ciao, <span className="gradient-text break-words">{displayName}</span>
+		<div className="container space-y-8 pt-6 pb-8">
+			<div className="space-y-3">
+				<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+					<div className="flex min-w-0 items-center gap-3">
+						<h1 className="truncate text-2xl font-bold tracking-tight">
+							Ciao, {displayName}
 						</h1>
-						<div className="mb-3 flex flex-wrap items-center gap-2">
-							<Badge className="border-primary/20 bg-primary/5 text-brand border px-3 py-1 text-xs font-medium backdrop-blur-sm sm:px-4 sm:py-1.5 sm:text-sm">
-								{getRoleLabel(profile.role)}
-							</Badge>
-							{achievements && achievements.pinned.length > 0 && (
-								<>
-									<span className="bg-border h-4 w-px" aria-hidden />
-									<PinnedAchievements pinned={achievements.pinned} />
-								</>
-							)}
-						</div>
-						<div className="text-muted-foreground flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-							{profile.email && (
-								<div className="flex min-w-0 items-center gap-1.5">
-									<LetterIcon className="h-4 w-4 shrink-0" />
-									<span className="truncate text-sm">{profile.email}</span>
-								</div>
-							)}
-							<div className="flex items-center gap-1.5">
-								<CalendarMinimalisticIcon className="h-4 w-4 shrink-0" />
-								<span className="text-sm">
-									Membro dal {formatDate(profile.createdAt)}
-								</span>
-							</div>
-						</div>
+						{achievements && achievements.pinned.length > 0 && (
+							<PinnedAchievements pinned={achievements.pinned} />
+						)}
 					</div>
 				</div>
-			</UserHero>
 
-			<div className="container space-y-8">
-				{openAttempt && <OpenAttemptBanner attempt={openAttempt} />}
-
-				<div className="grid gap-4 sm:grid-cols-3">
-					<ActionCard
-						icon={InboxIcon}
-						color="amber"
-						title="I miei contributi"
-						state="Proponi materiale"
-						href="/user/requests"
-					/>
-					<ActionCard
-						icon={DiplomaIcon}
-						color="blue"
-						title="I miei insegnamenti"
-						state={`${profile.stats.userClassesCount} seguiti`}
-						href="/user/classes"
-					/>
-					<ActionCard
-						icon={BookmarkIcon}
-						color="purple"
-						title="I miei segnalibri"
-						state={`${profile.stats.bookmarksCount} salvati`}
-						href="/user/bookmarks"
-					/>
-				</div>
-
-				{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
-
-				{achievements && <AchievementStrip overview={achievements} />}
-
-				{/* Recent Classes */}
-				{profile.recentClasses.length > 0 && (
-					<RecentClassesSection classes={profile.recentClasses} />
-				)}
-
-				<ActivitySection
-					attempts={profile.recentQuizAttempts}
-					total={profile.stats.quizAttemptsCount}
+				<DashboardStatus
+					openAttempt={openAttempt}
+					askEnrollment={enrollmentLoaded && !enrollment}
 				/>
 			</div>
+
+			{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
+
+			<DashboardBoard
+				calendar={
+					calendar && today && <CalendarPanel calendar={calendar} today={today} />
+				}
+				career={
+					enrollment &&
+					career &&
+					calendar &&
+					today && <CareerCard career={career} next={nextSitting(calendar, today)} />
+				}
+				achievements={achievements && <AchievementStrip overview={achievements} />}
+			/>
+
+			{profile.recentClasses.length > 0 && (
+				<RecentClassesSection classes={profile.recentClasses} />
+			)}
+
+			<ActivitySection
+				attempts={profile.recentQuizAttempts}
+				total={profile.stats.quizAttemptsCount}
+			/>
 		</div>
 	);
 }
 
-function ActionCard({
-	icon: Icon,
-	color,
-	title,
-	state,
-	href,
-}: {
-	icon: typeof CupFirstIcon;
-	color: string;
-	title: string;
-	state: string;
-	href: string;
-}) {
-	const colors = decorativeTint(color);
+/** The chosen appello still to come that is nearest. */
+function nextSitting(calendar: CalendarData, today: string) {
+	return (
+		calendar.sittings
+			.filter(row => row.chosen && !row.examPassed && row.date >= today)
+			.sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
+	);
+}
+
+function CalendarPanel({ calendar, today }: { calendar: CalendarData; today: string }) {
+	const entries = useMemo(() => toEntries(calendar), [calendar]);
+	const [quick, setQuick] = useState<EntrySpan | null>(null);
+	const [sheet, setSheet] = useState<SheetTarget>(null);
+	const quickSave = useQuickSave(() => setQuick(null));
+	const { mutate: patchTask } = useUpdateTask();
 
 	return (
-		<Link to={href} className="group block">
-			<InsetCard
-				className={cn(
-					"transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
-					colors.border
-				)}
-				texture="tr"
-				textureAlpha={0.2}
-			>
-				<div className="relative flex items-center gap-3 p-4">
-					<IconTile variant="soft" size="lg" className={cn("shrink-0", colors.icon)}>
-						<Icon />
-					</IconTile>
-					<div className="min-w-0 flex-1">
-						<h3 className="font-semibold tracking-tight">{title}</h3>
-						<p className="text-muted-foreground truncate text-sm">{state}</p>
-					</div>
-					<ArrowRightIcon className="text-muted-foreground size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
-				</div>
-			</InsetCard>
-		</Link>
+		<>
+			<CalendarDayCard
+				entries={entries}
+				today={today}
+				onOpen={entry => setSheet(sheetOf(refOf(entry)))}
+				onToggle={entry => {
+					const ref = refOf(entry);
+					if (ref.kind === "task") patchTask({ id: ref.id, done: !entry.done });
+				}}
+				onAdd={setQuick}
+			/>
+			<QuickCreate
+				draft={quick}
+				exams={calendar.exams.filter(exam => !exam.passed)}
+				pending={quickSave.pending}
+				onSave={quickSave.save}
+				onMore={result => {
+					setQuick(null);
+					setSheet(sheetFromQuick(result));
+				}}
+				onClose={() => setQuick(null)}
+			/>
+			<CalendarSheets data={calendar} open={sheet} onClose={() => setSheet(null)} />
+		</>
+	);
+}
+
+/** The viewer's local day; null on the server, where the zone is not theirs. */
+function useToday() {
+	const hydrated = useIsHydrated();
+	return hydrated ? format(new Date(), "yyyy-MM-dd") : null;
+}
+
+function DashboardStatus({
+	openAttempt,
+	askEnrollment,
+}: {
+	openAttempt: OpenAttempt | null | undefined;
+	askEnrollment: boolean;
+}) {
+	if (!openAttempt && !askEnrollment) return null;
+
+	return (
+		<div className="bg-muted flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border px-3.5 py-2 text-sm">
+			{openAttempt && <OpenAttemptStatus attempt={openAttempt} />}
+
+			{openAttempt && askEnrollment && (
+				<span
+					className="bg-muted-foreground/30 h-1 w-1 shrink-0 rounded-full"
+					aria-hidden
+				/>
+			)}
+
+			{askEnrollment && (
+				<span className="flex min-w-0 flex-1 items-center gap-2">
+					<DiplomaIcon className="text-muted-foreground size-4 shrink-0" />
+					<span className="truncate">Non ci hai ancora detto cosa studi</span>
+					<Button asChild size="sm" variant="outline" className="ms-auto shrink-0">
+						<Link to="/onboarding">Completa il profilo</Link>
+					</Button>
+				</span>
+			)}
+		</div>
 	);
 }
 
@@ -197,13 +213,9 @@ function RecentClassesSection({ classes }: { classes: RecentClass[] }) {
 					<p className="text-brand eyebrow-lg">I tuoi insegnamenti</p>
 					<h2 className="text-xl font-bold">Insegnamenti visti di recente</h2>
 				</div>
-				<Button asChild variant="ghost" size="sm" className="group">
-					<Link to="/user/classes" className="flex items-center gap-1">
-						<DiplomaIcon className="h-4 w-4" />
-						Tutti gli insegnamenti
-						<ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-					</Link>
-				</Button>
+				<SeeAllLink to="/user/classes" icon={DiplomaIcon}>
+					Tutti gli insegnamenti
+				</SeeAllLink>
 			</div>
 
 			<RecentClassesTable classes={classes} />

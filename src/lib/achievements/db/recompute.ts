@@ -13,29 +13,17 @@ import {
 	PERFECT_SCORE,
 } from "../constants";
 import type { UserMetrics } from "../types";
+import { CRM_METRIC_COLUMNS, CRM_METRIC_CTES, CRM_METRIC_JOINS } from "./crm-metrics";
 import { toUserMetrics } from "./metrics";
 
-/**
- * Every metric computed from the raw history, which is the only authoritative
- * source. This is no longer what a read or an unlock runs — `readMetricSnapshots`
- * serves those from the rollups — but it is what proves the rollups right, so it
- * stays in lockstep with them and with the thresholds in `../constants`.
- *
- * Cost is proportional to the user's entire history, which is exactly why it was
- * demoted: run it from `pnpm achievements:reconcile` or a backfill, not on a
- * request path.
- *
- * A day is Europe/Rome throughout, while the analytics page groups in UTC and the
- * rhythm card in the viewer's zone. And RLS filters nothing on this connection:
- * `target` is what keeps one user's attempts out of another's totals.
- */
+/** Every metric from the raw history; its cost grows with the user's history, so keep it off request paths. */
 export async function recomputeMetricSnapshots(
 	db: DbOrTx,
 	userId?: string
 ): Promise<UserMetrics[]> {
 	const scoped = userId ? sql` where p.id = ${userId}` : sql``;
 
-	// The stored rank is what this checks, so it is recomputed rather than read.
+	// Recomputed, because the stored rank is what this checks.
 	const signup = userId
 		? sql`select t.user_id,
 			       (select count(*)
@@ -150,6 +138,13 @@ export async function recomputeMetricSnapshots(
 			 where cr.status = 'APPROVED'
 			 group by cr.user_id
 		),
+		enrolled as (
+			select e.user_id
+			  from crm.enrollments e
+			  join target t on t.user_id = e.user_id
+			 where e.is_current
+			 group by e.user_id
+		),
 		days as (
 			select a.user_id, (a.completed_at at time zone ${ACTIVITY_ZONE})::date as day
 			  from attempt a
@@ -181,7 +176,8 @@ export async function recomputeMetricSnapshots(
 			  ) w
 			 where w.n >= ${ACTIVE_WEEK_MIN_DAYS}
 			 group by user_id
-		)
+		),
+		${CRM_METRIC_CTES}
 		select t.user_id,
 		       coalesce(v.quizzes_completed, 0) as quizzes_completed,
 		       coalesce(b.distinct_sections, 0) as distinct_sections,
@@ -197,7 +193,9 @@ export async function recomputeMetricSnapshots(
 		       coalesce(f.flashcard_sessions, 0) as flashcard_sessions,
 		       coalesce(bk.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(r.approved_requests, 0) as approved_requests,
-		       sg.signup_rank as signup_rank
+		       sg.signup_rank as signup_rank,
+		       (en.user_id is not null)::int as enrollment_declared,
+		       ${CRM_METRIC_COLUMNS}
 		  from target t
 		  left join volume v on v.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
@@ -208,6 +206,8 @@ export async function recomputeMetricSnapshots(
 		  left join flash f on f.user_id = t.user_id
 		  left join book bk on bk.user_id = t.user_id
 		  left join req r on r.user_id = t.user_id
+		  left join enrolled en on en.user_id = t.user_id
+		  ${CRM_METRIC_JOINS}
 		  join signup sg on sg.user_id = t.user_id
 	`);
 

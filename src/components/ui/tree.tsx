@@ -2,18 +2,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * A static hierarchy view without a headless-tree dependency. Each row renders one
- * gutter cell per ancestor level; what a cell draws depends on `connector`.
- * `elbow` is the ReUI/Linear look: a straight vertical while that ancestor
- * continues below, and a rounded elbow into the row (`└` when the row is the last
- * child, `├` otherwise). `rail` is the file-explorer look: one full-height vertical
- * per level, the shape nested `border-l` containers produce, so the line runs past
- * the last child. The caller passes `guides` — one boolean per level, "does the line
- * at this depth continue below me", read by `elbow` only — and owns the expand
- * state. `reach` widens the deepest cell so the connector reaches a row whose
- * content is indented further (e.g. a leaf that stands in for a missing toggle).
- */
 type TreeConnector = "elbow" | "rail" | "none";
 
 const TreeContext = React.createContext<{ indent: number; connector: TreeConnector }>({
@@ -22,9 +10,8 @@ const TreeContext = React.createContext<{ indent: number; connector: TreeConnect
 });
 
 interface TreeProps extends React.HTMLAttributes<HTMLDivElement> {
-	/** Pixels per level, and the guide spacing. */
+	/** Pixels per level. */
 	indent?: number;
-	/** Elbow connectors, full-height rails, or plain indentation. */
 	connector?: TreeConnector;
 }
 
@@ -36,7 +23,6 @@ function Tree({ indent = 20, connector = "elbow", className, ...props }: TreePro
 	);
 }
 
-/** One indent cell: a vertical rail, or the rounded elbow into the row. */
 function Guide({
 	indent,
 	connector,
@@ -56,12 +42,10 @@ function Guide({
 	if (connector === "elbow" && deepest) {
 		return (
 			<div className="relative shrink-0" style={{ width }} aria-hidden>
-				{/* solid vertical + rounded corner + a short solid start */}
 				<span
 					className="border-border absolute top-0 h-1/2 rounded-bl-[6px] border-b border-l"
 					style={{ left, width: 10 }}
 				/>
-				{/* dashed continuation, fading out before the row */}
 				<span
 					className="border-border/70 absolute top-0 h-1/2 border-b border-dashed"
 					style={{ left: left + 8, right: 8 }}

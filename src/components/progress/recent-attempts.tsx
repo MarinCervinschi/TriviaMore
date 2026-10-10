@@ -1,10 +1,9 @@
-import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { Link } from "@tanstack/react-router";
 
 import { ChartCard } from "@/components/charts";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { sectionDisplayName } from "@/lib/catalog/constants";
@@ -16,10 +15,6 @@ import { formatTimeSpent } from "@/lib/utils/quiz-results";
 import { FavoriteStar } from "./favorite-star";
 import { ScoreRing } from "./score-ring";
 
-/**
- * The little a row needs, so both the full history entry and the dashboard's
- * lighter recent attempt fit without either being widened.
- */
 export type RecentAttemptRow = {
 	id: string;
 	score: number;
@@ -34,11 +29,6 @@ export type RecentAttemptRow = {
 	timeSpent?: number | null;
 };
 
-/**
- * The last few sittings, as a list rather than a table: there is nothing to sort
- * or filter here, and the full table already lives at the history page. The grade
- * is said once, by the ring — a column of rings reads before any figure does.
- */
 export function RecentAttempts({
 	attempts,
 	limit = 5,
@@ -46,7 +36,7 @@ export function RecentAttempts({
 }: {
 	attempts: RecentAttemptRow[];
 	limit?: number;
-	/** The whole count, when the list is only a window onto it. */
+	/** The full count, when the list shows only part of it. */
 	total?: number;
 }) {
 	const recent = attempts.slice(0, limit);
@@ -58,13 +48,9 @@ export function RecentAttempts({
 				title="Ultimi tentativi"
 				description={`${count} quiz completati in tutto`}
 				actions={
-					<Button asChild variant="ghost" size="sm" className="group">
-						<Link to="/user/analytics/history" className="flex items-center gap-1.5">
-							<ClockCircleIcon className="size-3.5" />
-							Cronologia completa
-							<ArrowRightIcon className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-						</Link>
-					</Button>
+					<SeeAllLink to="/user/analytics/history" icon={ClockCircleIcon}>
+						Cronologia completa
+					</SeeAllLink>
 				}
 			>
 				{recent.length === 0 ? (
@@ -72,7 +58,6 @@ export function RecentAttempts({
 				) : (
 					<ul className="divide-border/60 divide-y">
 						{recent.map(attempt => {
-							// The codes place the quiz, the class names it: there is room for both.
 							const place = [
 								attempt.departmentCode,
 								attempt.courseCode,
@@ -129,7 +114,6 @@ export function RecentAttempts({
 	);
 }
 
-/** The two lines of a row, linked to the result when the quiz still exists. */
 function Body({
 	name,
 	place,

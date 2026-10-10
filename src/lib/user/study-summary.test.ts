@@ -88,7 +88,7 @@ describe("buildStudySummary", () => {
 
 	it("totals the time and formats it", () => {
 		const t = metric(WEEK, "time");
-		expect(t.value).toBe("15m 0s"); // 900_000 ms
+		expect(t.value).toBe("15m 0s");
 		expect(t.delta).toBe(88); // 900k vs 480k
 	});
 
@@ -99,14 +99,12 @@ describe("buildStudySummary", () => {
 			TODAY
 		);
 		expect(summary.metrics[0]!.spark).toHaveLength(4);
-		// today falls in the last (most recent) bucket
 		expect(summary.metrics[0]!.spark.at(-1)).toBe(1);
 	});
 });
 
 describe("quality sparklines", () => {
 	it("carry the running average and stay null before the first quiz", () => {
-		// A single quiz on the last day of a 7-day window.
 		const daily: DailyStudyStat[] = [
 			{
 				date: "2026-04-18",

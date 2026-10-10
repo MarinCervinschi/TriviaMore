@@ -1,14 +1,10 @@
-// Runs every read path migrated in #90 against the live database, so a broken
-// query surfaces here instead of in the browser. It only asserts that the SQL
-// executes and returns a plausible shape — the UI check stays manual.
-//
-//   pnpm smoke:reads
 import { sql } from "drizzle-orm";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
 import { readMetricSnapshots } from "../../src/lib/achievements/db/metrics.ts";
 import { recomputeMetricSnapshots } from "../../src/lib/achievements/db/recompute.ts";
 import { getAchievements } from "../../src/lib/achievements/service.ts";
+import { getAvatarChoices } from "../../src/lib/avatar/service.ts";
 import { getClassWithSections } from "../../src/lib/browse/service/classes.ts";
 import { searchClasses } from "../../src/lib/browse/service/classes.ts";
 import { getAvailableClassYears } from "../../src/lib/browse/service/classes.ts";
@@ -26,6 +22,11 @@ import {
 	getPlatformStats,
 } from "../../src/lib/browse/service/overview.ts";
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts";
+import { getCalendar } from "../../src/lib/crm/service/calendar.ts";
+import {
+	getCurrentEnrollment,
+	hasEnrollment,
+} from "../../src/lib/crm/service/enrollment.ts";
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts";
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts";
 import {
@@ -77,7 +78,6 @@ async function check(name: string, run: () => Promise<unknown>) {
 
 const db = getDb();
 
-// Sample identifiers from the live catalog so the checks hit real rows.
 const [sample] = await db
 	.execute<{
 		dept_code: string;
@@ -115,8 +115,7 @@ const userId = sample.user_id;
 
 await check("browse.getDepartments", async () => {
 	const rows = await getDepartments();
-	// A Postgres array of a custom enum type comes back as a raw string unless it
-	// is cast; the UI then spreads it character by character.
+	// An array of a custom enum comes back as a raw string unless the query casts it.
 	for (const row of rows) {
 		if (!Array.isArray(row.campusLocations)) {
 			throw new Error(
@@ -132,7 +131,7 @@ await check("browse.getDepartmentWithCourses", () =>
 	getDepartmentWithCourses(sample.dept_code)
 );
 await check("browse.getCourseWithClasses", () =>
-	getCourseWithClasses(sample.dept_code, sample.course_code)
+	getCourseWithClasses(userId, sample.dept_code, sample.course_code)
 );
 await check("browse.getClassWithSections", () =>
 	getClassWithSections(userId, {
@@ -153,7 +152,7 @@ await check("browse.searchCourses (fts)", () =>
 	searchCourses({ query: "ingegneria", page: 1, pageSize: 5 })
 );
 await check("browse.searchClasses (fts)", () =>
-	searchClasses({ query: "analisi", page: 1, pageSize: 5 })
+	searchClasses(userId, { query: "analisi", page: 1, pageSize: 5 })
 );
 await check("browse.getAvailableClassYears", () => getAvailableClassYears({}));
 await check("browse.getDepartmentCourseList", async () => {
@@ -211,9 +210,7 @@ if (userId) {
 	await check("achievements.getAchievements", () =>
 		getAchievements(userId, { heal: false })
 	);
-	// Unscoped too: the replay runs it that way over every user at once.
 	await check("achievements.readMetricSnapshots", () => readMetricSnapshots(db));
-	// The reconciler's side of the same measures, straight from the history.
 	await check("achievements.recomputeMetricSnapshots", () =>
 		recomputeMetricSnapshots(db)
 	);
@@ -245,14 +242,17 @@ if (userId) {
 	await check("requests.getContentTree", () => getContentTree(userId));
 	await check("notifications.getNotifications", () => getNotifications(userId));
 	await check("notifications.getUnreadCount", () => getUnreadCount(userId));
+	await check("avatar.getAvatarChoices", async () => getAvatarChoices(userId));
+	await check("crm.getCurrentEnrollment", () => getCurrentEnrollment(userId));
+	await check("crm.hasEnrollment", () => hasEnrollment(userId));
+	await check("crm.getCalendar", () => getCalendar(userId));
 	await check("legal.getAcceptanceStatus", () => getAcceptanceStatus(userId));
 	await check("legal.getAcceptanceHistory", () => getAcceptanceHistory(userId));
 } else {
 	console.log("· notifications / legal — skipped, no profile");
 }
 
-// changelogs is absent on purpose: its version list comes from
-// `import.meta.glob`, which only exists under Vite.
+// changelogs is left out because `import.meta.glob` only exists under Vite.
 
 await check("sitemap.buildSitemap", async () => {
 	const xml = await buildSitemap();

@@ -6,27 +6,21 @@ import { cn } from "@/lib/utils";
 import { HEAT_EMPTY, HEAT_LEGEND, heatColor } from "./heat-scale";
 
 export type CalendarDatum = {
-	/** ISO day, `YYYY-MM-DD`. */
+	/** `YYYY-MM-DD`. */
 	date: string;
 	value: number;
 };
 
-/** `"rolling"` = the last 12 months; a number = that whole calendar year. */
+/** `"rolling"` is the last 12 months; a number is that calendar year. */
 export type HeatmapView = "rolling" | number;
 
 export type CalendarHeatmapProps = {
-	/** All daily counts, any range. */
 	data: CalendarDatum[];
-	/** Which window to show. */
 	view: HeatmapView;
-	/** Last day of the rolling window. Defaults to the latest day in the data. */
+	/** Defaults to the latest day in the data. */
 	endDate?: string;
 	unitLabel?: string;
 	emptyMessage?: string;
-	/**
-	 * The card around the grid. Off when a parent card already provides one — two
-	 * nested surfaces read as a seam, not as depth.
-	 */
 	className?: string;
 };
 
@@ -40,7 +34,7 @@ function weekdayIndex(date: Date): number {
 	return (date.getUTCDay() + 6) % 7;
 }
 
-/** The calendar years the data has activity in, most recent first. */
+/** The years with activity, most recent first. */
 export function heatmapYears(data: CalendarDatum[]): number[] {
 	return [
 		...new Set(data.filter(d => d.value > 0).map(d => Number(d.date.slice(0, 4)))),
@@ -53,7 +47,6 @@ function ceilingOf(columns: Cell[][]) {
 	return Math.max(...columns.flat().map(c => c.value), 1);
 }
 
-/** The rolling window of the last `WEEKS` weeks. */
 function buildRolling(byDate: Map<string, number>, endIso: string) {
 	const end = new Date(`${endIso}T00:00:00Z`);
 	end.setUTCDate(end.getUTCDate() + (6 - weekdayIndex(end)));
@@ -76,10 +69,6 @@ function buildRolling(byDate: Map<string, number>, endIso: string) {
 	return { columns, ceiling: ceilingOf(columns) };
 }
 
-/**
- * A whole calendar year, Jan–Dec: always the full map, even the current year —
- * the days still to come are simply empty.
- */
 function buildYear(byDate: Map<string, number>, year: number) {
 	const end = new Date(`${year}-12-31T00:00:00Z`);
 	end.setUTCDate(end.getUTCDate() + (6 - weekdayIndex(end)));
@@ -106,11 +95,6 @@ function buildYear(byDate: Map<string, number>, year: number) {
 
 type Tip = { left: number; top: number; label: string };
 
-/**
- * The study-activity calendar: a week-per-column grid people already read as "how
- * consistently did I show up". Controlled by `view` — the caller owns the year
- * picker. Magnitude only: the ramp is sequential, never the categorical slots.
- */
 export function CalendarHeatmap({
 	data,
 	view,

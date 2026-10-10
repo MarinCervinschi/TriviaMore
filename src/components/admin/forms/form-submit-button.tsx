@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
 
-// Shared submit button for the admin CRUD forms: "Salvataggio…" while pending,
-// then "Aggiorna <entity>" / "Crea <entity>" depending on edit vs create.
 export function FormSubmitButton({
 	isPending,
 	isEdit,
