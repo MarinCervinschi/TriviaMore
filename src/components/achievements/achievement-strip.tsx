@@ -32,9 +32,9 @@ export function AchievementStrip({ overview }: { overview: AchievementsOverview 
 					Tutti i traguardi
 				</SeeAllLink>
 			}
-			panelClassName="p-4"
+			panelClassName="@container p-4"
 		>
-			<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+			<div className="grid grid-cols-1 gap-5 @xs:grid-cols-2 @3xl:grid-cols-4">
 				{recent.map(entry => (
 					<div key={entry.key} className="flex items-center gap-2.5">
 						<AchievementMedal
@@ -56,7 +56,7 @@ export function AchievementStrip({ overview }: { overview: AchievementsOverview 
 				))}
 
 				{next?.progress && (
-					<div className="border-border min-w-0 sm:border-l sm:ps-5">
+					<div className="border-border min-w-0 @3xl:border-l @3xl:ps-5">
 						<p className="text-muted-foreground eyebrow text-2xs">Il prossimo</p>
 						<p className="mt-1 truncate text-sm font-semibold tracking-tight">
 							{next.name}

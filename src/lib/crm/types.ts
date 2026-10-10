@@ -44,6 +44,7 @@ export interface CareerChoiceGroup {
 /** The enrolment's course as the Carriera header shows it. */
 export interface CareerCourse {
 	id: string;
+	code: string;
 	name: string;
 	cfu: number | null;
 	courseType: CourseType;

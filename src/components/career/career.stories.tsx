@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { CareerCard } from "./career-card";
 import { CareerView } from "./career-view";
 import {
 	CAREER,
@@ -100,4 +101,22 @@ export const MobilePrevisione: Story = {
 	name: "Mobile, previsione",
 	globals: { viewport: { value: "iphone6" } },
 	render: () => <CareerView career={CAREER} initialTab="forecast" />,
+};
+
+export const CardDashboard: Story = {
+	name: "Card della dashboard",
+	render: () => (
+		<div className="flex max-w-md flex-col gap-6">
+			<CareerCard
+				career={CAREER}
+				next={{
+					examName: "Ai for Bioinformatics",
+					date: "2027-01-14",
+					label: "Scritto",
+				}}
+			/>
+			<CareerCard career={CAREER} next={null} />
+			<CareerCard career={CAREER_EMPTY} next={null} />
+		</div>
+	),
 };

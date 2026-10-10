@@ -184,6 +184,7 @@ const BASE: Omit<Career, "exams" | "choiceGroups" | "missingMandatory" | "planGa
 	settingsSaved: false,
 	course: {
 		id: "course-aie",
+		code: "20-262",
 		name: "Artificial Intelligence Engineering",
 		cfu: 120,
 		courseType: "MASTER",
