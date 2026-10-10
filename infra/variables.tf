@@ -16,3 +16,12 @@ variable "infisical_project_id" {
 variable "infisical_site_url" {
   type = string
 }
+
+variable "cloudflare_account_id" {
+  type = string
+}
+
+variable "console_owner_email" {
+  type        = string
+  description = "The one address Cloudflare Access lets into the console."
+}

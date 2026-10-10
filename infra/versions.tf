@@ -7,6 +7,10 @@ terraform {
       source  = "coolify-terraform/coolify"
       version = "~> 0.1.26"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.27"
+    }
   }
 
   # The bucket comes from infra/run.sh and the endpoint from R2_ENDPOINT; R2 speaks S3 but not its account checks.

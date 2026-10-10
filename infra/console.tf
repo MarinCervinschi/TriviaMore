@@ -22,11 +22,17 @@ locals {
     INFISICAL_SITE_URL      = var.infisical_site_url
     INFISICAL_ENV           = "prod"
   }
+
+  # The server also checks the token Cloudflare Access signs; the worker serves no requests.
+  console_server_env = merge(local.console_env, {
+    CF_ACCESS_TEAM_DOMAIN = local.team_domain
+    CF_ACCESS_AUD         = cloudflare_zero_trust_access_application.console.aud
+  })
 }
 
 resource "coolify_application_github_app" "console" {
   name                = "trivia-more:console"
-  description         = "The ops console; reachable only from the tailnet, through tailscale serve on the host."
+  description         = "The ops console, on its domain behind Cloudflare Access."
   project_uuid        = local.console.project_uuid
   server_uuid         = local.console.server_uuid
   environment_name    = local.console.environment_name
@@ -37,12 +43,13 @@ resource "coolify_application_github_app" "console" {
   build_pack          = "dockerfile"
   dockerfile_location = local.console.dockerfile_location
   ports_exposes       = "3100"
-  # The provider takes no bind address, so Docker publishes on every interface; the Oracle firewall keeps 3100 off the internet.
-  ports_mappings      = "3100:3100"
-  domains             = ""
+  domains             = "https://${local.console_host}"
   autogenerate_domain = false
   watch_paths         = local.console.watch_paths
   instant_deploy      = false
+
+  # The domain goes live only once Access stands in front of it.
+  depends_on = [cloudflare_zero_trust_access_application.console]
 }
 
 resource "coolify_application_github_app" "console_worker" {
@@ -66,11 +73,11 @@ resource "coolify_application_github_app" "console_worker" {
 }
 
 resource "coolify_environment_variable" "console" {
-  for_each = nonsensitive(toset(keys(local.console_env)))
+  for_each = nonsensitive(toset(keys(local.console_server_env)))
 
   application_uuid = coolify_application_github_app.console.uuid
   key              = each.key
-  value            = local.console_env[each.key]
+  value            = local.console_server_env[each.key]
   is_runtime       = true
   is_build         = false
   is_preview       = false

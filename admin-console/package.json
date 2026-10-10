@@ -22,6 +22,7 @@
 		"@tanstack/react-router-ssr-query": "1.166.10",
 		"@tanstack/react-start": "1.167.5",
 		"drizzle-orm": "0.45.2",
+		"jose": "6.2.2",
 		"pg": "8.22.0",
 		"pg-boss": "12.37.0",
 		"react": "19.2.4",

@@ -95,28 +95,18 @@ jobs written for pg-boss port to Temporal activities later without rewriting the
 graphile-worker was considered: it deletes a job on completion and expects a shadow table for history, so it
 saves nothing over pg-boss here.
 
-### The tailnet is the only way in; Supabase is the login
+### Cloudflare Access in front; Supabase is the login
 
-Two independent layers.
+**Amended 2026-10-10:** the console moved from the tailnet to a public domain, `admin.trivia-more.it`,
+so it opens from any device without a VPN, and Traefik serves it like the app. Two layers still stand
+apart:
 
-1. **Network: Tailscale.** The console has no public hostname and no record on Cloudflare. Tailscale already runs
-   on the VPS and on the owner's machines, so the console is published on the tailnet only: the page does not
-   open without the VPN on.
-   - Coolify publishes the console's port on `127.0.0.1` of the host, not on a public interface.
-   - `tailscale serve` on the host proxies the tailnet to that port over HTTPS, with the VPS's `*.ts.net`
-     certificate. HTTPS is required, because the Supabase session cookies are `Secure`.
-   - A Tailscale ACL limits the VPS's console port to the owner's devices.
-2. **Login: Supabase.** The console signs in against the production Supabase auth, like the app, then checks the
-   user id against `CONSOLE_OWNER_IDS` from Infisical. A valid TriviaMore account is not enough, whatever its
-   role.
+1. **Cloudflare Access** lets only the owner's address through. The VPS's IP reaches Traefik without
+   Cloudflare, so the console checks the token Access signs on every request and refuses one without it.
+2. **The login** is Supabase, against the production auth, checked against `CONSOLE_OWNER_IDS`.
 
-Either layer alone keeps a stranger out. The VPN keeps the console off the internet, and the login keeps a device
-on the tailnet from being enough.
-
-**To verify in #194:**
-- Traefik listens on `0.0.0.0:443` on the host, which includes the Tailscale interface. If it conflicts with
-  `tailscale serve` on 443, Serve uses another HTTPS port, for example `https://<vps>.<tailnet>.ts.net:8443`.
-- The console's URL must be added to the allowed redirect URLs of the production Supabase auth.
+Either layer alone keeps a stranger out. The domain, the DNS record and the Access application are in
+Terraform (`infra/access.tf`, #203).
 
 ## Connections
 
