@@ -53,3 +53,4 @@ export * from "./entities/crm/relations";
 
 export * from "./entities/ops/job-runs";
 export * from "./entities/ops/job-schedules";
+export * from "./entities/ops/job-texts";
