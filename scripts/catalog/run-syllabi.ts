@@ -49,7 +49,10 @@ async function readLocal(db: Db) {
 	};
 }
 
-async function readCandidates(plans: Awaited<ReturnType<typeof readLocal>>["plans"]) {
+async function readCandidates(
+	plans: Awaited<ReturnType<typeof readLocal>>["plans"],
+	progress: Progress
+) {
 	const classOf = new Map(
 		plans.map(p => [`${p.cohort}\u0000${p.curriculum}\u0000${p.code}`, p.classId!])
 	);
@@ -59,7 +62,9 @@ async function readCandidates(plans: Awaited<ReturnType<typeof readLocal>>["plan
 
 	const candidates = new Map<string, Candidate[]>();
 	for (const year of years) {
-		const { activities } = await fetchYear(String(year));
+		const { activities } = await fetchYear(String(year), (done, total) =>
+			progress(`piani ${year} ${done}/${total}`)
+		);
 		for (const activity of activities) {
 			const ref = activity.syllabusRef;
 			if (!ref || ref.offerYear > CURRENT || !activity.curriculum) continue;
@@ -141,7 +146,10 @@ export async function importSyllabi(
 ): Promise<SyllabiReport> {
 	progress("Syllabi dal catalogo ufficiale…");
 	const local = await readLocal(db);
-	const found = await readSyllabi(await readCandidates(local.plans), progress);
+	const found = await readSyllabi(
+		await readCandidates(local.plans, progress),
+		progress
+	);
 	const plan = planSyllabi(local, found);
 	const report = {
 		plan,
@@ -152,6 +160,7 @@ export async function importSyllabi(
 	};
 	if (!write || total(plan) === 0) return report;
 
+	progress("Scrittura…");
 	await apply(db, plan);
 	// A re-plan after applying must be empty, or the apply missed something.
 	return {

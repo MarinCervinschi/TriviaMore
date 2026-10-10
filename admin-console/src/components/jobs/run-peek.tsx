@@ -22,6 +22,7 @@ import type { JobInfo, JobRunDetail } from "~/lib/jobs/types";
 
 import { KindCounts } from "./run-changes";
 import { RunStatusBadge } from "./run-status-badge";
+import { StopRunButton } from "./stop-run-button";
 
 /** A quick look at one run from a list: the outcome and its counts, and the way to its full page. */
 export function RunPeek({
@@ -98,6 +99,7 @@ export function RunPeek({
 								</Button>
 							</>
 						)}
+						<StopRunButton run={run} />
 						<Button asChild size="sm">
 							<Link
 								to="/jobs/$job/runs/$runId"

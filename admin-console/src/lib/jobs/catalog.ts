@@ -53,11 +53,12 @@ export const catalogSync: JobDefinition<typeof yearParam> = {
 	get fields() {
 		return [yearField()];
 	},
-	async run({ year }, { db, dryRun, cacheDir }) {
+	async run({ year }, { db, dryRun, cacheDir, signal }) {
 		setCacheDir(cacheDir);
 		const report = await syncCatalog(db, {
 			year: year ?? String(academicYearOf(new Date())),
 			apply: !dryRun,
+			progress: () => signal.throwIfAborted(),
 		});
 		if (report.left > 0) {
 			throw new Error(`Applicato, ma ${report.left} righe restano da sistemare.`);
@@ -85,9 +86,12 @@ export const catalogSyllabi: JobDefinition<typeof noParams> = {
 	command: "pnpm catalog:syllabi",
 	params: noParams,
 	fields: [],
-	async run(_params, { db, dryRun, cacheDir }) {
+	async run(_params, { db, dryRun, cacheDir, signal }) {
 		setCacheDir(cacheDir);
-		const report = await importSyllabi(db, { apply: !dryRun });
+		const report = await importSyllabi(db, {
+			apply: !dryRun,
+			progress: () => signal.throwIfAborted(),
+		});
 		if (report.left > 0) {
 			throw new Error(`Applicato, ma ${report.left} righe restano da sistemare.`);
 		}

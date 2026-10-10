@@ -365,6 +365,7 @@ export async function syncCatalog(
 	if (!write || additions.additions.length + total(updates) + planChanges(plans) === 0)
 		return report;
 
+	progress("Scrittura…");
 	await applyAdditions(db, additions);
 	const appliedUpdates = planCatalogueUpdates(await readLocal(db), source);
 	await apply(db, appliedUpdates);

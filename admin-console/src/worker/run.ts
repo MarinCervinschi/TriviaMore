@@ -15,6 +15,28 @@ import type { JobDefinition } from "~/lib/jobs/types";
 
 const now = () => new Date().toISOString();
 
+/** How often a running job looks for a stop request from the console. */
+const STOP_POLL_MS = 3000;
+
+/** Aborts `controller` once the console asks to stop the run; the returned function ends the watch. */
+function watchForStop(runId: string, controller: AbortController): () => void {
+	const timer = setInterval(async () => {
+		try {
+			const [row] = await consoleDb()
+				.select({ asked: jobRuns.cancelRequestedAt })
+				.from(jobRuns)
+				.where(eq(jobRuns.id, runId));
+			if (row?.asked) controller.abort();
+		} catch (error) {
+			log.warn("Stop check failed for {RunId}: {Reason}", {
+				RunId: runId,
+				Reason: error instanceof Error ? error.message : String(error),
+			});
+		}
+	}, STOP_POLL_MS);
+	return () => clearInterval(timer);
+}
+
 /** The runs this process is executing, so a shutdown can close the ones it cuts short. */
 export const inFlight = new Set<string>();
 
@@ -85,12 +107,14 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 		});
 
 		const cacheDir = await mkdtemp(join(tmpdir(), "triviamore-job-"));
+		const stop = new AbortController();
+		const unwatch = watchForStop(run.id, stop);
 		try {
 			const params = definition.params.parse(run.params);
 			const { summary, changes } = await definition.run(params, {
 				db,
 				dryRun: run.dryRun,
-				signal: job.signal,
+				signal: AbortSignal.any([job.signal, stop.signal]),
 				cacheDir,
 			});
 			await db
@@ -109,6 +133,21 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 				...summary,
 			});
 		} catch (error) {
+			if (stop.signal.aborted) {
+				await db
+					.update(jobRuns)
+					.set({
+						status: "CANCELLED",
+						error: "Fermata dalla console.",
+						finishedAt: now(),
+					})
+					.where(eq(jobRuns.id, run.id));
+				log.info("Job {Job} stopped from the console", {
+					Job: definition.name,
+					RunId: run.id,
+				});
+				return;
+			}
 			const message = error instanceof Error ? error.message : String(error);
 			await db
 				.update(jobRuns)
@@ -124,6 +163,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 				error
 			);
 		} finally {
+			unwatch();
 			await rm(cacheDir, { recursive: true, force: true });
 		}
 	}).finally(() => inFlight.delete(run.id));

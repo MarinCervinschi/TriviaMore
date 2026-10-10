@@ -14,6 +14,7 @@ export type JobContext = {
 	/** The console's database: the local one in development, production once deployed. */
 	db: ConsoleDb;
 	dryRun: boolean;
+	/** Aborted when the console stops the run; a long job checks it between steps. */
 	signal: AbortSignal;
 	/** An empty directory for this run only, removed when it ends. */
 	cacheDir: string;

@@ -10,4 +10,5 @@ export { saveJobTextsFn } from "./save-job-texts";
 export { saveScheduleFn } from "./save-schedule";
 export { setSchedulePausedFn } from "./set-schedule-paused";
 export { startJobFn } from "./start-job";
+export { stopRunFn } from "./stop-run";
 export { updateQueuedRunFn } from "./update-queued-run";

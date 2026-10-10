@@ -6,7 +6,7 @@ export const RUN_STATUS: Record<JobRunStatus, { label: string; status: Status }>
 	RUNNING: { label: "In corso", status: "info" },
 	SUCCEEDED: { label: "Riuscita", status: "success" },
 	FAILED: { label: "Fallita", status: "danger" },
-	CANCELLED: { label: "Annullata", status: "neutral" },
+	CANCELLED: { label: "Fermata", status: "warning" },
 };
 
 export function RunStatusBadge({ status }: { status: JobRunStatus }) {
