@@ -7,7 +7,11 @@ import type {
 } from "@/components/event-calendar/event-calendar-types";
 
 import { ENTRY_KINDS } from "./calendar-entry";
-import type { CalendarEntry, EntrySpan } from "./calendar-model";
+import {
+	type CalendarEntry,
+	type EntrySpan,
+	addDays as addIsoDays,
+} from "./calendar-model";
 
 const localDay = (iso: string) => {
 	const [year, month, day] = iso.split("-").map(Number);
@@ -95,6 +99,34 @@ export function occurrencesOf(
 		{ timeZone: viewerZone() }
 	).map(occurrence => ({ ...entry, date: day(occurrence.start) }));
 }
+
+/** The days of a month, with a week either side, that hold an entry, for the day picker. */
+export function busyDays(entries: CalendarEntry[], month: Date): Date[] {
+	const first = format(month, "yyyy-MM-01");
+	const from = addIsoDays(first, -7);
+	const to = addIsoDays(first, 45);
+	const days = new Set<string>();
+	for (const entry of entries) {
+		for (const occurrence of occurrencesOf(entry, from, to)) {
+			const last = occurrence.endDate ?? occurrence.date;
+			for (let iso = occurrence.date; iso <= last; iso = addIsoDays(iso, 1))
+				days.add(iso);
+		}
+	}
+	return [...days].map(localDay);
+}
+
+/** What falls on one day, recurrences included: whole days first, then by hour. */
+export function entriesOn(entries: CalendarEntry[], iso: string): CalendarEntry[] {
+	return entries
+		.flatMap(entry => occurrencesOf(entry, iso, addIsoDays(iso, 1)))
+		.filter(entry => entry.date <= iso && iso <= (entry.endDate ?? entry.date))
+		.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+}
+
+/** The dot the day pickers draw under a busy day. */
+export const BUSY_DOT =
+	"relative after:absolute after:bottom-1 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-current after:opacity-60";
 
 /** A timed stretch in days and local times; an end at midnight stays on its day as 23:59. */
 export function timedSpan(start: Date, end: Date): EntrySpan {

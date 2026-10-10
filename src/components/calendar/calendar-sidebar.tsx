@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { CalendarAddIcon } from "@solar-icons/react/linear/calendar-add";
 import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
 import { NotebookIcon } from "@solar-icons/react/linear/notebook";
-import { format } from "date-fns";
 
 import { PlusGlyph } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { occurrencesOf } from "./calendar-adapter";
+import { BUSY_DOT, busyDays, occurrencesOf } from "./calendar-adapter";
 import { ENTRY_KINDS } from "./calendar-entry";
 import {
 	type CalendarEntry,
@@ -26,11 +25,6 @@ import {
 	daysBetween,
 	formatDay,
 } from "./calendar-model";
-
-const parse = (value: string) => {
-	const [year, month, day] = value.split("-").map(Number);
-	return new Date(year!, month! - 1, day);
-};
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
 	return (
@@ -67,21 +61,14 @@ export function CalendarSidebar({
 	onCreate: (kind: "event" | "sitting" | "task") => void;
 	onSelectEntry: (entry: CalendarEntry) => void;
 }) {
-	const month = format(date, "yyyy-MM");
-	const busy = useMemo(() => {
-		const from = addDays(`${month}-01`, -7);
-		const to = addDays(`${month}-01`, 45);
-		const days = new Set<string>();
-		for (const entry of entries) {
-			if (hidden.has(entry.kind)) continue;
-			for (const occurrence of occurrencesOf(entry, from, to)) {
-				const last = occurrence.endDate ?? occurrence.date;
-				for (let day = occurrence.date; day <= last; day = addDays(day, 1))
-					days.add(day);
-			}
-		}
-		return [...days].map(parse);
-	}, [entries, hidden, month]);
+	const busy = useMemo(
+		() =>
+			busyDays(
+				entries.filter(entry => !hidden.has(entry.kind)),
+				date
+			),
+		[entries, hidden, date]
+	);
 
 	const counts = useMemo(() => {
 		const map = new Map<EntryKind, number>();
@@ -144,7 +131,7 @@ export function CalendarSidebar({
 					weekStartsOn={1}
 					modifiers={{ busy }}
 					modifiersClassNames={{
-						busy: "relative after:absolute after:bottom-1 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-current after:opacity-60",
+						busy: BUSY_DOT,
 					}}
 					className="w-full p-0"
 				/>

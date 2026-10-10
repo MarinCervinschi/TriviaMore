@@ -14,6 +14,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useCreateEvent, useCreateSitting, useCreateTask } from "@/lib/crm/mutations";
 
 import { type EntrySpan, formatDay } from "./calendar-model";
 import type { SittingExam } from "./sitting-sheet";
@@ -156,4 +157,52 @@ function QuickForm({
 			</div>
 		</form>
 	);
+}
+
+/** Saves what the quick create returns, as an event, a task or an appello. */
+export function useQuickSave(onSaved: () => void) {
+	const createEvent = useCreateEvent();
+	const createTask = useCreateTask();
+	const createSitting = useCreateSitting();
+
+	const save = (result: QuickResult) => {
+		const done = { onSuccess: onSaved };
+		if (result.kind === "task") {
+			createTask.mutate(
+				{
+					title: result.title,
+					dueDate: result.draft.date,
+					dueTime: result.draft.time ?? null,
+					endTime: result.draft.time ? (result.draft.endTime ?? null) : null,
+				},
+				done
+			);
+		} else if (result.kind === "event") {
+			createEvent.mutate(
+				{
+					title: result.title,
+					date: result.draft.date,
+					endDate: result.draft.endDate ?? null,
+					startTime: result.draft.time ?? null,
+					endTime: result.draft.endTime ?? null,
+				},
+				done
+			);
+		} else {
+			createSitting.mutate(
+				{
+					examId: result.examId,
+					date: result.draft.date,
+					importance: 2,
+					chosen: false,
+				},
+				done
+			);
+		}
+	};
+
+	return {
+		save,
+		pending: createEvent.isPending || createTask.isPending || createSitting.isPending,
+	};
 }
