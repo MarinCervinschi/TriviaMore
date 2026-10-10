@@ -99,7 +99,7 @@ function ClassName({ entry }: { entry: PlanClass }) {
 				{entry.name}
 			</span>
 			{entry.description && (
-				<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+				<p className="text-muted-foreground mt-0.5 max-w-md truncate text-xs">
 					{entry.description}
 				</p>
 			)}

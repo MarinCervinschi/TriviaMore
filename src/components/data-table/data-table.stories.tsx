@@ -91,7 +91,6 @@ function ResizableExample() {
 		data: SECTIONS,
 		columns,
 		pageSize: 5,
-		resizableColumns: true,
 	});
 
 	return (

@@ -243,6 +243,16 @@ max-w-3xl` would silently fail to narrow. */
 	);
 }
 
+/* A thin scrollbar that shows only under the pointer; the standard properties override the webkit rules below. */
+@utility scrollbar-hover {
+	scrollbar-width: thin;
+	scrollbar-color: transparent transparent;
+	&:hover,
+	&:focus-within {
+		scrollbar-color: hsl(var(--foreground) / 0.25) transparent;
+	}
+}
+
 @utility eyebrow {
 	font-size: var(--text-xs);
 	line-height: var(--text-xs--line-height);

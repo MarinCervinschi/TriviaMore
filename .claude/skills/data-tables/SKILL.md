@@ -150,7 +150,13 @@ replaces the default with a row-level predicate. `query` arrives lowercased and 
 `string[]`, keep `filterFn: "facet"` — it matches when any value is selected — and add
 `getUniqueValues: row => row.departments` so the popover counts each value, not each combination.
 
-**Resizable columns** are opt-in: `useDataTable({ …, resizableColumns: true })`. Each header gets a
+**Cells do not wrap.** Every cell is `whitespace-nowrap`; a table wider than its card scrolls sideways,
+with a thin scrollbar that shows under the pointer (`scrollbar-hover`), and the header stays put while the
+body scrolls inside a `max-h-[70dvh]` container. A second line under a name (a description) is
+`max-w-* truncate`, never `line-clamp-1`, or the column grows to the full text. A column meant to wrap
+says so: `cellClassName: "max-w-xs whitespace-normal"`, as the question text in `/admin/sections/$sectionId`.
+
+**Resizable columns** are on by default; `resizableColumns: false` turns them off. Each header gets a
 handle on its right edge — drag it, or focus it and use the arrow keys; a double click restores
 every width. Until the first resize the table keeps its automatic layout; that first drag freezes every
 column at the width it renders at, switches to `table-fixed` and adds an empty filler column that

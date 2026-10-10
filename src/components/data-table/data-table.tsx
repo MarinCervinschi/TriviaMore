@@ -125,10 +125,16 @@ export function DataTable<TData extends RowData>({
 				empty
 			) : (
 				<div className="overflow-hidden">
-					<Table className={sized ? "table-fixed" : undefined}>
-						<TableHeader>
+					<Table
+						className={sized ? "table-fixed" : undefined}
+						containerClassName="scrollbar-hover max-h-[70dvh]"
+					>
+						<TableHeader className="sticky top-0 z-10">
 							{table.getHeaderGroups().map(headerGroup => (
-								<TableRow key={headerGroup.id} className="bg-muted/50">
+								<TableRow
+									key={headerGroup.id}
+									className="bg-[color-mix(in_oklab,var(--color-muted)_50%,var(--color-card))]"
+								>
 									{headerGroup.headers.map(header => {
 										const meta = header.column.columnDef.meta;
 										const align = meta?.align ?? "left";
@@ -204,6 +210,7 @@ export function DataTable<TData extends RowData>({
 												<TableCell
 													key={cell.id}
 													className={cn(
+														"whitespace-nowrap",
 														cellPadding,
 														ALIGN_CLASS[meta?.align ?? "left"],
 														meta?.hideBelow && HIDE_BELOW_CLASS[meta.hideBelow],

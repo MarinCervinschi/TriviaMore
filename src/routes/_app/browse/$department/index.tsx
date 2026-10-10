@@ -98,7 +98,7 @@ function buildColumns(deptCode: string) {
 						{row.original.name}
 					</span>
 					{row.original.description && (
-						<p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+						<p className="text-muted-foreground mt-0.5 max-w-md truncate text-xs">
 							{row.original.description}
 						</p>
 					)}
