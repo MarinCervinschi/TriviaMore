@@ -449,6 +449,13 @@
       "when": 1791620475525,
       "tag": "0063_crm_achievements",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791625740216,
+      "tag": "0064_job_run_changes",
+      "breakpoints": true
     }
   ]
 }
