@@ -1,9 +1,23 @@
+import { useMemo, useState } from "react";
+
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
 
 import { AchievementStrip } from "@/components/achievements/achievement-strip";
 import { PinnedAchievements } from "@/components/achievements/pinned-achievements";
+import { refOf, toEntries } from "@/components/calendar/calendar-data";
+import { CalendarDayCard } from "@/components/calendar/calendar-day-card";
+import type { EntrySpan } from "@/components/calendar/calendar-model";
+import {
+	CalendarSheets,
+	type SheetTarget,
+	sheetFromQuick,
+	sheetOf,
+} from "@/components/calendar/calendar-sheets";
+import { QuickCreate, useQuickSave } from "@/components/calendar/quick-create";
+import { CareerCard } from "@/components/career/career-card";
 import {
 	DataTable,
 	createDataTableColumns,
@@ -16,10 +30,13 @@ import { UserDashboardSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ActivitySection } from "@/components/user/activity-section";
+import { DashboardBoard } from "@/components/user/dashboard-board";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
+import { useUpdateTask } from "@/lib/crm/mutations";
 import { crmQueries } from "@/lib/crm/queries";
-import type { CurrentEnrollment } from "@/lib/crm/types";
+import type { CalendarData } from "@/lib/crm/types";
 import { quizQueries } from "@/lib/quiz/queries";
 import type { OpenAttempt } from "@/lib/quiz/types";
 import { seoHead } from "@/lib/seo";
@@ -47,6 +64,12 @@ function DashboardPage() {
 	const { data: enrollment, isSuccess: enrollmentLoaded } = useQuery(
 		crmQueries.currentEnrollment()
 	);
+	const { data: career } = useQuery({
+		...crmQueries.career(),
+		enabled: Boolean(enrollment),
+	});
+	const { data: calendar } = useQuery(crmQueries.calendar());
+	const today = useToday();
 
 	if (!profile) return null;
 
@@ -64,7 +87,6 @@ function DashboardPage() {
 							<PinnedAchievements pinned={achievements.pinned} />
 						)}
 					</div>
-					{enrollment && <EnrollmentChip enrollment={enrollment} />}
 				</div>
 
 				<DashboardStatus
@@ -75,7 +97,18 @@ function DashboardPage() {
 
 			{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
 
-			{achievements && <AchievementStrip overview={achievements} />}
+			<DashboardBoard
+				calendar={
+					calendar && today && <CalendarPanel calendar={calendar} today={today} />
+				}
+				career={
+					enrollment &&
+					career &&
+					calendar &&
+					today && <CareerCard career={career} next={nextSitting(calendar, today)} />
+				}
+				achievements={achievements && <AchievementStrip overview={achievements} />}
+			/>
 
 			{profile.recentClasses.length > 0 && (
 				<RecentClassesSection classes={profile.recentClasses} />
@@ -87,6 +120,56 @@ function DashboardPage() {
 			/>
 		</div>
 	);
+}
+
+/** The chosen appello still to come that is nearest. */
+function nextSitting(calendar: CalendarData, today: string) {
+	return (
+		calendar.sittings
+			.filter(row => row.chosen && !row.examPassed && row.date >= today)
+			.sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
+	);
+}
+
+function CalendarPanel({ calendar, today }: { calendar: CalendarData; today: string }) {
+	const entries = useMemo(() => toEntries(calendar), [calendar]);
+	const [quick, setQuick] = useState<EntrySpan | null>(null);
+	const [sheet, setSheet] = useState<SheetTarget>(null);
+	const quickSave = useQuickSave(() => setQuick(null));
+	const { mutate: patchTask } = useUpdateTask();
+
+	return (
+		<>
+			<CalendarDayCard
+				entries={entries}
+				today={today}
+				onOpen={entry => setSheet(sheetOf(refOf(entry)))}
+				onToggle={entry => {
+					const ref = refOf(entry);
+					if (ref.kind === "task") patchTask({ id: ref.id, done: !entry.done });
+				}}
+				onAdd={setQuick}
+			/>
+			<QuickCreate
+				draft={quick}
+				exams={calendar.exams.filter(exam => !exam.passed)}
+				pending={quickSave.pending}
+				onSave={quickSave.save}
+				onMore={result => {
+					setQuick(null);
+					setSheet(sheetFromQuick(result));
+				}}
+				onClose={() => setQuick(null)}
+			/>
+			<CalendarSheets data={calendar} open={sheet} onClose={() => setSheet(null)} />
+		</>
+	);
+}
+
+/** The viewer's local day; null on the server, where the zone is not theirs. */
+function useToday() {
+	const hydrated = useIsHydrated();
+	return hydrated ? format(new Date(), "yyyy-MM-dd") : null;
 }
 
 function DashboardStatus({
@@ -119,26 +202,6 @@ function DashboardStatus({
 				</span>
 			)}
 		</div>
-	);
-}
-
-function EnrollmentChip({ enrollment }: { enrollment: CurrentEnrollment }) {
-	return (
-		<Link
-			to="/browse/$department/$course"
-			params={{
-				department: enrollment.departmentCode.toLowerCase(),
-				course: enrollment.courseCode.toLowerCase(),
-			}}
-			className="bg-card text-muted-foreground hover:bg-accent hover:text-foreground flex max-w-full min-w-0 items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors"
-		>
-			<DiplomaIcon className="text-brand mr-0.5 size-4 shrink-0" />
-			<span className="truncate">{enrollment.courseName}</span>
-			<span aria-hidden className="text-muted-foreground/50 shrink-0">
-				·
-			</span>
-			<span className="shrink-0 font-mono text-xs">{enrollment.departmentCode}</span>
-		</Link>
 	);
 }
 

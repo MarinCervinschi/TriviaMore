@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { CalendarDayCard } from "./calendar-day-card";
 import type { EntrySpan } from "./calendar-model";
 import { CalendarWorkspace } from "./calendar-workspace";
 import { EventSheet } from "./event-sheet";
@@ -139,4 +140,32 @@ export const ModificaTask: Story = {
 			onClose={() => {}}
 		/>
 	),
+};
+
+function DayCardDemo() {
+	const [entries, setEntries] = useState(ENTRIES);
+	return (
+		<CalendarDayCard
+			entries={entries}
+			today={TODAY}
+			onOpen={() => {}}
+			onAdd={() => {}}
+			onToggle={entry =>
+				setEntries(prev =>
+					prev.map(row => (row.id === entry.id ? { ...row, done: !row.done } : row))
+				)
+			}
+		/>
+	);
+}
+
+export const CardDashboard: Story = {
+	name: "Card della dashboard",
+	render: () => <DayCardDemo />,
+};
+
+export const CardDashboardMobile: Story = {
+	name: "Card della dashboard, mobile",
+	render: () => <DayCardDemo />,
+	globals: { viewport: { value: "iphone6" } },
 };

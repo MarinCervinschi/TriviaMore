@@ -145,6 +145,7 @@ export async function getCareer(userId: string): Promise<Career> {
 		db
 			.select({
 				id: courses.id,
+				code: courses.code,
 				name: courses.name,
 				cfu: courses.cfu,
 				courseType: courses.courseType,
