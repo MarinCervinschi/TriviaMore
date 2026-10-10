@@ -279,7 +279,9 @@ describe("planCohortPlans", () => {
 			{ cohorts: [cohort(2023, [activity()])], attributes: NO_ATTRIBUTES }
 		);
 		expect(changes.plans.inserts).toEqual([]);
-		expect(changes.plans.updates).toEqual([{ id: "p1", set: { cfu: 9 } }]);
+		expect(changes.plans.updates).toMatchObject([
+			{ id: "p1", set: { cfu: 9 }, before: { cfu: 6 }, row: { cfu: 9 } },
+		]);
 	});
 
 	it("is empty when the stored rows match", () => {
@@ -287,7 +289,7 @@ describe("planCohortPlans", () => {
 			{ ...LOCAL, curricula: [storedCurriculum()], plans: [stored()] },
 			{ cohorts: [cohort(2023, [activity()])], attributes: NO_ATTRIBUTES }
 		);
-		const none = { inserts: [], updates: [], deletes: [] };
+		const none = { inserts: [], updates: [], deletes: [], deleted: [] };
 		expect(changes).toEqual({ curricula: none, plans: none, unmatchedCourses: 0 });
 	});
 
@@ -305,6 +307,7 @@ describe("planCohortPlans", () => {
 			{ cohorts: [cohort(2023, [activity()])], attributes: NO_ATTRIBUTES }
 		);
 		expect(changes.plans.deletes).toEqual(["dropped"]);
+		expect(changes.plans.deleted).toHaveLength(1);
 		expect(changes.curricula.deletes).toEqual([]);
 	});
 

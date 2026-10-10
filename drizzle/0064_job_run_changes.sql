@@ -1,0 +1,1 @@
+ALTER TABLE "ops"."job_runs" ADD COLUMN "changes" jsonb;

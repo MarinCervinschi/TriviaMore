@@ -209,10 +209,16 @@ export function evaluateAchievementsInBackground(userId: string): void {
 export async function replayAchievements(options?: {
 	notify?: boolean;
 	dryRun?: boolean;
-}): Promise<{ users: number; awarded: number }> {
-	const db = getDb();
+	db?: DbOrTx;
+}): Promise<{
+	users: number;
+	awarded: number;
+	/** Who gets which badge: the ones due on a dry run, the ones inserted otherwise. */
+	awards: { userId: string; key: string }[];
+}> {
+	const db = options?.db ?? getDb();
 	const catalogue = await findActiveAchievements(db);
-	if (catalogue.length === 0) return { users: 0, awarded: 0 };
+	if (catalogue.length === 0) return { users: 0, awarded: 0, awards: [] };
 
 	const [snapshots, awardedByUser] = await Promise.all([
 		readMetricSnapshots(db),
@@ -232,7 +238,11 @@ export async function replayAchievements(options?: {
 	}
 
 	if (options?.dryRun) {
-		return { users: snapshots.length, awarded: pending.length };
+		return {
+			users: snapshots.length,
+			awarded: pending.length,
+			awards: pending.map(row => ({ userId: row.userId, key: row.unlock.key })),
+		};
 	}
 
 	const byUser = new Map<string, AchievementUnlock[]>();
@@ -240,10 +250,12 @@ export async function replayAchievements(options?: {
 		pending.map(row => [`${row.userId}\u0000${row.unlock.key}`, row.unlock])
 	);
 
-	let awarded = 0;
+	const awards: { userId: string; key: string }[] = [];
 	for (let index = 0; index < pending.length; index += AWARD_CHUNK) {
 		const inserted = await insertAwards(db, pending.slice(index, index + AWARD_CHUNK));
-		awarded += inserted.length;
+		awards.push(
+			...inserted.map(row => ({ userId: row.userId, key: row.achievementKey }))
+		);
 
 		// From the inserted rows, because a live evaluation may already have awarded and announced some.
 		for (const row of inserted) {
@@ -260,10 +272,10 @@ export async function replayAchievements(options?: {
 
 	log.info("Achievements replayed {Users} {Awarded}", {
 		Users: snapshots.length,
-		Awarded: awarded,
+		Awarded: awards.length,
 	});
 
-	return { users: snapshots.length, awarded };
+	return { users: snapshots.length, awarded: awards.length, awards };
 }
 
 export type MetricDrift = {
@@ -279,8 +291,9 @@ const DRIFT_EPSILON = 1e-9;
 /** Compares the rollups against the history; read-only unless asked to repair. */
 export async function reconcileAchievementMetrics(options?: {
 	repair?: boolean;
+	db?: DbOrTx;
 }): Promise<{ users: number; drift: MetricDrift[] }> {
-	const db = getDb();
+	const db = options?.db ?? getDb();
 	const [stored, computed] = await Promise.all([
 		readMetricSnapshots(db),
 		recomputeMetricSnapshots(db),

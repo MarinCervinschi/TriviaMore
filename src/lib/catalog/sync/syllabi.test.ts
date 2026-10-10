@@ -120,7 +120,11 @@ describe("planSyllabi", () => {
 		);
 		expect(changes.inserts).toHaveLength(1);
 		expect(changes.descriptions).toEqual([
-			{ classId: "k1", description: "Fornire le basi del calcolo differenziale." },
+			{
+				classId: "k1",
+				description: "Fornire le basi del calcolo differenziale.",
+				before: "Sintesi nostra",
+			},
 		]);
 	});
 
@@ -135,7 +139,11 @@ describe("planSyllabi", () => {
 			new Map([["k1", syllabus()]])
 		);
 		expect(changes.updates).toEqual([
-			{ classId: "k1", set: { contents: "Limiti. Derivate." } },
+			{
+				classId: "k1",
+				set: { contents: "Limiti. Derivate." },
+				before: { contents: "Vecchi" },
+			},
 		]);
 		expect(changes.descriptions).toEqual([]);
 	});
@@ -158,6 +166,8 @@ describe("planSyllabi", () => {
 			{ classes: [{ id: "k2", description: "Sintesi nostra" }], syllabi: [] },
 			new Map()
 		);
-		expect(changes.descriptions).toEqual([{ classId: "k2", description: null }]);
+		expect(changes.descriptions).toEqual([
+			{ classId: "k2", description: null, before: "Sintesi nostra" },
+		]);
 	});
 });

@@ -50,8 +50,11 @@ export type SourceCohort = {
 
 type Changes<Row> = {
 	inserts: Row[];
-	updates: { id: string; set: Partial<Row> }[];
+	/** `before` holds the stored values of the fields in `set`; `row` is the row as it will be. */
+	updates: { id: string; set: Partial<Row>; before: Partial<Row>; row: Row }[];
 	deletes: string[];
+	/** The rows behind `deletes`, for a report to name them. */
+	deleted: Row[];
 };
 
 export type CohortPlanChanges = {
@@ -86,7 +89,7 @@ function diff<Row, Stored extends Row & { id: string }>(
 	fields: readonly (keyof Row)[],
 	isCovered: (row: Stored) => boolean
 ): Changes<Row> {
-	const changes: Changes<Row> = { inserts: [], updates: [], deletes: [] };
+	const changes: Changes<Row> = { inserts: [], updates: [], deletes: [], deleted: [] };
 	for (const [k, row] of desired) {
 		const current = stored.get(k);
 		if (!current) {
@@ -94,13 +97,21 @@ function diff<Row, Stored extends Row & { id: string }>(
 			continue;
 		}
 		const set: Partial<Row> = {};
+		const before: Partial<Row> = {};
 		for (const field of fields) {
-			if ((row[field] as unknown) !== current[field]) set[field] = row[field];
+			if ((row[field] as unknown) !== current[field]) {
+				set[field] = row[field];
+				before[field] = current[field];
+			}
 		}
-		if (Object.keys(set).length > 0) changes.updates.push({ id: current.id, set });
+		if (Object.keys(set).length > 0)
+			changes.updates.push({ id: current.id, set, before, row });
 	}
 	for (const [k, row] of stored) {
-		if (!desired.has(k) && isCovered(row)) changes.deletes.push(row.id);
+		if (!desired.has(k) && isCovered(row)) {
+			changes.deletes.push(row.id);
+			changes.deleted.push(row);
+		}
 	}
 	return changes;
 }
@@ -277,11 +288,11 @@ export function planCohortPlans(
 			.map(c => key(c.courseId, c.cohort, c.code))
 	);
 	const deleted = new Set(planChanges.deletes);
-	planChanges.deletes = local.plans
-		.filter(
-			p => deleted.has(p.id) && !dropped.has(key(p.courseId, p.cohort, p.curriculum))
-		)
-		.map(p => p.id);
+	const kept = local.plans.filter(
+		p => deleted.has(p.id) && !dropped.has(key(p.courseId, p.cohort, p.curriculum))
+	);
+	planChanges.deletes = kept.map(p => p.id);
+	planChanges.deleted = kept;
 
 	return { curricula: curriculumChanges, plans: planChanges, unmatchedCourses };
 }

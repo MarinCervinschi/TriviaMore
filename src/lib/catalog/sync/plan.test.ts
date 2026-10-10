@@ -229,7 +229,7 @@ describe("planCatalogueUpdates", () => {
 			}
 		);
 		expect(plan.classes).toEqual([
-			{ id: "k1", name: "Fisica", ssd: "FIS/01", contested: false },
+			{ id: "k1", name: "Fisica", ssd: "FIS/01", before: null, contested: false },
 		]);
 	});
 
@@ -257,6 +257,7 @@ describe("planCatalogueUpdates", () => {
 				id: "d1",
 				name: "Dipartimento di Scienze Mediche e Chirurgiche",
 				catalogueCode: "302",
+				before: null,
 			},
 		]);
 	});

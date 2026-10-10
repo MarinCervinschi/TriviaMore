@@ -4,6 +4,25 @@ import { boolean, index, jsonb, text, timestamp, uuid } from "drizzle-orm/pg-cor
 import { opsSchema } from "../../common";
 import { jobRunStatusEnum, jobRunTriggerEnum } from "../public/enums";
 
+export type JobChangeValue = string | number | boolean | null;
+
+export type JobChangeRow = {
+	kind: "added" | "updated" | "removed";
+	label: string;
+	detail?: string;
+	/** For an update, each field that changed; for an addition or a removal, the row's own values. */
+	fields?: { name: string; before: JobChangeValue; after: JobChangeValue }[];
+};
+
+/** What a run changed, or would change, by what it touches; rows past a cap are only counted. */
+export type JobChanges = {
+	key: string;
+	title: string;
+	counts: { added: number; updated: number; removed: number };
+	rows: JobChangeRow[];
+	omitted: number;
+}[];
+
 export const jobRuns = opsSchema
 	.table(
 		"job_runs",
@@ -22,6 +41,7 @@ export const jobRuns = opsSchema
 			scheduleKey: text("schedule_key"),
 			queueJobId: uuid("queue_job_id"),
 			summary: jsonb().$type<Record<string, number | string>>(),
+			changes: jsonb().$type<JobChanges>(),
 			error: text(),
 			queuedAt: timestamp("queued_at", { withTimezone: true, mode: "string" })
 				.defaultNow()

@@ -140,8 +140,13 @@ const SYLLABUS_FIELDS = [
 
 export type SyllabusChanges = {
 	inserts: (Syllabus & { classId: string })[];
-	updates: { classId: string; set: Partial<Syllabus> }[];
-	descriptions: { classId: string; description: string | null }[];
+	/** `before` holds the stored values of the fields in `set`. */
+	updates: { classId: string; set: Partial<Syllabus>; before: Partial<Syllabus> }[];
+	descriptions: {
+		classId: string;
+		description: string | null;
+		before: string | null;
+	}[];
 };
 
 /** The syllabi and descriptions to write; a class with no syllabus loses its description. */
@@ -162,19 +167,25 @@ export function planSyllabi(
 			continue;
 		}
 		const set: Partial<Syllabus> = {};
+		const before: Partial<Syllabus> = {};
 		for (const field of SYLLABUS_FIELDS) {
 			if (syllabus[field] !== current[field]) {
 				(set as Record<string, unknown>)[field] = syllabus[field];
+				(before as Record<string, unknown>)[field] = current[field];
 			}
 		}
-		if (Object.keys(set).length > 0) changes.updates.push({ classId, set });
+		if (Object.keys(set).length > 0) changes.updates.push({ classId, set, before });
 	}
 
 	for (const cls of local.classes) {
 		const syllabus = found.get(cls.id) ?? stored.get(cls.id);
 		const description = summarise(syllabus?.objectives ?? null);
 		if (description !== cls.description) {
-			changes.descriptions.push({ classId: cls.id, description });
+			changes.descriptions.push({
+				classId: cls.id,
+				description,
+				before: cls.description,
+			});
 		}
 	}
 

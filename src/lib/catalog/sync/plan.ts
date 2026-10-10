@@ -124,16 +124,30 @@ type CourseClassSet = Partial<
 	>
 >;
 
+/** Each update carries the stored value it replaces, so a report can show both. */
 export type CatalogueUpdates = {
-	departments: { id: string; name: string; catalogueCode: string }[];
-	courses: { id: string; code: string; set: CourseSet }[];
-	classes: { id: string; name: string; ssd: string; contested: boolean }[];
+	departments: {
+		id: string;
+		name: string;
+		catalogueCode: string;
+		before: string | null;
+	}[];
+	courses: { id: string; code: string; set: CourseSet; before: CourseSet }[];
+	classes: {
+		id: string;
+		name: string;
+		ssd: string;
+		before: string | null;
+		contested: boolean;
+	}[];
 	courseClasses: {
 		courseId: string;
 		classId: string;
 		courseCode: string;
 		code: string;
+		name: string;
 		set: CourseClassSet;
+		before: CourseClassSet;
 	}[];
 	unmatched: { departments: number; courses: number; courseClasses: number };
 };
@@ -148,6 +162,12 @@ function changes<T extends object>(current: T, next: Partial<T>): Partial<T> {
 		}
 	}
 	return out;
+}
+
+function beforeOf<T extends object>(current: T, set: Partial<T>): Partial<T> {
+	return Object.fromEntries(
+		Object.keys(set).map(field => [field, current[field as keyof T]])
+	) as Partial<T>;
 }
 
 /** The field values that differ from the source; a second run after applying returns none. */
@@ -185,6 +205,7 @@ export function planCatalogueUpdates(
 				id: department.id,
 				name: department.name,
 				catalogueCode: match.code,
+				before: department.catalogueCode,
 			});
 		}
 	}
@@ -204,7 +225,12 @@ export function planCatalogueUpdates(
 			catalogueUrl: match.url,
 		});
 		if (Object.keys(set).length > 0)
-			updates.courses.push({ id: course.id, code: course.code, set });
+			updates.courses.push({
+				id: course.id,
+				code: course.code,
+				set,
+				before: beforeOf(course, set),
+			});
 	}
 
 	const activitiesByPair = new Map<string, SourceActivity[]>();
@@ -256,7 +282,9 @@ export function planCatalogueUpdates(
 				classId: row.classId,
 				courseCode: row.courseCode,
 				code: row.code,
+				name: row.name,
 				set,
+				before: beforeOf(row, set),
 			});
 		}
 
@@ -270,7 +298,13 @@ export function planCatalogueUpdates(
 	for (const cls of local.classes) {
 		const { value, contested } = latest(ssdByClass.get(cls.id) ?? []);
 		if (value !== null && value !== cls.ssd) {
-			updates.classes.push({ id: cls.id, name: cls.name, ssd: value, contested });
+			updates.classes.push({
+				id: cls.id,
+				name: cls.name,
+				ssd: value,
+				before: cls.ssd,
+				contested,
+			});
 		}
 	}
 
