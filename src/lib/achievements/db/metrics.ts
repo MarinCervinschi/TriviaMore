@@ -5,6 +5,7 @@ import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
 import { ACTIVE_WEEK_MIN_DAYS, IMPROVEMENT_MIN_RUNS } from "../constants";
 import type { UserMetrics } from "../types";
+import { CRM_METRIC_COLUMNS, CRM_METRIC_CTES, CRM_METRIC_JOINS } from "./crm-metrics";
 
 type MetricRow = Record<string, string | number | null>;
 
@@ -27,6 +28,10 @@ export function toUserMetrics(row: MetricRow): UserMetrics {
 			BOOKMARKED_THEN_CORRECT: Number(row.bookmarked_then_correct ?? 0),
 			APPROVED_REQUESTS: Number(row.approved_requests ?? 0),
 			ENROLLMENT_DECLARED: Number(row.enrollment_declared ?? 0),
+			EXAMS_PASSED: Number(row.exams_passed ?? 0),
+			CFU_EARNED: Number(row.cfu_earned ?? 0),
+			HONOURS_EARNED: Number(row.honours_earned ?? 0),
+			TASKS_DONE: Number(row.tasks_done ?? 0),
 			// Compared with LTE, so a missing rank is the worst value.
 			SIGNUP_RANK:
 				row.signup_rank === null || row.signup_rank === undefined
@@ -104,7 +109,8 @@ export async function readMetricSnapshots(
 			  ) w
 			 where w.n >= ${ACTIVE_WEEK_MIN_DAYS}
 			 group by user_id
-		)
+		),
+		${CRM_METRIC_CTES}
 		select t.user_id,
 		       coalesce(us.quizzes_completed, 0) as quizzes_completed,
 		       coalesce(b.distinct_sections, 0) as distinct_sections,
@@ -121,13 +127,15 @@ export async function readMetricSnapshots(
 		       coalesce(us.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(us.approved_requests, 0) as approved_requests,
 		       t.signup_rank,
-		       (en.user_id is not null)::int as enrollment_declared
+		       (en.user_id is not null)::int as enrollment_declared,
+		       ${CRM_METRIC_COLUMNS}
 		  from target t
 		  left join public.user_stats us on us.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
 		  left join streak st on st.user_id = t.user_id
 		  left join weeks w on w.user_id = t.user_id
 		  left join enrolled en on en.user_id = t.user_id
+		  ${CRM_METRIC_JOINS}
 	`);
 
 	return result.rows.map(toUserMetrics);

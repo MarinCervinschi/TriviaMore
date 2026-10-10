@@ -78,7 +78,7 @@ export const Medaglie: Story = {
 };
 
 export const Icone: Story = {
-	name: "Le icone del catalogo v1",
+	name: "Le icone del catalogo",
 	render: () => (
 		<div className="grid grid-cols-2 gap-5 sm:grid-cols-4 lg:grid-cols-7">
 			{CATALOGUE_ICONS.map(entry => (

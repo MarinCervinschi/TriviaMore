@@ -110,10 +110,15 @@ export const CATALOGUE_ICONS: {
 	{ icon: "calendar", shape: "hex", accent: "chart-5", label: "weeks" },
 	{ icon: "fire", shape: "hex", accent: "chart-5", label: "streak" },
 	{ icon: "clock-circle", shape: "hex", accent: "chart-5", label: "hours" },
+	{ icon: "bolt", shape: "hex", accent: "chart-5", label: "quizzes" },
 	{ icon: "cardholder", shape: "plaque", accent: "chart-1", label: "flashcards" },
 	{ icon: "bookmark", shape: "plaque", accent: "chart-1", label: "review" },
+	{ icon: "checklist", shape: "plaque", accent: "chart-1", label: "tasks" },
 	{ icon: "hand-heart", shape: "ribbon", accent: "brand", label: "contributor" },
 	{ icon: "star", shape: "diamond", accent: "muted", label: "founder" },
+	{ icon: "notebook", shape: "crest", accent: "chart-4", label: "passed" },
+	{ icon: "academic-cap", shape: "crest", accent: "chart-4", label: "cfu" },
+	{ icon: "crown", shape: "crest", accent: "chart-4", label: "honours" },
 ];
 
 export const OVERVIEW: AchievementsOverview = {

@@ -30,11 +30,12 @@ All three maps live in `src/components/achievements/achievement-medal.tsx` and f
 throw, so an unmapped value still renders — it just renders as something else.
 
 - **`shape`** — one silhouette per category, the second identity channel beside colour:
-  `seal` · `shield` · `burst` · `hex` · `plaque` · `ribbon` · `diamond`
+  `seal` · `shield` · `burst` · `hex` · `plaque` · `ribbon` · `crest` · `diamond`
 - **`accent`** — `chart-1` … `chart-5` · `brand` · `muted`. Adding one means a new field in
   `ACCENTS`, not a new map: the tile's progress ramp reads `achievementStroke` from the same place.
-- **`icon`** — `bolt` `bookmark` `calendar` `cardholder` `clock-circle` `compass`
-  `diploma-verified` `fire` `global` `graph-up` `hand-heart` `map` `medal-star` `star`.
+- **`icon`** — `academic-cap` `bolt` `bookmark` `calendar` `cardholder` `checklist` `clock-circle`
+  `compass` `crown` `diploma-verified` `fire` `global` `graph-up` `hand-heart` `map` `medal-star`
+  `notebook` `star`.
   A new one is an import plus a line in `ICONS`.
 
 **A category keeps one shape and one accent across all its badges.** That pairing is the identity;
@@ -42,7 +43,7 @@ splitting it inside a category makes both channels meaningless.
 
 ## The v1 categories
 
-`Esplorazione` · `Padronanza` · `Ritmo` · `Progresso` · `Metodo` · `Contributo` · `Origine`
+`Esplorazione` · `Padronanza` · `Ritmo` · `Progresso` · `Metodo` · `Contributo` · `Origine` · `Carriera`
 
 A new category is just a new string — the page builds its tabs from what the catalogue contains.
 

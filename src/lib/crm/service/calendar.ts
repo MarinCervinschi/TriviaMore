@@ -3,6 +3,7 @@ import { and, asc, eq, inArray, ne } from "drizzle-orm";
 import type { DbOrTx } from "@/db";
 import { getDb } from "@/db";
 import { calendarEvents, careerExams, examSittings, tasks } from "@/db/schema";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { Invalid, NotFound } from "@/lib/server/errors";
 
 import { findCurrentEnrollment } from "../db/enrollments";
@@ -296,6 +297,7 @@ export async function createTask(userId: string, input: CreateTaskInput) {
 		color: input.color ?? null,
 		careerExamId: input.examId ?? null,
 	});
+	if (done) evaluateAchievementsInBackground(userId);
 }
 
 export async function updateTask(userId: string, { id, ...patch }: UpdateTaskInput) {
@@ -331,6 +333,8 @@ export async function updateTask(userId: string, { id, ...patch }: UpdateTaskInp
 			careerExamId: patch.examId === undefined ? current.careerExamId : patch.examId,
 		})
 		.where(eq(tasks.id, id));
+	// After the write, so a task ticked off can unlock a Metodo badge.
+	if (done && !current.done) evaluateAchievementsInBackground(userId);
 }
 
 export async function removeTask(userId: string, id: string): Promise<void> {
