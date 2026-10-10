@@ -35,8 +35,8 @@ export function InsetCard({
 	const heading =
 		header ??
 		((title || description || actions) && (
-			<div className="flex items-start justify-between gap-4">
-				<div className="min-w-0">
+			<div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+				<div className="min-w-0 flex-1 basis-40">
 					{title && <CardTitle className="text-base">{title}</CardTitle>}
 					{description && (
 						<p className="text-muted-foreground mt-0.5 text-sm">{description}</p>
