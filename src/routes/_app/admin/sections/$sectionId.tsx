@@ -81,7 +81,7 @@ function buildColumns(onDelete: (id: string) => void) {
 			meta: {
 				label: "Contenuto",
 				headerClassName: "w-[50%]",
-				cellClassName: "max-w-xs",
+				cellClassName: "max-w-xs whitespace-normal",
 			},
 			cell: ({ row }) => (
 				<Link

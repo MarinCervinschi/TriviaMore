@@ -45,7 +45,7 @@ export type UseDataTableOptions<
 	urlState?: DataTableUrlState<TSearch>;
 	manual?: { pageCount: number; rowCount: number };
 	extraResetKeys?: string[];
-	/** Lets the reader drag a header edge to set a column's width; off unless a table asks for it. */
+	/** Lets the reader drag a header edge to set a column's width; on by default, `false` for a table too narrow to need it. */
 	resizableColumns?: boolean;
 };
 
@@ -70,7 +70,7 @@ export function useDataTable<
 	urlState,
 	manual,
 	extraResetKeys,
-	resizableColumns = false,
+	resizableColumns = true,
 }: UseDataTableOptions<TData, TSearch>): DataTableInstance<TData> {
 	const [localSearch, setLocalSearch] = useState<SearchBag>({});
 	const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>(
