@@ -3,6 +3,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import type { DbOrTx } from "@/db";
 import { getDb } from "@/db";
 import { careerExams, classes, coursePlans, courses, departments } from "@/db/schema";
+import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { listCurricula } from "@/lib/catalog/db/course-curricula";
 import { Invalid, NotFound } from "@/lib/server/errors";
 
@@ -329,7 +330,7 @@ export async function updateCareerExam(
 	userId: string,
 	{ id, ...patch }: UpdateCareerExamInput
 ): Promise<CareerExam> {
-	return getDb().transaction(async tx => {
+	const exam = await getDb().transaction(async tx => {
 		const enrollment = await requireCurrentEnrollment(tx, userId);
 		const [current] = await tx
 			.select()
@@ -375,6 +376,10 @@ export async function updateCareerExam(
 			.returning();
 		return saved!;
 	});
+
+	// After the commit, as for the enrolment: a passed exam can unlock a Carriera badge.
+	evaluateAchievementsInBackground(userId);
+	return exam;
 }
 
 export async function removeCareerExam(userId: string, id: string): Promise<void> {

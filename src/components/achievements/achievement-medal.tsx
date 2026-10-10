@@ -4,8 +4,10 @@ import { BoltIcon } from "@solar-icons/react/bold/bolt";
 import { BookmarkIcon } from "@solar-icons/react/bold/bookmark";
 import { CalendarIcon } from "@solar-icons/react/bold/calendar";
 import { CardholderIcon } from "@solar-icons/react/bold/cardholder";
+import { ChecklistMinimalisticIcon } from "@solar-icons/react/bold/checklist-minimalistic";
 import { ClockCircleIcon } from "@solar-icons/react/bold/clock-circle";
 import { CompassIcon } from "@solar-icons/react/bold/compass";
+import { CrownIcon } from "@solar-icons/react/bold/crown";
 import { DiplomaVerifiedIcon } from "@solar-icons/react/bold/diploma-verified";
 import { FireIcon } from "@solar-icons/react/bold/fire";
 import { GlobalIcon } from "@solar-icons/react/bold/global";
@@ -13,6 +15,8 @@ import { GraphUpIcon } from "@solar-icons/react/bold/graph-up";
 import { HandHeartIcon } from "@solar-icons/react/bold/hand-heart";
 import { MapIcon } from "@solar-icons/react/bold/map";
 import { MedalStarIcon } from "@solar-icons/react/bold/medal-star";
+import { NotebookIcon } from "@solar-icons/react/bold/notebook";
+import { SquareAcademicCapIcon } from "@solar-icons/react/bold/square-academic-cap";
 import { StarIcon } from "@solar-icons/react/bold/star";
 
 import type { Icon } from "@/components/icons";
@@ -24,8 +28,10 @@ const ICONS: Record<string, Icon> = {
 	bookmark: BookmarkIcon,
 	calendar: CalendarIcon,
 	cardholder: CardholderIcon,
+	checklist: ChecklistMinimalisticIcon,
 	"clock-circle": ClockCircleIcon,
 	compass: CompassIcon,
+	crown: CrownIcon,
 	"diploma-verified": DiplomaVerifiedIcon,
 	fire: FireIcon,
 	global: GlobalIcon,
@@ -33,6 +39,8 @@ const ICONS: Record<string, Icon> = {
 	"hand-heart": HandHeartIcon,
 	map: MapIcon,
 	"medal-star": MedalStarIcon,
+	notebook: NotebookIcon,
+	"academic-cap": SquareAcademicCapIcon,
 	star: StarIcon,
 };
 
@@ -46,6 +54,8 @@ const SHAPES: Record<string, string> = {
 	plaque: "M50,5 L84,17 L84,51 C84,73 68,85 50,94 C32,85 16,73 16,51 L16,17 Z",
 	ribbon:
 		"M18,10 L82,10 A8,8 0 0 1 90,18 L90,64 A8,8 0 0 1 82,72 L64,72 L50,86 L36,72 L18,72 A8,8 0 0 1 10,64 L10,18 A8,8 0 0 1 18,10 Z",
+	crest:
+		"M50,6 Q53,6 56,8.2 L89,32 Q93,35 91.6,40 L79,86 Q77.5,91 72,91 L28,91 Q22.5,91 21,86 L8.4,40 Q7,35 11,32 L44,8.2 Q47,6 50,6 Z",
 	diamond:
 		"M41.51,13.49 Q50.0,5.0 58.49,13.49 L86.51,41.51 Q95.0,50.0 86.51,58.49 L58.49,86.51 Q50.0,95.0 41.51,86.51 L13.49,58.49 Q5.0,50.0 13.49,41.51 Z",
 };

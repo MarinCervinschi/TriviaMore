@@ -1,0 +1,48 @@
+-- The CRM badges; they rest on data the student enters, so the thresholds stay modest. Re-runnable like 0025.
+INSERT INTO public.achievements
+  (key, family, tier, name, description, category, metric, comparator, threshold, icon, shape, accent, position)
+VALUES
+  ('tasks_1', 'tasks', 1, 'Spuntato',
+   'Completa 10 task del calendario.',
+   'Metodo', 'TASKS_DONE', 'GTE', 10, 'checklist', 'plaque', 'chart-1', 115),
+  ('tasks_2', 'tasks', 2, 'Organizzato',
+   'Completa 50 task del calendario.',
+   'Metodo', 'TASKS_DONE', 'GTE', 50, 'checklist', 'plaque', 'chart-1', 116),
+
+  ('passed_1', 'passed', 1, 'Il primo è fatto',
+   'Segna nel libretto il primo esame superato.',
+   'Carriera', 'EXAMS_PASSED', 'GTE', 1, 'notebook', 'crest', 'chart-4', 141),
+  ('passed_2', 'passed', 2, 'Cinque in tasca',
+   'Segna nel libretto 5 esami superati.',
+   'Carriera', 'EXAMS_PASSED', 'GTE', 5, 'notebook', 'crest', 'chart-4', 142),
+  ('passed_3', 'passed', 3, 'Doppia cifra',
+   'Segna nel libretto 10 esami superati.',
+   'Carriera', 'EXAMS_PASSED', 'GTE', 10, 'notebook', 'crest', 'chart-4', 143),
+  ('passed_4', 'passed', 4, 'Ventina',
+   'Segna nel libretto 20 esami superati.',
+   'Carriera', 'EXAMS_PASSED', 'GTE', 20, 'notebook', 'crest', 'chart-4', 144),
+  ('cfu_1', 'cfu', 1, 'Un anno di crediti',
+   'Raggiungi 60 CFU con gli esami superati.',
+   'Carriera', 'CFU_EARNED', 'GTE', 60, 'academic-cap', 'crest', 'chart-4', 151),
+  ('cfu_2', 'cfu', 2, 'Due anni di crediti',
+   'Raggiungi 120 CFU con gli esami superati.',
+   'Carriera', 'CFU_EARNED', 'GTE', 120, 'academic-cap', 'crest', 'chart-4', 152),
+  ('cfu_3', 'cfu', 3, 'Triennio',
+   'Raggiungi 180 CFU con gli esami superati.',
+   'Carriera', 'CFU_EARNED', 'GTE', 180, 'academic-cap', 'crest', 'chart-4', 153),
+  ('honours_1', 'honours', 1, 'Con lode',
+   'Supera un esame con 30 e lode.',
+   'Carriera', 'HONOURS_EARNED', 'GTE', 1, 'crown', 'crest', 'chart-4', 161)
+ON CONFLICT (key) DO UPDATE SET
+  family      = EXCLUDED.family,
+  tier        = EXCLUDED.tier,
+  name        = EXCLUDED.name,
+  description = EXCLUDED.description,
+  category    = EXCLUDED.category,
+  metric      = EXCLUDED.metric,
+  comparator  = EXCLUDED.comparator,
+  threshold   = EXCLUDED.threshold,
+  icon        = EXCLUDED.icon,
+  shape       = EXCLUDED.shape,
+  accent      = EXCLUDED.accent,
+  position    = EXCLUDED.position;

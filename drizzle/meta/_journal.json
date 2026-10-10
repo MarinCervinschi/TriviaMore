@@ -435,6 +435,20 @@
       "when": 1791620323990,
       "tag": "0061_achievement_tiers",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1791620398548,
+      "tag": "0062_crm_achievement_metrics",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1791620475525,
+      "tag": "0063_crm_achievements",
+      "breakpoints": true
     }
   ]
 }

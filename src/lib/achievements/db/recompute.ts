@@ -13,6 +13,7 @@ import {
 	PERFECT_SCORE,
 } from "../constants";
 import type { UserMetrics } from "../types";
+import { CRM_METRIC_COLUMNS, CRM_METRIC_CTES, CRM_METRIC_JOINS } from "./crm-metrics";
 import { toUserMetrics } from "./metrics";
 
 /** Every metric from the raw history; its cost grows with the user's history, so keep it off request paths. */
@@ -175,7 +176,8 @@ export async function recomputeMetricSnapshots(
 			  ) w
 			 where w.n >= ${ACTIVE_WEEK_MIN_DAYS}
 			 group by user_id
-		)
+		),
+		${CRM_METRIC_CTES}
 		select t.user_id,
 		       coalesce(v.quizzes_completed, 0) as quizzes_completed,
 		       coalesce(b.distinct_sections, 0) as distinct_sections,
@@ -192,7 +194,8 @@ export async function recomputeMetricSnapshots(
 		       coalesce(bk.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(r.approved_requests, 0) as approved_requests,
 		       sg.signup_rank as signup_rank,
-		       (en.user_id is not null)::int as enrollment_declared
+		       (en.user_id is not null)::int as enrollment_declared,
+		       ${CRM_METRIC_COLUMNS}
 		  from target t
 		  left join volume v on v.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
@@ -204,6 +207,7 @@ export async function recomputeMetricSnapshots(
 		  left join book bk on bk.user_id = t.user_id
 		  left join req r on r.user_id = t.user_id
 		  left join enrolled en on en.user_id = t.user_id
+		  ${CRM_METRIC_JOINS}
 		  join signup sg on sg.user_id = t.user_id
 	`);
 
