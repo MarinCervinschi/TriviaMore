@@ -1,8 +1,8 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 
 import { jobRuns } from "@/db/schema";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
 
 import { queueSender } from "../queue";
 import { JOBS, jobByName } from "../registry";
@@ -10,6 +10,7 @@ import type {
 	JobInfo,
 	JobParams,
 	JobRun,
+	JobRunDetail,
 	RunChangeResult,
 	StartJobResult,
 	WorkerStatus,
@@ -20,25 +21,32 @@ const ALREADY_STARTED = "L'esecuzione è già partita: non si può più cambiare
 const RECENT_RUNS = 200;
 
 export function listJobs(): JobInfo[] {
-	return JOBS.map(({ name, label, description, command, fields }) => ({
-		name,
-		label,
-		description,
-		command,
-		fields,
-	}));
+	return JOBS.map(
+		({ name, label, description, area, simulates, command, terminal, fields }) => ({
+			name,
+			label,
+			description,
+			area,
+			simulates,
+			command,
+			terminal,
+			fields,
+		})
+	);
 }
 
+const { changes: _report, ...RUN_COLUMNS } = getTableColumns(jobRuns);
+
 export async function listRuns(): Promise<JobRun[]> {
-	return dbFor("staging")
-		.select()
+	return consoleDb()
+		.select(RUN_COLUMNS)
 		.from(jobRuns)
 		.orderBy(desc(jobRuns.queuedAt))
 		.limit(RECENT_RUNS);
 }
 
-export async function getRun(id: string): Promise<JobRun | null> {
-	const [run] = await dbFor("staging").select().from(jobRuns).where(eq(jobRuns.id, id));
+export async function getRun(id: string): Promise<JobRunDetail | null> {
+	const [run] = await consoleDb().select().from(jobRuns).where(eq(jobRuns.id, id));
 	return run ?? null;
 }
 
@@ -52,13 +60,13 @@ export async function startJob(
 	const params = job.params.safeParse(input.params);
 	if (!params.success) return { success: false, error: "Parametri non validi." };
 
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const [run] = await db
 		.insert(jobRuns)
 		.values({
 			job: job.name,
 			params: params.data as JobParams,
-			dryRun: input.dryRun,
+			dryRun: input.dryRun && job.simulates !== false,
 			requestedBy,
 		})
 		.returning({ id: jobRuns.id });
@@ -92,9 +100,12 @@ export async function updateQueuedRun(input: {
 	const params = job.params.safeParse(input.params);
 	if (!params.success) return { success: false, error: "Parametri non validi." };
 
-	const updated = await dbFor("staging")
+	const updated = await consoleDb()
 		.update(jobRuns)
-		.set({ params: params.data as JobParams, dryRun: input.dryRun })
+		.set({
+			params: params.data as JobParams,
+			dryRun: input.dryRun && job.simulates !== false,
+		})
 		.where(and(eq(jobRuns.id, input.id), eq(jobRuns.status, "QUEUED")))
 		.returning({ id: jobRuns.id });
 	return updated.length > 0
@@ -104,7 +115,7 @@ export async function updateQueuedRun(input: {
 
 /** Takes a run out of the queue before it starts: nothing ran, so its row goes too. */
 export async function removeQueuedRun(id: string): Promise<RunChangeResult> {
-	const [removed] = await dbFor("staging")
+	const [removed] = await consoleDb()
 		.delete(jobRuns)
 		.where(and(eq(jobRuns.id, id), eq(jobRuns.status, "QUEUED")))
 		.returning({ job: jobRuns.job, queueJobId: jobRuns.queueJobId });
@@ -121,7 +132,7 @@ export async function removeQueuedRun(id: string): Promise<RunChangeResult> {
 
 /** On when a pg-boss instance serving at least one queue sent its heartbeat within two intervals; the console's own instances serve none. */
 export async function getWorkerStatus(): Promise<WorkerStatus> {
-	const { rows } = await dbFor("staging").execute<{
+	const { rows } = await consoleDb().execute<{
 		host: string;
 		heartbeat_on: string;
 		online: boolean;

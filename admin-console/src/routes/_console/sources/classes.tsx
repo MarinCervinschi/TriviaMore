@@ -187,7 +187,6 @@ function ClassesPage() {
 		data: classes,
 		columns,
 		getRowId: row => row.id,
-		resizableColumns: true,
 		searchFn: (row, query) =>
 			row.name.toLowerCase().includes(query) ||
 			(row.code?.toLowerCase().includes(query) ?? false),
@@ -206,7 +205,7 @@ function ClassesPage() {
 	return (
 		<ConsolePage
 			title="Insegnamenti"
-			description="Gli insegnamenti nello staging, con i corsi in cui compaiono e la scheda insegnamento ufficiale."
+			description="Gli insegnamenti, con i corsi in cui compaiono e la scheda insegnamento ufficiale."
 		>
 			<div className="grid gap-4 sm:grid-cols-3">
 				<FigureCard

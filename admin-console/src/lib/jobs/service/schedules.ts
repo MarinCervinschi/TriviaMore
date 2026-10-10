@@ -2,7 +2,8 @@ import { and, asc, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 
 import { jobRuns, jobSchedules } from "@/db/schema";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
+import { IS_PRODUCTION } from "~/lib/environment";
 
 import { SCHEDULE_TIMEZONE, describeCron } from "../cron";
 import { type ScheduledRun, queueSender } from "../queue";
@@ -32,7 +33,7 @@ type ScheduleRow = typeof jobSchedules.$inferSelect;
 
 /** The jobs a schedule queued that no worker has claimed yet: they carry its old settings, so they go with it. */
 async function dropPendingRuns(job: string, key: string): Promise<void> {
-	const { rows } = await dbFor("staging").execute<{ id: string }>(sql`
+	const { rows } = await consoleDb().execute<{ id: string }>(sql`
 		select id from pgboss.job
 		where name = ${job} and state in ('created', 'retry') and data -> 'schedule' ->> 'scheduleKey' = ${key}
 	`);
@@ -68,7 +69,7 @@ async function deactivate(row: Pick<ScheduleRow, "id" | "job">): Promise<void> {
 /** Makes pg-boss hold exactly the active schedules of the table; the worker runs it when it starts. */
 export async function syncSchedules(): Promise<{ activated: number; removed: number }> {
 	const boss = await queueSender();
-	const rows = await dbFor("staging").select().from(jobSchedules);
+	const rows = await consoleDb().select().from(jobSchedules);
 	const active = rows.filter(row => !row.paused);
 	for (const row of active) await activate(row);
 
@@ -89,7 +90,7 @@ function nextOccurrence(
 
 async function lastRuns(keys: string[]) {
 	if (keys.length === 0) return new Map<string, JobSchedule["lastRun"]>();
-	const runs = await dbFor("staging")
+	const runs = await consoleDb()
 		.selectDistinctOn([jobRuns.scheduleKey], {
 			key: jobRuns.scheduleKey,
 			id: jobRuns.id,
@@ -104,7 +105,7 @@ async function lastRuns(keys: string[]) {
 
 export async function listSchedules(): Promise<JobSchedule[]> {
 	const boss = await queueSender();
-	const rows = await dbFor("staging")
+	const rows = await consoleDb()
 		.select()
 		.from(jobSchedules)
 		.orderBy(asc(jobSchedules.createdAt));
@@ -149,13 +150,16 @@ export async function saveSchedule(
 ): Promise<SaveScheduleResult> {
 	const job = jobByName(input.job);
 	if (!job) return { success: false, error: "Job sconosciuto." };
+	if (IS_PRODUCTION && job.simulates === false) {
+		return { success: false, error: "In produzione questo job si avvia solo a mano." };
+	}
 	const params = job.params.safeParse(input.params);
 	if (!params.success) return { success: false, error: "Parametri non validi." };
 	const cron = input.cron.trim();
 	const preview = await previewCron(cron);
 	if (!preview.valid) return { success: false, error: preview.error };
 
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const values = { cron, params: params.data as JobParams, dryRun: input.dryRun };
 	let row: ScheduleRow | undefined;
 	if (input.key) {
@@ -184,7 +188,7 @@ export async function saveSchedule(
 }
 
 export async function deleteSchedule(key: string): Promise<RunChangeResult> {
-	const [row] = await dbFor("staging")
+	const [row] = await consoleDb()
 		.delete(jobSchedules)
 		.where(eq(jobSchedules.id, key))
 		.returning({ id: jobSchedules.id, job: jobSchedules.job });
@@ -198,7 +202,7 @@ export async function setSchedulePaused(
 	key: string | "all",
 	paused: boolean
 ): Promise<RunChangeResult> {
-	const rows = await dbFor("staging")
+	const rows = await consoleDb()
 		.update(jobSchedules)
 		.set({ paused })
 		.where(key === "all" ? eq(jobSchedules.paused, !paused) : eq(jobSchedules.id, key))
@@ -214,7 +218,7 @@ export async function getSchedulerOverview(
 	window: TimelineWindow
 ): Promise<SchedulerOverview> {
 	const boss = await queueSender();
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const now = new Date();
 	const start = new Date(now.getTime() - WINDOWS[window].pastMs);
 	const end = new Date(now.getTime() + WINDOWS[window].futureMs);

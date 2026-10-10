@@ -8,7 +8,8 @@ import { jobRuns } from "@/db/schema";
 import { createContext, runWithContext } from "@/lib/logging/context";
 import { log } from "@/lib/logging/server";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
+import { IS_PRODUCTION } from "~/lib/environment";
 import type { QueuedRun } from "~/lib/jobs/queue";
 import type { JobDefinition } from "~/lib/jobs/types";
 
@@ -41,12 +42,13 @@ async function runIdOf(
 ): Promise<string> {
 	if ("runId" in job.data) return job.data.runId;
 	const { scheduleKey, params, dryRun } = job.data.schedule;
-	const [created] = await dbFor("staging")
+	// Nothing writes production on its own: a scheduled run there is always a simulation.
+	const [created] = await consoleDb()
 		.insert(jobRuns)
 		.values({
 			job: definition.name,
 			params,
-			dryRun,
+			dryRun: dryRun || IS_PRODUCTION,
 			trigger: "SCHEDULE",
 			scheduleKey,
 			queueJobId: job.id,
@@ -56,7 +58,7 @@ async function runIdOf(
 }
 
 async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<void> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const runId = await runIdOf(definition, job);
 	// Claimed in one statement, so an edit from the console lands either before it or not at all.
 	const [run] = await db
@@ -85,7 +87,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 		const cacheDir = await mkdtemp(join(tmpdir(), "triviamore-job-"));
 		try {
 			const params = definition.params.parse(run.params);
-			const summary = await definition.run(params, {
+			const { summary, changes } = await definition.run(params, {
 				db,
 				dryRun: run.dryRun,
 				signal: job.signal,
@@ -93,7 +95,12 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 			});
 			await db
 				.update(jobRuns)
-				.set({ status: "SUCCEEDED", summary, finishedAt: now() })
+				.set({
+					status: "SUCCEEDED",
+					summary,
+					changes: changes ?? null,
+					finishedAt: now(),
+				})
 				.where(eq(jobRuns.id, run.id));
 			log.info("Job {Job} succeeded in {Elapsed} ms", {
 				Job: definition.name,

@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { DetailSection } from "~/components/detail-sheet";
+import { ENVIRONMENT_TARGET, IS_PRODUCTION } from "~/lib/environment";
 import type { JobInfo, JobParams } from "~/lib/jobs/types";
 
 // Radix Select has no empty value, and an empty parameter means the job's own default.
@@ -38,10 +39,16 @@ export function commandOf(job: JobInfo, params: JobParams, dryRun: boolean): str
 	return [
 		job.command,
 		...job.fields.flatMap(field =>
-			params[field.key] ? [field.flag, String(params[field.key])] : []
+			!params[field.key]
+				? []
+				: field.toggle
+					? [field.flag]
+					: [field.flag, String(params[field.key])]
 		),
-		...(dryRun ? [] : ["--apply"]),
-	].join(" ");
+		(dryRun ? job.terminal?.dryRun : (job.terminal?.apply ?? "--apply")) ?? "",
+	]
+		.filter(Boolean)
+		.join(" ");
 }
 
 const OPTION =
@@ -169,14 +176,15 @@ export function ModeChoice({
 					onSelect={() => onChange("apply")}
 					icon={PenNewSquareIcon}
 					title="Applica"
-					description="Scrive le modifiche nello staging."
+					description={`Scrive le modifiche ${ENVIRONMENT_TARGET}.`}
 				/>
 			</div>
 			{mode === "apply" && (
 				<p className="text-warning bg-warning/10 border-warning/20 flex gap-2 rounded-xl border px-3 py-2 text-xs">
 					<DangerTriangleIcon className="mt-px size-4 shrink-0" />
-					Le modifiche vanno nello staging in una sola transazione. La produzione non
-					cambia: ci arriva solo con una promozione.
+					{IS_PRODUCTION
+						? "Le modifiche vanno in produzione, in una sola transazione. Prima lancia una simulazione e controllane il risultato."
+						: "Le modifiche vanno nel database locale, in una sola transazione."}
 				</p>
 			)}
 		</DetailSection>

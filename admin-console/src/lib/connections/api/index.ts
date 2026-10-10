@@ -1,1 +1,1 @@
-export { getConnectionsFn } from "./get-connections";
+export { getConnectionFn } from "./get-connection";

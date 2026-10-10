@@ -24,11 +24,15 @@ Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 | --------------------------------------------- | ---------------------------------------------------------------------- |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app                 |
 | `CONSOLE_OWNER_IDS`                           | comma-separated user ids allowed in; anyone else is signed out at once |
-| `STAGING_DATABASE_URL`                        | the staging database, read and write                                   |
-| `PRODUCTION_READONLY_DATABASE_URL`            | production, through a role with `default_transaction_read_only = on`   |
+| `DATABASE_URL`                                | the one database: local in `dev`, production in `prod`                 |
 
-Without `CONSOLE_OWNER_IDS` nobody can sign in. A database variable left out shows as _non configurata_ on
-Impostazioni → Connessioni, which also flags a production credential that can write.
+Without `CONSOLE_OWNER_IDS` nobody can sign in. A missing `DATABASE_URL` shows as _non configurata_ on
+Impostazioni → Connessione. A built console labels itself _Produzione_; `pnpm console:dev` is _Locale_.
+
+## The worker
+
+The jobs run in a separate process, `pnpm console:worker`, one at a time. It reads the same database. In
+production a schedule only simulates; applying is always a run started by hand, after its simulation.
 
 ## Docker
 
@@ -62,4 +66,4 @@ Same stack as the app: TanStack Start (React 19, Vite, Nitro) and Tailwind v4.
   opens and closes from the grip on its edge, then the page.
 - Below `md` the rail is replaced by a sheet with the whole navigation.
 
-The pages are placeholders for now. Each one links to the issue of epic #188 that builds it.
+A page not built yet is a placeholder that links to its issue of epic #188.

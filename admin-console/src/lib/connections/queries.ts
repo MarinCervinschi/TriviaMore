@@ -1,12 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getConnectionsFn } from "./api";
+import { getConnectionFn } from "./api";
 
 export const connectionQueries = {
-	all: () =>
+	status: () =>
 		queryOptions({
-			queryKey: ["connections"],
-			queryFn: () => getConnectionsFn(),
+			queryKey: ["connection"],
+			queryFn: () => getConnectionFn(),
 			staleTime: 0,
 		}),
 };

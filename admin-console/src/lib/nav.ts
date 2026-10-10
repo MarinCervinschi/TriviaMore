@@ -7,12 +7,10 @@ import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { DocumentTextIcon } from "@solar-icons/react/linear/document-text";
 import { HistoryIcon } from "@solar-icons/react/linear/history";
 import { Home2Icon } from "@solar-icons/react/linear/home-2";
-import { LayersIcon } from "@solar-icons/react/linear/layers";
 import { PlayCircleIcon } from "@solar-icons/react/linear/play-circle";
 import { PlugCircleIcon } from "@solar-icons/react/linear/plug-circle";
 import { SettingsIcon } from "@solar-icons/react/linear/settings";
 import { ShieldKeyholeIcon } from "@solar-icons/react/linear/shield-keyhole";
-import { TransferHorizontalIcon } from "@solar-icons/react/linear/transfer-horizontal";
 import { Widget2Icon } from "@solar-icons/react/linear/widget-2";
 
 import type { Icon } from "@/components/icons";
@@ -108,23 +106,9 @@ export const NAV: NavSection[] = [
 			{
 				label: "Job",
 				items: [
-					{ label: "Esecuzioni", to: "/jobs", icon: ChecklistMinimalisticIcon },
+					{ label: "Catalogo", to: "/jobs", icon: PlayCircleIcon },
+					{ label: "Esecuzioni", to: "/jobs/runs", icon: ChecklistMinimalisticIcon },
 					{ label: "Pianificazioni", to: "/jobs/schedules", icon: CalendarIcon },
-				],
-			},
-		],
-	},
-	{
-		id: "staging",
-		label: "Staging",
-		icon: LayersIcon,
-		base: "/staging",
-		groups: [
-			{
-				label: "Staging",
-				items: [
-					{ label: "Differenze", to: "/staging", icon: TransferHorizontalIcon },
-					{ label: "Promozioni", to: "/staging/promotions", icon: LayersIcon },
 				],
 			},
 		],
@@ -138,7 +122,7 @@ export const NAV: NavSection[] = [
 			{
 				label: "Impostazioni",
 				items: [
-					{ label: "Connessioni", to: "/settings", icon: PlugCircleIcon },
+					{ label: "Connessione", to: "/settings", icon: PlugCircleIcon },
 					{ label: "Accesso", to: "/settings/access", icon: ShieldKeyholeIcon },
 				],
 			},

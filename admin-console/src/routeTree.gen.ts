@@ -16,17 +16,18 @@ import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiProxyRouteImport } from './routes/api/proxy'
 import { Route as ConsoleApisRouteImport } from './routes/_console/apis'
 import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
-import { Route as ConsoleStagingIndexRouteImport } from './routes/_console/staging/index'
 import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
 import { Route as ConsoleSettingsIndexRouteImport } from './routes/_console/settings/index'
 import { Route as ConsoleJobsIndexRouteImport } from './routes/_console/jobs/index'
-import { Route as ConsoleStagingPromotionsRouteImport } from './routes/_console/staging/promotions'
 import { Route as ConsoleSourcesTimetablesRouteImport } from './routes/_console/sources/timetables'
 import { Route as ConsoleSourcesExamsRouteImport } from './routes/_console/sources/exams'
 import { Route as ConsoleSourcesClassesRouteImport } from './routes/_console/sources/classes'
 import { Route as ConsoleSourcesCatalogRouteImport } from './routes/_console/sources/catalog'
 import { Route as ConsoleSettingsAccessRouteImport } from './routes/_console/settings/access'
 import { Route as ConsoleJobsSchedulesRouteImport } from './routes/_console/jobs/schedules'
+import { Route as ConsoleJobsRunsRouteImport } from './routes/_console/jobs/runs'
+import { Route as ConsoleJobsJobIndexRouteImport } from './routes/_console/jobs/$job/index'
+import { Route as ConsoleJobsJobRunsRunIdRouteImport } from './routes/_console/jobs/$job/runs/$runId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -62,11 +63,6 @@ const ConsoleActivityRoute = ConsoleActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ConsoleStagingIndexRoute = ConsoleStagingIndexRouteImport.update({
-  id: '/staging/',
-  path: '/staging/',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
 const ConsoleSourcesIndexRoute = ConsoleSourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
@@ -82,12 +78,6 @@ const ConsoleJobsIndexRoute = ConsoleJobsIndexRouteImport.update({
   path: '/jobs/',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ConsoleStagingPromotionsRoute =
-  ConsoleStagingPromotionsRouteImport.update({
-    id: '/staging/promotions',
-    path: '/staging/promotions',
-    getParentRoute: () => ConsoleRouteRoute,
-  } as any)
 const ConsoleSourcesTimetablesRoute =
   ConsoleSourcesTimetablesRouteImport.update({
     id: '/sources/timetables',
@@ -119,6 +109,21 @@ const ConsoleJobsSchedulesRoute = ConsoleJobsSchedulesRouteImport.update({
   path: '/jobs/schedules',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
+const ConsoleJobsRunsRoute = ConsoleJobsRunsRouteImport.update({
+  id: '/jobs/runs',
+  path: '/jobs/runs',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleJobsJobIndexRoute = ConsoleJobsJobIndexRouteImport.update({
+  id: '/jobs/$job/',
+  path: '/jobs/$job/',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleJobsJobRunsRunIdRoute = ConsoleJobsJobRunsRunIdRouteImport.update({
+  id: '/jobs/$job/runs/$runId',
+  path: '/jobs/$job/runs/$runId',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
@@ -127,17 +132,18 @@ export interface FileRoutesByFullPath {
   '/apis': typeof ConsoleApisRoute
   '/api/proxy': typeof ApiProxyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/jobs/runs': typeof ConsoleJobsRunsRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
   '/sources/catalog': typeof ConsoleSourcesCatalogRoute
   '/sources/classes': typeof ConsoleSourcesClassesRoute
   '/sources/exams': typeof ConsoleSourcesExamsRoute
   '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
-  '/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/jobs/': typeof ConsoleJobsIndexRoute
   '/settings/': typeof ConsoleSettingsIndexRoute
   '/sources/': typeof ConsoleSourcesIndexRoute
-  '/staging/': typeof ConsoleStagingIndexRoute
+  '/jobs/$job/': typeof ConsoleJobsJobIndexRoute
+  '/jobs/$job/runs/$runId': typeof ConsoleJobsJobRunsRunIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -146,17 +152,18 @@ export interface FileRoutesByTo {
   '/api/proxy': typeof ApiProxyRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/': typeof ConsoleIndexRoute
+  '/jobs/runs': typeof ConsoleJobsRunsRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
   '/sources/catalog': typeof ConsoleSourcesCatalogRoute
   '/sources/classes': typeof ConsoleSourcesClassesRoute
   '/sources/exams': typeof ConsoleSourcesExamsRoute
   '/sources/timetables': typeof ConsoleSourcesTimetablesRoute
-  '/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/jobs': typeof ConsoleJobsIndexRoute
   '/settings': typeof ConsoleSettingsIndexRoute
   '/sources': typeof ConsoleSourcesIndexRoute
-  '/staging': typeof ConsoleStagingIndexRoute
+  '/jobs/$job': typeof ConsoleJobsJobIndexRoute
+  '/jobs/$job/runs/$runId': typeof ConsoleJobsJobRunsRunIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -167,17 +174,18 @@ export interface FileRoutesById {
   '/api/proxy': typeof ApiProxyRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/_console/': typeof ConsoleIndexRoute
+  '/_console/jobs/runs': typeof ConsoleJobsRunsRoute
   '/_console/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/_console/settings/access': typeof ConsoleSettingsAccessRoute
   '/_console/sources/catalog': typeof ConsoleSourcesCatalogRoute
   '/_console/sources/classes': typeof ConsoleSourcesClassesRoute
   '/_console/sources/exams': typeof ConsoleSourcesExamsRoute
   '/_console/sources/timetables': typeof ConsoleSourcesTimetablesRoute
-  '/_console/staging/promotions': typeof ConsoleStagingPromotionsRoute
   '/_console/jobs/': typeof ConsoleJobsIndexRoute
   '/_console/settings/': typeof ConsoleSettingsIndexRoute
   '/_console/sources/': typeof ConsoleSourcesIndexRoute
-  '/_console/staging/': typeof ConsoleStagingIndexRoute
+  '/_console/jobs/$job/': typeof ConsoleJobsJobIndexRoute
+  '/_console/jobs/$job/runs/$runId': typeof ConsoleJobsJobRunsRunIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -188,17 +196,18 @@ export interface FileRouteTypes {
     | '/apis'
     | '/api/proxy'
     | '/auth/callback'
+    | '/jobs/runs'
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
     | '/sources/classes'
     | '/sources/exams'
     | '/sources/timetables'
-    | '/staging/promotions'
     | '/jobs/'
     | '/settings/'
     | '/sources/'
-    | '/staging/'
+    | '/jobs/$job/'
+    | '/jobs/$job/runs/$runId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -207,17 +216,18 @@ export interface FileRouteTypes {
     | '/api/proxy'
     | '/auth/callback'
     | '/'
+    | '/jobs/runs'
     | '/jobs/schedules'
     | '/settings/access'
     | '/sources/catalog'
     | '/sources/classes'
     | '/sources/exams'
     | '/sources/timetables'
-    | '/staging/promotions'
     | '/jobs'
     | '/settings'
     | '/sources'
-    | '/staging'
+    | '/jobs/$job'
+    | '/jobs/$job/runs/$runId'
   id:
     | '__root__'
     | '/_console'
@@ -227,17 +237,18 @@ export interface FileRouteTypes {
     | '/api/proxy'
     | '/auth/callback'
     | '/_console/'
+    | '/_console/jobs/runs'
     | '/_console/jobs/schedules'
     | '/_console/settings/access'
     | '/_console/sources/catalog'
     | '/_console/sources/classes'
     | '/_console/sources/exams'
     | '/_console/sources/timetables'
-    | '/_console/staging/promotions'
     | '/_console/jobs/'
     | '/_console/settings/'
     | '/_console/sources/'
-    | '/_console/staging/'
+    | '/_console/jobs/$job/'
+    | '/_console/jobs/$job/runs/$runId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -298,13 +309,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleActivityRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/_console/staging/': {
-      id: '/_console/staging/'
-      path: '/staging'
-      fullPath: '/staging/'
-      preLoaderRoute: typeof ConsoleStagingIndexRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
     '/_console/sources/': {
       id: '/_console/sources/'
       path: '/sources'
@@ -324,13 +328,6 @@ declare module '@tanstack/react-router' {
       path: '/jobs'
       fullPath: '/jobs/'
       preLoaderRoute: typeof ConsoleJobsIndexRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/staging/promotions': {
-      id: '/_console/staging/promotions'
-      path: '/staging/promotions'
-      fullPath: '/staging/promotions'
-      preLoaderRoute: typeof ConsoleStagingPromotionsRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
     '/_console/sources/timetables': {
@@ -375,6 +372,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleJobsSchedulesRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
+    '/_console/jobs/runs': {
+      id: '/_console/jobs/runs'
+      path: '/jobs/runs'
+      fullPath: '/jobs/runs'
+      preLoaderRoute: typeof ConsoleJobsRunsRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/jobs/$job/': {
+      id: '/_console/jobs/$job/'
+      path: '/jobs/$job'
+      fullPath: '/jobs/$job/'
+      preLoaderRoute: typeof ConsoleJobsJobIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/jobs/$job/runs/$runId': {
+      id: '/_console/jobs/$job/runs/$runId'
+      path: '/jobs/$job/runs/$runId'
+      fullPath: '/jobs/$job/runs/$runId'
+      preLoaderRoute: typeof ConsoleJobsJobRunsRunIdRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
   }
 }
 
@@ -382,34 +400,36 @@ interface ConsoleRouteRouteChildren {
   ConsoleActivityRoute: typeof ConsoleActivityRoute
   ConsoleApisRoute: typeof ConsoleApisRoute
   ConsoleIndexRoute: typeof ConsoleIndexRoute
+  ConsoleJobsRunsRoute: typeof ConsoleJobsRunsRoute
   ConsoleJobsSchedulesRoute: typeof ConsoleJobsSchedulesRoute
   ConsoleSettingsAccessRoute: typeof ConsoleSettingsAccessRoute
   ConsoleSourcesCatalogRoute: typeof ConsoleSourcesCatalogRoute
   ConsoleSourcesClassesRoute: typeof ConsoleSourcesClassesRoute
   ConsoleSourcesExamsRoute: typeof ConsoleSourcesExamsRoute
   ConsoleSourcesTimetablesRoute: typeof ConsoleSourcesTimetablesRoute
-  ConsoleStagingPromotionsRoute: typeof ConsoleStagingPromotionsRoute
   ConsoleJobsIndexRoute: typeof ConsoleJobsIndexRoute
   ConsoleSettingsIndexRoute: typeof ConsoleSettingsIndexRoute
   ConsoleSourcesIndexRoute: typeof ConsoleSourcesIndexRoute
-  ConsoleStagingIndexRoute: typeof ConsoleStagingIndexRoute
+  ConsoleJobsJobIndexRoute: typeof ConsoleJobsJobIndexRoute
+  ConsoleJobsJobRunsRunIdRoute: typeof ConsoleJobsJobRunsRunIdRoute
 }
 
 const ConsoleRouteRouteChildren: ConsoleRouteRouteChildren = {
   ConsoleActivityRoute: ConsoleActivityRoute,
   ConsoleApisRoute: ConsoleApisRoute,
   ConsoleIndexRoute: ConsoleIndexRoute,
+  ConsoleJobsRunsRoute: ConsoleJobsRunsRoute,
   ConsoleJobsSchedulesRoute: ConsoleJobsSchedulesRoute,
   ConsoleSettingsAccessRoute: ConsoleSettingsAccessRoute,
   ConsoleSourcesCatalogRoute: ConsoleSourcesCatalogRoute,
   ConsoleSourcesClassesRoute: ConsoleSourcesClassesRoute,
   ConsoleSourcesExamsRoute: ConsoleSourcesExamsRoute,
   ConsoleSourcesTimetablesRoute: ConsoleSourcesTimetablesRoute,
-  ConsoleStagingPromotionsRoute: ConsoleStagingPromotionsRoute,
   ConsoleJobsIndexRoute: ConsoleJobsIndexRoute,
   ConsoleSettingsIndexRoute: ConsoleSettingsIndexRoute,
   ConsoleSourcesIndexRoute: ConsoleSourcesIndexRoute,
-  ConsoleStagingIndexRoute: ConsoleStagingIndexRoute,
+  ConsoleJobsJobIndexRoute: ConsoleJobsJobIndexRoute,
+  ConsoleJobsJobRunsRunIdRoute: ConsoleJobsJobRunsRunIdRoute,
 }
 
 const ConsoleRouteRouteWithChildren = ConsoleRouteRoute._addFileChildren(

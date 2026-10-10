@@ -5,7 +5,7 @@ import { profiles } from "@/db/schema";
 import type { LoginInput } from "@/lib/auth/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
 
 import type {
 	ConsoleAccount,
@@ -36,13 +36,13 @@ export async function getConsoleSession(): Promise<ConsoleSession | null> {
 	return { userId: user.id, email: user.email ?? null };
 }
 
-/** The owner with their profile, read from staging; a missing or unreachable profile still signs them in. */
+/** The owner with their profile, read from the console database; a missing or unreachable profile still signs them in. */
 export async function getConsoleAccount(): Promise<ConsoleAccount | null> {
 	const session = await getConsoleSession();
 	if (!session) return null;
 	let profile: { name: string | null; image: string | null } | undefined;
 	try {
-		[profile] = await dbFor("staging")
+		[profile] = await consoleDb()
 			.select({ name: profiles.name, image: profiles.image })
 			.from(profiles)
 			.where(eq(profiles.id, session.userId));

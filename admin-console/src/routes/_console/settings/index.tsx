@@ -12,21 +12,22 @@ import { connectionQueries } from "~/lib/connections/queries";
 import type { ConnectionStatus } from "~/lib/connections/types";
 
 export const Route = createFileRoute("/_console/settings/")({
-	loader: ({ context }) => context.queryClient.ensureQueryData(connectionQueries.all()),
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(connectionQueries.status()),
 	component: ConnectionsPage,
 });
 
 function ConnectionsPage() {
 	const {
-		data: connections,
+		data: connection,
 		refetch,
 		isFetching,
-	} = useSuspenseQuery(connectionQueries.all());
+	} = useSuspenseQuery(connectionQueries.status());
 
 	return (
 		<ConsolePage
-			title="Connessioni"
-			description="I database a cui la console è collegata. Lo staging si legge e si scrive, la produzione solo si legge."
+			title="Connessione"
+			description="Il database su cui lavora la console: quello locale in sviluppo, la produzione quando è deployata."
 			actions={
 				<Button
 					size="sm"
@@ -39,18 +40,14 @@ function ConnectionsPage() {
 				</Button>
 			}
 		>
-			<div className="grid gap-4 lg:grid-cols-2">
-				{connections.map(connection => (
-					<ConnectionCard key={connection.id} connection={connection} />
-				))}
+			<div className="max-w-xl">
+				<ConnectionCard connection={connection} />
 			</div>
 		</ConsolePage>
 	);
 }
 
 function ConnectionCard({ connection }: { connection: ConnectionStatus }) {
-	const writableProduction = connection.expectReadOnly && connection.readOnly === false;
-
 	return (
 		<InsetCard
 			title={connection.label}
@@ -89,12 +86,6 @@ function ConnectionCard({ connection }: { connection: ConnectionStatus }) {
 					{connection.error}
 				</p>
 			)}
-			{writableProduction && (
-				<p role="alert" className="text-danger border-t px-4 py-3 text-xs">
-					Questa credenziale può scrivere in produzione. Usa un ruolo con
-					<code className="font-mono"> default_transaction_read_only = on</code>.
-				</p>
-			)}
 		</InsetCard>
 	);
 }
@@ -105,9 +96,6 @@ function StateBadge({ connection }: { connection: ConnectionStatus }) {
 	}
 	if (connection.state === "unreachable") {
 		return <StatusBadge status="danger">Non raggiungibile</StatusBadge>;
-	}
-	if (connection.expectReadOnly && !connection.readOnly) {
-		return <StatusBadge status="danger">Scrivibile</StatusBadge>;
 	}
 	return <StatusBadge status="success">Collegata</StatusBadge>;
 }

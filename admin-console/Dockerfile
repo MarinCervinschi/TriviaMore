@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build from the repository root: the console imports the app's components from ../src.
 #   docker build -f admin-console/Dockerfile .
+# The worker is the same image with another command: node .output/worker.mjs
 
 FROM node:22-slim AS base
 

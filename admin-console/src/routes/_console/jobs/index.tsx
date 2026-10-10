@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
-import { PlayIcon } from "@solar-icons/react/linear/play";
-import { TestTubeIcon } from "@solar-icons/react/linear/test-tube";
+import { LayersIcon } from "@solar-icons/react/linear/layers";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
@@ -16,93 +15,82 @@ import {
 	dataTableSearchFields,
 	useDataTable,
 } from "@/components/data-table";
-import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
 
 import { ConsolePage } from "~/components/console-page";
-import { RunSheet } from "~/components/jobs/run-sheet";
 import { RUN_STATUS, RunStatusBadge } from "~/components/jobs/run-status-badge";
-import { StartJobSheet } from "~/components/jobs/start-job-sheet";
 import { WorkerBar } from "~/components/jobs/worker-status";
 import { formatDateTime, formatDuration } from "~/lib/format";
 import { jobQueries } from "~/lib/jobs/queries";
-import type { JobRun } from "~/lib/jobs/types";
+import type { JobInfo, JobRun } from "~/lib/jobs/types";
 
 export const Route = createFileRoute("/_console/jobs/")({
 	validateSearch: z.object({
 		...dataTableSearchFields,
-		job: dataTableFilterField,
+		area: dataTableFilterField,
 		status: dataTableFilterField,
-		mode: dataTableFilterField,
-		detail: z.string().optional().catch(undefined),
 	}),
 	loader: ({ context }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(jobQueries.jobs()),
 			context.queryClient.ensureQueryData(jobQueries.runs()),
+			context.queryClient.ensureQueryData(jobQueries.overview("week")),
 		]),
-	component: RunsPage,
+	component: CataloguePage,
 });
 
-const STATUS_OPTIONS: DataTableFacetOption[] = Object.entries(RUN_STATUS).map(
-	([value, { label }]) => ({ value, label })
-);
+type CatalogueRow = { job: JobInfo; last: JobRun | undefined; next: string | null };
 
-const MODE_OPTIONS: DataTableFacetOption[] = [
-	{ value: "dry-run", label: "Simulazione" },
-	{ value: "apply", label: "Applica" },
+const NEVER = "NEVER";
+
+const STATUS_OPTIONS: DataTableFacetOption[] = [
+	...Object.entries(RUN_STATUS).map(([value, { label }]) => ({ value, label })),
+	{ value: NEVER, label: "Mai eseguito" },
 ];
 
-const column = createDataTableColumns<JobRun>();
+const column = createDataTableColumns<CatalogueRow>();
 
-function buildColumns(jobOptions: DataTableFacetOption[]) {
-	const labelOf = new Map(jobOptions.map(option => [option.value, option.label]));
+function buildColumns(areas: DataTableFacetOption[]) {
 	return [
-		column.accessor("job", {
+		column.accessor(row => row.job.label, {
+			id: "job",
 			header: "Job",
-			filterFn: "facet",
-			meta: {
-				label: "Job",
-				cellClassName: "min-w-[12rem]",
-				facet: { options: jobOptions, icon: PlayIcon },
-			},
+			meta: { label: "Job" },
 			cell: ({ row }) => (
 				<div className="min-w-0">
-					<p className="truncate font-medium">
-						{labelOf.get(row.original.job) ?? row.original.job}
+					<p className="truncate font-medium">{row.original.job.label}</p>
+					<p className="text-muted-foreground max-w-sm truncate text-xs">
+						{row.original.job.description}
 					</p>
-					<p className="text-muted-foreground font-mono text-xs">{row.original.job}</p>
 				</div>
 			),
 		}),
-		column.accessor("status", {
-			header: "Stato",
+		column.accessor(row => row.job.area, {
+			id: "area",
+			header: "Area",
+			filterFn: "facet",
+			meta: { label: "Area", facet: { options: areas, icon: LayersIcon } },
+		}),
+		column.accessor(row => row.last?.status ?? NEVER, {
+			id: "status",
+			header: "Ultima esecuzione",
 			filterFn: "facet",
 			meta: {
-				label: "Stato",
+				label: "Ultima esecuzione",
 				facet: { options: STATUS_OPTIONS, icon: ChecklistMinimalisticIcon },
 			},
-			cell: ({ row }) => <RunStatusBadge status={row.original.status} />,
-		}),
-		column.accessor(row => (row.dryRun ? "dry-run" : "apply"), {
-			id: "mode",
-			header: "Modalità",
-			filterFn: "facet",
-			meta: {
-				label: "Modalità",
-				hideBelow: "md",
-				facet: { options: MODE_OPTIONS, icon: TestTubeIcon },
-			},
-			cell: ({ row }) => (row.original.dryRun ? "Simulazione" : "Applica"),
-		}),
-		column.accessor("queuedAt", {
-			header: "Accodata",
-			meta: { label: "Accodata", align: "right", hideBelow: "sm" },
-			cell: ({ row }) => (
-				<span className="text-muted-foreground text-xs whitespace-nowrap">
-					{formatDateTime(row.original.queuedAt)}
-				</span>
-			),
+			cell: ({ row }) =>
+				row.original.last ? (
+					<div className="flex flex-col items-start gap-1">
+						<RunStatusBadge status={row.original.last.status} />
+						<span className="text-muted-foreground text-xs">
+							{row.original.last.dryRun ? "Simulazione" : "Applica"} ·{" "}
+							{formatDateTime(row.original.last.queuedAt)}
+						</span>
+					</div>
+				) : (
+					<span className="text-muted-foreground text-xs">Mai eseguito</span>
+				),
 		}),
 		column.display({
 			id: "duration",
@@ -110,104 +98,96 @@ function buildColumns(jobOptions: DataTableFacetOption[]) {
 			meta: { label: "Durata", align: "right", hideBelow: "lg" },
 			cell: ({ row }) => (
 				<span className="tabular-nums">
-					{formatDuration(row.original.startedAt, row.original.finishedAt)}
+					{row.original.last
+						? formatDuration(row.original.last.startedAt, row.original.last.finishedAt)
+						: "—"}
+				</span>
+			),
+		}),
+		column.accessor(row => row.next ?? "", {
+			id: "next",
+			header: "Prossima",
+			meta: { label: "Prossima", align: "right", hideBelow: "md" },
+			cell: ({ row }) => (
+				<span className="text-muted-foreground text-xs whitespace-nowrap">
+					{row.original.next ? formatDateTime(row.original.next) : "Non pianificato"}
 				</span>
 			),
 		}),
 	];
 }
 
-function RunsPage() {
+function CataloguePage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const search = Route.useSearch();
 	const { data: jobs } = useSuspenseQuery(jobQueries.jobs());
 	const { data: runs } = useSuspenseQuery(jobQueries.runs());
-	const [starting, setStarting] = useState(false);
-	const [editing, setEditing] = useState<JobRun>();
+	const { data: overview } = useSuspenseQuery(jobQueries.overview("week"));
+
+	const rows = useMemo<CatalogueRow[]>(() => {
+		const schedules = overview.rows.map(row => row.schedule);
+		return jobs.map(job => ({
+			job,
+			last: runs.find(run => run.job === job.name),
+			next:
+				schedules
+					.filter(s => s.job === job.name && !s.paused && s.nextRun)
+					.map(s => s.nextRun!)
+					.sort()[0] ?? null,
+		}));
+	}, [jobs, runs, overview]);
 
 	const columns = useMemo(
-		() => buildColumns(jobs.map(job => ({ value: job.name, label: job.label }))),
+		() =>
+			buildColumns(
+				[...new Set(jobs.map(job => job.area))].map(area => ({
+					value: area,
+					label: area,
+				}))
+			),
 		[jobs]
 	);
 
 	const table = useDataTable({
-		data: runs,
+		data: rows,
 		columns,
-		getRowId: row => row.id,
-		resizableColumns: true,
-		initialSorting: [{ id: "queuedAt", desc: true }],
-		searchFn: (run, query) => run.job.toLowerCase().includes(query),
+		getRowId: row => row.job.name,
+		searchFn: (row, query) =>
+			[row.job.label, row.job.description, row.job.name].some(text =>
+				text.toLowerCase().includes(query)
+			),
 		urlState: {
 			values: search,
 			onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),
 		},
 	});
 
-	const openDetail = (detail: string | undefined) =>
-		navigate({ search: prev => ({ ...prev, detail }), resetScroll: false });
-
 	return (
 		<ConsolePage
-			title="Esecuzioni"
-			description="Ogni esecuzione dei job, dalla più recente. I job scrivono solo nello staging."
-			actions={
-				<Button size="sm" onClick={() => setStarting(true)}>
-					<PlayIcon className="size-4" />
-					Avvia un job
-				</Button>
-			}
+			title="Job"
+			description="Ogni job della console. Aprine uno per avviarlo, vedere le sue esecuzioni e pianificarlo."
 		>
 			<WorkerBar />
-
 			<DataTable
 				table={table}
-				density="compact"
 				toolbar={
 					<DataTableToolbar
 						table={table}
 						filterVariant="inline"
-						searchPlaceholder="Cerca job…"
+						searchPlaceholder="Cerca un job…"
 					/>
 				}
-				empty={
-					<InlineEmpty>
-						{runs.length === 0
-							? "Nessuna esecuzione. Avvia un job per vederla qui."
-							: "Nessuna esecuzione trovata."}
-					</InlineEmpty>
+				empty={<InlineEmpty>Nessun job trovato.</InlineEmpty>}
+				onRowClick={row =>
+					navigate({ to: "/jobs/$job", params: { job: row.job.name } })
 				}
-				onRowClick={row => openDetail(row.id)}
 				rowLink={row => (
 					<Link
-						from={Route.fullPath}
-						to="."
-						search={prev => ({ ...prev, detail: row.id })}
-						resetScroll={false}
-						aria-label={`Apri l'esecuzione di ${row.job}`}
+						to="/jobs/$job"
+						params={{ job: row.job.name }}
+						aria-label={`Apri ${row.job.label}`}
 					/>
 				)}
-			/>
-
-			<RunSheet
-				id={search.detail}
-				jobs={jobs}
-				onClose={() => openDetail(undefined)}
-				onEdit={run => setEditing(run)}
-			/>
-			<StartJobSheet
-				open={starting || Boolean(editing)}
-				jobs={jobs}
-				runs={runs}
-				editing={editing}
-				onClose={() => {
-					setStarting(false);
-					setEditing(undefined);
-				}}
-				onDone={runId => {
-					setStarting(false);
-					setEditing(undefined);
-					openDetail(runId);
-				}}
 			/>
 		</ConsolePage>
 	);

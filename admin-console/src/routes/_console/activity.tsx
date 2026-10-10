@@ -12,7 +12,7 @@ function ActivityPage() {
 	return (
 		<ConsolePage
 			title="Attività recenti"
-			description="Le azioni fatte dalla console: job avviati, promozioni, modifiche alle pianificazioni."
+			description="Le azioni fatte dalla console: job avviati e modifiche alle pianificazioni."
 		>
 			<ComingSoon
 				icon={HistoryIcon}

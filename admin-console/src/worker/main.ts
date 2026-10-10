@@ -3,6 +3,7 @@ import { PgBoss } from "pg-boss";
 import { log } from "@/lib/logging/server";
 import { flush } from "@/lib/logging/shipper";
 
+import { DATABASE_ENV } from "~/lib/db/client";
 import { QUEUE_OPTIONS, type QueuedRun } from "~/lib/jobs/queue";
 import { JOBS } from "~/lib/jobs/registry";
 import { syncSchedules } from "~/lib/jobs/service/schedules";
@@ -10,15 +11,15 @@ import { syncSchedules } from "~/lib/jobs/service/schedules";
 import { abandonRuns } from "./abandon";
 import { inFlight, runQueuedJob } from "./run";
 
-const url = process.env.STAGING_DATABASE_URL;
-if (!url) throw new Error("STAGING_DATABASE_URL non è configurata.");
+const url = process.env[DATABASE_ENV];
+if (!url) throw new Error(`${DATABASE_ENV} non è configurata.`);
 
 // The pgboss schema comes from a migration applied by hand, so the worker never installs or upgrades it.
 const boss = new PgBoss({ connectionString: url, migrate: false });
 boss.on("error", error => log.error("Job queue error", {}, error));
 
 await boss.start();
-// One worker per staging database, so anything still running belongs to a worker that is gone.
+// One worker per database, so anything still running belongs to a worker that is gone.
 await abandonRuns(
 	boss,
 	"all-running",

@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import { cn } from "@/lib/utils";
 
+import { ENVIRONMENT_TARGET } from "~/lib/environment";
 import type { NavSection } from "~/lib/nav";
 
 /** The pages of one section, grouped, beside the content. */
@@ -69,8 +70,7 @@ export function SectionSidebar({
 							Ambiente
 						</p>
 						<p className="text-muted-foreground mt-1 text-xs">
-							I job scrivono nello staging. In produzione si passa solo con una
-							promozione.
+							{`La console lavora ${ENVIRONMENT_TARGET}. Prima di applicare un job, lancia una simulazione.`}
 						</p>
 					</div>
 				</div>
