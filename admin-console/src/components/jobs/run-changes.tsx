@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
 
+import { AchievementMedal } from "@/components/achievements/achievement-medal";
 import { Button } from "@/components/ui/button";
 import { InlineEmpty } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
@@ -66,39 +67,52 @@ function Value({ value, struck }: { value: JobChangeValue; struck?: boolean }) {
 
 function ChangeRow({ row }: { row: JobChangeRow }) {
 	return (
-		<li className="flex flex-col gap-2 px-4 py-3">
-			<div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-				<StatusBadge status={KINDS[row.kind].status}>
-					{KINDS[row.kind].label}
-				</StatusBadge>
-				<span className="font-medium">{row.label}</span>
-				{row.detail && (
-					<span className="text-muted-foreground text-xs">{row.detail}</span>
+		<li className="flex items-start gap-3 px-4 py-3">
+			{row.badge && (
+				<AchievementMedal
+					icon={row.badge.icon}
+					accent={row.badge.accent}
+					shape={row.badge.shape}
+					tier={row.badge.tier}
+					size="sm"
+				/>
+			)}
+			<div className="flex min-w-0 flex-1 flex-col gap-2">
+				<div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+					<StatusBadge status={KINDS[row.kind].status}>
+						{KINDS[row.kind].label}
+					</StatusBadge>
+					<span className="font-medium">{row.label}</span>
+					{row.detail && (
+						<span className="text-muted-foreground text-xs">{row.detail}</span>
+					)}
+				</div>
+				{row.fields && row.fields.length > 0 && (
+					<dl className="grid grid-cols-[minmax(8rem,auto)_1fr] gap-x-4 gap-y-1.5 text-sm">
+						{row.fields.map(field => (
+							<div key={field.name} className="contents">
+								<dt className="text-muted-foreground">{field.name}</dt>
+								<dd className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:gap-2">
+									{row.kind === "updated" ? (
+										<>
+											<Value value={field.before} struck />
+											<span aria-hidden className="text-muted-foreground shrink-0">
+												→
+											</span>
+											<span className="sr-only">diventa</span>
+											<Value value={field.after} />
+										</>
+									) : (
+										<Value
+											value={row.kind === "removed" ? field.before : field.after}
+										/>
+									)}
+								</dd>
+							</div>
+						))}
+					</dl>
 				)}
 			</div>
-			{row.fields && row.fields.length > 0 && (
-				<dl className="grid grid-cols-[minmax(8rem,auto)_1fr] gap-x-4 gap-y-1.5 text-sm">
-					{row.fields.map(field => (
-						<div key={field.name} className="contents">
-							<dt className="text-muted-foreground">{field.name}</dt>
-							<dd className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:gap-2">
-								{row.kind === "updated" ? (
-									<>
-										<Value value={field.before} struck />
-										<span aria-hidden className="text-muted-foreground shrink-0">
-											→
-										</span>
-										<span className="sr-only">diventa</span>
-										<Value value={field.after} />
-									</>
-								) : (
-									<Value value={row.kind === "removed" ? field.before : field.after} />
-								)}
-							</dd>
-						</div>
-					))}
-				</dl>
-			)}
 		</li>
 	);
 }

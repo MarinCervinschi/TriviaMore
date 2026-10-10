@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { ChecklistMinimalisticIcon } from "@solar-icons/react/linear/checklist-minimalistic";
 import { PlayIcon } from "@solar-icons/react/linear/play";
 import { TestTubeIcon } from "@solar-icons/react/linear/test-tube";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import {
 	DataTable,
@@ -107,19 +107,23 @@ export type RunsSearch = DataTableSearch & {
 	mode?: string;
 };
 
-/** Runs, newest first: a click opens a summary, the arrow the run's page; `showJob` adds the job column. */
+/** Runs, newest first, each opening its page; `showJob` adds the job column, `peek` a summary sheet on click. */
 export function RunsTable({
 	runs,
 	jobs,
 	showJob = true,
+	peek = false,
 	urlState,
 }: {
 	runs: JobRun[];
 	jobs: JobInfo[];
 	showJob?: boolean;
+	/** A click opens a summary sheet instead of the run's page, for the list of every run. */
+	peek?: boolean;
 	urlState?: DataTableUrlState<RunsSearch>;
 }) {
-	const [peek, setPeek] = useState<string>();
+	const navigate = useNavigate();
+	const [peeked, setPeeked] = useState<string>();
 	const columns = useMemo(
 		() =>
 			buildColumns(
@@ -157,7 +161,14 @@ export function RunsTable({
 							: "Nessuna esecuzione trovata."}
 					</InlineEmpty>
 				}
-				onRowClick={row => setPeek(row.id)}
+				onRowClick={row =>
+					peek
+						? setPeeked(row.id)
+						: navigate({
+								to: "/jobs/$job/runs/$runId",
+								params: { job: row.job, runId: row.id },
+							})
+				}
 				rowLink={row => (
 					<Link
 						to="/jobs/$job/runs/$runId"
@@ -166,7 +177,7 @@ export function RunsTable({
 					/>
 				)}
 			/>
-			<RunPeek id={peek} jobs={jobs} onClose={() => setPeek(undefined)} />
+			{peek && <RunPeek id={peeked} jobs={jobs} onClose={() => setPeeked(undefined)} />}
 		</>
 	);
 }
