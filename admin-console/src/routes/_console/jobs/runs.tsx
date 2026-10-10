@@ -49,6 +49,7 @@ function RunsPage() {
 			<RunsTable
 				runs={runs}
 				jobs={jobs}
+				peek
 				urlState={{
 					values: search,
 					onChange: patch => navigate({ search: prev => ({ ...prev, ...patch }) }),

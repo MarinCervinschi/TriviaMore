@@ -12,6 +12,8 @@ export type JobChangeRow = {
 	detail?: string;
 	/** For an update, each field that changed; for an addition or a removal, the row's own values. */
 	fields?: { name: string; before: JobChangeValue; after: JobChangeValue }[];
+	/** The medal of an achievement the row awards, drawn beside it. */
+	badge?: { icon: string; accent: string; shape: string; tier: number };
 };
 
 /** What a run changed, or would change, by what it touches; rows past a cap are only counted. */

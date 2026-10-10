@@ -140,6 +140,10 @@ export const achievementsReplay: JobDefinition<typeof replayParams> = {
 						key: achievements.key,
 						name: achievements.name,
 						category: achievements.category,
+						icon: achievements.icon,
+						accent: achievements.accent,
+						shape: achievements.shape,
+						tier: achievements.tier,
 					})
 					.from(achievements)
 			).map(row => [row.key, row])
@@ -160,6 +164,12 @@ export const achievementsReplay: JobDefinition<typeof replayParams> = {
 							kind: "added",
 							label: person?.label ?? award.userId,
 							detail: person?.detail,
+							badge: badge && {
+								icon: badge.icon,
+								accent: badge.accent,
+								shape: badge.shape,
+								tier: badge.tier,
+							},
 							fields: [
 								{
 									name: badge?.category ?? "Traguardo",
