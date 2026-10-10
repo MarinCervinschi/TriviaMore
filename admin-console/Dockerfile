@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build from the repository root: the console imports the app's components from ../src.
 #   docker build -f admin-console/Dockerfile .
-# The worker is the same image with another command: node .output/worker.mjs
+# The worker is the `worker` stage: the same image with another command.
 
 FROM node:22-slim AS base
 
@@ -40,3 +40,9 @@ USER node
 EXPOSE 3100
 ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", ".output/server/index.mjs"]
+
+# Coolify builds this stage for the worker (dockerfile_target_build); the last stage stays the server.
+FROM runtime AS worker
+CMD ["node", ".output/worker.mjs"]
+
+FROM runtime
