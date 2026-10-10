@@ -50,6 +50,11 @@ export const jobRuns = opsSchema
 				.notNull(),
 			startedAt: timestamp("started_at", { withTimezone: true, mode: "string" }),
 			finishedAt: timestamp("finished_at", { withTimezone: true, mode: "string" }),
+			/** Set by the console's stop button; the worker sees it and aborts the job. */
+			cancelRequestedAt: timestamp("cancel_requested_at", {
+				withTimezone: true,
+				mode: "string",
+			}),
 		},
 		table => [
 			index("idx_job_runs_job_queued_at").using(

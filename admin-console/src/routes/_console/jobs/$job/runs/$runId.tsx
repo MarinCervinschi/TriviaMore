@@ -17,6 +17,7 @@ import { FigureCard } from "~/components/figure-card";
 import { commandOf } from "~/components/jobs/job-form";
 import { RunChanges } from "~/components/jobs/run-changes";
 import { RunStatusBadge } from "~/components/jobs/run-status-badge";
+import { StopRunButton } from "~/components/jobs/stop-run-button";
 import { NotFound } from "~/components/not-found";
 import { ENVIRONMENT_TARGET, IS_PRODUCTION } from "~/lib/environment";
 import { formatDateTime, formatDuration, formatNumber } from "~/lib/format";
@@ -139,6 +140,7 @@ function RunView({ run, job }: { run: JobRunDetail; job: JobInfo | undefined }) 
 							Rimuovi dalla coda
 						</Button>
 					)}
+					<StopRunButton run={run} />
 					{canApply && (
 						<Button
 							size="sm"

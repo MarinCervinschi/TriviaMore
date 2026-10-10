@@ -1,4 +1,4 @@
-import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, isNull, sql } from "drizzle-orm";
 
 import { jobRuns } from "@/db/schema";
 
@@ -110,6 +110,28 @@ export async function removeQueuedRun(id: string): Promise<RunChangeResult> {
 	if (removed.queueJobId) {
 		const boss = await queueSender();
 		await boss.deleteJob(removed.job, removed.queueJobId);
+	}
+	return { success: true };
+}
+
+/** Asks the worker to stop a run in progress; it aborts the job within seconds and records it as stopped. */
+export async function stopRun(id: string): Promise<RunChangeResult> {
+	const [asked] = await consoleDb()
+		.update(jobRuns)
+		.set({ cancelRequestedAt: new Date().toISOString() })
+		.where(
+			and(
+				eq(jobRuns.id, id),
+				eq(jobRuns.status, "RUNNING"),
+				isNull(jobRuns.cancelRequestedAt)
+			)
+		)
+		.returning({ id: jobRuns.id });
+	if (!asked) {
+		const run = await getRun(id);
+		if (!run) return { success: false, error: "Esecuzione non trovata." };
+		if (run.cancelRequestedAt) return { success: true };
+		return { success: false, error: "L'esecuzione non è in corso." };
 	}
 	return { success: true };
 }
