@@ -428,6 +428,13 @@
       "when": 1791570055566,
       "tag": "0060_calendar_colors",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1791620323990,
+      "tag": "0061_achievement_tiers",
+      "breakpoints": true
     }
   ]
 }
