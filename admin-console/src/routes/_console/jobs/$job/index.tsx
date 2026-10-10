@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { AddCircleIcon } from "@solar-icons/react/linear/add-circle";
 import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
+import { Pen2Icon } from "@solar-icons/react/linear/pen-2";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import { InsetCard } from "@/components/ui/inset-card";
 import { TabNav } from "@/components/ui/tab-nav";
 
 import { ConsolePage } from "~/components/console-page";
+import { JobTextsSheet } from "~/components/jobs/job-texts-sheet";
 import { RunStatusBadge } from "~/components/jobs/run-status-badge";
 import { RunsTable } from "~/components/jobs/runs-table";
 import { ScheduleSheet } from "~/components/jobs/schedule-sheet";
@@ -66,6 +68,7 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 	const openRun = (runId: string) =>
 		navigate({ to: "/jobs/$job/runs/$runId", params: { job: job.name, runId } });
 
+	const [editingTexts, setEditingTexts] = useState(false);
 	const [schedule, setSchedule] = useState<{ editing?: JobSchedule } | null>(null);
 
 	const select = (next: Tab) =>
@@ -78,6 +81,12 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 			back={{ to: "/jobs", label: "Job" }}
 			title={job.label}
 			description={job.description}
+			actions={
+				<Button size="sm" variant="outline" onClick={() => setEditingTexts(true)}>
+					<Pen2Icon className="size-4" />
+					Modifica
+				</Button>
+			}
 		>
 			<div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
 				<div className="min-w-0 space-y-4">
@@ -140,6 +149,11 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 				</div>
 			</div>
 
+			<JobTextsSheet
+				open={editingTexts}
+				job={job}
+				onClose={() => setEditingTexts(false)}
+			/>
 			<ScheduleSheet
 				open={schedule !== null}
 				jobs={jobs}

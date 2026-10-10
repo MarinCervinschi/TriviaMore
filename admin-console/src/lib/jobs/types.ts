@@ -48,6 +48,8 @@ export type JobDefinition<TParams extends z.ZodType = z.ZodType> = {
 	run: (params: z.infer<TParams>, context: JobContext) => Promise<JobResult>;
 };
 
+export type SaveJobTextsResult = { success: true } | { success: false; error: string };
+
 export type JobRunStatus = JobRun["status"];
 
 export type JobInfo = Pick<
@@ -60,7 +62,10 @@ export type JobInfo = Pick<
 	| "command"
 	| "terminal"
 	| "fields"
->;
+> & {
+	/** The name and description in the job's code, for a text the owner changed. */
+	original: { label: string; description: string };
+};
 
 /** A run as lists show it; the change report is read only by the run's own page. */
 export type JobRun = Omit<JobRunDetail, "changes">;

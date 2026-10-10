@@ -5,9 +5,8 @@ import { jobRuns } from "@/db/schema";
 import { consoleDb } from "~/lib/db/client";
 
 import { queueSender } from "../queue";
-import { JOBS, jobByName } from "../registry";
+import { jobByName } from "../registry";
 import type {
-	JobInfo,
 	JobParams,
 	JobRun,
 	JobRunDetail,
@@ -19,21 +18,6 @@ import type {
 const ALREADY_STARTED = "L'esecuzione è già partita: non si può più cambiare.";
 
 const RECENT_RUNS = 200;
-
-export function listJobs(): JobInfo[] {
-	return JOBS.map(
-		({ name, label, description, area, simulates, command, terminal, fields }) => ({
-			name,
-			label,
-			description,
-			area,
-			simulates,
-			command,
-			terminal,
-			fields,
-		})
-	);
-}
 
 const { changes: _report, ...RUN_COLUMNS } = getTableColumns(jobRuns);
 

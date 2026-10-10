@@ -6,6 +6,7 @@ export { listJobsFn } from "./list-jobs";
 export { listRunsFn } from "./list-runs";
 export { previewCronFn } from "./preview-cron";
 export { removeQueuedRunFn } from "./remove-queued-run";
+export { saveJobTextsFn } from "./save-job-texts";
 export { saveScheduleFn } from "./save-schedule";
 export { setSchedulePausedFn } from "./set-schedule-paused";
 export { startJobFn } from "./start-job";
