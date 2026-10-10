@@ -94,7 +94,7 @@ Order matters, and two of these steps are load-bearing.
 export URL='postgresql://postgres:<...>@savvy:54322/postgres'
 
 pnpm db:dump                                                  # 1. backup first
-SUPABASE_DB_URL="$URL" pnpm exec drizzle-kit migrate          # 2. before the code deploy
+SUPABASE_DB_URL="$URL" pnpm exec tsx scripts/db/migrations.ts --apply   # 2. before the code deploy
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/backfill-rollups.ts
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/reconcile.ts
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/replay.ts --dry-run

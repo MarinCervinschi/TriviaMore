@@ -12,6 +12,93 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.4.0 — 2026-10-10
+
+The release that links a student to their degree. The catalogue is now filled from the university's
+public CINECA API, with every cohort's study plan, curricula, choice groups and official syllabi.
+On top of it sits the first part of the CRM: onboarding to a course, the Carriera page with its
+record and forecast, and the Calendario with appelli, personal events and tasks. The data jobs
+behind the catalogue run from a separate ops console, deployed with Terraform.
+
+### Added
+
+- **Onboarding.** A three-step wizard at `/onboarding` links an account to a department, a course
+  and an enrolment year, saved in `crm.enrollments`. Accounts made before the wizard are reached
+  through a prompt on the dashboard. Avatars are generated server-side or uploaded as a photo through
+  a one-shot signed URL. (#175, #176)
+- **The catalogue follows the official one.** `catalog:diff` compares our data with the CINECA API in
+  a read-only transaction. `catalog:sync` plans the field changes, writes them only with `--apply`,
+  and plans again to prove nothing is left. It adds the plan classes we lacked (443 rows) and mirrors
+  every cohort's study plan, curricula and choice groups from 2021 on. (#178–#183)
+- **Official syllabi.** `catalog:syllabi` imports each class's syllabus from its latest offering that
+  published one, and the class page shows it in a Programma tab. (#178)
+- **The course page by cohort and curriculum.** It opens on the student's own cohort, groups the
+  classes by the plan's choice groups, hides what the current offering dropped, and lists the plan's
+  other activities (traineeships, final exams, entry checks) apart from the study catalogue.
+  (#181, #186)
+- **Carriera** — the career record, prefilled from the cohort's mandatory exams, with choice-group
+  picks, free entries, exams taken at another university, averages, the graduation base, a forecast
+  and a what-if. (#128)
+- **Calendario** — exam sittings, personal events and tasks on one calendar, in Italian. A task is
+  done or not done, on a day, with an optional time. Events and tasks take a colour. (#129, #199)
+- **The dashboard** shows the career and the calendar, and opens an event or a task in place. (#200)
+- **Traguardi**: more tiers on the existing metrics, and a Carriera category with its own silhouette
+  on four metrics read from the CRM on demand: exams passed, CFU earned, honours earned and tasks
+  done. Evaluation runs after a career exam is saved and after a task is ticked. A badge for
+  declaring the course of study. (#176, #200)
+- **The ops console** in `admin-console/`, a separate app at `admin.trivia-more.it`. It runs the
+  catalogue and achievement jobs in a pg-boss worker, with dry runs, schedules that only simulate in
+  production, a stop button and a report of every value a run changed. Cloudflare Access sits in
+  front, and the console checks the Access token and the owner's Supabase account on every request.
+  (`docs/OPS_CONSOLE.md`) (#188, #193–#195, #198, #202)
+- **Terraform** in `infra/` for the console's two Coolify services, its DNS record and its Access
+  application, with the state on R2. (#203)
+- `scripts/db/migrations.ts` applies each pending migration in its own transaction and prints the
+  statement that failed. `drizzle-kit migrate` runs them all in one and hides the error.
+
+### Changed
+
+- **Navigation.** The icon rail is replaced by an inset shell: a grouped sidebar, the page in a
+  panel, and a header carrying the trail. Analytics, Traguardi and Segnalibri have their own rows,
+  notifications sit in the header and the theme moves into the profile menu. (#148, #177)
+- **Tables** keep each cell on one line, scroll sideways under a sticky header, and have resizable
+  columns by default.
+- Sheets open as an inset panel, and forms share one Italian date field.
+- The enrolment points to its cohort's curriculum. The hand-written curriculum text is no longer
+  read. (#128)
+- Class codes have one spelling, without spaces. The class page normalises the code in the URL, so
+  older links still resolve, and the lookup stops reading `_` as a wildcard.
+- The repository is a pnpm workspace, with the console as its second package.
+- Comment lines in `src/` and `scripts/` go from 3412 to 574, one line each. (#184, #185)
+
+### Fixed
+
+- A replayed flashcard session counted its active day again. It now counts once.
+- Acknowledging an approved request twice counted it twice; the second call answers Conflict.
+- The achievement backfill now removes rollup rows the history no longer justifies, so a rebuild
+  converges.
+- An `InsetCard` title takes the free width, and its actions wrap.
+
+### Migrations
+
+Thirty-eight, `0029`–`0066`, already applied to the production database. Two are destructive.
+
+- `0029`–`0034` — the `crm` schema, enrolments, grants, the avatars bucket and the onboarding badge.
+  `0033` recreates the `achievement_metric` enum instead of extending it, since a value added to an
+  enum cannot be used in the same transaction.
+- `0035`, `0037`–`0042` — the official catalogue fields, `is_teaching`, the study plans, curricula,
+  choice groups and syllabi, with their triggers.
+- **`0036_normalise_class_codes.sql` — destructive.** Rewrites the 90 class codes stored with spaces.
+- `0043`–`0048`, `0064`–`0066` — the `ops` schema, pg-boss, schedules, the run report, job texts and
+  the stop request.
+- `0049`, `0050`, `0052`–`0060` — the career record, exam sittings, calendar events and tasks.
+- **`0051_drop_enrollment_curriculum_text.sql` — destructive.** Drops `crm.enrollments.curriculum`,
+  replaced by the link to the cohort's curriculum.
+- `0061`–`0063` — the new tiers, the CRM metrics and the Carriera badges.
+
+**After the deploy:** run *Assegna i traguardi* from the console, as a dry run first, so the new
+tiers and the Carriera badges reach the accounts that already qualify.
+
 ## 3.3.0 — 2026-09-19
 
 Two things a student will notice, and a layer underneath the first of them. Traguardi arrive as a
