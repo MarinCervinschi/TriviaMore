@@ -1,0 +1,60 @@
+-- More tiers on the v1 metrics; re-runnable like 0025, with `is_active` left out of the update.
+-- Not here: departments past 2, classes past 8, hard questions past 100 (on 2026-10-10 there are 2, 12 and 86).
+INSERT INTO public.achievements
+  (key, family, tier, name, description, category, metric, comparator, threshold, icon, shape, accent, position)
+VALUES
+  ('explorer_4', 'explorer', 4, 'Atlante',
+   'Completa un quiz in 50 sezioni diverse.',
+   'Esplorazione', 'DISTINCT_SECTIONS', 'GTE', 50, 'compass', 'seal', 'chart-2', 14),
+
+  ('perfect_2', 'perfect', 2, 'Perfezionista',
+   'Chiudi 5 quiz con voto pieno su almeno 10 domande.',
+   'Padronanza', 'PERFECT_QUIZZES', 'GTE', 5, 'medal-star', 'shield', 'chart-3', 32),
+  ('perfect_3', 'perfect', 3, 'Infallibile',
+   'Chiudi 20 quiz con voto pieno su almeno 10 domande.',
+   'Padronanza', 'PERFECT_QUIZZES', 'GTE', 20, 'medal-star', 'shield', 'chart-3', 33),
+  ('exam_2', 'exam', 2, 'Collaudato',
+   'Chiudi 5 simulazioni d''esame con almeno 27, su almeno 15 domande.',
+   'Padronanza', 'EXAM_SIMS_PASSED', 'GTE', 5, 'diploma-verified', 'shield', 'chart-3', 52),
+  ('exam_3', 'exam', 3, 'Pronto a tutto',
+   'Chiudi 15 simulazioni d''esame con almeno 27, su almeno 15 domande.',
+   'Padronanza', 'EXAM_SIMS_PASSED', 'GTE', 15, 'diploma-verified', 'shield', 'chart-3', 53),
+
+  ('weeks_3', 'weeks', 3, 'Trimestre pieno',
+   'Accumula 12 settimane con almeno 3 giorni di studio.',
+   'Ritmo', 'ACTIVE_WEEKS', 'GTE', 12, 'calendar', 'hex', 'chart-5', 73),
+  ('streak_2', 'streak', 2, 'Abitudine',
+   'Studia 15 giorni di fila.',
+   'Ritmo', 'BEST_DAY_STREAK', 'GTE', 15, 'fire', 'hex', 'chart-5', 82),
+  ('streak_3', 'streak', 3, 'Inarrestabile',
+   'Studia 30 giorni di fila.',
+   'Ritmo', 'BEST_DAY_STREAK', 'GTE', 30, 'fire', 'hex', 'chart-5', 83),
+  ('quizzes_1', 'quizzes', 1, 'Rodaggio',
+   'Completa 10 quiz.',
+   'Ritmo', 'QUIZZES_COMPLETED', 'GTE', 10, 'bolt', 'hex', 'chart-5', 94),
+  ('quizzes_2', 'quizzes', 2, 'Allenato',
+   'Completa 50 quiz.',
+   'Ritmo', 'QUIZZES_COMPLETED', 'GTE', 50, 'bolt', 'hex', 'chart-5', 95),
+  ('quizzes_3', 'quizzes', 3, 'Instancabile',
+   'Completa 200 quiz.',
+   'Ritmo', 'QUIZZES_COMPLETED', 'GTE', 200, 'bolt', 'hex', 'chart-5', 96),
+
+  ('flashcards_3', 'flashcards', 3, 'Bibliotecario',
+   'Completa 50 sessioni di flashcard.',
+   'Metodo', 'FLASHCARD_SESSIONS', 'GTE', 50, 'cardholder', 'plaque', 'chart-1', 103),
+  ('review_2', 'review', 2, 'Ripasso sistematico',
+   'Rispondi correttamente a 25 domande che avevi salvato nei segnalibri.',
+   'Metodo', 'BOOKMARKED_THEN_CORRECT', 'GTE', 25, 'bookmark', 'plaque', 'chart-1', 112)
+ON CONFLICT (key) DO UPDATE SET
+  family      = EXCLUDED.family,
+  tier        = EXCLUDED.tier,
+  name        = EXCLUDED.name,
+  description = EXCLUDED.description,
+  category    = EXCLUDED.category,
+  metric      = EXCLUDED.metric,
+  comparator  = EXCLUDED.comparator,
+  threshold   = EXCLUDED.threshold,
+  icon        = EXCLUDED.icon,
+  shape       = EXCLUDED.shape,
+  accent      = EXCLUDED.accent,
+  position    = EXCLUDED.position;
