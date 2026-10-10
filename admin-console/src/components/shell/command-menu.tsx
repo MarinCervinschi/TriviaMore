@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { MagnifierIcon } from "@solar-icons/react/linear/magnifier";
+import { PlayIcon } from "@solar-icons/react/linear/play";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import {
@@ -12,12 +14,14 @@ import {
 	CommandList,
 } from "@/components/ui/command";
 
+import { jobQueries } from "~/lib/jobs/queries";
 import { NAV } from "~/lib/nav";
 
-/** Every page of the console, reachable from ⌘K. */
+/** Every page of the console, and every job's own page, reachable from ⌘K. */
 export function CommandMenu() {
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
+	const { data: jobs = [] } = useQuery({ ...jobQueries.jobs(), enabled: open });
 
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
@@ -43,7 +47,7 @@ export function CommandMenu() {
 			</button>
 
 			<CommandDialog open={open} onOpenChange={setOpen}>
-				<CommandInput placeholder="Cerca una pagina…" />
+				<CommandInput placeholder="Cerca una pagina o un job…" />
 				<CommandList>
 					<CommandEmpty>Nessuna pagina trovata.</CommandEmpty>
 					{NAV.map(section => (
@@ -65,6 +69,24 @@ export function CommandMenu() {
 							)}
 						</CommandGroup>
 					))}
+					{jobs.length > 0 && (
+						<CommandGroup heading="Avvia un job">
+							{jobs.map(job => (
+								<CommandItem
+									key={job.name}
+									value={`avvia job ${job.area} ${job.label} ${job.name}`}
+									onSelect={() => {
+										setOpen(false);
+										void navigate({ to: "/jobs/$job", params: { job: job.name } });
+									}}
+								>
+									<PlayIcon className="size-4" />
+									<span className="flex-1">{job.label}</span>
+									<span className="text-muted-foreground text-xs">{job.area}</span>
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
 				</CommandList>
 			</CommandDialog>
 		</>

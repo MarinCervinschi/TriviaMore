@@ -78,7 +78,7 @@ function DashboardPage() {
 	return (
 		<ConsolePage
 			title="Panoramica"
-			description="Lo stato dei dati nello staging: quanti sono e quando sono stati importati l'ultima volta."
+			description="Lo stato dei dati: quanti sono e quando sono stati importati l'ultima volta."
 		>
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 				<FigureCard
@@ -151,8 +151,8 @@ function DashboardPage() {
 							{recent.map(run => (
 								<li key={run.id}>
 									<Link
-										to="/jobs"
-										search={{ detail: run.id }}
+										to="/jobs/$job/runs/$runId"
+										params={{ job: run.job, runId: run.id }}
 										className="hover:bg-muted/50 flex items-center justify-between gap-4 px-4 py-3 transition-colors motion-reduce:transition-none"
 									>
 										<div className="min-w-0">
@@ -180,9 +180,9 @@ function DashboardPage() {
 							<ChecklistMinimalisticIcon className="text-muted-foreground mb-2 size-6" />
 							<p className="text-sm font-medium">Nessuna esecuzione</p>
 							<p className="text-muted-foreground mt-1 max-w-xs text-xs">
-								Avvia un job dalla pagina{" "}
+								Avvia un job dal{" "}
 								<Link to="/jobs" className="underline underline-offset-2">
-									Esecuzioni
+									catalogo dei job
 								</Link>
 								.
 							</p>

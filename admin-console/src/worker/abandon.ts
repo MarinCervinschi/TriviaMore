@@ -4,7 +4,7 @@ import type { PgBoss } from "pg-boss";
 import { jobRuns } from "@/db/schema";
 import { log } from "@/lib/logging/server";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
 
 /** Closes runs a stopped worker left open: the row fails and its pg-boss job is cancelled, or the singleton queue stays blocked. */
 export async function abandonRuns(
@@ -12,7 +12,7 @@ export async function abandonRuns(
 	runIds: string[] | "all-running",
 	reason: string
 ) {
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const running = eq(jobRuns.status, "RUNNING");
 	const abandoned = await db
 		.update(jobRuns)

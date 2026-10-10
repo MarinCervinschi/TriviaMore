@@ -9,6 +9,7 @@ import {
 	syncCatalog,
 } from "../../../../scripts/catalog/run-sync.ts";
 import { setCacheDir } from "../../../../scripts/catalog/source.ts";
+import { syllabiChanges, syncChanges } from "./catalog-changes";
 import type { JobDefinition, JobField } from "./types";
 
 const FIRST_CATALOGUE_YEAR = 2021;
@@ -44,6 +45,7 @@ function yearField(): JobField {
 export const catalogSync: JobDefinition<typeof yearParam> = {
 	name: "catalog.sync",
 	label: "Catalogo e piani",
+	area: "Catalogo",
 	description:
 		"Aggiunge gli insegnamenti che mancano, aggiorna i campi del catalogo e allinea i piani di ogni coorte con il catalogo CINECA.",
 	command: "pnpm catalog:sync",
@@ -61,10 +63,13 @@ export const catalogSync: JobDefinition<typeof yearParam> = {
 			throw new Error(`Applicato, ma ${report.left} righe restano da sistemare.`);
 		}
 		return {
-			"Insegnamenti aggiunti": report.additions.additions.length,
-			"Campi aggiornati": catalogueRowCount(report.updates),
-			"Righe di piano": planRowCount(report.plans),
-			Coorti: report.cohorts.join(", "),
+			summary: {
+				"Insegnamenti aggiunti": report.additions.additions.length,
+				"Campi aggiornati": catalogueRowCount(report.updates),
+				"Righe di piano": planRowCount(report.plans),
+				Coorti: report.cohorts.join(", "),
+			},
+			changes: await syncChanges(db, report),
 		};
 	},
 };
@@ -74,6 +79,7 @@ const noParams = z.object({});
 export const catalogSyllabi: JobDefinition<typeof noParams> = {
 	name: "catalog.syllabi",
 	label: "Schede insegnamento",
+	area: "Catalogo",
 	description:
 		"Scarica la scheda ufficiale di ogni insegnamento dal catalogo CINECA e ne ricava le descrizioni.",
 	command: "pnpm catalog:syllabi",
@@ -87,11 +93,14 @@ export const catalogSyllabi: JobDefinition<typeof noParams> = {
 		}
 		const cleared = report.plan.descriptions.filter(d => d.description === null).length;
 		return {
-			"Con la scheda": report.found,
-			"Schede nuove": report.plan.inserts.length,
-			"Schede aggiornate": report.plan.updates.length,
-			"Descrizioni riscritte": report.plan.descriptions.length - cleared,
-			"Descrizioni svuotate": cleared,
+			summary: {
+				"Con la scheda": report.found,
+				"Schede nuove": report.plan.inserts.length,
+				"Schede aggiornate": report.plan.updates.length,
+				"Descrizioni riscritte": report.plan.descriptions.length - cleared,
+				"Descrizioni svuotate": cleared,
+			},
+			changes: await syllabiChanges(db, report),
 		};
 	},
 };

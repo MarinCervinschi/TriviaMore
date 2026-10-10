@@ -3,46 +3,37 @@ import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
 
-import type { ConnectionId } from "~/lib/connections/types";
+/** The console's one database: the local one in development, production once deployed. */
+export const DATABASE_ENV = "DATABASE_URL";
 
-export const CONNECTION_ENV: Record<ConnectionId, string> = {
-	staging: "STAGING_DATABASE_URL",
-	production: "PRODUCTION_READONLY_DATABASE_URL",
-};
+let pool: Pool | null = null;
 
-const pools = new Map<ConnectionId, Pool>();
-
-/** One small pool per database, made on first use; null when its variable is not set. */
-export function poolFor(id: ConnectionId): Pool | null {
-	const existing = pools.get(id);
-	if (existing) return existing;
-	const url = process.env[CONNECTION_ENV[id]];
+/** A small pool, made on first use; null when the variable is not set. */
+export function consolePool(): Pool | null {
+	if (pool) return pool;
+	const url = process.env[DATABASE_ENV];
 	if (!url) return null;
-	const pool = new Pool({
-		connectionString: url,
-		max: 3,
-		connectionTimeoutMillis: 5000,
+	pool = new Pool({ connectionString: url, max: 3, connectionTimeoutMillis: 5000 });
+	pool.on("error", () => {
+		pool = null;
+		db = null;
 	});
-	pool.on("error", () => pools.delete(id));
-	pools.set(id, pool);
 	return pool;
 }
 
-function createDb(pool: Pool) {
-	return drizzle(pool, { schema, casing: "snake_case" });
+function createDb(from: Pool) {
+	return drizzle(from, { schema, casing: "snake_case" });
 }
 
 export type ConsoleDb = ReturnType<typeof createDb>;
 
-const dbs = new Map<ConnectionId, ConsoleDb>();
+let db: ConsoleDb | null = null;
 
-/** The app's schema over one of the console's databases. */
-export function dbFor(id: ConnectionId): ConsoleDb {
-	const existing = dbs.get(id);
-	if (existing) return existing;
-	const pool = poolFor(id);
-	if (!pool) throw new Error(`${CONNECTION_ENV[id]} non è configurata.`);
-	const db = createDb(pool);
-	dbs.set(id, db);
+/** The app's schema over the console's database. */
+export function consoleDb(): ConsoleDb {
+	if (db) return db;
+	const from = consolePool();
+	if (!from) throw new Error(`${DATABASE_ENV} non è configurata.`);
+	db = createDb(from);
 	return db;
 }

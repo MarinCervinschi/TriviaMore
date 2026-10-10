@@ -13,7 +13,7 @@ import {
 } from "@/db/schema";
 import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
 
-import { dbFor } from "~/lib/db/client";
+import { consoleDb } from "~/lib/db/client";
 
 import type {
 	CatalogClass,
@@ -25,9 +25,9 @@ import type {
 
 const iso = (value: string | null) => (value ? new Date(value).toISOString() : null);
 
-/** The size and freshness of the catalogue in staging. */
+/** The size and freshness of the catalogue. */
 export async function getCatalogOverview(): Promise<CatalogOverview> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const studiable = studiableCourseClassSql(db);
 
 	const [
@@ -79,7 +79,7 @@ export async function getCatalogOverview(): Promise<CatalogOverview> {
 
 /** Every course, with its plans as the catalogue last published them. */
 export async function getCatalogCourses(): Promise<CatalogCourse[]> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 
 	const latest = db
 		.select({
@@ -134,7 +134,7 @@ export async function getCatalogCourses(): Promise<CatalogCourse[]> {
 
 /** Every class, with where it is listed and the year of its official class sheet. */
 export async function getCatalogClasses(): Promise<CatalogClass[]> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const studiable = studiableCourseClassSql(db);
 
 	return db
@@ -176,7 +176,7 @@ const SYLLABUS_FIELDS = [
 
 /** One class: every course that lists it, its class sheet and how much of our content hangs off it. */
 export async function getClassDetail(id: string): Promise<ClassDetail | null> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 	const studiable = studiableCourseClassSql(db);
 
 	const [[row], listings, [syllabus], [content]] = await Promise.all([
@@ -239,7 +239,7 @@ export async function getClassDetail(id: string): Promise<ClassDetail | null> {
 
 /** One course with its plans, cohort by cohort, newest first. */
 export async function getCourseDetail(id: string): Promise<CourseDetail | null> {
-	const db = dbFor("staging");
+	const db = consoleDb();
 
 	const [[row], cohorts, curricula, [classCount]] = await Promise.all([
 		db

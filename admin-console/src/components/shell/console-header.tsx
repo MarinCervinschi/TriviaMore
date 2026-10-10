@@ -9,7 +9,9 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
+import { ENVIRONMENT_LABEL, IS_PRODUCTION } from "~/lib/environment";
 import type { NavItem, NavSection } from "~/lib/nav";
 
 import { CommandMenu } from "./command-menu";
@@ -61,8 +63,15 @@ export function ConsoleHeader({
 			</div>
 
 			<div className="ml-auto flex items-center gap-2">
-				<span className="bg-info/10 text-info border-info/20 hidden rounded-md border px-2 py-0.5 text-xs font-medium sm:inline-flex">
-					Staging locale
+				<span
+					className={cn(
+						"hidden rounded-md border px-2 py-0.5 text-xs font-medium sm:inline-flex",
+						IS_PRODUCTION
+							? "bg-warning/10 text-warning border-warning/20"
+							: "bg-info/10 text-info border-info/20"
+					)}
+				>
+					{ENVIRONMENT_LABEL}
 				</span>
 				<Button
 					variant="ghost"

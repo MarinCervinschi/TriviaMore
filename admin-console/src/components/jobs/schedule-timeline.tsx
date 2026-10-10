@@ -158,7 +158,7 @@ export function ScheduleTimeline({
 										key={at}
 										aria-hidden
 										title={`Prevista il ${formatDateTime(at)}`}
-										className="border-foreground/50 bg-card absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+										className="bg-card outline-foreground/60 absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full outline-[1.5px] -outline-offset-[1.5px] outline-dashed"
 										style={{ left: position(at) }}
 									/>
 								))}
@@ -167,8 +167,8 @@ export function ScheduleTimeline({
 									<Tooltip key={run.id}>
 										<TooltipTrigger asChild>
 											<Link
-												to="/jobs"
-												search={{ detail: run.id }}
+												to="/jobs/$job/runs/$runId"
+												params={{ job: row.schedule.job, runId: run.id }}
 												aria-label={`${RUN_STATUS[run.status].label}, ${formatDateTime(run.queuedAt)}`}
 												className={cn(
 													"focus-visible:ring-ring ring-card absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 outline-none focus-visible:ring-2",
@@ -215,7 +215,7 @@ export function ScheduleTimeline({
 						</span>
 					))}
 					<span className="inline-flex items-center gap-1.5">
-						<span className="border-foreground/50 size-2.5 rounded-full border" />
+						<span className="bg-card outline-foreground/60 size-3 rounded-full outline-[1.5px] -outline-offset-[1.5px] outline-dashed" />
 						Prevista
 					</span>
 				</div>

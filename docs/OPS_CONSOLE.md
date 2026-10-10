@@ -1,6 +1,8 @@
 # Ops console — architecture
 
 **Status:** accepted (#193, part of #188). The points marked *to verify* are checked in #194.
+**Amended 2026-10-10:** no staging instance and no promotion. The deployed console works on production, with a
+simulation before every write; the local Supabase is where a job is developed and tried.
 
 The ops console is a second app, deployed on its own, from which the owner runs and watches the jobs that keep
 TriviaMore's official data current: catalog, syllabi, plans, and later timetables and exam sittings. It is not
@@ -13,8 +15,8 @@ part of the student app, and its access has nothing to do with the app's roles.
   ends with a re-plan that must come out empty.
 - The app is self-hosted on a VPS, on Coolify behind Cloudflare. A long-running Node process is available; there
   is no serverless runtime.
-- **Infisical's `staging` and `prod` environments point at the same database today.** There is no separate
-  staging instance yet.
+- **There is one hosted database, production.** Infisical's `staging` and `prod` environments point at it; the
+  local Supabase is the only other one.
 - The app's roles (SUPERADMIN, ADMIN, MAINTAINER, STUDENT) govern content and section access. The console's
   concerns (jobs, sync, data health, later feature flags and analytics) belong to the platform's owner only.
 
@@ -39,16 +41,17 @@ Until `packages/ui` exists, the console imports the app's design system directly
 `src/styles/globals.css` and the primitives in `src/components/ui/`. The console's own code uses the `~/` alias,
 so the app's `@/` alias keeps resolving inside the imported components. One design system, no copies.
 
-### A separate staging database
+### One database: the local one in development, production once deployed
 
-Jobs write to a staging instance; production receives source data only through a promotion (#196).
+The console works on one database, read from `DATABASE_URL` like the app: Infisical `dev` gives the local
+Supabase, `prod` gives production. A built console is the deployed one, so it labels itself *Produzione*.
 
-- Staging is a **Supabase** instance, like production, so the whole migration chain applies unchanged. The
-  baseline and its triggers reference `auth.users`, `auth.uid()` and `storage.objects`, which a bare Postgres
-  does not have.
-- Until it is hosted, the **local Supabase plays staging**. It behaves the same, and the console runs locally
-  against it.
-- Migrations are applied by hand to both instances, as today.
+- **No staging instance and no promotion step.** Every job already runs as a simulation first and reports what
+  it would change, which is what a staging copy was for. A second hosted Supabase would cost upkeep and a
+  migration chain to keep level, for a check the simulation already gives. It can come back if the jobs outgrow
+  that.
+- A job is developed and tried against the local Supabase, then run on production from the deployed console.
+- Migrations are applied by hand to both, as today.
 
 ### Jobs are managed from the console
 
@@ -57,19 +60,24 @@ read; the terminal stops being the interface.
 
 ### Rules every job follows
 
-- A job writes only to staging. Promotion to production is its own step, with an explicit approval.
+- **Simulate first.** Applying is a run of its own, started by hand; in production it asks for confirmation.
+- **Nothing writes production on its own.** In production a schedule only simulates, and the worker enforces it.
+- **A job with nothing to simulate runs directly.** Rebuilding the achievement counters from history only
+  recomputes derived values, so it has no simulation (`simulates: false`); production never schedules it.
+- **Every run keeps what it changed.** A job returns its counts and, where it can, the rows it changed or would
+  change with their values before and after (`ops.job_runs.changes`), which the run's page shows.
 - One request at a time to a source, with the cache.
 - No job starts on deploy, exactly like migrations.
 - Logs go to Seq with message templates (see `docs/OBSERVABILITY.md`).
 
 ### Jobs run in a worker process, with pg-boss
 
-Three options were weighed, all able to run today's scripts. The jobs are short, weekly to daily, and mostly single-step; the
-one multi-step flow is *fetch → write staging → diff → wait for approval → promote*.
+Three options were weighed, all able to run today's scripts. The jobs are short, weekly to daily, and mostly single-step;  none
+needs a durable wait.
 
 | | Worker process + pg-boss | Child process of the console | Temporal |
 |---|---|---|---|
-| Infrastructure added | none: a queue schema in the staging Postgres | none | a Temporal server, its UI, and its persistence (Postgres 12+ is enough since 1.20) |
+| Infrastructure added | none: a queue schema in the console's Postgres | none | a Temporal server, its UI, and its persistence (Postgres 12+ is enough since 1.20) |
 | Resources | one Node process | none | sized at 2 GB / 2 vCPU for a light self-hosted node |
 | Scheduling | cron built in | to build (node-cron) | Schedules built in |
 | Retries, backoff | built in | to build | built in |
@@ -78,9 +86,7 @@ one multi-step flow is *fetch → write staging → diff → wait for approval �
 | Survives a restart | yes, the queue is in Postgres | no | yes |
 
 **Chosen: a worker process with pg-boss.** It adds no infrastructure, survives restarts, and covers
-cron, retries and concurrency. The console reads and writes the queue through the same database. The approval
-step is a state in `ops.job_runs` plus a promotion job started from the console, which is little code for one
-flow.
+cron, retries and concurrency. The console reads and writes the queue through the same database.
 
 Temporal earns its cost when flows grow to several durable steps or long waits, or once the server already runs
 for something else. Since the worker contract is "a function that takes typed input and reports a result", the
@@ -116,13 +122,9 @@ on the tailnet from being enough.
 
 | Connection | Used for | Rights |
 |---|---|---|
-| Staging | jobs' output, the queue, `ops.job_runs` | read and write |
-| Production | counts and the staging-vs-production diff | read only |
-| Production, promotion | applying an approved promotion | write, used by the promotion job alone |
+| `DATABASE_URL` | the app's tables the jobs write, the queue (`pgboss`), `ops.job_runs` and `ops.job_schedules` | read and write |
 
-Two production credentials keep the everyday console unable to write production by mistake.
-
-The console reaches the databases and Seq over the Docker network on the VPS, the same way the app does.
+The console reaches the database and Seq over the Docker network on the VPS, the same way the app does.
 
 ## Consequences
 
@@ -130,5 +132,4 @@ The console reaches the databases and Seq over the Docker network on the VPS, th
   own `package.json`, build and Dockerfile under `admin-console/`.
 - Coolify runs the console as a second resource from the same repository, with no domain. The worker is a third
   service from the console's image with a different command, and publishes no port.
-- A new Infisical environment holds the console's secrets: the staging database, the two production
-  credentials, `CONSOLE_OWNER_IDS`.
+- The console reads Infisical's `prod` environment, like the app, plus `CONSOLE_OWNER_IDS`.

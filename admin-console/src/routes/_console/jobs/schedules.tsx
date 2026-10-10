@@ -61,9 +61,14 @@ function buildColumns(
 			meta: { label: "Job", cellClassName: "min-w-[12rem]" },
 			cell: ({ row }) => (
 				<div className="min-w-0">
-					<p className="truncate font-medium">
+					<Link
+						to="/jobs/$job"
+						params={{ job: row.original.job }}
+						onClick={event => event.stopPropagation()}
+						className="hover:text-brand block truncate font-medium transition-colors"
+					>
 						{labelOf.get(row.original.job) ?? row.original.job}
-					</p>
+					</Link>
 					<p className="text-muted-foreground text-xs">
 						{row.original.dryRun ? "Simulazione" : "Applica"}
 					</p>
@@ -98,8 +103,8 @@ function buildColumns(
 				if (!last) return <span className="text-muted-foreground text-xs">Mai</span>;
 				return (
 					<Link
-						to="/jobs"
-						search={{ detail: last.id }}
+						to="/jobs/$job/runs/$runId"
+						params={{ job: row.original.job, runId: last.id }}
 						className="inline-flex items-center gap-2"
 						aria-label={`Apri l'ultima esecuzione, ${formatDateTime(last.queuedAt)}`}
 					>
@@ -182,7 +187,6 @@ function SchedulesPage() {
 		data: schedules,
 		columns,
 		getRowId: row => row.key,
-		resizableColumns: true,
 		pageSize: Math.max(schedules.length, 1),
 	});
 

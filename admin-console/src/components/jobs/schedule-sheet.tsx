@@ -20,6 +20,7 @@ import {
 import { useDebounce } from "@/hooks/useDebounce";
 
 import { DetailList, DetailSection, DetailSheet } from "~/components/detail-sheet";
+import { IS_PRODUCTION } from "~/lib/environment";
 import { formatDateTime } from "~/lib/format";
 import { deleteScheduleFn, saveScheduleFn } from "~/lib/jobs/api";
 import { type Frequency, WEEKDAYS, fromCron, toCron } from "~/lib/jobs/cron";
@@ -57,20 +58,22 @@ function withKind(current: Frequency, kind: Frequency["kind"]): Frequency {
 	return { kind, day: 1, time };
 }
 
-/** Creates a schedule, or with `editing` changes or deletes one. */
+/** Creates a schedule, or with `editing` changes or deletes one; `job` fixes the job, from that job's page. */
 export function ScheduleSheet({
 	open,
 	jobs,
 	editing,
+	job: fixedJob,
 	onClose,
 }: {
 	open: boolean;
 	jobs: JobInfo[];
 	editing?: JobSchedule;
+	job?: string;
 	onClose: () => void;
 }) {
 	const queryClient = useQueryClient();
-	const [jobName, setJobName] = useState(jobs[0]?.name ?? "");
+	const [jobName, setJobName] = useState(fixedJob ?? jobs[0]?.name ?? "");
 	const [values, setValues] = useState<FieldValues>({});
 	const [mode, setMode] = useState<Mode>("dry-run");
 	const [frequency, setFrequency] = useState<Frequency>(DEFAULT_FREQUENCY);
@@ -78,12 +81,14 @@ export function ScheduleSheet({
 
 	useEffect(() => {
 		if (!open) return;
-		setJobName(editing?.job ?? jobs[0]?.name ?? "");
+		setJobName(editing?.job ?? fixedJob ?? jobs[0]?.name ?? "");
 		setValues(valuesOf(editing?.params ?? {}));
 		setMode(editing && !editing.dryRun ? "apply" : "dry-run");
 		setFrequency(editing ? fromCron(editing.cron) : DEFAULT_FREQUENCY);
-	}, [open, editing, jobs]);
+	}, [open, editing, fixedJob, jobs]);
 
+	// In production a schedule only simulates, so a job that cannot is never offered.
+	const schedulable = IS_PRODUCTION ? jobs.filter(j => j.simulates !== false) : jobs;
 	const job = jobs.find(j => j.name === jobName);
 	const cron = toCron(frequency);
 	const previewCron = useDebounce(cron, 400);
@@ -103,7 +108,7 @@ export function ScheduleSheet({
 					job: jobName,
 					cron,
 					params: paramsOf(values),
-					dryRun: mode === "dry-run",
+					dryRun: IS_PRODUCTION || mode === "dry-run",
 				},
 			}),
 		onSuccess: result => {
@@ -190,16 +195,25 @@ export function ScheduleSheet({
 			}
 		>
 			<JobPicker
-				jobs={jobs}
+				jobs={schedulable}
 				value={jobName}
-				locked={Boolean(editing)}
+				locked={Boolean(editing || fixedJob)}
 				onChange={name => {
 					setJobName(name);
 					setValues({});
 				}}
 			/>
 			{job && <JobFields job={job} values={values} onChange={setValues} />}
-			<ModeChoice mode={mode} onChange={setMode} />
+			{IS_PRODUCTION ? (
+				<DetailSection title="Modalità">
+					<p className="text-muted-foreground text-sm">
+						In produzione una pianificazione fa solo simulazioni: le modifiche si
+						applicano a mano, da un'esecuzione.
+					</p>
+				</DetailSection>
+			) : (
+				<ModeChoice mode={mode} onChange={setMode} />
+			)}
 
 			<DetailSection title="Frequenza">
 				<div className="grid grid-cols-2 gap-2">

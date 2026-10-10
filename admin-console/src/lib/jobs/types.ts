@@ -1,14 +1,17 @@
 import type { z } from "zod";
 
-import type { jobRuns } from "@/db/schema";
+import type { JobChanges, jobRuns } from "@/db/schema";
 
 import type { ConsoleDb } from "~/lib/db/client";
 
 /** What a run reports when it ends: counts and short values the console shows as they are. */
 export type JobSummary = Record<string, number | string>;
 
+/** The counts a run reports, and, when the job can say, the rows it changed or would change. */
+export type JobResult = { summary: JobSummary; changes?: JobChanges };
+
 export type JobContext = {
-	/** Staging, the only database a job writes to. */
+	/** The console's database: the local one in development, production once deployed. */
 	db: ConsoleDb;
 	dryRun: boolean;
 	signal: AbortSignal;
@@ -24,27 +27,45 @@ export type JobField = {
 	options: { value: string; label: string }[];
 	/** The flag the terminal command takes for this parameter. */
 	flag: string;
+	/** A yes or no: the command takes the bare flag when the value is set. */
+	toggle?: boolean;
 };
 
 export type JobDefinition<TParams extends z.ZodType = z.ZodType> = {
 	name: string;
 	label: string;
 	description: string;
-	/** The terminal command that does the same, without `--apply`. */
+	/** The group the catalogue lists it under. */
+	area: string;
+	/** `false` for a job with nothing worth simulating: it only runs, and production never schedules it. */
+	simulates?: boolean;
+	/** The terminal command that does the same, as a simulation unless `terminal` says otherwise. */
 	command: string;
+	/** For scripts that write by default: the flags that make the command simulate or apply. */
+	terminal?: { dryRun: string; apply: string };
 	params: TParams;
 	fields: JobField[];
-	run: (params: z.infer<TParams>, context: JobContext) => Promise<JobSummary>;
+	run: (params: z.infer<TParams>, context: JobContext) => Promise<JobResult>;
 };
 
 export type JobRunStatus = JobRun["status"];
 
 export type JobInfo = Pick<
 	JobDefinition,
-	"name" | "label" | "description" | "command" | "fields"
+	| "name"
+	| "label"
+	| "description"
+	| "area"
+	| "simulates"
+	| "command"
+	| "terminal"
+	| "fields"
 >;
 
-export type JobRun = typeof jobRuns.$inferSelect;
+/** A run as lists show it; the change report is read only by the run's own page. */
+export type JobRun = Omit<JobRunDetail, "changes">;
+
+export type JobRunDetail = typeof jobRuns.$inferSelect;
 
 export type JobParams = JobRun["params"];
 

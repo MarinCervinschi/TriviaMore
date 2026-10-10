@@ -132,7 +132,6 @@ function CatalogPage() {
 		data: courses,
 		columns,
 		getRowId: row => row.id,
-		resizableColumns: true,
 		searchFn: (course, query) =>
 			course.name.toLowerCase().includes(query) ||
 			course.code.toLowerCase().includes(query),
@@ -150,7 +149,7 @@ function CatalogPage() {
 	return (
 		<ConsolePage
 			title="Corsi e piani"
-			description="Il catalogo CINECA nello staging: per ogni corso, i piani dell'ultima coorte importata."
+			description="Il catalogo CINECA: per ogni corso, i piani dell'ultima coorte importata."
 		>
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 				<FigureCard
