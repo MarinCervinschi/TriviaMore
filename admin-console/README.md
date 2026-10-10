@@ -1,7 +1,7 @@
 # TriviaMore Console
 
 The ops console: the owner's app for running and watching the jobs that keep TriviaMore's official data
-current. It is deployed apart from the student app and reached only from the tailnet. The architecture and its
+current. It is deployed apart from the student app, at `admin.trivia-more.it` behind Cloudflare Access. The architecture and its
 reasons are in [`docs/OPS_CONSOLE.md`](../docs/OPS_CONSOLE.md).
 
 ## Run it
@@ -25,6 +25,7 @@ Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app                 |
 | `CONSOLE_OWNER_IDS`                           | comma-separated user ids allowed in; anyone else is signed out at once |
 | `DATABASE_URL`                                | the one database: local in `dev`, production in `prod`                 |
+| `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`      | the Cloudflare Access token every request must carry; unset locally    |
 
 Without `CONSOLE_OWNER_IDS` nobody can sign in. A missing `DATABASE_URL` shows as _non configurata_ on
 Impostazioni → Connessione. A built console labels itself _Produzione_; `pnpm console:dev` is _Locale_.
