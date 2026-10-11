@@ -42,7 +42,6 @@ export async function getAdminSectionDetail(id: string): Promise<AdminSectionDet
 		.limit(1);
 	if (!section) throw new NotFound("Sezione non trovata");
 
-	// Primary course of the owning class, for the breadcrumb.
 	const [parent] = await db
 		.select({
 			classCode: courseClasses.code,
@@ -94,9 +93,7 @@ export async function createSection(input: SectionInput) {
 
 export async function updateSection(id: string, updates: UpdateSectionInput) {
 	const user = await requireContentManagerForSection(id);
-	// Visibility is a superadmin decision. Without this a maintainer could turn a
-	// section it manages private and then be locked out of it by the very guard
-	// above — and, worse, decide unilaterally who can read it.
+	// Visibility is a superadmin decision, and a maintainer would lock itself out of a private section.
 	if (user.role === "MAINTAINER" && updates.is_public === false) {
 		throw new Forbidden("I maintainer non possono rendere privata una sezione.");
 	}

@@ -10,17 +10,6 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { REVIEW_FIXTURES } from "./fixtures";
 import { ReviewItem } from "./review-item";
 
-/**
- * The question list under the outcome. The row is the closed state and an
- * `InsetCard` the open one; the filter above it defaults to what is left to go
- * back to, not to everything.
- *
- * The header carries only the verdict — icon, points, chevron. The difficulty and
- * the two per-question actions sit in the strip at the top of the open panel.
- *
- * The actions are stand-ins here: in the app the slot takes `BookmarkButton` and
- * `ReportButton`, which both mutate.
- */
 const meta = {
 	title: "Risultati/Revisione",
 	parameters: { layout: "padded" },
@@ -50,7 +39,6 @@ const actions = (
 	</>
 );
 
-/** The four verdicts, the first one open. */
 export const List: Story = {
 	name: "La lista",
 	render: () => (
@@ -71,7 +59,7 @@ export const List: Story = {
 	),
 };
 
-/** Open, with an explanation and without: the footer band only exists when there is one. */
+/** With and without an explanation; the footer band exists only with one. */
 export const Open: Story = {
 	name: "Aperta",
 	render: () => (
@@ -140,7 +128,6 @@ function Filtered() {
 	);
 }
 
-/** The list as the page shows it, filtered to what is left to go back to. */
 export const Filter: Story = {
 	name: "Con il filtro",
 	render: () => <Filtered />,

@@ -3,7 +3,6 @@ import type { MasteryBreakdown } from "@/lib/user/types";
 import { getDifficultyLabel } from "@/lib/user/utils";
 import { cn } from "@/lib/utils";
 
-/** Accuracy read as an outcome: the same three steps wherever a share is scored. */
 export function accuracyTone(pct: number) {
 	if (pct >= 75) return { fill: "var(--color-success)", ink: "text-success" };
 	if (pct >= 50) return { fill: "var(--color-warning)", ink: "text-warning" };
@@ -16,10 +15,6 @@ export function pctOf(correct: number, total: number) {
 
 const DIFFICULTY_STEPS: Record<string, number> = { EASY: 1, MEDIUM: 2, HARD: 3 };
 
-/**
- * Three rising bars, the first `n` filled: the difficulty ladder as a shape,
- * because in this row colour already means accuracy and cannot mean two things.
- */
 export function DifficultyMeter({ level }: { level: string }) {
 	const filled = DIFFICULTY_STEPS[level] ?? 0;
 	return (
@@ -38,19 +33,15 @@ export function DifficultyMeter({ level }: { level: string }) {
 	);
 }
 
-/**
- * One difficulty's accuracy. Needs a `TooltipProvider` above it: the counts behind
- * the percentage live in the tooltip in the `inline` layout.
- */
+/** Needs a `TooltipProvider` above it. */
 export function DifficultyBar({
 	row,
 	layout = "inline",
 	showCounts = false,
 }: {
 	row: MasteryBreakdown;
-	/** `stacked` puts the bar on its own line — for a narrow column. */
 	layout?: "inline" | "stacked";
-	/** `stacked` only: spells the counts out beside the share instead of leaving them to the tooltip. */
+	/** `stacked` only. */
 	showCounts?: boolean;
 }) {
 	const pct = pctOf(row.correct, row.total);

@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { RAIL_SLOT } from "@/components/layout/nav-items";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarHeader,
+	SidebarProvider,
+} from "@/components/ui/sidebar";
 import type { Notification } from "@/lib/notifications/types";
 
-import { SidebarChangelogMegaphone } from "./changelog-megaphone";
+import { ChangelogMegaphoneRow } from "./changelog-megaphone";
 import { SidebarNotificationBell } from "./notification-bell";
 import { NotificationItem } from "./notification-item";
 import { NotificationList } from "./notification-list";
 import { NotificationPopover } from "./notification-popover";
 
-/**
- * The notification stack. `NotificationList` and `NotificationPopover` read the `["notifications"]`
- * query, and the rail badges read the unread counts — all three are seeded through
- * `parameters.queryData`, so the mutations still throw if you click them and the render is real.
- */
 const meta = {
 	title: "Notifications/Notifiche",
 	parameters: { layout: "padded", session: { role: "STUDENT" } },
@@ -21,6 +21,28 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+function BadgeRows() {
+	return (
+		<SidebarProvider>
+			<Sidebar collapsible="none" className="w-64 rounded-2xl border">
+				<SidebarHeader>
+					<div className="flex items-center gap-1">
+						<span className="text-sm font-semibold">TriviaMore</span>
+						<div className="ml-auto">
+							<SidebarNotificationBell />
+						</div>
+					</div>
+				</SidebarHeader>
+				<SidebarContent>
+					<div className="bg-popover text-popover-foreground m-2 rounded-xl border py-1">
+						<ChangelogMegaphoneRow />
+					</div>
+				</SidebarContent>
+			</Sidebar>
+		</SidebarProvider>
+	);
+}
 
 const TYPES: Notification["type"][] = [
 	"REQUEST_STATUS_CHANGED",
@@ -92,7 +114,6 @@ function make(
 
 const ALL = TYPES.map((type, i) => make(type, i, i > 2));
 
-/** Every type, unread on the left and read on the right: the icon and the dot are the only difference. */
 export const Item: Story = {
 	name: "La voce, tutti i tipi",
 	render: () => (
@@ -150,9 +171,9 @@ export const Popover: Story = {
 	),
 };
 
-/** The two rail badges at 0, 3 and 100+ — the pill changes shape past 9 and caps at 99+. */
+/** The counts at 3 and past 99, where the pill caps. */
 export const RailBadges: Story = {
-	name: "I badge nella rail",
+	name: "Gli indicatori di non letto",
 	parameters: {
 		queryData: [
 			[["notifications", "unreadCount"], 3],
@@ -162,16 +183,7 @@ export const RailBadges: Story = {
 			],
 		],
 	},
-	render: () => (
-		<div className="bg-sidebar w-fit rounded-2xl border p-3">
-			<div className={RAIL_SLOT}>
-				<SidebarNotificationBell />
-			</div>
-			<div className={RAIL_SLOT}>
-				<SidebarChangelogMegaphone />
-			</div>
-		</div>
-	),
+	render: () => <BadgeRows />,
 };
 
 export const RailBadgesOverflow: Story = {
@@ -185,14 +197,5 @@ export const RailBadgesOverflow: Story = {
 			],
 		],
 	},
-	render: () => (
-		<div className="bg-sidebar w-fit rounded-2xl border p-3">
-			<div className={RAIL_SLOT}>
-				<SidebarNotificationBell />
-			</div>
-			<div className={RAIL_SLOT}>
-				<SidebarChangelogMegaphone />
-			</div>
-		</div>
-	),
+	render: () => <BadgeRows />,
 };

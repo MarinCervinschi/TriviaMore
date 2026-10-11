@@ -61,12 +61,18 @@ function useAttemptActions(attempt: OpenAttempt) {
 		/>
 	);
 
-	return { label, resume, discard, confirmation };
+	return {
+		label,
+		resume,
+		discard,
+		confirmation,
+		askDiscard: () => setConfirmOpen(true),
+		discarding: cancel.isPending,
+	};
 }
 
 function AttemptWhere({ attempt }: { attempt: OpenAttempt }): ReactNode {
-	// The instant is formatted in the reader's zone, which the server container does
-	// not share: rendering it before hydration mismatches by the whole offset.
+	// The instant is formatted in the reader's zone, which the server does not share.
 	const isHydrated = useIsHydrated();
 
 	return (
@@ -107,6 +113,38 @@ export function OpenAttemptBanner({
 					</div>
 				</div>
 			</Card>
+			{confirmation}
+		</>
+	);
+}
+
+export function OpenAttemptStatus({ attempt }: { attempt: OpenAttempt }) {
+	const { label, confirmation, askDiscard, discarding } = useAttemptActions(attempt);
+
+	return (
+		<>
+			<span className="flex min-w-0 flex-1 items-center gap-2">
+				<ClockCircleIcon className="text-warning size-4 shrink-0" />
+				<span className="truncate">
+					Hai un {label} in corso — {attempt.sectionName} · {attempt.className}
+				</span>
+				<span className="ms-auto flex shrink-0 items-center gap-1 ps-2">
+					<Button asChild size="sm">
+						<Link to="/quiz/$quizId" params={{ quizId: attempt.quizId }}>
+							Riprendi
+						</Link>
+					</Button>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={askDiscard}
+						disabled={discarding}
+						className="text-muted-foreground hover:bg-card hover:text-danger"
+					>
+						Elimina
+					</Button>
+				</span>
+			</span>
 			{confirmation}
 		</>
 	);

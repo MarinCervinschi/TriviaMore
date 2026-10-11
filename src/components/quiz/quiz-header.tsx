@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 
 import { QuizTimer } from "./quiz-timer";
 
-/** What the run is over, so the header says which quiz this is. */
 export type QuizContext = {
 	kind: "section" | "class" | "exam";
 	/** The section's name, or the class's when the run spans the whole class. */
@@ -96,10 +95,6 @@ export function QuizHeader({
 	);
 }
 
-/**
- * Which quiz this is. Held back below `sm`, where the bar already carries the
- * counter, the timer and the way out — and where the name would be cut to a word.
- */
 function ContextLabel({ context }: { context: QuizContext }) {
 	const { label, icon: Glyph } = KIND[context.kind];
 	return (

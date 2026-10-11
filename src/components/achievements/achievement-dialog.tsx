@@ -13,7 +13,6 @@ import { formatDate } from "@/lib/utils/format";
 
 import { AchievementMedal, achievementInk } from "./achievement-medal";
 
-/** One achievement in full, with its family's tier chain. */
 export function AchievementDialog({
 	achievement,
 	family,

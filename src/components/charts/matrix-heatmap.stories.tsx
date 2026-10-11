@@ -24,7 +24,6 @@ export const Default: Story = {
 	),
 };
 
-/** Two categorical axes, one magnitude — the ramp says how much, never which. */
 export const WeekByHour: Story = {
 	render: () => {
 		const days = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
@@ -33,7 +32,6 @@ export const WeekByHour: Story = {
 			hours.map((column, h) => ({
 				row,
 				column,
-				// Deterministic: an evening-study pattern, lighter at the weekend.
 				value: Math.max(0, ((d * 7 + h * 3) % 11) - (d >= 5 ? 4 : 0)),
 			}))
 		);

@@ -81,7 +81,6 @@ export function parseAnswers(md: string): Map<number, ParsedAnswer> {
 	return answers;
 }
 
-// Split a `correct:` field into normalized uppercase option letters.
 export function correctLetters(correct: string): string[] {
 	return correct
 		.split(/[,\s]+/)

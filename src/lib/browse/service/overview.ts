@@ -4,16 +4,20 @@ import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
 import {
 	classes,
+	courseClasses,
 	courses,
 	departmentLocations,
 	departments,
 	questions,
 	sections,
 } from "@/db/schema";
+import { locationColumns } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
-import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
+import {
+	primaryCourseByClass,
+	studiableCourseClassSql,
+} from "@/lib/catalog/db/course-classes";
 
-import { locationColumns } from "../columns";
 import { CAMPUS_LOCATION_CONFIG, COURSE_TYPE_CONFIG } from "../constants";
 import type { BrowseOverview, CampusLocation, PlatformStats } from "../types";
 
@@ -24,7 +28,10 @@ async function countCatalogEntities(db: DbOrTx): Promise<PlatformStats> {
 		.select({
 			departments: sql<number>`(select count(*) from ${departments})`.mapWith(Number),
 			courses: sql<number>`(select count(*) from ${courses})`.mapWith(Number),
-			classes: sql<number>`(select count(*) from ${classes})`.mapWith(Number),
+			classes: sql<number>`(${db
+				.select({ n: sql`count(distinct ${courseClasses.classId})` })
+				.from(courseClasses)
+				.where(studiableCourseClassSql(db))})`.mapWith(Number),
 			sections: sql<number>`(select count(*) from ${sections})`.mapWith(Number),
 			questions: sql<number>`(select count(*) from ${questions})`.mapWith(Number),
 		})

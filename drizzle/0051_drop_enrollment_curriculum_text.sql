@@ -1,0 +1,1 @@
+ALTER TABLE "crm"."enrollments" DROP COLUMN "curriculum";

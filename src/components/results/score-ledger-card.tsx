@@ -22,14 +22,6 @@ function LedgerRow({
 	);
 }
 
-/**
- * How the grade was arrived at, when a wrong answer costs points: what the correct
- * answers earned, what the penalty took back, and the net between them.
- *
- * It exists for the one thing an evaluation mode with a penalty makes true and
- * nothing else on the page says — that leaving a question blank was free, and
- * guessing was not.
- */
 export function ScoreLedgerCard({
 	correct,
 	wrong,
@@ -43,11 +35,11 @@ export function ScoreLedgerCard({
 	correct: number;
 	wrong: number;
 	unanswered: number;
-	/** Points gained, on the 0–33 scale. */
+	/** On the 0–33 scale. */
 	earned: number;
-	/** Points the penalty took back, as a positive number on the same scale. */
+	/** A positive number on the same scale. */
 	lost: number;
-	/** The grade the attempt was given. Not `earned - lost`: the page must not show two answers. */
+	/** The grade the attempt was given; do not compute it from `earned` and `lost`. */
 	net: number;
 	max: number;
 	className?: string;
@@ -69,8 +61,7 @@ export function ScoreLedgerCard({
 							className="bg-success absolute inset-y-0 left-0"
 							style={{ width: `${earnedPct}%` }}
 						/>
-						{/* The divider's colour is inline: `globals.css` sets `border-color`
-						    on `*` outside any layer, so `border-card` never applies. */}
+						{/* Inline colour, because `globals.css` sets `border-color` on `*` outside any layer. */}
 						<div
 							className="bg-destructive absolute inset-y-0 border-l-2"
 							style={{

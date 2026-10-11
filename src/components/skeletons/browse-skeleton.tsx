@@ -5,7 +5,6 @@ import { SkeletonRoot } from "./primitives";
 function DepartmentCardSkeleton() {
 	return (
 		<div className="bg-card overflow-hidden rounded-2xl border shadow-sm">
-			{/* Area banner */}
 			<div className="bg-muted/40 flex items-center gap-2.5 px-5 py-4">
 				<Skeleton className="h-9 w-9 shrink-0 rounded-xl" />
 				<div className="flex-1 space-y-1.5">
@@ -14,7 +13,6 @@ function DepartmentCardSkeleton() {
 				</div>
 				<Skeleton className="h-7 w-7 shrink-0 rounded-full" />
 			</div>
-			{/* Body */}
 			<div className="space-y-2.5 p-5">
 				<Skeleton className="h-5 w-3/4" />
 				<Skeleton className="h-4 w-full" />
@@ -31,7 +29,6 @@ function DepartmentCardSkeleton() {
 export function BrowseOverviewSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento panoramica…">
-			{/* Hero + toolbar + grid (single tight block) */}
 			<section className="relative container pt-10 pb-12 sm:pt-14">
 				<div className="space-y-3">
 					<Skeleton className="h-13 w-13 rounded-2xl" />
@@ -55,7 +52,6 @@ export function BrowseOverviewSkeleton() {
 				</div>
 			</section>
 
-			{/* Hierarchy diagram band */}
 			<section className="relative py-14 sm:py-20">
 				<div className="container">
 					<div className="mx-auto mb-10 max-w-2xl space-y-3 text-center">
@@ -63,13 +59,11 @@ export function BrowseOverviewSkeleton() {
 						<Skeleton className="mx-auto h-8 w-3/4" />
 						<Skeleton className="mx-auto h-4 w-2/3" />
 					</div>
-					{/* Mobile: vertical stack */}
 					<div className="mx-auto flex max-w-xs flex-col items-center gap-3 lg:hidden">
 						{Array.from({ length: 4 }).map((_, i) => (
 							<Skeleton key={i} className="h-16 w-full rounded-2xl" />
 						))}
 					</div>
-					{/* Desktop: horizontal */}
 					<div className="hidden gap-2 lg:flex xl:gap-3">
 						{Array.from({ length: 4 }).map((_, i) => (
 							<Skeleton key={i} className="h-20 flex-1 rounded-2xl" />
@@ -78,7 +72,6 @@ export function BrowseOverviewSkeleton() {
 				</div>
 			</section>
 
-			{/* Bento data section */}
 			<section className="container pt-4 pb-16">
 				<div className="mb-8 space-y-2">
 					<Skeleton className="h-3 w-32" />
@@ -88,17 +81,14 @@ export function BrowseOverviewSkeleton() {
 					</div>
 				</div>
 				<div className="grid gap-4 lg:grid-cols-3">
-					{/* Row 1: Map (cs2) + Course donut */}
 					<div className="lg:col-span-2">
 						<Skeleton className="h-full min-h-[380px] w-full rounded-2xl" />
 					</div>
 					<Skeleton className="h-full min-h-[380px] w-full rounded-2xl" />
-					{/* Row 2: Department bar (cs2) + Question donut */}
 					<div className="lg:col-span-2">
 						<Skeleton className="h-full min-h-[460px] w-full rounded-2xl" />
 					</div>
 					<Skeleton className="h-full min-h-[460px] w-full rounded-2xl" />
-					{/* Row 3: Campus radial + Top classes (cs2) */}
 					<Skeleton className="h-full min-h-[320px] w-full rounded-2xl" />
 					<div className="lg:col-span-2">
 						<Skeleton className="h-full min-h-[320px] w-full rounded-2xl" />

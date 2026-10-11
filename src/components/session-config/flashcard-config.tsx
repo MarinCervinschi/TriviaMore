@@ -6,9 +6,6 @@ import { AnimatedBlock } from "./animated-block";
 import { SliderWithInput } from "./session-form-blocks";
 import { CardStackBlock, Eyebrow } from "./summary-blocks";
 
-// The flashcard configuration form and its live summary, shared by the flashcard
-// start dialog and the exam dialog's flashcard tab. State lives in the parent.
-
 export function FlashcardConfigFields({
 	cardCount,
 	setCardCount,
@@ -17,9 +14,7 @@ export function FlashcardConfigFields({
 }: {
 	cardCount: number;
 	setCardCount: (v: number) => void;
-	/** The most this session may draw: the section's own total, capped. */
 	maxCards: number;
-	/** How many exist, so the hint never claims "all" while showing the ceiling. */
 	available?: number;
 }) {
 	return (

@@ -1,11 +1,4 @@
-/**
- * The public URLs of the catalogue, in one place. Pure string work, so this file
- * is safe on both sides: `catalog/service.ts` reaches `getDb` and cannot be
- * imported from a component, and a breadcrumb needs the same routes a query does.
- *
- * Every level returns null when the chain above it is incomplete — a class that
- * hangs off no course has no browse route to point at.
- */
+// Pure string work, so a component can import it.
 export type CatalogChain = {
 	departmentCode?: string | null;
 	courseCode?: string | null;

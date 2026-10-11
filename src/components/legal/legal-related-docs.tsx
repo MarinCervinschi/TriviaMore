@@ -45,11 +45,6 @@ interface LegalRelatedDocsProps {
 	currentSlug: LegalDocSlug;
 }
 
-/**
- * Cross-navigation between the three legal documents, rendered under
- * the main content. Excludes the currently-displayed document so the
- * user is always offered the other two as next steps.
- */
 export function LegalRelatedDocs({ currentSlug }: LegalRelatedDocsProps) {
 	const others = DOCS.filter(doc => doc.slug !== currentSlug);
 

@@ -30,3 +30,9 @@ export const questionTypeEnum = pgEnum("question_type", [
 ]);
 
 export const difficultyEnum = pgEnum("difficulty", ["EASY", "MEDIUM", "HARD"]);
+
+export const evaluationTypeEnum = pgEnum("evaluation_type", [
+	"GRADED",
+	"PASS_FAIL",
+	"NONE",
+]);

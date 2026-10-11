@@ -10,16 +10,12 @@ export const achievements = pgTable(
     tier: smallint().default(1).notNull(),
     name: text().notNull(),
     description: text().notNull(),
-    // The section the page groups this under, held as its Italian label so a
-    // category added from the SQL console needs no TS map and no deploy.
+    // The Italian label, so a category added from the SQL console needs no deploy.
     category: text().notNull(),
     metric: achievementMetricEnum().notNull(),
     comparator: achievementComparatorEnum().default("GTE").notNull(),
     threshold: doublePrecision().notNull(),
     icon: text().notNull(),
-    // The silhouette, alongside icon and accent: a category added from the SQL
-    // console picks its own without a deploy. Defaulted because the column is
-    // added to a populated table, and because an unset one must still render.
     shape: text().notNull().default("seal"),
     accent: text().notNull(),
     position: integer().default(0).notNull(),

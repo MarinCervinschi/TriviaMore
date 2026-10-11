@@ -16,11 +16,6 @@ import {
 import { PaceCard } from "./pace-card";
 import { ScoreLedgerCard } from "./score-ledger-card";
 
-/**
- * The three readings that sit between the outcome and the question list: how fast
- * the attempt went, where the points were lost, and whether it is going anywhere.
- * All four cards take the same attempt, so they can be compared side by side.
- */
 const meta = {
 	title: "Risultati/Metriche",
 	parameters: { layout: "padded" },
@@ -36,10 +31,7 @@ const history = (
 	</Link>
 );
 
-/**
- * Three references, three shapes: the student's own average on the section, the
- * limit of a simulation, and an attempt that was never timed.
- */
+/** Against the section average, a simulation's limit, and an untimed attempt. */
 export const Pace: Story = {
 	name: "Il ritmo",
 	render: () => (
@@ -59,7 +51,6 @@ export const Pace: Story = {
 	),
 };
 
-/** The card that says what to go back to — the only one on the page that does. */
 export const Difficulty: Story = {
 	name: "Accuratezza per difficoltà",
 	render: () => (
@@ -76,7 +67,7 @@ export const Difficulty: Story = {
 	),
 };
 
-/** Only ever shown when the evaluation mode takes points off — otherwise it says nothing. */
+/** Shown only when the evaluation mode takes points off. */
 export const Ledger: Story = {
 	name: "Come si compone il punteggio",
 	render: () => (
@@ -94,7 +85,7 @@ export const Ledger: Story = {
 	),
 };
 
-/** Two runs: one climbing through the bands, one still under the pass mark. */
+/** One run climbing through the bands, one still under the pass mark. */
 export const Trend: Story = {
 	name: "L'andamento",
 	render: () => (

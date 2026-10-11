@@ -18,30 +18,23 @@ export type AttemptSummary = {
 	correct: number;
 	partial: number;
 	wrong: number;
-	/** Left blank. With a penalty this is not the same thing as wrong, and it is why the two are counted apart. */
+	/** Left blank, which under a penalty differs from wrong. */
 	unanswered: number;
-	/** Points the correct and partial answers earned, on the 0–33 scale. */
+	/** On the 0–33 scale. */
 	earned: number;
-	/** Points the penalty took back, as a positive number on the same scale. */
+	/** A positive number on the 0–33 scale. */
 	lost: number;
 	hasPenalty: boolean;
 	perQuestionMax: number;
 	perQuestionMin: number;
 	byDifficulty: MasteryBreakdown[];
-	/** One per question, in the order the quiz asked them. */
+	/** In the order the quiz asked them. */
 	rows: AttemptRow[];
 };
 
 const DIFFICULTY_ORDER = ["EASY", "MEDIUM", "HARD"];
 
-/**
- * Reads an attempt as it was graded, not as the questions stand now: the verdict
- * and the score are the ones frozen on the answer at submission, so editing a
- * question's correct answer later cannot rewrite a past result.
- *
- * Answers whose question is no longer in the quiz are dropped — the quiz is the
- * list of questions the student was actually asked.
- */
+/** Reads the verdicts frozen at submission and drops answers whose question left the quiz. */
 export function summariseAttempt(result: QuizAttemptResult): AttemptSummary {
 	const questions = result.quiz.questions;
 	const total = questions.length;
@@ -97,7 +90,6 @@ export function summariseAttempt(result: QuizAttemptResult): AttemptSummary {
 	};
 }
 
-/** The verdict as it was frozen: correctness first, then partial credit, then whether anything was picked at all. */
 function answerVerdict({
 	isCorrect,
 	score,

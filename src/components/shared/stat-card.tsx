@@ -6,9 +6,6 @@ import { decorativeTint } from "@/components/shared/decorative-tints";
 import { IconTile } from "@/components/ui/icon-tile";
 import { InsetCard } from "@/components/ui/inset-card";
 
-// The one stat tile used across the admin dashboard, the user area and progress.
-// `color` drives the icon badge and icon tint together; an optional `href`
-// turns the whole card into a link.
 export function StatCard({
 	label,
 	value,

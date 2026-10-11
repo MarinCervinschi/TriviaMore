@@ -1,7 +1,5 @@
 import type { Transition, Variants } from "framer-motion";
 
-// --- Transition presets ---
-
 export const springGentle: Transition = {
 	type: "spring",
 	stiffness: 260,
@@ -20,8 +18,6 @@ export const easeFade: Transition = {
 	duration: 0.3,
 	ease: "easeOut",
 };
-
-// --- Variant collections ---
 
 export const fadeInUp: Variants = {
 	hidden: { opacity: 0, y: 20 },
@@ -48,8 +44,6 @@ export const slideInRight: Variants = {
 	visible: { opacity: 1, x: 0, transition: springGentle },
 };
 
-// --- Stagger orchestration ---
-
 export const staggerContainer: Variants = {
 	hidden: { opacity: 0 },
 	visible: {
@@ -69,8 +63,6 @@ export const staggerItem: Variants = {
 		transition: springGentle,
 	},
 };
-
-// --- Reduced motion helper ---
 
 export function withReducedMotion(
 	variants: Variants,

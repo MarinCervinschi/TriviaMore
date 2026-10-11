@@ -11,6 +11,7 @@ export const classes = catalogSchema
 			name: text().notNull(),
 			description: text(),
 			cfu: integer(),
+			ssd: text(),
 			position: integer().default(0).notNull(),
 			createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
 				.defaultNow()

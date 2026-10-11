@@ -191,13 +191,11 @@ function AdminClassDetailPage() {
 												code: courseClass.code,
 												class_year: courseClass.classYear,
 												mandatory: courseClass.mandatory,
-												curriculum: courseClass.curriculum ?? "",
 											}
 										: undefined
 								}
 								onSubmit={formData => {
-									const { code, class_year, mandatory, curriculum, ...classFields } =
-										formData;
+									const { code, class_year, mandatory, ...classFields } = formData;
 									updateClass.mutate({ id: cls.id, ...classFields });
 									if (courseClass && course) {
 										updateCourseClass.mutate({
@@ -206,7 +204,6 @@ function AdminClassDetailPage() {
 											code,
 											class_year,
 											mandatory,
-											curriculum,
 										});
 									}
 								}}

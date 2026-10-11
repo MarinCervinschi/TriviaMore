@@ -8,8 +8,6 @@ import { QuizProgress } from "./quiz-progress";
 import { QuizSidebar, QuizSidebarContent } from "./quiz-sidebar";
 import { QuizTimer } from "./quiz-timer";
 
-// The frame around a quiz question: where you are, how long is left, and how to move. The timer runs
-// for real, so leaving a story open counts down.
 const meta = {
 	title: "Quiz/Chrome",
 	parameters: { layout: "padded" },
@@ -89,7 +87,6 @@ function Nav({ index, total }: { index: number; total: number }) {
 	);
 }
 
-/** First, middle, last and mid-submit: the three ends of the walk plus the state that blocks it. */
 export const Navigation: Story = {
 	name: "Navigazione",
 	render: () => (
@@ -129,7 +126,6 @@ export const Sidebar_: Story = {
 	render: () => <Sidebar />,
 };
 
-/** The same list inside its aside, which is what the play route mounts from `lg` up. */
 export const SidebarAside: Story = {
 	name: "La colonna laterale",
 	parameters: { layout: "fullscreen" },

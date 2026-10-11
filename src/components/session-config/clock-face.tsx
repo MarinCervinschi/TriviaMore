@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
 
 type ClockFaceProps = {
-	/** Minutes (0–∞) or null for unlimited (∞ glyph). */
+	/** null draws the ∞ glyph. */
 	minutes: number | null;
-	/** Rendered side length in px. */
 	size?: number;
 	className?: string;
 };
@@ -18,7 +17,7 @@ const TICK_OUTER = 27;
 const TICK_MAJOR_INNER = 22;
 const TICK_MINOR_INNER = 24;
 
-/** Convert a clock angle (deg, 0 at 12 o'clock, clockwise) to a point on a circle. */
+/** Degrees, 0 at 12 o'clock, clockwise. */
 function pointOnCircle(angleDeg: number, radius: number) {
 	const theta = (angleDeg - 90) * (Math.PI / 180);
 	return {
@@ -37,7 +36,6 @@ export function ClockFace({ minutes, size = 64, className }: ClockFaceProps) {
 	let sweepPath: string | null = null;
 	if (showSweep) {
 		if (angle >= 360) {
-			// Full circle as a path (two arcs to render as filled ring slice).
 			sweepPath = `M ${CX} ${CY - DIAL_R} A ${DIAL_R} ${DIAL_R} 0 1 1 ${CX - 0.001} ${CY - DIAL_R} Z`;
 		} else {
 			const end = pointOnCircle(angle, DIAL_R);
@@ -48,7 +46,6 @@ export function ClockFace({ minutes, size = 64, className }: ClockFaceProps) {
 
 	const handEnd = pointOnCircle(angle, HAND_R);
 
-	// Build 12 major ticks and 12 minor ticks between them.
 	const ticks: { x1: number; y1: number; x2: number; y2: number; major: boolean }[] =
 		[];
 	for (let i = 0; i < 60; i += 5) {

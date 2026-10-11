@@ -10,10 +10,7 @@ export type SummaryMetric = {
 	value: string;
 	/** Percent change vs the previous window; null when there is no baseline. */
 	delta: number | null;
-	/**
-	 * One value per sub-bucket of the window, for the sparkline. `null` where a
-	 * ratio has nothing to show yet — never 0, which would read as a real crash.
-	 */
+	/** One value per sub-bucket; `null` where a ratio has nothing to show yet. */
 	spark: (number | null)[];
 };
 
@@ -58,11 +55,7 @@ function add(target: Bucket, stat: Bucket) {
 	target.answersCorrect += stat.answersCorrect;
 }
 
-/**
- * The running value across the window's buckets: a ratio only moves when a
- * bucket adds something to it, and is `null` until the first one does. Plotting
- * a bucket's own average instead would drop the line to 0 on every quiet day.
- */
+/** The running value across buckets, `null` until the first bucket adds to it. */
 function runningSpark(
 	buckets: Bucket[],
 	read: (totals: Bucket) => number | null
@@ -74,17 +67,10 @@ function runningSpark(
 	});
 }
 
-// null, not 0, when there is nothing before to compare against — the badge is
-// hidden rather than reading a real "no change".
 function pctChange(current: number, previous: number): number | null {
 	return previous === 0 ? null : Math.round(((current - previous) / previous) * 100);
 }
 
-/**
- * Windows the daily stats into a period's metrics: a value over the window, the
- * percent change vs the previous window of equal length, and a per-sub-bucket
- * series for the sparkline. `today` is injected so the function stays pure.
- */
 export function buildStudySummary(
 	daily: DailyStudyStat[],
 	period: SummaryPeriod,

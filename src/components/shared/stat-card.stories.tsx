@@ -22,9 +22,6 @@ export const WithSubtitle: Story = {
 	args: { subtitle: "+12% questa settimana" },
 };
 
-// href renders a TanStack Router <Link>, which needs a router provider Storybook
-// doesn't have — so the linked variant is exercised in the app, not here.
-
 export const Grid: Story = {
 	render: () => (
 		<div className="grid grid-cols-2 gap-4">

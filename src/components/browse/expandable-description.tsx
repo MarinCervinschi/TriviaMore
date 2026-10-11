@@ -21,13 +21,10 @@ export function ExpandableDescription({
 	const [needsToggle, setNeedsToggle] = useState(false);
 	const ref = useRef<HTMLParagraphElement>(null);
 
-	// Reset expansion when the source text changes (e.g. SSR navigation between pages).
 	useEffect(() => {
 		setIsExpanded(false);
 	}, [text]);
 
-	// Measure overflow only while collapsed; once detected the toggle remains
-	// available even when the user expands and collapses again.
 	useEffect(() => {
 		if (isExpanded) return;
 		const el = ref.current;

@@ -1,20 +1,12 @@
 import { cn } from "@/lib/utils";
 import { GRADE_BANDS, gradeBandIndex, pointsToNextBand } from "@/lib/utils/grading";
 
-/**
- * The five grade bands as one track, with the grade's own band lit and the rest
- * held back. It answers what a bare number cannot — where this grade sits, and
- * how far the next step is.
- *
- * The bands are named categories, not a linear axis, so the segments are equal
- * and the labels carry the ranges: a proportional track would give "sotto 18"
- * half the width and squash the four bands anyone is reading it for.
- */
+// Equal segments, because a proportional track would squash the four bands that matter.
 export function GradeBandScale({
 	score,
 	className,
 }: {
-	/** The raw score on the 0–33 scale, not the rounded grade. */
+	/** The raw score on the 0–33 scale, before rounding. */
 	score: number;
 	className?: string;
 }) {

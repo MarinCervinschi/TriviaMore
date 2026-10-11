@@ -15,9 +15,6 @@ import { RequestFormDialog } from "./request-form-dialog";
 import { SearchableSelect } from "./searchable-select";
 import { TypeCard } from "./type-card";
 
-// Proposing content. The form reaches the catalog and the create mutation through server functions, so
-// none of this had a story before the stub — and the empty content tree is what a story shows that the
-// app rarely does.
 const meta = {
 	title: "Requests/Form",
 	parameters: { layout: "padded", session: { role: "STUDENT" } },
@@ -111,7 +108,7 @@ function Editor() {
 	);
 }
 
-/** Filled and empty, and the second without onRemove — the only question cannot be removed. */
+/** Filled and empty; the second has no onRemove and cannot be removed. */
 export const Editor_: Story = { name: "L'editor di domanda", render: () => <Editor /> };
 
 function Upload() {
@@ -156,5 +153,5 @@ function Select() {
 	);
 }
 
-/** The second has no options at all, which is the state a fresh catalog produces. */
+/** The second has no options, as a fresh catalogue has. */
 export const Select_: Story = { name: "La select cercabile", render: () => <Select /> };

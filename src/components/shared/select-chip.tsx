@@ -19,11 +19,6 @@ export type ChipOption<T extends string> = {
 	glyph?: ReactNode;
 };
 
-/**
- * A single-select chip, reading like the data-table filter chips: the current
- * value *is* the label, so the control says what it is showing without a legend
- * beside it.
- */
 export function SelectChip<T extends string>({
 	label,
 	value,

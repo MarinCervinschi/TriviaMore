@@ -16,8 +16,7 @@ describe("localDayIndex", () => {
 	});
 
 	it("still counts one day across a DST change", () => {
-		// Europe/Rome springs forward on 2026-03-29; a naive timestamp division
-		// would report 0.958 of a day here and floor to the same index.
+		// Europe/Rome springs forward on 2026-03-29, where dividing timestamps gives 0.958 of a day.
 		const before = localDayIndex(new Date(2026, 2, 28, 12));
 		const after = localDayIndex(new Date(2026, 2, 29, 12));
 		expect(after - before).toBe(1);

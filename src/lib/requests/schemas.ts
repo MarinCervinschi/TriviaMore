@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// File upload submission: user uploads a file contribution
 export const fileUploadSubmissionSchema = z.object({
 	type: z.literal("file_upload"),
 	file_name: z.string().min(1, "Il nome del file è obbligatorio").trim(),
@@ -8,8 +7,6 @@ export const fileUploadSubmissionSchema = z.object({
 	file_size: z.number().min(0),
 	comment: z.string().max(1000).nullable(),
 });
-
-// ─── Stored JSONB validation (content only, no target fields) ───
 
 const storedSectionSchema = z.object({
 	type: z.literal("section"),
@@ -46,15 +43,11 @@ export const storedContentSchema = z.discriminatedUnion("type", [
 	fileUploadSubmissionSchema,
 ]);
 
-// Rejecting or asking for changes. Approving goes through approveRequestFn, and
-// acknowledging a report or a file through acknowledgeRequestFn.
 export const handleRequestSchema = z.object({
 	id: z.string().uuid(),
 	status: z.enum(["REJECTED", "NEEDS_REVISION"]),
 	admin_note: z.string().max(1000).trim().optional(),
 });
-
-// ─── Server function inputs ───
 
 export const requestIdSchema = z.object({ id: z.string().uuid() });
 

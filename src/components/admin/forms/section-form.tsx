@@ -23,8 +23,6 @@ type SectionFormProps = {
 	classId: string;
 	onSubmit: (data: SectionInput) => void;
 	isPending: boolean;
-	// Visibility (public/private) is an access-control decision; hidden from
-	// maintainers, who only manage public sections.
 	canEditVisibility?: boolean;
 };
 

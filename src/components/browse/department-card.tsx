@@ -63,7 +63,6 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 					"hover:border-primary/30 hover:-translate-y-1 hover:shadow-xl"
 				)}
 			>
-				{/* Area banner */}
 				<div
 					className={cn(
 						"relative flex items-center gap-2.5 px-5 py-4",
@@ -104,7 +103,6 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 					</div>
 				</div>
 
-				{/* Body */}
 				<div className="flex flex-1 flex-col gap-2.5 p-5">
 					<h3 className="text-foreground group-hover:text-brand line-clamp-2 text-base leading-tight font-bold tracking-tight transition-colors sm:text-lg">
 						{department.name}
@@ -115,7 +113,6 @@ export function DepartmentCard({ department }: { department: DepartmentCardData 
 						</p>
 					)}
 
-					{/* Footer */}
 					<div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-3 text-sm">
 						<span className="text-muted-foreground flex items-center gap-1.5">
 							<DiplomaIcon className="h-4 w-4" />

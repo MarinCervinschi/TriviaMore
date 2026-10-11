@@ -4,14 +4,21 @@ import { afterAll, describe, expect, it } from "vitest";
 import {
 	answerAttempts,
 	bookmarks,
+	careerExams,
 	flashcardAttempts,
 	questions,
 	quizAttempts,
+	tasks,
 	userDayActivity,
 } from "@/db/schema";
+import {
+	findCurrentEnrollment,
+	insertEnrollment,
+	setEnrollmentCurrent,
+} from "@/lib/crm/db/enrollments";
 import { insertFlashcardAttempt } from "@/lib/flashcard/db/flashcard-attempts";
 import { type TestTx, closeTestDb, withRollback } from "@/lib/testing/db";
-import { seedQuizScope } from "@/lib/testing/fixtures";
+import { createCourse, createDepartment, seedQuizScope } from "@/lib/testing/fixtures";
 
 import { backfillRollups } from "./db/backfill";
 import { readMetricSnapshots } from "./db/metrics";
@@ -37,7 +44,6 @@ async function createQuestion(
 	return row.id;
 }
 
-/** One completed attempt with its answers — the history a rollup must match. */
 async function recordAttempt(
 	tx: TestTx,
 	params: {
@@ -82,7 +88,7 @@ async function snapshots(tx: TestTx, userId: string) {
 	return { stored: stored!.metrics, computed: computed!.metrics };
 }
 
-/** Everything except the rank, which the rollup path fills lazily by design. */
+/** Everything except the rank, which the rollup path fills lazily. */
 function comparable(metrics: MetricSnapshot) {
 	const { SIGNUP_RANK: _rank, ...rest } = metrics;
 	return rest;
@@ -153,8 +159,6 @@ describe("user rollups agree with the history they derive from", () => {
 
 			const { stored, computed } = await snapshots(tx, scope.owner);
 			expect(comparable(stored)).toEqual(comparable(computed));
-			// The same HARD question three times is one distinct question, and the
-			// improvement is the first-to-last delta over three runs.
 			expect(stored.HARD_CORRECT).toBe(1);
 			expect(stored.QUIZZES_COMPLETED).toBe(3);
 			expect(stored.MAX_SECTION_IMPROVEMENT).toBe(20);
@@ -220,6 +224,74 @@ describe("user rollups agree with the history they derive from", () => {
 			const { stored, computed } = await snapshots(tx, scope.owner);
 			expect(stored.SIGNUP_RANK).toBe(computed.SIGNUP_RANK);
 			expect(Number.isFinite(stored.SIGNUP_RANK)).toBe(true);
+		});
+	});
+
+	it("declares an enrolment, and follows the current one", async () => {
+		await withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+
+			const before = await snapshots(tx, scope.owner);
+			expect(before.stored.ENROLLMENT_DECLARED).toBe(0);
+			expect(before.computed.ENROLLMENT_DECLARED).toBe(0);
+
+			const courseId = await createCourse(tx, await createDepartment(tx));
+			await insertEnrollment(tx, { userId: scope.owner, courseId });
+
+			const after = await snapshots(tx, scope.owner);
+			expect(after.stored.ENROLLMENT_DECLARED).toBe(1);
+			expect(after.computed.ENROLLMENT_DECLARED).toBe(1);
+
+			const row = await findCurrentEnrollment(tx, scope.owner);
+			await setEnrollmentCurrent(tx, row!.id, false);
+
+			const demoted = await snapshots(tx, scope.owner);
+			expect(demoted.stored.ENROLLMENT_DECLARED).toBe(0);
+			expect(demoted.computed.ENROLLMENT_DECLARED).toBe(0);
+		});
+	});
+
+	it("counts the passed exams of the current record, and the tasks ticked off", async () => {
+		await withRollback(async tx => {
+			const scope = await seedQuizScope(tx);
+			const courseId = await createCourse(tx, await createDepartment(tx));
+			await insertEnrollment(tx, { userId: scope.owner, courseId });
+			const enrollment = (await findCurrentEnrollment(tx, scope.owner))!;
+			await tx.insert(careerExams).values([
+				{
+					enrollmentId: enrollment.id,
+					name: "A",
+					cfu: 9,
+					status: "PASSED",
+					grade: 30,
+					honours: true,
+				},
+				{ enrollmentId: enrollment.id, name: "B", cfu: 6, status: "PASSED", grade: 24 },
+				{ enrollmentId: enrollment.id, name: "C", cfu: 12 },
+			]);
+			await tx.insert(tasks).values([
+				{
+					userId: scope.owner,
+					title: "Fatta",
+					dueDate: "2027-01-12",
+					done: true,
+					doneAt: new Date().toISOString(),
+				},
+				{ userId: scope.owner, title: "Da fare", dueDate: "2027-01-13" },
+			]);
+
+			const { stored, computed } = await snapshots(tx, scope.owner);
+			for (const metrics of [stored, computed]) {
+				expect(metrics.EXAMS_PASSED).toBe(2);
+				expect(metrics.CFU_EARNED).toBe(15);
+				expect(metrics.HONOURS_EARNED).toBe(1);
+				expect(metrics.TASKS_DONE).toBe(1);
+			}
+
+			await setEnrollmentCurrent(tx, enrollment.id, false);
+			const switched = await snapshots(tx, scope.owner);
+			expect(switched.stored.EXAMS_PASSED).toBe(0);
+			expect(switched.computed.EXAMS_PASSED).toBe(0);
 		});
 	});
 });

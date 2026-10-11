@@ -3,8 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MASTERY } from "./fixtures";
 import { SpeedAccuracy } from "./speed-accuracy";
 
-// The width the card gets on the page: eight of twelve columns in the 1216px
-// content area, 16px gaps.
 const PAGE_WIDTH = 805;
 
 const meta = {
@@ -24,22 +22,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Il chip in alto a destra raggruppa davvero: sezione, insegnamento, corso. */
+/** The chip at the top right regroups by section, class or course. */
 export const Default: Story = { name: "Per sezione" };
 
-/** Un solo punto: le guide restano, ma non dividono più niente. */
+/** One point, where the guides stay but divide nothing. */
 export const UnaSezione: Story = {
 	name: "Una sezione",
 	args: { sections: MASTERY.sections.slice(0, 1) },
 };
 
-/** Nessun tempo registrato: il grafico non può collocare niente, e lo dice. */
+/** No recorded times, so the chart places nothing and says so. */
 export const SenzaTempi: Story = {
 	name: "Senza tempi",
 	args: { sections: MASTERY.sections.map(s => ({ ...s, avgSeconds: null })) },
 };
 
-/** Metà delle sezioni senza tempo: il footer conta quelle escluse. */
+/** Half the sections have no time, and the footer counts the excluded ones. */
 export const ConEsclusioni: Story = {
 	name: "Con esclusioni",
 	args: {

@@ -1,14 +1,17 @@
-import { and, eq, ilike } from "drizzle-orm";
+import { and, count, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments } from "@/db/schema";
-
+import type { DbOrTx } from "@/db";
+import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
+import { accessibleSectionsSql, readsPrivateSections } from "@/lib/auth/checks";
+import { normaliseCatalogueCode } from "@/lib/catalog/codes";
 import {
 	classColumns,
 	courseClassColumns,
 	courseColumns,
 	departmentColumns,
-} from "../columns";
+} from "@/lib/catalog/columns";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -22,6 +25,30 @@ export function toFtsQuery(input: string): string {
 		.filter(Boolean)
 		.map(term => `${term}:*`)
 		.join(" & ");
+}
+
+/** Sections of each class this viewer could open, keyed by class id. */
+export async function countVisibleSectionsByClass(
+	db: DbOrTx,
+	classIds: string[],
+	userId: string | null
+): Promise<Map<string, number>> {
+	if (classIds.length === 0) return new Map();
+
+	const readsPrivate = await readsPrivateSections(db, userId);
+	const rows = await db
+		.select({ classId: sections.classId, total: count(sections.id) })
+		.from(sections)
+		.where(
+			and(
+				inArray(sections.classId, classIds),
+				ne(sections.name, EXAM_SIMULATION_SECTION),
+				accessibleSectionsSql(db, userId, readsPrivate)
+			)
+		)
+		.groupBy(sections.classId);
+
+	return new Map(rows.map(row => [row.classId, row.total]));
 }
 
 export function paginationOf(params: { page?: number; pageSize?: number }) {
@@ -76,7 +103,8 @@ export async function resolveClassByCodes(
 		.where(
 			and(
 				eq(courseClasses.courseId, parent.course.id),
-				ilike(courseClasses.code, classCode)
+				// `ilike` reads `_` as a wildcard, and 418 codes contain one.
+				sql`lower(${courseClasses.code}) = ${normaliseCatalogueCode(classCode).toLowerCase()}`
 			)
 		)
 		.limit(1);

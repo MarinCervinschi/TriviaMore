@@ -19,7 +19,7 @@ function BrowsePageHeaderSkeleton({
 	withActions?: boolean;
 }) {
 	return (
-		<section className="relative w-full pt-8 pb-10 sm:pt-12">
+		<section className="relative w-full pt-6 pb-6 sm:pt-8 sm:pb-8">
 			<div className="container">
 				<div className="mb-4 flex items-center gap-2">
 					<Skeleton className="h-4 w-20" />
@@ -68,9 +68,6 @@ export function DepartmentDetailSkeleton() {
 		<SkeletonRoot label="Caricamento dipartimento…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={3} stats={1} />
 			<div className="container">
-				{/* Map */}
-				<SkeletonChart className="mb-6" height={300} />
-
 				<SkeletonFilterBar chips={4} />
 				<SkeletonSearchInput className="mb-6" />
 
@@ -85,6 +82,9 @@ export function DepartmentDetailSkeleton() {
 						</section>
 					))}
 				</div>
+
+				{/* Map, at the foot of the page */}
+				<SkeletonChart className="mt-10" height={300} />
 			</div>
 		</SkeletonRoot>
 	);
@@ -93,11 +93,14 @@ export function DepartmentDetailSkeleton() {
 export function CourseDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento corso…" className="pb-8">
-			<BrowsePageHeaderSkeleton badges={3} stats={1} />
-			<div className="container pt-8">
+			<BrowsePageHeaderSkeleton badges={4} stats={1} />
+			<div className="container">
 				<div className="mb-4 flex flex-wrap items-center justify-between gap-4">
 					<SkeletonFilterBar chips={4} />
-					<Skeleton className="h-10 w-48 rounded-xl" />
+					<div className="flex gap-2">
+						<Skeleton className="h-10 w-44 rounded-xl" />
+						<Skeleton className="h-10 w-48 rounded-xl" />
+					</div>
 				</div>
 				<SkeletonSearchInput className="mb-6" />
 
@@ -109,6 +112,21 @@ export function CourseDetailSkeleton() {
 						</section>
 					))}
 				</div>
+
+				<section className="mt-10">
+					<Skeleton className="h-5 w-48" />
+					<Skeleton className="mt-2 mb-4 h-4 w-80 max-w-full" />
+					<div className="bg-muted/40 border-border/60 rounded-2xl border p-1">
+						<div className="bg-card border-border/50 divide-y rounded-xl border">
+							{Array.from({ length: 3 }).map((_, i) => (
+								<div key={i} className="flex justify-between gap-4 px-4 py-2.5">
+									<Skeleton className="h-4 w-40" />
+									<Skeleton className="h-4 w-24" />
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
 			</div>
 		</SkeletonRoot>
 	);
@@ -118,7 +136,7 @@ export function ClassDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento insegnamento…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={5} stats={2} />
-			<div className="container pt-8">
+			<div className="container">
 				{/* Exam simulation banner */}
 				<div className="bg-card mb-6 rounded-xl border p-5">
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -147,7 +165,7 @@ export function SectionDetailSkeleton() {
 	return (
 		<SkeletonRoot label="Caricamento sezione…" className="pb-8">
 			<BrowsePageHeaderSkeleton badges={3} stats={0} />
-			<div className="container pt-8">
+			<div className="container">
 				<div className="grid gap-6 md:grid-cols-2">
 					{Array.from({ length: 2 }).map((_, i) => (
 						<div key={i} className="bg-card rounded-2xl border p-6 shadow-sm">

@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validates frontmatter parsed from src/content/changelogs/*.md
 export const changelogFrontmatterSchema = z.object({
 	version: z.string().regex(/^\d+\.\d+\.\d+$/, "version must be semver (e.g. 1.4.0)"),
 	title: z.string().min(1),

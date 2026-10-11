@@ -24,7 +24,6 @@ export const Vertical: Story = {
 	),
 };
 
-/** Horizontal is what long category names need — the label gets a real column. */
 export const Horizontal: Story = {
 	render: () => (
 		<ComparisonChart
@@ -73,10 +72,6 @@ export const Stacked: Story = {
 	),
 };
 
-/**
- * A single series whose colour carries meaning: the grade band, not a category.
- * Status colours are reserved for exactly this and never used as "series 4".
- */
 export const ColouredByGradeBand: Story = {
 	render: () => (
 		<ComparisonChart

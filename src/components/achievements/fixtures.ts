@@ -8,7 +8,6 @@ const BASE = {
 	pinPosition: null,
 } satisfies Partial<AchievementView>;
 
-// Fixed: a story that re-dates itself cannot be compared against the one beside it.
 export const UNLOCKED_AT = "2026-09-04T10:20:00.000Z";
 
 export const ACHIEVEMENTS: AchievementView[] = [
@@ -95,7 +94,6 @@ export const ACHIEVEMENTS: AchievementView[] = [
 	},
 ];
 
-/** Every icon key the v1 catalogue uses. */
 export const CATALOGUE_ICONS: {
 	icon: string;
 	accent: string;
@@ -112,13 +110,17 @@ export const CATALOGUE_ICONS: {
 	{ icon: "calendar", shape: "hex", accent: "chart-5", label: "weeks" },
 	{ icon: "fire", shape: "hex", accent: "chart-5", label: "streak" },
 	{ icon: "clock-circle", shape: "hex", accent: "chart-5", label: "hours" },
+	{ icon: "bolt", shape: "hex", accent: "chart-5", label: "quizzes" },
 	{ icon: "cardholder", shape: "plaque", accent: "chart-1", label: "flashcards" },
 	{ icon: "bookmark", shape: "plaque", accent: "chart-1", label: "review" },
+	{ icon: "checklist", shape: "plaque", accent: "chart-1", label: "tasks" },
 	{ icon: "hand-heart", shape: "ribbon", accent: "brand", label: "contributor" },
 	{ icon: "star", shape: "diamond", accent: "muted", label: "founder" },
+	{ icon: "notebook", shape: "crest", accent: "chart-4", label: "passed" },
+	{ icon: "academic-cap", shape: "crest", accent: "chart-4", label: "cfu" },
+	{ icon: "crown", shape: "crest", accent: "chart-4", label: "honours" },
 ];
 
-/** What the strip and the summary both read. */
 export const OVERVIEW: AchievementsOverview = {
 	categories: [
 		{

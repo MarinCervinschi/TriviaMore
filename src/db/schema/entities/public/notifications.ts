@@ -29,8 +29,7 @@ export const notifications = pgTable(
       .notNull(),
   },
   (table) => [
-    // No .op() here: drizzle-kit drops the DESC direction when an opclass is
-    // also given, and timestamptz_ops is the default anyway.
+    // No .op(), because drizzle-kit drops DESC when an opclass is also given.
     index("idx_notifications_created_at").using(
       "btree",
       table.createdAt.desc().nullsFirst(),

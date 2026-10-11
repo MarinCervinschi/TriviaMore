@@ -1,10 +1,11 @@
-// The per-class sentinel section that backs "exam simulation" mode. It holds no
-// questions of its own: it is a stable id the exam entry points can hang off.
+/** The per-class sentinel section behind exam simulation; it holds no questions. */
 export const EXAM_SIMULATION_SECTION = "Exam Simulation";
 
-// Its user-facing Italian label (the stored name stays an internal sentinel).
 export const EXAM_SIMULATION_LABEL = "Simulazione d'esame";
 
 export function sectionDisplayName(name: string): string {
 	return name === EXAM_SIMULATION_SECTION ? EXAM_SIMULATION_LABEL : name;
 }
+
+/** The plan group of the compulsory classes; every other group is a choice. */
+export const COMPULSORY_GROUP = "OO";

@@ -10,8 +10,6 @@ export function LoadingPage() {
 
 	return (
 		<div className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
-			{/* Background texture */}
-
 			<motion.div
 				className="flex flex-col items-center"
 				variants={variants}

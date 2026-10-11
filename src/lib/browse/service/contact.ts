@@ -7,8 +7,7 @@ type ContactInput = z.infer<typeof contactSchema>;
 export async function submitContact(
 	input: ContactInput
 ): Promise<{ success: boolean; error?: string }> {
-	// Honeypot: bots tend to fill the hidden `website` field. Drop silently so
-	// they don't learn anything about why their submission was rejected.
+	// Honeypot. Dropped silently, so a bot learns nothing about the rejection.
 	if (input.website && input.website.trim().length > 0) {
 		return { success: true };
 	}

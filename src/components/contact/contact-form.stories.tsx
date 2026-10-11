@@ -2,10 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { ContactForm } from "./contact-form";
 
-/**
- * The contact form. Signed in, the email arrives filled and locked to the account — the one difference
- * between the two stories, and the reason both exist.
- */
 const meta = {
 	title: "Contact/Form",
 	component: ContactForm,

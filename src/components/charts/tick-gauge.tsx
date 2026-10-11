@@ -1,11 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/**
- * A value read as a count of filled marks rather than as a sweep — which is what a
- * threshold actually is. The geometry is a constant for the reason `ScoreRing`
- * gives beside its own: a float differing between container and browser breaks
- * hydration, and only in production.
- */
+// Precomputed because a float that differs between server and browser breaks hydration.
 const ARC_TICKS = [
 	[15.0, 50.0, 5.0, 50.0],
 	[15.18, 46.46, 5.23, 45.45],
@@ -52,7 +47,7 @@ export function TickArc({
 }: {
 	value: number;
 	max: number;
-	/** The figure in the middle. Falls back to `value / max`. */
+	/** Defaults to `value / max`. */
 	label?: string;
 	caption?: string;
 	className?: string;
@@ -99,7 +94,6 @@ export function TickArc({
 const BAR_TICKS = 36;
 const BAR_INDEXES = Array.from({ length: BAR_TICKS }, (_, index) => index);
 
-/** The linear half: flex children, so it reflows at any width. */
 export function TickBar({
 	value,
 	max,
@@ -108,7 +102,6 @@ export function TickBar({
 }: {
 	value: number;
 	max: number;
-	/** `brand` for the page's own progress, `current` to take the accent around it. */
 	tone?: "brand" | "current";
 	className?: string;
 }) {

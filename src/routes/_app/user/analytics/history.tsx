@@ -24,6 +24,7 @@ import {
 	useDataTable,
 } from "@/components/data-table";
 import type { CustomInlineFilter, DataTableFacetOption } from "@/components/data-table";
+import { ANALYTICS_TABS } from "@/components/layout/nav-items";
 import { FavoriteStar } from "@/components/progress/favorite-star";
 import { ScoreRing } from "@/components/progress/score-ring";
 import { MetricCard } from "@/components/shared/metric-card";
@@ -34,7 +35,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { EmptyState, InlineEmpty } from "@/components/ui/empty-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { sectionDisplayName } from "@/lib/catalog/constants";
 import { seoHead } from "@/lib/seo";
@@ -117,7 +117,6 @@ function deriveFacetOptions(attempts: AttemptHistoryEntry[]) {
 
 function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 	return [
-		// The grade comes first: scanning a history, it is the column the eye wants.
 		column.accessor("score", {
 			header: "Voto",
 			meta: { label: "Voto", align: "center", headerClassName: "w-20" },
@@ -180,7 +179,7 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			},
 			cell: ({ row }) => row.original.className ?? "—",
 		}),
-		// Filter-only: course and department are filters, not table columns.
+		// Filter-only; not a table column.
 		column.accessor(row => row.courseId ?? "", {
 			id: "corso",
 			header: "Corso",
@@ -232,8 +231,7 @@ function buildColumns(facets: ReturnType<typeof deriveFacetOptions>) {
 			cell: ({ row }) =>
 				row.original.timeSpent != null ? formatTimeSpent(row.original.timeSpent) : "—",
 		}),
-		// Filter-only, like course and department: the star in the row is the control,
-		// this column exists so the toolbar and the URL can filter on it.
+		// Filter-only, so the toolbar and the URL can filter on the star.
 		column.accessor(row => (row.isFavorite ? "si" : "no"), {
 			id: "preferiti",
 			header: "Preferiti",
@@ -280,8 +278,6 @@ function buildDatePresets() {
 	];
 }
 
-// Presets sidebar + a two-month range calendar, then Annulla/Applica — the
-// date range with presets after ReUI's data-grid date filter.
 function DateRangePanel({
 	from,
 	to,
@@ -376,10 +372,7 @@ function AttemptHistoryPage() {
 	const facets = useMemo(() => deriveFacetOptions(attempts), [attempts]);
 	const columns = useMemo(() => buildColumns(facets), [facets]);
 
-	// The range is picked on the viewer's calendar, so it must be compared there
-	// too — `completedAt` is UTC, and slicing its date would push a quiz finished
-	// just after midnight into the day before. Only the browser knows it, hence
-	// the gate.
+	// Compared on the viewer's calendar, because slicing the UTC date shifts a quiz finished after midnight.
 	const rows = useMemo(() => {
 		if (!hydrated || (!search.da && !search.a)) return attempts;
 		const from = search.da ? localDayIndex(parseDay(search.da)) : null;
@@ -452,42 +445,8 @@ function AttemptHistoryPage() {
 
 	return (
 		<TooltipProvider delayDuration={200}>
-			<div className="container space-y-4 py-6 pb-10">
-				<PageToolbar
-					breadcrumb={
-						<UserBreadcrumb
-							current="Storico"
-							currentIcon={ClockCircleIcon}
-							trail={[
-								{
-									label: "Analytics",
-									to: "/user/analytics",
-									icon: GraphUpIcon,
-								},
-							]}
-						/>
-					}
-					title="Storico dei tentativi"
-					meta={`${attempts.length} quiz completati`}
-					actions={
-						<Button
-							variant={search.preferiti ? "default" : "outline"}
-							size="sm"
-							onClick={() =>
-								navigate({
-									search: prev => ({
-										...prev,
-										preferiti: prev.preferiti ? undefined : "si",
-										page: undefined,
-									}),
-								})
-							}
-						>
-							<StarIcon className="size-3.5" />
-							Solo preferiti
-						</Button>
-					}
-				/>
+			<div className="container space-y-4 py-6 pb-10 [--container-max:none]">
+				<PageToolbar tabs={ANALYTICS_TABS} title="Analytics" />
 
 				{attempts.length > 0 && <HistorySummary attempts={attempts} />}
 
@@ -533,7 +492,6 @@ function AttemptHistoryPage() {
 	);
 }
 
-/** What the whole history says, above the table that slices it. */
 function HistorySummary({ attempts }: { attempts: AttemptHistoryEntry[] }) {
 	const total = attempts.length;
 	const average = attempts.reduce((sum, a) => sum + a.score, 0) / total;

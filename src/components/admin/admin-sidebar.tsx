@@ -33,14 +33,11 @@ export function AdminSidebar() {
 	const isSuperadmin = user?.role === "SUPERADMIN";
 	const isMaintainer = user?.role === "MAINTAINER";
 	const { data: stats } = useQuery(adminQueries.stats());
-	// SUPERADMIN-only (getAdminUserStatsFn); gating prevents requireSuperadmin
-	// from redirecting MAINTAINER/ADMIN users to /user.
+	// requireSuperadmin redirects anyone else to /user, so only a superadmin runs this query.
 	const { data: userStats } = useQuery({
 		...adminQueries.userStats(),
 		enabled: isSuperadmin,
 	});
-	// Maintainers manage their own courses (shown in the dashboard), not
-	// departments — skip the tree for them entirely.
 	const { data: tree } = useQuery({
 		...adminQueries.contentTree(),
 		enabled: !isMaintainer,
@@ -68,7 +65,6 @@ export function AdminSidebar() {
 			</div>
 			<p className="text-brand eyebrow mb-2 px-3">Gestione</p>
 			<div className="flex flex-col gap-0.5">
-				{/* Dashboard */}
 				<Link
 					to="/admin"
 					className={cn(
@@ -80,7 +76,6 @@ export function AdminSidebar() {
 					Dashboard
 				</Link>
 
-				{/* Dipartimenti — with file tree (hidden for maintainers) */}
 				{!isMaintainer && (
 					<DepartmentsTreeLink
 						isActive={!!isDeptActive}
@@ -89,7 +84,6 @@ export function AdminSidebar() {
 					/>
 				)}
 
-				{/* Utenti — SUPERADMIN only (/admin/users requires superadmin) */}
 				{isSuperadmin && (
 					<Link
 						to="/admin/users"
@@ -103,7 +97,6 @@ export function AdminSidebar() {
 					</Link>
 				)}
 
-				{/* Richieste */}
 				<Link
 					to="/admin/requests"
 					className={cn(
@@ -121,7 +114,6 @@ export function AdminSidebar() {
 				</Link>
 			</div>
 
-			{/* Stats: Contenuti */}
 			<div className="border-border/50 my-4 border-t pt-4">
 				<p className="text-brand eyebrow mb-2 px-3">Contenuti</p>
 				<div className="flex flex-col gap-0.5">
@@ -140,7 +132,6 @@ export function AdminSidebar() {
 				</div>
 			</div>
 
-			{/* Stats: Utenti — SUPERADMIN only */}
 			{isSuperadmin && (
 				<div className="border-border/50 border-t pt-4">
 					<p className="text-brand eyebrow mb-2 px-3">Utenti</p>
@@ -171,8 +162,6 @@ export function AdminSidebar() {
 	);
 }
 
-// ─── Dipartimenti link with expandable file tree ───
-
 function DepartmentsTreeLink({
 	isActive,
 	tree,
@@ -193,7 +182,6 @@ function DepartmentsTreeLink({
 					isActive && "bg-primary/10"
 				)}
 			>
-				{/* Chevron toggle */}
 				<button
 					onClick={() => hasTree && setOpen(!open)}
 					className="shrink-0 px-2 py-2"
@@ -207,7 +195,6 @@ function DepartmentsTreeLink({
 					/>
 				</button>
 
-				{/* Main link */}
 				<Link
 					to="/admin/departments"
 					className={cn(
@@ -225,7 +212,6 @@ function DepartmentsTreeLink({
 				</Link>
 			</div>
 
-			{/* File tree */}
 			{open && hasTree && (
 				<div className="border-border/40 mt-0.5 ml-4 border-l pl-1">
 					{tree.map(dept => (
@@ -236,8 +222,6 @@ function DepartmentsTreeLink({
 		</div>
 	);
 }
-
-// ─── Tree nodes ───
 
 function DepartmentNode({ department }: { department: ContentTreeDepartment }) {
 	const [open, setOpen] = useState(false);
@@ -375,8 +359,6 @@ function ClassNode({ cls }: { cls: ContentTreeClass }) {
 		</div>
 	);
 }
-
-// ─── Stat row ───
 
 function SidebarStat({
 	icon: Icon,

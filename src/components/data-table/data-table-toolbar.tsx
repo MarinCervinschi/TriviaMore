@@ -34,17 +34,10 @@ export function DataTableToolbar<TData extends RowData>({
 	searchPlaceholder?: string;
 	searchable?: boolean;
 	showViewOptions?: boolean;
-	/**
-	 * How the faceted filters read: `buttons` shows one dashed button per facet
-	 * (always visible); `inline` shows an «＋ Filtro» menu and a removable chip
-	 * per active facet. Both drive the same column filter state.
-	 */
+	/** `buttons` shows a dashed button per facet; `inline` shows a menu and a chip per active facet. */
 	filterVariant?: "buttons" | "inline";
-	/** Non-facet filters (e.g. a date range) folded into the `inline` variant. */
 	inlineFilters?: CustomInlineFilter[];
-	/** Extra filter controls, for state the table itself does not own. */
 	filters?: ReactNode;
-	/** Page-level buttons rendered at the end of the toolbar. */
 	actions?: ReactNode;
 	className?: string;
 }) {
@@ -57,8 +50,6 @@ export function DataTableToolbar<TData extends RowData>({
 		table.state.columnFilters.length > 0 ||
 		inlineFilters.some(filter => filter.active);
 
-	// Local state keeps typing snappy: the table (and the URL) only update once
-	// the debounce settles, instead of on every keystroke.
 	const [query, setQuery] = useState(globalFilter);
 	const debouncedQuery = useDebounce(query, 300);
 

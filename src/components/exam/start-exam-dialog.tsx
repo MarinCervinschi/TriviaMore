@@ -47,7 +47,6 @@ export function StartExamDialog({
 	const hasFlashcard = maxFlashcardQuestions > 0;
 	const [tab, setTab] = useState<ExamTab>(hasQuiz ? "quiz" : "flashcard");
 
-	// Quiz state
 	const quizCap = sessionCap(maxQuizQuestions);
 	const cardCap = sessionCap(maxFlashcardQuestions);
 	const [questionCount, setQuestionCount] = useState(
@@ -56,7 +55,6 @@ export function StartExamDialog({
 	const [timeStepIndex, setTimeStepIndex] = useState(TIME_STEPS.indexOf(60));
 	const [evalModeId, setEvalModeId] = useState<string | undefined>();
 
-	// Flashcard state
 	const [cardCount, setCardCount] = useState(Math.min(20, Math.max(1, cardCap)));
 
 	const { data: evalModes } = useQuery({
@@ -64,8 +62,7 @@ export function StartExamDialog({
 		enabled: open && hasQuiz,
 	});
 
-	// Only the quiz half is gated: a flashcard sitting holds no attempt, so an
-	// unfinished quiz must not stand in its way.
+	// Only the quiz half is gated, because a flashcard sitting holds no attempt.
 	const { data: openAttempt, isPending: checkingAttempt } = useQuery({
 		...quizQueries.openAttempt(),
 		enabled: open && hasQuiz,

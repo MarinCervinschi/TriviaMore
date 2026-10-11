@@ -11,7 +11,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** One series needs no legend — the title already names it. */
 export const AreaSingle: Story = {
 	render: () => (
 		<TimeSeriesChart
@@ -38,7 +37,6 @@ export const AreaMultiSeries: Story = {
 	),
 };
 
-/** Stacked bands are separated by a 2px surface stroke, so the boundary reads as a gap. */
 export const AreaStacked: Story = {
 	render: () => (
 		<TimeSeriesChart

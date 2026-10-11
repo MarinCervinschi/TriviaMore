@@ -7,22 +7,13 @@ import { cn } from "@/lib/utils";
 export type ChartCardProps = {
 	title?: ReactNode;
 	description?: string;
-	/** Rendered at the top right — a filter, a range switch, a link. */
 	actions?: ReactNode;
-	/** Rendered under the plot — a legend list, a total, a caveat. */
 	footer?: ReactNode;
-	/** The pixel field, in the panel. Off by default: a plot is busy enough. */
 	texture?: TexturePlacement;
 	className?: string;
 	children: ReactNode;
 };
 
-/**
- * The shell every chart shares, so a plot dropped into any page arrives with the
- * same heading, padding and framing. The heading and the footer ride on the
- * frame, the plot sits in the panel: a reader can tell chrome from data without
- * reading either.
- */
 export function ChartCard({
 	title,
 	description,
@@ -49,10 +40,6 @@ export function ChartCard({
 	);
 }
 
-/**
- * Shared plot chrome: the page's own dot grid, held far back so it reads as
- * paper rather than as a second set of gridlines.
- */
 export const CHART_PLOT_CLASS =
 	"[&_.recharts-cartesian-axis-tick_text]:tabular-nums " +
 	"[&_.recharts-cartesian-axis-tick_text]:text-xs";

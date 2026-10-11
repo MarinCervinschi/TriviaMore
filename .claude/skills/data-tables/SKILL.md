@@ -95,7 +95,7 @@ the reset button appears. Because those params are not column ids, list them in 
 
 ### `DataTable` props
 
-`toolbar`, `empty`, `rowLink`, `density` (`comfortable` default / `compact`), `bordered` (default
+`toolbar`, `empty`, `rowLink`, `onRowClick`, `density` (`comfortable` default / `compact`), `bordered` (default
 true — pass `false` inside a `Card`), `showPagination`.
 
 `rowLink` takes a **bare** `<Link>`: `row => <Link to="…" params={…} aria-label={`Apri ${row.name}`} />`.
@@ -103,6 +103,10 @@ The arrow cell, its column and the hover animation are added for you. Do not ren
 arrow column — that implicit column is exactly what made the old `BrowseTable` unsafe. Return **null**
 for a row that has nowhere to go — a deleted target, say — and its arrow cell stays empty while the
 column keeps its shape.
+
+`onRowClick` makes the whole row a pointer target, skipping clicks that land on a link or a button
+inside it. A row cannot take focus, so pair it with a `rowLink` to the same place: the console opens
+its detail sheets this way, both writing `?detail=<id>` to the URL.
 
 ## State: URL or local
 
@@ -142,6 +146,24 @@ and rejected as not worth the noise.
 that renders name *and* email only matches on its accessor. Pass `searchFn: (row, query) => …` and it
 replaces the default with a row-level predicate. `query` arrives lowercased and trimmed.
 
+**A facet over a list** (a class listed in two departments): make the accessor return the
+`string[]`, keep `filterFn: "facet"` — it matches when any value is selected — and add
+`getUniqueValues: row => row.departments` so the popover counts each value, not each combination.
+
+**Cells do not wrap.** Every cell is `whitespace-nowrap`; a table wider than its card scrolls sideways,
+with a thin scrollbar that shows under the pointer (`scrollbar-hover`), and the header stays put while the
+body scrolls inside a `max-h-[70dvh]` container. A second line under a name (a description) is
+`max-w-* truncate`, never `line-clamp-1`, or the column grows to the full text. A column meant to wrap
+says so: `cellClassName: "max-w-xs whitespace-normal"`, as the question text in `/admin/sections/$sectionId`.
+
+**Resizable columns** are on by default; `resizableColumns: false` turns them off. Each header gets a
+handle on its right edge — drag it, or focus it and use the arrow keys; a double click restores
+every width. Until the first resize the table keeps its automatic layout; that first drag freezes every
+column at the width it renders at, switches to `table-fixed` and adds an empty filler column that
+takes the leftover space. Set `enableResizing: false` on a column that should not move (an actions
+column) and `minSize` where 48px is too narrow. Widths stay local and are lost on reload, like column
+visibility.
+
 **A table with no pagination** (a short, complete list): `showPagination={false}` and
 `pageSize: Math.max(rows.length, 1)`. The `max` matters — a page size of 0 breaks the row model.
 
@@ -149,10 +171,11 @@ replaces the default with a row-level predicate. `query` arrives lowercased and 
 calls `useDataTable` once and render it per group. Build the column defs once in the parent and pass
 them down. Examples: `CourseGroupTable`, `ClassTable`.
 
-**A server-driven table** (`/search/*`): pass `manual: { pageCount, rowCount }`. That switches
-`manualPagination`, `manualSorting` and `manualFiltering` all on, so the table renders `data` verbatim
-and only drives the pagination UI. **Mark every column `enableSorting: false`** unless the API really
-accepts a sort parameter — a header that sorts nothing is worse than no header control.
+**A server-driven table**: pass `manual: { pageCount, rowCount }`. That switches `manualPagination`,
+`manualSorting` and `manualFiltering` all on, so the table renders `data` verbatim and only drives the
+pagination UI. **Mark every column `enableSorting: false`** unless the API really accepts a sort
+parameter — a header that sorts nothing is worse than no header control. **No table uses this today**
+— `/search` was the one, and it stopped being a table (D30); the capability stays for the next one.
 
 **A filter the table cannot own** — one that maps to a *set* of values rather than a column value,
 like `open` = `PENDING | NEEDS_REVISION` in `/admin/requests`. Keep it as page state, put it in the

@@ -22,12 +22,6 @@ import type { DataTableFacetOption, DataTableFeatures } from "./features";
 
 type FacetColumn<TData extends RowData> = Column<DataTableFeatures, TData, any>;
 
-/**
- * The checkable option rows behind a facet. Marker-aware, so toggling a value
- * preserves the include/exclude operator (see `facet-filter`). Shared by every
- * selection surface — the dashed button, the chip, the «＋ Filtro» menu — so
- * they stay identical.
- */
 export function FacetOptionsBody<TData extends RowData>({
 	column,
 	options,

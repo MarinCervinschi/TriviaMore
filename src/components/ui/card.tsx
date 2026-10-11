@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-	/** `panel` is the page-level surface: one radius step up, padding left to the caller. */
+	/** `panel` is one radius step up and leaves padding to the caller. */
 	level?: "card" | "panel";
 }
 
@@ -102,10 +102,7 @@ const TEXTURE_FADE: Record<TexturePlacement, string | undefined> = {
 	edges: "radial-gradient(75% 75% at 50% 50%, transparent 28%, #000 92%)",
 };
 
-// Deterministic [0,1) hash — integer math only, so it is bit-identical on the
-// server and the client. Math.sin (and Math.random) are not: a float hash here
-// diverged by ~1e-12 between Node and the browser and tripped hydration on the
-// pixel field. Everything downstream is basic IEEE arithmetic, which is exact.
+// Integer math only, because a float hash differs between Node and the browser and breaks hydration.
 function textureHash(i: number, seed: number): number {
 	let h = Math.imul(i + 1, 374761393) ^ Math.imul(seed + 1, 2654435761);
 	h = Math.imul(h ^ (h >>> 13), 1274126177);
@@ -117,9 +114,8 @@ const TEXTURE_MIN_SIZE = 0.5;
 const TEXTURE_N = 12;
 
 interface CardTextureProps {
-	/** Where the texture sits and how it fades. */
 	placement?: TexturePlacement;
-	/** Back-compat alias for a corner placement (the shape every call site uses today). */
+	/** Alias for a corner `placement`. */
 	corner?: Corner;
 	/** Grid spacing in px. */
 	gap?: number;
@@ -130,13 +126,7 @@ interface CardTextureProps {
 	className?: string;
 }
 
-/**
- * D27's surface texture, reworked for D28: a static "pixel field" instead of a dot grid — a tiled grid
- * of tiny squares at variable size and tone, monochrome on `--foreground` so it reads in both themes,
- * faded by `placement`. The page already wears the dot band, so the card takes a different mark. A
- * category's colour stays on the icon, never on the pixels. **Its parent needs
- * `relative overflow-hidden`** to clip it.
- */
+/** A static pixel field; its parent needs `relative overflow-hidden` to clip it. */
 function CardTexture({
 	placement,
 	corner,

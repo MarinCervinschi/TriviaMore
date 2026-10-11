@@ -16,19 +16,9 @@ import {
 export type TrendPoint = { label: string; score: number };
 
 const PLOT = 104;
-/** The value label sits above its column and inside the plot, so the bars give it room. */
 const BAR_ROOM = PLOT - 20;
-/** A grade of 1 is 3px of column: still a bar, but only just. This keeps it a mark. */
 const BAR_MIN = 6;
 
-/**
- * The same section, attempt after attempt. Plain divs rather than Recharts: five
- * columns and a mean rule do not need a plotting library, and this way the card
- * renders identically on the server and in a test.
- *
- * The zero baseline stays — a truncated axis would turn two points of progress
- * into a cliff.
- */
 export function AttemptTrendCard({
 	title,
 	points,
@@ -43,10 +33,8 @@ export function AttemptTrendCard({
 	/** Oldest first; the last one is this attempt. */
 	points: TrendPoint[];
 	average: number;
-	/** Where this attempt sits in the run — "5º tentativo su questa sezione." */
 	attemptLabel: string;
 	isPersonalBest: boolean;
-	/** The header's closing control, usually a link to the history. */
 	action?: ReactNode;
 	max?: number;
 	className?: string;

@@ -84,8 +84,6 @@ function AdminRequestDetailPage() {
 	const isAcknowledgeOnly = isReport || isFileUpload;
 
 	const submitted = request.submitted;
-	// The user's words (reasons + free-text) are kept separate from the material
-	// under review so reviewers can tell them apart at a glance.
 	const reasons = submitted.type === "report" ? submitted.reasons : [];
 	const userComment =
 		submitted.type === "report" || submitted.type === "file_upload"
@@ -133,7 +131,6 @@ function AdminRequestDetailPage() {
 				}
 			/>
 
-			{/* Summary: type + outcome, then who sent it and when */}
 			<InsetCard>
 				<div className="space-y-4 p-6">
 					<div className="space-y-2">
@@ -211,7 +208,6 @@ function AdminRequestDetailPage() {
 				</div>
 			</InsetCard>
 
-			{/* 2. The user's message — only when there is one */}
 			{hasUserMessage && (
 				<section className="space-y-3">
 					<SectionLabel>Messaggio dell&apos;utente</SectionLabel>
@@ -236,7 +232,6 @@ function AdminRequestDetailPage() {
 				</section>
 			)}
 
-			{/* 3. The material under review */}
 			<section className="space-y-3">
 				<div className="flex items-center justify-between gap-2">
 					<SectionLabel>{materialLabel}</SectionLabel>
@@ -258,7 +253,6 @@ function AdminRequestDetailPage() {
 				/>
 			</section>
 
-			{/* 4. Response area (reports + file uploads, while pending) */}
 			{isAcknowledgeOnly && isPending && (
 				<section className="space-y-3">
 					<SectionLabel>Rispondi e prendi in carico</SectionLabel>
@@ -306,8 +300,6 @@ function AdminRequestDetailPage() {
 function SectionLabel({ children }: { children: ReactNode }) {
 	return <h3 className="text-brand eyebrow px-1">{children}</h3>;
 }
-
-// ─── Material preview (the content under review, without the user's words) ───
 
 function formatFileSize(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
@@ -404,7 +396,6 @@ function QuestionCard({
 
 				<MarkdownRenderer content={question.content} className="text-sm font-medium" />
 
-				{/* Options */}
 				{question.options && question.options.length > 0 && (
 					<div className="space-y-1.5">
 						{question.options.map((opt, oi) => {
@@ -433,7 +424,6 @@ function QuestionCard({
 					</div>
 				)}
 
-				{/* True/False answer */}
 				{question.question_type === "TRUE_FALSE" && (
 					<p className="text-sm">
 						Risposta:{" "}
@@ -443,7 +433,6 @@ function QuestionCard({
 					</p>
 				)}
 
-				{/* Short answer */}
 				{question.question_type === "SHORT_ANSWER" && (
 					<p className="text-sm">
 						Risposta:{" "}
@@ -453,7 +442,6 @@ function QuestionCard({
 					</p>
 				)}
 
-				{/* Explanation */}
 				{question.explanation && (
 					<div className="bg-muted/50 rounded-lg px-3 py-2">
 						<p className="text-muted-foreground text-xs font-medium">Spiegazione</p>

@@ -1,0 +1,1 @@
+ALTER TABLE "catalog"."course_classes" ADD COLUMN "is_teaching" boolean;

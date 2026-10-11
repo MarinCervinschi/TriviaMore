@@ -7,10 +7,6 @@ import { ChartCard } from "./chart-card";
 import { DonutChart } from "./donut-chart";
 import { TimeSeriesChart } from "./time-series-chart";
 
-/**
- * The shell every chart shares. The plots have their own stories — this one is about the frame: the
- * heading, the actions and the footer.
- */
 const meta = {
 	title: "Charts/ChartCard",
 	component: ChartCard,
@@ -86,7 +82,6 @@ export const WithFooter: Story = {
 	},
 };
 
-/** No heading at all: the card collapses to padding, which is how a bare plot is dropped in a grid. */
 export const Bare: Story = {
 	name: "Senza intestazione",
 	args: { children: <Plot /> },

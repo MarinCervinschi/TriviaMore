@@ -1,7 +1,6 @@
-import { ArrowRightIcon } from "@solar-icons/react/linear/arrow-right";
-import { Link } from "@tanstack/react-router";
+import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 
-import { Button } from "@/components/ui/button";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { InsetCard } from "@/components/ui/inset-card";
 import { Progress } from "@/components/ui/progress";
 import { formatMetricValue } from "@/lib/achievements/format";
@@ -13,7 +12,6 @@ import { AchievementMedal, achievementInk } from "./achievement-medal";
 
 const RECENT = 3;
 
-/** The dashboard's slice: the last few unlocked, plus the closest goal. */
 export function AchievementStrip({ overview }: { overview: AchievementsOverview }) {
 	const recent = overview.categories
 		.flatMap(group => group.achievements)
@@ -30,16 +28,13 @@ export function AchievementStrip({ overview }: { overview: AchievementsOverview 
 			title="Traguardi"
 			description={`${overview.unlocked} sbloccati su ${overview.total}`}
 			actions={
-				<Button asChild variant="ghost" size="sm" className="group">
-					<Link to="/user/achievements" className="flex items-center gap-1">
-						Tutti i traguardi
-						<ArrowRightIcon className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-					</Link>
-				</Button>
+				<SeeAllLink to="/user/achievements" icon={CupFirstIcon}>
+					Tutti i traguardi
+				</SeeAllLink>
 			}
-			panelClassName="p-4"
+			panelClassName="@container p-4"
 		>
-			<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+			<div className="grid grid-cols-1 gap-5 @xs:grid-cols-2 @3xl:grid-cols-4">
 				{recent.map(entry => (
 					<div key={entry.key} className="flex items-center gap-2.5">
 						<AchievementMedal
@@ -61,7 +56,7 @@ export function AchievementStrip({ overview }: { overview: AchievementsOverview 
 				))}
 
 				{next?.progress && (
-					<div className="border-border min-w-0 sm:border-l sm:ps-5">
+					<div className="border-border min-w-0 @3xl:border-l @3xl:ps-5">
 						<p className="text-muted-foreground eyebrow text-2xs">Il prossimo</p>
 						<p className="mt-1 truncate text-sm font-semibold tracking-tight">
 							{next.name}

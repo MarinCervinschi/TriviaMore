@@ -8,10 +8,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Card } from "@/components/ui/card";
 
-// Deletable lab — kept for tuning the card pixel texture with live controls. A static "pixel card":
-// tiny squares at variable size and tone, monochrome on `--foreground` (theme-aware), faded by
-// placement. Use the Controls panel; toggle the theme in the toolbar.
-
 type Placement =
 	| "full"
 	| "top"
@@ -43,7 +39,6 @@ const FADE: Record<Placement, string | undefined> = {
 
 const PLACEMENTS = Object.keys(FADE) as Placement[];
 
-// Deterministic [0,1) hash — no Math.random, so the field never reshuffles between renders.
 function hash(i: number, seed: number): number {
 	const x = Math.sin(i * 127.1 + seed) * 43758.5453;
 	return x - Math.floor(x);
@@ -156,7 +151,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Fila di card con icone vere e i controlli della texture. Toggle il tema. */
+/** A row of cards with real icons and the texture controls. */
 export const Esempi: Story = {
 	render: args => (
 		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

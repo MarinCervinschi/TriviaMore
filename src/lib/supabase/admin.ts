@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 
-// Service-role client, kept for the two things that never moved to Drizzle: the
-// auth admin API and Storage.
+// Only for the auth admin API and Storage; every data path goes through Drizzle.
 let _admin: ReturnType<typeof createClient> | null = null
 
 export function getSupabaseAdmin() {

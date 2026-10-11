@@ -25,8 +25,6 @@ import {
 	TypeScriptIcon,
 } from "./tech-icons";
 
-// The public page, section by section, with the app's real copy from data.ts rather than invented
-// strings — the point is to catch a layout that only works with the text it happens to have.
 const meta = {
 	title: "Landing/Sezioni",
 	parameters: { layout: "fullscreen" },
@@ -51,7 +49,6 @@ export const Showcase: Story = {
 	render: () => <FeatureShowcase features={showcaseFeatures} />,
 };
 
-/** Real numbers and zeros: a fresh install shows the second, and it must not read as broken. */
 export const Stats: Story = {
 	render: () => (
 		<div className="divide-border divide-y">
@@ -86,7 +83,6 @@ export const Footer: Story = {
 	render: () => <LandingFooter sections={footerSections} />,
 };
 
-/** The stack badges, drawn as inline SVG so they follow the text colour instead of shipping six PNGs. */
 export const TechIcons: Story = {
 	name: "Le icone dello stack",
 	parameters: { layout: "padded" },

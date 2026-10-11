@@ -23,7 +23,6 @@ export const WithButtonAction: Story = {
 	args: { actionLabel: "Riprova", onAction: () => {} },
 };
 
-/** The counterpart: a line inside a panel that already has its own frame. */
 export const Inline: Story = {
 	render: () => (
 		<div className="space-y-6">

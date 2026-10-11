@@ -10,7 +10,6 @@ import { PageBand } from "@/components/layout/page-band";
 
 import { AppBreadcrumb, type Crumb } from "./app-breadcrumb";
 
-// The deepest trail the catalogue can produce, with the names it really has.
 const DEEP: Crumb[] = [
 	{ label: "Esplora", to: "/browse", icon: CompassIcon },
 	{ label: "Ingegneria «Enzo Ferrari»", to: "/browse", icon: BuildingsIcon },
@@ -25,7 +24,6 @@ const SHORT: Crumb[] = [
 	{ label: "Storico", icon: DocumentTextIcon },
 ];
 
-/** The band the breadcrumb really sits on, so legibility is judged where it happens. */
 function OnBand({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="bg-background relative isolate min-h-48 overflow-hidden rounded-2xl border">
@@ -67,7 +65,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Il laboratorio: cambia le variabili dai controlli e guarda cosa regge. */
+/** Change the variables from the controls and see what holds. */
 export const Lab: Story = { name: "Laboratorio" };
 
 export const Combinazioni: Story = {
@@ -98,7 +96,7 @@ export const Combinazioni: Story = {
 	),
 };
 
-/** Quanti livelli restano prima che il centro si pieghi nel menu. */
+/** How many levels fit before the middle folds into the menu. */
 export const Soglie: Story = {
 	name: "Soglia di collasso",
 	render: () => (
@@ -115,10 +113,10 @@ export const Soglie: Story = {
 	),
 };
 
-/** Una scia corta non collassa mai: il menu non deve comparire per abitudine. */
+/** A short trail never collapses. */
 export const Corto: Story = { name: "Scia corta", args: { items: SHORT } };
 
-/** Lo spazio stretto: è qui che si vede se il taglio delle etichette basta. */
+/** A narrow space, where the label cut is tested. */
 export const Stretto: Story = {
 	name: "In colonna stretta",
 	render: () => (
@@ -128,7 +126,7 @@ export const Stretto: Story = {
 	),
 };
 
-/** Quanto stringere le etichette prima che smettano di dire qualcosa. */
+/** How far the labels can shrink before they stop saying anything. */
 export const Etichette: Story = {
 	name: "Lunghezza delle etichette",
 	render: () => (

@@ -37,9 +37,7 @@ export const legalDocumentTypeEnum = pgEnum("legal_document_type", [
   "PRIVACY",
 ])
 
-// The metric vocabulary. Declared as a type so a row inserted straight from the
-// SQL console cannot name a measure the engine does not compute: adding a badge
-// needs no deploy, inventing a metric does.
+// An enum, so a row inserted from the SQL console cannot name a metric the engine does not compute.
 export const achievementMetricEnum = pgEnum("achievement_metric", [
   "QUIZZES_COMPLETED",
   "DISTINCT_SECTIONS",
@@ -56,9 +54,30 @@ export const achievementMetricEnum = pgEnum("achievement_metric", [
   "BOOKMARKED_THEN_CORRECT",
   "APPROVED_REQUESTS",
   "SIGNUP_RANK",
+  "ENROLLMENT_DECLARED",
+  "EXAMS_PASSED",
+  "CFU_EARNED",
+  "HONOURS_EARNED",
+  "TASKS_DONE",
 ])
 
 export const achievementComparatorEnum = pgEnum("achievement_comparator", [
   "GTE",
   "LTE",
+])
+
+export const jobRunStatusEnum = pgEnum("job_run_status", [
+  "QUEUED",
+  "RUNNING",
+  "SUCCEEDED",
+  "FAILED",
+  "CANCELLED",
+])
+
+export const jobRunTriggerEnum = pgEnum("job_run_trigger", ["MANUAL", "SCHEDULE"])
+
+export const careerExamStatusEnum = pgEnum("career_exam_status", [
+  "PLANNED",
+  "PASSED",
+  "REJECTED",
 ])
