@@ -43,6 +43,7 @@ export const tasks = crmSchema
 		},
 		table => [
 			index("idx_tasks_user_due").using("btree", table.userId, table.dueDate),
+			index("idx_tasks_career_exam").using("btree", table.careerExamId),
 			foreignKey({
 				columns: [table.userId],
 				foreignColumns: [profiles.id],

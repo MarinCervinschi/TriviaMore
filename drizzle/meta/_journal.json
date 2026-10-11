@@ -477,6 +477,13 @@
       "when": 1791707752860,
       "tag": "0067_advisor_lints",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1791711423512,
+      "tag": "0068_crm_indexes",
+      "breakpoints": true
     }
   ]
 }

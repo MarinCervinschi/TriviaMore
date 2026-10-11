@@ -191,8 +191,10 @@ export async function prefillCareer(userId: string): Promise<{ added: number }> 
 			throw new Invalid("Per la tua coorte non c'è un piano ufficiale");
 
 		const missing = missingMandatoryOf(plan.rows, await listExams(tx, enrollment.id));
-		if (missing.length > 0) {
-			await tx.insert(careerExams).values(
+		if (missing.length === 0) return { added: 0 };
+		const inserted = await tx
+			.insert(careerExams)
+			.values(
 				missing.map((row, position) => ({
 					enrollmentId: enrollment.id,
 					classId: row.classId,
@@ -203,9 +205,10 @@ export async function prefillCareer(userId: string): Promise<{ added: number }> 
 					graded: row.graded,
 					position,
 				}))
-			);
-		}
-		return { added: missing.length };
+			)
+			.onConflictDoNothing()
+			.returning({ id: careerExams.id });
+		return { added: inserted.length };
 	});
 }
 
@@ -293,20 +296,24 @@ export async function setCareerChoices(
 				row => wanted.has(row.code) && !held.some(exam => exam.planCode === row.code)
 			);
 			if (missing.length > 0) {
-				await tx.insert(careerExams).values(
-					missing.map(row => ({
-						enrollmentId: enrollment.id,
-						classId: row.classId,
-						planCode: row.code,
-						groupCode: choice.groupCode,
-						name: row.name,
-						cfu: row.cfu!,
-						classYear: row.classYear,
-						graded: row.graded,
-					}))
-				);
+				const inserted = await tx
+					.insert(careerExams)
+					.values(
+						missing.map(row => ({
+							enrollmentId: enrollment.id,
+							classId: row.classId,
+							planCode: row.code,
+							groupCode: choice.groupCode,
+							name: row.name,
+							cfu: row.cfu!,
+							classYear: row.classYear,
+							graded: row.graded,
+						}))
+					)
+					.onConflictDoNothing()
+					.returning({ id: careerExams.id });
+				added += inserted.length;
 			}
-			added += missing.length;
 			removed += drop.length;
 		}
 		return { added, removed };
