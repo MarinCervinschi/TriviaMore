@@ -21,7 +21,7 @@ const LEVEL_RING: Record<Importance, string> = {
 /** A task's tick: an empty ring, or a filled one with a check once done. */
 function TaskCheck({ done }: { done?: boolean }) {
 	return done ? (
-		<span className="bg-success text-primary-foreground flex size-3.5 shrink-0 items-center justify-center rounded-full">
+		<span className="bg-success text-success-foreground flex size-3.5 shrink-0 items-center justify-center rounded-full">
 			<CheckGlyph className="size-2.5" />
 		</span>
 	) : (

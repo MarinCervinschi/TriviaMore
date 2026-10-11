@@ -69,15 +69,11 @@ export async function getUserProfile(
 
 export async function updateProfile(
 	userId: string,
-	input: { name: string; image?: string | null }
+	input: { name: string }
 ) {
-	// An absent `image` leaves the stored one alone; only an explicit null clears it.
 	await getDb()
 		.update(profiles)
-		.set({
-			name: input.name,
-			image: input.image === undefined ? undefined : input.image,
-		})
+		.set({ name: input.name })
 		.where(eq(profiles.id, userId));
 
 	// Duplicated into the auth user's metadata, which OAuth and the email templates read.

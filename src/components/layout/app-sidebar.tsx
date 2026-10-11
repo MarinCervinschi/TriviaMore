@@ -74,7 +74,8 @@ function RailDot() {
 /** A destination, or a parent that nests; a parent is never highlighted itself. */
 function NavRow({ item }: { item: NavItem }) {
 	const matchRoute = useMatchRoute();
-	const { state, isMobile } = useSidebar();
+	const { state, isMobile, setOpenMobile } = useSidebar();
+	const closeMobile = () => isMobile && setOpenMobile(false);
 
 	const ownActive = !!matchRoute({ to: item.to, fuzzy: item.fuzzy });
 	const childActive = (item.children ?? []).some(
@@ -103,7 +104,11 @@ function NavRow({ item }: { item: NavItem }) {
 					tooltip={item.label}
 					className={ACTIVE_ROW}
 				>
-					<Link to={item.to} aria-current={ownActive ? "page" : undefined}>
+					<Link
+						to={item.to}
+						aria-current={ownActive ? "page" : undefined}
+						onClick={closeMobile}
+					>
 						<Icon />
 						<span>{item.label}</span>
 					</Link>
@@ -176,7 +181,11 @@ function NavRow({ item }: { item: NavItem }) {
 							return (
 								<SidebarMenuSubItem key={child.to}>
 									<SidebarMenuSubButton asChild isActive={active}>
-										<Link to={child.to} aria-current={active ? "page" : undefined}>
+										<Link
+											to={child.to}
+											aria-current={active ? "page" : undefined}
+											onClick={closeMobile}
+										>
 											<ChildIcon />
 											<span>{child.label}</span>
 										</Link>
