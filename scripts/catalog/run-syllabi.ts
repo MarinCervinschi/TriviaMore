@@ -7,6 +7,7 @@ import {
 	classes,
 	courseCurricula,
 	coursePlans,
+	courses,
 } from "../../src/db/schema/index.ts";
 import { academicYearOf } from "../../src/lib/catalog/academic-year.ts";
 import type { SyllabusRef } from "../../src/lib/catalog/sync/diff.ts";
@@ -28,12 +29,13 @@ type Candidate = { ref: SyllabusRef; catalogueUrl: string | null };
 type Progress = (message: string) => void;
 
 async function readLocal(db: Db) {
-	const [classRows, syllabusRows, planRows] = await Promise.all([
+	const [classRows, syllabusRows, planRows, courseRows] = await Promise.all([
 		db.select({ id: classes.id, description: classes.description }).from(classes),
 		db.select().from(classSyllabi),
 		db
 			.select({
 				classId: coursePlans.classId,
+				courseId: coursePlans.courseId,
 				cohort: coursePlans.cohort,
 				curriculum: courseCurricula.code,
 				code: coursePlans.code,
@@ -41,20 +43,29 @@ async function readLocal(db: Db) {
 			.from(coursePlans)
 			.innerJoin(courseCurricula, eq(courseCurricula.id, coursePlans.curriculumId))
 			.where(isNotNull(coursePlans.classId)),
+		db
+			.select({ id: courses.id, nationalCode: courses.nationalCode })
+			.from(courses)
+			.where(isNotNull(courses.nationalCode)),
 	]);
 	return {
 		classes: classRows,
 		syllabi: syllabusRows.map(({ createdAt: _c, updatedAt: _u, ...row }) => row),
 		plans: planRows,
+		courseByNational: new Map(courseRows.map(row => [row.nationalCode!, row.id])),
 	};
 }
 
+// A curriculum code is shared by many courses, so the course is part of the key.
+const planKey = (cohort: number, courseId: string, curriculum: string, code: string) =>
+	[cohort, courseId, curriculum, code].join("\u0000");
+
 async function readCandidates(
-	plans: Awaited<ReturnType<typeof readLocal>>["plans"],
+	{ plans, courseByNational }: Awaited<ReturnType<typeof readLocal>>,
 	progress: Progress
 ) {
 	const classOf = new Map(
-		plans.map(p => [`${p.cohort}\u0000${p.curriculum}\u0000${p.code}`, p.classId!])
+		plans.map(p => [planKey(p.cohort, p.courseId, p.curriculum, p.code), p.classId!])
 	);
 	const years = (await fetchYears())
 		.map(Number)
@@ -68,8 +79,10 @@ async function readCandidates(
 		for (const activity of activities) {
 			const ref = activity.syllabusRef;
 			if (!ref || ref.offerYear > CURRENT || !activity.curriculum) continue;
+			const courseId = activity.codicione && courseByNational.get(activity.codicione);
+			if (!courseId) continue;
 			const classId = classOf.get(
-				`${year}\u0000${activity.curriculum}\u0000${activity.code}`
+				planKey(year, courseId, activity.curriculum, activity.code)
 			);
 			if (!classId) continue;
 			const list = candidates.get(classId) ?? [];
@@ -146,10 +159,7 @@ export async function importSyllabi(
 ): Promise<SyllabiReport> {
 	progress("Syllabi dal catalogo ufficiale…");
 	const local = await readLocal(db);
-	const found = await readSyllabi(
-		await readCandidates(local.plans, progress),
-		progress
-	);
+	const found = await readSyllabi(await readCandidates(local, progress), progress);
 	const plan = planSyllabi(local, found);
 	const report = {
 		plan,

@@ -1,10 +1,19 @@
 // Adds the plan classes we lack, fills fields and mirrors every cohort's plan from the official catalogue; writes only with --apply.
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { closeDb, getDb } from "../../src/db/index.ts";
 import { academicYearOf } from "../../src/lib/catalog/academic-year.ts";
 import type { CatalogueAdditions } from "../../src/lib/catalog/sync/additions.ts";
 import type { CohortPlanChanges } from "../../src/lib/catalog/sync/cohort-plans.ts";
 import type { CatalogueUpdates } from "../../src/lib/catalog/sync/plan.ts";
 import { catalogueRowCount, planRowCount, syncCatalog } from "./run-sync.ts";
+import { setCacheDir } from "./source.ts";
+
+// A fresh cache per run, so a plan never reads a response from an earlier one.
+const cacheDir = await mkdtemp(join(tmpdir(), "triviamore-catalog-"));
+setCacheDir(cacheDir);
 
 function arg(name: string): string | undefined {
 	const index = process.argv.indexOf(`--${name}`);
@@ -101,4 +110,5 @@ if (!APPLY) {
 	);
 }
 
+await rm(cacheDir, { recursive: true, force: true });
 await closeDb();

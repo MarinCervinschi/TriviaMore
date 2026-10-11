@@ -70,6 +70,7 @@ async function cached<T>(name: string, load: () => Promise<T>): Promise<T> {
 
 async function get(path: string): Promise<unknown> {
 	const response = await fetch(`${BASE}/${path}`);
+	if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
 	const body = await response.text();
 	// An unrouted path answers the SPA's HTML with a 200.
 	if (body.startsWith("<")) throw new Error(`Nessun endpoint: ${path}`);
@@ -331,6 +332,7 @@ export async function fetchActivityAttributes(): Promise<
 			// The server ignores the year and returns all of them.
 			body: JSON.stringify({ anno: "2025" }),
 		});
+		if (!response.ok) throw new Error(`ricercaInsegnamenti: HTTP ${response.status}`);
 		const raw = (await response.json()) as Raw[];
 		return raw
 			.filter(row => !row.isMod && row.cdsCod && row.adCod)
@@ -378,6 +380,7 @@ export async function fetchSyllabus(
 	].join("/");
 	const raw = await cached(`syllabus/${path.replaceAll("/", "-")}`, async () => {
 		const response = await fetch(`${BASE}/insegnamento-offerta/${path}`);
+		if (response.status >= 500) throw new Error(`${path}: HTTP ${response.status}`);
 		const body = await response.text();
 		// A missing offering answers a plain-text 404.
 		return body.startsWith("{")
