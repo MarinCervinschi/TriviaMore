@@ -484,6 +484,13 @@
       "when": 1791711423512,
       "tag": "0068_crm_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1791711438880,
+      "tag": "0069_avatar_uploads_bucket",
+      "breakpoints": true
     }
   ]
 }

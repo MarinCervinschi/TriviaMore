@@ -46,11 +46,13 @@ export function useUploadAvatar() {
 			const resized = await resizeForAvatar(file);
 			const contentType = "image/webp" as const;
 
-			const { path, token } = await createAvatarUploadUrlFn({ data: { contentType } });
+			const { bucket, path, token } = await createAvatarUploadUrlFn({
+				data: { contentType },
+			});
 
 			const { createClient } = await import("@/lib/supabase/client");
 			const { error } = await createClient()
-				.storage.from("avatars")
+				.storage.from(bucket)
 				.uploadToSignedUrl(path, token, resized, { contentType });
 
 			if (error) throw new Error("Caricamento non riuscito. Riprova.");
