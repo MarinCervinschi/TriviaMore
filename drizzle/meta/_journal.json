@@ -470,6 +470,13 @@
       "when": 1791629617499,
       "tag": "0066_job_run_stop",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1791707752860,
+      "tag": "0067_advisor_lints",
+      "breakpoints": true
     }
   ]
 }
