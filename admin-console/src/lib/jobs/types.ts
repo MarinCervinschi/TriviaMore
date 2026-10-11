@@ -8,7 +8,12 @@ import type { ConsoleDb } from "~/lib/db/client";
 export type JobSummary = Record<string, number | string>;
 
 /** The counts a run reports, and, when the job can say, the rows it changed or would change. */
-export type JobResult = { summary: JobSummary; changes?: JobChanges };
+export type JobResult = {
+	summary: JobSummary;
+	changes?: JobChanges;
+	/** Set when the run wrote its changes but did not finish the job; the run fails and keeps its report. */
+	failure?: string;
+};
 
 export type JobContext = {
 	/** The console's database: the local one in development, production once deployed. */

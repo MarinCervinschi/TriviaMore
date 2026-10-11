@@ -111,7 +111,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 		const unwatch = watchForStop(run.id, stop);
 		try {
 			const params = definition.params.parse(run.params);
-			const { summary, changes } = await definition.run(params, {
+			const { summary, changes, failure } = await definition.run(params, {
 				db,
 				dryRun: run.dryRun,
 				signal: AbortSignal.any([job.signal, stop.signal]),
@@ -120,18 +120,27 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 			await db
 				.update(jobRuns)
 				.set({
-					status: "SUCCEEDED",
+					status: failure ? "FAILED" : "SUCCEEDED",
+					error: failure ?? null,
 					summary,
 					changes: changes ?? null,
 					finishedAt: now(),
 				})
 				.where(and(eq(jobRuns.id, run.id), eq(jobRuns.status, "RUNNING")));
-			log.info("Job {Job} succeeded in {Elapsed} ms", {
+			const fields = {
 				Job: definition.name,
 				RunId: run.id,
 				Elapsed: Math.round(performance.now() - started),
 				...summary,
-			});
+			};
+			if (failure) {
+				log.warn("Job {Job} failed after writing in {Elapsed} ms: {Failure}", {
+					...fields,
+					Failure: failure,
+				});
+			} else {
+				log.info("Job {Job} succeeded in {Elapsed} ms", fields);
+			}
 		} catch (error) {
 			const stopped =
 				stop.signal.aborted &&
