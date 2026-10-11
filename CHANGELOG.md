@@ -81,7 +81,7 @@ behind the catalogue run from a separate ops console, deployed with Terraform.
 
 ### Migrations
 
-Thirty-eight, `0029`–`0066`, already applied to the production database. Two are destructive.
+Thirty-nine, `0029`–`0067`. `0029`–`0066` are already applied to the production database. Two are destructive.
 
 - `0029`–`0034` — the `crm` schema, enrolments, grants, the avatars bucket and the onboarding badge.
   `0033` recreates the `achievement_metric` enum instead of extending it, since a value added to an
@@ -95,6 +95,11 @@ Thirty-eight, `0029`–`0066`, already applied to the production database. Two a
 - **`0051_drop_enrollment_curriculum_text.sql` — destructive.** Drops `crm.enrollments.curriculum`,
   replaced by the link to the cohort's curriculum.
 - `0061`–`0063` — the new tiers, the CRM metrics and the Carriera badges.
+- `0067_advisor_lints.sql` — revokes from `anon` and `authenticated` the tables Supabase's default
+  privileges granted them after `0008`, changes those defaults, and pins `search_path` on the six
+  pg-boss functions. Not destructive.
+
+**Before the deploy:** apply `0067` with `scripts/db/migrations.ts --apply`.
 
 **After the deploy:** run *Assegna i traguardi* from the console, as a dry run first, so the new
 tiers and the Carriera badges reach the accounts that already qualify.
