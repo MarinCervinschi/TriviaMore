@@ -4,7 +4,9 @@ import {
 	getRunFn,
 	getSchedulerOverviewFn,
 	getWorkerStatusFn,
+	listJobRunsFn,
 	listJobsFn,
+	listLatestRunsFn,
 	listRunsFn,
 	previewCronFn,
 } from "./api";
@@ -25,6 +27,22 @@ export const jobQueries = {
 			// Fast while something is queued or running, so a run's progress shows without a refresh.
 			refetchInterval: query =>
 				query.state.data?.some(isActive) ? ACTIVE_REFRESH_MS : IDLE_REFRESH_MS,
+		}),
+	jobRuns: (job: string) =>
+		queryOptions({
+			queryKey: ["jobs", "runs", "job", job],
+			queryFn: () => listJobRunsFn({ data: { job } }),
+			refetchInterval: query =>
+				query.state.data?.some(isActive) ? ACTIVE_REFRESH_MS : IDLE_REFRESH_MS,
+		}),
+	latest: () =>
+		queryOptions({
+			queryKey: ["jobs", "runs", "latest"],
+			queryFn: () => listLatestRunsFn(),
+			refetchInterval: query =>
+				query.state.data?.some(entry => entry.last && isActive(entry.last))
+					? ACTIVE_REFRESH_MS
+					: IDLE_REFRESH_MS,
 		}),
 	run: (id: string) =>
 		queryOptions({

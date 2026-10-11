@@ -1,4 +1,13 @@
-import { and, desc, eq, getTableColumns, isNull, sql } from "drizzle-orm";
+import {
+	type SQL,
+	and,
+	count,
+	desc,
+	eq,
+	getTableColumns,
+	isNull,
+	sql,
+} from "drizzle-orm";
 
 import { jobRuns } from "@/db/schema";
 
@@ -10,6 +19,7 @@ import type {
 	JobParams,
 	JobRun,
 	JobRunDetail,
+	JobRunsLatest,
 	RunChangeResult,
 	StartJobResult,
 	WorkerStatus,
@@ -27,6 +37,44 @@ export async function listRuns(): Promise<JobRun[]> {
 		.from(jobRuns)
 		.orderBy(desc(jobRuns.queuedAt))
 		.limit(RECENT_RUNS);
+}
+
+export async function listJobRuns(job: string): Promise<JobRun[]> {
+	return consoleDb()
+		.select(RUN_COLUMNS)
+		.from(jobRuns)
+		.where(eq(jobRuns.job, job))
+		.orderBy(desc(jobRuns.queuedAt))
+		.limit(RECENT_RUNS);
+}
+
+function latestPerJob(where?: SQL) {
+	return consoleDb()
+		.selectDistinctOn([jobRuns.job], RUN_COLUMNS)
+		.from(jobRuns)
+		.where(where)
+		.orderBy(jobRuns.job, desc(jobRuns.queuedAt));
+}
+
+/** For every job that ever ran, its run count and its latest run, latest success and latest successful apply. */
+export async function listLatestRuns(): Promise<JobRunsLatest[]> {
+	const [totals, last, succeeded, applied] = await Promise.all([
+		consoleDb()
+			.select({ job: jobRuns.job, total: count() })
+			.from(jobRuns)
+			.groupBy(jobRuns.job),
+		latestPerJob(),
+		latestPerJob(eq(jobRuns.status, "SUCCEEDED")),
+		latestPerJob(and(eq(jobRuns.status, "SUCCEEDED"), eq(jobRuns.dryRun, false))),
+	]);
+	const of = (runs: JobRun[], job: string) => runs.find(run => run.job === job) ?? null;
+	return totals.map(({ job, total }) => ({
+		job,
+		total,
+		last: of(last, job),
+		lastSucceeded: of(succeeded, job),
+		lastApplied: of(applied, job),
+	}));
 }
 
 export async function getRun(id: string): Promise<JobRunDetail | null> {

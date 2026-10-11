@@ -16,7 +16,7 @@ import { ConsolePage } from "~/components/console-page";
 import { FigureCard } from "~/components/figure-card";
 import { commandOf } from "~/components/jobs/job-form";
 import { RunChanges } from "~/components/jobs/run-changes";
-import { RunStatusBadge } from "~/components/jobs/run-status-badge";
+import { RunStatusBadge, applyOutcome } from "~/components/jobs/run-status-badge";
 import { StopRunButton } from "~/components/jobs/stop-run-button";
 import { NotFound } from "~/components/not-found";
 import { ENVIRONMENT_TARGET, IS_PRODUCTION } from "~/lib/environment";
@@ -112,7 +112,7 @@ function RunView({ run, job }: { run: JobRunDetail; job: JobInfo | undefined }) 
 			description={
 				run.dryRun
 					? `Simulazione del ${formatDateTime(run.queuedAt)}: non ha scritto niente.`
-					: `Applicata ${ENVIRONMENT_TARGET} il ${formatDateTime(run.queuedAt)}.`
+					: `${applyOutcome(run, ENVIRONMENT_TARGET)}.`
 			}
 			actions={
 				<>

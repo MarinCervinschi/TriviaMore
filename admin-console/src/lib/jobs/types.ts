@@ -75,6 +75,14 @@ export type JobRunDetail = typeof jobRuns.$inferSelect;
 
 export type JobParams = JobRun["params"];
 
+export type JobRunsLatest = {
+	job: string;
+	total: number;
+	last: JobRun | null;
+	lastSucceeded: JobRun | null;
+	lastApplied: JobRun | null;
+};
+
 export type StartJobResult =
 	| { success: true; runId: string }
 	| { success: false; error: string };
