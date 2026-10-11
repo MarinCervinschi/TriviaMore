@@ -11,7 +11,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { type ClassInput, classSchema, courseClassSchema } from "@/lib/admin/schemas";
 import type { AdminClassDetail } from "@/lib/admin/types";
 
@@ -32,7 +31,7 @@ type JunctionDefaults = {
 };
 
 type ClassFormProps = {
-	cls?: Pick<AdminClassDetail, "name" | "description" | "cfu">;
+	cls?: Pick<AdminClassDetail, "name" | "cfu">;
 	onSubmit: (data: ClassInput & JunctionDefaults) => void;
 	isPending: boolean;
 	junction?: JunctionDefaults;
@@ -43,7 +42,6 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 		resolver: standardSchemaResolver(junction ? classWithJunctionSchema : classSchema),
 		defaultValues: {
 			name: cls?.name ?? "",
-			description: cls?.description ?? "",
 			cfu: cls?.cfu ?? undefined,
 			code: junction?.code ?? "",
 			class_year: junction?.class_year ?? 1,
@@ -148,23 +146,6 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 						/>
 					</>
 				)}
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Descrizione</FormLabel>
-							<FormControl>
-								<Textarea
-									placeholder="Descrizione dell'insegnamento (opzionale)"
-									rows={3}
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
 				<FormSubmitButton
 					isPending={isPending}
 					isEdit={!!cls}

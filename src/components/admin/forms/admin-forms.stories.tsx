@@ -102,7 +102,6 @@ export const Class: Story = {
 			<ClassForm
 				cls={{
 					name: "Analisi matematica I",
-					description: "Calcolo di una variabile.",
 					cfu: 9,
 				}}
 				junction={{ code: "INF-001", class_year: 1, mandatory: true }}
