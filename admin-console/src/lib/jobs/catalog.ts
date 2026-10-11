@@ -60,9 +60,6 @@ export const catalogSync: JobDefinition<typeof yearParam> = {
 			apply: !dryRun,
 			progress: () => signal.throwIfAborted(),
 		});
-		if (report.left > 0) {
-			throw new Error(`Applicato, ma ${report.left} righe restano da sistemare.`);
-		}
 		return {
 			summary: {
 				"Insegnamenti aggiunti": report.additions.additions.length,
@@ -71,9 +68,13 @@ export const catalogSync: JobDefinition<typeof yearParam> = {
 				Coorti: report.cohorts.join(", "),
 			},
 			changes: await syncChanges(db, report),
+			failure: leftOver(report.left),
 		};
 	},
 };
+
+const leftOver = (left: number) =>
+	left > 0 ? `Applicato, ma ${left} righe restano da sistemare.` : undefined;
 
 const noParams = z.object({});
 
@@ -92,9 +93,6 @@ export const catalogSyllabi: JobDefinition<typeof noParams> = {
 			apply: !dryRun,
 			progress: () => signal.throwIfAborted(),
 		});
-		if (report.left > 0) {
-			throw new Error(`Applicato, ma ${report.left} righe restano da sistemare.`);
-		}
 		const cleared = report.plan.descriptions.filter(d => d.description === null).length;
 		return {
 			summary: {
@@ -105,6 +103,7 @@ export const catalogSyllabi: JobDefinition<typeof noParams> = {
 				"Descrizioni svuotate": cleared,
 			},
 			changes: await syllabiChanges(db, report),
+			failure: leftOver(report.left),
 		};
 	},
 };

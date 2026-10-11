@@ -8,7 +8,7 @@ import { QUEUE_OPTIONS, type QueuedRun } from "~/lib/jobs/queue";
 import { JOBS } from "~/lib/jobs/registry";
 import { syncSchedules } from "~/lib/jobs/service/schedules";
 
-import { abandonRuns } from "./abandon";
+import { abandonQueued, abandonRuns } from "./abandon";
 import { inFlight, runQueuedJob } from "./run";
 
 const url = process.env[DATABASE_ENV];
@@ -25,6 +25,7 @@ await abandonRuns(
 	"all-running",
 	"Interrotta: il worker si è fermato durante l'esecuzione."
 );
+await abandonQueued(boss, "Interrotta: il worker si è fermato prima di avviarla.");
 for (const job of JOBS) {
 	if (!(await boss.getQueue(job.name))) await boss.createQueue(job.name, QUEUE_OPTIONS);
 	await boss.work<QueuedRun>(
