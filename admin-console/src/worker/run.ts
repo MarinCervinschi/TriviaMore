@@ -125,7 +125,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 					changes: changes ?? null,
 					finishedAt: now(),
 				})
-				.where(eq(jobRuns.id, run.id));
+				.where(and(eq(jobRuns.id, run.id), eq(jobRuns.status, "RUNNING")));
 			log.info("Job {Job} succeeded in {Elapsed} ms", {
 				Job: definition.name,
 				RunId: run.id,
@@ -133,7 +133,11 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 				...summary,
 			});
 		} catch (error) {
-			if (stop.signal.aborted) {
+			const stopped =
+				stop.signal.aborted &&
+				(error === stop.signal.reason ||
+					(error instanceof Error && error.name === "AbortError"));
+			if (stopped) {
 				await db
 					.update(jobRuns)
 					.set({
@@ -141,7 +145,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 						error: "Fermata dalla console.",
 						finishedAt: now(),
 					})
-					.where(eq(jobRuns.id, run.id));
+					.where(and(eq(jobRuns.id, run.id), eq(jobRuns.status, "RUNNING")));
 				log.info("Job {Job} stopped from the console", {
 					Job: definition.name,
 					RunId: run.id,
@@ -152,7 +156,7 @@ async function execute(definition: JobDefinition, job: Job<QueuedRun>): Promise<
 			await db
 				.update(jobRuns)
 				.set({ status: "FAILED", error: message, finishedAt: now() })
-				.where(eq(jobRuns.id, run.id));
+				.where(and(eq(jobRuns.id, run.id), eq(jobRuns.status, "RUNNING")));
 			log.error(
 				"Job {Job} failed in {Elapsed} ms",
 				{

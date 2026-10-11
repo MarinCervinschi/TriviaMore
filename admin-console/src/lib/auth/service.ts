@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { profiles } from "@/db/schema";
 import type { LoginInput } from "@/lib/auth/schemas";
+import { Unauthorized } from "@/lib/server/errors";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import { consoleDb } from "~/lib/db/client";
@@ -96,6 +97,7 @@ export async function logout(): Promise<void> {
 /** For every endpoint that reads or writes data: the page guard alone does not stop a direct call. */
 export async function requireOwner(): Promise<ConsoleSession> {
 	const session = await getConsoleSession();
-	if (!session) throw new Error("Accesso riservato al proprietario della console.");
+	if (!session)
+		throw new Unauthorized("Accesso riservato al proprietario della console.");
 	return session;
 }

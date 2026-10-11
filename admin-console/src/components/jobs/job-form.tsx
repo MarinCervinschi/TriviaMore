@@ -59,14 +59,12 @@ export function JobPicker({
 	value,
 	onChange,
 	locked,
-	hint,
 }: {
 	jobs: JobInfo[];
 	value: string;
 	onChange: (name: string) => void;
 	/** Shows only the chosen job, for a record whose job cannot change. */
 	locked?: boolean;
-	hint?: (job: JobInfo) => string;
 }) {
 	return (
 		<DetailSection title="Job">
@@ -98,11 +96,6 @@ export function JobPicker({
 								<span className="text-muted-foreground mt-0.5 block text-xs">
 									{job.description}
 								</span>
-								{hint && (
-									<span className="text-muted-foreground mt-1.5 block text-xs">
-										{hint(job)}
-									</span>
-								)}
 							</span>
 						</button>
 					);

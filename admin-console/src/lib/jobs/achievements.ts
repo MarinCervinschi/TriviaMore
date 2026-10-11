@@ -60,8 +60,9 @@ export const achievementsRollups: JobDefinition<typeof noParams> = {
 	terminal: { dryRun: "", apply: "--repair" },
 	params: noParams,
 	fields: [],
-	async run(_params, { db, dryRun }) {
+	async run(_params, { db, dryRun, signal }) {
 		await requireCatalogue(db);
+		signal.throwIfAborted();
 		const { users, drift } = await reconcileAchievementMetrics({ db, repair: !dryRun });
 		const people = await peopleOf(
 			db,
@@ -119,8 +120,9 @@ export const achievementsReplay: JobDefinition<typeof replayParams> = {
 			toggle: true,
 		},
 	],
-	async run({ notify }, { db, dryRun }) {
+	async run({ notify }, { db, dryRun, signal }) {
 		await requireCatalogue(db);
+		signal.throwIfAborted();
 		// On counters that drifted, an award would be missed or given early, and the run would not say so.
 		const { drift } = await reconcileAchievementMetrics({ db });
 		if (drift.length > 0) {
@@ -128,6 +130,7 @@ export const achievementsReplay: JobDefinition<typeof replayParams> = {
 				`I contatori hanno ${drift.length} derive: esegui prima «Ricostruisci i contatori».`
 			);
 		}
+		signal.throwIfAborted();
 		const result = await replayAchievements({ db, dryRun, notify: Boolean(notify) });
 		const people = await peopleOf(
 			db,

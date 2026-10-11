@@ -101,7 +101,7 @@ function buildColumns(jobOptions: DataTableFacetOption[], showJob: boolean) {
 	];
 }
 
-export type RunsSearch = DataTableSearch & {
+type RunsSearch = DataTableSearch & {
 	job?: string;
 	status?: string;
 	mode?: string;
@@ -151,6 +151,7 @@ export function RunsTable({
 					<DataTableToolbar
 						table={table}
 						filterVariant="inline"
+						searchable={showJob}
 						searchPlaceholder={showJob ? "Cerca job…" : undefined}
 					/>
 				}

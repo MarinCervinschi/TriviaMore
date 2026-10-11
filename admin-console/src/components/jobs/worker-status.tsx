@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { InsetCard } from "@/components/ui/inset-card";
 
 import { StatusBadge } from "~/components/status-badge";
+import { IS_PRODUCTION } from "~/lib/environment";
 import { formatDateTime } from "~/lib/format";
 import { jobQueries } from "~/lib/jobs/queries";
 
@@ -23,9 +24,15 @@ export function WorkerStatusLine() {
 					? [worker.host, worker.memoryMb && `${worker.memoryMb} MB`]
 							.filter(Boolean)
 							.join(" · ")
-					: worker.lastSeen
-						? `Ultimo segnale il ${formatDateTime(worker.lastSeen)}. Le esecuzioni restano in coda finché non lo avvii con pnpm console:worker.`
-						: "Le esecuzioni restano in coda finché non lo avvii con pnpm console:worker."}
+					: [
+							worker.lastSeen &&
+								`Ultimo segnale il ${formatDateTime(worker.lastSeen)}.`,
+							IS_PRODUCTION
+								? "Le esecuzioni restano in coda finché il servizio trivia-more:console-worker non riparte su Coolify."
+								: "Le esecuzioni restano in coda finché non lo avvii con pnpm console:worker.",
+						]
+							.filter(Boolean)
+							.join(" ")}
 			</span>
 		</div>
 	);

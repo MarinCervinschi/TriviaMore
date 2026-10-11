@@ -137,7 +137,7 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 
 				<div className="lg:sticky lg:top-6">
 					<StartPanel
-						key={editing?.id ?? "new"}
+						key={`${job.name}:${editing?.id ?? "new"}`}
 						job={job}
 						lastSucceeded={lastSucceeded}
 						editing={editing}
