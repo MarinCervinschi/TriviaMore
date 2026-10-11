@@ -1,8 +1,4 @@
 // Adds the plan classes we lack, fills fields and mirrors every cohort's plan from the official catalogue; writes only with --apply.
-//
-//   pnpm catalog:sync                 cosa cambierebbe
-//   pnpm catalog:sync --apply         applicalo
-//   pnpm catalog:sync --anno 2025     contro un altro anno, invece di quello in corso
 import { closeDb, getDb } from "../../src/db/index.ts";
 import { academicYearOf } from "../../src/lib/catalog/academic-year.ts";
 import type { CatalogueAdditions } from "../../src/lib/catalog/sync/additions.ts";

@@ -52,10 +52,6 @@ export async function getCurrentEnrollment(
 	return selectCurrentEnrollment(getDb(), userId);
 }
 
-export async function hasEnrollment(userId: string): Promise<boolean> {
-	return (await findCurrentEnrollment(getDb(), userId)) !== undefined;
-}
-
 /** The curricula a student of this course and cohort can pick; empty when the plan has only the common trunk. */
 export async function getCurriculumOptions(
 	courseId: string,

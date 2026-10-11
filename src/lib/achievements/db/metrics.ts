@@ -94,13 +94,6 @@ export async function readMetricSnapshots(
 			  ) runs
 			 group by user_id
 		),
-		enrolled as (
-			select e.user_id
-			  from crm.enrollments e
-			  join target t on t.user_id = e.user_id
-			 where e.is_current
-			 group by e.user_id
-		),
 		weeks as (
 			select user_id, count(*)::int as active_weeks
 			  from (
@@ -127,14 +120,12 @@ export async function readMetricSnapshots(
 		       coalesce(us.bookmarked_then_correct, 0) as bookmarked_then_correct,
 		       coalesce(us.approved_requests, 0) as approved_requests,
 		       t.signup_rank,
-		       (en.user_id is not null)::int as enrollment_declared,
 		       ${CRM_METRIC_COLUMNS}
 		  from target t
 		  left join public.user_stats us on us.user_id = t.user_id
 		  left join breadth b on b.user_id = t.user_id
 		  left join streak st on st.user_id = t.user_id
 		  left join weeks w on w.user_id = t.user_id
-		  left join enrolled en on en.user_id = t.user_id
 		  ${CRM_METRIC_JOINS}
 	`);
 

@@ -2,6 +2,13 @@ import { sql } from "drizzle-orm";
 
 /** Read straight from the student's own record, which is the authority: there is no rollup to drift. */
 export const CRM_METRIC_CTES = sql`
+		enrolled as (
+			select e.user_id
+			  from crm.enrollments e
+			  join target t on t.user_id = e.user_id
+			 where e.is_current
+			 group by e.user_id
+		),
 		career as (
 			select e.user_id,
 			       count(*) filter (where ce.status = 'PASSED')::int as exams_passed,
@@ -22,11 +29,13 @@ export const CRM_METRIC_CTES = sql`
 		)`;
 
 export const CRM_METRIC_COLUMNS = sql`
+		       (en.user_id is not null)::int as enrollment_declared,
 		       coalesce(ca.exams_passed, 0) as exams_passed,
 		       coalesce(ca.cfu_earned, 0) as cfu_earned,
 		       coalesce(ca.honours_earned, 0) as honours_earned,
 		       coalesce(tk.tasks_done, 0) as tasks_done`;
 
 export const CRM_METRIC_JOINS = sql`
+		  left join enrolled en on en.user_id = t.user_id
 		  left join career ca on ca.user_id = t.user_id
 		  left join ticked tk on tk.user_id = t.user_id`;

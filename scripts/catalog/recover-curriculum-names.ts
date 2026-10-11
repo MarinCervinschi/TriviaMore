@@ -1,7 +1,4 @@
 // Names the curricula the catalogue only labels with a code or an acronym, from the hand-written course_classes.curriculum; writes only with --apply.
-//
-//   pnpm catalog:recover-names            cosa cambierebbe
-//   pnpm catalog:recover-names --apply    applicalo
 import { and, eq, isNotNull } from "drizzle-orm";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
