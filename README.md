@@ -88,6 +88,8 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 | `pnpm db:studio` | Drizzle Studio |
 | `pnpm db:dump` | Back up schema + data under `backups/` |
 | `pnpm smoke:reads` / `pnpm smoke:writes` | Run every read path, and the write paths in a rolled-back transaction |
+| `pnpm catalog:sync [--anno 2025] [--apply]` | Plan, then with `--apply` write, the changes from the official catalogue; `--anno` targets another academic year |
+| `pnpm catalog:recover-names [--apply]` | Name the curricula the catalogue labels only with a code |
 
 ## Configuration
 

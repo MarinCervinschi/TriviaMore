@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 import { formatExamDate, formatFigure, summaryOf } from "./career-model";
 
-export type NextSitting = { examName: string; date: string; label: string | null };
+type NextSitting = { examName: string; date: string; label: string | null };
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
 	return (

@@ -3,7 +3,6 @@ import type { careerExams, courses, enrollments, examSittings } from "@/db/schem
 import type { CareerSettings, EntryColor } from "./schemas";
 
 export type Enrollment = typeof enrollments.$inferSelect;
-export type NewEnrollment = typeof enrollments.$inferInsert;
 
 type CourseRow = typeof courses.$inferSelect;
 type CourseType = CourseRow["courseType"];

@@ -64,7 +64,6 @@ async function requireOwnSitting(
 	return sitting;
 }
 
-/** Choosing an appello releases the one the exam had before. */
 /** Unchooses the exam's other appelli; the unique index allows one chosen per exam. */
 async function releaseChoices(db: DbOrTx, examId: string, keep?: string) {
 	await db

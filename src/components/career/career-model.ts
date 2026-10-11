@@ -195,11 +195,3 @@ export function cfuBreakdown(career: Career, year?: number | null): CfuBreakdown
 		toChoose: year === undefined ? cfuToChoose(career) : 0,
 	};
 }
-
-export const yearsOf = (career: Career) =>
-	[
-		...new Set<number | null>([
-			...career.exams.map(exam => exam.classYear),
-			...career.choiceGroups.map(group => group.classYear),
-		]),
-	].sort((a, b) => (a ?? Infinity) - (b ?? Infinity));
