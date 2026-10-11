@@ -8,7 +8,9 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { AVATAR_STYLE, avatarSeeds, renderAvatarSvg } from "./dicebear";
 import type { AvatarChoice } from "./types";
 
-const BUCKET = "avatars";
+const GENERATED_BUCKET = "avatars";
+// Raster only, so a file the browser chose can never be served as active content.
+const UPLOAD_BUCKET = "avatar-uploads";
 const PREVIEW_COUNT = 12;
 const EXTENSION: Record<string, string> = {
 	"image/jpeg": "jpg",
@@ -24,19 +26,22 @@ export function getAvatarChoices(userId: string, page = 0): AvatarChoice[] {
 	}));
 }
 
-function publicUrl(path: string): string {
-	const { data } = getSupabaseAdmin().storage.from(BUCKET).getPublicUrl(path);
+function publicUrl(bucket: string, path: string): string {
+	const { data } = getSupabaseAdmin().storage.from(bucket).getPublicUrl(path);
 	return data.publicUrl;
 }
 
 /** An OAuth picture lives on Google, so it is forgotten instead of deleted. */
 async function removePreviousAvatar(userId: string, current: string | null) {
 	if (!current) return;
-	const marker = `/${BUCKET}/${userId}/`;
-	const at = current.indexOf(marker);
-	if (at === -1) return;
-	const path = current.slice(at + BUCKET.length + 2);
-	await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
+	for (const bucket of [GENERATED_BUCKET, UPLOAD_BUCKET]) {
+		const marker = `/${bucket}/${userId}/`;
+		const at = current.indexOf(marker);
+		if (at === -1) continue;
+		const path = current.slice(at + bucket.length + 2);
+		await getSupabaseAdmin().storage.from(bucket).remove([path]);
+		return;
+	}
 }
 
 async function currentImage(userId: string): Promise<string | null> {
@@ -48,9 +53,13 @@ async function currentImage(userId: string): Promise<string | null> {
 	return row?.image ?? null;
 }
 
-async function commitAvatar(userId: string, path: string): Promise<string> {
+async function commitAvatar(
+	userId: string,
+	bucket: string,
+	path: string
+): Promise<string> {
 	const previous = await currentImage(userId);
-	const url = publicUrl(path);
+	const url = publicUrl(bucket, path);
 
 	await getDb().update(profiles).set({ image: url }).where(eq(profiles.id, userId));
 	await removePreviousAvatar(userId, previous);
@@ -66,7 +75,7 @@ export async function setGeneratedAvatar(
 	const path = `${userId}/${AVATAR_STYLE}-${crypto.randomUUID()}.svg`;
 
 	const { error } = await getSupabaseAdmin()
-		.storage.from(BUCKET)
+		.storage.from(GENERATED_BUCKET)
 		.upload(path, renderAvatarSvg(seed), {
 			contentType: "image/svg+xml",
 			upsert: false,
@@ -74,7 +83,7 @@ export async function setGeneratedAvatar(
 
 	if (error) throw new Unavailable("Non è stato possibile salvare l'avatar. Riprova.");
 
-	return commitAvatar(userId, path);
+	return commitAvatar(userId, GENERATED_BUCKET, path);
 }
 
 /** The path is chosen by the server, never by the client. */
@@ -82,14 +91,14 @@ export async function createAvatarUploadUrl(userId: string, contentType: string)
 	const path = `${userId}/${crypto.randomUUID()}.${EXTENSION[contentType] ?? "bin"}`;
 
 	const { data, error } = await getSupabaseAdmin()
-		.storage.from(BUCKET)
+		.storage.from(UPLOAD_BUCKET)
 		.createSignedUploadUrl(path);
 
 	if (error || !data) {
 		throw new Unavailable("Non è stato possibile preparare il caricamento. Riprova.");
 	}
 
-	return { path, token: data.token };
+	return { bucket: UPLOAD_BUCKET, path, token: data.token };
 }
 
 export async function confirmUploadedAvatar(
@@ -102,16 +111,16 @@ export async function confirmUploadedAvatar(
 
 	const name = path.slice(userId.length + 1);
 	const { data, error } = await getSupabaseAdmin()
-		.storage.from(BUCKET)
+		.storage.from(UPLOAD_BUCKET)
 		.list(userId, { search: name });
 
 	const uploaded = data?.find(file => file.name === name);
 	if (error || !uploaded) throw new Unavailable("Caricamento non trovato. Riprova.");
 
 	if (!RASTER_TYPES.has(String(uploaded.metadata?.mimetype ?? ""))) {
-		await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
+		await getSupabaseAdmin().storage.from(UPLOAD_BUCKET).remove([path]);
 		throw new Unavailable("Formato non supportato.");
 	}
 
-	return commitAvatar(userId, path);
+	return commitAvatar(userId, UPLOAD_BUCKET, path);
 }
