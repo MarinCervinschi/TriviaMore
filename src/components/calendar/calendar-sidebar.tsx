@@ -124,7 +124,7 @@ export function CalendarSidebar({
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
-			<div className="flex min-h-0 flex-1 flex-col gap-6 overflow-x-hidden overflow-y-auto pr-1 pb-4">
+			<div className="flex min-h-0 flex-1 flex-col gap-6 overflow-x-hidden overflow-y-auto pr-3 pb-4">
 				<Calendar
 					mode="single"
 					selected={date}
