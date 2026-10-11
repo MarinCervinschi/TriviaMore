@@ -16,7 +16,7 @@ import {
 import { ProgressSummary } from "@/components/progress/progress-summary";
 import { OpenAttemptStatus } from "@/components/quiz/open-attempt-banner";
 import { SeeAllLink } from "@/components/shared/see-all-link";
-import { UserDashboardSkeleton } from "@/components/skeletons";
+import { DashboardCardSkeleton, UserDashboardSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ActivitySection } from "@/components/user/activity-section";
@@ -49,15 +49,18 @@ function DashboardPage() {
 	const { data: studyStats } = useSuspenseQuery(userQueries.studyStats());
 	const { data: openAttempt } = useQuery(quizQueries.openAttempt());
 	// Not suspense and not in the loader, so this feature can never take the dashboard down.
-	const { data: achievements } = useQuery(achievementQueries.all());
-	const { data: enrollment, isSuccess: enrollmentLoaded } = useQuery(
-		crmQueries.currentEnrollment()
-	);
-	const { data: career } = useQuery({
+	const achievementsQuery = useQuery(achievementQueries.all());
+	const achievements = achievementsQuery.data;
+	const enrollmentQuery = useQuery(crmQueries.currentEnrollment());
+	const enrollment = enrollmentQuery.data;
+	const enrollmentLoaded = enrollmentQuery.isSuccess;
+	const careerQuery = useQuery({
 		...crmQueries.career(),
 		enabled: Boolean(enrollment),
 	});
-	const { data: calendar } = useQuery(crmQueries.calendar());
+	const career = careerQuery.data;
+	const calendarQuery = useQuery(crmQueries.calendar());
+	const calendar = calendarQuery.data;
 	const today = useToday();
 
 	if (!profile) return null;
@@ -86,17 +89,33 @@ function DashboardPage() {
 
 			{studyStats.length > 0 && <ProgressSummary daily={studyStats} />}
 
+			{/* A failed query leaves its card out, while a pending one holds its place. */}
 			<DashboardBoard
 				calendar={
-					calendar && today && <CalendarPanel calendar={calendar} today={today} />
+					calendar && today ? (
+						<CalendarPanel calendar={calendar} today={today} />
+					) : (
+						(calendarQuery.isPending || !today) && <DashboardCardSkeleton tall />
+					)
 				}
 				career={
-					enrollment &&
-					career &&
-					calendar &&
-					today && <CareerCard career={career} next={nextSitting(calendar, today)} />
+					enrollment && career && calendar && today ? (
+						<CareerCard career={career} next={nextSitting(calendar, today)} />
+					) : (
+						(enrollmentQuery.isPending ||
+							(enrollment &&
+								(careerQuery.isPending || calendarQuery.isPending || !today))) && (
+							<DashboardCardSkeleton />
+						)
+					)
 				}
-				achievements={achievements && <AchievementStrip overview={achievements} />}
+				achievements={
+					achievements ? (
+						<AchievementStrip overview={achievements} />
+					) : (
+						achievementsQuery.isPending && <DashboardCardSkeleton />
+					)
+				}
 			/>
 
 			{profile.recentClasses.length > 0 && (
