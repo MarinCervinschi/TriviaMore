@@ -16,6 +16,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { parseIsoDay, toIsoDay } from "@/lib/utils/datetime";
 
 import { BUSY_DOT, busyDays, entriesOn } from "./calendar-adapter";
 import { ENTRY_KINDS } from "./calendar-entry";
@@ -32,14 +33,6 @@ const ALL = "all";
 /** Wider days from md up; the inline tokens of the primitive need `!` to give way. */
 const ROOMY_DAYS =
 	"md:[--rdp-day-width:2.75rem]! md:[--rdp-day-height:2.75rem]! md:[--rdp-day_button-width:2.5rem]! md:[--rdp-day_button-height:2.5rem]!";
-
-const toIso = (date: Date) =>
-	`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-const fromIso = (iso: string) => {
-	const [year, month, day] = iso.split("-").map(Number);
-	return new Date(year!, month! - 1, day);
-};
 
 function whenOf(entry: CalendarEntry) {
 	if (entry.time) return entry.endTime ? `${entry.time}–${entry.endTime}` : entry.time;
@@ -116,7 +109,7 @@ export function CalendarDayCard({
 	onAdd: (span: EntrySpan) => void;
 }) {
 	const [day, setDay] = useState(today);
-	const [month, setMonth] = useState(() => fromIso(today));
+	const [month, setMonth] = useState(() => parseIsoDay(today));
 	const [kind, setKind] = useState<EntryKind | typeof ALL>(ALL);
 
 	const shown = useMemo(
@@ -141,8 +134,8 @@ export function CalendarDayCard({
 				<Calendar
 					mode="single"
 					required
-					selected={fromIso(day)}
-					onSelect={date => setDay(toIso(date))}
+					selected={parseIsoDay(day)}
+					onSelect={date => setDay(toIsoDay(date))}
 					month={month}
 					onMonthChange={setMonth}
 					weekStartsOn={1}

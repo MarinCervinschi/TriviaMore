@@ -1,5 +1,3 @@
-import { useMemo, useState } from "react";
-
 import { DiplomaIcon } from "@solar-icons/react/linear/diploma";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -7,16 +5,8 @@ import { format } from "date-fns";
 
 import { AchievementStrip } from "@/components/achievements/achievement-strip";
 import { PinnedAchievements } from "@/components/achievements/pinned-achievements";
-import { refOf, toEntries } from "@/components/calendar/calendar-data";
 import { CalendarDayCard } from "@/components/calendar/calendar-day-card";
-import type { EntrySpan } from "@/components/calendar/calendar-model";
-import {
-	CalendarSheets,
-	type SheetTarget,
-	sheetFromQuick,
-	sheetOf,
-} from "@/components/calendar/calendar-sheets";
-import { QuickCreate, useQuickSave } from "@/components/calendar/quick-create";
+import { useCalendarSheets } from "@/components/calendar/calendar-sheets";
 import { CareerCard } from "@/components/career/career-card";
 import {
 	DataTable,
@@ -34,7 +24,6 @@ import { DashboardBoard } from "@/components/user/dashboard-board";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { achievementQueries } from "@/lib/achievements/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
-import { useUpdateTask } from "@/lib/crm/mutations";
 import { crmQueries } from "@/lib/crm/queries";
 import type { CalendarData } from "@/lib/crm/types";
 import { quizQueries } from "@/lib/quiz/queries";
@@ -132,36 +121,18 @@ function nextSitting(calendar: CalendarData, today: string) {
 }
 
 function CalendarPanel({ calendar, today }: { calendar: CalendarData; today: string }) {
-	const entries = useMemo(() => toEntries(calendar), [calendar]);
-	const [quick, setQuick] = useState<EntrySpan | null>(null);
-	const [sheet, setSheet] = useState<SheetTarget>(null);
-	const quickSave = useQuickSave(() => setQuick(null));
-	const { mutate: patchTask } = useUpdateTask();
+	const sheets = useCalendarSheets(calendar);
 
 	return (
 		<>
 			<CalendarDayCard
-				entries={entries}
+				entries={sheets.entries}
 				today={today}
-				onOpen={entry => setSheet(sheetOf(refOf(entry)))}
-				onToggle={entry => {
-					const ref = refOf(entry);
-					if (ref.kind === "task") patchTask({ id: ref.id, done: !entry.done });
-				}}
-				onAdd={setQuick}
+				onOpen={sheets.openEntry}
+				onToggle={sheets.toggleEntry}
+				onAdd={sheets.startQuick}
 			/>
-			<QuickCreate
-				draft={quick}
-				exams={calendar.exams.filter(exam => !exam.passed)}
-				pending={quickSave.pending}
-				onSave={quickSave.save}
-				onMore={result => {
-					setQuick(null);
-					setSheet(sheetFromQuick(result));
-				}}
-				onClose={() => setQuick(null)}
-			/>
-			<CalendarSheets data={calendar} open={sheet} onClose={() => setSheet(null)} />
+			{sheets.dialogs}
 		</>
 	);
 }

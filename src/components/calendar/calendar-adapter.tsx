@@ -5,6 +5,7 @@ import type {
 	CalendarEvent,
 	EventCalendarProposedUpdate,
 } from "@/components/event-calendar/event-calendar-types";
+import { parseIsoDay, toIsoDay } from "@/lib/utils/datetime";
 
 import { ENTRY_KINDS } from "./calendar-entry";
 import {
@@ -13,14 +14,9 @@ import {
 	addDays as addIsoDays,
 } from "./calendar-model";
 
-const localDay = (iso: string) => {
-	const [year, month, day] = iso.split("-").map(Number);
-	return new Date(year!, month! - 1, day);
-};
-
 const at = (iso: string, time: string) => {
 	const [hours, minutes] = time.split(":").map(Number);
-	const date = localDay(iso);
+	const date = parseIsoDay(iso);
 	date.setHours(hours!, minutes!, 0, 0);
 	return date;
 };
@@ -55,12 +51,12 @@ export function toCalendarEvent(
 	const kind = ENTRY_KINDS[entry.kind];
 	const timed = Boolean(entry.time) && !kind.allDayOnly;
 	const lastDay = entry.endDate ?? entry.date;
-	const start = timed ? at(entry.date, entry.time!) : localDay(entry.date);
+	const start = timed ? at(entry.date, entry.time!) : parseIsoDay(entry.date);
 	const end = timed
 		? entry.endTime
 			? at(lastDay, entry.endTime)
 			: addMinutes(at(lastDay, entry.time!), 60)
-		: addDays(localDay(lastDay), 1);
+		: addDays(parseIsoDay(lastDay), 1);
 	const movable = !entry.done && !entry.recurrence;
 	return {
 		id: entry.id,
@@ -82,8 +78,6 @@ export function toCalendarEvent(
 	};
 }
 
-const day = (date: Date) => format(date, "yyyy-MM-dd");
-
 const viewerZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 /** The entry once per day it falls on between two days; a one-off entry is itself. */
@@ -95,9 +89,9 @@ export function occurrencesOf(
 	if (!entry.recurrence) return [entry];
 	return expandRecurrence(
 		toCalendarEvent(entry),
-		{ start: localDay(from), end: localDay(to) },
+		{ start: parseIsoDay(from), end: parseIsoDay(to) },
 		{ timeZone: viewerZone() }
-	).map(occurrence => ({ ...entry, date: day(occurrence.start) }));
+	).map(occurrence => ({ ...entry, date: toIsoDay(occurrence.start) }));
 }
 
 /** The days of a month, with a week either side, that hold an entry, for the day picker. */
@@ -113,7 +107,7 @@ export function busyDays(entries: CalendarEntry[], month: Date): Date[] {
 				days.add(iso);
 		}
 	}
-	return [...days].map(localDay);
+	return [...days].map(parseIsoDay);
 }
 
 /** What falls on one day, recurrences included: whole days first, then by hour. */
@@ -130,8 +124,8 @@ export const BUSY_DOT =
 
 /** A timed stretch in days and local times; an end at midnight stays on its day as 23:59. */
 export function timedSpan(start: Date, end: Date): EntrySpan {
-	const date = day(start);
-	const last = day(addMinutes(end, -1));
+	const date = toIsoDay(start);
+	const last = toIsoDay(addMinutes(end, -1));
 	const endTime = format(end, "HH:mm");
 	return {
 		date,
@@ -143,9 +137,9 @@ export function timedSpan(start: Date, end: Date): EntrySpan {
 
 /** Where a drag or a resize left the entry, back in days and local times. */
 export function moveOf(update: EventCalendarProposedUpdate<CalendarEntry>): EntrySpan {
-	const date = day(update.start);
+	const date = toIsoDay(update.start);
 	if (update.allDay) {
-		const last = day(addDays(update.end, -1));
+		const last = toIsoDay(addDays(update.end, -1));
 		return last > date ? { date, endDate: last } : { date };
 	}
 	return timedSpan(update.start, update.end);

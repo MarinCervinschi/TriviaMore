@@ -1,18 +1,13 @@
 import { useState } from "react";
 
 import { CalendarMinimalisticIcon } from "@solar-icons/react/linear/calendar-minimalistic";
-import { format } from "date-fns";
 
 import { formatExamDate } from "@/components/career/career-model";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-const parseDay = (value: string) => {
-	const [year, month, day] = value.split("-").map(Number);
-	return new Date(year!, month! - 1, day);
-};
+import { parseIsoDay, toIsoDay } from "@/lib/utils/datetime";
 
 export function DateField({
 	id,
@@ -27,9 +22,9 @@ export function DateField({
 	future?: boolean;
 }) {
 	const [open, setOpen] = useState(false);
-	const selected = value ? parseDay(value) : undefined;
+	const selected = value ? parseIsoDay(value) : undefined;
 	const pick = (day: Date | undefined) => {
-		onChange(day ? format(day, "yyyy-MM-dd") : "");
+		onChange(day ? toIsoDay(day) : "");
 		setOpen(false);
 	};
 
