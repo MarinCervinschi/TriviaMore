@@ -8,6 +8,7 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 |---|---|---|
 | `VITE_SUPABASE_URL` | Client + Server | `supabase status` → Project URL (local: `http://127.0.0.1:54321`) |
 | `VITE_SUPABASE_ANON_KEY` | Client + Server | `supabase status` → Publishable key (`sb_publishable_...`) |
+| `SUPABASE_INTERNAL_URL` | Server only | Kong on the Docker network, for the server's session checks (`prod`/`staging`: `http://supabase-kong-jkk044s048kkcs848osggg0g:8000`). Unset locally, which falls back to `VITE_SUPABASE_URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | `supabase status` → Secret key (`sb_secret_...`) |
 | `VITE_APP_URL` | Server only | App URL for OAuth redirects (default `http://localhost:3000`) |
 | `VITE_SITE_URL` | Client + Server | Canonical site URL (default `https://www.trivia-more.it`) |

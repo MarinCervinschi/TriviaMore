@@ -1,19 +1,15 @@
 import { redirect } from "@tanstack/react-router";
 
 import { getDb } from "@/db";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { requireAdmin, requireAuth } from "@/lib/auth/guards";
+import type { AuthUser } from "@/lib/auth/types";
 
 import { findLatestAcceptedVersions } from "./db/legal-acceptances";
 import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION } from "./versions";
 
-// Returns silently with no user, because the auth guard around it has already redirected.
-export async function requireLegalAcceptance(): Promise<void> {
-	const supabase = createServerSupabaseClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	if (!user) return;
-
+/** The signed-in user (an admin with `admin`) who has accepted the current terms, with one session check. */
+export async function requireLegalAcceptance(admin = false): Promise<AuthUser> {
+	const user = admin ? await requireAdmin() : await requireAuth();
 	const latest = await findLatestAcceptedVersions(getDb(), user.id);
 
 	if (
@@ -22,4 +18,5 @@ export async function requireLegalAcceptance(): Promise<void> {
 	) {
 		throw redirect({ to: "/legal/accept" });
 	}
+	return user;
 }

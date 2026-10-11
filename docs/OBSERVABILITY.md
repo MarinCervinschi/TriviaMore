@@ -183,6 +183,7 @@ them would mean saying so in the privacy policy.
 |---|---|
 | `SEQ_URL` | ingestion base URL, no path. **Unset → events print to the console instead**, which is what contributors without Infisical get |
 | `SEQ_API_KEY` | Seq API key, one per environment |
+| `SEQ_SERVICE_API_KEY` | a service's own key, used instead of `SEQ_API_KEY`. The console and its worker read the app's Infisical secrets, and `infisical run` overwrites a variable of the same name, so Terraform sets theirs under this one |
 | `LOG_LEVEL` | `debug` \| `info` \| `warn` \| `error`; defaults to `info` |
 | `APP_VERSION` | commit sha, **only needed off Coolify** — see below; omitted from events when unset |
 
@@ -194,10 +195,11 @@ layer cache, and this build already costs enough. Confirm it is arriving with
 
 ### Seq setup
 
-One API key per environment, **Data → Ingestion → Add API key**:
+One API key per environment and service, **Data → Ingestion → Add API key**:
 
-- **Attached properties**: `Environment` = `preview` / `production`. Setting it on the key rather
-  than in code means the app cannot mislabel its own environment.
+- **Attached properties**: `Environment` = `preview` / `production`, and `Application` = `app`,
+  `console` or `console-worker`. Setting them on the key rather than in code means a service cannot
+  mislabel itself.
 - **Permissions**: `Ingest` only.
 - **Server timestamps**: leave unchecked — it would overwrite `@t` with arrival time and hide the
   real latency inside a batch.
