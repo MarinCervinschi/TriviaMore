@@ -201,9 +201,12 @@ export function CareerForecast({ career }: { career: Career }) {
 	const [target, setTarget] = useState<Target>("110");
 	const [customTarget, setCustomTarget] = useState(108);
 	const rules = career.settings;
-	const [thesis, setThesis] = useState(rules.thesis);
-	const [inCorso, setInCorso] = useState(rules.inCorso > 0);
-	const [erasmus, setErasmus] = useState(rules.erasmus > 0);
+	const [thesisPick, setThesis] = useState<number | null>(null);
+	const [inCorsoPick, setInCorso] = useState<boolean | null>(null);
+	const [erasmusPick, setErasmus] = useState<boolean | null>(null);
+	const thesis = Math.min(thesisPick ?? rules.thesis, rules.thesis);
+	const inCorso = inCorsoPick ?? rules.inCorso > 0;
+	const erasmus = erasmusPick ?? rules.erasmus > 0;
 	const bonuses = {
 		thesis,
 		inCorso: inCorso ? rules.inCorso : 0,
