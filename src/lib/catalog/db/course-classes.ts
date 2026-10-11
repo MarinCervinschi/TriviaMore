@@ -1,5 +1,6 @@
 import { and, asc, eq, exists, inArray, ne, not, or, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 
 import type { DbOrTx } from "@/db";
 import {
@@ -45,16 +46,14 @@ export function primaryCourseByClass(db: DbOrTx, classIds?: string[]) {
 		.as("primary_course");
 }
 
-function hasContentSql(db: DbOrTx): SQL {
+/** Whether the class `classId` points at has a section other than the exam simulation. */
+export function classHasContentSql(db: DbOrTx, classId: AnyPgColumn): SQL {
 	return exists(
 		db
 			.select({ one: sql`1` })
 			.from(sections)
 			.where(
-				and(
-					eq(sections.classId, courseClasses.classId),
-					ne(sections.name, EXAM_SIMULATION_SECTION)
-				)
+				and(eq(sections.classId, classId), ne(sections.name, EXAM_SIMULATION_SECTION))
 			)
 	);
 }
@@ -86,7 +85,11 @@ export function offeredCourseClassSql(
 				)
 			)
 		);
-	return or(hasContentSql(db), exists(listed), not(exists(planOfYear)))!;
+	return or(
+		classHasContentSql(db, courseClasses.classId),
+		exists(listed),
+		not(exists(planOfYear))
+	)!;
 }
 
 /** A course-class a student can study: an offered teaching, or any class that already has content. */
@@ -96,6 +99,9 @@ export function studiableCourseClassSql(
 ): SQL {
 	return and(
 		offeredCourseClassSql(db, year),
-		or(sql`coalesce(${courseClasses.isTeaching}, true)`, hasContentSql(db))
+		or(
+			sql`coalesce(${courseClasses.isTeaching}, true)`,
+			classHasContentSql(db, courseClasses.classId)
+		)
 	)!;
 }

@@ -1,4 +1,4 @@
-import { and, asc, eq, exists, ne, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
@@ -10,12 +10,13 @@ import {
 	coursePlans,
 	courses,
 	departments,
-	sections,
 } from "@/db/schema";
 import { academicYearOf } from "@/lib/catalog/academic-year";
 import { classColumns, courseClassColumns } from "@/lib/catalog/columns";
-import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
-import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import {
+	classHasContentSql,
+	studiableCourseClassSql,
+} from "@/lib/catalog/db/course-classes";
 import { listCohorts, listCurricula } from "@/lib/catalog/db/course-curricula";
 import { findEnrollmentByCourse } from "@/lib/crm/db/enrollments";
 
@@ -60,17 +61,7 @@ export async function getCourseWithClasses(
 		return { ...base, cohort: null, ...(await currentCatalogue(userId, courseId)) };
 	}
 
-	const hasContent = exists(
-		db
-			.select({ one: sql`1` })
-			.from(sections)
-			.where(
-				and(
-					eq(sections.classId, coursePlans.classId),
-					ne(sections.name, EXAM_SIMULATION_SECTION)
-				)
-			)
-	);
+	const hasContent = classHasContentSql(db, coursePlans.classId);
 	const [curricula, rows] = await Promise.all([
 		listCurricula(db, courseId, cohort),
 		db
