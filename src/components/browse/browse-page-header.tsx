@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import type { Icon } from "@/components/icons";
 import { IconStack } from "@/components/ui/icon-stack";
+import { useAuth } from "@/hooks/useAuth";
 
 import { ExpandableDescription } from "./expandable-description";
 
@@ -12,6 +13,7 @@ export function BrowsePageHeader({
 	description,
 	badges,
 	stats,
+	tabs,
 	actions,
 }: {
 	breadcrumb?: ReactNode;
@@ -20,16 +22,18 @@ export function BrowsePageHeader({
 	description?: string | null;
 	badges?: ReactNode;
 	stats?: { label: string; value: number }[];
+	/** Takes the place of the stats, for a page whose body switches between views. */
+	tabs?: ReactNode;
 	actions?: ReactNode;
 }) {
-	return (
-		<section className="relative w-full pt-6 pb-10 sm:pt-8 sm:pb-14">
-			<div className="container">
-				{breadcrumb}
+	const { isAuthenticated } = useAuth();
 
-				{/* Top row: icon left, actions right. On mobile, actions wrap below
-            so the title block underneath always has full width and never gets
-            squeezed by buttons. */}
+	return (
+		<section className="relative w-full pt-6 pb-6 sm:pt-8 sm:pb-8">
+			<div className="container">
+				{/* Signed in, the trail is in the shell header instead. */}
+				{!isAuthenticated && breadcrumb}
+
 				{(Icon || actions) && (
 					<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 						{Icon ? (
@@ -61,7 +65,8 @@ export function BrowsePageHeader({
 					{badges && (
 						<div className="mt-4 flex flex-wrap items-center gap-2">{badges}</div>
 					)}
-					{stats && stats.length > 0 && (
+					{tabs && <div className="mt-6">{tabs}</div>}
+					{!tabs && stats && stats.length > 0 && (
 						<div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
 							{stats.map((stat, i) => (
 								<div key={stat.label} className="flex items-center gap-2">

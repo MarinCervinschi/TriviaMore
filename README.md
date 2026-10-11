@@ -88,6 +88,9 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 | `pnpm db:studio` | Drizzle Studio |
 | `pnpm db:dump` | Back up schema + data under `backups/` |
 | `pnpm smoke:reads` / `pnpm smoke:writes` | Run every read path, and the write paths in a rolled-back transaction |
+| `pnpm catalog:sync [--anno 2025] [--apply]` | Plan, then with `--apply` write, the changes from the official catalogue; `--anno` targets another academic year |
+| `pnpm catalog:syllabi [--apply]` | Plan, then with `--apply` write, the official syllabi and the class descriptions taken from them |
+| `pnpm catalog:recover-names [--apply]` | Name the curricula the catalogue labels only with a code |
 
 ## Configuration
 
@@ -112,6 +115,19 @@ pnpm db:migrate                         # apply what is pending
 deploy hook, in any environment. Apply the migration first and deploy the code second; use
 expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
 Take a `pnpm db:dump` before touching a shared database.
+
+For a shared database, use `scripts/db/migrations.ts` instead of `pnpm db:migrate`. drizzle-kit runs
+every pending migration in one transaction and hides the SQL error when one fails, so a migration that
+adds an enum value next to one that uses it fails with no message. The script applies each migration
+in its own transaction, records it the way drizzle does, and prints the statement that broke:
+
+```bash
+export SUPABASE_DB_URL='postgresql://postgres:…@host:54322/postgres'   # the admin role
+pnpm exec tsx scripts/db/migrations.ts           # the last one applied, and what is pending
+pnpm exec tsx scripts/db/migrations.ts --apply   # apply them, one transaction each
+```
+
+It runs without `infisical run` on purpose: Infisical would replace the URL with the local one.
 
 The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
 role through `SUPABASE_DB_URL`.

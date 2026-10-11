@@ -63,11 +63,6 @@ function CardRow({
 	);
 }
 
-/**
- * The end of a flashcard session. There is no grade to report — nothing was
- * answered — so coverage is the headline: how much of the deck was actually
- * turned over, and which cards were not.
- */
 export function FlashcardResults({
 	questions,
 	studiedCards,
@@ -78,7 +73,7 @@ export function FlashcardResults({
 }: {
 	questions: FlashcardQuestion[];
 	studiedCards: Set<number>;
-	/** The whole session, in milliseconds. */
+	/** Milliseconds. */
 	timeSpent: number;
 	sectionName: string;
 	onExit: () => void;

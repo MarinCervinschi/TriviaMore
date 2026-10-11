@@ -162,7 +162,6 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 				onMouseEnter={() => setIsPaused(true)}
 				onMouseLeave={() => setIsPaused(false)}
 			>
-				{/* Outer orbit ring */}
 				<div
 					className="border-border/50 absolute rounded-full border border-dashed"
 					style={{
@@ -172,7 +171,6 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 					}}
 				/>
 
-				{/* Inner orbit ring */}
 				<div
 					className="border-border/50 absolute rounded-full border border-dashed"
 					style={{
@@ -182,7 +180,6 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 					}}
 				/>
 
-				{/* Center hub */}
 				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 					<div
 						className="border-primary/20 from-primary/10 to-card relative flex items-center justify-center rounded-full border-2 bg-gradient-to-br shadow-lg"
@@ -193,7 +190,6 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 					</div>
 				</div>
 
-				{/* Inner orbit (clockwise) */}
 				<div
 					className="absolute inset-0"
 					style={{
@@ -218,7 +214,6 @@ export function OrbitingTechStack({ className }: { className?: string }) {
 					))}
 				</div>
 
-				{/* Outer orbit (counter-clockwise) */}
 				<div
 					className="absolute inset-0"
 					style={{

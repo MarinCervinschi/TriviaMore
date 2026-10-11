@@ -55,8 +55,7 @@ export function MaintainerInviteDialog({
 		setBody("");
 	}
 
-	// Regenerate the default subject/body from the selected course; the text is
-	// course-specific, so picking a course overwrites any previous draft.
+	// The text is per course, so picking a course overwrites an edited draft.
 	function handleCourseChange(id: string) {
 		setCourseId(id);
 		const course = courses.find(c => c.id === id);

@@ -20,8 +20,7 @@ export const profiles = pgTable(
     email: text(),
     image: text(),
     role: roleEnum().default("STUDENT").notNull(),
-    // Position in signup order, immutable once set. Stored because deriving it
-    // meant ranking the whole table on every achievement evaluation.
+    // Immutable once set. Stored, because deriving it ranks the whole table on every evaluation.
     signupRank: integer("signup_rank"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()

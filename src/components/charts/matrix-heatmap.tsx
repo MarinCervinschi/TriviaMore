@@ -16,18 +16,13 @@ export type MatrixHeatmapProps = Omit<ChartCardProps, "children"> & {
 	rows: string[];
 	columns: string[];
 	cells: MatrixCell[];
-	/** Top of the colour scale. Defaults to the highest value present. */
+	/** Defaults to the highest value present. */
 	max?: number;
 	unitLabel?: string;
 	valueFormatter?: (value: number) => string;
 	emptyMessage?: string;
 };
 
-/**
- * Two categorical axes and one magnitude — "which section is hard at which
- * difficulty", "which hour of which day gets studied". The ramp is sequential,
- * so the cell colour reads as more-or-less, never as a category.
- */
 export function MatrixHeatmap({
 	rows,
 	columns,
@@ -46,8 +41,7 @@ export function MatrixHeatmap({
 		);
 	}
 
-	// Row and column labels are arbitrary text, so the key separator has to be a
-	// character they cannot contain.
+	// Labels are free text, so the key separator is a character they cannot contain.
 	const byCell = new Map(
 		cells.map(cell => [cellKey(cell.row, cell.column), cell.value])
 	);

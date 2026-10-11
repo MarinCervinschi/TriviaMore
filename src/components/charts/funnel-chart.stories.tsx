@@ -11,10 +11,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * Every stage must be a subset of the one before it, otherwise the narrowing
- * shape claims a drop-off that did not happen.
- */
 export const Default: Story = {
 	render: () => (
 		<FunnelChart

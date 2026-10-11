@@ -46,7 +46,6 @@ export async function findQuizQuestionOrder(db: DbOrTx, quizId: string) {
 		.orderBy(asc(quizQuestions.order));
 }
 
-// Replaces the quiz.quizzes_detail view.
 export async function findQuizWithChain(db: DbOrTx, quizId: string) {
 	const primaryCourse = primaryCourseByClass(db);
 
@@ -90,11 +89,7 @@ export async function findQuizSectionAndMode(db: DbOrTx, quizId: string) {
 	return quiz;
 }
 
-/**
- * Drops the given quizzes that no attempt points at any more — a quiz only exists
- * to be taken, so one nobody holds is dead weight. `quiz_questions` cascade on the
- * foreign key.
- */
+/** Deletes the given quizzes that no attempt points at; `quiz_questions` cascade. */
 export async function deleteOrphanQuizzes(db: DbOrTx, quizIds: string[]) {
 	if (quizIds.length === 0) return;
 

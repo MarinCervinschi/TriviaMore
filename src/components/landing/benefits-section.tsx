@@ -111,7 +111,6 @@ export function BenefitsSection({
 	return (
 		<section className="relative py-20 sm:py-28">
 			<div className="container">
-				{/* Benefits */}
 				<div className="mb-20 grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
 					<motion.div
 						ref={headingRef}
@@ -144,7 +143,6 @@ export function BenefitsSection({
 					</motion.div>
 				</div>
 
-				{/* CTA */}
 				<CTACard {...ctaCard} />
 			</div>
 		</section>

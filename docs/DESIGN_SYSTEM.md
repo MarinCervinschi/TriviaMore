@@ -235,8 +235,10 @@ never appears on something inert.
 
 ## Background
 
-One texture, `<PageBand />`, mounted **once** in the `_app` shell so it spans the sidebar gutter
-(D12, D13). Dots plus one soft orb, both fading vertically, anchored **top left**.
+One texture, `<PageBand />`, mounted **once** in the `_app` shell (D12, D13, D29). Dots plus one
+soft orb, both fading vertically, anchored **top left** — but inside the app shell the band sits in
+the inset panel, starting **below the header**, and passes `glow={false}`, so there it is the dots
+alone. The public shell keeps both.
 
 - **`level` follows `isAuthenticated`.** `"public"` is the same band with its two alphas turned up —
   not a second system.
@@ -342,6 +344,28 @@ No dialog says "Sei sicuro?". It names the object and the act.
 
 When a route has a `pendingComponent`, its skeleton in `src/components/skeletons/` changes with the
 page. A skeleton that drifts is worse than none: it makes the swap jump.
+
+### How wide the content is
+
+`container` caps at `var(--container-max, 80rem)`, and the cap is a token so the
+context can set it (D29, D31):
+
+| where | value | why |
+|---|---|---|
+| the inset panel | `none` | so the header's trail starts at the panel edge |
+| the wrapper around `<Outlet />` | `80rem` | the measure every page gets by default |
+| a page that opts out | `none` | set on the element that carries `container` |
+
+**Content is measured, chrome is not.** The cap wraps the `Outlet`, never the panel:
+the trail belongs to the shell and runs edge to edge.
+
+**Opt out where width carries information** — a chart grid, a long table — not where
+it merely fills: past ~1280px a fixed-column card grid shows the same cards wider,
+not more of them. Today: analytics and its entity pages, the attempt history, I miei
+insegnamenti, the whole admin layout.
+
+**A tab set shares one measure.** Traguardi sits in the analytics tab row, so it opts
+out with them: switching tab must not move the layout.
 
 ### The `container` trap
 

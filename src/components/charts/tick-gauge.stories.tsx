@@ -77,7 +77,7 @@ export const Barra: Story = {
 	),
 };
 
-/** Una soglia di 1 è binaria: la barra sarebbe vuota o piena, mai in mezzo. */
+/** A threshold of 1 is binary, so the bar is either empty or full. */
 export const Limiti: Story = {
 	name: "I casi limite",
 	render: () => (

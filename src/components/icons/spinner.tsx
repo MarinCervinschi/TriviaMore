@@ -5,9 +5,6 @@ interface SpinnerProps {
 	label?: string;
 }
 
-// A spinner is motion, not an icon: it owns its own animation and announces itself as a status,
-// rather than being an aria-hidden icon that a call site remembers to spin.
-
 export function Spinner({ className, label = "Caricamento" }: SpinnerProps) {
 	return (
 		<span role="status" className={cn("inline-flex size-4 shrink-0", className)}>

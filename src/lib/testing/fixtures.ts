@@ -12,6 +12,7 @@ import {
 	sections,
 } from "@/db/schema";
 import type { AuthUser } from "@/lib/auth/types";
+import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 
 import type { TestTx } from "./db";
 
@@ -19,11 +20,7 @@ function shortId() {
 	return crypto.randomUUID().slice(0, 8);
 }
 
-// profiles.id references auth.users.id, so a profile needs a backing auth user.
-// GoTrue's auth.users defaults every column but the id, and an on-insert trigger
-// then creates the matching profile with the default STUDENT role. The role is
-// reset by delete + insert rather than update: a BEFORE UPDATE trigger on
-// profiles guards role changes and is off-limits to a plain fixture.
+// Inserting an auth user fires a trigger that creates its profile with the STUDENT role.
 export async function createUser(
 	tx: TestTx,
 	role: AuthUser["role"] = "MAINTAINER"
@@ -35,7 +32,7 @@ export async function createUser(
 	return id;
 }
 
-async function createDepartment(tx: TestTx): Promise<string> {
+export async function createDepartment(tx: TestTx): Promise<string> {
 	const [row] = await tx
 		.insert(departments)
 		.values({ name: "Dip. Test", code: `D-${shortId()}` })
@@ -43,7 +40,7 @@ async function createDepartment(tx: TestTx): Promise<string> {
 	return row.id;
 }
 
-async function createCourse(tx: TestTx, departmentId: string): Promise<string> {
+export async function createCourse(tx: TestTx, departmentId: string): Promise<string> {
 	const [row] = await tx
 		.insert(courses)
 		.values({ name: "Corso Test", code: `C-${shortId()}`, departmentId })
@@ -72,13 +69,13 @@ async function linkClassToCourse(
 async function createSection(
 	tx: TestTx,
 	classId: string,
-	isPublic: boolean
+	isPublic: boolean,
+	// slug is generated from the name and unique per class, so sibling names must differ.
+	name = `Sezione ${shortId()}`
 ): Promise<string> {
 	const [row] = await tx
 		.insert(sections)
-		// slug is generated from the name and is unique per class, so the name must
-		// differ between sibling sections.
-		.values({ name: `Sezione ${shortId()}`, classId, isPublic })
+		.values({ name, classId, isPublic })
 		.returning({ id: sections.id });
 	return row.id;
 }
@@ -94,8 +91,6 @@ export type MaintainerScope = {
 	sectionOutOfScope: string;
 };
 
-// A minimal catalog graph exercising the MAINTAINER scoping rules: one course
-// the user maintains and one they do not, each with its own class and sections.
 export async function seedMaintainerScope(tx: TestTx): Promise<MaintainerScope> {
 	const maintainer = await createUser(tx, "MAINTAINER");
 	const departmentId = await createDepartment(tx);
@@ -125,15 +120,19 @@ export async function seedMaintainerScope(tx: TestTx): Promise<MaintainerScope> 
 
 export type SectionAccessScope = {
 	student: string;
+	maintainer: string;
+	admin: string;
+	superadmin: string;
 	publicSection: string;
 	privateGranted: string;
 	privateDenied: string;
 };
 
-// A student with one explicit grant, plus a public section and a private
-// section they cannot reach: the three cases the section-access gate turns on.
 export async function seedSectionAccessScope(tx: TestTx): Promise<SectionAccessScope> {
 	const student = await createUser(tx, "STUDENT");
+	const maintainer = await createUser(tx, "MAINTAINER");
+	const admin = await createUser(tx, "ADMIN");
+	const superadmin = await createUser(tx, "SUPERADMIN");
 	const classId = await createClass(tx);
 
 	const publicSection = await createSection(tx, classId, true);
@@ -142,7 +141,47 @@ export async function seedSectionAccessScope(tx: TestTx): Promise<SectionAccessS
 
 	await tx.insert(sectionAccess).values({ userId: student, sectionId: privateGranted });
 
-	return { student, publicSection, privateGranted, privateDenied };
+	return {
+		student,
+		maintainer,
+		admin,
+		superadmin,
+		publicSection,
+		privateGranted,
+		privateDenied,
+	};
+}
+
+export type SectionCountScope = {
+	student: string;
+	admin: string;
+	courseId: string;
+	classId: string;
+	publicSections: string[];
+	privateSection: string;
+	sentinel: string;
+};
+
+export async function seedSectionCountScope(tx: TestTx): Promise<SectionCountScope> {
+	const student = await createUser(tx, "STUDENT");
+	const admin = await createUser(tx, "ADMIN");
+	const departmentId = await createDepartment(tx);
+	const courseId = await createCourse(tx, departmentId);
+	const classId = await createClass(tx);
+	await linkClassToCourse(tx, courseId, classId);
+
+	return {
+		student,
+		admin,
+		courseId,
+		classId,
+		publicSections: [
+			await createSection(tx, classId, true),
+			await createSection(tx, classId, true),
+		],
+		privateSection: await createSection(tx, classId, false),
+		sentinel: await createSection(tx, classId, true, EXAM_SIMULATION_SECTION),
+	};
 }
 
 export type QuizScope = {

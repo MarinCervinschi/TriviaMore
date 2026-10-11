@@ -51,9 +51,6 @@ describe("getGradeChartColor", () => {
 	});
 
 	it("shares its band edges with getGradeColor", () => {
-		// The invariant is that the two switch band at the same scores. It used to be checked by
-		// matching substrings, which quietly required both to be named alike — and they are not:
-		// text takes the ink token, a chart fill takes the surface one. Compare where each changes.
 		const scores = [0, 17.9, 18, 23.9, 24, 26.9, 27, 30, 30.1];
 		const edges = (f: (n: number) => string) =>
 			scores.map((score, i) => i > 0 && f(score) !== f(scores[i - 1]));

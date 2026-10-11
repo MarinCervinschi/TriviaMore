@@ -55,8 +55,6 @@ import { formatTimeSpent } from "@/lib/utils/quiz-results";
 
 type Series = { key: string; label: string; color: string };
 
-/** What a metric is called, how it is coloured and how it is formatted: one table,
- * so the tabs, the headline cards and any future export agree. */
 export const METRICS: { key: MetricKey; label: string; color: string; icon: Icon }[] = [
 	{ key: "quizzes", label: "Quiz", color: "var(--color-chart-1)", icon: CupFirstIcon },
 	{
@@ -90,10 +88,8 @@ function pctChange(current: number, previous: number): number {
 	return previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100);
 }
 
-/** Mini-glyphs that show the plot style itself, so the toggle needs no words. */
 type Formatter = (n: number) => string;
 
-/** One tooltip row: the swatch, the series label, the formatted value. */
 function TooltipRow({
 	color,
 	label,
@@ -139,11 +135,6 @@ function GridAndAxis({ hideY }: { hideY?: boolean }) {
 	);
 }
 
-/**
- * A flow — a count or a sum. Columns, not an area: an area asserts a path
- * *between* two buckets, and a month with no quizzes is an absence, not a
- * descent. Its zero is the true value, so nothing here is nulled out.
- */
 function FlowChart({
 	points,
 	series,
@@ -192,15 +183,8 @@ function FlowChart({
 	);
 }
 
-/**
- * A ratio — a grade average or an accuracy. Read at *day* resolution on a time
- * axis: a dot for the days that side studied, and the running average as the
- * line, which holds flat across a gap because an average does not move when
- * nothing is added to it. No point is ever invented for an empty period.
- */
 type Curve = "step" | "smooth";
 
-/** The two line shapes, drawn: a toggle that shows what it does needs no label. */
 function GlyphSmooth() {
 	return (
 		<svg viewBox="0 0 24 12" width="20" height="10" fill="none" aria-hidden>
@@ -242,7 +226,7 @@ function QualityChart({
 	metricKey: MetricKey;
 	range: DayRange;
 	ticks: { day: number; label: string }[];
-	/** `step` is the literal shape — the average holds until the next quiz. */
+	/** `step` holds the average flat until the next quiz. */
 	curve: Curve;
 	height?: number;
 }) {
@@ -369,7 +353,6 @@ const MODE_OPTIONS: { value: ExplorerMode; label: string; icon: Icon }[] = [
 	{ value: "EXAM_SIMULATION", label: "Esame", icon: DiplomaIcon },
 	{ value: "both", label: "Entrambi", icon: LayersIcon },
 ];
-/** Round the tab that lands on a top corner — and only that layout's corner. */
 function cornerClass(index: number, count: number): string {
 	return cn(
 		index === 0 && "rounded-tl-xl",
@@ -378,11 +361,6 @@ function cornerClass(index: number, count: number): string {
 	);
 }
 
-/**
- * The drill-down analytics card, reused as-is for the whole account and for a
- * single section, class or course — only `daily` changes. `today` is injected in
- * stories for determinism.
- */
 export function MetricExplorer({
 	daily,
 	today,
@@ -392,12 +370,8 @@ export function MetricExplorer({
 }: {
 	daily: DailyStudyStat[];
 	today?: Date;
-	/** Which tab a story opens on; the app lands on the grade. */
 	initialMetric?: MetricKey;
-	/**
-	 * Pass both to let the page own the window: the card then drops its own two
-	 * chips, which would otherwise be the twins of the ones in the page toolbar.
-	 */
+	/** Pass both to let the page own the window; the card then drops its own two chips. */
 	period?: ExplorerPeriod;
 	mode?: ExplorerMode;
 }) {
@@ -473,8 +447,6 @@ export function MetricExplorer({
 		label: bucket.label,
 	}));
 	const hasData = windowTotals.quizzes > 0;
-	// The whole span has no earlier window to compare against, so the tabs never
-	// carry a delta there — the range says what the figures cover instead.
 	const spanLabel = period === "all" ? buckets[0]?.label : null;
 
 	return (
@@ -505,8 +477,6 @@ export function MetricExplorer({
 										type="button"
 										onClick={() => setCurve(option.value)}
 										aria-pressed={curve === option.value}
-										// The glyph is the whole control, so the name lives here: a
-										// drawing is not an accessible name.
 										aria-label={option.label}
 										className={cn(
 											"flex items-center rounded-md px-2 py-1.5 transition-colors",

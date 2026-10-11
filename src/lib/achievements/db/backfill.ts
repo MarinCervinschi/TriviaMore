@@ -10,15 +10,7 @@ import {
 	PERFECT_SCORE,
 } from "../constants";
 
-/**
- * Rebuilds every rollup from the history that is their source of truth. Safe to
- * run repeatedly: every statement is keyed the same way the incremental path
- * writes and whatever the history no longer justifies is deleted, so a rebuild
- * converges rather than accumulating.
- *
- * This is the guarantee that makes the derived tables acceptable at all — a
- * counter you cannot rebuild is a corrupt value waiting to be discovered.
- */
+/** Rebuilds every rollup from the history; safe to run repeatedly. */
 export async function backfillRollups(db: DbOrTx): Promise<void> {
 	await db.execute(sql`
 		insert into public.user_section_stats

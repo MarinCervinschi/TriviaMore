@@ -3,6 +3,7 @@ import type { CSSProperties, ComponentProps } from "react";
 import { AltArrowLeftIcon } from "@solar-icons/react/linear/alt-arrow-left";
 import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
 import { DayPicker } from "react-day-picker";
+import { it } from "react-day-picker/locale";
 import "react-day-picker/style.css";
 
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ const CALENDAR_TOKENS = {
 function Calendar({ className, showOutsideDays = true, ...props }: CalendarProps) {
 	return (
 		<DayPicker
+			locale={it}
 			showOutsideDays={showOutsideDays}
 			className={cn("p-3", className)}
 			style={CALENDAR_TOKENS}

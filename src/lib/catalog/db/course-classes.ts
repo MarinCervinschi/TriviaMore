@@ -1,7 +1,18 @@
-import { asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, exists, inArray, ne, not, or, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 
 import type { DbOrTx } from "@/db";
-import { courseClasses, courses, departments } from "@/db/schema";
+import {
+	courseClasses,
+	coursePlans,
+	courses,
+	departments,
+	sections,
+} from "@/db/schema";
+
+import { academicYearOf } from "../academic-year";
+import { EXAM_SIMULATION_SECTION } from "../constants";
 
 type DepartmentArea = (typeof departments.$inferSelect)["area"];
 
@@ -33,4 +44,64 @@ export function primaryCourseByClass(db: DbOrTx, classIds?: string[]) {
 		.where(classIds ? inArray(courseClasses.classId, classIds) : undefined)
 		.orderBy(asc(courseClasses.classId), asc(courseClasses.position))
 		.as("primary_course");
+}
+
+/** Whether the class `classId` points at has a section other than the exam simulation. */
+export function classHasContentSql(db: DbOrTx, classId: AnyPgColumn): SQL {
+	return exists(
+		db
+			.select({ one: sql`1` })
+			.from(sections)
+			.where(
+				and(eq(sections.classId, classId), ne(sections.name, EXAM_SIMULATION_SECTION))
+			)
+	);
+}
+
+/** A course-class the catalogue still lists this year, as the current cohort's plan or as a class taught to an earlier cohort; a course with no plan for the year keeps every row. */
+export function offeredCourseClassSql(
+	db: DbOrTx,
+	year = academicYearOf(new Date())
+): SQL {
+	const planOfYear = db
+		.select({ one: sql`1` })
+		.from(coursePlans)
+		.where(
+			and(
+				eq(coursePlans.courseId, courseClasses.courseId),
+				eq(coursePlans.cohort, year)
+			)
+		);
+	const listed = db
+		.select({ one: sql`1` })
+		.from(coursePlans)
+		.where(
+			and(
+				eq(coursePlans.courseId, courseClasses.courseId),
+				eq(coursePlans.classId, courseClasses.classId),
+				or(
+					eq(coursePlans.cohort, year),
+					sql`${coursePlans.cohort} + ${coursePlans.classYear} - 1 = ${year}`
+				)
+			)
+		);
+	return or(
+		classHasContentSql(db, courseClasses.classId),
+		exists(listed),
+		not(exists(planOfYear))
+	)!;
+}
+
+/** A course-class a student can study: an offered teaching, or any class that already has content. */
+export function studiableCourseClassSql(
+	db: DbOrTx,
+	year = academicYearOf(new Date())
+): SQL {
+	return and(
+		offeredCourseClassSql(db, year),
+		or(
+			sql`coalesce(${courseClasses.isTeaching}, true)`,
+			classHasContentSql(db, courseClasses.classId)
+		)
+	)!;
 }

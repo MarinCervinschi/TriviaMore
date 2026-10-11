@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PlusGlyph } from "@/components/icons";
 import { RequestFormDialog } from "@/components/requests/request-form-dialog";
 import { RequestStatusBadge } from "@/components/requests/request-status-badge";
+import { PageToolbar } from "@/components/shared/page-toolbar";
 import { UserRequestsSkeleton } from "@/components/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -33,8 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { UserBreadcrumb } from "@/components/user/user-breadcrumb";
-import { UserHero } from "@/components/user/user-hero";
+import { usePagedList } from "@/hooks/usePagedList";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem, withReducedMotion } from "@/lib/motion";
 import {
@@ -120,21 +121,18 @@ function timeAgo(dateStr: string): string {
 
 function UserContributionsPage() {
 	const { data: requests } = useSuspenseQuery(requestQueries.userRequests());
+	const paged = usePagedList(requests);
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const prefersReduced = useReducedMotion();
 
 	return (
-		<div className="space-y-8 pb-8">
-			<UserHero
-				icon={InboxIcon}
-				title="I miei contributi"
-				description="Proponi nuovi contenuti per la piattaforma."
-			/>
+		<div className="pb-8">
+			<div className="container space-y-6 py-6">
+				<PageToolbar
+					title="I miei contributi"
+					meta="Proponi nuovi contenuti per la piattaforma."
+				/>
 
-			<div className="container space-y-6">
-				<UserBreadcrumb current="Contributi" />
-
-				{/* Info banner */}
 				<div className="flex items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
 					<InfoCircleIcon className="size-4 shrink-0 text-blue-500" />
 					<p className="text-muted-foreground text-xs">
@@ -176,14 +174,14 @@ function UserContributionsPage() {
 						initial="hidden"
 						animate="visible"
 					>
-						{requests.map((request, i) => (
+						{paged.items.map((request, i) => (
 							<motion.div
 								key={request.id}
 								variants={withReducedMotion(staggerItem, prefersReduced)}
 							>
 								<ContributionRow
 									request={request}
-									isLast={i === requests.length - 1}
+									isLast={i === paged.items.length - 1}
 									isExpanded={expandedId === request.id}
 									onToggle={() =>
 										setExpandedId(expandedId === request.id ? null : request.id)
@@ -194,6 +192,14 @@ function UserContributionsPage() {
 						))}
 					</motion.div>
 				)}
+
+				<Pagination
+					page={paged.page}
+					totalPages={paged.totalPages}
+					pageSize={paged.pageSize}
+					totalItems={paged.total}
+					onPageChange={paged.setPage}
+				/>
 			</div>
 		</div>
 	);
@@ -218,7 +224,7 @@ function ContributionRow({
 		REPORT: FlagIcon,
 		FILE_UPLOAD: CloudUploadIcon,
 	};
-	// The same slots RequestTypeBadge uses, so a request type has one colour across the app.
+	// The same colour slots RequestTypeBadge uses.
 	const colorMap = {
 		NEW_SECTION: { bg: "bg-chart-2/10", text: "text-chart-2-ink" },
 		NEW_QUESTIONS: { bg: "bg-chart-4/10", text: "text-chart-4-ink" },
@@ -231,7 +237,6 @@ function ContributionRow({
 
 	return (
 		<div className={cn(!isLast && !isExpanded && "border-border/50 border-b")}>
-			{/* Row header */}
 			<button
 				onClick={onToggle}
 				className="hover:bg-accent/30 flex w-full items-center gap-3 px-5 py-4 text-left transition-colors"
@@ -262,7 +267,6 @@ function ContributionRow({
 				</div>
 			</button>
 
-			{/* Expanded detail */}
 			<AnimatePresence>
 				{isExpanded && (
 					<motion.div
@@ -273,7 +277,6 @@ function ContributionRow({
 						className="overflow-hidden"
 					>
 						<div className="space-y-4 border-t px-5 py-4">
-							{/* Admin note */}
 							{request.adminNote && (
 								<div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
 									<p className="text-xs font-medium text-amber-600 dark:text-amber-400">
@@ -283,7 +286,6 @@ function ContributionRow({
 								</div>
 							)}
 
-							{/* Editable form or read-only preview */}
 							{request.status === "NEEDS_REVISION" ? (
 								<RevisionForm requestId={request.id} submitted={request.submitted} />
 							) : request.status === "PENDING" &&
@@ -356,8 +358,6 @@ function SubmittedContentPreview({ submitted }: { submitted: SubmittedContent })
 		</div>
 	);
 }
-
-// ─── Revision Form ───
 
 function RevisionForm({
 	requestId,
@@ -659,10 +659,6 @@ function RevisionQuestionEditor({
 		</div>
 	);
 }
-
-// ─── Previews ───
-
-// ─── Report: edit + delete while pending ───
 
 function ReportEditor({
 	requestId,

@@ -21,7 +21,7 @@ export function getDisplayName(profile: UserProfile): string {
 	return "Utente Anonimo";
 }
 
-export function getInitials(profile: UserProfile): string {
+export function getInitials(profile: Pick<UserProfile, "name" | "email">): string {
 	if (profile.name) {
 		return profile.name
 			.split(" ")

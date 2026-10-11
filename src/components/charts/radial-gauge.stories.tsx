@@ -12,7 +12,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The gauge earns its place only when the maximum means something. */
 export const GradeBands: Story = {
 	render: () => (
 		<div className="flex flex-wrap items-center gap-8">

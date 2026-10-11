@@ -37,12 +37,7 @@ function finalize(acc: Acc, id: string): RollupNode {
 	};
 }
 
-/**
- * Rolls the flat attempt list up into a course → insegnamento → sezione tree,
- * with per-node quizzes / mean grade / time. Only attempts whose whole chain is
- * live are placed (a deleted section snapshots to a null link and can't be
- * navigated to); they still count on the history and trend.
- */
+/** Places only attempts whose whole chain is live; the rest still count on history and trend. */
 export function buildProgressRollup(attempts: AttemptHistoryEntry[]): RollupCourse[] {
 	type ClassAcc = Acc & { sections: Map<string, Acc> };
 	type CourseAcc = Acc & { classes: Map<string, ClassAcc> };

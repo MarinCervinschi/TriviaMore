@@ -6,17 +6,11 @@ import type { AttemptRow } from "@/lib/quiz/results";
 
 type Filter = "todo" | "all" | "correct";
 
-/**
- * The question list, filtered by default to what is left to go back to. Landing
- * on "tutte" would put twenty-three answers the student got right between them
- * and the four they did not.
- */
 export function ReviewList({
 	rows,
 	renderItem,
 }: {
 	rows: AttemptRow[];
-	/** The caller owns the row, because it owns the bookmark and the report buttons. */
 	renderItem: (row: AttemptRow, index: number, open: boolean) => ReactNode;
 }) {
 	const counts = useMemo(
@@ -28,12 +22,9 @@ export function ReviewList({
 		[rows]
 	);
 
-	// A perfect attempt has nothing to review, and an empty list behind a selected
-	// filter reads as a bug rather than as a result.
 	const [filter, setFilter] = useState<Filter>(counts.todo > 0 ? "todo" : "all");
 
-	// The index travels with the row: it numbers the question as the quiz asked it,
-	// which a filtered list would otherwise renumber from one.
+	// The index travels with the row, so a filtered list keeps the quiz's numbering.
 	const shown = useMemo(() => {
 		const numbered = rows.map((row, index) => ({ row, index }));
 		if (filter === "all") return numbered;

@@ -14,7 +14,6 @@ type DepartmentChartData = { name: string; code: string; count: number };
 const config: ChartConfig = {
 	count: {
 		label: "Corsi",
-		// Use the exact app primary brand orange used in CTAs/buttons.
 		color: "hsl(var(--primary))",
 	},
 };
@@ -22,11 +21,9 @@ const config: ChartConfig = {
 export function DepartmentBarChart({ data }: { data: DepartmentChartData[] }) {
 	if (data.length === 0) return null;
 
-	// Sort ascending so the highest is at the top of the chart (recharts vertical layout reads bottom-up).
+	// Ascending, because Recharts draws a vertical layout bottom-up.
 	const sorted = [...data].sort((a, b) => a.count - b.count);
 
-	// Intrinsic height: each bar gets a constant slot so the chart never overflows
-	// its container.
 	const rowHeight = 28;
 	const chartHeight = sorted.length * rowHeight + 16;
 

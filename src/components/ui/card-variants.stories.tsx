@@ -29,7 +29,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// A category = a chart ink; the soft IconTile derives the whole tint from it.
 const CHART_INK = {
 	1: "text-chart-1-ink",
 	2: "text-chart-2-ink",
@@ -204,7 +203,7 @@ function IconOnlyCard({ icon: I, chart }: { icon: Icon; chart?: ChartKey }) {
 	);
 }
 
-/** Icona monotono + testo. */
+/** Monotone icon and text. */
 export const TestoEIcona: Story = {
 	name: "Testo + icona",
 	render: () => (
@@ -233,7 +232,7 @@ export const TestoEIcona: Story = {
 	),
 };
 
-/** Icona colorata (categoria = token chart) + numero, dot sul lato vuoto. */
+/** Coloured icon, its category a chart token, with a number. */
 export const IconeColorate: Story = {
 	name: "Icone colorate (stat)",
 	render: () => (
@@ -246,7 +245,7 @@ export const IconeColorate: Story = {
 	),
 };
 
-/** Icona a sinistra + stato: layout orizzontale, colore dello stato dal token semantico. */
+/** Icon on the left and a status coloured by its semantic token. */
 export const Stato: Story = {
 	name: "Icona + stato",
 	render: () => (
@@ -273,7 +272,7 @@ export const Stato: Story = {
 	),
 };
 
-/** Flow di icone + badge: card larga, texture al centro del box del flow. */
+/** A flow of icons and badges on a wide card. */
 export const Flow: Story = {
 	render: () => (
 		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -302,7 +301,7 @@ export const Flow: Story = {
 	),
 };
 
-/** Solo icona: colorata vs monotono, dot nell'angolo opposto. */
+/** Icon only, coloured and monotone. */
 export const SoloIcona: Story = {
 	name: "Solo icona (colore vs mono)",
 	render: () => (

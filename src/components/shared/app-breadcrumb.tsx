@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 export type Crumb = {
 	label: string;
-	/** Absent on the last crumb: the page you are already on. */
+	/** Absent on the last crumb, the current page. */
 	to?: LinkProps["to"];
 	params?: Record<string, string>;
 	icon?: Icon;
@@ -37,7 +37,7 @@ export type Crumb = {
 export type BreadcrumbSurface = "plain" | "soft" | "outline";
 export type BreadcrumbIcons = "none" | "first" | "all";
 
-// Opaque on purpose: the page band's dots run under the breadcrumb.
+// Opaque because the page band's dots run under the breadcrumb.
 const SURFACE: Record<BreadcrumbSurface, string> = {
 	plain: "",
 	soft: "bg-muted rounded-xl px-3 py-1.5",
@@ -56,12 +56,7 @@ function CrumbIcon({ crumb, boxed }: { crumb: Crumb; boxed: boolean }) {
 	);
 }
 
-/**
- * Whether the label is actually showing an ellipsis. Measured rather than counted:
- * the cut is `maxLabel` in `ch`, and a `ch` is the width of a zero, so a label of
- * 26 narrow characters still fits inside 22ch. Counting characters put a tooltip
- * on names that were rendering in full.
- */
+/** Whether the label shows an ellipsis, measured from the rendered box. */
 function useIsClipped<T extends HTMLElement>() {
 	const ref = useRef<T>(null);
 	const [clipped, setClipped] = useState(false);
@@ -69,7 +64,7 @@ function useIsClipped<T extends HTMLElement>() {
 	useEffect(() => {
 		const node = ref.current;
 		if (!node) return;
-		// A pixel of tolerance: sub-pixel rounding otherwise reports a clip that is not there.
+		// One pixel of tolerance for sub-pixel rounding.
 		const measure = () => setClipped(node.scrollWidth > node.clientWidth + 1);
 		measure();
 		const observer = new ResizeObserver(measure);
@@ -94,7 +89,6 @@ function CrumbBody({
 	const body = (
 		<span className="inline-flex min-w-0 items-center gap-1.5">
 			<CrumbIcon crumb={crumb} boxed={boxed} />
-			{/* `ch` cuts by character while still respecting the font's own metrics. */}
 			<span ref={labelRef} className="truncate" style={{ maxWidth: `${maxLabel}ch` }}>
 				{crumb.label}
 			</span>
@@ -111,11 +105,7 @@ function CrumbBody({
 	);
 }
 
-/**
- * The one breadcrumb. Past `maxItems` the middle collapses into a menu instead of
- * wrapping onto a second line — the catalogue's names are long enough that a
- * five-level trail would otherwise take two rows on a laptop.
- */
+/** Past `maxItems`, the middle crumbs collapse into a menu. */
 export function AppBreadcrumb({
 	items,
 	maxItems = 4,
@@ -126,13 +116,12 @@ export function AppBreadcrumb({
 	className,
 }: {
 	items: Crumb[];
-	/** Visible slots, the menu counted: 4 keeps the first, the dots and two names. */
+	/** Visible slots, counting the menu. */
 	maxItems?: number;
-	/** Characters a label may take before it is cut; the full name lands in a tooltip. */
+	/** Characters before a label is cut; the full name goes in a tooltip. */
 	maxLabel?: number;
 	surface?: BreadcrumbSurface;
 	icons?: BreadcrumbIcons;
-	/** Draws the first crumb's icon in its own bordered square. */
 	boxedFirstIcon?: boolean;
 	className?: string;
 }) {

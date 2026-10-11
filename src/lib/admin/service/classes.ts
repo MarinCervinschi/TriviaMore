@@ -9,6 +9,7 @@ import {
 	questions,
 	sections,
 } from "@/db/schema";
+import { classColumns, courseColumns, departmentColumns } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { Conflict, NotFound, rethrowUniqueViolation } from "@/lib/server/errors";
 
@@ -34,13 +35,7 @@ export async function getAdminClassDetail(id: string): Promise<AdminClassDetail>
 
 	const [cls] = await db
 		.select({
-			id: classes.id,
-			name: classes.name,
-			description: classes.description,
-			cfu: classes.cfu,
-			position: classes.position,
-			createdAt: classes.createdAt,
-			updatedAt: classes.updatedAt,
+			...classColumns,
 		})
 		.from(classes)
 		.where(eq(classes.id, id))
@@ -55,30 +50,12 @@ export async function getAdminClassDetail(id: string): Promise<AdminClassDetail>
 			classYear: courseClasses.classYear,
 			mandatory: courseClasses.mandatory,
 			catalogueUrl: courseClasses.catalogueUrl,
-			curriculum: courseClasses.curriculum,
 			position: courseClasses.position,
 			course: {
-				id: courses.id,
-				name: courses.name,
-				code: courses.code,
-				description: courses.description,
-				departmentId: courses.departmentId,
-				location: courses.location,
-				cfu: courses.cfu,
-				position: courses.position,
-				courseType: courses.courseType,
-				createdAt: courses.createdAt,
-				updatedAt: courses.updatedAt,
+				...courseColumns,
 			},
 			department: {
-				id: departments.id,
-				name: departments.name,
-				code: departments.code,
-				description: departments.description,
-				area: departments.area,
-				position: departments.position,
-				createdAt: departments.createdAt,
-				updatedAt: departments.updatedAt,
+				...departmentColumns,
 			},
 		})
 		.from(courseClasses)
@@ -127,7 +104,6 @@ export async function getAdminClassDetail(id: string): Promise<AdminClassDetail>
 					classYear: parent.classYear,
 					mandatory: parent.mandatory,
 					catalogueUrl: parent.catalogueUrl,
-					curriculum: parent.curriculum,
 					position: parent.position,
 				}
 			: null,
@@ -256,7 +232,6 @@ export async function addClassToCourse(input: CourseClassInput) {
 				classYear: input.class_year,
 				mandatory: input.mandatory,
 				catalogueUrl: input.catalogue_url || null,
-				curriculum: input.curriculum || null,
 				position: input.position ?? 0,
 			})
 			.returning();
@@ -280,8 +255,6 @@ export async function updateCourseClass(
 			mandatory: updates.mandatory,
 			catalogueUrl:
 				updates.catalogue_url === undefined ? undefined : updates.catalogue_url || null,
-			curriculum:
-				updates.curriculum === undefined ? undefined : updates.curriculum || null,
 			position: updates.position,
 		})
 		.where(

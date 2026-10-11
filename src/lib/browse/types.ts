@@ -34,7 +34,7 @@ export type DepartmentLocation = Pick<
 // row rather than the class itself.
 export type CourseClassInfo = Pick<
 	typeof courseClasses.$inferSelect,
-	"code" | "classYear" | "mandatory" | "catalogueUrl" | "curriculum" | "position"
+	"code" | "classYear" | "mandatory" | "catalogueUrl" | "position"
 >;
 
 // Listing types
@@ -47,14 +47,6 @@ export type BrowseDepartment = Department & {
 export type BrowseCourse = Course & {
 	classCount: number;
 };
-
-// A class seen from inside a course: junction fields merged into the class.
-// `position` drops out of the class side — in a course listing it always means
-// the position inside that course.
-export type BrowseClassInCourse = Omit<Class, "position"> &
-	CourseClassInfo & {
-		sectionCount: number;
-	};
 
 export type BrowseSection = Section & {
 	questionCount: number;
@@ -69,9 +61,46 @@ export type DepartmentWithCourses = Department & {
 	locations: DepartmentLocation[];
 };
 
+/** A group of the plan; `position` orders the groups of a year. */
+export type PlanGroup = { code: string | null; label: string; position: number };
+
+/** A plan entry that is not a class to study, such as a traineeship or the final exam. */
+export type PlanActivity = {
+	id: string;
+	name: string;
+	cfu: number | null;
+	classYear: number;
+	// The group every curriculum puts it in; null when they disagree.
+	group: PlanGroup | null;
+	curricula: string[];
+};
+
+/** A class of a cohort's plan; `link` is the class code our pages use, null when we do not hold the class. */
+export type PlanClass = {
+	id: string;
+	code: string;
+	link: string | null;
+	name: string;
+	description: string | null;
+	cfu: number | null;
+	classYear: number;
+	sectionCount: number;
+	// Compulsory in every curriculum that lists the class.
+	mandatory: boolean;
+	group: PlanGroup | null;
+	curricula: { code: string; mandatory: boolean; group: PlanGroup | null }[];
+};
+
+export type CourseCurriculum = { code: string; name: string };
+
 export type CourseWithClasses = Course & {
 	department: Department;
-	classes: BrowseClassInCourse[];
+	// The cohort whose plan the lists follow; null when the course has no plan.
+	cohort: number | null;
+	cohorts: number[];
+	curricula: CourseCurriculum[];
+	classes: PlanClass[];
+	activities: PlanActivity[];
 };
 
 export type ClassWithSections = Class & {
@@ -83,6 +112,7 @@ export type ClassWithSections = Class & {
 		totalQuizQuestions: number;
 		totalFlashcardQuestions: number;
 	};
+	syllabus: ClassSyllabus | null;
 };
 
 export type SectionDetail = Section & {
@@ -171,6 +201,7 @@ export interface SearchClassesParams {
 	query?: string;
 	departmentId?: string;
 	courseId?: string;
+	campus?: string;
 	classYear?: number;
 	mandatory?: boolean;
 	page?: number;
@@ -184,3 +215,16 @@ export interface PaginatedResult<T> {
 
 export type SearchCoursesResponse = PaginatedResult<SearchCourseResult>;
 export type SearchClassesResponse = PaginatedResult<SearchClassResult>;
+
+/** A class's official syllabus, as the catalogue publishes it. */
+export type ClassSyllabus = {
+	academicYear: number;
+	catalogueUrl: string | null;
+	objectives: string | null;
+	contents: string | null;
+	prerequisites: string | null;
+	assessment: string | null;
+	readings: string | null;
+	teachingMethods: string | null;
+	outcomes: string | null;
+};

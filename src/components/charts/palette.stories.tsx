@@ -23,10 +23,6 @@ function Swatch({ color, label }: { color: string; label: string }) {
 	);
 }
 
-/**
- * The two palettes side by side. Toggle the theme in the toolbar: dark is a
- * separate set of steps against the dark surface, not the light values flipped.
- */
 export const Reference: Story = {
 	render: () => (
 		<div className="space-y-8">

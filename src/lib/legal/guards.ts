@@ -6,8 +6,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { findLatestAcceptedVersions } from "./db/legal-acceptances";
 import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION } from "./versions";
 
-// Runs after requireAuth: with no user it returns silently, because the auth
-// guard wrapping it has already redirected.
+// Returns silently with no user, because the auth guard around it has already redirected.
 export async function requireLegalAcceptance(): Promise<void> {
 	const supabase = createServerSupabaseClient();
 	const {

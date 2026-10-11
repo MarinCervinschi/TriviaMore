@@ -116,8 +116,23 @@ construction.
   `bg-transparent` from shadcn. **This is the first thing to check when a control looks wrong.**
 - Six surfaces sit genuinely outside `_app` (auth, quiz, flashcard, quiz skeleton, error, not-found)
   and mount their own band.
-- The band belongs in the **shell**, not in page headers: they sit at different nesting depths, so none
-  of them can reach across the sidebar's 90px gutter — and that gutter is where the seam appears.
+- The band belongs in the **shell**, not in page headers — one mount, so no two of them can disagree.
+  Since D29 it lives inside the inset panel and starts below the header, and the app shell asks for
+  **no orb** (`glow={false}`). The 90px rail gutter the earlier version of this rule spoke of is gone.
+
+## Width
+
+**Content is measured, chrome is not.** `container` caps at `var(--container-max, 80rem)`;
+the cap wraps the `Outlet`, and the inset panel keeps `none` so the header's trail
+starts at the panel edge. Never move the cap onto the panel.
+
+- **The question is whether width carries information**, not whether the page is a
+  table. Past ~1280px a fixed-column card grid shows the same cards wider, not more
+  of them — that is what made the dashboard and the catalogue read as stretched.
+- **A page opts out with `[--container-max:none]`** on the element that carries
+  `container`, and only where the width is information: a chart grid, a long table.
+- **A tab set shares one measure.** A page in someone else's tab row takes that row's
+  choice, or switching tab moves the layout under the tabs.
 
 ## Motion
 

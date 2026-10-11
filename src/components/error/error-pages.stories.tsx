@@ -3,10 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ErrorPage } from "./error-page";
 import { NotFoundPage } from "./not-found-page";
 
-/**
- * The two boundaries. `withBand` is off inside the `_app` shell, which paints the band already — two
- * stack their alphas — so both stories exist here, and the difference between them is the point.
- */
 const meta = {
 	title: "Error/Pagine",
 	parameters: { layout: "fullscreen" },
@@ -28,7 +24,6 @@ export const NotFound: Story = {
 	render: () => <NotFoundPage />,
 };
 
-/** The title and the message are props: a route that knows what was missing says so. */
 export const NotFoundCustom: Story = {
 	name: "404 con testo proprio",
 	render: () => (

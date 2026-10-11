@@ -1,14 +1,13 @@
 import { useState } from "react";
 
-import { AltArrowRightIcon } from "@solar-icons/react/linear/alt-arrow-right";
 import { CheckCircleIcon } from "@solar-icons/react/linear/check-circle";
 import { ClockCircleIcon } from "@solar-icons/react/linear/clock-circle";
 import { CupFirstIcon } from "@solar-icons/react/linear/cup-first";
 import { GraphUpIcon } from "@solar-icons/react/linear/graph-up";
-import { Link } from "@tanstack/react-router";
 
 import type { Icon } from "@/components/icons";
 import { DeltaBadge } from "@/components/shared/delta-badge";
+import { SeeAllLink } from "@/components/shared/see-all-link";
 import { CardContent, CardHeader, CardTexture, CardTitle } from "@/components/ui/card";
 import { InsetCard } from "@/components/ui/inset-card";
 import {
@@ -42,7 +41,6 @@ function Sparkline({ points }: { points: (number | null)[] }) {
 	const w = 96;
 	const h = 28;
 	const pad = 2;
-	// A gap keeps its place on the x axis: the point is dropped, its slot is not.
 	const drawn = points.flatMap((p, i) => (p === null ? [] : [{ value: p, i }]));
 	if (drawn.length < 2) return null;
 	const values = drawn.map(point => point.value);
@@ -105,11 +103,8 @@ export function ProgressSummary({
 	today,
 }: {
 	daily: DailyStudyStat[];
-	/** Injected in stories to keep them deterministic; the app uses now. */
 	today?: Date;
 }) {
-	// A week is often a single session, or none: the year is the window that has
-	// something to show on a home page.
 	const [period, setPeriod] = useState<SummaryPeriod>("year");
 	const summary = buildStudySummary(daily, period, today ?? new Date());
 
@@ -118,14 +113,9 @@ export function ProgressSummary({
 			footer={
 				<div className="text-muted-foreground flex flex-col items-start gap-1 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2">
 					<span>{summary.footer}</span>
-					<Link
-						to="/user/analytics"
-						className="group text-foreground inline-flex items-center gap-1.5 font-medium hover:underline"
-					>
-						<GraphUpIcon className="size-4" />
+					<SeeAllLink to="/user/analytics" icon={GraphUpIcon}>
 						Analisi complete
-						<AltArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-					</Link>
+					</SeeAllLink>
 				</div>
 			}
 		>

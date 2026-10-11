@@ -36,6 +36,7 @@ const DEPARTMENT = {
 	code: "DIEF",
 	description: "Ingegneria informatica, meccanica e dei materiali.",
 	area: "TECNOLOGIA" as const,
+	catalogueCode: "120",
 	position: 0,
 	createdAt: now,
 	updatedAt: now,
@@ -51,6 +52,11 @@ const COURSE = {
 	cfu: 180,
 	position: 0,
 	courseType: "BACHELOR" as const,
+	nationalCode: "0360106203100001",
+	degreeClass: "L-8",
+	teachingLanguage: "ita",
+	restrictedAccess: false,
+	catalogueUrl: null,
 	createdAt: now,
 	updatedAt: now,
 };
@@ -96,7 +102,6 @@ export const Class: Story = {
 			<ClassForm
 				cls={{
 					name: "Analisi matematica I",
-					description: "Calcolo di una variabile.",
 					cfu: 9,
 				}}
 				junction={{ code: "INF-001", class_year: 1, mandatory: true }}

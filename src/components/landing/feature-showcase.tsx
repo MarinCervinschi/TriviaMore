@@ -14,11 +14,9 @@ import { cn } from "@/lib/utils";
 
 import type { ShowcaseFeature } from "./data";
 
-// TODO: Replace placeholders with real <img src="/screenshots/..." /> once screenshots are captured
 function ScreenshotPlaceholder({ feature }: { feature: ShowcaseFeature }) {
 	return (
 		<div className="bg-card h-full w-full rounded-2xl border p-4 shadow-inner">
-			{/* Window chrome */}
 			<div className="mb-3 flex items-center gap-1.5">
 				<div className="h-2.5 w-2.5 rounded-full bg-red-400/60" />
 				<div className="h-2.5 w-2.5 rounded-full bg-yellow-400/60" />
@@ -26,17 +24,7 @@ function ScreenshotPlaceholder({ feature }: { feature: ShowcaseFeature }) {
 				<div className="bg-muted ml-2 h-4 w-32 rounded-lg" />
 			</div>
 
-			{/* Content based on feature type */}
 			{feature.id === "quiz" && <QuizMockup />}
-			{/* TODO: replace with real screenshot when ready */}
-			{/* {feature.id === "dashboard" && (
-        <img
-          src="/screenshots/dashboard.png"
-          alt="Dashboard utente"
-          className="w-full rounded-xl"
-          loading="lazy"
-        />
-      )} */}
 			{feature.id === "dashboard" && <DashboardMockup />}
 			{feature.id === "flashcards" && <FlashcardMockup />}
 			{feature.id === "progress" && <ProgressMockup />}
@@ -47,7 +35,6 @@ function ScreenshotPlaceholder({ feature }: { feature: ShowcaseFeature }) {
 function QuizMockup() {
 	return (
 		<div className="space-y-3">
-			{/* Timer bar */}
 			<div className="flex items-center justify-between">
 				<div className="bg-muted h-3 w-20 rounded-full" />
 				<div className="bg-muted mx-4 h-2 flex-1 overflow-hidden rounded-full">
@@ -55,12 +42,10 @@ function QuizMockup() {
 				</div>
 				<div className="bg-primary/20 h-3 w-12 rounded-full" />
 			</div>
-			{/* Question */}
 			<div className="bg-background rounded-xl border p-3">
 				<div className="bg-muted mb-2 h-3 w-3/4 rounded" />
 				<div className="bg-muted h-3 w-1/2 rounded" />
 			</div>
-			{/* Answer options */}
 			<div className="grid grid-cols-1 gap-2">
 				{[false, true, false, false].map((active, i) => (
 					<div
@@ -86,7 +71,6 @@ function QuizMockup() {
 function DashboardMockup() {
 	return (
 		<div className="space-y-3">
-			{/* Stat cards */}
 			<div className="grid grid-cols-2 gap-2">
 				{[
 					"bg-blue-500/10",
@@ -100,7 +84,6 @@ function DashboardMockup() {
 					</div>
 				))}
 			</div>
-			{/* Recent activity */}
 			<div className="bg-background rounded-xl border p-3">
 				<div className="bg-muted mb-2 h-2.5 w-24 rounded" />
 				{[0.8, 0.6, 0.7].map((w, i) => (
@@ -119,20 +102,17 @@ function DashboardMockup() {
 function FlashcardMockup() {
 	return (
 		<div className="flex flex-col items-center space-y-3">
-			{/* Progress */}
 			<div className="flex w-full items-center gap-2">
 				<div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
 					<div className="gradient-bg h-full w-2/5 rounded-full" />
 				</div>
 				<div className="bg-muted h-3 w-16 rounded" />
 			</div>
-			{/* Flashcard */}
 			<div className="border-primary/20 from-primary/5 to-card w-full rounded-2xl border-2 bg-gradient-to-br p-6 text-center">
 				<div className="bg-muted mx-auto mb-3 h-3 w-3/4 rounded" />
 				<div className="bg-muted mx-auto mb-4 h-3 w-1/2 rounded" />
 				<div className="bg-primary/15 mx-auto h-6 w-24 rounded-lg" />
 			</div>
-			{/* Nav buttons */}
 			<div className="flex gap-2">
 				<div className="bg-muted h-8 w-20 rounded-xl" />
 				<div className="bg-primary/20 h-8 w-20 rounded-xl" />
@@ -144,7 +124,6 @@ function FlashcardMockup() {
 function ProgressMockup() {
 	return (
 		<div className="space-y-3">
-			{/* Chart area */}
 			<div className="bg-background rounded-xl border p-3">
 				<div className="bg-muted mb-2 h-2.5 w-20 rounded" />
 				<div className="flex h-20 items-end gap-1.5">
@@ -157,7 +136,6 @@ function ProgressMockup() {
 					))}
 				</div>
 			</div>
-			{/* Stats row */}
 			<div className="grid grid-cols-3 gap-2">
 				{["bg-green-500/10", "bg-blue-500/10", "bg-orange-500/10"].map((bg, i) => (
 					<div key={i} className={cn("rounded-xl border p-2 text-center", bg)}>
@@ -191,7 +169,6 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 			initial="hidden"
 			animate={isVisible ? "visible" : "hidden"}
 		>
-			{/* Text side */}
 			<motion.div className={isReversed ? "lg:order-2" : ""} variants={container}>
 				<motion.div
 					className={cn("mb-4 inline-flex rounded-2xl p-3", feature.iconBg)}
@@ -224,7 +201,6 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 				</motion.ul>
 			</motion.div>
 
-			{/* Screenshot side with 3D perspective */}
 			<motion.div className={isReversed ? "lg:order-1" : ""} variants={slideVariant}>
 				<div className="[perspective:1200px]">
 					<div
@@ -237,7 +213,6 @@ function ShowcaseRow({ feature, index }: { feature: ShowcaseFeature; index: numb
 					>
 						<div className="relative overflow-hidden rounded-2xl border shadow-2xl">
 							<ScreenshotPlaceholder feature={feature} />
-							{/* Gradient overlay for depth */}
 							<div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
 						</div>
 					</div>
@@ -255,11 +230,9 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 
 	return (
 		<section className="relative overflow-hidden py-20 sm:py-28">
-			{/* Background */}
 			<div className="bg-muted/20 pointer-events-none absolute inset-0 -z-10" />
 
 			<div className="container">
-				{/* Section heading */}
 				<motion.div
 					ref={headingRef}
 					className="mb-20 text-center"
@@ -285,7 +258,6 @@ export function FeatureShowcase({ features }: { features: ShowcaseFeature[] }) {
 					</motion.p>
 				</motion.div>
 
-				{/* Alternating feature rows */}
 				<div className="space-y-20 lg:space-y-28">
 					{features.map((feature, i) => (
 						<ShowcaseRow key={feature.id} feature={feature} index={i} />

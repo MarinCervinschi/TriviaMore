@@ -9,13 +9,8 @@ export function AdminRowActions({
 	onDelete,
 	label,
 }: {
-	/** The edit affordance, usually a `<Link>` wrapping an icon. */
 	children?: ReactNode;
 	onDelete?: () => void;
-	/**
-	 * Names the row's object. Without it a table reads as twenty identical "Modifica" buttons —
-	 * compliant, but useless to anyone listening rather than looking.
-	 */
 	label?: string;
 }) {
 	return (

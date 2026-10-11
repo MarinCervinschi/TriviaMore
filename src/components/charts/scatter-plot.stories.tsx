@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { ScatterPlot } from "./scatter-plot";
 
-// A fixed spread: no Math.random, so two looks compare.
 const DATA = [
 	{ key: "a", label: "Alpha", x: 12, y: 79, weight: 38 },
 	{ key: "b", label: "Bravo", x: 18, y: 96, weight: 120 },
@@ -37,13 +36,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** Without the two guides the quadrants disappear and only the cloud is left. */
 export const SenzaGuide: Story = {
 	name: "Senza guide",
 	args: { guides: undefined },
 };
 
-/** Every mark the same size: the weight stops being a channel. */
 export const SenzaPesi: Story = {
 	name: "Senza pesi",
 	args: { data: DATA.map(point => ({ ...point, weight: undefined })) },

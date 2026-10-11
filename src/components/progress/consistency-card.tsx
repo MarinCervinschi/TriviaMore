@@ -24,7 +24,7 @@ import type {
 } from "@/lib/user/types";
 import { cn } from "@/lib/utils";
 
-/** One square per day, quizzes and decks summed: it counts sittings, not marks. */
+/** One square per day, with quizzes and decks summed. */
 function toCalendar(
 	daily: DailyStudyStat[],
 	flashcardDays: DailyFlashcardDay[]
@@ -41,7 +41,7 @@ function toCalendar(
 		.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-// Hoisted: a literal default would be a new array each render, re-running the memo.
+// Hoisted, because a literal default is a new array each render and re-runs the memo.
 const NO_FLASHCARDS: DailyFlashcardDay[] = [];
 
 function Figure({
@@ -71,12 +71,7 @@ function Figure({
 	);
 }
 
-/**
- * How regularly you study: the streaks, and a square per day of the year. The
- * squares come from the daily stats, which are keyed in UTC by the server, so the
- * calendar is the same everywhere; the streaks are counted in the **viewer's**
- * day and therefore wait for hydration, showing dashes until then.
- */
+/** The streaks use the viewer's day, so they show dashes until hydration. */
 export function ConsistencyCard({
 	daily,
 	flashcardDays = NO_FLASHCARDS,
@@ -96,8 +91,6 @@ export function ConsistencyCard({
 	);
 	const data = useMemo(() => toCalendar(daily, flashcardDays), [daily, flashcardDays]);
 
-	// The chip speaks strings (a radio group's value is one); the heatmap's own
-	// view type carries the year as a number, so it is parsed back on the way out.
 	const [view, setView] = useState("rolling");
 	const views: ChipOption<string>[] = [
 		{ value: "rolling", label: "12 mesi" },

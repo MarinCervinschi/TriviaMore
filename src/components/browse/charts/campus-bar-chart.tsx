@@ -11,9 +11,7 @@ import { formatNumber } from "@/lib/utils/format";
 
 type CampusChartData = { campus: string; label: string; count: number };
 
-// Skip chart-1 (brand orange used for the primary single-series chart) so each
-// campus has its own distinct hue without clashing with the dept bar. Slot order
-// is kept: it is the order the palette was validated in.
+// chart-1 is skipped because the department bar already uses it.
 const COLOR_VARS = [
 	"var(--color-chart-2)",
 	"var(--color-chart-3)",

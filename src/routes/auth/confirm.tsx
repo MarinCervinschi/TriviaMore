@@ -29,7 +29,7 @@ export const Route = createFileRoute("/auth/confirm")({
 			throw redirect({ to: "/auth/auth-code-error" });
 		}
 
-		throw redirect({ to: "/user" });
+		throw redirect({ to: search.type === "signup" ? "/onboarding" : "/user" });
 	},
 	component: () => null,
 });

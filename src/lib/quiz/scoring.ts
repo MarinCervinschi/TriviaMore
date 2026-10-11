@@ -2,14 +2,7 @@ import type { EvaluationMode } from "./types";
 
 export const THIRTY_SCALE_MAX = 33;
 
-/**
- * Maps raw evaluation-mode points onto the 0–33 normalized scale used in the
- * results page and in the start-quiz dialog summary.
- *
- * The total max is always {@link THIRTY_SCALE_MAX}, so each question is worth
- * `THIRTY_SCALE_MAX / N`. The min collapses to
- * `(incorrect_points / correct_points) * THIRTY_SCALE_MAX`, independent of N.
- */
+/** The max is always `THIRTY_SCALE_MAX`; the min is `(incorrect_points / correct_points) * THIRTY_SCALE_MAX`. */
 export function getNormalizedEvaluationScale(
 	evaluationMode: EvaluationMode,
 	totalQuestions: number
@@ -32,9 +25,6 @@ export function getNormalizedEvaluationScale(
 	};
 }
 
-/**
- * Converts a single answer's raw score into its contribution on the 0–33 scale.
- */
 export function scaleAnswerScore(
 	rawScore: number,
 	evaluationMode: EvaluationMode,
@@ -71,7 +61,6 @@ export function calculateAnswerScore(
 	const totalCorrect = correctAnswer.length;
 	const totalGiven = userAnswer.length;
 
-	// Exact match
 	if (
 		correctGiven === totalCorrect &&
 		incorrectGiven === 0 &&
@@ -83,7 +72,6 @@ export function calculateAnswerScore(
 		};
 	}
 
-	// Partial credit
 	if (correctGiven > 0) {
 		if (evaluationMode.partialCreditEnabled) {
 			if (incorrectGiven > 0 && evaluationMode.incorrectAnswerPoints === 0) {

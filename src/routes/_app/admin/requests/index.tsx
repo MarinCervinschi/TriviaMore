@@ -26,8 +26,6 @@ import { seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/format";
 
-// Open requests still await action; the rest are considered handled (approved,
-// acknowledged or rejected) and are hidden from the default view.
 const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"];
 const isOpen = (r: AdminContentRequest) => OPEN_STATUSES.includes(r.status);
 const isReport = (r: AdminContentRequest) => r.requestType === "REPORT";

@@ -8,4 +8,5 @@ export {
 	PlusGlyph,
 } from "@/components/icons/glyphs";
 export { GithubIcon } from "@/components/icons/github";
+export { GoogleIcon } from "@/components/icons/google";
 export { Spinner } from "@/components/icons/spinner";

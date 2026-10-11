@@ -5,8 +5,6 @@ import { z } from "zod";
 import { correctLetters, parseAnswers, parseQuestions } from "../lib/parse-markdown.ts";
 import { json } from "../lib/utils.ts";
 
-// Above this much-longer-than-every-distractor margin, the option clearly breaks the
-// ±20% length-parity target from multiple-choice.md → critical. At or below → soft warning.
 const CRITICAL_MARGIN_PCT = 20;
 
 interface OptionLen {
@@ -99,12 +97,9 @@ export function register(server: McpServer) {
 				}
 
 				mcCount++;
-				// Chance that one specific option is the longest among all (baseline for the summary).
 				chanceSum += 100 / options.length;
 
 				const multiCorrect = correct.length > 1;
-				// Compare the WEAKEST correct option against the STRONGEST distractor: the bias holds
-				// only when every correct option out-lengths every distractor.
 				const minCorrectLen = Math.min(...correct.map(o => o.len));
 				const longestDistractorLen = Math.max(...distractors.map(o => o.len));
 				const correctIsLongest = minCorrectLen > longestDistractorLen;
@@ -136,7 +131,6 @@ export function register(server: McpServer) {
 				? Math.round((correctIsLongestCount / mcCount) * 100)
 				: 0;
 			const expectedByChancePct = mcCount ? Math.round(chanceSum / mcCount) : 0;
-			// Systemic when the correct option is the longest far more often than chance would predict.
 			const systemicBias =
 				mcCount >= 4 && correctIsLongestPct > Math.max(45, expectedByChancePct + 20);
 

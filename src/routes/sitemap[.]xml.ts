@@ -10,8 +10,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 	server: {
 		handlers: {
 			GET: async () => {
-				// Building it costs four paginated catalog queries, so hold it in
-				// memory between crawls even when no CDN is in front.
+				// Held in memory, because building it costs four paginated catalog queries.
 				if (!cached || Date.now() - cached.at > TTL_MS) {
 					cached = { xml: await buildSitemap(), at: Date.now() };
 				}

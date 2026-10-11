@@ -1,14 +1,10 @@
-// Exercises the write side of #90 — start, complete, cancel — against the live
-// schema, inside a transaction that is rolled back at the end. Nothing is
-// persisted, which is the point: every db/ function takes a `DbOrTx`, so the
-// whole flow runs on a handle the caller controls.
-//
-//   pnpm smoke:writes
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { TransactionRollbackError } from "drizzle-orm/errors";
 
 import { closeDb, getDb } from "../../src/db/index.ts";
 import {
+	courses,
+	enrollments,
 	evaluationModes,
 	flashcardAttempts,
 	questions,
@@ -17,6 +13,13 @@ import {
 	quizzes,
 } from "../../src/db/schema/index.ts";
 import { QUIZ_QUESTION_TYPES } from "../../src/lib/catalog/db/questions.ts";
+import {
+	findCurrentEnrollment,
+	findEnrollmentByCourse,
+	insertEnrollment,
+	setEnrollmentCurrent,
+	updateEnrollmentDetails,
+} from "../../src/lib/crm/db/enrollments.ts";
 import { insertFlashcardAttempt } from "../../src/lib/flashcard/db/flashcard-attempts.ts";
 import {
 	applyAttemptGrade,
@@ -168,7 +171,6 @@ try {
 				graded?.quizMode === "STUDY"
 		);
 
-		// flashcard: one row per session, and replaying its id records nothing more.
 		const flashcardSession = `smoke-${seed.section_id}`;
 		for (let i = 0; i < 2; i++) {
 			await insertFlashcardAttempt(tx, {
@@ -224,8 +226,7 @@ try {
 			picked.map(question => question.id)
 		);
 
-		// Completed first: the partial unique index allows one open attempt per user,
-		// so the quiz can only be held by a second attempt that is already finished.
+		// The partial unique index allows one open attempt per user, so this one is already completed.
 		const doneAttempt = await insertAttempt(tx, {
 			userId: seed.user_id,
 			quizId: staleQuiz.id,
@@ -266,11 +267,68 @@ try {
 			.where(eq(quizzes.id, staleQuiz.id));
 		expect("reap: a quiz another attempt holds is kept", heldQuiz.length === 1);
 
+		// The unique index on (user_id, course_id) ignores is_current, so a demoted row collides too.
+		const heldCourses = await tx
+			.select({ courseId: enrollments.courseId })
+			.from(enrollments)
+			.where(eq(enrollments.userId, seed.user_id));
+		const held = await findCurrentEnrollment(tx, seed.user_id);
+		const taken = heldCourses.map(row => row.courseId);
+		const pair = await tx
+			.select({ id: courses.id })
+			.from(courses)
+			.where(taken.length > 0 ? notInArray(courses.id, taken) : undefined)
+			.orderBy(courses.createdAt)
+			.limit(2);
+		if (pair.length === 2) {
+			const [first, second] = pair as [{ id: string }, { id: string }];
+
+			if (held) await setEnrollmentCurrent(tx, held.id, false);
+
+			await insertEnrollment(tx, { userId: seed.user_id, courseId: first.id });
+			const opened = await findCurrentEnrollment(tx, seed.user_id);
+			expect("enrolment: the first one is current", opened?.courseId === first.id);
+
+			if (opened) await setEnrollmentCurrent(tx, opened.id, false);
+			await insertEnrollment(tx, { userId: seed.user_id, courseId: second.id });
+			const switched = await findCurrentEnrollment(tx, seed.user_id);
+			expect(
+				"enrolment: switching promotes the new course",
+				switched?.courseId === second.id
+			);
+			expect(
+				"enrolment: the previous course is kept as history",
+				(await findEnrollmentByCourse(tx, seed.user_id, first.id)) !== undefined
+			);
+
+			if (switched) await setEnrollmentCurrent(tx, switched.id, false);
+			const previous = await findEnrollmentByCourse(tx, seed.user_id, first.id);
+			if (previous) await setEnrollmentCurrent(tx, previous.id, true);
+			const back = await findCurrentEnrollment(tx, seed.user_id);
+			expect(
+				"enrolment: switching back reuses the original row",
+				back?.id === opened?.id && back?.courseId === first.id
+			);
+
+			let emptyPatchThrew = false;
+			try {
+				await updateEnrollmentDetails(tx, back!.id, {
+					curriculumId: undefined,
+					startYear: undefined,
+				});
+			} catch {
+				emptyPatchThrew = true;
+			}
+			expect("enrolment: an empty details patch is a no-op", !emptyPatchThrew);
+
+			await updateEnrollmentDetails(tx, back!.id, { startYear: 2023 });
+			const patched = await findCurrentEnrollment(tx, seed.user_id);
+			expect("enrolment: a non-empty patch still writes", patched?.startYear === 2023);
+		}
+
 		tx.rollback();
 	});
 } catch (error) {
-	// Drizzle signals an explicit rollback by throwing; anything else is a real
-	// failure.
 	if (!(error instanceof TransactionRollbackError)) {
 		console.error(error);
 		await closeDb();

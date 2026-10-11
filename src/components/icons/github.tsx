@@ -3,9 +3,6 @@ import { forwardRef } from "react";
 import IconBase from "@solar-icons/react/lib/IconBase";
 import type { Icon, IconProps } from "@solar-icons/react/lib/types";
 
-// Solar is a UI set and carries no logos. The mark is filled rather than stroked, so unlike the
-// glyphs it does not inherit the 1.5 stroke — it only borrows IconBase's sizing and aria handling.
-
 export const GithubIcon: Icon = forwardRef<SVGSVGElement, IconProps>((props, ref) => (
 	<IconBase ref={ref} {...props} iconName="github">
 		<path

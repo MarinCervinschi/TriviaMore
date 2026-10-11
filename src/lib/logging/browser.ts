@@ -1,5 +1,4 @@
-// The only logging entry point a component may import: it reaches nothing
-// server-side. It POSTs to `/api/log`, which proxies to Seq.
+// The only logging entry point a component may import.
 
 type LogProperties = Record<string, string | number | boolean | null>;
 
@@ -67,7 +66,7 @@ export function reportBrowserError(
 			...(options.traceId ? { traceId: options.traceId } : {}),
 		};
 
-		// keepalive lets the POST survive the unload that an unhandled error precedes.
+		// keepalive lets the POST survive the unload.
 		void fetch(ENDPOINT, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -87,7 +86,7 @@ export function installBrowserErrorHandlers(): void {
 	installed = true;
 
 	window.addEventListener("error", event => {
-		// Resource-load failures dispatch a plain Event with no stack worth sending.
+		// Resource-load failures dispatch a plain Event with no stack.
 		if (!(event instanceof ErrorEvent)) return;
 		if (event.message === "Script error.") return;
 		reportBrowserError("Unhandled browser error", event.error ?? event.message, {

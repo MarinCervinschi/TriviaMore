@@ -45,7 +45,6 @@ describe("selectRandomItems", () => {
 
 	it("selects the deterministic index when Math.random is pinned", () => {
 		vi.spyOn(Math, "random").mockReturnValue(0);
-		// A single index (0) is drawn; the Set never grows past one distinct value.
 		expect(selectRandomItems(source, 1)).toEqual([source[0]]);
 		vi.restoreAllMocks();
 	});

@@ -101,12 +101,10 @@ function ResponsiveConnector() {
 			className="text-muted-foreground/60 flex shrink-0 items-center justify-center lg:py-0"
 			aria-hidden
 		>
-			{/* Mobile/tablet: down arrow */}
 			<div className="flex flex-col items-center py-2 lg:hidden">
 				<div className="bg-border h-4 w-px" />
 				<AltArrowDownIcon className="-mt-1 h-4 w-4" />
 			</div>
-			{/* Desktop: right arrow */}
 			<div className="hidden flex-row items-center lg:flex">
 				<div className="bg-border h-px w-3 xl:w-4" />
 				<AltArrowRightIcon className="-ml-1 h-4 w-4" />

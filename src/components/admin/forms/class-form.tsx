@@ -11,7 +11,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { type ClassInput, classSchema, courseClassSchema } from "@/lib/admin/schemas";
 import type { AdminClassDetail } from "@/lib/admin/types";
 
@@ -22,7 +21,6 @@ const classWithJunctionSchema = classSchema.merge(
 		code: true,
 		class_year: true,
 		mandatory: true,
-		curriculum: true,
 	})
 );
 
@@ -30,11 +28,10 @@ type JunctionDefaults = {
 	code?: string;
 	class_year?: number;
 	mandatory?: boolean;
-	curriculum?: string;
 };
 
 type ClassFormProps = {
-	cls?: Pick<AdminClassDetail, "name" | "description" | "cfu">;
+	cls?: Pick<AdminClassDetail, "name" | "cfu">;
 	onSubmit: (data: ClassInput & JunctionDefaults) => void;
 	isPending: boolean;
 	junction?: JunctionDefaults;
@@ -45,12 +42,10 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 		resolver: standardSchemaResolver(junction ? classWithJunctionSchema : classSchema),
 		defaultValues: {
 			name: cls?.name ?? "",
-			description: cls?.description ?? "",
 			cfu: cls?.cfu ?? undefined,
 			code: junction?.code ?? "",
 			class_year: junction?.class_year ?? 1,
 			mandatory: junction?.mandatory ?? false,
-			curriculum: junction?.curriculum ?? "",
 		},
 	});
 
@@ -149,38 +144,8 @@ export function ClassForm({ cls, onSubmit, isPending, junction }: ClassFormProps
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="curriculum"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Curriculum</FormLabel>
-									<FormControl>
-										<Input placeholder="es. Applicazioni (opzionale)" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
 					</>
 				)}
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Descrizione</FormLabel>
-							<FormControl>
-								<Textarea
-									placeholder="Descrizione dell'insegnamento (opzionale)"
-									rows={3}
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
 				<FormSubmitButton
 					isPending={isPending}
 					isEdit={!!cls}

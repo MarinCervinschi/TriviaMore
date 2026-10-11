@@ -1,0 +1,1 @@
+ALTER TABLE "crm"."career_exams" ADD COLUMN "external" boolean DEFAULT false NOT NULL;

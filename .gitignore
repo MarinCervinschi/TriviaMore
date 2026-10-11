@@ -26,3 +26,13 @@ backups/
 # Storybook
 storybook-static/
 *storybook.log
+
+# Catalogue sync: the fetched source and its report (scripts/catalog)
+.cache/
+catalog-diff.md
+
+# Terraform: providers and local state stay out; the lock file is committed.
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan

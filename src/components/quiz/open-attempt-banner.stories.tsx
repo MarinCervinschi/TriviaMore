@@ -5,7 +5,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { OPEN_ATTEMPT } from "@/components/session-config/fixtures";
 import { Button } from "@/components/ui/button";
 
-import { OpenAttemptBanner, OpenAttemptDialog } from "./open-attempt-banner";
+import {
+	OpenAttemptBanner,
+	OpenAttemptDialog,
+	OpenAttemptStatus,
+} from "./open-attempt-banner";
 
 const meta = {
 	title: "Quiz/Tentativo aperto",
@@ -15,10 +19,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Cancelling really calls the server function, which the Storybook stub throws from. */
+/** Cancelling calls the server function, which throws in Storybook. */
 export const Banner: Story = {
-	name: "Il banner in dashboard",
+	name: "Il banner, prima di una simulazione",
 	render: () => <OpenAttemptBanner attempt={OPEN_ATTEMPT} />,
+};
+
+export const Status: Story = {
+	name: "La riga di stato",
+	render: () => (
+		<div className="bg-muted flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border px-3.5 py-2 text-sm">
+			<OpenAttemptStatus attempt={OPEN_ATTEMPT} />
+		</div>
+	),
 };
 
 export const Exam: Story = {

@@ -3,8 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { PageBand } from "./page-band";
 import { ThemeIcons, ThemeToggle } from "./theme-toggle";
 
-// The two smallest pieces of chrome. The band is the app's only texture and is mounted once in the
-// shell; `level="public"` is the same band with its two alphas turned up, not a second system.
 const meta = {
 	title: "Layout/Blocchi",
 	parameters: { layout: "fullscreen" },
@@ -31,7 +29,6 @@ function Band({ level }: { level: "app" | "public" }) {
 	);
 }
 
-/** Side by side, because the difference is only intensity and that is hard to judge apart. */
 export const Band_: Story = {
 	name: "La fascia",
 	render: () => (

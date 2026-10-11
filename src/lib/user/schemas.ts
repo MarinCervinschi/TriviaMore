@@ -33,12 +33,10 @@ export type MasteryInput = NonNullable<z.infer<typeof masteryInputSchema>>;
 
 export const updateProfileSchema = z.object({
 	name: z.string().min(1, "Il nome è obbligatorio").max(100),
-	image: z.string().url().nullable().optional(),
 });
 
 export const attemptFavoriteSchema = z.object({
 	attemptId: z.string().uuid(),
-	// The wanted value, not a blind flip: an optimistic click that arrives twice
-	// must land on the same state, not undo itself.
+	// The wanted value, so a click that arrives twice lands on the same state.
 	isFavorite: z.boolean(),
 });

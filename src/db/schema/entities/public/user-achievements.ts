@@ -22,8 +22,7 @@ export const userAchievements = pgTable(
     awardedAt: timestamp("awarded_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
-    // The metric as it stood at the unlock. Keeps the award readable after its
-    // threshold is retuned, which is the whole point of editable rules.
+    // The metric at the unlock, so the award stays readable after its threshold is retuned.
     metricValue: doublePrecision("metric_value"),
     pinPosition: smallint("pin_position"),
   },

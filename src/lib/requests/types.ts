@@ -1,7 +1,5 @@
 import type { contentRequests } from "@/db/schema";
 
-// `submittedContent` is dropped from the wire shape: it is jsonb, so its type is
-// `unknown`, and every consumer reads the validated `submitted` instead.
 export type ContentRequest = Omit<
 	typeof contentRequests.$inferSelect,
 	"submittedContent"
@@ -9,10 +7,7 @@ export type ContentRequest = Omit<
 export type ContentRequestType = ContentRequest["requestType"];
 export type ContentRequestStatus = ContentRequest["status"];
 
-// The shapes below are **stored inside the submitted_content jsonb**, so their
-// keys are a serialization contract with rows already in the database, not a row
-// type. They stay snake_case on purpose: renaming a key here would orphan every
-// request already submitted.
+// Stored inside the submitted_content jsonb, so these keys stay snake_case.
 
 export type SubmittedSection = {
 	type: "section";
@@ -66,7 +61,6 @@ export type ReportedQuestion = {
 	difficulty: "EASY" | "MEDIUM" | "HARD";
 };
 
-// Request with the target breadcrumb that list views show.
 export type ContentRequestWithMeta = ContentRequest & {
 	targetLabel: string;
 	submitted: SubmittedContent;
@@ -85,8 +79,7 @@ export type AdminContentRequest = ContentRequestWithMeta & {
 	handledByUser: RequestUser | null;
 };
 
-// Detail view: `user` is null when the owner views their own request, and
-// `handledByUser` stays null until someone handles it.
+/** `user` is null when the owner views their own request. */
 export type ContentRequestDetail = ContentRequestWithMeta & {
 	user: RequestUser | null;
 	handledByUser: RequestUser | null;

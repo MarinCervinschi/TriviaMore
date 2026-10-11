@@ -7,11 +7,7 @@ type DeltaUnit = "percent" | "points" | "raw";
 
 const SUFFIX: Record<DeltaUnit, string> = { percent: "%", points: " pt", raw: "" };
 
-/**
- * The change against the previous window, as a coloured pill. `null` renders
- * nothing: a metric with no baseline must not read as "no change", which is a
- * real measurement. The caller rounds — this only formats and tints.
- */
+/** `null` renders nothing; the caller rounds. */
 export function DeltaBadge({
 	value,
 	unit = "percent",

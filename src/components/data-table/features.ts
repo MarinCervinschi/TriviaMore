@@ -1,6 +1,8 @@
 import {
 	columnFacetingFeature,
 	columnFilteringFeature,
+	columnResizingFeature,
+	columnSizingFeature,
 	columnVisibilityFeature,
 	createColumnHelper,
 	createFacetedRowModel,
@@ -35,32 +37,24 @@ export type DataTableFacetOption = {
 };
 
 export type DataTableColumnMeta = {
-	/** Human-readable name for the filter and column-visibility menus. */
 	label?: string;
 	align?: DataTableAlign;
-	/** Hides header and cells together below this breakpoint. */
 	hideBelow?: DataTableBreakpoint;
 	headerClassName?: string;
 	cellClassName?: string;
-	/**
-	 * Turns the column into a multi-select filter in the toolbar. `icon` labels
-	 * the field in the inline filter chip and the «＋ Filtro» menu.
-	 */
 	facet?: { options: DataTableFacetOption[]; icon?: Icon };
 };
 
 export type DataTableMeta = {
-	/**
-	 * Clears the search box and every faceted filter at once. The toolbar cannot
-	 * call the per-slice reset APIs instead: with URL-backed state each of them
-	 * would issue its own navigation, and the later one would overwrite the first.
-	 */
+	/** Clears search and facets in one navigation; separate resets would overwrite each other. */
 	resetFilters: () => void;
 };
 
 export const dataTableFeatures = tableFeatures({
 	columnFacetingFeature,
 	columnFilteringFeature,
+	columnResizingFeature,
+	columnSizingFeature,
 	columnVisibilityFeature,
 	globalFilteringFeature,
 	rowPaginationFeature,

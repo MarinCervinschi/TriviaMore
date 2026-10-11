@@ -32,7 +32,7 @@ import type {
 type FacetColumn<TData extends RowData> = Column<DataTableFeatures, TData, any>;
 type InlineSize = "sm" | "default";
 
-/** A filter with no facet column behind it — a date range, say; its state lives with the host. */
+/** A filter with no facet column behind it, whose state lives with the host. */
 export type CustomInlineFilter = {
 	id: string;
 	label: string;
@@ -40,7 +40,6 @@ export type CustomInlineFilter = {
 	active: boolean;
 	summary?: string;
 	placeholder?: string;
-	/** A render function receives `close`, so an «Applica» button can dismiss the chip. */
 	popover?: ReactNode | ((close: () => void) => ReactNode);
 	clear: () => void;
 };
@@ -346,7 +345,6 @@ export function DataTableInlineFilterChips<TData extends RowData>({
 	);
 }
 
-/** The «＋ Filtro» control: one hover submenu per facet, with counts. */
 export function DataTableInlineFilterAdd<TData extends RowData>({
 	table,
 	size = "default",

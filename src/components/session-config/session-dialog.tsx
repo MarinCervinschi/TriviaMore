@@ -12,11 +12,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 
-// Shared chrome for the quiz / flashcard / exam start dialogs. `SessionDialogShell`
-// is the modal + two-column grid (config on the left, live summary on the right);
-// `SessionDialogColumn` is the left config column: header, animated form stack,
-// and the cancel / confirm footer.
-
 export function SessionDialogShell({
 	open,
 	onOpenChange,

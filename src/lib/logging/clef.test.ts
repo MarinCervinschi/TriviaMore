@@ -41,8 +41,6 @@ describe("toClef", () => {
 		}
 	});
 
-	// A log line attached to a span carries `@sp` but no `@st`: it is an event
-	// inside the span, not a span of its own.
 	it("distinguishes an attached log line from a span", () => {
 		const payload = parse({ ...base(), spanId: "0123456789abcdef" });
 

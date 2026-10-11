@@ -88,7 +88,6 @@ export async function createQuestion(input: QuestionInput) {
 export async function createQuestionsBulk(input: QuestionInput[]) {
 	const user = await requireAdmin();
 
-	// Every distinct target section is scope-checked before anything is written.
 	for (const sectionId of new Set(input.map(q => q.section_id))) {
 		await assertSectionScope(user, sectionId);
 	}

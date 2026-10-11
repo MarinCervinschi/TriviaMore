@@ -2,31 +2,14 @@ export type ChartFill = "solid" | "gradient" | "hatched";
 
 export type DefSeries = {
 	key: string;
-	/** Set only for a series whose colour carries meaning. */
 	color?: string;
 	fill?: ChartFill;
 };
 
-/**
- * The SVG `<defs>` every chart shares. Ids are namespaced by the chart's own
- * `useId`, because two charts on one page would otherwise collide — SVG ids are
- * document-global.
- *
- * Two gradients, and the difference matters. Slot 1 gets the **brand ramp**
- * (orange → coral at 135°, the same stops as the CTAs and the quiz bar) because
- * slot 1 *is* the brand orange. Every other series gets a fade of its own hue,
- * which changes opacity only — a hue-shifting wash on a series whose colour
- * carries identity would distort the encoding.
- *
- * `hatched` is the 45° texture and is deliberately never a default: dense angled
- * fields read as noise on a value scale. It is for a mark that means something
- * extra — a folded "Altro" bucket, a period still in progress — or as the print
- * and colour-vision fallback.
- */
+/** The SVG `<defs>` every chart shares, with ids namespaced by the chart's `useId`. */
 export function ChartDefs({
 	scope,
 	series,
-	/** Marks the first slot as the brand series. Off when colours are explicit. */
 	brandFirst = false,
 }: {
 	scope: string;
@@ -35,8 +18,6 @@ export function ChartDefs({
 }) {
 	return (
 		<defs>
-			{/* One 45° mask shared by every hatched fill: the stripe is the colour at
-			    full strength, the gap the same colour held back. */}
 			<pattern
 				id={`${scope}-hatch`}
 				width="6"
@@ -108,10 +89,7 @@ export function ChartDefs({
 	);
 }
 
-/**
- * The fill a mark should get. Only a per-datum colour forces flat: there is one
- * gradient def per series, so a bar that picks its own colour could not use it.
- */
+/** The fill for a mark; a per-datum colour always gets a flat fill. */
 export function seriesFill(
 	scope: string,
 	series: DefSeries,
@@ -123,7 +101,6 @@ export function seriesFill(
 		: `url(#${scope}-${variant}-${series.key})`;
 }
 
-/** The soft fade an area gets under its line — vertical, down to nothing. */
 export function AreaFadeDefs({
 	scope,
 	series,

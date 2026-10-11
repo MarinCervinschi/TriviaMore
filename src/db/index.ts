@@ -9,8 +9,6 @@ import * as schema from "./schema";
 export type Db = ReturnType<typeof createDb>;
 export type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 
-// Every db/ function takes this as its first argument, so the same query runs
-// standalone or inside a transaction.
 export type DbOrTx = Db | Tx;
 
 const POOL_MAX = 10;
@@ -24,8 +22,7 @@ function createDb(pool: Pool) {
 	return drizzle(pool, { schema, casing: "snake_case" });
 }
 
-// Never the parameter values: they carry answers, emails and everything else a
-// user typed.
+// Never the parameter values, which carry answers, emails and anything else a user typed.
 function statementText(statement: unknown): string {
 	const text =
 		typeof statement === "string"
@@ -64,10 +61,6 @@ async function track<T>(
 			? "Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}"
 			: "Query took {Elapsed:0.0}ms — {Statement}";
 
-		// A child span of the request, so the trace shows which query the time
-		// went into. Queries raised outside a request — scripts, jobs — have no
-		// trace to hang from, so they stay plain log lines. The level is unchanged
-		// either way: production still ships only the slow ones.
 		if (context) {
 			logSpan({
 				level: slow ? "Warning" : "Debug",
@@ -124,8 +117,7 @@ function instrument(pool: Pool): Pool {
 	});
 
 	const query = pool.query.bind(pool);
-	// Only the promise form is instrumented; the callback form has no caller
-	// here, Drizzle being the sole consumer of this pool.
+	// Only the promise form is instrumented, because Drizzle never uses the callback form.
 	pool.query = ((...args: unknown[]) => {
 		reportSaturation();
 		return track(pool, args[0], () =>
@@ -144,8 +136,6 @@ function instrument(pool: Pool): Pool {
 	return pool;
 }
 
-// Lazy because entry-server.tsx loads secrets on the first request, so
-// DATABASE_URL is absent at module evaluation time.
 export function getDb(): Db {
 	if (_db) return _db;
 
