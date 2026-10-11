@@ -79,9 +79,15 @@ behind the catalogue run from a separate ops console, deployed with Terraform.
   converges.
 - An `InsetCard` title takes the free width, and its actions wrap.
 
+### Security
+
+- Photos uploaded from the browser go to their own raster-only bucket. The signed upload URL used
+  to land in the bucket that accepts SVG, so a client could store active content there.
+- `anon` and `authenticated` hold no privilege on the `public` tables created after `0008`.
+
 ### Migrations
 
-Thirty-nine, `0029`–`0067`. `0029`–`0066` are already applied to the production database. Two are destructive.
+Forty-one, `0029`–`0069`. `0029`–`0066` are already applied to the production database. Two are destructive.
 
 - `0029`–`0034` — the `crm` schema, enrolments, grants, the avatars bucket and the onboarding badge.
   `0033` recreates the `achievement_metric` enum instead of extending it, since a value added to an
@@ -98,8 +104,12 @@ Thirty-nine, `0029`–`0067`. `0029`–`0066` are already applied to the product
 - `0067_advisor_lints.sql` — revokes from `anon` and `authenticated` the tables Supabase's default
   privileges granted them after `0008`, changes those defaults, and pins `search_path` on the six
   pg-boss functions. Not destructive.
+- `0068_crm_indexes.sql` — a unique index on a career exam's plan row, so a repeated prefill cannot
+  duplicate it, and indexes on three foreign keys. Fails if a record already holds a duplicate.
+- `0069_avatar_uploads_bucket.sql` — the raster-only `avatar-uploads` bucket for photos; `avatars` now
+  accepts only the SVGs the server generates. Not destructive.
 
-**Before the deploy:** apply `0067` with `scripts/db/migrations.ts --apply`.
+**Before the deploy:** apply `0067`–`0069` with `scripts/db/migrations.ts --apply`.
 
 **After the deploy:** run *Assegna i traguardi* from the console, as a dry run first, so the new
 tiers and the Carriera badges reach the accounts that already qualify.
