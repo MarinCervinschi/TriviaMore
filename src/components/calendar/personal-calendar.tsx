@@ -16,6 +16,7 @@ import type { CalendarView } from "@/components/event-calendar/event-calendar-ty
 import { InsetCard } from "@/components/ui/inset-card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { toIsoDay } from "@/lib/utils/datetime";
 
 import { canMove, moveOf, timedSpan, toCalendarEvent } from "./calendar-adapter";
 import { CALENDAR_I18N, CALENDAR_LOCALE } from "./calendar-i18n";
@@ -25,11 +26,9 @@ const VIEWS: CalendarView[] = ["month", "week", "day", "agenda"];
 
 const SESSIONS = {
 	weekendDays: [],
-	isOffDay: (day: Date) => Boolean(sessionOn(format(day, "yyyy-MM-dd"))),
+	isOffDay: (day: Date) => Boolean(sessionOn(toIsoDay(day))),
 	className: "bg-chart-2/8",
 };
-
-const day = (date: Date) => format(date, "yyyy-MM-dd");
 
 /** The personal calendar: every kind of entry over the exam sessions, in month, week, day and agenda. */
 export function PersonalCalendar({
@@ -112,16 +111,16 @@ export function PersonalCalendar({
 			}}
 			onSlotClick={slot => {
 				if (slot.allDay) {
-					onCreate?.({ date: day(slot.date) });
+					onCreate?.({ date: toIsoDay(slot.date) });
 					return;
 				}
 				const midnight = addDays(startOfDay(slot.date), 1);
 				onCreate?.(timedSpan(slot.date, min([addMinutes(slot.date, 60), midnight])));
 			}}
 			onSelectSlot={slot => {
-				const first = day(slot.start);
+				const first = toIsoDay(slot.start);
 				if (slot.allDay) {
-					const last = day(addDays(slot.end, -1));
+					const last = toIsoDay(addDays(slot.end, -1));
 					onCreate?.(last > first ? { date: first, endDate: last } : { date: first });
 					return;
 				}

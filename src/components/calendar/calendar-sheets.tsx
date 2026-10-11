@@ -1,3 +1,5 @@
+import { useCallback, useMemo, useState } from "react";
+
 import {
 	useCreateEvent,
 	useCreateSitting,
@@ -11,9 +13,10 @@ import {
 } from "@/lib/crm/mutations";
 import type { CalendarData } from "@/lib/crm/types";
 
-import type { EntryRef } from "./calendar-data";
+import { type EntryRef, refOf, toEntries } from "./calendar-data";
+import type { CalendarEntry, EntrySpan } from "./calendar-model";
 import { type EventDraft, EventSheet } from "./event-sheet";
-import type { QuickResult } from "./quick-create";
+import { QuickCreate, type QuickResult, useQuickSave } from "./quick-create";
 import { type SittingDraft, SittingSheet } from "./sitting-sheet";
 import { type TaskDraft, TaskSheet } from "./task-sheet";
 
@@ -215,4 +218,50 @@ export function CalendarSheets({
 			/>
 		</>
 	);
+}
+
+/** The entries of the calendar data and what opens, toggles and creates them; `dialogs` must be rendered once. */
+export function useCalendarSheets(data: CalendarData) {
+	const entries = useMemo(() => toEntries(data), [data]);
+	const [open, setOpen] = useState<SheetTarget>(null);
+	const [quick, setQuick] = useState<EntrySpan | null>(null);
+	const quickSave = useQuickSave(() => setQuick(null));
+	const { mutate: patchTask } = useUpdateTask();
+
+	const openExams = data.exams.filter(exam => !exam.passed);
+
+	const toggleEntry = useCallback(
+		(entry: CalendarEntry) => {
+			const ref = refOf(entry);
+			if (ref.kind === "task") patchTask({ id: ref.id, done: !entry.done });
+		},
+		[patchTask]
+	);
+
+	const dialogs = (
+		<>
+			<QuickCreate
+				draft={quick}
+				exams={openExams}
+				pending={quickSave.pending}
+				onSave={quickSave.save}
+				onMore={result => {
+					setQuick(null);
+					setOpen(sheetFromQuick(result));
+				}}
+				onClose={() => setQuick(null)}
+			/>
+			<CalendarSheets data={data} open={open} onClose={() => setOpen(null)} />
+		</>
+	);
+
+	return {
+		entries,
+		openExams,
+		openEntry: (entry: CalendarEntry) => setOpen(sheetOf(refOf(entry))),
+		openSheet: setOpen,
+		startQuick: setQuick,
+		toggleEntry,
+		dialogs,
+	};
 }

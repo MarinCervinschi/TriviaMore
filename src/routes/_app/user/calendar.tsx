@@ -1,19 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 
-import { refOf, toEntries } from "@/components/calendar/calendar-data";
-import type { CalendarEntry, EntrySpan } from "@/components/calendar/calendar-model";
-import {
-	CalendarSheets,
-	type SheetTarget,
-	sheetFromQuick,
-	sheetOf,
-} from "@/components/calendar/calendar-sheets";
+import { refOf } from "@/components/calendar/calendar-data";
+import { useCalendarSheets } from "@/components/calendar/calendar-sheets";
 import { CalendarWorkspace } from "@/components/calendar/calendar-workspace";
-import { QuickCreate, useQuickSave } from "@/components/calendar/quick-create";
 import { readSidebarOpen } from "@/components/layout/sidebar-state";
 import { CalendarSkeleton } from "@/components/skeletons";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -41,43 +34,27 @@ function useFoldedAppSidebar() {
 function CalendarPage() {
 	useFoldedAppSidebar();
 	const { data } = useSuspenseQuery(crmQueries.calendar());
-	const entries = useMemo(() => toEntries(data), [data]);
-	const [open, setOpen] = useState<SheetTarget>(null);
-	const close = () => setOpen(null);
+	const sheets = useCalendarSheets(data);
 
 	const moveSitting = useUpdateSitting();
 	const moveEvent = useUpdateEvent();
 	const quietTask = useUpdateTask();
 
-	const openExams = data.exams.filter(exam => !exam.passed);
-
-	const { mutate: patchTask } = quietTask;
-	const toggleEntry = useCallback(
-		(entry: CalendarEntry) => {
-			const ref = refOf(entry);
-			if (ref.kind === "task") patchTask({ id: ref.id, done: !entry.done });
-		},
-		[patchTask]
-	);
-
 	const hydrated = useIsHydrated();
-	const [quick, setQuick] = useState<EntrySpan | null>(null);
-
-	const quickSave = useQuickSave(() => setQuick(null));
 
 	if (!hydrated) return <CalendarSkeleton />;
 
 	return (
 		<div className="px-4 py-4 md:px-6">
 			<CalendarWorkspace
-				entries={entries}
+				entries={sheets.entries}
 				today={format(new Date(), "yyyy-MM-dd")}
-				canAddSitting={openExams.length > 0}
+				canAddSitting={sheets.openExams.length > 0}
 				className="h-[calc(100dvh-var(--app-header-h)-3rem)] min-h-[36rem]"
-				onSelectEntry={entry => setOpen(sheetOf(refOf(entry)))}
-				onCreate={setQuick}
-				onCreateKind={kind => setOpen({ kind })}
-				onToggleEntry={toggleEntry}
+				onSelectEntry={sheets.openEntry}
+				onCreate={sheets.startQuick}
+				onCreateKind={kind => sheets.openSheet({ kind })}
+				onToggleEntry={sheets.toggleEntry}
 				onMoveEntry={(entry, move) => {
 					const ref = refOf(entry);
 					if (ref.kind === "sitting") {
@@ -101,19 +78,7 @@ function CalendarPage() {
 				}}
 			/>
 
-			<QuickCreate
-				draft={quick}
-				exams={openExams}
-				pending={quickSave.pending}
-				onSave={quickSave.save}
-				onMore={result => {
-					setQuick(null);
-					setOpen(sheetFromQuick(result));
-				}}
-				onClose={() => setQuick(null)}
-			/>
-
-			<CalendarSheets data={data} open={open} onClose={close} />
+			{sheets.dialogs}
 		</div>
 	);
 }
