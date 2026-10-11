@@ -319,40 +319,53 @@ export function UserRequestsSkeleton() {
 
 export function SettingsSkeleton() {
 	return (
-		<SkeletonRoot label="Caricamento impostazioni…" className="space-y-8 pb-8">
+		<SkeletonRoot label="Caricamento impostazioni…" className="pb-8">
 			<div className="container space-y-6 py-6">
 				<SkeletonToolbar />
 
-				<div className="bg-card rounded-3xl border p-6 sm:p-8">
-					<Skeleton className="mb-2 h-6 w-1/3" />
-					<Skeleton className="mb-6 h-4 w-1/2" />
+				<SkeletonInset>
+					<div className="p-6 sm:p-8">
+						<Skeleton className="mb-2 h-6 w-1/3" />
+						<Skeleton className="mb-6 h-4 w-1/2" />
 
-					<div className="mb-6 flex items-center gap-4">
-						<Skeleton className="h-24 w-24 shrink-0 rounded-full" />
-						<div className="space-y-2">
-							<Skeleton className="h-6 w-40" />
-							<Skeleton className="h-7 w-28 rounded-full" />
+						<div className="mb-6 flex items-center gap-4">
+							<Skeleton className="h-24 w-24 shrink-0 rounded-full" />
+							<div className="space-y-2">
+								<Skeleton className="h-6 w-40" />
+								<Skeleton className="h-7 w-28 rounded-full" />
+							</div>
+						</div>
+
+						<div className="grid gap-4 md:grid-cols-2">
+							<div className="space-y-2">
+								<Skeleton className="h-4 w-24" />
+								<Skeleton className="h-10 w-full rounded-xl" />
+							</div>
+							<div className="space-y-2">
+								<Skeleton className="h-4 w-12" />
+								<Skeleton className="h-10 w-full rounded-xl" />
+								<Skeleton className="h-3 w-44" />
+							</div>
+						</div>
+
+						<Skeleton className="mt-6 h-10 w-36 rounded-xl" />
+					</div>
+				</SkeletonInset>
+
+				<SkeletonInset>
+					<div className="p-6 sm:p-8">
+						<Skeleton className="mb-2 h-6 w-36" />
+						<Skeleton className="mb-6 h-4 w-2/3" />
+						<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+							<Skeleton className="size-12 shrink-0 rounded-md" />
+							<div className="min-w-0 flex-1 space-y-2">
+								<Skeleton className="h-4 w-1/3" />
+								<Skeleton className="h-4 w-2/3" />
+							</div>
+							<Skeleton className="h-10 w-24 shrink-0 rounded-xl" />
 						</div>
 					</div>
-
-					<div className="grid gap-4 md:grid-cols-2">
-						<div className="space-y-2">
-							<Skeleton className="h-4 w-24" />
-							<Skeleton className="h-10 w-full rounded-xl" />
-						</div>
-						<div className="space-y-2">
-							<Skeleton className="h-4 w-12" />
-							<Skeleton className="h-10 w-full rounded-xl" />
-						</div>
-					</div>
-
-					<div className="mt-4 space-y-2">
-						<Skeleton className="h-4 w-40" />
-						<Skeleton className="h-10 w-full rounded-xl" />
-					</div>
-
-					<Skeleton className="mt-6 h-10 w-36 rounded-xl" />
-				</div>
+				</SkeletonInset>
 
 				<div>
 					<Skeleton className="mb-1 h-6 w-48" />
@@ -364,21 +377,25 @@ export function SettingsSkeleton() {
 					</div>
 				</div>
 
-				<div className="bg-card rounded-3xl border p-6 sm:p-8">
-					<Skeleton className="mb-2 h-6 w-40" />
-					<Skeleton className="mb-6 h-4 w-1/2" />
-					<div className="space-y-4">
-						<div className="space-y-2">
-							<Skeleton className="h-4 w-20" />
-							<Skeleton className="h-10 w-full rounded-xl" />
-						</div>
-						<div className="flex items-center gap-2">
-							<Skeleton className="h-4 w-4 rounded-full" />
-							<Skeleton className="h-4 w-24" />
-							<Skeleton className="h-4 w-32" />
+				<SkeletonInset>
+					<div className="p-6 sm:p-8">
+						<Skeleton className="mb-2 h-6 w-40" />
+						<Skeleton className="mb-6 h-4 w-1/2" />
+						<div className="space-y-4">
+							<div className="space-y-2">
+								<Skeleton className="h-4 w-20" />
+								<Skeleton className="h-11 w-full rounded-xl" />
+							</div>
+							{Array.from({ length: 2 }).map((_, i) => (
+								<div key={i} className="flex items-center gap-2">
+									<Skeleton className="h-4 w-4 rounded-full" />
+									<Skeleton className="h-4 w-24" />
+									<Skeleton className="h-4 w-32" />
+								</div>
+							))}
 						</div>
 					</div>
-				</div>
+				</SkeletonInset>
 			</div>
 		</SkeletonRoot>
 	);
