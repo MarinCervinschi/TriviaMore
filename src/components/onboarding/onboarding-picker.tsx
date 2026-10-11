@@ -17,35 +17,25 @@ export interface PickerOption {
 	keywords?: string;
 }
 
-/** Suggestions come first and are left out of "Tutti", so each option appears once. */
 export function OnboardingPicker({
 	options,
-	suggestions = [],
 	value,
 	onSelect,
 	placeholder,
 	emptyLabel,
-	suggestionsLabel = "Suggeriti per te",
-	allLabel = "Tutti",
 	className,
 }: {
 	options: PickerOption[];
-	suggestions?: PickerOption[];
 	value?: string | null;
 	onSelect: (id: string) => void;
 	placeholder: string;
 	emptyLabel: string;
-	suggestionsLabel?: string;
-	allLabel?: string;
 	className?: string;
 }) {
-	const suggestedIds = new Set(suggestions.map(option => option.id));
-	const rest = options.filter(option => !suggestedIds.has(option.id));
-
-	const row = (option: PickerOption, group: string) => (
+	const row = (option: PickerOption) => (
 		<CommandItem
-			key={`${group}-${option.id}`}
-			value={`${group}-${option.id}`}
+			key={option.id}
+			value={option.id}
 			keywords={[option.name, option.keywords ?? ""]}
 			onSelect={() => onSelect(option.id)}
 			className="aria-selected:bg-accent gap-3 px-3 py-2.5"
@@ -71,16 +61,7 @@ export function OnboardingPicker({
 			<CommandInput placeholder={placeholder} />
 			<CommandList className="max-h-72">
 				<CommandEmpty>{emptyLabel}</CommandEmpty>
-				{suggestions.length > 0 && (
-					<CommandGroup heading={suggestionsLabel}>
-						{suggestions.map(option => row(option, "suggested"))}
-					</CommandGroup>
-				)}
-				{rest.length > 0 && (
-					<CommandGroup heading={suggestions.length > 0 ? allLabel : undefined}>
-						{rest.map(option => row(option, "all"))}
-					</CommandGroup>
-				)}
+				{options.length > 0 && <CommandGroup>{options.map(row)}</CommandGroup>}
 			</CommandList>
 		</Command>
 	);
