@@ -69,9 +69,13 @@ grants, policies, seed rows) → `references/migrations.md`.
 
 ## Non-negotiables
 
-- **Migrations are applied by hand.** Never in a container start command, entrypoint or automatic
-  deploy hook, in any environment. Migration first, code second; expand/contract for destructive
-  changes, because rolling back a deploy does not roll back the schema.
+- **Never in a container start command, entrypoint or deploy hook**, in any environment. Production
+  receives migrations from the release pipeline only, after a backup and an approval; until it
+  exists, by hand with `scripts/db/migrations.ts`. Staging may receive them from a local checkout
+  (`docs/PLATFORM.md`).
+- **Every migration is backward compatible.** Migration first, code second; a drop, rename, type
+  change or new `NOT NULL` is split into expand and contract steps. The rules are in the
+  `safe-changes` skill.
 - **There is no `db:push`.** Always generate + migrate, so every change leaves a reviewable file.
 - **Commit the TS change and the generated `.sql` together**, plus the `drizzle/meta/` snapshot.
 - **Never hand-edit a `.sql` file that has already been applied anywhere.** Write a new migration.
