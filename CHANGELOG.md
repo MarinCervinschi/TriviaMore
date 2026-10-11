@@ -87,7 +87,7 @@ behind the catalogue run from a separate ops console, deployed with Terraform.
 
 ### Migrations
 
-Forty-one, `0029`–`0069`. `0029`–`0066` are already applied to the production database. Two are destructive.
+Forty-one, `0029`–`0069`, all applied to the production database. Two are destructive.
 
 - `0029`–`0034` — the `crm` schema, enrolments, grants, the avatars bucket and the onboarding badge.
   `0033` recreates the `achievement_metric` enum instead of extending it, since a value added to an
@@ -109,10 +109,9 @@ Forty-one, `0029`–`0069`. `0029`–`0066` are already applied to the productio
 - `0069_avatar_uploads_bucket.sql` — the raster-only `avatar-uploads` bucket for photos; `avatars` now
   accepts only the SVGs the server generates. Not destructive.
 
-**Before the deploy:** apply `0067`–`0069` with `scripts/db/migrations.ts --apply`.
-
-**After the deploy:** run *Assegna i traguardi* from the console, as a dry run first, so the new
-tiers and the Carriera badges reach the accounts that already qualify.
+**After the deploy:** from the console, each as a dry run first, run *Schede insegnamento*, which
+moves the syllabi that had landed on another course's class, and then *Assegna i traguardi*, so the
+new tiers and the Carriera badges reach the accounts that already qualify.
 
 ## 3.3.0 — 2026-09-19
 
