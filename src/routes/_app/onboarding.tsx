@@ -18,12 +18,12 @@ import type { OnboardingStep } from "@/components/onboarding/onboarding-steps";
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { ProfileStep } from "@/components/onboarding/profile-step";
 import { StartYearSelect } from "@/components/onboarding/start-year-select";
+import { useAvatarChoice } from "@/components/onboarding/use-avatar-choice";
 import { OnboardingSkeleton } from "@/components/skeletons";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { requireAuthFn } from "@/lib/auth/api";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
-import { avatarQueries } from "@/lib/avatar/queries";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
 import { academicYearOf, formatAcademicYear } from "@/lib/catalog/academic-year";
@@ -78,14 +78,12 @@ function OnboardingPage() {
 	const [startYear, setStartYear] = useState(() => academicYearOf(new Date()));
 	const [curriculumId, setCurriculumId] = useState<string | null>(null);
 	const [name, setName] = useState(user?.name ?? "");
-	const [page, setPage] = useState(0);
-	const [seed, setSeed] = useState<string | null>(null);
 
 	const courseList = useQuery({
 		...browseQueries.departmentCourseList(departmentId ?? undefined),
 		enabled: departmentId !== null,
 	});
-	const choices = useQuery(avatarQueries.choices(page));
+	const avatar = useAvatarChoice();
 	const curriculumOptions =
 		useQuery({
 			...crmQueries.curriculumOptions(courseId ?? "", startYear),
@@ -105,7 +103,7 @@ function OnboardingPage() {
 		courseType: course.courseType,
 	}));
 
-	const previewUri = choices.data?.find(choice => choice.seed === seed)?.dataUri;
+	const previewUri = avatar.chosen?.dataUri;
 	const initials = getInitials(name || user?.name, user?.email);
 	const chosen = [departmentId, courseId, name.trim() || null][step];
 	const copy = COPY[step] ?? COPY[2]!;
@@ -128,7 +126,7 @@ function OnboardingPage() {
 		try {
 			await setEnrollment.mutateAsync({ courseId, startYear, curriculumId });
 			await updateProfile.mutateAsync({ name: name.trim() });
-			if (seed) await setGeneratedAvatar.mutateAsync(seed);
+			if (avatar.chosen) await setGeneratedAvatar.mutateAsync(avatar.chosen.seed);
 		} catch {
 			// Each mutation shows its own toast, and the wizard stays where it is.
 			return;
@@ -266,15 +264,11 @@ function OnboardingPage() {
 								imageUrl={previewUri ?? user?.image}
 								avatarChooser={
 									<AvatarChooser
-										choices={choices.data ?? []}
-										selectedSeed={seed}
-										onSelect={setSeed}
-										onShuffle={() => setPage(current => current + 1)}
+										{...avatar.chooserProps}
 										onUpload={file => {
-											// Clearing the seed matters, because the preview prefers it over the uploaded image.
-											uploadAvatar.mutate(file, { onSuccess: () => setSeed(null) });
+											// Clearing the choice matters, because the preview prefers it over the uploaded image.
+											uploadAvatar.mutate(file, { onSuccess: avatar.clear });
 										}}
-										isLoading={choices.isFetching}
 										isUploading={uploadAvatar.isPending}
 									/>
 								}

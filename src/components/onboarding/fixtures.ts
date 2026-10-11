@@ -178,10 +178,3 @@ export const DSV_COURSES: CourseOption[] = [
 		courseType: "SINGLE_CYCLE",
 	},
 ];
-
-export const SUGGESTED_DEPARTMENTS: PickerOption[] = [
-	DEPARTMENTS[9]!,
-	DEPARTMENTS[11]!,
-];
-
-export const SUGGESTED_COURSES: CourseOption[] = [FIM_COURSES[1]!];

@@ -9,14 +9,10 @@ import { AvatarChooser } from "@/components/onboarding/avatar-chooser";
 import { avatarChoices } from "@/components/onboarding/avatar-fixtures";
 import { CoursePicker } from "@/components/onboarding/course-picker";
 import { EnrollmentCard } from "@/components/onboarding/enrollment-card";
-import { EnrollmentPrompt } from "@/components/onboarding/enrollment-prompt";
-import { EnrollmentSummary } from "@/components/onboarding/enrollment-summary";
 import {
 	DEPARTMENTS,
 	DSV_COURSES,
 	FIM_COURSES,
-	SUGGESTED_COURSES,
-	SUGGESTED_DEPARTMENTS,
 } from "@/components/onboarding/fixtures";
 import { OnboardingPicker } from "@/components/onboarding/onboarding-picker";
 import { OnboardingRecap } from "@/components/onboarding/onboarding-recap";
@@ -29,6 +25,7 @@ import { ProfileStep } from "@/components/onboarding/profile-step";
 import { StartYearSelect } from "@/components/onboarding/start-year-select";
 import { Label } from "@/components/ui/label";
 import { AvatarEditor } from "@/components/user/avatar-editor";
+import type { AvatarChoice } from "@/lib/avatar/types";
 import { formatAcademicYear } from "@/lib/catalog/academic-year";
 
 const STEPS: OnboardingStep[] = [
@@ -61,11 +58,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function WizardExample({
-	withSuggestions = true,
 	courses = FIM_COURSES,
 	startAt = 0,
 }: {
-	withSuggestions?: boolean;
 	courses?: typeof FIM_COURSES;
 	startAt?: number;
 }) {
@@ -76,11 +71,11 @@ function WizardExample({
 	const [startYear, setStartYear] = useState(2026);
 	const [name, setName] = useState("Marin Cervinschi");
 	const [page, setPage] = useState(0);
-	const [seed, setSeed] = useState<string | null>(null);
+	const [picked, setPicked] = useState<AvatarChoice | null>(null);
 	const [uploaded, setUploaded] = useState<string | null>(null);
 
 	const choices = avatarChoices(page);
-	const avatarUri = uploaded ?? choices.find(choice => choice.seed === seed)?.dataUri;
+	const avatarUri = uploaded ?? picked?.dataUri;
 	const chosen = [departmentId, courseId, name.trim() || null][step];
 	const copy = COPY[step] ?? COPY[2]!;
 
@@ -107,7 +102,6 @@ function WizardExample({
 				{step === 0 && (
 					<OnboardingPicker
 						options={DEPARTMENTS}
-						suggestions={withSuggestions ? SUGGESTED_DEPARTMENTS : []}
 						value={departmentId}
 						onSelect={setDepartmentId}
 						placeholder="Cerca un dipartimento…"
@@ -116,12 +110,7 @@ function WizardExample({
 				)}
 				{step === 1 && (
 					<div className="flex flex-col gap-4">
-						<CoursePicker
-							options={courses}
-							suggestions={withSuggestions ? SUGGESTED_COURSES : []}
-							value={courseId}
-							onSelect={setCourseId}
-						/>
+						<CoursePicker options={courses} value={courseId} onSelect={setCourseId} />
 						<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
 							<Label htmlFor="start-year">Anno di immatricolazione</Label>
 							<StartYearSelect
@@ -169,15 +158,15 @@ function WizardExample({
 							avatarChooser={
 								<AvatarChooser
 									choices={choices}
-									selectedSeed={seed}
+									selectedSeed={picked?.seed}
 									onSelect={next => {
-										setSeed(next);
+										setPicked(next);
 										setUploaded(null);
 									}}
 									onShuffle={() => setPage(current => current + 1)}
 									onUpload={file => {
 										setUploaded(URL.createObjectURL(file));
-										setSeed(null);
+										setPicked(null);
 									}}
 								/>
 							}
@@ -208,11 +197,6 @@ export const CicloUnico: Story = {
 export const IlRecap: Story = {
 	name: "Il recap finale",
 	render: () => <WizardExample startAt={2} />,
-};
-
-export const SenzaSuggerimenti: Story = {
-	name: "Senza suggerimenti",
-	render: () => <WizardExample withSuggestions={false} />,
 };
 
 export const SuTelefono: Story = {
@@ -257,7 +241,6 @@ export const IlSelettore: Story = {
 		<div className="border-border/50 bg-card max-w-xl rounded-xl border p-2">
 			<OnboardingPicker
 				options={DEPARTMENTS}
-				suggestions={SUGGESTED_DEPARTMENTS}
 				value={DEPARTMENTS[9]!.id}
 				onSelect={() => {}}
 				placeholder="Cerca un dipartimento…"
@@ -280,47 +263,6 @@ const ENROLLMENT = {
 	curriculumId: null,
 	curriculumName: null,
 	startYear: null,
-};
-
-/** The longest name in the catalogue, 70 characters. */
-const LONG_ENROLLMENT = {
-	...ENROLLMENT,
-	courseId: "83-313",
-	courseName: "Scienze Dell'Educazione Per Il Nido E Le Professioni Socio-Pedagogiche",
-	courseCode: "83-313",
-	departmentId: "desu",
-	departmentName: "Dipartimento di Educazione e Scienze Umane",
-	departmentCode: "DESU",
-};
-
-/** The dashboard prompt for accounts made before the wizard, at its width in the hero. */
-export const IlPromemoria: Story = {
-	name: "Il promemoria in dashboard",
-	render: () => (
-		<div className="lg:w-80">
-			<EnrollmentPrompt />
-		</div>
-	),
-};
-
-/** The same hero slot once the course is declared. */
-export const IlCorsoInDashboard: Story = {
-	name: "Il corso dichiarato, in dashboard",
-	render: () => (
-		<div className="lg:w-80">
-			<EnrollmentSummary enrollment={ENROLLMENT} />
-		</div>
-	),
-};
-
-/** The 70-character worst case. Hover the name for the tooltip. */
-export const IlCorsoPiuLungo: Story = {
-	name: "Il corso dal nome piu lungo",
-	render: () => (
-		<div className="lg:w-80">
-			<EnrollmentSummary enrollment={LONG_ENROLLMENT} />
-		</div>
-	),
 };
 
 export const InImpostazioni: Story = {

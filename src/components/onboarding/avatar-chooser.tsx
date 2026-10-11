@@ -20,7 +20,7 @@ export function AvatarChooser({
 }: {
 	choices: AvatarChoice[];
 	selectedSeed?: string | null;
-	onSelect: (seed: string) => void;
+	onSelect: (choice: AvatarChoice) => void;
 	onShuffle: () => void;
 	onUpload: (file: File) => void;
 	isLoading?: boolean;
@@ -78,7 +78,7 @@ export function AvatarChooser({
 								type="button"
 								aria-pressed={selected}
 								aria-label={`Avatar ${index + 1}`}
-								onClick={() => onSelect(choice.seed)}
+								onClick={() => onSelect(choice)}
 								className={cn(
 									"focus-visible:ring-ring bg-muted aspect-square w-full cursor-pointer overflow-hidden rounded-xl transition-shadow focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",
 									selected ? "ring-primary ring-2" : "hover:ring-border hover:ring-2"

@@ -18,12 +18,10 @@ const KIND_ORDER: CourseKind[] = ["BACHELOR", "MASTER", "SINGLE_CYCLE"];
 /** Only the course types the department offers get a segment. */
 export function CoursePicker({
 	options,
-	suggestions = [],
 	value,
 	onSelect,
 }: {
 	options: CourseOption[];
-	suggestions?: CourseOption[];
 	value?: string | null;
 	onSelect: (id: string) => void;
 }) {
@@ -36,7 +34,6 @@ export function CoursePicker({
 	const active = kind && kinds.includes(kind) ? kind : kinds[0];
 
 	const visible = options.filter(option => option.courseType === active);
-	const visibleSuggestions = suggestions.filter(option => option.courseType === active);
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -55,7 +52,6 @@ export function CoursePicker({
 			)}
 			<OnboardingPicker
 				options={visible}
-				suggestions={visibleSuggestions}
 				value={value}
 				onSelect={onSelect}
 				placeholder="Cerca un corso…"

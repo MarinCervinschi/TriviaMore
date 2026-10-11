@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 import { CameraIcon } from "@solar-icons/react/linear/camera";
-import { useQuery } from "@tanstack/react-query";
 
 import { AvatarChooser } from "@/components/onboarding/avatar-chooser";
+import { useAvatarChoice } from "@/components/onboarding/use-avatar-choice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
-import { avatarQueries } from "@/lib/avatar/queries";
 import { cn } from "@/lib/utils";
 
 export function AvatarEditor({
@@ -33,14 +32,11 @@ export function AvatarEditor({
 	fallbackClassName?: string;
 }) {
 	const [open, setOpen] = useState(false);
-	const [page, setPage] = useState(0);
-	const [seed, setSeed] = useState<string | null>(null);
-
-	const choices = useQuery({ ...avatarQueries.choices(page), enabled: open });
+	const avatar = useAvatarChoice({ enabled: open });
 	const setGenerated = useSetGeneratedAvatar();
 	const upload = useUploadAvatar();
 
-	const preview = choices.data?.find(choice => choice.seed === seed)?.dataUri;
+	const seed = avatar.chosen?.seed;
 
 	async function save() {
 		try {
@@ -50,7 +46,7 @@ export function AvatarEditor({
 			return;
 		}
 		setOpen(false);
-		setSeed(null);
+		avatar.clear();
 	}
 
 	return (
@@ -58,7 +54,7 @@ export function AvatarEditor({
 			open={open}
 			onOpenChange={next => {
 				setOpen(next);
-				if (!next) setSeed(null);
+				if (!next) avatar.clear();
 			}}
 		>
 			<DialogTrigger asChild>
@@ -93,7 +89,7 @@ export function AvatarEditor({
 
 				<div className="flex items-center gap-4">
 					<Avatar className="size-16">
-						<AvatarImage src={preview ?? imageUrl ?? undefined} alt="" />
+						<AvatarImage src={avatar.chosen?.dataUri ?? imageUrl ?? undefined} alt="" />
 						<AvatarFallback className={fallbackClassName}>{initials}</AvatarFallback>
 					</Avatar>
 					<p className="text-muted-foreground text-sm">
@@ -102,19 +98,15 @@ export function AvatarEditor({
 				</div>
 
 				<AvatarChooser
-					choices={choices.data ?? []}
-					selectedSeed={seed}
-					onSelect={setSeed}
-					onShuffle={() => setPage(current => current + 1)}
+					{...avatar.chooserProps}
 					onUpload={file =>
 						upload.mutate(file, {
 							onSuccess: () => {
-								setSeed(null);
+								avatar.clear();
 								setOpen(false);
 							},
 						})
 					}
-					isLoading={choices.isFetching}
 					isUploading={upload.isPending}
 				/>
 
