@@ -127,7 +127,7 @@ export function DataTable<TData extends RowData>({
 				<div className="overflow-hidden">
 					<Table
 						className={sized ? "table-fixed" : undefined}
-						containerClassName="scrollbar-hover max-h-[70dvh]"
+						containerClassName="max-h-[70dvh]"
 					>
 						<TableHeader className="sticky top-0 z-10">
 							{table.getHeaderGroups().map(headerGroup => (
