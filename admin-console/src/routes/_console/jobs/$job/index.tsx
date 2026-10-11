@@ -14,7 +14,7 @@ import { TabNav } from "@/components/ui/tab-nav";
 
 import { ConsolePage } from "~/components/console-page";
 import { JobTextsSheet } from "~/components/jobs/job-texts-sheet";
-import { RunStatusBadge } from "~/components/jobs/run-status-badge";
+import { RunStatusBadge, applyOutcome } from "~/components/jobs/run-status-badge";
 import { RunsTable } from "~/components/jobs/runs-table";
 import { ScheduleSheet } from "~/components/jobs/schedule-sheet";
 import { StartPanel } from "~/components/jobs/start-panel";
@@ -23,7 +23,7 @@ import { StatusBadge } from "~/components/status-badge";
 import { IS_PRODUCTION } from "~/lib/environment";
 import { formatDateTime, formatDuration, formatNumber } from "~/lib/format";
 import { jobQueries } from "~/lib/jobs/queries";
-import type { JobInfo, JobRun, JobSchedule } from "~/lib/jobs/types";
+import type { JobInfo, JobRun, JobRunsLatest, JobSchedule } from "~/lib/jobs/types";
 
 const TABS = ["panoramica", "esecuzioni", "pianificazioni"] as const;
 type Tab = (typeof TABS)[number];
@@ -34,10 +34,11 @@ export const Route = createFileRoute("/_console/jobs/$job/")({
 		/** A queued run to change in the start panel. */
 		edit: z.string().optional().catch(undefined),
 	}),
-	loader: ({ context }) =>
+	loader: ({ context, params }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(jobQueries.jobs()),
-			context.queryClient.ensureQueryData(jobQueries.runs()),
+			context.queryClient.ensureQueryData(jobQueries.jobRuns(params.job)),
+			context.queryClient.ensureQueryData(jobQueries.latest()),
 			context.queryClient.ensureQueryData(jobQueries.overview("week")),
 		]),
 	component: JobPage,
@@ -54,17 +55,18 @@ function JobPage() {
 function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const { tab = "panoramica", edit } = Route.useSearch();
-	const { data: allRuns } = useSuspenseQuery(jobQueries.runs());
+	const { data: runs } = useSuspenseQuery(jobQueries.jobRuns(job.name));
+	const { data: latest } = useSuspenseQuery(jobQueries.latest());
 	const { data: overview } = useSuspenseQuery(jobQueries.overview("week"));
 
-	const runs = allRuns.filter(run => run.job === job.name);
+	const summary = latest.find(entry => entry.job === job.name);
+	const total = summary?.total ?? 0;
 	const schedules = overview.rows
 		.map(row => row.schedule)
 		.filter(s => s.job === job.name);
 	const editing = edit
 		? runs.find(run => run.id === edit && run.status === "QUEUED")
 		: undefined;
-	const lastSucceeded = runs.find(run => run.status === "SUCCEEDED");
 	const openRun = (runId: string) =>
 		navigate({ to: "/jobs/$job/runs/$runId", params: { job: job.name, runId } });
 
@@ -102,7 +104,7 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 							{
 								key: "esecuzioni",
 								label: "Esecuzioni",
-								badge: runs.length > 0 ? formatNumber(runs.length) : undefined,
+								badge: total > 0 ? formatNumber(total) : undefined,
 								active: tab === "esecuzioni",
 								onSelect: () => select("esecuzioni"),
 							},
@@ -117,7 +119,7 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 						]}
 					/>
 					{tab === "panoramica" && (
-						<Overview job={job} runs={runs} schedules={schedules} />
+						<Overview job={job} summary={summary} schedules={schedules} />
 					)}
 					{tab === "esecuzioni" && (
 						<RunsTable runs={runs} jobs={jobs} showJob={false} />
@@ -139,7 +141,7 @@ function JobView({ job, jobs }: { job: JobInfo; jobs: JobInfo[] }) {
 					<StartPanel
 						key={`${job.name}:${editing?.id ?? "new"}`}
 						job={job}
-						lastSucceeded={lastSucceeded}
+						lastSucceeded={summary?.lastSucceeded ?? undefined}
 						editing={editing}
 						onDone={openRun}
 						onCancelEdit={() =>
@@ -170,7 +172,9 @@ function RunCard({ title, run, job }: { title: string; run: JobRun; job: JobInfo
 	return (
 		<InsetCard
 			title={title}
-			description={`${run.dryRun ? "Simulazione" : "Applicata"} · ${formatDateTime(run.queuedAt)}`}
+			description={
+				run.dryRun ? `Simulazione · ${formatDateTime(run.queuedAt)}` : applyOutcome(run)
+			}
 			actions={<RunStatusBadge status={run.status} />}
 			footer={
 				<div className="flex justify-end">
@@ -213,15 +217,15 @@ function RunCard({ title, run, job }: { title: string; run: JobRun; job: JobInfo
 
 function Overview({
 	job,
-	runs,
+	summary,
 	schedules,
 }: {
 	job: JobInfo;
-	runs: JobRun[];
+	summary: JobRunsLatest | undefined;
 	schedules: JobSchedule[];
 }) {
-	const last = runs[0];
-	const lastApplied = runs.find(run => !run.dryRun && run.status === "SUCCEEDED");
+	const last = summary?.last;
+	const lastApplied = summary?.lastApplied;
 	const next = schedules
 		.filter(schedule => !schedule.paused && schedule.nextRun)
 		.sort((a, b) => a.nextRun!.localeCompare(b.nextRun!))[0];

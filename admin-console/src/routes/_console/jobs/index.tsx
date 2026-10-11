@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_console/jobs/")({
 	loader: ({ context }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(jobQueries.jobs()),
-			context.queryClient.ensureQueryData(jobQueries.runs()),
+			context.queryClient.ensureQueryData(jobQueries.latest()),
 			context.queryClient.ensureQueryData(jobQueries.overview("week")),
 		]),
 	component: CataloguePage,
@@ -121,21 +121,21 @@ function CataloguePage() {
 	const navigate = useNavigate({ from: Route.fullPath });
 	const search = Route.useSearch();
 	const { data: jobs } = useSuspenseQuery(jobQueries.jobs());
-	const { data: runs } = useSuspenseQuery(jobQueries.runs());
+	const { data: latest } = useSuspenseQuery(jobQueries.latest());
 	const { data: overview } = useSuspenseQuery(jobQueries.overview("week"));
 
 	const rows = useMemo<CatalogueRow[]>(() => {
 		const schedules = overview.rows.map(row => row.schedule);
 		return jobs.map(job => ({
 			job,
-			last: runs.find(run => run.job === job.name),
+			last: latest.find(entry => entry.job === job.name)?.last ?? undefined,
 			next:
 				schedules
 					.filter(s => s.job === job.name && !s.paused && s.nextRun)
 					.map(s => s.nextRun!)
 					.sort()[0] ?? null,
 		}));
-	}, [jobs, runs, overview]);
+	}, [jobs, latest, overview]);
 
 	const columns = useMemo(
 		() =>
