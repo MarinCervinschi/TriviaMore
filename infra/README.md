@@ -21,7 +21,7 @@ reached through the tailnet.
 |---|---|
 | `versions.tf` | Terraform and the providers (`coolify-terraform/coolify`, `cloudflare/cloudflare`), and the state on Cloudflare R2 |
 | `providers.tf` | the providers, from `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` and `CLOUDFLARE_API_TOKEN` |
-| `discovery.tf` | reads only: Coolify's version, the projects, servers, environments, applications and GitHub Apps |
+| `discovery.tf` | reads only: the projects, servers and GitHub Apps that `console.tf` looks up by name |
 | `console.tf` | the console's two services, server and worker, and their runtime variables |
 | `access.tf` | `admin.trivia-more.it` on Cloudflare: the DNS record and the Access application in front of it |
 | `variables.tf` | the values `run.sh` passes from Infisical |
