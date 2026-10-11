@@ -27,6 +27,12 @@ locals {
   console_server_env = merge(local.console_env, {
     CF_ACCESS_TEAM_DOMAIN = local.team_domain
     CF_ACCESS_AUD         = cloudflare_zero_trust_access_application.console.aud
+    SEQ_SERVICE_API_KEY   = var.console_seq_api_key
+  })
+
+  # Each service ingests with its own Seq key, which attaches the Application property.
+  console_worker_env = merge(local.console_env, {
+    SEQ_SERVICE_API_KEY = var.console_worker_seq_api_key
   })
 }
 
@@ -85,11 +91,11 @@ resource "coolify_environment_variable" "console" {
 }
 
 resource "coolify_environment_variable" "console_worker" {
-  for_each = nonsensitive(toset(keys(local.console_env)))
+  for_each = nonsensitive(toset(keys(local.console_worker_env)))
 
   application_uuid = coolify_application_github_app.console_worker.uuid
   key              = each.key
-  value            = local.console_env[each.key]
+  value            = local.console_worker_env[each.key]
   is_runtime       = true
   is_build         = false
   is_preview       = false

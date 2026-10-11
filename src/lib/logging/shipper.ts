@@ -27,7 +27,8 @@ function resolveTarget(): Target | null {
 	target = base
 		? {
 				url: `${base.replace(/\/+$/, "")}/ingest/clef`,
-				apiKey: process.env.SEQ_API_KEY?.trim(),
+				// A service that shares the app's Infisical secrets gets its own key under a name Infisical does not overwrite.
+				apiKey: (process.env.SEQ_SERVICE_API_KEY ?? process.env.SEQ_API_KEY)?.trim(),
 			}
 		: null;
 	return target;

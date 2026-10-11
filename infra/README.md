@@ -37,6 +37,7 @@ reached through the tailnet.
 | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | where that identity signs in |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | the DNS record and Cloudflare Access |
 | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console |
+| `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git. The
 identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and

@@ -25,3 +25,13 @@ variable "console_owner_email" {
   type        = string
   description = "The one address Cloudflare Access lets into the console."
 }
+
+variable "console_seq_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "console_worker_seq_api_key" {
+  type      = string
+  sensitive = true
+}
