@@ -140,6 +140,9 @@ pnpm build                 # must leave no drizzle/pg in .output/public
   wrong at worst. Build correlated subqueries with the query builder (`exists(db.select()…)`), which
   qualifies them; wrap the result in `sql<boolean>\`${…}\`` if you need to name its type.
 
+**Changing an input or a behaviour** breaks the tabs still running the previous release. Inputs only
+grow, and a changed behaviour is a new function; the rules are in the `safe-changes` skill.
+
 **Hard-reload the browser after moving or renaming a server function.** Its id is derived from the
 defining file and export name, and it is baked into the client module the browser already has. A tab
 loaded before the move keeps calling the old id, which fails in one of two ways that look like

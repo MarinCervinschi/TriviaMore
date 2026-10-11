@@ -95,6 +95,11 @@ This caused three near-regressions during the migration; check `pg_policies` bef
 ported from the old code. Auth and Storage stay on supabase-js, and are all `src/lib/supabase/` still
 contains.
 
+**Supabase is on its way out** (`docs/PLATFORM.md`): plain Postgres, a self-hosted S3 store, Better Auth
+inside the app, and a staging environment on the `rieti` server where every change lands first. Read
+that ADR before touching auth, storage, the infrastructure or how migrations are applied; until its
+phases land, the current setup described here still holds.
+
 Issue #87 holds the plan and the decisions. Every phase of it is closed except #93, which is future
 work — browser-direct reads with Realtime. Hosting is **self-hosted on the VPS** (Coolify behind
 Cloudflare): there is no Vercel and no serverless runtime, so a long-running Node process is what
@@ -131,10 +136,16 @@ The Drizzle schema in `src/db/schema/` is the source of truth. **For any schema,
 migration or row-type work, use the `drizzle-schema` skill** — it holds the conventions and the
 traps.
 
-Two rules that are not negotiable:
+Rules that are not negotiable:
 
-- **Migrations are applied by hand.** Never add `db:migrate` to a container start command, an
-  entrypoint, or an automatic deploy hook, in any environment.
+- **Every migration is backward compatible.** The code of the previous release must run on the new
+  schema: drops, renames, type changes and new `NOT NULL`s are split into expand and contract steps
+  across releases. **For any migration, or a change to a server function's input or behaviour, use
+  the `safe-changes` skill.**
+- **Never apply migrations from a container start command, an entrypoint or a deploy hook**, in any
+  environment. Production receives them from the release pipeline only, after a backup and an
+  approval; until that pipeline exists, by hand with `scripts/db/migrations.ts`. Staging, once it
+  exists, may receive them from a local checkout, because it can be rebuilt.
 - **No `psql` on the host.** Query the local database through the container:
   `docker exec supabase_db_TriviaMore psql -U postgres -d postgres -c "..."`.
 

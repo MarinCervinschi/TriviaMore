@@ -16,12 +16,21 @@ live database. That is why a stale local database never produces a spurious migr
 
 ## Applying
 
-**By hand, always.** Never in a container start command, an entrypoint or an automatic deploy hook,
-in any environment. Consequences to plan for:
+Never in a container start command, an entrypoint or a deploy hook, in any environment.
+
+- **Production:** from the release pipeline only, after a backup and an approval. Until it exists,
+  by hand: `SUPABASE_DB_URL=… pnpm exec tsx scripts/db/migrations.ts`, then `--apply`. It applies
+  each migration in its own transaction and prints the statement that failed, which
+  `drizzle-kit migrate` hides.
+- **Staging:** from a local checkout too, since staging can be rebuilt (`docs/PLATFORM.md`).
+- **Local:** `pnpm db:migrate`.
+
+Consequences to plan for:
 
 - Migration first, code second.
-- Destructive changes (renames, drops) need expand/contract across two deploys, or the running
-  version breaks in the window between them.
+- Every migration is backward compatible; destructive changes are split into expand and contract
+  steps across releases. The rules, the lock traps and the review checklist are in the
+  `safe-changes` skill.
 - Rolling back a deploy does **not** roll back the schema.
 
 ## What needs a custom migration
