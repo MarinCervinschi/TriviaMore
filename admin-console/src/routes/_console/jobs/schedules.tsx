@@ -303,7 +303,8 @@ function SchedulesPage() {
 				showPagination={false}
 				empty={
 					<InlineEmpty>
-						Nessuna pianificazione. I job partono solo quando li avvii da Esecuzioni.
+						Nessuna pianificazione. I job partono solo quando li avvii dalla loro
+						pagina.
 					</InlineEmpty>
 				}
 				onRowClick={schedule => openDetail(schedule.key)}

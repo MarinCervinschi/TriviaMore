@@ -2,6 +2,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
+import { log } from "@/lib/logging/server";
+import { Unavailable } from "@/lib/server/errors";
 
 /** The console's one database: the local one in development, production once deployed. */
 export const DATABASE_ENV = "DATABASE_URL";
@@ -14,10 +16,9 @@ export function consolePool(): Pool | null {
 	const url = process.env[DATABASE_ENV];
 	if (!url) return null;
 	pool = new Pool({ connectionString: url, max: 3, connectionTimeoutMillis: 5000 });
-	pool.on("error", () => {
-		pool = null;
-		db = null;
-	});
+	pool.on("error", error =>
+		log.warn("Idle database client failed: {Reason}", { Reason: error.message })
+	);
 	return pool;
 }
 
@@ -33,7 +34,7 @@ let db: ConsoleDb | null = null;
 export function consoleDb(): ConsoleDb {
 	if (db) return db;
 	const from = consolePool();
-	if (!from) throw new Error(`${DATABASE_ENV} non è configurata.`);
+	if (!from) throw new Unavailable(`${DATABASE_ENV} non è configurata.`);
 	db = createDb(from);
 	return db;
 }

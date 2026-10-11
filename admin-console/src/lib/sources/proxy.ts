@@ -17,7 +17,7 @@ export async function forwardToSource(request: Request): Promise<Response> {
 }
 
 /** The forwarding alone, for a caller already known to be the owner. */
-export async function relay(request: Request): Promise<Response> {
+async function relay(request: Request): Promise<Response> {
 	let target: URL;
 	try {
 		target = new URL(new URL(request.url).searchParams.get("scalar_url") ?? "");

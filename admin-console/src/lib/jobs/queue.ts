@@ -1,6 +1,7 @@
 import { PgBoss } from "pg-boss";
 
 import { log } from "@/lib/logging/server";
+import { Unavailable } from "@/lib/server/errors";
 
 import { DATABASE_ENV } from "~/lib/db/client";
 
@@ -26,7 +27,7 @@ let sender: Promise<PgBoss> | undefined;
 export function queueSender(): Promise<PgBoss> {
 	sender ??= (async () => {
 		const url = process.env[DATABASE_ENV];
-		if (!url) throw new Error(`${DATABASE_ENV} non è configurata.`);
+		if (!url) throw new Unavailable(`${DATABASE_ENV} non è configurata.`);
 		const boss = new PgBoss({
 			connectionString: url,
 			migrate: false,
@@ -37,6 +38,9 @@ export function queueSender(): Promise<PgBoss> {
 		});
 		boss.on("error", error => log.error("Job queue error", {}, error));
 		return boss.start();
-	})();
+	})().catch(error => {
+		sender = undefined;
+		throw error;
+	});
 	return sender;
 }
