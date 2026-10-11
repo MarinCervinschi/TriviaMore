@@ -66,10 +66,12 @@ export async function login(input: LoginInput): Promise<LoginResult> {
 	return { success: true };
 }
 
-/** Where Google sends the owner back: this console's own origin, so it works the same locally and on the tailnet. */
+/** Where Google sends the owner back: this console's own origin, so it works the same locally and on its domain. */
 export async function googleSignInUrl(): Promise<GoogleSignInResult> {
 	const { origin } = getRequestUrl();
-	const { data, error } = await createServerSupabaseClient().auth.signInWithOAuth({
+	const { data, error } = await createServerSupabaseClient({
+		via: "public",
+	}).auth.signInWithOAuth({
 		provider: "google",
 		options: { redirectTo: `${origin}/auth/callback` },
 	});

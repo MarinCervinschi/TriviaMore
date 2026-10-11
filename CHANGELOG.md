@@ -12,6 +12,33 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.4.1 — 2026-10-11
+
+Pages under `/user` answer faster. A session check cost about 110 ms, because the server reached
+Supabase through its public URL and so left the host and came back through Cloudflare; on preview
+the median of a server function went from 596 ms to 60 ms once it used the Docker network. The rest
+is detail work on the dashboard, the scrollbars and the calendar picker, and logs the ops console can
+be told apart by.
+
+### Changed
+
+- **Session checks stay on the host.** The server's Supabase client uses `SUPABASE_INTERNAL_URL`,
+  Kong on the Docker network, and falls back to the public URL where it is unset. The session cookie
+  keeps the name the public URL gives it, and the Google sign-in, whose URL the browser follows,
+  stays on the public client. (`docs/SECRETS.md`)
+- **One session check per guarded navigation.** The `/user`, `/admin` and onboarding layouts check
+  the session and the accepted terms in a single server call instead of two.
+- **The console and its worker log with their own Seq keys**, which attach `Application = console`
+  and `console-worker`. Terraform sets them as `SEQ_SERVICE_API_KEY`, a name `infisical run` does
+  not overwrite. (`docs/OBSERVABILITY.md`)
+- Every scrollbar is thin and shows only while the pointer or the focus is inside its container.
+- The calendar's month and year pickers use the app's `Select` instead of the native one.
+
+### Fixed
+
+- The dashboard's career, traguardi and calendar cards appeared from nothing once their queries
+  returned. Each now holds its place with a skeleton, and the route's skeleton draws them too.
+
 ## 3.4.0 — 2026-10-10
 
 The release that links a student to their degree. The catalogue is now filled from the university's

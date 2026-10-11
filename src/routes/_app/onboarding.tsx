@@ -22,7 +22,6 @@ import { useAvatarChoice } from "@/components/onboarding/use-avatar-choice";
 import { OnboardingSkeleton } from "@/components/skeletons";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { requireAuthFn } from "@/lib/auth/api";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
@@ -35,7 +34,6 @@ import { useUpdateProfile } from "@/lib/user/mutations";
 
 export const Route = createFileRoute("/_app/onboarding")({
 	beforeLoad: async () => {
-		await requireAuthFn();
 		await requireLegalAcceptanceFn();
 	},
 	loader: ({ context }) =>

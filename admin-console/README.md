@@ -26,6 +26,7 @@ Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 | `CONSOLE_OWNER_IDS`                           | comma-separated user ids allowed in; anyone else is signed out at once |
 | `DATABASE_URL`                                | the one database: local in `dev`, production in `prod`                 |
 | `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`      | the Cloudflare Access token every request must carry; unset locally    |
+| `SEQ_SERVICE_API_KEY`                         | the service's own Seq key, set by Terraform; unset locally            |
 
 Without `CONSOLE_OWNER_IDS` nobody can sign in. A missing `DATABASE_URL` shows as _non configurata_ on
 Impostazioni → Connessione. A built console labels itself _Produzione_; `pnpm console:dev` is _Locale_.
