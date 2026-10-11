@@ -8,6 +8,7 @@ import {
 	integer,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
@@ -48,6 +49,10 @@ export const careerExams = crmSchema
 		},
 		table => [
 			index("idx_career_exams_enrollment").using("btree", table.enrollmentId),
+			index("idx_career_exams_class").using("btree", table.classId),
+			uniqueIndex("uq_career_exams_plan_row")
+				.on(table.enrollmentId, table.planCode, sql`coalesce(${table.groupCode}, '')`)
+				.where(sql`${table.planCode} IS NOT NULL`),
 			foreignKey({
 				columns: [table.enrollmentId],
 				foreignColumns: [enrollments.id],

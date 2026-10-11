@@ -43,6 +43,7 @@ export const calendarEvents = crmSchema
 		},
 		table => [
 			index("idx_calendar_events_user_date").using("btree", table.userId, table.date),
+			index("idx_calendar_events_career_exam").using("btree", table.careerExamId),
 			foreignKey({
 				columns: [table.userId],
 				foreignColumns: [profiles.id],
