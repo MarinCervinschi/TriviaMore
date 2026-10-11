@@ -1,10 +1,16 @@
 // Imports the official syllabus of every class from the catalogue and derives the descriptions from it; writes only with --apply.
-//
-//   pnpm catalog:syllabi            cosa cambierebbe
-//   pnpm catalog:syllabi --apply    applicalo
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { closeDb, getDb } from "../../src/db/index.ts";
 import type { SyllabusChanges } from "../../src/lib/catalog/sync/syllabi.ts";
 import { importSyllabi, syllabusRowCount } from "./run-syllabi.ts";
+import { setCacheDir } from "./source.ts";
+
+// A fresh cache per run, so a plan never reads a response from an earlier one.
+const cacheDir = await mkdtemp(join(tmpdir(), "triviamore-catalog-"));
+setCacheDir(cacheDir);
 
 const APPLY = process.argv.includes("--apply");
 
@@ -41,4 +47,5 @@ if (!APPLY) {
 	);
 }
 
+await rm(cacheDir, { recursive: true, force: true });
 await closeDb();
