@@ -33,7 +33,6 @@ export type MasteryInput = NonNullable<z.infer<typeof masteryInputSchema>>;
 
 export const updateProfileSchema = z.object({
 	name: z.string().min(1, "Il nome è obbligatorio").max(100),
-	image: z.string().url().nullable().optional(),
 });
 
 export const attemptFavoriteSchema = z.object({

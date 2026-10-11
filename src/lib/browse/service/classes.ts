@@ -18,11 +18,11 @@ import { findSectionsInClass } from "@/lib/catalog/db/sections";
 
 import type {
 	BrowseSection,
-	CampusLocation,
 	ClassWithSections,
 	SearchClassesParams,
 	SearchClassesResponse,
 } from "../types";
+import { isCampus } from "./courses";
 import {
 	countVisibleSectionsByClass,
 	paginationOf,
@@ -150,7 +150,9 @@ export async function searchClasses(
 	// A row is a (course, class) pair, so this is the campus that pairing is
 	// taught at: a class shared by two courses can match on either.
 	if (params.campus) {
-		filters.push(eq(courses.location, params.campus as CampusLocation));
+		filters.push(
+			isCampus(params.campus) ? eq(courses.location, params.campus) : sql`false`
+		);
 	}
 	if (params.mandatory !== undefined) {
 		filters.push(eq(courseClasses.mandatory, params.mandatory));

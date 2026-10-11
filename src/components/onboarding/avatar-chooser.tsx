@@ -70,13 +70,14 @@ export function AvatarChooser({
 			/>
 
 			<ul className="grid grid-cols-4 gap-2 sm:grid-cols-6">
-				{choices.map(choice => {
+				{choices.map((choice, index) => {
 					const selected = choice.seed === selectedSeed;
 					return (
 						<li key={choice.seed}>
 							<button
 								type="button"
 								aria-pressed={selected}
+								aria-label={`Avatar ${index + 1}`}
 								onClick={() => onSelect(choice.seed)}
 								className={cn(
 									"focus-visible:ring-ring bg-muted aspect-square w-full cursor-pointer overflow-hidden rounded-xl transition-shadow focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",

@@ -80,8 +80,11 @@ export function CalendarSidebar({
 		() =>
 			entries
 				.filter(entry => !hidden.has(entry.kind) && !entry.done)
-				.flatMap(entry => occurrencesOf(entry, today, addDays(today, 366)))
-				.filter(entry => (entry.endDate ?? entry.date) >= today)
+				.flatMap(entry =>
+					occurrencesOf(entry, today, addDays(today, 366))
+						.filter(occurrence => (occurrence.endDate ?? occurrence.date) >= today)
+						.slice(0, 1)
+				)
 				.sort(
 					(a, b) =>
 						a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")

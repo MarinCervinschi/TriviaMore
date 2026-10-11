@@ -3,6 +3,7 @@ import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import {
+	campusLocationEnum,
 	classes,
 	courseClasses,
 	courseCurricula,
@@ -174,7 +175,9 @@ export async function searchCourses(
 		filters.push(eq(courses.courseType, params.courseType as CourseType));
 	}
 	if (params.campus) {
-		filters.push(eq(courses.location, params.campus as CampusLocation));
+		filters.push(
+			isCampus(params.campus) ? eq(courses.location, params.campus) : sql`false`
+		);
 	}
 
 	const { limit, offset } = paginationOf(params);
@@ -220,3 +223,6 @@ export async function searchCourses(
 		total: rows[0]?.total ?? 0,
 	};
 }
+
+export const isCampus = (value: string): value is CampusLocation =>
+	(campusLocationEnum.enumValues as readonly string[]).includes(value);
