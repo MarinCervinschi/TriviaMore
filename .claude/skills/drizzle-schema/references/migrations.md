@@ -70,50 +70,20 @@ the DSL will not do it.
 For anything beyond a trivial column, prove the migrations rebuild the schema from zero. This has
 already caught an inverted composite unique and two indexes that lost their `DESC`.
 
+`pnpm db:test:up` starts an empty Postgres on :54329 and applies every migration to it. Then diff its
+schema against the working local database, with the same flags on both:
+
 ```bash
-D=supabase_db_TriviaMore
-docker exec $D psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS drizzle_verify" \
-                                             -c "CREATE DATABASE drizzle_verify"
-
-# stubs for the Supabase-owned objects our migrations reference
-docker exec $D psql -U postgres -d drizzle_verify -c "
-  CREATE SCHEMA auth;
-  CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, raw_user_meta_data jsonb);
-  CREATE SCHEMA storage;
-  CREATE TABLE storage.buckets (id text PRIMARY KEY, name text, public boolean, file_size_limit bigint);
-  CREATE TABLE storage.objects (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), bucket_id text, name text);
-  CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS 'SELECT NULL::uuid';
-  CREATE FUNCTION storage.foldername(text) RETURNS text[] LANGUAGE sql IMMUTABLE AS 'SELECT string_to_array(\$1, ''/'')';"
-
-DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:54322/drizzle_verify' pnpm exec drizzle-kit migrate
+for c in supabase_db_TriviaMore triviamore-test-db-1; do
+  docker exec $c pg_dump -U postgres -d postgres --schema-only --no-owner --no-privileges --no-comments \
+    -n public -n catalog -n quiz -n internal -n crm -n ops -n pgboss \
+    | grep -vE '^\\(un)?restrict|^-- Dumped|queue_stats_2026' > /tmp/$c.sql
+done
+diff /tmp/supabase_db_TriviaMore.sql /tmp/triviamore-test-db-1.sql
 ```
 
-Then diff the rebuilt database against the working one. Run each query against both and compare:
-
-```sql
--- indexes
-select schemaname||'.'||indexname||' :: '||regexp_replace(indexdef,'^CREATE (UNIQUE )?INDEX [^ ]+ ON ','')
-from pg_indexes where schemaname in ('public','catalog','quiz') order by 1;
-
--- constraints
-select conrelid::regclass||' '||conname||' '||pg_get_constraintdef(oid)
-from pg_constraint where connamespace::regnamespace::text in ('public','catalog','quiz') order by 1;
-
--- columns, defaults, nullability, generation expressions
-select table_schema||'.'||table_name||'.'||column_name||' '||data_type||' '||
-       coalesce(column_default,'-')||' '||is_nullable||' '||coalesce(generation_expression,'-')
-from information_schema.columns where table_schema in ('public','catalog','quiz') order by 1;
-
--- triggers
-select event_object_schema||'.'||event_object_table||' '||trigger_name||' '||action_timing||' '||event_manipulation
-from information_schema.triggers where trigger_schema in ('public','catalog','quiz','auth') order by 1;
-```
-
-Drop `drizzle_verify` when done.
-
-Note that until the refactor in #87 completes, the live database still carries RLS policies the
-Drizzle schema does not describe. Policy differences in that diff are expected; column, index,
-constraint and trigger differences are not.
+The diff must be empty. `queue_stats_*` are partitions pg-boss creates at runtime, so they are left
+out. `pnpm db:test:down` removes the database; it lives in memory, so nothing remains.
 
 ## Baselining an existing database
 

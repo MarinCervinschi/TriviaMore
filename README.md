@@ -80,7 +80,8 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 | `pnpm build` / `pnpm build:dev` | Production build, without / with secrets |
 | `pnpm start` | Serve the production build |
 | `pnpm test` | Unit tests — offline, no database |
-| `pnpm test:db` | Integration tests — needs the local stack |
+| `pnpm db:test:up` / `pnpm db:test:down` | An empty Postgres on :54329 with the migrations applied, and its removal |
+| `pnpm test:db` | Integration tests, on the database `db:test:up` starts |
 | `pnpm storybook` / `pnpm build-storybook` | Component workbench, and the build that proves stories compile |
 | `pnpm format` | Prettier — tabs and semicolons |
 | `pnpm db:generate --name x` | Generate a migration from the schema |
@@ -132,10 +133,11 @@ It runs without `infisical run` on purpose: Infisical would replace the URL with
 The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
 role through `SUPABASE_DB_URL`.
 
-`supabase/migrations/` is a frozen archive from before the cut-over — nothing new goes there, but it
-is still what `supabase start` uses to build the local database. The Drizzle migrations run **on top
-of a Supabase-provisioned database**: `drizzle/0000_baseline.sql` expects the `auth` schema, so they
-do not bootstrap an empty one on their own.
+`supabase/migrations/` is a frozen archive from before the cut-over, still what `supabase start` uses to
+build the local database. `drizzle/archive/` holds the Drizzle migrations up to `0069`, squashed on
+2026-10-11 into `drizzle/0000_baseline.sql`. The baseline builds the whole schema on an empty Postgres:
+where Supabase is absent it creates a minimal `auth.users`, until Better Auth replaces it (#211). On a
+database that already ran the old chain it counts as applied, since its timestamp is the one of `0069`.
 
 Conventions for entities, relations, enums and row types are in
 [`.claude/skills/drizzle-schema`](./.claude/skills/drizzle-schema/SKILL.md).

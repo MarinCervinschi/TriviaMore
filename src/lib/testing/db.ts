@@ -6,7 +6,7 @@ import * as schema from "@/db/schema";
 
 // Refuses any non-local host, so a stray TEST_DATABASE_URL never reaches production.
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "0.0.0.0"]);
-const DEFAULT_TEST_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+const DEFAULT_TEST_URL = "postgresql://postgres:postgres@127.0.0.1:54329/postgres";
 
 function resolveTestUrl(): string {
 	const url = process.env.TEST_DATABASE_URL ?? DEFAULT_TEST_URL;
