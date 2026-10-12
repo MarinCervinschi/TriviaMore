@@ -107,7 +107,7 @@ Cloudflare): there is no Vercel and no serverless runtime, so a long-running Nod
 the app can rely on.
 
 Automated testing is deliberately deferred until the refactor settles — see #109. The app is **not in
-production**; it runs on `preview` and has no users yet, so a visible regression costs a look, not an
+production**; it runs on `staging` and has no users yet, so a visible regression costs a look, not an
 incident.
 
 ### Derived state

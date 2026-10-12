@@ -78,7 +78,7 @@ enforce today. Public files are served from a domain of ours.
 ### A staging environment on `rieti`
 
 Staging is a full copy of the stack on `rieti`: the app, Postgres, the S3 store and Mailpit. The preview app
-moves there. Keeping only the database on `rieti` was set aside, because every query would then cross from the
+moves there, and its branch `preview` becomes `staging`. Keeping only the database on `rieti` was set aside, because every query would then cross from the
 VPS to a home connection, at 10 to 40 ms each.
 
 - **Exposure:** a Cloudflare Tunnel, so no port opens at home, with Cloudflare Access in front.
@@ -90,7 +90,7 @@ VPS to a home connection, at 10 to 40 ms each.
   come from a versioned seed script, which replaces seeding from the SQL console.
 - **Email:** captured by Mailpit, never delivered.
 - **Separate everything:** OAuth clients, bucket, Seq key (`Environment = staging`), Infisical `staging`.
-- **Rebuildable:** `db:reset-staging` drops the database, applies the migrations of `preview`, synchronises the
+- **Rebuildable:** `db:reset-staging` drops the database, applies the migrations of `staging`, synchronises the
   catalogue and runs the seed. A staging whose schema drifted is rebuilt from scratch.
 
 The limit accepted: staging depends on the power and the connection of the place `rieti` is in.
@@ -109,7 +109,7 @@ GitHub Actions, in three places:
 | When | What |
 |---|---|
 | Every pull request | `drizzle-kit check`, a rebuild of an empty Postgres from the migrations, the integration tests on it |
-| A push to `preview` | the migrations applied to staging, then the deploy |
+| A push to `staging` | the migrations applied to staging, then the deploy |
 | A push to `prod` | a job in the `production` environment, which needs an approval: backup, the pending migrations shown, applied, then the deploy |
 
 The runner reaches the databases through the Tailscale GitHub Action, as a short-lived node tagged `tag:ci`. The

@@ -1,0 +1,78 @@
+# Checks every pull request and every push to staging and prod. Needs no secret: the repository is public.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [staging, prod]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # The same empty Postgres as `pnpm db:test:up`, so the migrations prove they build a database from nothing.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54329/postgres
+      SUPABASE_DB_URL: postgresql://postgres:postgres@127.0.0.1:54329/postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm --filter admin-console exec tsc --noEmit -p .
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: The schema and the migrations agree
+        run: |
+          pnpm exec drizzle-kit check
+          pnpm exec drizzle-kit generate --name ci_drift_check
+          if [ -n "$(git status --porcelain drizzle)" ]; then
+            echo "::error::The Drizzle schema has changes no migration describes. Run pnpm db:generate and commit the result."
+            git status --porcelain drizzle
+            exit 1
+          fi
+
+      - name: Migrations on an empty database
+        run: pnpm exec tsx scripts/db/migrations.ts --apply
+
+      - name: Integration tests
+        run: pnpm test:db
+
+      - name: Build
+        run: |
+          pnpm build
+          pnpm --filter admin-console build
