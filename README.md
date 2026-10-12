@@ -163,8 +163,8 @@ Server functions declare their own middleware and authorize inside the service l
 ## Deployment
 
 The app runs on a self-hosted VPS: Coolify builds the `Dockerfile` and deploys on push, behind
-Cloudflare, co-located with the Supabase stack. `prod` is production, `preview` is the preview
-instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
+Cloudflare, co-located with the Supabase stack. `prod` is production, `staging` is the integration
+branch and its instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
 rather than leaving a container serving errors.
 
 Auth emails are served as static assets from `public/email-templates/`, so both the local CLI and the
@@ -188,9 +188,9 @@ Contributions are welcome — to the code and to the catalog content.
 
 - **A wrong question or a missing topic?** Open an issue with the `content` label, linking the section.
 - **A bug or an idea?** Open an issue with the `bug` or `enhancement` label.
-- **Code:** fork, branch off `preview` (`feat/quiz-shortcuts`, `fix/sitemap-encoding`), keep commits
+- **Code:** fork, branch off `staging` (`feat/quiz-shortcuts`, `fix/sitemap-encoding`), keep commits
   small and in Conventional Commits style, run `pnpm test` and `pnpm build`, then open a pull request
-  against `preview` with screenshots for UI changes.
+  against `staging` with screenshots for UI changes.
 
 Want to maintain the catalog of your own department? Open an issue and we'll grant you the
 maintainer role for that scope.
@@ -198,8 +198,8 @@ maintainer role for that scope.
 ## Branches
 
 ```
-preview → Active development, and the preview instance
-prod    → Production (default branch)
+staging → Active development, and the staging instance (default branch)
+prod    → Production
 ```
 
 `master` is frozen at the pre-rewrite state and kept as an archive; the Next.js version before it is
