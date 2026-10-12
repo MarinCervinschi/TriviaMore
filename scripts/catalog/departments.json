@@ -1,0 +1,285 @@
+[
+	{
+		"catalogueCode": "150",
+		"code": "DEMB",
+		"name": "Dipartimento di Economia \"Marco Biagi\"",
+		"area": "SOCIETA_CULTURA",
+		"description": "Centro di eccellenza dedicato allo studio delle dinamiche economiche, aziendali e sociali, orientato alla formazione di professionisti capaci di interpretare la complessità dei mercati e delle politiche del lavoro.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Berengario",
+				"address": "Via Jacopo Berengario, 51, 41121 Modena",
+				"latitude": 44.6493,
+				"longitude": 10.9234,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "103",
+		"code": "DCE",
+		"name": "Dipartimento di Comunicazione ed Economia",
+		"area": "SOCIETA_CULTURA",
+		"description": "Polo multidisciplinare focalizzato sulla comprensione dei processi comunicativi e dei modelli economici in contesti digitali, con un forte orientamento all'innovazione strategica e al marketing.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Reggio Emilia - Palazzo Dossetti",
+				"address": "Viale Antonio Allegri, 9, 42121 Reggio Emilia",
+				"latitude": 44.7024,
+				"longitude": 10.6287,
+				"campusLocation": "REGGIO_EMILIA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "112",
+		"code": "DSLC",
+		"name": "Dipartimento di Studi Linguistici e Culturali",
+		"area": "SOCIETA_CULTURA",
+		"description": "Spazio di ricerca e formazione dedicato alla mediazione linguistica e culturale, volto a promuovere il dialogo internazionale e la comprensione delle identità globali attraverso lo studio delle lingue e letterature.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Largo Sant'Eufemia",
+				"address": "Largo Sant'Eufemia, 19, 41121 Modena",
+				"latitude": 44.6469,
+				"longitude": 10.9255,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "111",
+		"code": "DGIU",
+		"name": "Dipartimento di Giurisprudenza",
+		"area": "SOCIETA_CULTURA",
+		"description": "Istituzione di consolidata tradizione dedicata all'approfondimento della cultura giuridica, coniugando il rigore degli studi classici con l'analisi delle nuove frontiere del diritto nazionale e internazionale.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via San Geminiano",
+				"address": "Via San Geminiano, 3, 41121 Modena",
+				"latitude": 44.6441,
+				"longitude": 10.9268,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "183",
+		"code": "DESU",
+		"name": "Dipartimento di Educazione e Scienze Umane",
+		"area": "SOCIETA_CULTURA",
+		"description": "Centro di eccellenza per le scienze pedagogiche e psicologiche, impegnato nella ricerca educativa d'avanguardia e nella formazione di figure professionali orientate al benessere sociale e alla crescita della persona.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Reggio Emilia - Palazzo Baroni",
+				"address": "Viale Timavo, 93, 42121 Reggio Emilia",
+				"latitude": 44.6974,
+				"longitude": 10.6212,
+				"campusLocation": "REGGIO_EMILIA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "301",
+		"code": "DSBMN",
+		"name": "Dipartimento di Scienze Biomediche, Metaboliche e Neuroscienze",
+		"area": "SALUTE",
+		"description": "Polo di ricerca biomedica d'avanguardia impegnato nello studio delle basi molecolari della salute, con particolare attenzione alle neuroscienze, al metabolismo e all'integrazione tra scienze di base e applicazioni cliniche.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Campi 287",
+				"address": "Via Giuseppe Campi, 287, 41125 Modena",
+				"latitude": 44.6293,
+				"longitude": 10.9497,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "303",
+		"code": "DCHIM",
+		"name": "Dipartimento Chirurgico, Medico, Odontoiatrico e di Scienze Morfologiche con Interesse Trapiantologico, Oncologico e di Medicina Rigenerativa",
+		"area": "SALUTE",
+		"description": "Dipartimento focalizzato sulla medicina traslazionale e l'innovazione chirurgica, dedicato allo sviluppo di terapie avanzate e alla ricerca scientifica applicata alla pratica clinica di alta specializzazione.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via del Pozzo (Policlinico)",
+				"address": "Via del Pozzo, 71, 41124 Modena",
+				"latitude": 44.6366,
+				"longitude": 10.9413,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "302",
+		"code": "DSMCMIA",
+		"name": "Dipartimento di Scienze Mediche e Chirurgiche Materno-Infantili e dell'Adulto",
+		"area": "SALUTE",
+		"description": "Struttura multidisciplinare orientata alla tutela della salute umana in tutte le sue fasi, con un impegno costante nella ricerca scientifica e nell'eccellenza clinica in ambito medico e chirurgico.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via del Pozzo (Policlinico)",
+				"address": "Via del Pozzo, 71, 41124 Modena",
+				"latitude": 44.6366,
+				"longitude": 10.9413,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "116",
+		"code": "DSCG",
+		"name": "Dipartimento di Scienze Chimiche e Geologiche",
+		"area": "SCIENZE",
+		"description": "Centro dedicato allo studio della materia e del pianeta, focalizzato sullo sviluppo di soluzioni chimiche sostenibili e sulla comprensione dei sistemi geologici per la tutela del territorio e delle risorse.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Campi 103",
+				"address": "Via Giuseppe Campi, 103, 41125 Modena",
+				"latitude": 44.6306,
+				"longitude": 10.9482,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			},
+			{
+				"name": "Sede Mantova - Fondazione UniverMantova",
+				"address": "Via Angelo Scarsellini, 2, 46100 Mantova",
+				"latitude": 45.1558,
+				"longitude": 10.7875,
+				"campusLocation": "MANTOVA",
+				"isPrimary": false,
+				"position": 2
+			}
+		]
+	},
+	{
+		"catalogueCode": "216",
+		"code": "FIM",
+		"name": "Dipartimento di Scienze Fisiche, Informatiche e Matematiche",
+		"area": "SCIENZE",
+		"description": "Polo d'eccellenza per le scienze fondamentali e applicate, dove la ricerca teorica in fisica, matematica e informatica si traduce in innovazione tecnologica e soluzioni computazionali avanzate.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Campi 213/a",
+				"address": "Via Giuseppe Campi, 213/a, 41125 Modena",
+				"latitude": 44.6289,
+				"longitude": 10.9488,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	},
+	{
+		"catalogueCode": "117",
+		"code": "DSV",
+		"name": "Dipartimento di Scienze della Vita",
+		"area": "VITA",
+		"description": "Dipartimento multidisciplinare dedicato allo studio della vita in ogni sua forma, integrando biotecnologie e scienze agrarie per promuovere la sostenibilità ambientale e l'innovazione nel settore agro-alimentare.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Campi 287",
+				"address": "Via Giuseppe Campi, 287, 41125 Modena",
+				"latitude": 44.6293,
+				"longitude": 10.9497,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			},
+			{
+				"name": "Sede Reggio Emilia - Campus San Lazzaro",
+				"address": "Via Giovanni Amendola, 2, 42122 Reggio Emilia",
+				"latitude": 44.6917,
+				"longitude": 10.6582,
+				"campusLocation": "REGGIO_EMILIA",
+				"isPrimary": false,
+				"position": 2
+			}
+		]
+	},
+	{
+		"catalogueCode": "120",
+		"code": "DIEF",
+		"name": "Dipartimento di Ingegneria \"Enzo Ferrari\"",
+		"area": "TECNOLOGIA",
+		"description": "Motore di innovazione tecnologica e industriale che coniuga la ricerca ingegneristica avanzata con la formazione di figure tecniche trasversali, operando in stretta sinergia con le eccellenze produttive del territorio.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Modena - Via Vivarelli (Campus Ingegneria)",
+				"address": "Via Pietro Vivarelli, 10, 41125 Modena",
+				"latitude": 44.6288,
+				"longitude": 10.9525,
+				"campusLocation": "MODENA",
+				"isPrimary": true,
+				"position": 1
+			},
+			{
+				"name": "Sede Carpi - Polo Universitario",
+				"address": "Via Corbolani, 41012 Carpi",
+				"latitude": 44.7831,
+				"longitude": 10.8945,
+				"campusLocation": "CARPI",
+				"isPrimary": false,
+				"position": 2
+			},
+			{
+				"name": "Sede Mantova - Fondazione UniverMantova",
+				"address": "Via Angelo Scarsellini, 2, 46100 Mantova",
+				"latitude": 45.1558,
+				"longitude": 10.7875,
+				"campusLocation": "MANTOVA",
+				"isPrimary": false,
+				"position": 3
+			}
+		]
+	},
+	{
+		"catalogueCode": "101",
+		"code": "DISMI",
+		"name": "Dipartimento di Scienze e Metodi dell'Ingegneria",
+		"area": "TECNOLOGIA",
+		"description": "Polo tecnologico orientato all'eccellenza nei sistemi integrati, dove le competenze ingegneristiche e gestionali convergono per promuovere l'efficienza industriale e l'automazione intelligente.",
+		"position": 0,
+		"locations": [
+			{
+				"name": "Sede Reggio Emilia - Campus San Lazzaro",
+				"address": "Via Giovanni Amendola, 2, 42122 Reggio Emilia",
+				"latitude": 44.6917,
+				"longitude": 10.6582,
+				"campusLocation": "REGGIO_EMILIA",
+				"isPrimary": true,
+				"position": 1
+			}
+		]
+	}
+]
