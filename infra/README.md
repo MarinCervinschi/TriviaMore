@@ -27,7 +27,7 @@ on the personal tailnet**, because Coolify's API is reached through it.
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
 | `envs/prod/` | the console's server and worker on the VPS, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
-| `envs/staging/` | the `staging` environment and its Postgres on `rieti`. State `triviamore-staging.tfstate` |
+| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the tunnel with `mail-pr.trivia-more.it` behind Access, Mailpit and Garage. State `triviamore-staging.tfstate` |
 
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
 and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
@@ -53,6 +53,10 @@ The shared ones are the same values as in `prod` → `/infra`; reference them th
 | Secret | For |
 |---|---|
 | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
+| `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging` |
+| `STAGING_DATABASE_URL` | the admin URL `db:reset-staging` uses, built from `STAGING_POSTGRES_PASSWORD` |
+| `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
+| `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git. The
 identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and
@@ -65,6 +69,20 @@ identities that run the app and the console have the project role `Runtime-Read`
 - Coolify runs in Docker behind `docker-proxy`, so it sees every API call coming from the gateway of its
   network, `10.0.2.1`. That address is in **Allowed API IPs**, which means **the Oracle firewall is what
   keeps the API off the internet**: its ingress rules open only 22, 80 and 443.
+
+## Staging on rieti
+
+`rieti` has no public address, so staging reaches the internet through a Cloudflare Tunnel: `cloudflared`
+runs there as a Coolify service and opens the connections outward. A hostname is a CNAME to the tunnel
+and an ingress rule in `tunnel.tf` to a container on the `coolify` network, which every staging service
+joins. Cloudflare holds the certificate, so no ACME bypass is needed.
+
+- **Mailpit** catches every email staging sends (SMTP on 1025) and shows them at `mail-pr.trivia-more.it`.
+- **Garage** is the S3 store: buckets `public` (served by its web endpoint) and `contributions` (private).
+  `garage-init` imports the app's key and creates the buckets on every start, skipping what exists.
+- Coolify creates a variable for every `${VAR}` in a compose file, empty, so a service's secrets are set
+  with `coolify_envs_bulk`, which overwrites them. Services are created with `instant_deploy = false`
+  when they need those secrets, and started after the apply.
 
 ## The console on its domain
 
