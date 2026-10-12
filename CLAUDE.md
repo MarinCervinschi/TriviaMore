@@ -170,7 +170,10 @@ starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty
 - Prefer editing an existing file over adding one; match the surrounding style.
 - When a route has a `pendingComponent`, update the matching skeleton in
   `src/components/skeletons/` whenever you change the page layout.
-- Seed data is applied through a SQL console, not a seed script.
+- **Content outside production comes from scripts:** the catalogue from CINECA (`catalog:populate`, then
+  `catalog:sync`), the departments and their sites from `scripts/catalog/departments.json`, and made-up
+  sections and questions from `scripts/db/seed-content.ts`. `pnpm db:reset-staging` runs them all.
+  Production content is still written through the admin and the SQL console.
 
 ## Verification
 
