@@ -11,7 +11,8 @@ questions.
 | `pnpm dev` | dev server (Infisical injects secrets) |
 | `pnpm build:dev` | production build with secrets |
 | `pnpm test` | Vitest — unit tier only (`*.test.ts`, offline) |
-| `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, needs local Supabase) |
+| `pnpm db:test:up` | an empty Postgres on :54329 with the migrations applied, for `pnpm test:db` |
+| `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, on the database `db:test:up` starts) |
 | `pnpm exec tsc --noEmit` | typecheck |
 | `pnpm storybook` | component workbench on :6006 |
 | `pnpm build-storybook` | verify every story compiles |
@@ -149,7 +150,8 @@ Rules that are not negotiable:
 - **No `psql` on the host.** Query the local database through the container:
   `docker exec supabase_db_TriviaMore psql -U postgres -d postgres -c "..."`.
 
-`supabase/migrations/` is a frozen archive. Nothing new goes there.
+`supabase/migrations/` and `drizzle/archive/` are frozen archives. Nothing new goes there. The chain
+starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty Postgres.
 
 ## Conventions
 
@@ -184,8 +186,8 @@ holds the two story shapes, the title taxonomy and the components that cannot be
 Tests are co-located with the source they cover. Two tiers, split by suffix, in `vitest.config.ts`
 (kept separate from `vite.config.ts`): `*.test.ts` needs no database and no network — offline, CI-safe,
 the `pnpm test` gate; `*.itest.ts` is DB-backed via `pnpm test:db`. Reading a repo file is allowed in
-the unit tier, which is how `src/styles/contrast.test.ts` gates the colour tokens against WCAG. The integration tier needs the local
-stack up (`supabase start`), connects as the postgres admin through `TEST_DATABASE_URL` (defaults to
-the local database, refuses any non-local host), and runs each test inside a transaction that is
+the unit tier, which is how `src/styles/contrast.test.ts` gates the colour tokens against WCAG. The integration tier runs on the
+plain Postgres of `pnpm db:test:up`, connects as the postgres admin through `TEST_DATABASE_URL` (defaults to
+that database on :54329, refuses any non-local host), and runs each test inside a transaction that is
 always rolled back — so it seeds its own fixtures and leaves the database untouched. Helpers live in
 `src/lib/testing/`. Component tests are deliberately out of scope (#109).

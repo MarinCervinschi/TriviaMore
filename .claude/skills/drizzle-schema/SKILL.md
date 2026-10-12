@@ -9,7 +9,8 @@ The TypeScript schema is the source of truth. `drizzle-kit` diffs it and writes 
 never edited directly. Same model as EF Core Code First: `db:generate` ↔ `migrations add`,
 `db:migrate` ↔ `database update`, `--custom` ↔ `migrationBuilder.Sql(...)`.
 
-`supabase/migrations/` is a frozen archive from before the cut-over. Nothing new goes there.
+`supabase/migrations/` and `drizzle/archive/` are frozen archives. Nothing new goes there. The chain
+starts at `drizzle/0000_baseline.sql`, the schema as of `0069`, which builds on an empty Postgres.
 
 ## Layout
 

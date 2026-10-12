@@ -75,7 +75,7 @@ A case in `src/lib/achievements/rollups.itest.ts`, covering **both directions**:
 That equality is the entire basis for serving reads from derived tables. Exercise the case that
 distinguishes the shape — for a set metric, the same thing twice must count once.
 
-Run it with `pnpm test:db` (needs `supabase start`; each test runs in a rolled-back transaction).
+Run it with `pnpm db:test:up` then `pnpm test:db` (each test runs in a rolled-back transaction).
 
 ## 6. Ship it
 

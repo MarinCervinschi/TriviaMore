@@ -26,6 +26,8 @@
 		"test": "vitest run --project unit",
 		"test:watch": "vitest --project unit",
 		"test:db": "vitest run --project integration --passWithNoTests",
+		"db:test:up": "docker compose up -d --wait test-db && SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54329/postgres tsx scripts/db/migrations.ts --apply",
+		"db:test:down": "docker compose down test-db",
 		"db:generate": "infisical run --recursive -- drizzle-kit generate",
 		"db:migrate": "infisical run --recursive -- drizzle-kit migrate",
 		"db:studio": "infisical run --recursive -- drizzle-kit studio",

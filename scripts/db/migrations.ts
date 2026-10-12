@@ -23,6 +23,10 @@ const { entries } = JSON.parse(
 const client = new pg.Client({ connectionString: url, ssl: false });
 await client.connect();
 
+// The same table drizzle-kit creates, so an empty database can start from the baseline.
+await client.query(
+	"create schema if not exists drizzle; create table if not exists drizzle.__drizzle_migrations (id serial primary key, hash text not null, created_at bigint)"
+);
 const { rows } = await client.query<{ created_at: string }>(
 	"select created_at from drizzle.__drizzle_migrations order by created_at desc limit 1"
 );
