@@ -1,31 +1,36 @@
 # infra
 
-The VPS's resources as Terraform, starting with the ops console (#203, #198). The app and Supabase
-are still managed by hand in Coolify, and get imported here one at a time if the pilot holds.
+TriviaMore's servers as Terraform, one root per environment (`docs/PLATFORM.md`). Production holds the
+ops console (#203, #198); staging on `rieti` is being built in #208. The app and Supabase are still
+managed by hand in Coolify, until #212.
 
 ## Run it
 
 ```bash
-pnpm infra:plan     # what would change; reads only
-pnpm infra:apply    # applies, after showing the same plan and asking
-pnpm infra:output   # the values the last apply recorded
+pnpm infra:plan             # production: what would change; reads only
+pnpm infra:apply            # production: applies, after showing the same plan and asking
+pnpm infra:output           # production: the values the last apply recorded
+pnpm infra:staging:plan     # the same three for staging
+pnpm infra:staging:apply
+pnpm infra:staging:output
 ```
 
-Each one runs `infisical run --env=prod --path=/infra -- bash infra/run.sh …`, so the secrets come from
-Infisical and never from a file. Needs Terraform ≥ 1.10 and **Tailscale on**, because Coolify's API is
-reached through the tailnet.
+Each one runs `infisical run --env=<env> --path=/infra -- bash infra/run.sh <env> …`, so the secrets come
+from that environment's `/infra` folder and never from a file. Needs Terraform ≥ 1.10 and **Tailscale on,
+on the personal tailnet**, because Coolify's API is reached through it.
 
 ## What it holds
 
-| File | |
+| Path | |
 |---|---|
-| `versions.tf` | Terraform and the providers (`coolify-terraform/coolify`, `cloudflare/cloudflare`), and the state on Cloudflare R2 |
-| `providers.tf` | the providers, from `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` and `CLOUDFLARE_API_TOKEN` |
-| `discovery.tf` | reads only: the projects, servers and GitHub Apps that `console.tf` looks up by name |
-| `console.tf` | the console's two services, server and worker, and their runtime variables |
-| `access.tf` | `admin.trivia-more.it` on Cloudflare: the DNS record and the Access application in front of it |
-| `variables.tf` | the values `run.sh` passes from Infisical |
-| `run.sh` | maps the Infisical secrets onto what Terraform reads, then runs it |
+| `run.sh` | `run.sh <prod\|staging> <command>`: the shared secrets, then the root's `vars.sh`, then Terraform in that root |
+| `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
+| `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
+| `envs/prod/` | the console's server and worker on the VPS, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
+| `envs/staging/` | the `staging` environment and its Postgres on `rieti`. State `triviamore-staging.tfstate` |
+
+Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
+and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
 
 ## Secrets: Infisical `prod` → `/infra`
 
@@ -38,6 +43,16 @@ reached through the tailnet.
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | the DNS record and Cloudflare Access |
 | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console |
 | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+
+## Secrets: Infisical `staging` → `/infra`
+
+The shared ones are the same values as in `prod` → `/infra`; reference them there instead of copying them:
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN`,
+`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+
+| Secret | For |
+|---|---|
+| `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git. The
 identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and

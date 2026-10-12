@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Runs Terraform on infra/ with the secrets of prod → /infra, which `pnpm infra:*` injects through Infisical.
-: "${R2_ENDPOINT:?run through pnpm infra:*, so Infisical injects prod → /infra}"
+# Runs Terraform on infra/envs/<env> with the secrets of that environment's /infra folder, which `pnpm infra:*` injects through Infisical.
+env="${1:?usage: run.sh <prod|staging> <terraform arguments>}"
+shift
+root="$(dirname "$0")/envs/$env"
+[ -d "$root" ] || { echo "no Terraform root for $env" >&2; exit 1; }
+
+: "${R2_ENDPOINT:?run through pnpm infra:*, so Infisical injects $env → /infra}"
+: "${CLOUDFLARE_API_TOKEN:?add CLOUDFLARE_API_TOKEN to $env → /infra}"
 export AWS_ENDPOINT_URL_S3="$R2_ENDPOINT"
-export TF_VAR_console_infisical_client_id="${CONSOLE_INFISICAL_CLIENT_ID:?missing in prod → /infra}"
-export TF_VAR_console_infisical_client_secret="${CONSOLE_INFISICAL_CLIENT_SECRET:?missing in prod → /infra}"
-export TF_VAR_infisical_project_id="${INFISICAL_PROJECT_ID:?add INFISICAL_PROJECT_ID to prod → /infra}"
-export TF_VAR_infisical_site_url="${INFISICAL_SITE_URL:?add INFISICAL_SITE_URL to prod → /infra}"
-: "${CLOUDFLARE_API_TOKEN:?add CLOUDFLARE_API_TOKEN to prod → /infra}"
-export TF_VAR_cloudflare_account_id="${CLOUDFLARE_ACCOUNT_ID:?add CLOUDFLARE_ACCOUNT_ID to prod → /infra}"
-export TF_VAR_console_seq_api_key="${CONSOLE_SEQ_API_KEY:?add CONSOLE_SEQ_API_KEY to prod → /infra}"
-export TF_VAR_console_worker_seq_api_key="${CONSOLE_WORKER_SEQ_API_KEY:?add CONSOLE_WORKER_SEQ_API_KEY to prod → /infra}"
-export TF_VAR_console_owner_email="${CONSOLE_OWNER_EMAIL:?add CONSOLE_OWNER_EMAIL to prod → /infra}"
+export TF_VAR_cloudflare_account_id="${CLOUDFLARE_ACCOUNT_ID:?add CLOUDFLARE_ACCOUNT_ID to $env → /infra}"
+# shellcheck source=/dev/null
+source "$root/vars.sh"
 bucket="${TF_STATE_BUCKET:-triviamore-tfstate}"
 
-cd "$(dirname "$0")"
+cd "$root"
 terraform init -input=false -reconfigure -backend-config="bucket=$bucket" >/dev/null
 terraform "$@"
