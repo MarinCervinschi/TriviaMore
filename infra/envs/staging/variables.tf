@@ -7,3 +7,8 @@ variable "postgres_password" {
   type      = string
   sensitive = true
 }
+
+variable "owner_email" {
+  type        = string
+  description = "The address Cloudflare Access lets into the staging pages."
+}
