@@ -3,7 +3,7 @@
 #   docker build -f admin-console/Dockerfile .
 # The worker is the `worker` stage: the same image with another command.
 
-FROM node:22-slim AS base
+FROM node:22.23.4-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d AS base
 
 ARG INFISICAL_CLI_VERSION=0.43.101
 ENV PNPM_HOME=/pnpm
