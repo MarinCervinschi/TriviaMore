@@ -61,7 +61,7 @@ The input it sends is the shape the old client knew.
 ## Releases
 
 - **Order:** expand migration, then the code, then the contract migration in a later release. In production the
-  pipeline applies the migrations before the deploy.
+  migrations are applied by hand before the release is merged, so they always land before the code.
 - **Every release must run on the schema of the release after it**, which is what staging proves: there the
   migrations land before the code.
 - **A feature flag** separates turning a behaviour on from deploying it, when the change is risky or needs data
@@ -73,9 +73,9 @@ The input it sends is the shape the old client knew.
 
 - **Staging** may receive a migration from a local checkout before it is merged. If the migration is then
   changed, staging holds a version the file no longer describes: rebuild staging with `db:reset-staging`
-  instead of repairing it. That script arrives with staging, phase 3 of `docs/PLATFORM.md`.
-- **Production** receives migrations only from the pipeline, after a backup and an approval. Until the pipeline
-  exists, by hand with `scripts/db/migrations.ts`.
+  instead of repairing it. Apply with `pnpm db:migrate:staging --apply`.
+- **Production** receives migrations by hand, before the release is merged: `pnpm db:dump:prod`, then
+  `pnpm db:migrate:prod` to read what is pending, then `--apply`.
 - Two branches must not both add a migration with the same number. Rebase and regenerate before merging.
 
 ## Reviewing a migration

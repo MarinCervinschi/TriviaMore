@@ -98,4 +98,5 @@ under the same version reaches nobody — a real correction needs a new version.
 - [ ] `package.json` version bumped to the same version
 - [ ] Public entry added under `src/content/changelogs/`, if there is anything a student would notice
 - [ ] `pnpm build` passes — it is what proves the frontmatter parses
+- [ ] Any migration of the release applied to production first: `pnpm db:dump:prod`, `pnpm db:migrate:prod`, then `--apply`
 - [ ] Committed to `staging`, then merged into `prod`

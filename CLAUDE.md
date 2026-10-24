@@ -18,7 +18,9 @@ questions.
 | `pnpm build-storybook` | verify every story compiles |
 | `pnpm format` | Prettier — the house style is tabs + semicolons |
 | `pnpm db:generate --name x` | generate a migration from the Drizzle schema |
-| `pnpm db:migrate` | apply pending migrations |
+| `pnpm db:migrate` | apply pending migrations to the local database |
+| `pnpm db:migrate:staging [--apply]` | read, then apply, what staging lacks |
+| `pnpm db:dump:prod` · `pnpm db:migrate:prod [--apply]` | back up production, then read and apply what it lacks, before merging a release |
 | `pnpm smoke:reads` | run every migrated read path against the live database |
 | `pnpm smoke:writes` | run the quiz write paths in a transaction, then roll back |
 
@@ -143,10 +145,10 @@ Rules that are not negotiable:
   schema: drops, renames, type changes and new `NOT NULL`s are split into expand and contract steps
   across releases. **For any migration, or a change to a server function's input or behaviour, use
   the `safe-changes` skill.**
-- **Never apply migrations from a container start command, an entrypoint or a deploy hook**, in any
-  environment. Production receives them from the release pipeline only, after a backup and an
-  approval; until that pipeline exists, by hand with `scripts/db/migrations.ts`. Staging, once it
-  exists, may receive them from a local checkout, because it can be rebuilt.
+- **Migrations are applied by hand, never from a container start command, an entrypoint, a deploy
+  hook or a pipeline.** To staging while the change is developed (`pnpm db:migrate:staging --apply`);
+  to production before its release is merged, after `pnpm db:dump:prod` (`pnpm db:migrate:prod`, then
+  `--apply`). CI only checks them, on an empty Postgres.
 - **No `psql` on the host.** Query the local database through the container:
   `docker exec supabase_db_TriviaMore psql -U postgres -d postgres -c "..."`.
 

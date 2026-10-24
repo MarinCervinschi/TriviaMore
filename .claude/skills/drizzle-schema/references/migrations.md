@@ -16,14 +16,18 @@ live database. That is why a stale local database never produces a spurious migr
 
 ## Applying
 
-Never in a container start command, an entrypoint or a deploy hook, in any environment.
+By hand, never in a container start command, an entrypoint, a deploy hook or a pipeline.
 
-- **Production:** from the release pipeline only, after a backup and an approval. Until it exists,
-  by hand: `SUPABASE_DB_URL=… pnpm exec tsx scripts/db/migrations.ts`, then `--apply`. It applies
-  each migration in its own transaction and prints the statement that failed, which
-  `drizzle-kit migrate` hides.
-- **Staging:** from a local checkout too, since staging can be rebuilt (`docs/PLATFORM.md`).
-- **Local:** `pnpm db:migrate`.
+- **Staging:** `pnpm db:migrate:staging --apply`, as soon as the change needs it. A migration changed
+  after that is fixed with `pnpm db:reset-staging`, which rebuilds staging.
+- **Production:** before the release is merged. `pnpm db:dump:prod`, then `pnpm db:migrate:prod` to
+  read what is pending, then `pnpm db:migrate:prod --apply`.
+- **Local:** `pnpm db:migrate`, while local development still runs on Supabase.
+
+Both remote scripts run `scripts/db/migrations.ts`, which applies each migration in its own
+transaction and prints the statement that failed; `drizzle-kit migrate` runs them all in one and
+hides the error. CI (`.github/workflows/ci.yml`) applies every migration to an empty Postgres on each
+pull request, and applies nothing anywhere else.
 
 Consequences to plan for:
 

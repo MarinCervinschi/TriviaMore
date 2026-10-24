@@ -125,12 +125,15 @@ adds an enum value next to one that uses it fails with no message. The script ap
 in its own transaction, records it the way drizzle does, and prints the statement that broke:
 
 ```bash
-export SUPABASE_DB_URL='postgresql://postgres:…@host:54322/postgres'   # the admin role
-pnpm exec tsx scripts/db/migrations.ts           # the last one applied, and what is pending
-pnpm exec tsx scripts/db/migrations.ts --apply   # apply them, one transaction each
+pnpm db:migrate:staging            # staging: the last one applied, and what is pending
+pnpm db:migrate:staging --apply    # apply them, one transaction each
+pnpm db:dump:prod                  # production: back up first
+pnpm db:migrate:prod               # then read what is pending
+pnpm db:migrate:prod --apply       # and apply it, before the release is merged
 ```
 
-It runs without `infisical run` on purpose: Infisical would replace the URL with the local one.
+Both read the admin URL of their database from Infisical. CI applies every migration to an empty
+Postgres on each pull request, and applies nothing anywhere else.
 
 The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
 role through `SUPABASE_DB_URL`.
