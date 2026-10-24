@@ -57,6 +57,7 @@ The shared ones are the same values as in `prod` → `/infra`; reference them th
 | `STAGING_DATABASE_URL` | the admin URL `db:reset-staging` uses, built from `STAGING_POSTGRES_PASSWORD` |
 | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
 | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
+| `STAGING_SEED_PASSWORD` | the password of the made-up accounts `db:reset-staging` creates, one per role (`seed-<role>@trivia-more.it`) |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git. The
 identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and

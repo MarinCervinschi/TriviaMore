@@ -16,10 +16,11 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as QuizQuizIdRouteImport } from './routes/quiz/$quizId'
 import { Route as FlashcardSessionIdRouteImport } from './routes/flashcard/$sessionId'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as ApiLogRouteImport } from './routes/api/log'
 import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
@@ -34,6 +35,7 @@ import { Route as AppSearchIndexRouteImport } from './routes/_app/search/index'
 import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
 import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
@@ -113,6 +115,11 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -123,14 +130,14 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
   id: '/auth/confirm',
   path: '/auth/confirm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
@@ -202,6 +209,11 @@ const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppAdminRouteRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
   id: '/settings',
@@ -452,10 +464,11 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -472,6 +485,7 @@ export interface FileRoutesByFullPath {
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/departments/': typeof AppDepartmentsIndexRoute
@@ -519,10 +533,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -539,6 +554,7 @@ export interface FileRoutesByTo {
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
   '/departments': typeof AppDepartmentsIndexRoute
@@ -590,10 +606,11 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -611,6 +628,7 @@ export interface FileRoutesById {
   '/_app/user/notifications': typeof AppUserNotificationsRoute
   '/_app/user/progress': typeof AppUserProgressRoute
   '/_app/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/departments/': typeof AppDepartmentsIndexRoute
@@ -663,10 +681,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -683,6 +702,7 @@ export interface FileRouteTypes {
     | '/user/notifications'
     | '/user/progress'
     | '/user/settings'
+    | '/api/auth/$'
     | '/admin/'
     | '/browse/'
     | '/departments/'
@@ -730,10 +750,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -750,6 +771,7 @@ export interface FileRouteTypes {
     | '/user/notifications'
     | '/user/progress'
     | '/user/settings'
+    | '/api/auth/$'
     | '/admin'
     | '/browse'
     | '/departments'
@@ -800,10 +822,11 @@ export interface FileRouteTypes {
     | '/_app/onboarding'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -821,6 +844,7 @@ export interface FileRouteTypes {
     | '/_app/user/notifications'
     | '/_app/user/progress'
     | '/_app/user/settings'
+    | '/api/auth/$'
     | '/_app/admin/'
     | '/_app/browse/'
     | '/_app/departments/'
@@ -865,13 +889,15 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiLogRoute: typeof ApiLogRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -925,6 +951,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -939,18 +972,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/confirm': {
       id: '/auth/confirm'
       path: '/auth/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/auth-code-error': {
@@ -1050,6 +1083,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/user/settings': {
       id: '/_app/user/settings'
@@ -1534,13 +1574,15 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiLogRoute: ApiLogRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
   AuthConfirmRoute: AuthConfirmRoute,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

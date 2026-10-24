@@ -1,36 +1,48 @@
-export type AuthCodePurpose = "email-verification" | "forget-password";
+export type AuthLinkPurpose = "verify-email" | "reset-password";
 
 const COPY: Record<
-	AuthCodePurpose,
-	{ subject: string; label: string; intro: string; outro: string }
+	AuthLinkPurpose,
+	{ subject: string; label: string; intro: string; button: string; outro: string }
 > = {
-	"email-verification": {
-		subject: "Il tuo codice di verifica TriviaMore",
-		label: "verifica email",
-		intro: "Inserisci questo codice per confermare il tuo indirizzo email:",
+	"verify-email": {
+		subject: "Conferma la tua email su TriviaMore",
+		label: "conferma email",
+		intro: "Apri il link per confermare il tuo indirizzo email e attivare l'account.",
+		button: "Conferma email",
 		outro: "Se non hai creato un account su TriviaMore, ignora questa email.",
 	},
-	"forget-password": {
-		subject: "Il codice per reimpostare la password di TriviaMore",
+	"reset-password": {
+		subject: "Reimposta la password di TriviaMore",
 		label: "nuova password",
-		intro: "Inserisci questo codice per scegliere una nuova password:",
+		intro: "Apri il link per scegliere una nuova password.",
+		button: "Scegli una nuova password",
 		outro:
 			"Se non hai chiesto di cambiare la password, ignora questa email. La password attuale resta valida.",
 	},
 };
 
-/** The email carrying a one-time code; `expiresInMinutes` is shown to the reader. */
-export function renderAuthCodeEmail({
+function escapeHtml(str: string): string {
+	return str
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
+
+/** The email carrying a one-time link; `expiresInMinutes` is shown to the reader. */
+export function renderAuthLinkEmail({
 	purpose,
-	code,
+	url,
 	expiresInMinutes,
 }: {
-	purpose: AuthCodePurpose;
-	code: string;
+	purpose: AuthLinkPurpose;
+	url: string;
 	expiresInMinutes: number;
 }): { subject: string; html: string; text: string } {
 	const copy = COPY[purpose];
-	const expiry = `Il codice scade tra ${expiresInMinutes} minuti.`;
+	const expiry = `Il link scade tra ${expiresInMinutes} minuti.`;
+	const href = escapeHtml(url);
 
 	const html = `<!DOCTYPE html>
 <html lang="it">
@@ -52,10 +64,13 @@ export function renderAuthCodeEmail({
             </tr>
             <tr>
               <td style="padding:32px 40px;font-size:14px;line-height:1.7;color:#2a2a2a;">
-                <p style="margin:0 0 20px 0;">${copy.intro}</p>
-                <p style="margin:0 0 20px 0;padding:16px;background-color:#faf8f5;border-radius:12px;text-align:center;font-size:32px;font-weight:700;letter-spacing:0.3em;color:#1a1a1a;">${code}</p>
+                <p style="margin:0 0 24px 0;">${copy.intro}</p>
+                <p style="margin:0 0 24px 0;text-align:center;">
+                  <a href="${href}" style="display:inline-block;padding:12px 24px;background-color:#d14124;color:#ffffff;font-weight:600;text-decoration:none;border-radius:12px;">${copy.button}</a>
+                </p>
                 <p style="margin:0 0 8px 0;">${expiry}</p>
-                <p style="margin:0;color:#8a8a8a;">${copy.outro}</p>
+                <p style="margin:0 0 24px 0;color:#8a8a8a;">${copy.outro}</p>
+                <p style="margin:0;font-size:12px;color:#8a8a8a;word-break:break-all;">Se il pulsante non funziona, copia questo indirizzo nel browser: ${href}</p>
               </td>
             </tr>
           </table>
@@ -65,7 +80,7 @@ export function renderAuthCodeEmail({
   </body>
 </html>`;
 
-	const text = [copy.intro, "", code, "", expiry, copy.outro].join("\n");
+	const text = [copy.intro, "", url, "", expiry, copy.outro].join("\n");
 
 	return { subject: copy.subject, html, text };
 }

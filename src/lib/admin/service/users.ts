@@ -11,6 +11,7 @@ import {
 	quizAttempts,
 	sectionAccess,
 	sections,
+	users,
 } from "@/db/schema";
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards";
 import { createNotification } from "@/lib/notifications/service";
@@ -21,7 +22,6 @@ import {
 	Unavailable,
 	rethrowUniqueViolation,
 } from "@/lib/server/errors";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import type {
 	CourseMaintainerInput,
@@ -345,17 +345,14 @@ export async function removeSectionAccess(input: SectionAccessInput) {
 		);
 }
 
-// The profile row is deleted by the cascade from auth.users.
+// The profile, sessions and accounts go with it, by cascade.
 export async function deleteUser(id: string) {
 	const currentUser = await requireSuperadmin();
 	if (currentUser.id === id) {
 		throw new Forbidden("Non puoi eliminare il tuo stesso account");
 	}
 
-	const { error } = await getSupabaseAdmin().auth.admin.deleteUser(id);
-	if (error) {
-		throw new Unavailable("Errore nell'eliminazione dell'utente: " + error.message);
-	}
+	await getDb().delete(users).where(eq(users.id, id));
 }
 
 export async function getAllCourses() {

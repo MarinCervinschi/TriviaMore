@@ -95,8 +95,8 @@ something that line cannot show. The rules, with the reasoning, are in `docs/OBS
 Every query runs through Drizzle on a direct connection, as the service role. **RLS therefore never
 filters anything** — a read that used to be narrowed by a policy has to say so in a where clause.
 This caused three near-regressions during the migration; check `pg_policies` before trusting a query
-ported from the old code. Auth and Storage stay on supabase-js, and are all `src/lib/supabase/` still
-contains.
+ported from the old code. Authentication is Better Auth inside the app (`src/lib/auth/server.ts`).
+Storage stays on supabase-js until #210, and is all `src/lib/supabase/` still contains, with the console's login.
 
 **Supabase is on its way out** (`docs/PLATFORM.md`): plain Postgres, a self-hosted S3 store, Better Auth
 inside the app, and a staging environment on the `rieti` server where every change lands first. Read

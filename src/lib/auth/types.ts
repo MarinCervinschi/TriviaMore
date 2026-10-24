@@ -1,5 +1,3 @@
-import type { Session } from "@supabase/supabase-js";
-
 import type { profiles } from "@/db/schema";
 
 export type Profile = typeof profiles.$inferSelect;
@@ -16,7 +14,6 @@ export type AuthUser = {
 
 export type AuthSession = {
 	user: AuthUser;
-	supabaseSession: Session;
 };
 
 export type AuthResult =

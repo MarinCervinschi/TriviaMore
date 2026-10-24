@@ -1,5 +1,3 @@
-import { eq, sql } from "drizzle-orm";
-
 import {
 	classes,
 	courseClasses,
@@ -10,6 +8,7 @@ import {
 	profiles,
 	sectionAccess,
 	sections,
+	users,
 } from "@/db/schema";
 import type { AuthUser } from "@/lib/auth/types";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
@@ -20,14 +19,14 @@ function shortId() {
 	return crypto.randomUUID().slice(0, 8);
 }
 
-// Inserting an auth user fires a trigger that creates its profile with the STUDENT role.
 export async function createUser(
 	tx: TestTx,
 	role: AuthUser["role"] = "MAINTAINER"
 ): Promise<string> {
 	const id = crypto.randomUUID();
-	await tx.execute(sql`insert into auth.users (id) values (${id})`);
-	await tx.delete(profiles).where(eq(profiles.id, id));
+	await tx
+		.insert(users)
+		.values({ id, name: "Utente Test", email: `${id}@example.test` });
 	await tx.insert(profiles).values({ id, role });
 	return id;
 }
