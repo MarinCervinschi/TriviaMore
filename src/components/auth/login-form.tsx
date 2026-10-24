@@ -1,5 +1,5 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -66,7 +66,15 @@ export function LoginForm() {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Password</FormLabel>
+							<div className="flex items-center justify-between">
+								<FormLabel>Password</FormLabel>
+								<Link
+									to="/auth/forgot-password"
+									className="text-brand text-sm font-medium underline-offset-4 hover:underline"
+								>
+									Password dimenticata?
+								</Link>
+							</div>
 							<FormControl>
 								<PasswordInput
 									placeholder="La tua password"

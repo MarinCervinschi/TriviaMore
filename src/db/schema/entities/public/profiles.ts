@@ -1,4 +1,3 @@
-import { authUsers } from "drizzle-orm/supabase"
 import {
   foreignKey,
   index,
@@ -11,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 import { roleEnum } from "./enums"
+import { users } from "./users"
 
 export const profiles = pgTable(
   "profiles",
@@ -33,7 +33,7 @@ export const profiles = pgTable(
     index("idx_profiles_role").using("btree", table.role.asc().nullsLast().op("enum_ops")),
     foreignKey({
       columns: [table.id],
-      foreignColumns: [authUsers.id],
+      foreignColumns: [users.id],
       name: "profiles_id_fkey",
     }).onDelete("cascade"),
     unique("profiles_email_key").on(table.email),

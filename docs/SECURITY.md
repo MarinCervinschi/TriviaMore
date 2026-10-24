@@ -32,9 +32,10 @@ Database (PostgreSQL)
 
 ### Session Management
 
-- Sessions are managed by **Supabase Auth** via SSR cookies.
-- Server functions use `createServerSupabaseClient()` which reads the session from cookies automatically.
-- No manual JWT handling — Supabase SSR library manages token refresh, cookie rotation, and expiry.
+- Sessions are managed by **Better Auth** inside the app (`src/lib/auth/server.ts`), stored in the `sessions` table and referenced by an `httpOnly` cookie.
+- `readSession()` checks the session. A signed cookie caches it for 5 minutes, so a revoked session can last that long on another device.
+- Passwords are bcrypt hashes in `accounts.password`, the same format GoTrue wrote.
+- An email must be confirmed through the emailed link before a password sign-in works.
 
 ### Password Policy
 
@@ -49,8 +50,8 @@ Enforced in `src/lib/auth/schemas.ts` via Zod `superRefine`.
 ### OAuth Flow
 
 - Providers: GitHub, Google
-- Flow: `oauthSignInFn` → Supabase redirect → `/auth/callback` → `exchangeCodeFn`
-- **Redirect URL validation:** configured in the Supabase dashboard (allowed redirect URLs list), not just the env var.
+- Flow: `oauthSignInFn` → the provider → `/api/auth/callback/<provider>`, handled by Better Auth → `/onboarding` for a new account, `/` otherwise.
+- **Redirect URL validation:** the provider only accepts the callback registered in its console, `<BETTER_AUTH_URL>/api/auth/callback/<provider>`.
 
 ### Auth Guards
 
@@ -67,7 +68,7 @@ Three guards, each a `createServerFn`:
 1. **Every server function that accesses user data must call `requireAuth()` or `requireAdmin()`.**
 2. **Never trust client-side role checks alone** — the server function + RLS are the real enforcement.
 3. **Auth guards throw `redirect()`** — don't catch these errors, let TanStack Router handle them.
-4. **Don't store auth tokens manually** — Supabase SSR handles cookies automatically.
+4. **Don't store auth tokens manually** — Better Auth sets and rotates its cookies.
 
 ---
 

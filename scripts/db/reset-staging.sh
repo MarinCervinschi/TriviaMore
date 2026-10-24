@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Rebuilds the staging database from nothing: the migrations, the catalogue from CINECA, then made-up content.
+# Rebuilds the staging database from nothing: the migrations, the catalogue from CINECA, then made-up content and accounts.
 : "${STAGING_DATABASE_URL:?run through pnpm db:reset-staging, so Infisical injects staging → /infra}"
 : "${STAGING_APP_DB_PASSWORD:?add STAGING_APP_DB_PASSWORD to staging → /infra}"
+: "${STAGING_SEED_PASSWORD:?add STAGING_SEED_PASSWORD to staging → /infra}"
 
 host="$(node -e 'console.log(new URL(process.argv[1]).hostname)' "$STAGING_DATABASE_URL")"
 case "$host" in
@@ -41,7 +42,10 @@ fi
 echo "→ made-up sections and questions"
 DATABASE_URL="$STAGING_DATABASE_URL" pnpm exec tsx scripts/db/seed-content.ts
 
+echo "→ one made-up account per role"
+DATABASE_URL="$STAGING_DATABASE_URL" pnpm exec tsx scripts/db/seed-users.ts
+
 echo "→ rows"
-for table in catalog.departments catalog.courses catalog.classes catalog.course_plans catalog.sections catalog.questions; do
+for table in public.users catalog.departments catalog.courses catalog.classes catalog.course_plans catalog.sections catalog.questions; do
   printf '  %-24s %s\n' "$table" "$(pg psql "$STAGING_DATABASE_URL" -Atc "SELECT count(*) FROM $table")"
 done
