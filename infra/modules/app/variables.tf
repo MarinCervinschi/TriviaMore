@@ -64,3 +64,14 @@ variable "env" {
   default   = {}
   sensitive = true
 }
+
+variable "network_alias" {
+  type        = string
+  default     = null
+  description = "A fixed name on the Docker network, for a tunnel that reaches the container directly."
+}
+
+variable "env_at_build" {
+  type    = bool
+  default = false
+}

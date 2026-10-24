@@ -1,8 +1,8 @@
 # infra
 
 TriviaMore's servers as Terraform, one root per environment (`docs/PLATFORM.md`). Production holds the
-ops console (#203, #198); staging on `rieti` is being built in #208. The app and Supabase are still
-managed by hand in Coolify, until #212.
+ops console (#203, #198); staging on `rieti` holds the whole stack, the app included (#208, #211). The
+production app and Supabase are still managed by hand in Coolify, until #212.
 
 ## Run it
 
@@ -27,7 +27,7 @@ on the personal tailnet**, because Coolify's API is reached through it.
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
 | `envs/prod/` | the console's server and worker on the VPS, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
-| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the tunnel with `mail-pr.trivia-more.it` behind Access, Mailpit and Garage. State `triviamore-staging.tfstate` |
+| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access, Mailpit and Garage. State `triviamore-staging.tfstate` |
 
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
 and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
@@ -57,6 +57,8 @@ The shared ones are the same values as in `prod` → `/infra`; reference them th
 | `STAGING_DATABASE_URL` | the admin URL `db:reset-staging` uses, built from `STAGING_POSTGRES_PASSWORD` |
 | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
 | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
+| `STAGING_APP_INFISICAL_CLIENT_ID`, `STAGING_APP_INFISICAL_CLIENT_SECRET` | the machine identity the staging app reads `staging` with, at build and at start |
+| `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | where that identity signs in; the same values as in `prod` → `/infra` |
 | `STAGING_SEED_PASSWORD` | the password of the made-up accounts `db:reset-staging` creates, one per role (`seed-<role>@trivia-more.it`) |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git. The
@@ -78,6 +80,11 @@ runs there as a Coolify service and opens the connections outward. A hostname is
 and an ingress rule in `tunnel.tf` to a container on the `coolify` network, which every staging service
 joins. Cloudflare holds the certificate, so no ACME bypass is needed.
 
+- **The app** builds from the `staging` branch on every push that touches its paths, and answers at
+  `pr.trivia-more.it`. The tunnel reaches it by the alias `trivia-more-app-staging` on the `coolify`
+  network, because Coolify names the container after each deployment. It reads Infisical `staging`,
+  which points at this database, at Mailpit, and at the staging OAuth clients; `AUTH_ALLOWED_EMAIL_DOMAIN`
+  admits only `@trivia-more.it` accounts.
 - **Mailpit** catches every email staging sends (SMTP on 1025) and shows them at `mail-pr.trivia-more.it`.
 - **Garage** is the S3 store: buckets `public` (served by its web endpoint) and `contributions` (private).
   `garage-init` imports the app's key and creates the buckets on every start, skipping what exists.
