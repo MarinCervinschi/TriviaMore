@@ -2,9 +2,8 @@
 set -euo pipefail
 
 # Backup via the Supabase CLI, which bundles its own pg_dump — no local install.
-# Local by default; `pnpm db:dump prod` needs SUPABASE_DB_URL (admin/postgres)
-# exported, see README "Self-hosted production database". Writes a schema and a
-# data file; restore with psql in that order.
+# Local by default; `pnpm db:dump:prod` reads production's admin URL from Infisical.
+# Writes a schema and a data file; restore with psql in that order.
 
 label="${1:-local}"
 ts="$(date +%Y%m%d-%H%M%S)"

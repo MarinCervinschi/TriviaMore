@@ -76,38 +76,3 @@ jobs:
         run: |
           pnpm build
           pnpm --filter admin-console build
-
-  # Staging can be rebuilt, so its migrations land on every push to staging once the checks pass.
-  migrate-staging:
-    needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: staging
-    concurrency:
-      group: migrate-staging
-      cancel-in-progress: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      # A short-lived node tagged tag:ci, which the tailnet policy lets reach only the two Postgres ports.
-      - uses: tailscale/github-action@v3
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-
-      - name: Apply the pending migrations to staging
-        env:
-          SUPABASE_DB_URL: ${{ secrets.STAGING_DATABASE_URL }}
-        run: pnpm exec tsx scripts/db/migrations.ts --apply

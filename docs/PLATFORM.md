@@ -1,12 +1,12 @@
-# Platform — leaving Supabase, a staging environment and a release pipeline
+# Platform — leaving Supabase, a staging environment, and migrations applied by hand
 
-**Status:** accepted, 2026-10-11. Nothing here is built yet; the phases at the end become the issues of the
-epic.
+**Status:** accepted, 2026-10-11; epic #206. **Amended 2026-10-24:** migrations are applied by hand, not by a
+pipeline; CI only checks them (#209).
 
 TriviaMore stops depending on Supabase. Production keeps a plain Postgres, a self-hosted S3 store and an
 authentication library inside the app. A staging environment on its own server becomes the place where the new
-stack is built first and where every change lands before production. Migrations reach production only through
-a gated pipeline.
+stack is built first and where every change lands before production. Migrations are applied by hand, to
+staging while a change is developed and to production before its release is merged; CI checks every one of them.
 
 ## Context
 
@@ -102,20 +102,20 @@ staging straight from a local checkout. That is safe because every migration is 
 `safe-changes` skill), and because staging is rebuilt when a migration under development diverges from what
 was applied. A disposable local Postgres, filled from staging, is the place for anything destructive.
 
-### Migrations reach production only through the pipeline
+### Migrations are applied by hand, and CI checks them
 
-GitHub Actions, in three places:
+A pipeline that applies migrations was set aside on 2026-10-24. Development works on the staging database, so
+a migration is applied there as soon as the page that needs it is tried, and a failing one shows up while its
+author still has the context. A pipeline step would find nothing left to apply.
 
-| When | What |
+| Where | How |
 |---|---|
-| Every pull request | `drizzle-kit check`, a rebuild of an empty Postgres from the migrations, the integration tests on it |
-| A push to `staging` | the migrations applied to staging, then the deploy |
-| A push to `prod` | a job in the `production` environment, which needs an approval: backup, the pending migrations shown, applied, then the deploy |
+| Staging | `pnpm db:migrate:staging --apply`, while the change is developed. A migration changed after that is fixed by rebuilding staging with `db:reset-staging` |
+| Production | before the release is merged: `pnpm db:dump:prod`, then `pnpm db:migrate:prod` to read what is pending, then `pnpm db:migrate:prod --apply`. The merge comes last, so the code never runs on a schema it does not know |
+| Every pull request and push | `.github/workflows/ci.yml`: `drizzle-kit check`, a schema with no change missing its migration, every migration on an empty Postgres, the integration tests on it, the builds. It applies nothing and holds no secret, since the repository is public |
 
-The runner reaches the databases through the Tailscale GitHub Action, as a short-lived node tagged `tag:ci`. The
-tailnet ACL lets that tag reach the two Postgres ports and nothing else. Production secrets live in the
-`production` environment only. Until this pipeline exists, production migrations stay manual with
-`scripts/db/migrations.ts`.
+`scripts/db/migrations.ts` applies each migration in its own transaction and prints the statement that failed.
+Regular backups of production come with its new Postgres (#212), from Coolify's own database backups.
 
 ### Infrastructure as code for every service
 
@@ -150,7 +150,8 @@ Each phase ships on its own, and Supabase keeps running until the last one.
 2. **A baseline without Supabase:** the migrations rebuild an empty Postgres. Every later phase needs it.
 3. **Staging on `rieti`**, in Terraform: Postgres, the S3 store, the app, Mailpit, the tunnel and Access; the
    catalogue synchronised, the seed written.
-4. **The pipeline:** pull-request checks, staging on push, production behind an approval, Tailscale in CI.
+4. **Migrations:** CI checks on every pull request, and the scripts that apply them by hand to staging and to
+   production.
 5. **Storage on S3**, tried on staging, then the existing files moved and `profiles.image` rewritten.
 6. **Better Auth**, tried on staging with its rules, then the production users migrated.
 7. **Production on the new stack:** Postgres, the S3 store, the switch, a last full dump of Supabase, and

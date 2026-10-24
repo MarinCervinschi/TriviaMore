@@ -70,10 +70,9 @@ grants, policies, seed rows) → `references/migrations.md`.
 
 ## Non-negotiables
 
-- **Never in a container start command, entrypoint or deploy hook**, in any environment. Production
-  receives migrations from the release pipeline only, after a backup and an approval; until it
-  exists, by hand with `scripts/db/migrations.ts`. Staging may receive them from a local checkout
-  (`docs/PLATFORM.md`).
+- **Applied by hand, never from a container start command, entrypoint, deploy hook or pipeline**, in
+  any environment: to staging while developing, to production before the release is merged
+  (`references/migrations.md`). CI only checks them.
 - **Every migration is backward compatible.** Migration first, code second; a drop, rename, type
   change or new `NOT NULL` is split into expand and contract steps. The rules are in the
   `safe-changes` skill.
