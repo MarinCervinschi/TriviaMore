@@ -8,6 +8,13 @@
       "when": 1791711438880,
       "tag": "0000_baseline",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792848408430,
+      "tag": "0001_add_auth_tables",
+      "breakpoints": true
     }
   ]
 }
