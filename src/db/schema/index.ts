@@ -1,6 +1,10 @@
 export * from "./common";
 
 export * from "./entities/public/enums";
+export * from "./entities/public/users";
+export * from "./entities/public/sessions";
+export * from "./entities/public/accounts";
+export * from "./entities/public/verifications";
 export * from "./entities/public/profiles";
 export * from "./entities/public/notifications";
 export * from "./entities/public/achievements";
