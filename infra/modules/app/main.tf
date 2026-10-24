@@ -21,10 +21,11 @@ resource "coolify_application_github_app" "this" {
   domains                 = var.domain == null ? "" : "https://${var.domain}"
   autogenerate_domain     = false
   watch_paths             = join("\n", var.watch_paths)
+  custom_network_aliases  = var.network_alias
   instant_deploy          = false
 }
 
-# Runtime only: the images build without secrets, and read them when the container starts.
+# Runtime, and at build too when `env_at_build`: the app's Dockerfile reads its secrets from Infisical during `pnpm build`.
 resource "coolify_environment_variable" "this" {
   for_each = nonsensitive(toset(keys(var.env)))
 
@@ -32,7 +33,7 @@ resource "coolify_environment_variable" "this" {
   key              = each.key
   value            = var.env[each.key]
   is_runtime       = true
-  is_build         = false
+  is_build         = var.env_at_build
   is_preview       = false
   is_literal       = true
 }

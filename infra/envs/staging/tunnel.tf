@@ -24,6 +24,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "staging" {
   config = {
     ingress = [
       { hostname = local.mail_host, service = "http://mailpit-${coolify_service.mailpit.uuid}:8025" },
+      { hostname = local.app_host, service = "http://${local.app_alias}:3000" },
       { service = "http_status:404" },
     ]
   }
@@ -72,6 +73,20 @@ module "mail_access" {
   record_type    = "CNAME"
   record_content = "${cloudflare_zero_trust_tunnel_cloudflared.staging.id}.cfargotunnel.com"
   comment        = "Mailpit on rieti, through the staging tunnel; managed in infra/."
+  allowed_emails = [var.owner_email]
+  acme_bypass    = false
+}
+
+module "app_access" {
+  source = "../../modules/access"
+
+  account_id     = var.cloudflare_account_id
+  zone_id        = data.cloudflare_zone.site.id
+  name           = "TriviaMore staging"
+  host           = local.app_host
+  record_type    = "CNAME"
+  record_content = "${cloudflare_zero_trust_tunnel_cloudflared.staging.id}.cfargotunnel.com"
+  comment        = "The staging app on rieti, through the staging tunnel; managed in infra/."
   allowed_emails = [var.owner_email]
   acme_bypass    = false
 }

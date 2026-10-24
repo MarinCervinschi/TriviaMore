@@ -5,3 +5,7 @@ export TF_VAR_garage_rpc_secret="${GARAGE_RPC_SECRET:?add GARAGE_RPC_SECRET to s
 export TF_VAR_garage_admin_token="${GARAGE_ADMIN_TOKEN:?add GARAGE_ADMIN_TOKEN to staging → /infra}"
 export TF_VAR_garage_app_access_key_id="${GARAGE_APP_ACCESS_KEY_ID:?add GARAGE_APP_ACCESS_KEY_ID to staging → /infra}"
 export TF_VAR_garage_app_secret_access_key="${GARAGE_APP_SECRET_ACCESS_KEY:?add GARAGE_APP_SECRET_ACCESS_KEY to staging → /infra}"
+export TF_VAR_app_infisical_client_id="${STAGING_APP_INFISICAL_CLIENT_ID:?add STAGING_APP_INFISICAL_CLIENT_ID to staging → /infra}"
+export TF_VAR_app_infisical_client_secret="${STAGING_APP_INFISICAL_CLIENT_SECRET:?add STAGING_APP_INFISICAL_CLIENT_SECRET to staging → /infra}"
+export TF_VAR_infisical_project_id="${INFISICAL_PROJECT_ID:?add INFISICAL_PROJECT_ID to staging → /infra}"
+export TF_VAR_infisical_site_url="${INFISICAL_SITE_URL:?add INFISICAL_SITE_URL to staging → /infra}"
