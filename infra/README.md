@@ -17,7 +17,7 @@ pnpm infra:infisical:plan   # the Infisical projects, identities and settings
 pnpm infra:infisical:apply
 ```
 
-`run.sh` wraps Terraform in one `infisical run` per folder of the `trivia-more-infra` project that the root
+`run.sh` wraps Terraform in one `infisical run` per folder of the `cervinschi-infra` project that the root
 needs, in its `ops` environment, so the secrets never come from a file. Needs Terraform ≥ 1.10, the
 Infisical CLI signed in, and **Tailscale on, on the personal tailnet**, because Coolify's API is reached
 through it.
@@ -36,27 +36,29 @@ through it.
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
 and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
 
-## Secrets: `trivia-more-infra` → `ops`
+## Secrets: `cervinschi-infra` → `ops`
 
-A project of its own, so no identity that runs the app can read it: without custom roles, a project is the
-only boundary Infisical draws. Every root reads `/terraform`, `/cloudflare`, `/coolify` and `/r2`, plus the
-folder named after it.
+The owner's infrastructure project, shared with their other projects, which keep their own folders in it.
+No identity that runs an app is a member: without custom roles, a project is the only boundary Infisical
+draws. `run.sh` finds it by id, so a rename does not reach the scripts. Every TriviaMore root reads
+the shared `/cloudflare`, `/coolify` and `/r2`, plus `/trivia-more/terraform` and the folder of its environment
+under `/trivia-more/`.
 
 | Folder | Secret | For |
 |---|---|---|
-| `/terraform` | `TF_INFISICAL_HOST`, `TF_INFISICAL_CLIENT_ID`, `TF_INFISICAL_CLIENT_SECRET` | universal auth of `TriviaMore-Terraform`, an organization admin that is no member of this project; its secret is rotated by hand |
-| `/terraform` | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | the app's project, and where its identities sign in |
+| `/trivia-more/terraform` | `TF_INFISICAL_HOST`, `TF_INFISICAL_CLIENT_ID`, `TF_INFISICAL_CLIENT_SECRET` | universal auth of `TriviaMore-Terraform`, an organization admin that is no member of this project; its secret is rotated by hand |
+| `/trivia-more/terraform` | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | the app's project, and where its identities sign in |
 | `/cloudflare` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | DNS records, Cloudflare Access and the tunnel |
 | `/cloudflare` | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console and the staging pages |
 | `/coolify` | `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` | Coolify's API, as `http://savvy:8000` with a read, write and deploy token |
 | `/r2` | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT` | the state bucket on R2 (`triviamore-tfstate`, override with `TF_STATE_BUCKET`) |
-| `/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
-| `/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
-| `/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
-| `/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
-| `/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
-| `/staging` | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
-| `/staging` | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
+| `/trivia-more/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
+| `/trivia-more/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+| `/trivia-more/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
+| `/trivia-more/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
+| `/trivia-more/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
+| `/trivia-more/staging` | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
+| `/trivia-more/staging` | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
 
 ## What the staging root publishes
 

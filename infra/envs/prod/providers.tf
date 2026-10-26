@@ -1,7 +1,7 @@
-# Reads COOLIFY_ENDPOINT and COOLIFY_TOKEN, from trivia-more-infra → /coolify.
+# Reads COOLIFY_ENDPOINT and COOLIFY_TOKEN, from cervinschi-infra → /coolify.
 provider "coolify" {}
 
-# Reads CLOUDFLARE_API_TOKEN, from trivia-more-infra → /cloudflare.
+# Reads CLOUDFLARE_API_TOKEN, from cervinschi-infra → /cloudflare.
 provider "cloudflare" {}
 
 # Writes what this root generates to the production project, as TriviaMore-Terraform; set by vars.sh.
