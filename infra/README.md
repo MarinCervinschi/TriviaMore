@@ -30,7 +30,7 @@ through it.
 | `infisical/` | the Infisical projects of the app (`TriviaMore` for production, `trivia-more-staging` for staging and local runs), their environments, folders, identities and memberships, and the settings that are not secrets. State `triviamore-infisical.tfstate` |
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
-| `envs/prod/` | the console's server and worker on the VPS, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
+| `envs/prod/` | the console's server and worker on the VPS, built from `prod` so they ship with a release, after its migrations, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
 | `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access, Mailpit and Garage. State `triviamore-staging.tfstate` |
 
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects

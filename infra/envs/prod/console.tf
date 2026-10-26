@@ -23,7 +23,7 @@ module "console" {
   server_uuid         = local.server_uuid
   environment_name    = "production"
   github_app_uuid     = local.github_app_uuid
-  git_branch          = "staging"
+  git_branch          = "prod"
   dockerfile_location = "/admin-console/Dockerfile"
   ports_exposes       = "3100"
   domain              = local.console_host
@@ -49,7 +49,7 @@ module "console_worker" {
   server_uuid             = local.server_uuid
   environment_name        = "production"
   github_app_uuid         = local.github_app_uuid
-  git_branch              = "staging"
+  git_branch              = "prod"
   dockerfile_location     = "/admin-console/Dockerfile"
   dockerfile_target_build = "worker"
   ports_exposes           = "3100"
