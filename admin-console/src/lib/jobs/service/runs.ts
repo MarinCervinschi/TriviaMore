@@ -85,7 +85,7 @@ export async function getRun(id: string): Promise<JobRunDetail | null> {
 /** Records the run, then queues it; the worker picks it up and writes the outcome on the same row. */
 export async function startJob(
 	input: { job: string; params: JobParams; dryRun: boolean },
-	requestedBy: string
+	requestedBy: string | null
 ): Promise<StartJobResult> {
 	const job = jobByName(input.job);
 	if (!job) return { success: false, error: "Job sconosciuto." };

@@ -102,11 +102,10 @@ joins. Cloudflare holds the certificate, so no ACME bypass is needed.
 
 ## The console on its domain
 
-The console is `https://admin.trivia-more.it`, behind two layers that do not depend on each other:
-
-1. **Cloudflare Access**, which lets only `CONSOLE_OWNER_EMAIL` through, after a one-time code or a
-   social login. Its path `/.well-known/acme-challenge` is bypassed, or Let's Encrypt could not renew.
-2. **The console's own login**, a Supabase account whose id is in `CONSOLE_OWNER_IDS`.
+The console is `https://admin.trivia-more.it`, behind **Cloudflare Access**, which lets only
+`CONSOLE_OWNER_EMAIL` through, after a one-time code or a social login. Its path
+`/.well-known/acme-challenge` is bypassed, or Let's Encrypt could not renew. The console has no login of
+its own: the identity is the email in the token Access signs, and "Esci" ends the Access session.
 
 The server's IP reaches Traefik without Cloudflare, so Access alone could be walked around. The console
 therefore checks the token Access signs on every request (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, set by
@@ -114,8 +113,6 @@ therefore checks the token Access signs on every request (`CF_ACCESS_TEAM_DOMAIN
 
 ## By hand, outside Terraform
 
-- **The Supabase redirect URL** `https://admin.trivia-more.it/**`, in the auth stack's
-  `ADDITIONAL_REDIRECT_URLS`.
 - **The Oracle firewall** and SSH.
 - **Migrations**, with `scripts/db/migrations.ts`, before the deploy they belong to.
 

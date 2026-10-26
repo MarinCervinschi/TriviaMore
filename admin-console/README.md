@@ -20,15 +20,14 @@ Or from this folder: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 
 `pnpm dev` runs through Infisical, like the app; the console reads these on the server only.
 
-| Variable                                      | Used for                                                               |
-| --------------------------------------------- | ---------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | the sign-in, against the same Supabase auth as the app                 |
-| `CONSOLE_OWNER_IDS`                           | comma-separated user ids allowed in; anyone else is signed out at once |
-| `DATABASE_URL`                                | the one database: local in `dev`, production in `prod`                 |
-| `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`      | the Cloudflare Access token every request must carry; unset locally    |
-| `SEQ_SERVICE_API_KEY`                         | the service's own Seq key, set by Terraform; unset locally            |
+| Variable                                 | Used for                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`                           | the one database: local in `dev`, production in `prod`              |
+| `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD` | the Cloudflare Access token every request must carry; unset locally |
+| `SEQ_SERVICE_API_KEY`                    | the service's own Seq key, set by Terraform; unset locally          |
 
-Without `CONSOLE_OWNER_IDS` nobody can sign in. A missing `DATABASE_URL` shows as _non configurata_ on
+There is no sign-in: Cloudflare Access admits the owner, and the console takes their email from its token.
+Locally, with no Access in front, the session is anonymous. A missing `DATABASE_URL` shows as _non configurata_ on
 Impostazioni → Connessione. A built console labels itself _Produzione_; `pnpm console:dev` is _Locale_.
 
 ## The worker
@@ -57,7 +56,7 @@ Same stack as the app: TanStack Start (React 19, Vite, Nitro) and Tailwind v4.
   A new page is a route under `src/routes/` plus an entry there.
 - The section sidebar remembers whether it is open in the `console_section_sidebar` cookie, so the server
   renders it in the right state.
-- Every page sits under the `_console` layout, whose `beforeLoad` sends anyone but the owner to `/login`.
+- Every page sits under the `_console` layout, whose `beforeLoad` reads the session from the Access token.
   An endpoint that touches data calls `requireOwner()` itself, because a server function can be called
   without its page.
 

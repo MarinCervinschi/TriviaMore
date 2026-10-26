@@ -9,10 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConsoleRouteRouteImport } from './routes/_console/route'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiProxyRouteImport } from './routes/api/proxy'
 import { Route as ConsoleApisRouteImport } from './routes/_console/apis'
 import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
@@ -29,11 +27,6 @@ import { Route as ConsoleJobsRunsRouteImport } from './routes/_console/jobs/runs
 import { Route as ConsoleJobsJobIndexRouteImport } from './routes/_console/jobs/$job/index'
 import { Route as ConsoleJobsJobRunsRunIdRouteImport } from './routes/_console/jobs/$job/runs/$runId'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ConsoleRouteRoute = ConsoleRouteRouteImport.update({
   id: '/_console',
   getParentRoute: () => rootRouteImport,
@@ -42,11 +35,6 @@ const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiProxyRoute = ApiProxyRouteImport.update({
   id: '/api/proxy',
@@ -127,11 +115,9 @@ const ConsoleJobsJobRunsRunIdRoute = ConsoleJobsJobRunsRunIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
-  '/login': typeof LoginRoute
   '/activity': typeof ConsoleActivityRoute
   '/apis': typeof ConsoleApisRoute
   '/api/proxy': typeof ApiProxyRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/jobs/runs': typeof ConsoleJobsRunsRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
   '/settings/access': typeof ConsoleSettingsAccessRoute
@@ -146,11 +132,9 @@ export interface FileRoutesByFullPath {
   '/jobs/$job/runs/$runId': typeof ConsoleJobsJobRunsRunIdRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
   '/activity': typeof ConsoleActivityRoute
   '/apis': typeof ConsoleApisRoute
   '/api/proxy': typeof ApiProxyRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/': typeof ConsoleIndexRoute
   '/jobs/runs': typeof ConsoleJobsRunsRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
@@ -168,11 +152,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_console': typeof ConsoleRouteRouteWithChildren
-  '/login': typeof LoginRoute
   '/_console/activity': typeof ConsoleActivityRoute
   '/_console/apis': typeof ConsoleApisRoute
   '/api/proxy': typeof ApiProxyRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/_console/': typeof ConsoleIndexRoute
   '/_console/jobs/runs': typeof ConsoleJobsRunsRoute
   '/_console/jobs/schedules': typeof ConsoleJobsSchedulesRoute
@@ -191,11 +173,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
     | '/activity'
     | '/apis'
     | '/api/proxy'
-    | '/auth/callback'
     | '/jobs/runs'
     | '/jobs/schedules'
     | '/settings/access'
@@ -210,11 +190,9 @@ export interface FileRouteTypes {
     | '/jobs/$job/runs/$runId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
     | '/activity'
     | '/apis'
     | '/api/proxy'
-    | '/auth/callback'
     | '/'
     | '/jobs/runs'
     | '/jobs/schedules'
@@ -231,11 +209,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_console'
-    | '/login'
     | '/_console/activity'
     | '/_console/apis'
     | '/api/proxy'
-    | '/auth/callback'
     | '/_console/'
     | '/_console/jobs/runs'
     | '/_console/jobs/schedules'
@@ -253,20 +229,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ConsoleRouteRoute: typeof ConsoleRouteRouteWithChildren
-  LoginRoute: typeof LoginRoute
   ApiProxyRoute: typeof ApiProxyRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_console': {
       id: '/_console'
       path: ''
@@ -280,13 +247,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof ConsoleIndexRouteImport
       parentRoute: typeof ConsoleRouteRoute
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/proxy': {
       id: '/api/proxy'
@@ -438,19 +398,18 @@ const ConsoleRouteRouteWithChildren = ConsoleRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   ConsoleRouteRoute: ConsoleRouteRouteWithChildren,
-  LoginRoute: LoginRoute,
   ApiProxyRoute: ApiProxyRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

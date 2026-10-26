@@ -8,7 +8,6 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 |---|---|---|
 | `VITE_SUPABASE_URL` | Client + Server | `supabase status` → Project URL (local: `http://127.0.0.1:54321`) |
 | `VITE_SUPABASE_ANON_KEY` | Client + Server | `supabase status` → Publishable key (`sb_publishable_...`) |
-| `SUPABASE_INTERNAL_URL` | Server only | Kong on the Docker network, for the console's session checks (`prod`: `http://supabase-kong-jkk044s048kkcs848osggg0g:8000`). Unset locally, which falls back to `VITE_SUPABASE_URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | `supabase status` → Secret key (`sb_secret_...`) |
 | `BETTER_AUTH_URL` | Server only | The app's own origin, used in the links Better Auth emails and in the OAuth callbacks (local: `http://localhost:3000`) |
 | `BETTER_AUTH_SECRET` | Server only | Signs the session cookies; at least 32 random characters, one per environment (`openssl rand -base64 32`) |

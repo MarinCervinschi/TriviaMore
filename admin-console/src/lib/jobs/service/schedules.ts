@@ -146,7 +146,7 @@ export async function saveSchedule(
 		params: JobParams;
 		dryRun: boolean;
 	},
-	createdBy: string
+	createdBy: string | null
 ): Promise<SaveScheduleResult> {
 	const job = jobByName(input.job);
 	if (!job) return { success: false, error: "Job sconosciuto." };

@@ -31,7 +31,7 @@ export async function listJobs(): Promise<JobInfo[]> {
 /** Saves the job's name and description; a text equal to the code's, or empty, goes back to the code's. */
 export async function saveJobTexts(
 	input: { job: string; label: string; description: string },
-	updatedBy: string
+	updatedBy: string | null
 ): Promise<SaveJobTextsResult> {
 	const job = jobByName(input.job);
 	if (!job) return { success: false, error: "Job sconosciuto." };
