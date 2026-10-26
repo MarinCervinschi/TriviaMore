@@ -43,6 +43,8 @@
 		"infra:staging:apply": "bash infra/run.sh staging apply",
 		"infra:output": "bash infra/run.sh prod output",
 		"infra:staging:output": "bash infra/run.sh staging output",
+		"infra:infisical:plan": "bash infra/run.sh infisical plan",
+		"infra:infisical:apply": "bash infra/run.sh infisical apply",
 		"mcp:questions": "tsx scripts/mcp/questions-server.ts",
 		"smoke:reads": "infisical run --recursive -- tsx scripts/smoke/read-endpoints.ts",
 		"smoke:writes": "infisical run --recursive -- tsx scripts/smoke/write-paths.ts",
