@@ -94,7 +94,8 @@ exception and **no `Status` at all**. `Status: 500` therefore only ever means a 
 
 | Property | Values |
 |---|---|
-| `Environment` | `staging` \| `production` — **attached by the Seq API key**, never set in code |
+| `Environment` | `Staging` \| `Production` — **attached by the Seq API key**, never set in code; Seq's `=` is case-sensitive |
+| `Application` | `TriviaMore` for the app — attached by the key, like `Environment` |
 | `Source` | `ssr` \| `fn` \| `job` \| `browser` — see the note above on why `ssr` dominates, and the browser section below |
 | `Version` | commit sha, from Coolify's runtime `SOURCE_COMMIT` (or `APP_VERSION` off Coolify) |
 | `@tr` | 32-hex trace id, shared by every event in one request |
@@ -197,9 +198,9 @@ layer cache, and this build already costs enough. Confirm it is arriving with
 
 One API key per environment and service, **Data → Ingestion → Add API key**:
 
-- **Attached properties**: `Environment` = `staging` / `production`, and `Application` = `app`,
-  `console` or `console-worker`. Setting them on the key rather than in code means a service cannot
-  mislabel itself.
+- **Attached properties**: `Environment` = `Staging` / `Production`, and `Application` = `TriviaMore`
+  for the app; the console and its worker have keys of their own. Setting them on the key rather than in
+  code means a service cannot mislabel itself.
 - **Permissions**: `Ingest` only.
 - **Server timestamps**: leave unchecked — it would overwrite `@t` with arrival time and hide the
   real latency inside a batch.
@@ -245,7 +246,7 @@ grep -rl "async_hooks\|ingest/clef\|SEQ_API_KEY" .output/public   # must print n
 Source = 'fn' and Elapsed > 500              slow endpoints
 AppMs > 100                                  slow because of us, not the database or the auth API
 DbQueries > 20                               an N+1, without having to suspect one first
-@Level = 'Error' and Environment = 'preview' what broke while testing
+@Level = 'Error' and Environment = 'Staging' what broke while testing
 @tr = '4bf92f35…'                            everything one request did
 Outcome = 'failed' and Fn = 'startQuizFn'    one endpoint's bugs, excluding its rejections
 ```
