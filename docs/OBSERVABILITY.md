@@ -94,7 +94,7 @@ exception and **no `Status` at all**. `Status: 500` therefore only ever means a 
 
 | Property | Values |
 |---|---|
-| `Environment` | `preview` \| `production` — **attached by the Seq API key**, never set in code |
+| `Environment` | `staging` \| `production` — **attached by the Seq API key**, never set in code |
 | `Source` | `ssr` \| `fn` \| `job` \| `browser` — see the note above on why `ssr` dominates, and the browser section below |
 | `Version` | commit sha, from Coolify's runtime `SOURCE_COMMIT` (or `APP_VERSION` off Coolify) |
 | `@tr` | 32-hex trace id, shared by every event in one request |
@@ -197,7 +197,7 @@ layer cache, and this build already costs enough. Confirm it is arriving with
 
 One API key per environment and service, **Data → Ingestion → Add API key**:
 
-- **Attached properties**: `Environment` = `preview` / `production`, and `Application` = `app`,
+- **Attached properties**: `Environment` = `staging` / `production`, and `Application` = `app`,
   `console` or `console-worker`. Setting them on the key rather than in code means a service cannot
   mislabel itself.
 - **Permissions**: `Ingest` only.
@@ -211,6 +211,10 @@ The `datalust/seq` container listens on **80** for the full API and UI and on **
 80, so do not infer the internal port from the external one. Point `SEQ_URL` at the container's 5341
 over the shared Docker network: a compromised app container can then submit logs but neither read
 them nor reach the admin API.
+
+Staging runs on `rieti`, outside that network, so it sends to Seq's public address,
+`https://seq.cervinschi.site`, which serves the full API behind Seq's own login. Its key is `Ingest`
+only, so the app can still only write; the address is set by `infra/infisical`.
 
 Set a retention policy. 30 days is plenty.
 

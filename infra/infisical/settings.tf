@@ -3,10 +3,12 @@ locals {
   staging_settings = {
     "auth/BETTER_AUTH_URL"           = "https://pr.trivia-more.it"
     "auth/AUTH_ALLOWED_EMAIL_DOMAIN" = "trivia-more.it"
-    "app/LOG_LEVEL"                  = "debug"
+    "app/LOG_LEVEL"                  = "info"
     "app/MAINTENANCE_MODE"           = "false"
     "app/VITE_SITE_URL"              = "https://pr.trivia-more.it"
-    "email/MAIL_FROM_NAME"           = "TriviaMore Staging"
+    # Seq's public address: rieti cannot reach the ingestion-only port on savvy's Docker network.
+    "app/SEQ_URL"          = "https://seq.cervinschi.site"
+    "email/MAIL_FROM_NAME" = "TriviaMore Staging"
     # Mailpit accepts any login on 1025 and delivers nothing.
     "email/SMTP_PORT" = "1025"
     "email/SMTP_USER" = "noreply@trivia-more.it"
@@ -32,6 +34,7 @@ locals {
     "auth/GITHUB_CLIENT_ID",
     "auth/GITHUB_CLIENT_SECRET",
     "email/CONTACT_RECIPIENT",
+    "app/SEQ_API_KEY",
   ]
 
   settings = merge(
