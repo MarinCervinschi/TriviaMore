@@ -20,9 +20,9 @@ module "app" {
   env_at_build        = true
 
   env = {
-    INFISICAL_CLIENT_ID     = var.app_infisical_client_id
-    INFISICAL_CLIENT_SECRET = var.app_infisical_client_secret
-    INFISICAL_PROJECT_ID    = var.infisical_project_id
+    INFISICAL_CLIENT_ID     = infisical_identity_universal_auth_client_secret.app.client_id
+    INFISICAL_CLIENT_SECRET = infisical_identity_universal_auth_client_secret.app.client_secret
+    INFISICAL_PROJECT_ID    = data.infisical_projects.staging.id
     INFISICAL_SITE_URL      = var.infisical_site_url
     INFISICAL_ENV           = "staging"
   }
