@@ -100,6 +100,12 @@ joins. Cloudflare holds the certificate, so no ACME bypass is needed.
   with `coolify_envs_bulk`, which overwrites them. Services are created with `instant_deploy = false`
   when they need those secrets, and started after the apply.
 
+## What the production root publishes
+
+`envs/prod/secrets.tf` writes `BETTER_AUTH_SECRET` to `TriviaMore` → `prod` → `/auth`, and `infra/infisical`
+writes `BETTER_AUTH_URL` there. The rest of production's secrets were typed by hand and stay so; the Google and
+GitHub clients in `/auth` are changed in the UI.
+
 ## The console on its domain
 
 The console is `https://admin.trivia-more.it`, behind **Cloudflare Access**, which lets only
