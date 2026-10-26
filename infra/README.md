@@ -15,9 +15,10 @@ pnpm infra:staging:apply
 pnpm infra:staging:output
 ```
 
-Each one runs `infisical run --env=<env> --path=/infra -- bash infra/run.sh <env> …`, so the secrets come
-from that environment's `/infra` folder and never from a file. Needs Terraform ≥ 1.10 and **Tailscale on,
-on the personal tailnet**, because Coolify's API is reached through it.
+`run.sh` wraps Terraform in one `infisical run` per folder of the `trivia-more-infra` project that the root
+needs, in its `ops` environment, so the secrets never come from a file. Needs Terraform ≥ 1.10, the
+Infisical CLI signed in, and **Tailscale on, on the personal tailnet**, because Coolify's API is reached
+through it.
 
 ## What it holds
 
@@ -32,38 +33,30 @@ on the personal tailnet**, because Coolify's API is reached through it.
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
 and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
 
-## Secrets: Infisical `prod` → `/infra`
+## Secrets: `trivia-more-infra` → `ops`
 
-| Secret | For |
-|---|---|
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT` | the state bucket on R2 (`triviamore-tfstate`, override with `TF_STATE_BUCKET`) |
-| `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` | Coolify's API, as `http://savvy:8000` with a read, write and deploy token |
-| `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
-| `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | where that identity signs in |
-| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | the DNS record and Cloudflare Access |
-| `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console |
-| `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+A project of its own, so no identity that runs the app can read it: without custom roles, a project is the
+only boundary Infisical draws. Every root reads `/terraform`, `/cloudflare`, `/coolify` and `/r2`, plus the
+folder named after it.
 
-## Secrets: Infisical `staging` → `/infra`
+| Folder | Secret | For |
+|---|---|---|
+| `/terraform` | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | the app's project, and where its identities sign in |
+| `/cloudflare` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | DNS records, Cloudflare Access and the tunnel |
+| `/cloudflare` | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console and the staging pages |
+| `/coolify` | `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` | Coolify's API, as `http://savvy:8000` with a read, write and deploy token |
+| `/r2` | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT` | the state bucket on R2 (`triviamore-tfstate`, override with `TF_STATE_BUCKET`) |
+| `/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
+| `/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+| `/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
+| `/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging` |
+| `/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
+| `/staging` | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
+| `/staging` | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
+| `/staging` | `STAGING_APP_INFISICAL_CLIENT_ID`, `STAGING_APP_INFISICAL_CLIENT_SECRET` | the machine identity the staging app reads its secrets with, at build and at start |
+| `/staging` | `STAGING_SEED_PASSWORD` | the password of the made-up accounts `db:reset-staging` creates, one per role (`seed-<role>@trivia-more.it`) |
 
-The shared ones are the same values as in `prod` → `/infra`; reference them there instead of copying them:
-`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN`,
-`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
-
-| Secret | For |
-|---|---|
-| `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
-| `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging` |
-| `STAGING_DATABASE_URL` | the admin URL `db:reset-staging` uses, built from `STAGING_POSTGRES_PASSWORD` |
-| `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
-| `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
-| `STAGING_APP_INFISICAL_CLIENT_ID`, `STAGING_APP_INFISICAL_CLIENT_SECRET` | the machine identity the staging app reads `staging` with, at build and at start |
-| `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | where that identity signs in; the same values as in `prod` → `/infra` |
-| `STAGING_SEED_PASSWORD` | the password of the made-up accounts `db:reset-staging` creates, one per role (`seed-<role>@trivia-more.it`) |
-
-The state holds these values in clear, which is why it lives in a private bucket and never in git. The
-identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and
-`staging` but not `/infra`.
+The state holds these values in clear, which is why it lives in a private bucket and never in git.
 
 ## Coolify's API through the tailnet
 

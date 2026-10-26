@@ -1,4 +1,4 @@
-# Set by infra/envs/staging/vars.sh from staging → /infra; never written in a file.
+# Set by infra/envs/staging/vars.sh from trivia-more-infra; never written in a file.
 variable "cloudflare_account_id" {
   type = string
 }

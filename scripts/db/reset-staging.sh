@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # Rebuilds the staging database from nothing: the migrations, the catalogue from CINECA, then made-up content and accounts.
-: "${STAGING_DATABASE_URL:?run through pnpm db:reset-staging, so Infisical injects staging → /infra}"
-: "${STAGING_APP_DB_PASSWORD:?add STAGING_APP_DB_PASSWORD to staging → /infra}"
-: "${STAGING_SEED_PASSWORD:?add STAGING_SEED_PASSWORD to staging → /infra}"
+: "${STAGING_DATABASE_URL:?run through pnpm db:reset-staging, so Infisical injects trivia-more-infra → /staging}"
+: "${STAGING_APP_DB_PASSWORD:?add STAGING_APP_DB_PASSWORD to trivia-more-infra → /staging}"
+: "${STAGING_SEED_PASSWORD:?add STAGING_SEED_PASSWORD to trivia-more-infra → /staging}"
 
 host="$(node -e 'console.log(new URL(process.argv[1]).hostname)' "$STAGING_DATABASE_URL")"
 case "$host" in
