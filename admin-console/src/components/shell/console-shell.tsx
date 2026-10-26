@@ -9,8 +9,8 @@ import { LogoIcon } from "@/components/ui/logo";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import { SIGN_OUT_URL } from "~/lib/auth/sign-out";
 import type { ConsoleAccount } from "~/lib/auth/types";
-import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, itemOf, sectionOf } from "~/lib/nav";
 import { writeSectionSidebarOpen } from "~/lib/section-sidebar-state";
 
@@ -34,7 +34,6 @@ export function ConsoleShell({
 
 	const [sidebarOpen, setSidebarOpen] = useState(defaultSidebarOpen);
 	const [menuOpen, setMenuOpen] = useState(false);
-	const signOut = useSignOut();
 
 	const toggleSidebar = () => {
 		setSidebarOpen(open => {
@@ -101,14 +100,10 @@ export function ConsoleShell({
 						<LogoIcon size={22} />
 						<SheetTitle className="flex-1 text-sm font-semibold">Console</SheetTitle>
 						<ThemeToggle className="size-8" />
-						<Button
-							variant="ghost"
-							size="icon"
-							className="size-8"
-							aria-label="Esci"
-							onClick={() => void signOut()}
-						>
-							<Logout2Icon className="size-4" />
+						<Button variant="ghost" size="icon" className="size-8" asChild>
+							<a href={SIGN_OUT_URL} aria-label="Esci">
+								<Logout2Icon className="size-4" />
+							</a>
 						</Button>
 					</div>
 					<div className="h-[calc(100%-3rem)] overflow-y-auto">

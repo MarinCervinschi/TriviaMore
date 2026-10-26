@@ -95,7 +95,7 @@ jobs written for pg-boss port to Temporal activities later without rewriting the
 graphile-worker was considered: it deletes a job on completion and expects a shadow table for history, so it
 saves nothing over pg-boss here.
 
-### Cloudflare Access in front; Supabase is the login
+### Cloudflare Access in front, and nothing else
 
 **Amended 2026-10-10:** the console moved from the tailnet to a public domain, `admin.trivia-more.it`,
 so it opens from any device without a VPN, and Traefik serves it like the app. Two layers still stand
@@ -103,9 +103,12 @@ apart:
 
 1. **Cloudflare Access** lets only the owner's address through. The VPS's IP reaches Traefik without
    Cloudflare, so the console checks the token Access signs on every request and refuses one without it.
-2. **The login** is Supabase, against the production auth, checked against `CONSOLE_OWNER_IDS`.
+2. **The login** was Supabase, against the production auth, checked against `CONSOLE_OWNER_IDS`.
 
-Either layer alone keeps a stranger out. The domain, the DNS record and the Access application are in
+**Amended 2026-10-26 (#211):** the second layer is gone. The app's authentication moved to Better Auth
+inside the app, and a second instance on the console's domain would have been one more thing to keep in
+step for no gain: Access already admits only the owner, and the console verifies its token. The identity
+is the email in that token; the owner's TriviaMore profile is looked up by it for the name and photo. The domain, the DNS record and the Access application are in
 Terraform (`infra/access.tf`, #203).
 
 ## Connections
@@ -122,4 +125,4 @@ The console reaches the database and Seq over the Docker network on the VPS, the
   own `package.json`, build and Dockerfile under `admin-console/`.
 - Coolify runs the console as a second resource from the same repository, with no domain. The worker is a third
   service from the console's image with a different command, and publishes no port.
-- The console reads Infisical's `prod` environment, like the app, plus `CONSOLE_OWNER_IDS`.
+- The console reads Infisical's `prod` environment, like the app.

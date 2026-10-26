@@ -158,13 +158,6 @@ CREATE POLICY FOR INSERT WITH CHECK (user_id = auth.uid());
 
 ## Supabase Clients — When to Use Which
 
-### `createServerSupabaseClient()` (DEFAULT)
-
-- **Import:** `@/lib/supabase/server`
-- **Auth:** User session from cookies
-- **RLS:** Active — queries are filtered by the user's role
-- **Use for:** All standard queries in server functions
-
 ### `supabaseAdmin` (PRIVILEGED)
 
 - **Import:** `@/lib/supabase/admin`
