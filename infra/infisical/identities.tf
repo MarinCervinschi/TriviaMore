@@ -21,7 +21,7 @@ import {
   id = "f9b23753-ac42-41a2-b7be-fc816b43f547"
 }
 
-# The production app and the console, still on the custom project role until they move to viewer.
+# The production app and the console; viewer on the production project, which holds nothing else.
 resource "infisical_identity" "app_prod" {
   name                  = "TriviaMore"
   org_id                = local.org_id
@@ -48,6 +48,28 @@ import {
 }
 
 # Read by the staging app on rieti. Its client secret is made by infra/envs/staging, which hands it to Coolify.
+resource "infisical_project_identity" "app_prod" {
+  project_id     = infisical_project.prod.id
+  identity_id    = infisical_identity.app_prod.id
+  adopt_existing = true
+  roles = [
+    {
+      role_slug = "viewer"
+    },
+  ]
+}
+
+resource "infisical_project_identity" "console" {
+  project_id     = infisical_project.prod.id
+  identity_id    = infisical_identity.console.id
+  adopt_existing = true
+  roles = [
+    {
+      role_slug = "viewer"
+    },
+  ]
+}
+
 resource "infisical_identity" "app_staging" {
   name     = "TriviaMore-Staging"
   org_id   = local.org_id
