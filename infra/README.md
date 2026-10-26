@@ -13,6 +13,8 @@ pnpm infra:output           # production: the values the last apply recorded
 pnpm infra:staging:plan     # the same three for staging
 pnpm infra:staging:apply
 pnpm infra:staging:output
+pnpm infra:infisical:plan   # the Infisical projects, identities and settings
+pnpm infra:infisical:apply
 ```
 
 `run.sh` wraps Terraform in one `infisical run` per folder of the `trivia-more-infra` project that the root
@@ -25,6 +27,7 @@ through it.
 | Path | |
 |---|---|
 | `run.sh` | `run.sh <prod\|staging> <command>`: the shared secrets, then the root's `vars.sh`, then Terraform in that root |
+| `infisical/` | the Infisical projects of the app (`TriviaMore` for production, `trivia-more-staging` for staging and local runs), their environments, folders, identities and memberships, and the settings that are not secrets. State `triviamore-infisical.tfstate` |
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
 | `envs/prod/` | the console's server and worker on the VPS, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
@@ -41,6 +44,7 @@ folder named after it.
 
 | Folder | Secret | For |
 |---|---|---|
+| `/terraform` | `TF_INFISICAL_HOST`, `TF_INFISICAL_CLIENT_ID`, `TF_INFISICAL_CLIENT_SECRET` | universal auth of `TriviaMore-Terraform`, an organization admin that is no member of this project; its secret is rotated by hand |
 | `/terraform` | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | the app's project, and where its identities sign in |
 | `/cloudflare` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | DNS records, Cloudflare Access and the tunnel |
 | `/cloudflare` | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console and the staging pages |
