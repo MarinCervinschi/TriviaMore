@@ -40,7 +40,7 @@ resource "coolify_service" "tunnel" {
   docker_compose_raw = <<-YAML
     services:
       cloudflared:
-        image: cloudflare/cloudflared:2026.10.0
+        image: cloudflare/cloudflared:2026.10.3
         command: tunnel --no-autoupdate run
         environment:
           - TUNNEL_TOKEN=$${TUNNEL_TOKEN}
