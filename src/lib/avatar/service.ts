@@ -32,7 +32,7 @@ function publicUrl(bucket: string, path: string): string {
 }
 
 /** An OAuth picture lives on Google, so it is forgotten instead of deleted. */
-async function removePreviousAvatar(userId: string, current: string | null) {
+export async function removeStoredAvatar(userId: string, current: string | null) {
 	if (!current) return;
 	for (const bucket of [GENERATED_BUCKET, UPLOAD_BUCKET]) {
 		const marker = `/${bucket}/${userId}/`;
@@ -62,7 +62,7 @@ async function commitAvatar(
 	const url = publicUrl(bucket, path);
 
 	await getDb().update(profiles).set({ image: url }).where(eq(profiles.id, userId));
-	await removePreviousAvatar(userId, previous);
+	await removeStoredAvatar(userId, previous);
 
 	return url;
 }

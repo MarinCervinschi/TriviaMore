@@ -22,6 +22,7 @@ export const profiles = pgTable(
     role: roleEnum().default("STUDENT").notNull(),
     // Immutable once set. Stored, because deriving it ranks the whole table on every evaluation.
     signupRank: integer("signup_rank"),
+    anonymizedAt: timestamp("anonymized_at", { withTimezone: true, mode: "string" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
