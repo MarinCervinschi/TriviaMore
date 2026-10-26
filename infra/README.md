@@ -53,12 +53,23 @@ folder named after it.
 | `/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
 | `/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
 | `/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
-| `/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging` |
+| `/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
 | `/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
 | `/staging` | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
 | `/staging` | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
-| `/staging` | `STAGING_APP_INFISICAL_CLIENT_ID`, `STAGING_APP_INFISICAL_CLIENT_SECRET` | the machine identity the staging app reads its secrets with, at build and at start |
-| `/staging` | `STAGING_SEED_PASSWORD` | the password of the made-up accounts `db:reset-staging` creates, one per role (`seed-<role>@trivia-more.it`) |
+
+## What the staging root publishes
+
+`envs/staging/secrets.tf` writes to `trivia-more-staging` what it generates or knows, so nobody copies it by
+hand. The app reads it through `TriviaMore-Staging`, whose client secret the root creates and hands to Coolify.
+
+| Environment | Folder | Secret |
+|---|---|---|
+| `staging` | `/database` | `DATABASE_URL`, to the database by its container name; `STAGING_SEED_PASSWORD`, of the made-up accounts (`seed-<role>@trivia-more.it`) |
+| `staging` | `/auth` | `BETTER_AUTH_SECRET` |
+| `staging` | `/email` | `SMTP_HOST`, Mailpit by its container name |
+| `dev` | `/database` | `DATABASE_URL`, to the same database through rieti's tailnet address |
+| `dev` | `/auth` | `BETTER_AUTH_SECRET`, its own |
 
 The state holds these values in clear, which is why it lives in a private bucket and never in git.
 

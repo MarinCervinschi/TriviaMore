@@ -33,20 +33,13 @@ variable "garage_app_secret_access_key" {
   sensitive = true
 }
 
-variable "app_infisical_client_id" {
-  type      = string
-  sensitive = true
-}
-
-variable "app_infisical_client_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "infisical_project_id" {
-  type = string
+variable "app_db_password" {
+  type        = string
+  sensitive   = true
+  description = "The password of trivia_app, which db:reset-staging sets on the database."
 }
 
 variable "infisical_site_url" {
-  type = string
+  type        = string
+  description = "Where the app signs in to Infisical; a public address, which the containers on rieti resolve."
 }
