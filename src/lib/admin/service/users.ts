@@ -1,4 +1,14 @@
-import { and, asc, count, countDistinct, desc, eq, isNotNull, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	countDistinct,
+	desc,
+	eq,
+	isNotNull,
+	isNull,
+	sql,
+} from "drizzle-orm";
 
 import { getDb } from "@/db";
 import {
@@ -11,9 +21,10 @@ import {
 	quizAttempts,
 	sectionAccess,
 	sections,
-	users,
 } from "@/db/schema";
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards";
+import { removeStoredAvatar } from "@/lib/avatar/service";
+import { log } from "@/lib/logging/server";
 import { createNotification } from "@/lib/notifications/service";
 import {
 	Conflict,
@@ -22,6 +33,7 @@ import {
 	Unavailable,
 	rethrowUniqueViolation,
 } from "@/lib/server/errors";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import type {
 	CourseMaintainerInput,
@@ -31,8 +43,10 @@ import type {
 	UserRoleInput,
 } from "../schemas";
 import type { AdminUser, AdminUserDetail, AdminUserStats } from "../types";
+import { anonymizeUser } from "./anonymize";
 
 const completed = isNotNull(quizAttempts.completedAt);
+const active = isNull(profiles.anonymizedAt);
 
 export async function getAdminUsers(): Promise<AdminUser[]> {
 	await requireSuperadmin();
@@ -49,6 +63,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
 		})
 		.from(profiles)
 		.leftJoin(quizAttempts, and(eq(quizAttempts.userId, profiles.id), completed))
+		.where(active)
 		.groupBy(profiles.id)
 		.orderBy(desc(profiles.createdAt));
 }
@@ -67,7 +82,7 @@ export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
 			createdAt: profiles.createdAt,
 		})
 		.from(profiles)
-		.where(eq(profiles.id, id))
+		.where(and(eq(profiles.id, id), active))
 		.limit(1);
 	if (!profile) throw new NotFound("Utente non trovato");
 
@@ -134,6 +149,7 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
 		db
 			.select({ role: profiles.role, count: count() })
 			.from(profiles)
+			.where(active)
 			.groupBy(profiles.role),
 		db
 			.select({
@@ -345,14 +361,25 @@ export async function removeSectionAccess(input: SectionAccessInput) {
 		);
 }
 
-// The profile, sessions and accounts go with it, by cascade.
 export async function deleteUser(id: string) {
 	const currentUser = await requireSuperadmin();
 	if (currentUser.id === id) {
 		throw new Forbidden("Non puoi eliminare il tuo stesso account");
 	}
 
-	await getDb().delete(users).where(eq(users.id, id));
+	const files = await getDb().transaction(tx => anonymizeUser(tx, id));
+
+	try {
+		await removeStoredAvatar(id, files.avatar);
+		if (files.attachments.length > 0) {
+			const { error } = await getSupabaseAdmin()
+				.storage.from("contributions")
+				.remove(files.attachments);
+			if (error) throw error;
+		}
+	} catch (error) {
+		log.error("Files of anonymized user {UserId} not removed", { UserId: id }, error);
+	}
 }
 
 export async function getAllCourses() {

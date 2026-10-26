@@ -35,7 +35,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
 	attachUser(user.id);
 
 	const profile = await findProfile(getDb(), user.id);
-	return profile ? toAuthUser(profile) : null;
+	return profile && !profile.anonymizedAt ? toAuthUser(profile) : null;
 }
 
 export async function requireAuth(): Promise<AuthUser> {
