@@ -75,3 +75,9 @@ variable "env_at_build" {
   type    = bool
   default = false
 }
+
+variable "health_check_path" {
+  type        = string
+  default     = null
+  description = "A path that answers 200 while the server runs; null leaves the health check off."
+}

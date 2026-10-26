@@ -16,6 +16,7 @@ module "app" {
   dockerfile_location = "/Dockerfile"
   ports_exposes       = "3000"
   network_alias       = local.app_alias
+  health_check_path   = "/api/health"
   watch_paths         = ["src/**", "public/**", "drizzle/**", "package.json", "pnpm-lock.yaml", "Dockerfile", "docker-entrypoint.sh", "vite.config.ts"]
   env_at_build        = true
 
