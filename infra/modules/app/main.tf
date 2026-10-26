@@ -23,6 +23,14 @@ resource "coolify_application_github_app" "this" {
   watch_paths             = join("\n", var.watch_paths)
   custom_network_aliases  = var.network_alias
   instant_deploy          = false
+
+  health_check_enabled      = var.health_check_path != null
+  health_check_path         = var.health_check_path
+  health_check_port         = var.health_check_path == null ? null : var.ports_exposes
+  health_check_interval     = var.health_check_path == null ? null : 15
+  health_check_timeout      = var.health_check_path == null ? null : 5
+  health_check_retries      = var.health_check_path == null ? null : 5
+  health_check_start_period = var.health_check_path == null ? null : 60
 }
 
 # Runtime, and at build too when `env_at_build`: the app's Dockerfile reads its secrets from Infisical during `pnpm build`.

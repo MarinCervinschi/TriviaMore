@@ -23,6 +23,7 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-pas
 import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as ApiLogRouteImport } from './routes/api/log'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
 import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
@@ -148,6 +149,11 @@ const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
 const ApiLogRoute = ApiLogRouteImport.update({
   id: '/api/log',
   path: '/api/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
@@ -462,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -531,6 +538,7 @@ export interface FileRoutesByTo {
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/_app/contact': typeof AppContactRoute
   '/_app/news': typeof AppNewsRoute
   '/_app/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
   '/auth/confirm': typeof AuthConfirmRoute
@@ -679,6 +688,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/news'
     | '/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/confirm'
@@ -748,6 +758,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/news'
     | '/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/confirm'
@@ -820,6 +831,7 @@ export interface FileRouteTypes {
     | '/_app/contact'
     | '/_app/news'
     | '/_app/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
     | '/auth/confirm'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiLogRoute: typeof ApiLogRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
@@ -998,6 +1011,13 @@ declare module '@tanstack/react-router' {
       path: '/api/log'
       fullPath: '/api/log'
       preLoaderRoute: typeof ApiLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/onboarding': {
@@ -1572,6 +1592,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiLogRoute: ApiLogRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
   AuthConfirmRoute: AuthConfirmRoute,
