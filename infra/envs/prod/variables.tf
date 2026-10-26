@@ -1,4 +1,4 @@
-# Set by infra/envs/prod/vars.sh from trivia-more-infra; never written in a file.
+# Set by infra/envs/prod/vars.sh from cervinschi-infra; never written in a file.
 variable "console_infisical_client_id" {
   type      = string
   sensitive = true
