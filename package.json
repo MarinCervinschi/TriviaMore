@@ -35,6 +35,7 @@
 		"db:studio": "infisical run --recursive -- drizzle-kit studio",
 		"db:check": "infisical run --recursive -- drizzle-kit check",
 		"db:dump": "bash scripts/db/dump.sh",
+		"auth:migrate-users:prod": "infisical run --projectId=0b0731b1-94b6-4dce-b017-efe495c216b2 --env=prod --recursive -- tsx scripts/auth/migrate-users.ts",
 		"db:dump:prod": "infisical run --projectId=0b0731b1-94b6-4dce-b017-efe495c216b2 --env=prod --recursive -- bash scripts/db/dump.sh prod",
 		"infra:plan": "bash infra/run.sh prod plan",
 		"infra:staging:plan": "bash infra/run.sh staging plan",
