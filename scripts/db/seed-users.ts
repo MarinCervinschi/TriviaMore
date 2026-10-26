@@ -20,7 +20,7 @@ import {
 
 const password = process.env.STAGING_SEED_PASSWORD;
 if (!password) {
-	console.error("STAGING_SEED_PASSWORD is not set: add it to staging → /infra.");
+	console.error("STAGING_SEED_PASSWORD is not set: add it to trivia-more-infra → /staging.");
 	process.exit(1);
 }
 
