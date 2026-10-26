@@ -11,6 +11,14 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.27"
     }
+    infisical = {
+      source  = "infisical/infisical"
+      version = "= 0.20.3"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.9"
+    }
   }
 
   # The bucket comes from infra/run.sh and the endpoint from R2_ENDPOINT; R2 speaks S3 but not its account checks.

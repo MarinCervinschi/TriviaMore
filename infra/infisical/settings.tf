@@ -40,6 +40,23 @@ locals {
   )
 }
 
+# Production's folders were made by hand and stay outside Terraform; only these values are written there.
+locals {
+  prod_settings = {
+    "auth/BETTER_AUTH_URL" = "https://www.trivia-more.it"
+  }
+}
+
+resource "infisical_secret" "prod_setting" {
+  for_each = local.prod_settings
+
+  workspace_id = infisical_project.prod.id
+  env_slug     = infisical_project_environment.prod.slug
+  folder_path  = "/${split("/", each.key)[0]}"
+  name         = split("/", each.key)[1]
+  value        = each.value
+}
+
 resource "infisical_secret" "setting" {
   for_each = local.settings
 

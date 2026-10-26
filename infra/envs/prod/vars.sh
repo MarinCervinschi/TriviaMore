@@ -6,3 +6,6 @@ export TF_VAR_infisical_site_url="${INFISICAL_SITE_URL:?add INFISICAL_SITE_URL t
 export TF_VAR_console_seq_api_key="${CONSOLE_SEQ_API_KEY:?add CONSOLE_SEQ_API_KEY to trivia-more-infra → /prod}"
 export TF_VAR_console_worker_seq_api_key="${CONSOLE_WORKER_SEQ_API_KEY:?add CONSOLE_WORKER_SEQ_API_KEY to trivia-more-infra → /prod}"
 export TF_VAR_console_owner_email="${CONSOLE_OWNER_EMAIL:?add CONSOLE_OWNER_EMAIL to trivia-more-infra → /cloudflare}"
+export INFISICAL_HOST="${TF_INFISICAL_HOST:?add TF_INFISICAL_HOST to trivia-more-infra → /terraform}"
+export INFISICAL_UNIVERSAL_AUTH_CLIENT_ID="${TF_INFISICAL_CLIENT_ID:?add TF_INFISICAL_CLIENT_ID to trivia-more-infra → /terraform}"
+export INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET="${TF_INFISICAL_CLIENT_SECRET:?add TF_INFISICAL_CLIENT_SECRET to trivia-more-infra → /terraform}"
