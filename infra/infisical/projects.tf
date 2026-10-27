@@ -83,3 +83,11 @@ resource "infisical_project_user" "owner" {
     },
   ]
 }
+
+# The S3 keys of production, written by cervinschi-infra, which runs Garage on savvy.
+resource "infisical_secret_folder" "prod_storage" {
+  project_id       = infisical_project.prod.id
+  environment_slug = infisical_project_environment.prod.slug
+  folder_path      = "/"
+  name             = "storage"
+}
