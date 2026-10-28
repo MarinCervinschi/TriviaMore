@@ -25,6 +25,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "staging" {
     ingress = [
       { hostname = local.mail_host, service = "http://mailpit-${coolify_service.mailpit.uuid}:8025" },
       { hostname = local.app_host, service = "http://${local.app_alias}:3000" },
+      { hostname = local.media_host, service = "http://${local.rieti_tailnet_host}:3902" },
       { service = "http_status:404" },
     ]
   }
