@@ -31,7 +31,7 @@ through it.
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
 | `envs/prod/` | the console's server and worker on the VPS, built from `prod` so they ship with a release, after its migrations, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
-| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access, Mailpit and Garage. State `triviamore-staging.tfstate` |
+| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access and `media-pr.trivia-more.it`, and Mailpit. State `triviamore-staging.tfstate` |
 
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
 and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
@@ -57,8 +57,6 @@ under `/trivia-more/`.
 | `/trivia-more/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
 | `/trivia-more/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
 | `/trivia-more/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
-| `/trivia-more/staging` | `GARAGE_RPC_SECRET`, `GARAGE_ADMIN_TOKEN` | Garage's cluster secret and its admin API |
-| `/trivia-more/staging` | `GARAGE_APP_ACCESS_KEY_ID`, `GARAGE_APP_SECRET_ACCESS_KEY` | the S3 key the app uses, imported into Garage at every start |
 
 ## What the staging root publishes
 
@@ -96,8 +94,9 @@ joins. Cloudflare holds the certificate, so no ACME bypass is needed.
   which points at this database, at Mailpit, and at the staging OAuth clients; `AUTH_ALLOWED_EMAIL_DOMAIN`
   admits only `@trivia-more.it` accounts.
 - **Mailpit** catches every email staging sends (SMTP on 1025) and shows them at `mail-pr.trivia-more.it`.
-- **Garage** is the S3 store: buckets `public` (served by its web endpoint) and `contributions` (private).
-  `garage-init` imports the app's key and creates the buckets on every start, skipping what exists.
+- **Files** are on the backup Garage on rieti, which `cervinschi-infra` runs (`envs/hub/backup.tf`) and which
+  writes the S3 secrets to `/storage`: `trivia-more-staging-public`, served on `media-pr.trivia-more.it` through
+  the tunnel without Access, since an `<img>` cannot pass its login, and `trivia-more-staging-contributions`.
 - Coolify creates a variable for every `${VAR}` in a compose file, empty, so a service's secrets are set
   with `coolify_envs_bulk`, which overwrites them. Services are created with `instant_deploy = false`
   when they need those secrets, and started after the apply.
