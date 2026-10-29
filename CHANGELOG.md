@@ -12,6 +12,54 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.5.0 — 2026-10-29
+
+TriviaMore stops relying on Supabase for sign-in and files (#206). Authentication runs inside the
+app on Better Auth, and files live on the self-hosted Garage, served on `media.trivia-more.it`.
+Existing passwords and Google and GitHub accounts keep working, but every open session ends once.
+The release also brings the staging environment on `rieti` and migrations applied by hand.
+
+### Added
+
+- **Password reset**, from the login page, with a link sent by email. (#211)
+- **Staging on `rieti`**: the app, Postgres, Mailpit and the tunnel behind Cloudflare Access, rebuilt
+  from scripts with `pnpm db:reset-staging`. Password sign-up is off there, and OAuth accepts only a
+  verified `@trivia-more.it` email. (#208, #211)
+- `scripts/db/migrations.ts` applies each migration in its own transaction and prints the statement
+  that failed; `--to <tag>` stops at a given migration. (#209)
+
+### Changed
+
+- **Better Auth replaces GoTrue.** Users, sessions, accounts and verifications are our own tables;
+  `auth.users` bcrypt hashes are verified as they are, and Google and GitHub identities are relinked.
+  The session is cached in a signed cookie, so most checks read no database. Auth emails go through
+  `nodemailer` with our own templates. (#211)
+- **Files on S3.** Avatars and request attachments go through server functions to Garage; the browser
+  never talks to S3. Private attachments are streamed by
+  `src/routes/api/requests/$requestId/attachment.ts` after the request's scope check. (#210)
+- **Deleting an account from `/admin/users` anonymises it** instead of cascading the delete, as the
+  terms and the privacy policy promise: name, email, avatar and sign-in go, while quiz history,
+  stats and achievements stay. (#214)
+- **The ops console relies on Cloudflare Access alone**, with no login of its own. (#211)
+- Migrations are applied by hand, before a release is merged; CI only checks them on an empty
+  Postgres. The migration history is squashed into `0000_baseline`. (#207, #209)
+- Infisical projects, identities and the staging secrets are managed by Terraform. (#206)
+
+### Fixed
+
+- zod is aligned with Better Auth's, so the client IP check runs. (#211)
+
+### Migrations
+
+- `0001_add_auth_tables`: the Better Auth tables.
+- `0002_profiles_reference_users`: `profiles_id_fkey` points at `public.users` instead of
+  `auth.users`, and `handle_new_user` also writes `public.users` while GoTrue still runs. It needs
+  `pnpm auth:migrate-users:prod` first.
+- `0003_profiles_anonymized_at`: a nullable column.
+
+None is destructive. In production the users were migrated between `0001` and `0002`; after the merge,
+`auth:migrate-users:prod` and `storage:migrate-files:prod` run once more, and both are idempotent.
+
 ## 3.4.1 — 2026-10-11
 
 Pages under `/user` answer faster. A session check cost about 110 ms, because the server reached
