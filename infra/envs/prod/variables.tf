@@ -21,6 +21,11 @@ variable "cloudflare_account_id" {
   type = string
 }
 
+variable "server_ip" {
+  type        = string
+  description = "The VPS's public address, where Cloudflare's proxy sends the traffic it lets through."
+}
+
 variable "console_owner_email" {
   type        = string
   description = "The one address Cloudflare Access lets into the console."

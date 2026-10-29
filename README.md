@@ -102,6 +102,10 @@ them wraps `infisical run`, so there is no `.env` to maintain — contributors w
 `:no-secrets` variants. The full variable list and the production setup are in
 [`docs/SECRETS.md`](./docs/SECRETS.md).
 
+The scripts that reach production or the shared infrastructure project (`*:prod`, `db:migrate:staging`,
+`db:reset-staging`) take the project ids from the shell, never from the repo: export
+`TRIVIAMORE_INFISICAL_PROJECT_ID` (production) and `INFISICAL_INFRA_PROJECT_ID` (`cervinschi-infra`).
+
 ## Database
 
 The Drizzle schema in `src/db/schema/` is the source of truth. `drizzle-kit` diffs it against the

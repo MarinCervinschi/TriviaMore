@@ -11,20 +11,10 @@ resource "infisical_project" "prod" {
   }
 }
 
-import {
-  to = infisical_project.prod
-  id = "<infisical-prod-project-id>"
-}
-
 resource "infisical_project_environment" "prod" {
   project_id = infisical_project.prod.id
   name       = "Production"
   slug       = "prod"
-}
-
-import {
-  to = infisical_project_environment.prod
-  id = "<infisical-prod-environment-id>"
 }
 
 resource "infisical_project" "staging" {
