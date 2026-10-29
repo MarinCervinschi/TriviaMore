@@ -37,6 +37,7 @@
 		"db:dump": "bash scripts/db/dump.sh",
 		"storage:migrate-files:prod": "infisical run --projectId=${TRIVIAMORE_INFISICAL_PROJECT_ID:?} --env=prod --recursive -- bash -c 'S3_ENDPOINT=http://savvy:3900 tsx scripts/storage/migrate-files.ts \"$@\"' _",
 		"auth:migrate-users:prod": "infisical run --projectId=${TRIVIAMORE_INFISICAL_PROJECT_ID:?} --env=prod --recursive -- tsx scripts/auth/migrate-users.ts",
+		"db:transfer:prod": "infisical run --projectId=${INFISICAL_INFRA_PROJECT_ID:?} --env=ops --path=/trivia-more/prod -- infisical run --projectId=${TRIVIAMORE_INFISICAL_PROJECT_ID:?} --env=prod --recursive -- bash -c 'SOURCE_DATABASE_URL=\"$SUPABASE_DB_URL\" APP_DATABASE_URL=\"$DATABASE_URL\" TARGET_DATABASE_URL=\"postgresql://postgres:$PROD_POSTGRES_PASSWORD@$SAVVY_TAILNET_HOST:5432/postgres\" bash scripts/db/transfer.sh \"$@\"' _",
 		"db:dump:prod": "infisical run --projectId=${TRIVIAMORE_INFISICAL_PROJECT_ID:?} --env=prod --recursive -- bash scripts/db/dump.sh prod",
 		"infra:plan": "bash infra/run.sh prod plan",
 		"infra:staging:plan": "bash infra/run.sh staging plan",
