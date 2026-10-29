@@ -1,47 +1,77 @@
 # infra
 
-The VPS's resources as Terraform, starting with the ops console (#203, #198). The app and Supabase
-are still managed by hand in Coolify, and get imported here one at a time if the pilot holds.
+TriviaMore's servers as Terraform, one root per environment (`docs/PLATFORM.md`). Production holds the
+ops console (#203, #198); staging on `rieti` holds the whole stack, the app included (#208, #211). The
+production app and Supabase are still managed by hand in Coolify, until #212.
 
 ## Run it
 
 ```bash
-pnpm infra:plan     # what would change; reads only
-pnpm infra:apply    # applies, after showing the same plan and asking
-pnpm infra:output   # the values the last apply recorded
+pnpm infra:plan             # production: what would change; reads only
+pnpm infra:apply            # production: applies, after showing the same plan and asking
+pnpm infra:output           # production: the values the last apply recorded
+pnpm infra:staging:plan     # the same three for staging
+pnpm infra:staging:apply
+pnpm infra:staging:output
+pnpm infra:infisical:plan   # the Infisical projects, identities and settings
+pnpm infra:infisical:apply
 ```
 
-Each one runs `infisical run --env=prod --path=/infra -- bash infra/run.sh …`, so the secrets come from
-Infisical and never from a file. Needs Terraform ≥ 1.10 and **Tailscale on**, because Coolify's API is
-reached through the tailnet.
+`run.sh` wraps Terraform in one `infisical run` per folder of the `cervinschi-infra` project that the root
+needs, in its `ops` environment, so the secrets never come from a file. Needs Terraform ≥ 1.10, the
+Infisical CLI signed in, and **Tailscale on, on the personal tailnet**, because Coolify's API is reached
+through it.
 
 ## What it holds
 
-| File | |
+| Path | |
 |---|---|
-| `versions.tf` | Terraform and the providers (`coolify-terraform/coolify`, `cloudflare/cloudflare`), and the state on Cloudflare R2 |
-| `providers.tf` | the providers, from `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` and `CLOUDFLARE_API_TOKEN` |
-| `discovery.tf` | reads only: the projects, servers and GitHub Apps that `console.tf` looks up by name |
-| `console.tf` | the console's two services, server and worker, and their runtime variables |
-| `access.tf` | `admin.trivia-more.it` on Cloudflare: the DNS record and the Access application in front of it |
-| `variables.tf` | the values `run.sh` passes from Infisical |
-| `run.sh` | maps the Infisical secrets onto what Terraform reads, then runs it |
+| `run.sh` | `run.sh <prod\|staging> <command>`: the shared secrets, then the root's `vars.sh`, then Terraform in that root |
+| `infisical/` | the Infisical projects of the app (`TriviaMore` for production, `trivia-more-staging` for staging and local runs), their environments, folders, identities and memberships, and the settings that are not secrets. State `triviamore-infisical.tfstate` |
+| `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
+| `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
+| `envs/prod/` | the console's server and worker on the VPS, built from `prod` so they ship with a release, after its migrations, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
+| `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access and `media-pr.trivia-more.it`, and Mailpit. State `triviamore-staging.tfstate` |
 
-## Secrets: Infisical `prod` → `/infra`
+Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
+and servers looked up by name), `variables.tf` and `vars.sh` (which maps the Infisical secrets onto them).
 
-| Secret | For |
-|---|---|
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT` | the state bucket on R2 (`triviamore-tfstate`, override with `TF_STATE_BUCKET`) |
-| `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` | Coolify's API, as `http://savvy:8000` with a read, write and deploy token |
-| `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
-| `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | where that identity signs in |
-| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | the DNS record and Cloudflare Access |
-| `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console |
-| `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+## Secrets: `cervinschi-infra` → `ops`
 
-The state holds these values in clear, which is why it lives in a private bucket and never in git. The
-identities that run the app and the console have the project role `Runtime-Read`, which reads `prod` and
-`staging` but not `/infra`.
+The owner's infrastructure project, shared with their other projects, which keep their own folders in it.
+No identity that runs an app is a member: without custom roles, a project is the only boundary Infisical
+draws. `run.sh` finds it by id, so a rename does not reach the scripts. Every TriviaMore root reads
+the shared `/cloudflare`, `/coolify` and `/r2`, plus `/trivia-more/terraform` and the folder of its environment
+under `/trivia-more/`.
+
+| Folder | Secret | For |
+|---|---|---|
+| `/trivia-more/terraform` | `TF_INFISICAL_HOST`, `TF_INFISICAL_CLIENT_ID`, `TF_INFISICAL_CLIENT_SECRET` | universal auth of `TriviaMore-Terraform`, an organization admin that is no member of this project; its secret is rotated by hand |
+| `/trivia-more/terraform` | `INFISICAL_PROJECT_ID`, `INFISICAL_SITE_URL` | the app's project, and where its identities sign in |
+| `/cloudflare` | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | DNS records, Cloudflare Access and the tunnel |
+| `/cloudflare` | `CONSOLE_OWNER_EMAIL` | the one address Access lets into the console and the staging pages |
+| `/coolify` | `COOLIFY_ENDPOINT`, `COOLIFY_TOKEN` | Coolify's API, as `http://savvy:8000` with a read, write and deploy token |
+| `/r2` | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `R2_ENDPOINT` | the state bucket on R2 (`triviamore-tfstate`, override with `TF_STATE_BUCKET`) |
+| `/trivia-more/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
+| `/trivia-more/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
+| `/trivia-more/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
+| `/trivia-more/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
+| `/trivia-more/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
+
+## What the staging root publishes
+
+`envs/staging/secrets.tf` writes to `trivia-more-staging` what it generates or knows, so nobody copies it by
+hand. The app reads it through `TriviaMore-Staging`, whose client secret the root creates and hands to Coolify.
+
+| Environment | Folder | Secret |
+|---|---|---|
+| `staging` | `/database` | `DATABASE_URL`, to the database by its container name; `STAGING_SEED_PASSWORD`, of the made-up accounts (`seed-<role>@trivia-more.it`) |
+| `staging` | `/auth` | `BETTER_AUTH_SECRET` |
+| `staging` | `/email` | `SMTP_HOST`, Mailpit by its container name |
+| `dev` | `/database` | `DATABASE_URL`, to the same database through rieti's tailnet address |
+| `dev` | `/auth` | `BETTER_AUTH_SECRET`, its own |
+
+The state holds these values in clear, which is why it lives in a private bucket and never in git.
 
 ## Coolify's API through the tailnet
 
@@ -51,13 +81,38 @@ identities that run the app and the console have the project role `Runtime-Read`
   network, `<docker-gateway-ip>`. That address is in **Allowed API IPs**, which means **the Oracle firewall is what
   keeps the API off the internet**: its ingress rules open only 22, 80 and 443.
 
+## Staging on rieti
+
+`rieti` has no public address, so staging reaches the internet through a Cloudflare Tunnel: `cloudflared`
+runs there as a Coolify service and opens the connections outward. A hostname is a CNAME to the tunnel
+and an ingress rule in `tunnel.tf` to a container on the `coolify` network, which every staging service
+joins. Cloudflare holds the certificate, so no ACME bypass is needed.
+
+- **The app** builds from the `staging` branch on every push that touches its paths, and answers at
+  `pr.trivia-more.it`. The tunnel reaches it by the alias `trivia-more-app-staging` on the `coolify`
+  network, because Coolify names the container after each deployment. It reads Infisical `staging`,
+  which points at this database, at Mailpit, and at the staging OAuth clients; `AUTH_ALLOWED_EMAIL_DOMAIN`
+  admits only `@trivia-more.it` accounts.
+- **Mailpit** catches every email staging sends (SMTP on 1025) and shows them at `mail-pr.trivia-more.it`.
+- **Files** are on the backup Garage on rieti, which `cervinschi-infra` runs (`envs/hub/backup.tf`) and which
+  writes the S3 secrets to `/storage`: `trivia-more-staging-public`, served on `media-pr.trivia-more.it` through
+  the tunnel without Access, since an `<img>` cannot pass its login, and `trivia-more-staging-contributions`.
+- Coolify creates a variable for every `${VAR}` in a compose file, empty, so a service's secrets are set
+  with `coolify_envs_bulk`, which overwrites them. Services are created with `instant_deploy = false`
+  when they need those secrets, and started after the apply.
+
+## What the production root publishes
+
+`envs/prod/secrets.tf` writes `BETTER_AUTH_SECRET` to `TriviaMore` → `prod` → `/auth`, and `infra/infisical`
+writes `BETTER_AUTH_URL` there. The rest of production's secrets were typed by hand and stay so; the Google and
+GitHub clients in `/auth` are changed in the UI.
+
 ## The console on its domain
 
-The console is `https://admin.trivia-more.it`, behind two layers that do not depend on each other:
-
-1. **Cloudflare Access**, which lets only `CONSOLE_OWNER_EMAIL` through, after a one-time code or a
-   social login. Its path `/.well-known/acme-challenge` is bypassed, or Let's Encrypt could not renew.
-2. **The console's own login**, a Supabase account whose id is in `CONSOLE_OWNER_IDS`.
+The console is `https://admin.trivia-more.it`, behind **Cloudflare Access**, which lets only
+`CONSOLE_OWNER_EMAIL` through, after a one-time code or a social login. Its path
+`/.well-known/acme-challenge` is bypassed, or Let's Encrypt could not renew. The console has no login of
+its own: the identity is the email in the token Access signs, and "Esci" ends the Access session.
 
 The server's IP reaches Traefik without Cloudflare, so Access alone could be walked around. The console
 therefore checks the token Access signs on every request (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, set by
@@ -65,8 +120,6 @@ therefore checks the token Access signs on every request (`CF_ACCESS_TEAM_DOMAIN
 
 ## By hand, outside Terraform
 
-- **The Supabase redirect URL** `https://admin.trivia-more.it/**`, in the auth stack's
-  `ADDITIONAL_REDIRECT_URLS`.
 - **The Oracle firewall** and SSH.
 - **Migrations**, with `scripts/db/migrations.ts`, before the deploy they belong to.
 

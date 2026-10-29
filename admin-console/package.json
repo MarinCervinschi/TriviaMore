@@ -27,7 +27,7 @@
 		"pg-boss": "12.37.0",
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
-		"zod": "4.3.6"
+		"zod": "4.6.5"
 	},
 	"devDependencies": {
 		"@tailwindcss/vite": "4.2.2",

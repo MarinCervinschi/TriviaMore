@@ -1,20 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Runs Terraform on infra/ with the secrets of prod → /infra, which `pnpm infra:*` injects through Infisical.
-: "${R2_ENDPOINT:?run through pnpm infra:*, so Infisical injects prod → /infra}"
+# Runs Terraform on a root with the secrets of the cervinschi-infra folders it needs, injected by `infisical run`.
+root_name="${1:?usage: run.sh <infisical|prod|staging> <terraform arguments>}"
+shift
+here="$(cd "$(dirname "$0")" && pwd)"
+case "$root_name" in
+  infisical) root="$here/infisical"; paths=(/trivia-more/terraform /r2) ;;
+  *) root="$here/envs/$root_name"; paths=(/trivia-more/terraform /cloudflare /coolify /r2 "/trivia-more/$root_name") ;;
+esac
+[ -d "$root" ] || { echo "no Terraform root for $root_name" >&2; exit 1; }
+
+if [ "${TRIVIAMORE_TF_INJECTED:-}" != 1 ]; then
+  project="${INFISICAL_INFRA_PROJECT_ID:-<infisical-infra-project-id>}"
+
+  cmd=(env TRIVIAMORE_TF_INJECTED=1 bash "$0" "$root_name" "$@")
+  for path in "${paths[@]}"; do
+    cmd=(infisical run --projectId="$project" --env=ops --path="$path" --silent -- "${cmd[@]}")
+  done
+  exec "${cmd[@]}"
+fi
+
+: "${R2_ENDPOINT:?add R2_ENDPOINT to cervinschi-infra → /r2}"
 export AWS_ENDPOINT_URL_S3="$R2_ENDPOINT"
-export TF_VAR_console_infisical_client_id="${CONSOLE_INFISICAL_CLIENT_ID:?missing in prod → /infra}"
-export TF_VAR_console_infisical_client_secret="${CONSOLE_INFISICAL_CLIENT_SECRET:?missing in prod → /infra}"
-export TF_VAR_infisical_project_id="${INFISICAL_PROJECT_ID:?add INFISICAL_PROJECT_ID to prod → /infra}"
-export TF_VAR_infisical_site_url="${INFISICAL_SITE_URL:?add INFISICAL_SITE_URL to prod → /infra}"
-: "${CLOUDFLARE_API_TOKEN:?add CLOUDFLARE_API_TOKEN to prod → /infra}"
-export TF_VAR_cloudflare_account_id="${CLOUDFLARE_ACCOUNT_ID:?add CLOUDFLARE_ACCOUNT_ID to prod → /infra}"
-export TF_VAR_console_seq_api_key="${CONSOLE_SEQ_API_KEY:?add CONSOLE_SEQ_API_KEY to prod → /infra}"
-export TF_VAR_console_worker_seq_api_key="${CONSOLE_WORKER_SEQ_API_KEY:?add CONSOLE_WORKER_SEQ_API_KEY to prod → /infra}"
-export TF_VAR_console_owner_email="${CONSOLE_OWNER_EMAIL:?add CONSOLE_OWNER_EMAIL to prod → /infra}"
+if [ "$root_name" != infisical ]; then
+  : "${CLOUDFLARE_API_TOKEN:?add CLOUDFLARE_API_TOKEN to cervinschi-infra → /cloudflare}"
+  export TF_VAR_cloudflare_account_id="${CLOUDFLARE_ACCOUNT_ID:?add CLOUDFLARE_ACCOUNT_ID to cervinschi-infra → /cloudflare}"
+fi
+# shellcheck source=/dev/null
+source "$root/vars.sh"
 bucket="${TF_STATE_BUCKET:-triviamore-tfstate}"
 
-cd "$(dirname "$0")"
+cd "$root"
 terraform init -input=false -reconfigure -backend-config="bucket=$bucket" >/dev/null
 terraform "$@"

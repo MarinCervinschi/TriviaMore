@@ -11,13 +11,16 @@ questions.
 | `pnpm dev` | dev server (Infisical injects secrets) |
 | `pnpm build:dev` | production build with secrets |
 | `pnpm test` | Vitest — unit tier only (`*.test.ts`, offline) |
-| `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, needs local Supabase) |
+| `pnpm db:test:up` | an empty Postgres on :54329 with the migrations applied, for `pnpm test:db` |
+| `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, on the database `db:test:up` starts) |
 | `pnpm exec tsc --noEmit` | typecheck |
 | `pnpm storybook` | component workbench on :6006 |
 | `pnpm build-storybook` | verify every story compiles |
 | `pnpm format` | Prettier — the house style is tabs + semicolons |
 | `pnpm db:generate --name x` | generate a migration from the Drizzle schema |
-| `pnpm db:migrate` | apply pending migrations |
+| `pnpm db:migrate` | apply pending migrations to the local database |
+| `pnpm db:migrate:staging [--apply]` | read, then apply, what staging lacks |
+| `pnpm db:dump:prod` · `pnpm db:migrate:prod [--apply]` | back up production, then read and apply what it lacks, before merging a release |
 | `pnpm smoke:reads` | run every migrated read path against the live database |
 | `pnpm smoke:writes` | run the quiz write paths in a transaction, then roll back |
 
@@ -27,7 +30,8 @@ questions.
 ## Architecture
 
 `createServerFn` is the only API the browser talks to. The client never queries the database
-directly; the one exception is a Storage upload in `src/components/requests/request-form.tsx`.
+directly, and its files reach S3 through a server function too; private attachments are read through
+`src/routes/api/requests/$requestId/attachment.ts`.
 
 ```
 src/lib/<domain>/api/<endpoint>.ts   one server function per file — the API surface
@@ -92,8 +96,14 @@ something that line cannot show. The rules, with the reasoning, are in `docs/OBS
 Every query runs through Drizzle on a direct connection, as the service role. **RLS therefore never
 filters anything** — a read that used to be narrowed by a policy has to say so in a where clause.
 This caused three near-regressions during the migration; check `pg_policies` before trusting a query
-ported from the old code. Auth and Storage stay on supabase-js, and are all `src/lib/supabase/` still
-contains.
+ported from the old code. Authentication is Better Auth inside the app (`src/lib/auth/server.ts`).
+Files are on Garage, an S3 store reached only from the tailnet, through `src/lib/storage/server.ts`;
+public ones are served on `S3_PUBLIC_URL`.
+
+**Supabase is on its way out** (`docs/PLATFORM.md`): plain Postgres, a self-hosted S3 store, Better Auth
+inside the app, and a staging environment on the `rieti` server where every change lands first. Read
+that ADR before touching auth, storage, the infrastructure or how migrations are applied; until its
+phases land, the current setup described here still holds.
 
 Issue #87 holds the plan and the decisions. Every phase of it is closed except #93, which is future
 work — browser-direct reads with Realtime. Hosting is **self-hosted on the VPS** (Coolify behind
@@ -101,7 +111,7 @@ Cloudflare): there is no Vercel and no serverless runtime, so a long-running Nod
 the app can rely on.
 
 Automated testing is deliberately deferred until the refactor settles — see #109. The app is **not in
-production**; it runs on `preview` and has no users yet, so a visible regression costs a look, not an
+production**; it runs on `staging` and has no users yet, so a visible regression costs a look, not an
 incident.
 
 ### Derived state
@@ -131,14 +141,21 @@ The Drizzle schema in `src/db/schema/` is the source of truth. **For any schema,
 migration or row-type work, use the `drizzle-schema` skill** — it holds the conventions and the
 traps.
 
-Two rules that are not negotiable:
+Rules that are not negotiable:
 
-- **Migrations are applied by hand.** Never add `db:migrate` to a container start command, an
-  entrypoint, or an automatic deploy hook, in any environment.
+- **Every migration is backward compatible.** The code of the previous release must run on the new
+  schema: drops, renames, type changes and new `NOT NULL`s are split into expand and contract steps
+  across releases. **For any migration, or a change to a server function's input or behaviour, use
+  the `safe-changes` skill.**
+- **Migrations are applied by hand, never from a container start command, an entrypoint, a deploy
+  hook or a pipeline.** To staging while the change is developed (`pnpm db:migrate:staging --apply`);
+  to production before its release is merged, after `pnpm db:dump:prod` (`pnpm db:migrate:prod`, then
+  `--apply`). CI only checks them, on an empty Postgres.
 - **No `psql` on the host.** Query the local database through the container:
   `docker exec supabase_db_TriviaMore psql -U postgres -d postgres -c "..."`.
 
-`supabase/migrations/` is a frozen archive. Nothing new goes there.
+`supabase/migrations/` and `drizzle/archive/` are frozen archives. Nothing new goes there. The chain
+starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty Postgres.
 
 ## Conventions
 
@@ -157,7 +174,10 @@ Two rules that are not negotiable:
 - Prefer editing an existing file over adding one; match the surrounding style.
 - When a route has a `pendingComponent`, update the matching skeleton in
   `src/components/skeletons/` whenever you change the page layout.
-- Seed data is applied through a SQL console, not a seed script.
+- **Content outside production comes from scripts:** the catalogue from CINECA (`catalog:populate`, then
+  `catalog:sync`), the departments and their sites from `scripts/catalog/departments.json`, and made-up
+  sections and questions from `scripts/db/seed-content.ts`. `pnpm db:reset-staging` runs them all.
+  Production content is still written through the admin and the SQL console.
 
 ## Verification
 
@@ -173,8 +193,8 @@ holds the two story shapes, the title taxonomy and the components that cannot be
 Tests are co-located with the source they cover. Two tiers, split by suffix, in `vitest.config.ts`
 (kept separate from `vite.config.ts`): `*.test.ts` needs no database and no network — offline, CI-safe,
 the `pnpm test` gate; `*.itest.ts` is DB-backed via `pnpm test:db`. Reading a repo file is allowed in
-the unit tier, which is how `src/styles/contrast.test.ts` gates the colour tokens against WCAG. The integration tier needs the local
-stack up (`supabase start`), connects as the postgres admin through `TEST_DATABASE_URL` (defaults to
-the local database, refuses any non-local host), and runs each test inside a transaction that is
+the unit tier, which is how `src/styles/contrast.test.ts` gates the colour tokens against WCAG. The integration tier runs on the
+plain Postgres of `pnpm db:test:up`, connects as the postgres admin through `TEST_DATABASE_URL` (defaults to
+that database on :54329, refuses any non-local host), and runs each test inside a transaction that is
 always rolled back — so it seeds its own fixtures and leaves the database untouched. Helpers live in
 `src/lib/testing/`. Component tests are deliberately out of scope (#109).

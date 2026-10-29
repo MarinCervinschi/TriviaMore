@@ -1,6 +1,6 @@
 ---
 name: changelog
-description: How TriviaMore records a release — the technical CHANGELOG.md and the public Italian entry at /news, when each is written, the format both follow, and the traps in the frontmatter parser and the unread-megaphone. Use whenever merging preview into prod, cutting a release, bumping the version, or adding or editing anything under src/content/changelogs/.
+description: How TriviaMore records a release — the technical CHANGELOG.md and the public Italian entry at /news, when each is written, the format both follow, and the traps in the frontmatter parser and the unread-megaphone. Use whenever merging staging into prod, cutting a release, bumping the version, or adding or editing anything under src/content/changelogs/.
 ---
 
 # Changelog
@@ -20,11 +20,11 @@ refactor, a dependency bump — needs only `CHANGELOG.md`.
 
 ## When
 
-**At the merge from `preview` into `prod`, before merging.** That is the moment a change reaches
+**At the merge from `staging` into `prod`, before merging.** That is the moment a change reaches
 users, and it is why there is no `Unreleased` section to maintain: everything not yet released is
-already described by the git history on `preview`.
+already described by the git history on `staging`.
 
-Do not write an entry when merging a feature branch into `preview`. Do not append to the released
+Do not write an entry when merging a feature branch into `staging`. Do not append to the released
 section afterwards — a correction is a new patch version.
 
 ## Writing the technical entry
@@ -32,8 +32,8 @@ section afterwards — a correction is a new patch version.
 Build the raw material from the range being released:
 
 ```bash
-git log prod..preview --pretty='%s' | sort
-git log prod..preview --pretty='%s' | sed -E 's/^([a-z]+)(\(.*\))?!?:.*/\1/' | sort | uniq -c | sort -rn
+git log prod..staging --pretty='%s' | sort
+git log prod..staging --pretty='%s' | sed -E 's/^([a-z]+)(\(.*\))?!?:.*/\1/' | sort | uniq -c | sort -rn
 ```
 
 Then, in `CHANGELOG.md`, under a `## <version> — <YYYY-MM-DD>` heading:
@@ -98,4 +98,5 @@ under the same version reaches nobody — a real correction needs a new version.
 - [ ] `package.json` version bumped to the same version
 - [ ] Public entry added under `src/content/changelogs/`, if there is anything a student would notice
 - [ ] `pnpm build` passes — it is what proves the frontmatter parses
-- [ ] Committed to `preview`, then merged into `prod`
+- [ ] Any migration of the release applied to production first: `pnpm db:dump:prod`, `pnpm db:migrate:prod`, then `--apply`
+- [ ] Committed to `staging`, then merged into `prod`

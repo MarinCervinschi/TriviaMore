@@ -80,7 +80,8 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 | `pnpm build` / `pnpm build:dev` | Production build, without / with secrets |
 | `pnpm start` | Serve the production build |
 | `pnpm test` | Unit tests — offline, no database |
-| `pnpm test:db` | Integration tests — needs the local stack |
+| `pnpm db:test:up` / `pnpm db:test:down` | An empty Postgres on :54329 with the migrations applied, and its removal |
+| `pnpm test:db` | Integration tests, on the database `db:test:up` starts |
 | `pnpm storybook` / `pnpm build-storybook` | Component workbench, and the build that proves stories compile |
 | `pnpm format` | Prettier — tabs and semicolons |
 | `pnpm db:generate --name x` | Generate a migration from the schema |
@@ -89,6 +90,8 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 | `pnpm db:dump` | Back up schema + data under `backups/` |
 | `pnpm smoke:reads` / `pnpm smoke:writes` | Run every read path, and the write paths in a rolled-back transaction |
 | `pnpm catalog:sync [--anno 2025] [--apply]` | Plan, then with `--apply` write, the changes from the official catalogue; `--anno` targets another academic year |
+| `pnpm catalog:populate [--apply]` | Create the departments of `scripts/catalog/departments.json` and the degree courses of the official catalogue they lack; `catalog:sync` then adds the classes and plans |
+| `pnpm db:reset-staging [--syllabi]` | Rebuild the staging database on `rieti`: migrations, the catalogue from CINECA, made-up sections and questions |
 | `pnpm catalog:syllabi [--apply]` | Plan, then with `--apply` write, the official syllabi and the class descriptions taken from them |
 | `pnpm catalog:recover-names [--apply]` | Name the curricula the catalogue labels only with a code |
 
@@ -122,20 +125,24 @@ adds an enum value next to one that uses it fails with no message. The script ap
 in its own transaction, records it the way drizzle does, and prints the statement that broke:
 
 ```bash
-export SUPABASE_DB_URL='postgresql://postgres:…@host:54322/postgres'   # the admin role
-pnpm exec tsx scripts/db/migrations.ts           # the last one applied, and what is pending
-pnpm exec tsx scripts/db/migrations.ts --apply   # apply them, one transaction each
+pnpm db:migrate:staging            # staging: the last one applied, and what is pending
+pnpm db:migrate:staging --apply    # apply them, one transaction each
+pnpm db:dump:prod                  # production: back up first
+pnpm db:migrate:prod               # then read what is pending
+pnpm db:migrate:prod --apply       # and apply it, before the release is merged
 ```
 
-It runs without `infisical run` on purpose: Infisical would replace the URL with the local one.
+Both read the admin URL of their database from Infisical. CI applies every migration to an empty
+Postgres on each pull request, and applies nothing anywhere else.
 
 The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
 role through `SUPABASE_DB_URL`.
 
-`supabase/migrations/` is a frozen archive from before the cut-over — nothing new goes there, but it
-is still what `supabase start` uses to build the local database. The Drizzle migrations run **on top
-of a Supabase-provisioned database**: `drizzle/0000_baseline.sql` expects the `auth` schema, so they
-do not bootstrap an empty one on their own.
+`supabase/migrations/` is a frozen archive from before the cut-over, still what `supabase start` uses to
+build the local database. `drizzle/archive/` holds the Drizzle migrations up to `0069`, squashed on
+2026-10-11 into `drizzle/0000_baseline.sql`. The baseline builds the whole schema on an empty Postgres:
+where Supabase is absent it creates a minimal `auth.users`, until Better Auth replaces it (#211). On a
+database that already ran the old chain it counts as applied, since its timestamp is the one of `0069`.
 
 Conventions for entities, relations, enums and row types are in
 [`.claude/skills/drizzle-schema`](./.claude/skills/drizzle-schema/SKILL.md).
@@ -159,8 +166,8 @@ Server functions declare their own middleware and authorize inside the service l
 ## Deployment
 
 The app runs on a self-hosted VPS: Coolify builds the `Dockerfile` and deploys on push, behind
-Cloudflare, co-located with the Supabase stack. `prod` is production, `preview` is the preview
-instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
+Cloudflare, co-located with the Supabase stack. `prod` is production, `staging` is the integration
+branch and its instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
 rather than leaving a container serving errors.
 
 Auth emails are served as static assets from `public/email-templates/`, so both the local CLI and the
@@ -184,9 +191,9 @@ Contributions are welcome — to the code and to the catalog content.
 
 - **A wrong question or a missing topic?** Open an issue with the `content` label, linking the section.
 - **A bug or an idea?** Open an issue with the `bug` or `enhancement` label.
-- **Code:** fork, branch off `preview` (`feat/quiz-shortcuts`, `fix/sitemap-encoding`), keep commits
+- **Code:** fork, branch off `staging` (`feat/quiz-shortcuts`, `fix/sitemap-encoding`), keep commits
   small and in Conventional Commits style, run `pnpm test` and `pnpm build`, then open a pull request
-  against `preview` with screenshots for UI changes.
+  against `staging` with screenshots for UI changes.
 
 Want to maintain the catalog of your own department? Open an issue and we'll grant you the
 maintainer role for that scope.
@@ -194,8 +201,8 @@ maintainer role for that scope.
 ## Branches
 
 ```
-preview → Active development, and the preview instance
-prod    → Production (default branch)
+staging → Active development, and the staging instance (default branch)
+prod    → Production
 ```
 
 `master` is frozen at the pre-rewrite state and kept as an archive; the Next.js version before it is

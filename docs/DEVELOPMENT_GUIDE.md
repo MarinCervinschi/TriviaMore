@@ -228,11 +228,10 @@ invalidateKeys: [["requests", "mine"], ["admin", "requests"], ["admin", "request
 
 ## Database & Supabase
 
-### Three Clients
+### Two Clients
 
 | Client | Import | Auth | RLS | Use for |
 |--------|--------|------|-----|---------|
-| `createServerSupabaseClient()` | `@/lib/supabase/server` | User session (cookies) | Yes | Most server queries |
 | `supabaseAdmin` | `@/lib/supabase/admin` | Service role | No (bypasses) | Notifications, cross-user data |
 | `createClient()` | `@/lib/supabase/client` | Browser session | Yes | Client-side uploads (Storage) |
 

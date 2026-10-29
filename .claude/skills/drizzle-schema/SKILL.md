@@ -9,7 +9,8 @@ The TypeScript schema is the source of truth. `drizzle-kit` diffs it and writes 
 never edited directly. Same model as EF Core Code First: `db:generate` ↔ `migrations add`,
 `db:migrate` ↔ `database update`, `--custom` ↔ `migrationBuilder.Sql(...)`.
 
-`supabase/migrations/` is a frozen archive from before the cut-over. Nothing new goes there.
+`supabase/migrations/` and `drizzle/archive/` are frozen archives. Nothing new goes there. The chain
+starts at `drizzle/0000_baseline.sql`, the schema as of `0069`, which builds on an empty Postgres.
 
 ## Layout
 
@@ -69,9 +70,12 @@ grants, policies, seed rows) → `references/migrations.md`.
 
 ## Non-negotiables
 
-- **Migrations are applied by hand.** Never in a container start command, entrypoint or automatic
-  deploy hook, in any environment. Migration first, code second; expand/contract for destructive
-  changes, because rolling back a deploy does not roll back the schema.
+- **Applied by hand, never from a container start command, entrypoint, deploy hook or pipeline**, in
+  any environment: to staging while developing, to production before the release is merged
+  (`references/migrations.md`). CI only checks them.
+- **Every migration is backward compatible.** Migration first, code second; a drop, rename, type
+  change or new `NOT NULL` is split into expand and contract steps. The rules are in the
+  `safe-changes` skill.
 - **There is no `db:push`.** Always generate + migrate, so every change leaves a reviewable file.
 - **Commit the TS change and the generated `.sql` together**, plus the `drizzle/meta/` snapshot.
 - **Never hand-edit a `.sql` file that has already been applied anywhere.** Write a new migration.

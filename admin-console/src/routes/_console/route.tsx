@@ -1,15 +1,14 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import { ConsoleShell } from "~/components/shell/console-shell";
 import { getSessionFn } from "~/lib/auth/api";
 import { readSectionSidebarOpen } from "~/lib/section-sidebar-state";
 
 export const Route = createFileRoute("/_console")({
-	beforeLoad: async ({ location }) => {
+	beforeLoad: async () => {
 		const session = await getSessionFn();
-		if (!session) {
-			throw redirect({ to: "/login", search: { redirect: location.href } });
-		}
+		// Cloudflare Access answers 403 before this; reaching it means the token went bad in between.
+		if (!session) throw new Error("Accesso solo attraverso Cloudflare Access.");
 		return { session };
 	},
 	// In the loader, so the value matches the one the server rendered with.

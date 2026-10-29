@@ -23,9 +23,7 @@ import {
 } from "../../src/lib/browse/service/overview.ts";
 import { getSectionDetail } from "../../src/lib/browse/service/sections.ts";
 import { getCalendar } from "../../src/lib/crm/service/calendar.ts";
-import {
-	getCurrentEnrollment,
-} from "../../src/lib/crm/service/enrollment.ts";
+import { getCurrentEnrollment } from "../../src/lib/crm/service/enrollment.ts";
 import { getFlashcardSession } from "../../src/lib/flashcard/service.ts";
 import { encodeSessionId } from "../../src/lib/flashcard/session-id.ts";
 import {

@@ -13,6 +13,23 @@ const keys = TEAM_DOMAIN
 	? createRemoteJWKSet(new URL("/cdn-cgi/access/certs", TEAM_DOMAIN))
 	: null;
 
+/** False locally, where no Access stands in front of the console. */
+export const ACCESS_CONFIGURED = !!keys && !!AUDIENCE;
+
+/** The email Access signed for this request; throws when the token is missing, forged or for another app. */
+export async function verifyAccessToken(
+	token: string | null | undefined
+): Promise<string> {
+	if (!keys || !AUDIENCE || !token) throw new Error("No Cloudflare Access token");
+	const { payload } = await jwtVerify(token, keys, {
+		issuer: TEAM_DOMAIN,
+		audience: AUDIENCE,
+	});
+	if (typeof payload.email !== "string")
+		throw new Error("The Access token carries no email");
+	return payload.email;
+}
+
 const denied = (status: number, reason: string) =>
 	new Response(reason, {
 		status,
@@ -21,7 +38,7 @@ const denied = (status: number, reason: string) =>
 
 export const accessMiddleware = createMiddleware({ type: "request" }).server(
 	async ({ request, pathname, next }) => {
-		if (!keys || !AUDIENCE) {
+		if (!ACCESS_CONFIGURED) {
 			// Locally there is no Access in front; a deployed console without it refuses everything.
 			return IS_PRODUCTION
 				? denied(503, "Cloudflare Access non è configurato.")
@@ -32,7 +49,7 @@ export const accessMiddleware = createMiddleware({ type: "request" }).server(
 		if (!token) return denied(403, "Accesso solo attraverso Cloudflare Access.");
 
 		try {
-			await jwtVerify(token, keys, { issuer: TEAM_DOMAIN, audience: AUDIENCE });
+			await verifyAccessToken(token);
 		} catch (error) {
 			log.warn("Cloudflare Access token rejected on {Path}: {Reason}", {
 				Path: pathname,

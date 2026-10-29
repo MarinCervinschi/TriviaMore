@@ -34,6 +34,9 @@ export type SourceCourse = {
 	teachingLanguage: string | null;
 	restrictedAccess: boolean | null;
 	url: string;
+	departmentCode: string | null;
+	site: string | null;
+	area: string | null;
 };
 
 export type SourceCurriculum = {
@@ -97,6 +100,9 @@ type RawCourse = {
 	classe_cod?: string;
 	lingua_cod?: string;
 	tipoAccesso?: string;
+	dip_cod?: string;
+	sede_des_it?: string;
+	area_cod?: string;
 };
 
 export async function fetchCourses(year: string): Promise<SourceCourse[]> {
@@ -125,6 +131,9 @@ export async function fetchCourses(year: string): Promise<SourceCourse[]> {
 								? false
 								: null,
 					url: `${SITE}/corsi/${course.aa ?? year}/${course.cod}`,
+					departmentCode: text(course.dip_cod),
+					site: text(course.sede_des_it),
+					area: text(course.area_cod),
 				}))
 			)
 		)

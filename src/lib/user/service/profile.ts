@@ -1,10 +1,9 @@
 import { eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { profiles } from "@/db/schema";
+import { profiles, users } from "@/db/schema";
 import { findProfile } from "@/lib/auth/db/profiles";
 import { findCompletedAttemptHistory } from "@/lib/quiz/db/attempts";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import type { UserProfile, UserStats } from "../types";
 import { getRecentClasses } from "./classes";
@@ -67,18 +66,10 @@ export async function getUserProfile(
 	};
 }
 
-export async function updateProfile(
-	userId: string,
-	input: { name: string }
-) {
-	await getDb()
-		.update(profiles)
-		.set({ name: input.name })
-		.where(eq(profiles.id, userId));
-
-	// Duplicated into the auth user's metadata, which OAuth and the email templates read.
-	await createServerSupabaseClient().auth.updateUser({
-		data: { name: input.name },
+export async function updateProfile(userId: string, input: { name: string }) {
+	await getDb().transaction(async tx => {
+		await tx.update(profiles).set({ name: input.name }).where(eq(profiles.id, userId));
+		await tx.update(users).set({ name: input.name }).where(eq(users.id, userId));
 	});
 
 	return { success: true };

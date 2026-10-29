@@ -191,7 +191,7 @@ function AdminUsersPage() {
 				open={!!deleteId}
 				onOpenChange={open => !open && setDeleteId(null)}
 				title="Eliminare l'utente?"
-				description="L'account verrà rimosso con tutti i suoi dati: quiz, progressi e segnalibri."
+				description="Nome, email e avatar verranno cancellati e l'utente non potrà più accedere. Verranno eliminati anche notifiche, carriera, eventi del calendario, task e proposte non approvate. Quiz, progressi, traguardi e segnalibri restano, senza dati personali. L'operazione non è reversibile."
 				confirmText="Elimina"
 				variant="destructive"
 				onConfirm={() => {

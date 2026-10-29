@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
+import { uploadAttachmentFn } from "@/lib/requests/api";
 import { useCreateRequest } from "@/lib/requests/mutations";
 import { requestQueries } from "@/lib/requests/queries";
 import type { SubmittedQuestion } from "@/lib/requests/types";
-import { createClient } from "@/lib/supabase/client";
 
 import { FileUploadForm } from "./file-upload-form";
 import { QuestionEditor } from "./question-editor";
@@ -121,15 +121,9 @@ export function RequestForm({
 		} else if (type === "file_upload" && file && user) {
 			setUploading(true);
 			try {
-				const supabase = createClient();
-				const ext = file.name.split(".").pop() ?? "bin";
-				const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-				const { error: uploadError } = await supabase.storage
-					.from("contributions")
-					.upload(filePath, file);
-
-				if (uploadError) throw uploadError;
+				const form = new FormData();
+				form.append("file", file);
+				const { filePath } = await uploadAttachmentFn({ data: form });
 
 				createRequest.mutate({
 					type: "file_upload",
@@ -142,8 +136,10 @@ export function RequestForm({
 						comment: fileComment.trim() || null,
 					},
 				});
-			} catch {
-				toast.error("Errore nel caricamento del file");
+			} catch (error) {
+				toast.error(
+					error instanceof Error ? error.message : "Errore nel caricamento del file"
+				);
 			} finally {
 				setUploading(false);
 			}

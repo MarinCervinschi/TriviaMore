@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { formFileSchema } from "@/lib/storage/schemas";
+
 export const fileUploadSubmissionSchema = z.object({
 	type: z.literal("file_upload"),
 	file_name: z.string().min(1, "Il nome del file è obbligatorio").trim(),
@@ -81,7 +83,10 @@ export const acknowledgeRequestSchema = z.object({
 	admin_note: z.string().max(2000).optional(),
 });
 
-export const fileDownloadSchema = z.object({ filePath: z.string().min(1) });
+export const attachmentFileSchema = formFileSchema(
+	10 * 1024 * 1024,
+	"Il file supera il limite di 10 MB"
+);
 
 export type CreateRequestInput = z.infer<typeof createRequestSchema>;
 export type UpdateReportInput = z.infer<typeof updateReportSchema>;

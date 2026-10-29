@@ -16,12 +16,14 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as QuizQuizIdRouteImport } from './routes/quiz/$quizId'
 import { Route as FlashcardSessionIdRouteImport } from './routes/flashcard/$sessionId'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as ApiLogRouteImport } from './routes/api/log'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
 import { Route as AppNewsRouteImport } from './routes/_app/news'
 import { Route as AppContactRouteImport } from './routes/_app/contact'
@@ -34,6 +36,7 @@ import { Route as AppSearchIndexRouteImport } from './routes/_app/search/index'
 import { Route as AppDepartmentsIndexRouteImport } from './routes/_app/departments/index'
 import { Route as AppBrowseIndexRouteImport } from './routes/_app/browse/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppUserSettingsRouteImport } from './routes/_app/user/settings'
 import { Route as AppUserProgressRouteImport } from './routes/_app/user/progress'
 import { Route as AppUserNotificationsRouteImport } from './routes/_app/user/notifications'
@@ -57,6 +60,7 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
+import { Route as ApiRequestsRequestIdAttachmentRouteImport } from './routes/api/requests/$requestId/attachment'
 import { Route as AppUserCareerForecastRouteImport } from './routes/_app/user/career/forecast'
 import { Route as AppUserCareerExamsRouteImport } from './routes/_app/user/career/exams'
 import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
@@ -113,6 +117,11 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -123,14 +132,14 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
   id: '/auth/confirm',
   path: '/auth/confirm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
@@ -141,6 +150,11 @@ const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
 const ApiLogRoute = ApiLogRouteImport.update({
   id: '/api/log',
   path: '/api/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
@@ -202,6 +216,11 @@ const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppAdminRouteRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppUserSettingsRoute = AppUserSettingsRouteImport.update({
   id: '/settings',
@@ -320,6 +339,12 @@ const AppAdminDepartmentsIndexRoute =
     id: '/departments/',
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
+  } as any)
+const ApiRequestsRequestIdAttachmentRoute =
+  ApiRequestsRequestIdAttachmentRouteImport.update({
+    id: '/api/requests/$requestId/attachment',
+    path: '/api/requests/$requestId/attachment',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AppUserCareerForecastRoute = AppUserCareerForecastRouteImport.update({
   id: '/forecast',
@@ -450,12 +475,14 @@ export interface FileRoutesByFullPath {
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -472,6 +499,7 @@ export interface FileRoutesByFullPath {
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AppAdminIndexRoute
   '/browse/': typeof AppBrowseIndexRoute
   '/departments/': typeof AppDepartmentsIndexRoute
@@ -489,6 +517,7 @@ export interface FileRoutesByFullPath {
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/user/career/exams': typeof AppUserCareerExamsRoute
   '/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -517,12 +546,14 @@ export interface FileRoutesByTo {
   '/contact': typeof AppContactRoute
   '/news': typeof AppNewsRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -539,6 +570,7 @@ export interface FileRoutesByTo {
   '/user/notifications': typeof AppUserNotificationsRoute
   '/user/progress': typeof AppUserProgressRoute
   '/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AppAdminIndexRoute
   '/browse': typeof AppBrowseIndexRoute
   '/departments': typeof AppDepartmentsIndexRoute
@@ -556,6 +588,7 @@ export interface FileRoutesByTo {
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/user/career/exams': typeof AppUserCareerExamsRoute
   '/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -588,12 +621,14 @@ export interface FileRoutesById {
   '/_app/contact': typeof AppContactRoute
   '/_app/news': typeof AppNewsRoute
   '/_app/onboarding': typeof AppOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/flashcard/$sessionId': typeof FlashcardSessionIdRoute
   '/quiz/$quizId': typeof QuizQuizIdRoute
@@ -611,6 +646,7 @@ export interface FileRoutesById {
   '/_app/user/notifications': typeof AppUserNotificationsRoute
   '/_app/user/progress': typeof AppUserProgressRoute
   '/_app/user/settings': typeof AppUserSettingsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/browse/': typeof AppBrowseIndexRoute
   '/_app/departments/': typeof AppDepartmentsIndexRoute
@@ -628,6 +664,7 @@ export interface FileRoutesById {
   '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/_app/user/career/exams': typeof AppUserCareerExamsRoute
   '/_app/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -661,12 +698,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/news'
     | '/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -683,6 +722,7 @@ export interface FileRouteTypes {
     | '/user/notifications'
     | '/user/progress'
     | '/user/settings'
+    | '/api/auth/$'
     | '/admin/'
     | '/browse/'
     | '/departments/'
@@ -700,6 +740,7 @@ export interface FileRouteTypes {
     | '/user/analytics/history'
     | '/user/career/exams'
     | '/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -728,12 +769,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/news'
     | '/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -750,6 +793,7 @@ export interface FileRouteTypes {
     | '/user/notifications'
     | '/user/progress'
     | '/user/settings'
+    | '/api/auth/$'
     | '/admin'
     | '/browse'
     | '/departments'
@@ -767,6 +811,7 @@ export interface FileRouteTypes {
     | '/user/analytics/history'
     | '/user/career/exams'
     | '/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -798,12 +843,14 @@ export interface FileRouteTypes {
     | '/_app/contact'
     | '/_app/news'
     | '/_app/onboarding'
+    | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/callback'
     | '/auth/confirm'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password'
     | '/auth/verify-email'
     | '/flashcard/$sessionId'
     | '/quiz/$quizId'
@@ -821,6 +868,7 @@ export interface FileRouteTypes {
     | '/_app/user/notifications'
     | '/_app/user/progress'
     | '/_app/user/settings'
+    | '/api/auth/$'
     | '/_app/admin/'
     | '/_app/browse/'
     | '/_app/departments/'
@@ -838,6 +886,7 @@ export interface FileRouteTypes {
     | '/_app/user/analytics/history'
     | '/_app/user/career/exams'
     | '/_app/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -863,15 +912,19 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiLogRoute: typeof ApiLogRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRequestsRequestIdAttachmentRoute: typeof ApiRequestsRequestIdAttachmentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -925,6 +978,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -939,18 +999,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/confirm': {
       id: '/auth/confirm'
       path: '/auth/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/auth-code-error': {
@@ -965,6 +1025,13 @@ declare module '@tanstack/react-router' {
       path: '/api/log'
       fullPath: '/api/log'
       preLoaderRoute: typeof ApiLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/onboarding': {
@@ -1050,6 +1117,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/user/settings': {
       id: '/_app/user/settings'
@@ -1211,6 +1285,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/departments/'
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
+    }
+    '/api/requests/$requestId/attachment': {
+      id: '/api/requests/$requestId/attachment'
+      path: '/api/requests/$requestId/attachment'
+      fullPath: '/api/requests/$requestId/attachment'
+      preLoaderRoute: typeof ApiRequestsRequestIdAttachmentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/user/career/forecast': {
       id: '/_app/user/career/forecast'
@@ -1532,15 +1613,19 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiLogRoute: ApiLogRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
   AuthConfirmRoute: AuthConfirmRoute,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiRequestsRequestIdAttachmentRoute: ApiRequestsRequestIdAttachmentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

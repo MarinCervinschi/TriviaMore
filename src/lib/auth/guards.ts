@@ -3,9 +3,9 @@ import { redirect } from "@tanstack/react-router";
 import { getDb } from "@/db";
 import { attachUser } from "@/lib/logging/context";
 import { timeAuthCheck } from "@/lib/logging/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import { findProfile } from "./db/profiles";
+import { readSession } from "./server";
 import type { AuthUser } from "./types";
 
 // Plain functions, because a server function called from another handler is a round trip to ourselves.
@@ -27,19 +27,15 @@ export function toAuthUser(profile: {
 }
 
 export async function getAuthUser(): Promise<AuthUser | null> {
-	const supabase = createServerSupabaseClient();
-	const {
-		data: { user },
-		error,
-	} = await timeAuthCheck(() => supabase.auth.getUser());
-
-	if (error || !user) return null;
+	const session = await timeAuthCheck(readSession);
+	if (!session) return null;
+	const { user } = session;
 
 	// Only the id, so no email reaches Seq.
 	attachUser(user.id);
 
 	const profile = await findProfile(getDb(), user.id);
-	return profile ? toAuthUser(profile) : null;
+	return profile && !profile.anonymizedAt ? toAuthUser(profile) : null;
 }
 
 export async function requireAuth(): Promise<AuthUser> {
@@ -61,10 +57,6 @@ export async function requireSuperadmin(): Promise<AuthUser> {
 }
 
 export async function requireGuest(): Promise<void> {
-	const supabase = createServerSupabaseClient();
-	const {
-		data: { user },
-	} = await timeAuthCheck(() => supabase.auth.getUser());
-
-	if (user) throw redirect({ to: "/user" });
+	const session = await timeAuthCheck(readSession);
+	if (session) throw redirect({ to: "/user" });
 }

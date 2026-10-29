@@ -6,6 +6,9 @@ import { log, logSpan } from "@/lib/logging/server";
 
 const ASSET_PATTERN = /\.(js|mjs|css|map|ico|png|jpe?g|gif|svg|webp|avif|woff2?)$/i;
 
+// Polled by Coolify every few seconds; a line per poll would bury the requests worth reading.
+const HEALTH_PATH = "/api/health";
+
 const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
 
 const DISCONNECT_CODES = new Set([
@@ -50,7 +53,7 @@ function outcomeFor(status: number | undefined, disconnected: boolean): string {
 
 export const observabilityMiddleware = createMiddleware({ type: "request" }).server(
 	async ({ pathname, request, next }) => {
-		if (isAsset(pathname)) return next();
+		if (isAsset(pathname) || pathname === HEALTH_PATH) return next();
 
 		const context = createContext({
 			source: pathname.startsWith(SERVER_FN_BASE) ? "fn" : "ssr",

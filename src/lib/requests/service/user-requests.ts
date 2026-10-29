@@ -9,12 +9,21 @@ import {
 	questions,
 	sections,
 } from "@/db/schema";
+import { log } from "@/lib/logging/server";
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/service";
-import { Conflict, Forbidden, Invalid, NotFound } from "@/lib/server/errors";
+import {
+	Conflict,
+	Forbidden,
+	Invalid,
+	NotFound,
+	Unavailable,
+} from "@/lib/server/errors";
+import { putObject } from "@/lib/storage/server";
 
 import type { CreateRequestInput, UpdateReportInput } from "../schemas";
 import type { ContentRequestType, ContentRequestWithMeta } from "../types";
 import {
+	assertOwnAttachment,
 	findRequestOrThrow,
 	generateTitle,
 	parseSubmittedContent,
@@ -95,11 +104,42 @@ async function resolveTarget(
 	};
 }
 
+const ATTACHMENT_TYPES: Record<string, { type: string; magic: number[] }> = {
+	pdf: { type: "application/pdf", magic: [0x25, 0x50, 0x44, 0x46] },
+	docx: {
+		type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		magic: [0x50, 0x4b, 0x03, 0x04],
+	},
+};
+
+/** Stored before the request exists; the path it returns goes into the request's content. */
+export async function uploadAttachment(
+	userId: string,
+	file: File
+): Promise<{ filePath: string }> {
+	const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+	const accepted = ATTACHMENT_TYPES[extension];
+	const bytes = new Uint8Array(await file.arrayBuffer());
+	if (!accepted || accepted.magic.some((byte, i) => bytes[i] !== byte)) {
+		throw new Invalid("Formato non supportato. Carica un PDF o un DOCX.");
+	}
+
+	const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;
+	try {
+		await putObject("contributions", filePath, bytes, accepted.type);
+	} catch (error) {
+		log.error("Attachment of {UserId} not stored", { UserId: userId }, error);
+		throw new Unavailable("Caricamento non riuscito. Riprova.");
+	}
+	return { filePath };
+}
+
 export async function createRequest(
 	userId: string,
 	input: CreateRequestInput
 ): Promise<{ id: string }> {
 	const submitted = parseSubmittedContent(input.submitted_content);
+	assertOwnAttachment(userId, submitted);
 	const target = await resolveTarget(
 		input,
 		submitted.type === "report" ? submitted.question_id : null
@@ -138,6 +178,7 @@ export async function reviseRequest(
 	input: { id: string; submitted_content: unknown }
 ) {
 	const submitted = parseSubmittedContent(input.submitted_content);
+	assertOwnAttachment(userId, submitted);
 
 	await getDb().transaction(async tx => {
 		const existing = await findRequestOrThrow(tx, input.id);

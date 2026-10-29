@@ -23,12 +23,22 @@ const { entries } = JSON.parse(
 const client = new pg.Client({ connectionString: url, ssl: false });
 await client.connect();
 
+// The same table drizzle-kit creates, so an empty database can start from the baseline.
+await client.query(
+	"create schema if not exists drizzle; create table if not exists drizzle.__drizzle_migrations (id serial primary key, hash text not null, created_at bigint)"
+);
 const { rows } = await client.query<{ created_at: string }>(
 	"select created_at from drizzle.__drizzle_migrations order by created_at desc limit 1"
 );
 // drizzle applies every migration newer than the last one recorded, by the journal's `when`.
 const last = rows[0] ? Number(rows[0].created_at) : 0;
-const pending = entries.filter(entry => entry.when > last);
+const toIndex = process.argv.indexOf("--to");
+const to = toIndex === -1 ? undefined : process.argv[toIndex + 1];
+if (to !== undefined && !entries.some(entry => entry.tag === to))
+	throw new Error(`--to ${to}: nessuna migration con questo nome nel journal.`);
+const stop =
+	to === undefined ? Infinity : entries.find(entry => entry.tag === to)!.when;
+const pending = entries.filter(entry => entry.when > last && entry.when <= stop);
 const lastApplied = [...entries].reverse().find(entry => entry.when <= last);
 
 console.log(`Database: ${new URL(url).host}${new URL(url).pathname}`);

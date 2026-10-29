@@ -6,9 +6,11 @@ import { Link } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 
 import { AuthCard } from "./auth-card";
+import { ForgotPasswordForm } from "./forgot-password-form";
 import { LoginForm } from "./login-form";
 import { OAuthButtons } from "./oauth-buttons";
 import { RegisterForm } from "./register-form";
+import { ResetPasswordForm } from "./reset-password-form";
 
 const meta = {
 	title: "Auth/Accesso",
@@ -86,6 +88,35 @@ export const Register: Story = {
 					Hai già un account?
 				</Footer>
 			</div>
+		</AuthCard>
+	),
+};
+
+export const ForgotPassword: Story = {
+	name: "Password dimenticata",
+	render: () => (
+		<AuthCard
+			title="Password dimenticata"
+			description="Ti mandiamo un link per sceglierne una nuova"
+		>
+			<div className="grid gap-6">
+				<ForgotPasswordForm />
+				<Footer to="/auth/login" label="Torna al login">
+					{null}
+				</Footer>
+			</div>
+		</AuthCard>
+	),
+};
+
+export const ResetPassword: Story = {
+	name: "Nuova password",
+	render: () => (
+		<AuthCard
+			title="Scegli una nuova password"
+			description="Dopo il cambio, le sessioni aperte sugli altri dispositivi vengono chiuse"
+		>
+			<ResetPasswordForm token="story" />
 		</AuthCard>
 	),
 };

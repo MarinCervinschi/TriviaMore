@@ -8,12 +8,13 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 |---|---|---|
 | `VITE_SUPABASE_URL` | Client + Server | `supabase status` → Project URL (local: `http://127.0.0.1:54321`) |
 | `VITE_SUPABASE_ANON_KEY` | Client + Server | `supabase status` → Publishable key (`sb_publishable_...`) |
-| `SUPABASE_INTERNAL_URL` | Server only | Kong on the Docker network, for the server's session checks (`prod`/`staging`: `http://supabase-kong-jkk044s048kkcs848osggg0g:8000`). Unset locally, which falls back to `VITE_SUPABASE_URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | `supabase status` → Secret key (`sb_secret_...`) |
-| `VITE_APP_URL` | Server only | App URL for OAuth redirects (default `http://localhost:3000`) |
+| `BETTER_AUTH_URL` | Server only | The app's own origin, used in the links Better Auth emails and in the OAuth callbacks (local: `http://localhost:3000`) |
+| `BETTER_AUTH_SECRET` | Server only | Signs the session cookies; at least 32 random characters, one per environment (`openssl rand -base64 32`) |
+| `AUTH_ALLOWED_EMAIL_DOMAIN` | Server only | Staging only: `trivia-more.it`. Turns off password sign-up and admits only verified addresses of that domain |
 | `VITE_SITE_URL` | Client + Server | Canonical site URL (default `https://www.trivia-more.it`) |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app — optional locally |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth app — optional locally |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app, callback `<BETTER_AUTH_URL>/api/auth/callback/github` — optional locally |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth client, redirect URI `<BETTER_AUTH_URL>/api/auth/callback/google` — optional locally |
 | `MAINTENANCE_MODE` | Server only | `true` to redirect every route to the Coming Soon page |
 | `SEQ_URL` | Server only | Seq ingestion base URL — **unset means logs go to the console** |
 | `SEQ_API_KEY` | Server only | Seq API key, one per environment — see `docs/OBSERVABILITY.md` |

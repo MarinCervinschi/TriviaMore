@@ -10,10 +10,12 @@ import { departmentAdmins } from "../internal/department-admins"
 import { legalAcceptances } from "../internal/legal-acceptances"
 import { sectionAccess } from "../internal/section-access"
 import { quizAttempts } from "../quiz/quiz-attempts"
+import { accounts } from "./accounts"
 import { achievements } from "./achievements"
 import { bookmarks } from "./bookmarks"
 import { notifications } from "./notifications"
 import { profiles } from "./profiles"
+import { sessions } from "./sessions"
 import { userChangelogReads } from "./user-changelog-reads"
 import { userAchievements } from "./user-achievements"
 import { userClasses } from "./user-classes"
@@ -22,6 +24,7 @@ import { userQuestionStats } from "./user-question-stats"
 import { userSectionStats } from "./user-section-stats"
 import { userStats } from "./user-stats"
 import { userRecentClasses } from "./user-recent-classes"
+import { users } from "./users"
 
 export const profilesRelations = relations(profiles, ({ one, many }) => ({
   departmentAdmins: many(departmentAdmins),
@@ -145,4 +148,17 @@ export const userQuestionStatsRelations = relations(userQuestionStats, ({ one })
 
 export const userDayActivityRelations = relations(userDayActivity, ({ one }) => ({
   user: one(profiles, { fields: [userDayActivity.userId], references: [profiles.id] }),
+}))
+
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
+}))
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] }),
+}))
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }))

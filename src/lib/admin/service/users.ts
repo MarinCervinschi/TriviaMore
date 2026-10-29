@@ -1,4 +1,14 @@
-import { and, asc, count, countDistinct, desc, eq, isNotNull, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	countDistinct,
+	desc,
+	eq,
+	isNotNull,
+	isNull,
+	sql,
+} from "drizzle-orm";
 
 import { getDb } from "@/db";
 import {
@@ -13,6 +23,8 @@ import {
 	sections,
 } from "@/db/schema";
 import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards";
+import { removeStoredAvatar } from "@/lib/avatar/service";
+import { log } from "@/lib/logging/server";
 import { createNotification } from "@/lib/notifications/service";
 import {
 	Conflict,
@@ -21,7 +33,7 @@ import {
 	Unavailable,
 	rethrowUniqueViolation,
 } from "@/lib/server/errors";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { deleteObjects } from "@/lib/storage/server";
 
 import type {
 	CourseMaintainerInput,
@@ -31,8 +43,10 @@ import type {
 	UserRoleInput,
 } from "../schemas";
 import type { AdminUser, AdminUserDetail, AdminUserStats } from "../types";
+import { anonymizeUser } from "./anonymize";
 
 const completed = isNotNull(quizAttempts.completedAt);
+const active = isNull(profiles.anonymizedAt);
 
 export async function getAdminUsers(): Promise<AdminUser[]> {
 	await requireSuperadmin();
@@ -49,6 +63,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
 		})
 		.from(profiles)
 		.leftJoin(quizAttempts, and(eq(quizAttempts.userId, profiles.id), completed))
+		.where(active)
 		.groupBy(profiles.id)
 		.orderBy(desc(profiles.createdAt));
 }
@@ -67,7 +82,7 @@ export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
 			createdAt: profiles.createdAt,
 		})
 		.from(profiles)
-		.where(eq(profiles.id, id))
+		.where(and(eq(profiles.id, id), active))
 		.limit(1);
 	if (!profile) throw new NotFound("Utente non trovato");
 
@@ -134,6 +149,7 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
 		db
 			.select({ role: profiles.role, count: count() })
 			.from(profiles)
+			.where(active)
 			.groupBy(profiles.role),
 		db
 			.select({
@@ -345,16 +361,19 @@ export async function removeSectionAccess(input: SectionAccessInput) {
 		);
 }
 
-// The profile row is deleted by the cascade from auth.users.
 export async function deleteUser(id: string) {
 	const currentUser = await requireSuperadmin();
 	if (currentUser.id === id) {
 		throw new Forbidden("Non puoi eliminare il tuo stesso account");
 	}
 
-	const { error } = await getSupabaseAdmin().auth.admin.deleteUser(id);
-	if (error) {
-		throw new Unavailable("Errore nell'eliminazione dell'utente: " + error.message);
+	const files = await getDb().transaction(tx => anonymizeUser(tx, id));
+
+	try {
+		await removeStoredAvatar(id, files.avatar);
+		await deleteObjects("contributions", files.attachments);
+	} catch (error) {
+		log.error("Files of anonymized user {UserId} not removed", { UserId: id }, error);
 	}
 }
 

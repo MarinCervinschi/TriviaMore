@@ -16,8 +16,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { getInitials } from "@/lib/user/utils";
 import { cn } from "@/lib/utils";
 
+import { SIGN_OUT_URL } from "~/lib/auth/sign-out";
 import type { ConsoleAccount } from "~/lib/auth/types";
-import { useSignOut } from "~/lib/auth/use-sign-out";
 import { NAV, type NavSection } from "~/lib/nav";
 
 const RAIL_ITEM =
@@ -76,8 +76,6 @@ export function Rail({
 }
 
 function AccountMenu({ account }: { account: ConsoleAccount }) {
-	const signOut = useSignOut();
-
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -102,9 +100,11 @@ function AccountMenu({ account }: { account: ConsoleAccount }) {
 					)}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onSelect={() => void signOut()}>
-					<Logout2Icon className="size-4" />
-					Esci
+				<DropdownMenuItem asChild>
+					<a href={SIGN_OUT_URL}>
+						<Logout2Icon className="size-4" />
+						Esci
+					</a>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
