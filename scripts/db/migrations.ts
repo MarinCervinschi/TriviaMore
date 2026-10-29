@@ -32,7 +32,13 @@ const { rows } = await client.query<{ created_at: string }>(
 );
 // drizzle applies every migration newer than the last one recorded, by the journal's `when`.
 const last = rows[0] ? Number(rows[0].created_at) : 0;
-const pending = entries.filter(entry => entry.when > last);
+const toIndex = process.argv.indexOf("--to");
+const to = toIndex === -1 ? undefined : process.argv[toIndex + 1];
+if (to !== undefined && !entries.some(entry => entry.tag === to))
+	throw new Error(`--to ${to}: nessuna migration con questo nome nel journal.`);
+const stop =
+	to === undefined ? Infinity : entries.find(entry => entry.tag === to)!.when;
+const pending = entries.filter(entry => entry.when > last && entry.when <= stop);
 const lastApplied = [...entries].reverse().find(entry => entry.when <= last);
 
 console.log(`Database: ${new URL(url).host}${new URL(url).pathname}`);
