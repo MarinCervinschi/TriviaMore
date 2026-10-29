@@ -10,3 +10,5 @@ export TF_VAR_console_owner_email="${CONSOLE_OWNER_EMAIL:?add CONSOLE_OWNER_EMAI
 export INFISICAL_HOST="${TF_INFISICAL_HOST:?add TF_INFISICAL_HOST to cervinschi-infra → /trivia-more/terraform}"
 export INFISICAL_UNIVERSAL_AUTH_CLIENT_ID="${TF_INFISICAL_CLIENT_ID:?add TF_INFISICAL_CLIENT_ID to cervinschi-infra → /trivia-more/terraform}"
 export INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET="${TF_INFISICAL_CLIENT_SECRET:?add TF_INFISICAL_CLIENT_SECRET to cervinschi-infra → /trivia-more/terraform}"
+export TF_VAR_postgres_password="${PROD_POSTGRES_PASSWORD:?add PROD_POSTGRES_PASSWORD to cervinschi-infra → /trivia-more/prod}"
+export TF_VAR_savvy_tailnet_host="${SAVVY_TAILNET_HOST:?add SAVVY_TAILNET_HOST to cervinschi-infra → /trivia-more/prod}"

@@ -30,7 +30,7 @@ Infisical CLI signed in, `INFISICAL_INFRA_PROJECT_ID` exported with the id of `c
 | `infisical/` | the Infisical projects of the app (`TriviaMore` for production, `trivia-more-staging` for staging and local runs), their environments, folders, identities and memberships, and the settings that are not secrets. State `triviamore-infisical.tfstate` |
 | `modules/app/` | an application built from GitHub by Coolify, with its runtime variables |
 | `modules/access/` | a proxied DNS record and the Cloudflare Access application and policy in front of it, with an optional bypass for the ACME challenge |
-| `envs/prod/` | the console's server and worker on the VPS, built from `prod` so they ship with a release, after its migrations, `admin.trivia-more.it`, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
+| `envs/prod/` | the console's server and worker on the VPS, built from `prod` so they ship with a release, after its migrations, `admin.trivia-more.it`, the Postgres that replaces Supabase's (#212) with its nightly backup to rieti, and `moved.tf` for the move into modules. State `triviamore.tfstate` |
 | `envs/staging/` | on `rieti`: the `staging` environment, its Postgres, the app, the tunnel with `pr.trivia-more.it` and `mail-pr.trivia-more.it` behind Access and `media-pr.trivia-more.it`, and Mailpit. State `triviamore-staging.tfstate` |
 
 Each root has `versions.tf` (providers and the R2 backend), `providers.tf`, `discovery.tf` (the projects
@@ -56,6 +56,8 @@ repo, so a rename does not reach the scripts. Every TriviaMore root reads the sh
 | `/trivia-more/prod` | `CONSOLE_INFISICAL_CLIENT_ID`, `CONSOLE_INFISICAL_CLIENT_SECRET` | the console's machine identity, which the container uses to read its own secrets |
 | `/trivia-more/prod` | `CONSOLE_SEQ_API_KEY`, `CONSOLE_WORKER_SEQ_API_KEY` | the Seq keys of the server and the worker, set on each as `SEQ_SERVICE_API_KEY` |
 | `/trivia-more/prod` | `SAVVY_PUBLIC_IP` | the VPS's public address, where `admin.trivia-more.it` and `media.trivia-more.it` point behind Cloudflare's proxy |
+| `/trivia-more/prod` | `PROD_POSTGRES_PASSWORD` | the `postgres` user of the production database |
+| `/trivia-more/prod` | `SAVVY_TAILNET_HOST` | savvy's address on the tailnet, the only one the database's forwarder listens on |
 | `/trivia-more/staging` | `STAGING_POSTGRES_PASSWORD` | the `postgres` user of the staging database |
 | `/trivia-more/staging` | `STAGING_APP_DB_PASSWORD` | `trivia_app` on the staging database, set by `db:reset-staging`, and in the `DATABASE_URL` the staging root publishes |
 | `/trivia-more/staging` | `STAGING_DATABASE_URL` | the admin URL `db:migrate:staging` and `db:reset-staging` use |
@@ -109,6 +111,18 @@ joins. Cloudflare holds the certificate, so no ACME bypass is needed.
 `envs/prod/secrets.tf` writes `BETTER_AUTH_SECRET` to `TriviaMore` → `prod` → `/auth`, and `infra/infisical`
 writes `BETTER_AUTH_URL` there. The rest of production's secrets were typed by hand and stay so; the Google and
 GitHub clients in `/auth` are changed in the UI.
+
+## The production database
+
+`database.tf` holds a plain Postgres 17, a standalone Coolify database because Coolify's API schedules backups
+only for those. Its container is named after its uuid on the `coolify` network, where the app and Drizzle Gateway
+reach it. It has no public port: Coolify's would listen on every address of the VPS, and Docker's port rules
+come before the firewall. The tailnet reaches it through `trivia-more:db-tailnet`, a socat forwarder bound to
+`SAVVY_TAILNET_HOST:5432` only.
+
+Coolify dumps it every night at 03:00 and uploads the dump to the `rieti` S3 storage, the backup Garage that
+`cervinschi-infra` registers (`envs/hub/backup.tf`): 3 copies kept on savvy, 30 on rieti, and a notification
+after two nights without one.
 
 ## The console on its domain
 

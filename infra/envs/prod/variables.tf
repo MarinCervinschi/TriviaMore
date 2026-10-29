@@ -40,3 +40,14 @@ variable "console_worker_seq_api_key" {
   type      = string
   sensitive = true
 }
+
+variable "postgres_password" {
+  type        = string
+  sensitive   = true
+  description = "The postgres user of the production database."
+}
+
+variable "savvy_tailnet_host" {
+  type        = string
+  description = "savvy's address on the tailnet, the only one the database's forwarder listens on."
+}
