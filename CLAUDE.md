@@ -30,7 +30,8 @@ questions.
 ## Architecture
 
 `createServerFn` is the only API the browser talks to. The client never queries the database
-directly; the one exception is a Storage upload in `src/components/requests/request-form.tsx`.
+directly, and its files reach S3 through a server function too; private attachments are read through
+`src/routes/api/requests/$requestId/attachment.ts`.
 
 ```
 src/lib/<domain>/api/<endpoint>.ts   one server function per file — the API surface
@@ -96,7 +97,8 @@ Every query runs through Drizzle on a direct connection, as the service role. **
 filters anything** — a read that used to be narrowed by a policy has to say so in a where clause.
 This caused three near-regressions during the migration; check `pg_policies` before trusting a query
 ported from the old code. Authentication is Better Auth inside the app (`src/lib/auth/server.ts`).
-Storage stays on supabase-js until #210, and is all `src/lib/supabase/` still contains, with the console's login.
+Files are on Garage, an S3 store reached only from the tailnet, through `src/lib/storage/server.ts`;
+public ones are served on `S3_PUBLIC_URL`.
 
 **Supabase is on its way out** (`docs/PLATFORM.md`): plain Postgres, a self-hosted S3 store, Better Auth
 inside the app, and a staging environment on the `rieti` server where every change lands first. Read

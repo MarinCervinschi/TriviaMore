@@ -6,7 +6,7 @@ import { applyApprovedRequest } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { getObject } from "@/lib/storage/server";
 
 import type {
 	AdminContentRequest,
@@ -286,13 +286,23 @@ export async function acknowledgeRequest(input: { id: string; admin_note?: strin
 	evaluateAchievementsInBackground(authorId);
 }
 
-export async function getFileDownloadUrl(filePath: string): Promise<string> {
-	if (filePath.includes("..")) throw new Invalid("Percorso file non valido");
+/** The path comes from the request, never from the browser, and the reader must be in its scope. */
+export async function readAttachment(
+	id: string
+): Promise<{ body: ReadableStream | null; contentType: string; fileName: string }> {
+	const db = getDb();
+	const { scopeCourseIds } = await requireRequestAdmin();
+	const request = await findRequestOrThrow(db, id);
+	await assertInScope(db, scopeCourseIds, request);
 
-	const { data, error } = await getSupabaseAdmin()
-		.storage.from("contributions")
-		.createSignedUrl(filePath, 3600);
+	const submitted = parseSubmittedContent(request.submittedContent);
+	if (submitted.type !== "file_upload")
+		throw new NotFound("La proposta non ha un file");
 
-	if (error || !data?.signedUrl) throw new NotFound("Errore nel download del file");
-	return data.signedUrl;
+	const object = await getObject("contributions", submitted.file_path);
+	return {
+		body: object.body,
+		contentType: object.headers.get("content-type") ?? "application/octet-stream",
+		fileName: submitted.file_name,
+	};
 }
