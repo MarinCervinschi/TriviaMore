@@ -60,6 +60,7 @@ import { Route as AppBrowseDepartmentIndexRouteImport } from './routes/_app/brow
 import { Route as AppAdminUsersIndexRouteImport } from './routes/_app/admin/users/index'
 import { Route as AppAdminRequestsIndexRouteImport } from './routes/_app/admin/requests/index'
 import { Route as AppAdminDepartmentsIndexRouteImport } from './routes/_app/admin/departments/index'
+import { Route as ApiRequestsRequestIdAttachmentRouteImport } from './routes/api/requests/$requestId/attachment'
 import { Route as AppUserCareerForecastRouteImport } from './routes/_app/user/career/forecast'
 import { Route as AppUserCareerExamsRouteImport } from './routes/_app/user/career/exams'
 import { Route as AppUserAnalyticsHistoryRouteImport } from './routes/_app/user/analytics/history'
@@ -339,6 +340,12 @@ const AppAdminDepartmentsIndexRoute =
     path: '/departments/',
     getParentRoute: () => AppAdminRouteRoute,
   } as any)
+const ApiRequestsRequestIdAttachmentRoute =
+  ApiRequestsRequestIdAttachmentRouteImport.update({
+    id: '/api/requests/$requestId/attachment',
+    path: '/api/requests/$requestId/attachment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppUserCareerForecastRoute = AppUserCareerForecastRouteImport.update({
   id: '/forecast',
   path: '/forecast',
@@ -510,6 +517,7 @@ export interface FileRoutesByFullPath {
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/user/career/exams': typeof AppUserCareerExamsRoute
   '/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/admin/users/': typeof AppAdminUsersIndexRoute
@@ -580,6 +588,7 @@ export interface FileRoutesByTo {
   '/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/user/career/exams': typeof AppUserCareerExamsRoute
   '/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/admin/departments': typeof AppAdminDepartmentsIndexRoute
   '/admin/requests': typeof AppAdminRequestsIndexRoute
   '/admin/users': typeof AppAdminUsersIndexRoute
@@ -655,6 +664,7 @@ export interface FileRoutesById {
   '/_app/user/analytics/history': typeof AppUserAnalyticsHistoryRoute
   '/_app/user/career/exams': typeof AppUserCareerExamsRoute
   '/_app/user/career/forecast': typeof AppUserCareerForecastRoute
+  '/api/requests/$requestId/attachment': typeof ApiRequestsRequestIdAttachmentRoute
   '/_app/admin/departments/': typeof AppAdminDepartmentsIndexRoute
   '/_app/admin/requests/': typeof AppAdminRequestsIndexRoute
   '/_app/admin/users/': typeof AppAdminUsersIndexRoute
@@ -730,6 +740,7 @@ export interface FileRouteTypes {
     | '/user/analytics/history'
     | '/user/career/exams'
     | '/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/admin/departments/'
     | '/admin/requests/'
     | '/admin/users/'
@@ -800,6 +811,7 @@ export interface FileRouteTypes {
     | '/user/analytics/history'
     | '/user/career/exams'
     | '/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/admin/departments'
     | '/admin/requests'
     | '/admin/users'
@@ -874,6 +886,7 @@ export interface FileRouteTypes {
     | '/_app/user/analytics/history'
     | '/_app/user/career/exams'
     | '/_app/user/career/forecast'
+    | '/api/requests/$requestId/attachment'
     | '/_app/admin/departments/'
     | '/_app/admin/requests/'
     | '/_app/admin/users/'
@@ -911,6 +924,7 @@ export interface RootRouteChildren {
   FlashcardSessionIdRoute: typeof FlashcardSessionIdRoute
   QuizQuizIdRoute: typeof QuizQuizIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRequestsRequestIdAttachmentRoute: typeof ApiRequestsRequestIdAttachmentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1272,6 +1286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDepartmentsIndexRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/api/requests/$requestId/attachment': {
+      id: '/api/requests/$requestId/attachment'
+      path: '/api/requests/$requestId/attachment'
+      fullPath: '/api/requests/$requestId/attachment'
+      preLoaderRoute: typeof ApiRequestsRequestIdAttachmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/user/career/forecast': {
       id: '/_app/user/career/forecast'
       path: '/forecast'
@@ -1604,6 +1625,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlashcardSessionIdRoute: FlashcardSessionIdRoute,
   QuizQuizIdRoute: QuizQuizIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiRequestsRequestIdAttachmentRoute: ApiRequestsRequestIdAttachmentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -70,10 +70,11 @@ images, same 14 containers).
 
 ### A self-hosted S3 store
 
-Garage is the first candidate: one binary, sized for small installations, presigned uploads supported. Its
-narrower permission model and path-style-only addressing are checked during the staging phase; SeaweedFS is the
-fallback. Browser uploads use URLs signed by a server function, which also enforces what the storage policies
-enforce today. Public files are served from a domain of ours.
+Garage: one binary, sized for small installations. Production uses the shared Garage on savvy, staging the backup
+Garage on rieti, and both expose their S3 API on the tailnet only. So the browser never talks to S3: uploads go
+through a server function, which checks the bytes and chooses the key, and private attachments are streamed by the
+app after the same scope check as the request they belong to. Public files are served by Garage's web endpoint on
+`media.trivia-more.it` (`media-pr.trivia-more.it` on staging).
 
 ### A staging environment on `rieti`
 

@@ -79,6 +79,15 @@ export function parseSubmittedContent(raw: unknown): SubmittedContent {
 	return result.data as SubmittedContent;
 }
 
+/** An attachment is stored under its author's folder, so a request cannot point at someone else's file. */
+export function assertOwnAttachment(userId: string, submitted: SubmittedContent) {
+	if (submitted.type !== "file_upload") return;
+	const path = submitted.file_path;
+	if (!path.startsWith(`${userId}/`) || path.includes("..")) {
+		throw new Invalid("Percorso file non valido");
+	}
+}
+
 const REPORT_REASON_LABELS: Record<string, string> = {
 	errata: "Errata",
 	imprecisa: "Imprecisa",

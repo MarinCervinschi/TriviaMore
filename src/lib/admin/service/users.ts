@@ -33,7 +33,7 @@ import {
 	Unavailable,
 	rethrowUniqueViolation,
 } from "@/lib/server/errors";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { deleteObjects } from "@/lib/storage/server";
 
 import type {
 	CourseMaintainerInput,
@@ -371,12 +371,7 @@ export async function deleteUser(id: string) {
 
 	try {
 		await removeStoredAvatar(id, files.avatar);
-		if (files.attachments.length > 0) {
-			const { error } = await getSupabaseAdmin()
-				.storage.from("contributions")
-				.remove(files.attachments);
-			if (error) throw error;
-		}
+		await deleteObjects("contributions", files.attachments);
 	} catch (error) {
 		log.error("Files of anonymized user {UserId} not removed", { UserId: id }, error);
 	}

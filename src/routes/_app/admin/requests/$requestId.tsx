@@ -31,7 +31,6 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options";
-import { getFileDownloadUrlFn } from "@/lib/requests/api";
 import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations";
 import { requestQueries } from "@/lib/requests/queries";
 import type {
@@ -248,6 +247,7 @@ function AdminRequestDetailPage() {
 					)}
 				</div>
 				<MaterialPreview
+					requestId={request.id}
 					submitted={submitted}
 					reportedQuestion={request.reportedQuestion ?? null}
 				/>
@@ -308,14 +308,16 @@ function formatFileSize(bytes: number): string {
 }
 
 function MaterialPreview({
+	requestId,
 	submitted,
 	reportedQuestion,
 }: {
+	requestId: string;
 	submitted: SubmittedContent;
 	reportedQuestion?: ReportedQuestion | null;
 }) {
 	if (submitted.type === "file_upload") {
-		return <FileUploadPreview file={submitted} />;
+		return <FileUploadPreview requestId={requestId} file={submitted} />;
 	}
 
 	if (submitted.type === "report") {
@@ -549,16 +551,20 @@ function ReportedQuestionCard({ question }: { question: ReportedQuestion }) {
 	);
 }
 
-function FileUploadPreview({ file }: { file: SubmittedFileUpload }) {
+function FileUploadPreview({
+	requestId,
+	file,
+}: {
+	requestId: string;
+	file: SubmittedFileUpload;
+}) {
 	const [downloading, setDownloading] = useState(false);
 
 	async function handleDownload() {
 		setDownloading(true);
 		try {
-			const signedUrl = await getFileDownloadUrlFn({
-				data: { filePath: file.file_path },
-			});
-			const response = await fetch(signedUrl);
+			const response = await fetch(`/api/requests/${requestId}/attachment`);
+			if (!response.ok) throw new Error(await response.text());
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement("a");

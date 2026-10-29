@@ -1,11 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import {
-	confirmUploadedAvatarFn,
-	createAvatarUploadUrlFn,
-	setGeneratedAvatarFn,
-} from "./api";
+import { setGeneratedAvatarFn, uploadAvatarFn } from "./api";
 import { resizeForAvatar } from "./resize";
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp"] as const;
@@ -30,7 +26,7 @@ export function useSetGeneratedAvatar() {
 	});
 }
 
-/** The server signs the upload, the browser sends the bytes, and the server commits them. */
+/** The browser downscales the picture and sends the bytes; the server checks and stores them. */
 export function useUploadAvatar() {
 	const queryClient = useQueryClient();
 
@@ -43,21 +39,10 @@ export function useUploadAvatar() {
 				throw new Error("L'immagine supera i 20 MB.");
 			}
 
-			const resized = await resizeForAvatar(file);
-			const contentType = "image/webp" as const;
+			const form = new FormData();
+			form.append("file", await resizeForAvatar(file), "avatar.webp");
 
-			const { bucket, path, token } = await createAvatarUploadUrlFn({
-				data: { contentType },
-			});
-
-			const { createClient } = await import("@/lib/supabase/client");
-			const { error } = await createClient()
-				.storage.from(bucket)
-				.uploadToSignedUrl(path, token, resized, { contentType });
-
-			if (error) throw new Error("Caricamento non riuscito. Riprova.");
-
-			return confirmUploadedAvatarFn({ data: { path } });
+			return uploadAvatarFn({ data: form });
 		},
 		onSuccess: () => {
 			invalidateProfile(queryClient);
