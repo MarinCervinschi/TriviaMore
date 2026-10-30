@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ConsoleRouteRouteImport } from './routes/_console/route'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
 import { Route as ApiProxyRouteImport } from './routes/api/proxy'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ConsoleApisRouteImport } from './routes/_console/apis'
 import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
 import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
@@ -39,6 +40,11 @@ const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
 const ApiProxyRoute = ApiProxyRouteImport.update({
   id: '/api/proxy',
   path: '/api/proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsoleApisRoute = ConsoleApisRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
   '/activity': typeof ConsoleActivityRoute
   '/apis': typeof ConsoleApisRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/proxy': typeof ApiProxyRoute
   '/jobs/runs': typeof ConsoleJobsRunsRoute
   '/jobs/schedules': typeof ConsoleJobsSchedulesRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/activity': typeof ConsoleActivityRoute
   '/apis': typeof ConsoleApisRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/proxy': typeof ApiProxyRoute
   '/': typeof ConsoleIndexRoute
   '/jobs/runs': typeof ConsoleJobsRunsRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/_console': typeof ConsoleRouteRouteWithChildren
   '/_console/activity': typeof ConsoleActivityRoute
   '/_console/apis': typeof ConsoleApisRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/proxy': typeof ApiProxyRoute
   '/_console/': typeof ConsoleIndexRoute
   '/_console/jobs/runs': typeof ConsoleJobsRunsRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/activity'
     | '/apis'
+    | '/api/health'
     | '/api/proxy'
     | '/jobs/runs'
     | '/jobs/schedules'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
   to:
     | '/activity'
     | '/apis'
+    | '/api/health'
     | '/api/proxy'
     | '/'
     | '/jobs/runs'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/_console'
     | '/_console/activity'
     | '/_console/apis'
+    | '/api/health'
     | '/api/proxy'
     | '/_console/'
     | '/_console/jobs/runs'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ConsoleRouteRoute: typeof ConsoleRouteRouteWithChildren
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiProxyRoute: typeof ApiProxyRoute
 }
 
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/api/proxy'
       fullPath: '/api/proxy'
       preLoaderRoute: typeof ApiProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_console/apis': {
@@ -398,6 +418,7 @@ const ConsoleRouteRouteWithChildren = ConsoleRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   ConsoleRouteRoute: ConsoleRouteRouteWithChildren,
+  ApiHealthRoute: ApiHealthRoute,
   ApiProxyRoute: ApiProxyRoute,
 }
 export const routeTree = rootRouteImport

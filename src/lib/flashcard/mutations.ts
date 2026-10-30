@@ -2,6 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { track } from "@/lib/analytics/track";
+
 import { startExamFlashcardFn, startFlashcardFn } from "./api";
 
 export function useStartFlashcard(onSuccess?: () => void) {
@@ -10,7 +12,8 @@ export function useStartFlashcard(onSuccess?: () => void) {
 	return useMutation({
 		mutationFn: (data: { sectionId: string; cardCount: number }) =>
 			startFlashcardFn({ data }),
-		onSuccess: result => {
+		onSuccess: (result, data) => {
+			track("flashcard_avviate", { esame: false, carte: data.cardCount });
 			onSuccess?.();
 			navigate({
 				to: "/flashcard/$sessionId",
@@ -29,7 +32,8 @@ export function useStartExamFlashcard(onSuccess?: () => void) {
 	return useMutation({
 		mutationFn: (data: { sectionId: string; cardCount: number }) =>
 			startExamFlashcardFn({ data }),
-		onSuccess: result => {
+		onSuccess: (result, data) => {
+			track("flashcard_avviate", { esame: true, carte: data.cardCount });
 			onSuccess?.();
 			navigate({
 				to: "/flashcard/$sessionId",

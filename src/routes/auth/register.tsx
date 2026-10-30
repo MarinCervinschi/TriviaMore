@@ -29,7 +29,7 @@ function RegisterPage() {
 						</span>
 					</div>
 				</div>
-				<OAuthButtons />
+				<OAuthButtons event="registrazione" />
 				<p className="text-muted-foreground text-center text-sm">
 					Hai già un account?{" "}
 					<Link

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useMutationWithToast } from "@/hooks/useMutationWithToast";
+import { track, tracked } from "@/lib/analytics/track";
 import { toastUndo } from "@/lib/toast";
 
 import {
@@ -25,6 +26,7 @@ export function useAddClass() {
 		mutationFn: ({ classId, courseId }: { classId: string; courseId: string }) =>
 			addUserClassFn({ data: { classId, courseId } }),
 		onSuccess: () => {
+			track("insegnamento", { azione: "aggiunto" });
 			for (const key of CLASS_INVALIDATE_KEYS) {
 				queryClient.invalidateQueries({ queryKey: key });
 			}
@@ -49,6 +51,7 @@ export function useRemoveClass() {
 		mutationFn: ({ classId }: { classId: string; courseId: string | null }) =>
 			removeUserClassFn({ data: { classId } }),
 		onSuccess: (_result, { classId, courseId }) => {
+			track("insegnamento", { azione: "tolto" });
 			invalidate();
 			// Re-adding needs the course, so a row that has lost it cannot be put back.
 			if (!courseId) {
@@ -89,6 +92,7 @@ export function useToggleBookmark() {
 	return useMutation({
 		mutationFn: (questionId: string) => toggleBookmarkFn({ data: { questionId } }),
 		onSuccess: (result, questionId) => {
+			track("segnalibro", { azione: result.action === "added" ? "aggiunto" : "tolto" });
 			invalidate();
 			// A toggle is its own inverse, so the reversal is the same call again.
 			toastUndo(
@@ -108,7 +112,9 @@ export function useToggleBookmark() {
 
 export function useAttemptFavorite() {
 	return useMutationWithToast<{ attemptId: string; isFavorite: boolean }, unknown>(
-		setAttemptFavoriteFn,
+		tracked(setAttemptFavoriteFn, input =>
+			track("preferito", { azione: input.data.isFavorite ? "aggiunto" : "tolto" })
+		),
 		{
 			successMessage: "Preferiti aggiornati",
 			invalidateKeys: [

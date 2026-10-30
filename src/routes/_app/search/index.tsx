@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { TabNav } from "@/components/ui/tab-nav";
 import { useDebounce } from "@/hooks/useDebounce";
+import { track } from "@/lib/analytics/track";
 import { browseQueries } from "@/lib/browse/queries";
 import { seoHead } from "@/lib/seo";
 
@@ -157,6 +158,16 @@ function SearchPage() {
 	const loading = coursesQuery.isFetching || classesQuery.isFetching;
 	const nothing =
 		asked && !loading && (courses?.total ?? 0) === 0 && (classes?.total ?? 0) === 0;
+
+	// Counted once the reader stops typing, and without the words, which could be anything.
+	useEffect(() => {
+		if (!nothing) return;
+		const timer = setTimeout(
+			() => track("ricerca_vuota", { ambito: kind, filtri: activeCount }),
+			2000
+		);
+		return () => clearTimeout(timer);
+	}, [nothing, search.q, kind, activeCount]);
 
 	const tabs = [
 		{ key: "tutto", label: "Tutto", badge: total(courses?.total, classes?.total) },

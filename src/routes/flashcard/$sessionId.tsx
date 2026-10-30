@@ -17,6 +17,7 @@ import { PageBand } from "@/components/layout/page-band";
 import { FlashcardSkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { track } from "@/lib/analytics/track";
 import { completeFlashcardFn, getFlashcardSessionFn } from "@/lib/flashcard/api";
 import type { FlashcardSession } from "@/lib/flashcard/types";
 import { reportBrowserError } from "@/lib/logging/browser";
@@ -98,6 +99,7 @@ function FlashcardPage() {
 		setShowResults(true);
 		if (!session || recordedRef.current) return;
 		recordedRef.current = true;
+		track("flashcard_completate", { carte: studiedCards.size });
 		completeFlashcardFn({
 			data: { sessionId: session.id, cardsReviewed: studiedCards.size },
 		})

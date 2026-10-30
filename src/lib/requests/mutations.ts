@@ -1,4 +1,5 @@
 import { useMutationWithToast } from "@/hooks/useMutationWithToast";
+import { track, tracked } from "@/lib/analytics/track";
 
 import {
 	acknowledgeRequestFn,
@@ -11,17 +12,22 @@ import {
 } from "./api";
 
 export function useCreateRequest(onSuccess?: () => void) {
-	return useMutationWithToast(createRequestFn, {
-		successMessage: "Proposta inviata con successo",
-		invalidateKeys: [
-			["requests", "mine"],
-			["admin", "requests"],
-			["admin", "requestCount"],
-			["notifications"],
-			["notifications", "unreadCount"],
-		],
-		onSuccess,
-	});
+	return useMutationWithToast(
+		tracked(createRequestFn, input =>
+			track("richiesta_inviata", { tipo: input.data.type })
+		),
+		{
+			successMessage: "Proposta inviata con successo",
+			invalidateKeys: [
+				["requests", "mine"],
+				["admin", "requests"],
+				["admin", "requestCount"],
+				["notifications"],
+				["notifications", "unreadCount"],
+			],
+			onSuccess,
+		}
+	);
 }
 
 export function useReviseRequest(onSuccess?: () => void) {

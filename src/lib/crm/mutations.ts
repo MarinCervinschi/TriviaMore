@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { track, tracked } from "@/lib/analytics/track";
+
 import {
 	addCareerExamFn,
 	createEventFn,
@@ -39,7 +41,8 @@ export function useSetEnrollment() {
 
 	return useMutation({
 		mutationFn: (data: SetEnrollmentInput) => setEnrollmentFn({ data }),
-		onSuccess: () => {
+		onSuccess: (_output, data) => {
+			track("corso_di_studi", { curriculum: Boolean(data.curriculumId) });
 			queryClient.invalidateQueries({ queryKey: ["crm"] });
 			// The course page opens on the student's own cohort.
 			queryClient.invalidateQueries({ queryKey: ["browse", "course"] });
@@ -71,7 +74,10 @@ function useCareerMutation<TInput, TOutput>(
 
 export const usePrefillCareer = () =>
 	useCareerMutation(
-		() => prefillCareerFn(),
+		tracked(
+			() => prefillCareerFn(),
+			(_input, { added }) => track("libretto_precompilato", { esami: added })
+		),
 		({ added }) =>
 			added === 0
 				? "Il libretto ha già tutti gli esami obbligatori del piano"
@@ -80,19 +86,42 @@ export const usePrefillCareer = () =>
 
 export const useAddCareerExam = () =>
 	useCareerMutation(
-		(data: AddCareerExamInput) => addCareerExamFn({ data }),
+		tracked(
+			(data: AddCareerExamInput) => addCareerExamFn({ data }),
+			data =>
+				track("esame_aggiunto", {
+					origine:
+						"groupCode" in data
+							? "scelta"
+							: data.external
+								? "esterno"
+								: data.classId
+									? "catalogo"
+									: "manuale",
+				})
+		),
 		() => "Esame aggiunto"
 	);
 
 export const useUpdateCareerExam = () =>
 	useCareerMutation(
-		(data: UpdateCareerExamInput) => updateCareerExamFn({ data }),
+		tracked(
+			(data: UpdateCareerExamInput) => updateCareerExamFn({ data }),
+			data => {
+				if (data.status === "PASSED")
+					track("esame_superato", { lode: Boolean(data.honours) });
+			}
+		),
 		() => "Esame salvato"
 	);
 
 export const useSetCareerChoices = () =>
 	useCareerMutation(
-		(data: SetCareerChoicesInput) => setCareerChoicesFn({ data }),
+		tracked(
+			(data: SetCareerChoicesInput) => setCareerChoicesFn({ data }),
+			(_input, { added, removed }) =>
+				track("scelte_piano", { aggiunti: added, tolti: removed })
+		),
 		({ added, removed }) => {
 			if (added + removed === 0) return "Le scelte erano già queste";
 			const parts = [
@@ -112,7 +141,10 @@ export const useRemoveCareerExam = () =>
 
 export const useUpdateCareerSettings = () =>
 	useCareerMutation(
-		(data: CareerSettings) => updateCareerSettingsFn({ data }),
+		tracked(
+			(data: CareerSettings) => updateCareerSettingsFn({ data }),
+			() => track("regole_media", {})
+		),
 		() => "Regole di calcolo salvate"
 	);
 
@@ -151,13 +183,22 @@ function useCalendarMutation<TInput, TOutput>(
 
 export const useCreateSitting = () =>
 	useCalendarMutation(
-		(data: CreateSittingInput) => createSittingFn({ data }),
+		tracked(
+			(data: CreateSittingInput) => createSittingFn({ data }),
+			data =>
+				track("appello_aggiunto", { importanza: data.importance, scelto: data.chosen })
+		),
 		"Appello aggiunto"
 	);
 
 export const useUpdateSitting = (message?: string) =>
 	useCalendarMutation(
-		(data: UpdateSittingInput) => updateSittingFn({ data }),
+		tracked(
+			(data: UpdateSittingInput) => updateSittingFn({ data }),
+			data => {
+				if (data.chosen) track("appello_scelto", {});
+			}
+		),
 		message,
 		(calendar, input) => {
 			const examId = calendar.sittings.find(row => row.id === input.id)?.examId;
@@ -187,7 +228,16 @@ export const useRemoveSitting = () =>
 
 export const useCreateEvent = () =>
 	useCalendarMutation(
-		(data: CreateEventInput) => createEventFn({ data }),
+		tracked(
+			(data: CreateEventInput) => createEventFn({ data }),
+			data =>
+				track("evento_creato", {
+					orario: Boolean(data.startTime),
+					piu_giorni: Boolean(data.endDate),
+					ricorrente: Boolean(data.recurrence),
+					esame: Boolean(data.examId),
+				})
+		),
 		"Evento aggiunto"
 	);
 
@@ -216,13 +266,25 @@ export const useRemoveEvent = () =>
 
 export const useCreateTask = () =>
 	useCalendarMutation(
-		(data: CreateTaskInput) => createTaskFn({ data }),
+		tracked(
+			(data: CreateTaskInput) => createTaskFn({ data }),
+			data =>
+				track("task_creata", {
+					orario: Boolean(data.dueTime),
+					esame: Boolean(data.examId),
+				})
+		),
 		"Task aggiunta"
 	);
 
 export const useUpdateTask = (message?: string) =>
 	useCalendarMutation(
-		(data: UpdateTaskInput) => updateTaskFn({ data }),
+		tracked(
+			(data: UpdateTaskInput) => updateTaskFn({ data }),
+			data => {
+				if (data.done) track("task_completata", {});
+			}
+		),
 		message,
 		(calendar, input) => ({
 			...calendar,

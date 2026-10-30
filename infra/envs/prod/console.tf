@@ -26,6 +26,7 @@ module "console" {
   git_branch          = "prod"
   dockerfile_location = "/admin-console/Dockerfile"
   ports_exposes       = "3100"
+  health_check_path   = "/api/health"
   domain              = local.console_host
   watch_paths         = local.console_watch_paths
 

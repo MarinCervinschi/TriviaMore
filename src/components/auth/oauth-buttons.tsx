@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { GoogleIcon, Spinner } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { track } from "@/lib/analytics/track";
 import { oauthSignInFn } from "@/lib/auth/api";
 
 function GitHubIcon() {
@@ -12,11 +13,16 @@ function GitHubIcon() {
 	);
 }
 
-export function OAuthButtons() {
+export function OAuthButtons({
+	event = "accesso",
+}: {
+	event?: "accesso" | "registrazione";
+}) {
 	const [loading, setLoading] = useState<"github" | "google" | null>(null);
 
 	async function handleOAuth(provider: "github" | "google") {
 		setLoading(provider);
+		track(event, { metodo: provider });
 		try {
 			const result = await oauthSignInFn({ data: { provider } });
 			if (result.success && result.url) {

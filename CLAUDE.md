@@ -212,6 +212,8 @@ starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty
 - **For any text someone else reads (UI copy, commits, PRs, issues, docs, comments), use
   `method:plain-writing`.** It bans the tics that mark text as generated, and its last pass is not
   optional. The UI is in Italian, and D7 in `docs/DESIGN_DECISIONS.md` sets the bar for its copy.
+- Umami custom events go through `track` in `src/lib/analytics/track.ts`, with typed names and properties:
+  never an id, an email or text the user typed.
 - Prefer editing an existing file over adding one; match the surrounding style.
 - When a route has a `pendingComponent`, update the matching skeleton in
   `src/components/skeletons/` whenever you change the page layout.

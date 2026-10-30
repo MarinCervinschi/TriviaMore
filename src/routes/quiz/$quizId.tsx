@@ -19,6 +19,7 @@ import { QuizSidebar, QuizSidebarContent } from "@/components/quiz/quiz-sidebar"
 import { QuizPlaySkeleton } from "@/components/skeletons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { gradeBand, quizModeLabel, track } from "@/lib/analytics/track";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
 import { cancelQuizFn, completeQuizFn } from "@/lib/quiz/api";
 import { clearQuizDraft, readQuizDraft, writeQuizDraft } from "@/lib/quiz/draft";
@@ -154,7 +155,7 @@ function QuizPage() {
 		setIsCompleting(true);
 
 		try {
-			const { attemptId, unlocked } = await completeQuizFn({
+			const { attemptId, score, unlocked } = await completeQuizFn({
 				data: {
 					quizAttemptId: quiz.attemptId,
 					answers: userAnswers.map(ua => ({
@@ -163,6 +164,11 @@ function QuizPage() {
 					})),
 					timeSpent: elapsedRef.current * 1000,
 				},
+			});
+			track("quiz_completato", {
+				modalita: quizModeLabel(quiz.quizMode),
+				esito: score === undefined ? "sconosciuto" : gradeBand(score),
+				traguardi: unlocked.length,
 			});
 			clearQuizDraft();
 			queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -201,6 +207,7 @@ function QuizPage() {
 		if (quiz?.attemptId) {
 			try {
 				await cancelQuizFn({ data: { quizAttemptId: quiz.attemptId } });
+				track("quiz_annullato", {});
 			} catch {}
 		}
 

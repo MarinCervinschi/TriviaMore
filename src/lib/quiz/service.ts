@@ -307,7 +307,7 @@ function gradeAttempt(
 export async function completeQuiz(
 	userId: string,
 	input: CompleteQuizInput
-): Promise<{ attemptId: string; unlocked: UnlockedAchievement[] }> {
+): Promise<{ attemptId: string; score?: number; unlocked: UnlockedAchievement[] }> {
 	const result = await getDb().transaction(async tx => {
 		const claimed = await claimAttempt(tx, {
 			attemptId: input.quizAttemptId,
@@ -360,7 +360,7 @@ export async function completeQuiz(
 			answers: graded.answers,
 		});
 
-		return { attemptId: input.quizAttemptId };
+		return { attemptId: input.quizAttemptId, score: graded.score };
 	});
 
 	// Awaited, because the unlock is announced in this response.
