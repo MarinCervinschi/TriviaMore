@@ -117,9 +117,8 @@ work — browser-direct reads with Realtime. Hosting is **self-hosted on the VPS
 Cloudflare): there is no Vercel and no serverless runtime, so a long-running Node process is what
 the app can rely on.
 
-Automated testing is deliberately deferred until the refactor settles — see #109. The app is **not in
-production**; it runs on `staging` and has no users yet, so a visible regression costs a look, not an
-incident.
+The app is **in production** at `www.trivia-more.it`, with real users: a regression on `prod` is an
+incident, which is why every change lands on `staging` first.
 
 ### Derived state
 
