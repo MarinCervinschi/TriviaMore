@@ -18,7 +18,6 @@ admin-console/src/routeTree.gen.ts
 
 # Data layer (migrations + frozen archive are hand-managed)
 drizzle
-supabase
 
 # Tooling / secrets / assets
 .claude
