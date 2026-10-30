@@ -38,6 +38,8 @@ const denied = (status: number, reason: string) =>
 
 export const accessMiddleware = createMiddleware({ type: "request" }).server(
 	async ({ request, pathname, next }) => {
+		// Coolify's health check reaches the container directly, without an Access token.
+		if (pathname === "/api/health") return next();
 		if (!ACCESS_CONFIGURED) {
 			// Locally there is no Access in front; a deployed console without it refuses everything.
 			return IS_PRODUCTION
