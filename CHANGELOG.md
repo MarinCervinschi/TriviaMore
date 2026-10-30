@@ -12,6 +12,27 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.5.2 — 2026-10-30
+
+Health checks for the production apps on Coolify, and the first Umami custom events: what students do
+in quizzes, flashcards, the career record and the calendar, counted without anything that names them.
+Nothing changes for students.
+
+### Added
+
+- **Umami custom events** through `track` in `src/lib/analytics/track.ts`, typed by name and properties:
+  quizzes started, completed (with the band of the grade, not the grade) and cancelled, flashcards,
+  sign-ups and sign-ins by method, empty searches, requests, bookmarks, favourites, classes,
+  onboarding, and in the CRM the course of study, the career record, exam sittings, calendar events
+  and tasks. Never an id, an email or text the user typed. (#220)
+- **The console answers `/api/health`** without a Cloudflare Access token, and its Coolify resource
+  checks it; the app's resource checks its own `/api/health`, set by hand in Coolify. (#219)
+
+### Changed
+
+- `completeQuizFn` also returns the attempt's `score`, which the quiz event turns into a grade band. It
+  is absent when another request completed the attempt first. (#220)
+
 ## 3.5.1 — 2026-10-30
 
 The last phase of leaving Supabase (#212). Production moved to its own Postgres on 2026-10-29, while
