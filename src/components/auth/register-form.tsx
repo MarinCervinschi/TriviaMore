@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/useAuth";
+import { track } from "@/lib/analytics/track";
 import { type RegisterInput, registerSchema } from "@/lib/auth/schemas";
 
 export function RegisterForm() {
@@ -41,6 +42,7 @@ export function RegisterForm() {
 			toast.error(result.error);
 			return;
 		}
+		track("registrazione", { metodo: "email" });
 		if (result.status === "pending_email_confirmation") {
 			navigate({
 				to: "/auth/verify-email",

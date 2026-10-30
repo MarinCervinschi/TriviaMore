@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/useAuth";
+import { track } from "@/lib/analytics/track";
 import { type LoginInput, loginSchema } from "@/lib/auth/schemas";
 
 export function LoginForm() {
@@ -33,6 +34,7 @@ export function LoginForm() {
 	async function onSubmit(values: LoginInput) {
 		const result = await login.mutateAsync({ data: values });
 		if (result.success) {
+			track("accesso", { metodo: "email" });
 			toast.success("Accesso effettuato");
 			navigate({ to: "/" });
 		} else {
