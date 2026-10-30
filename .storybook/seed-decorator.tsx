@@ -23,7 +23,6 @@ function seededSession(session: StorySession) {
 			image: null,
 			role: session.role ?? "STUDENT",
 		},
-		supabaseSession: null,
 	};
 }
 

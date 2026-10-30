@@ -1,21 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Backup via the Supabase CLI, which bundles its own pg_dump — no local install.
-# Local by default; `pnpm db:dump:prod` reads production's admin URL from Infisical.
-# Writes a schema and a data file; restore with psql in that order.
-
+# A full pg_dump in custom format, with the tools from the image; `pnpm db:dump:prod` reads production's admin URL from Infisical.
 label="${1:-local}"
+: "${SUPABASE_DB_URL:?export SUPABASE_DB_URL, the admin (postgres) URL of the database to back up}"
+
 ts="$(date +%Y%m%d-%H%M%S)"
 mkdir -p backups
+# A local database is reached from the container through the host.
+url="$(node -e 'const u = new URL(process.argv[1]); if (["localhost", "127.0.0.1"].includes(u.hostname)) u.hostname = "host.docker.internal"; console.log(u.href)' "$SUPABASE_DB_URL")"
 
-if [ "$label" = "prod" ]; then
-  : "${SUPABASE_DB_URL:?export SUPABASE_DB_URL (admin/postgres) — see README}"
-  PGSSLMODE=disable supabase db dump --db-url "$SUPABASE_DB_URL" -f "backups/${ts}-prod-schema.sql"
-  PGSSLMODE=disable supabase db dump --db-url "$SUPABASE_DB_URL" --data-only -f "backups/${ts}-prod-data.sql"
-else
-  supabase db dump --local -f "backups/${ts}-local-schema.sql"
-  supabase db dump --local --data-only -f "backups/${ts}-local-data.sql"
-fi
-
-echo "✓ backups/${ts}-${label}-{schema,data}.sql"
+docker run --rm -v "$PWD/backups:/out" postgres:17 pg_dump "$url" -Fc -f "/out/${ts}-${label}.dump"
+echo "✓ backups/${ts}-${label}.dump; restore with pg_restore --no-owner -d <url>"
