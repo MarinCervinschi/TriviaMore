@@ -1,422 +1,213 @@
-# TriviaMore — Security Guide
+# Security
 
-> Security reference for developers and LLMs working on TriviaMore.
-> Covers authentication, authorization, data protection, input validation, and hardening.
-> For general development patterns, see `DEVELOPMENT_GUIDE.md`.
+How TriviaMore decides who may read and change what, where each check lives, and what a new feature has to
+do to keep it that way. The layering, the roles and the logging rules are in `CLAUDE.md`; this document does
+not repeat them. How to build a feature is in `DEVELOPMENT_GUIDE.md`.
 
----
+## The trust boundary
 
-## Architecture Overview
+The browser talks to the app through server functions (`createServerFn`) and four HTTP routes:
+`/api/auth/$` (Better Auth), `/api/requests/$requestId/attachment`, `/api/log` and `/api/health`. It never reaches the
+database or the S3 store. Everything behind that boundary runs with full rights:
 
-```
-Client (Browser)
-  │
-  ├── Supabase Anon Key (public, RLS-enforced)
-  ├── TanStack Start Server Functions (SSR)
-  │     ├── createServerSupabaseClient() → user session, RLS active
-  │     └── supabaseAdmin → service role, bypasses RLS
-  │
-  └── Supabase Storage (direct upload, RLS on bucket)
+- **Postgres:** every query runs through Drizzle on a direct `pg` connection (`src/db/index.ts`) as
+  `trivia_app`, a role with `BYPASSRLS`.
+- **S3 (Garage):** one key pair with access to both buckets, used only by `src/lib/storage/server.ts`.
 
-Database (PostgreSQL)
-  ├── Row Level Security on ALL tables
-  ├── SECURITY DEFINER helper functions
-  └── Role escalation trigger protection
-```
-
-**Defense in depth:** Every data access point is protected by at least two layers — server-side auth guards AND database RLS policies.
-
----
+So the only checks that exist are the ones written in TypeScript. A server function without a guard is open to
+anyone who can send an HTTP request, and a query without a `where` on the user returns every user's rows.
 
 ## Authentication
 
-### Session Management
-
-- Sessions are managed by **Better Auth** inside the app (`src/lib/auth/server.ts`), stored in the `sessions` table and referenced by an `httpOnly` cookie.
-- `readSession()` checks the session. A signed cookie caches it for 5 minutes, so a revoked session can last that long on another device.
-- Passwords are bcrypt hashes in `accounts.password`, the same format GoTrue wrote.
-- An email must be confirmed through the emailed link before a password sign-in works.
-
-### Password Policy
-
-```
-Minimum: 6 characters (consider increasing to 8+)
-Required: lowercase + uppercase + digit
-Forbidden: spaces
-```
-
-Enforced in `src/lib/auth/schemas.ts` via Zod `superRefine`.
-
-### OAuth Flow
-
-- Providers: GitHub, Google
-- Flow: `oauthSignInFn` → the provider → `/api/auth/callback/<provider>`, handled by Better Auth → `/onboarding` for a new account, `/` otherwise.
-- **Redirect URL validation:** the provider only accepts the callback registered in its console, `<BETTER_AUTH_URL>/api/auth/callback/<provider>`.
-
-### Auth Guards
-
-Three guards, each a `createServerFn`:
-
-| Guard | Returns | Redirects to | Use for |
-|-------|---------|-------------|---------|
-| `requireAuth()` | `AuthUser` | `/auth/login` | Any authenticated route |
-| `requireAdmin()` | `AuthUser` | `/user` | Admin-only server functions |
-| `requireGuest()` | void | `/user` | Login/register pages |
-
-### Rules
-
-1. **Every server function that accesses user data must call `requireAuth()` or `requireAdmin()`.**
-2. **Never trust client-side role checks alone** — the server function + RLS are the real enforcement.
-3. **Auth guards throw `redirect()`** — don't catch these errors, let TanStack Router handle them.
-4. **Don't store auth tokens manually** — Better Auth sets and rotates its cookies.
-
----
-
-## Authorization (Role Hierarchy)
-
-```
-SUPERADMIN
-  └── ADMIN (scoped to departments)
-       └── MAINTAINER (scoped to courses)
-            └── STUDENT (read-only public content)
-```
-
-### Role Enforcement Layers
-
-| Layer | Mechanism | Bypassed by |
-|-------|-----------|-------------|
-| **Client UI** | Conditional rendering | Anyone with DevTools |
-| **Server function** | `requireAdmin()` guard | Nothing (throws redirect) |
-| **Database RLS** | Policy checks `auth.uid()` + role | `supabaseAdmin` only |
-| **Trigger** | `protect_profile_role()` | Service role only |
-
-### Role Escalation Protection
-
-A PostgreSQL trigger prevents any non-SUPERADMIN from changing the `role` column:
-
-```sql
-CREATE FUNCTION public.protect_profile_role()
--- IF current_setting('role') != 'service_role' AND NOT is_superadmin()
--- THEN RAISE EXCEPTION
-```
-
-Additionally, `updateUserRoleFn` in `admin/server.ts` checks `user.role === "SUPERADMIN"` before proceeding.
-
-**Never modify role checks** without understanding both the trigger AND the server function guard.
-
----
-
-## Row Level Security (RLS)
-
-### Status: Enabled on ALL tables
-
-Every table in the database has RLS enabled. No exceptions.
-
-### Helper Functions
-
-All defined with `SECURITY DEFINER` and `SET search_path = public`:
-
-| Function | Logic |
-|----------|-------|
-| `is_superadmin()` | `role = 'SUPERADMIN'` |
-| `is_department_admin(dept_id)` | Superadmin OR in `department_admins` |
-| `is_course_maintainer(crs_id)` | Dept admin of parent OR in `course_maintainers` |
-| `is_class_admin(cls_id)` | Course maintainer of parent course |
-| `is_section_admin(sec_id)` | Class admin of parent class |
-| `can_access_section(sec_id)` | Public OR (auth'd AND (admin OR explicit grant)) |
-
-### Policy Patterns
-
-```sql
--- Public read (departments, courses, classes, evaluation_modes)
-CREATE POLICY FOR SELECT USING (true);
-
--- User-scoped (bookmarks, progress, notifications)
-CREATE POLICY FOR SELECT USING (user_id = auth.uid());
-
--- Admin-scoped (content_requests)
-CREATE POLICY FOR SELECT USING (
-  user_id = auth.uid()
-  OR is_superadmin()
-  OR is_department_admin(target_department_id)
-  OR ...
-);
-
--- Insert: user can only create own records
-CREATE POLICY FOR INSERT WITH CHECK (user_id = auth.uid());
-```
-
-### Rules for New Tables
-
-1. **Always enable RLS** — `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`
-2. **Always add at least SELECT + INSERT policies** — even if the table seems internal.
-3. **Use helper functions** — don't repeat role-checking logic in policies.
-4. **Test policies** — verify that students can't see admin data, and admins can't see other departments.
-5. **Notifications are special** — INSERT is unrestricted (server-side via `supabaseAdmin`), SELECT is user-scoped.
-
----
-
-## Supabase Clients — When to Use Which
-
-### `supabaseAdmin` (PRIVILEGED)
-
-- **Import:** `@/lib/supabase/admin`
-- **Auth:** Service role key
-- **RLS:** Bypassed — full access to all data
-- **Use ONLY for:**
-  - Creating notifications (user can't insert for others)
-  - Fetching cross-user profiles (profiles RLS is restrictive)
-  - Creating content on approval (`approveRequestFn`)
-  - Admin user management (`updateUserRoleFn`)
-
-### `createClient()` (BROWSER)
-
-- **Import:** `@/lib/supabase/client`
-- **Auth:** Browser session (anon key)
-- **RLS:** Active
-- **Use ONLY for:** Client-side file uploads to Supabase Storage
-
-### Rules
-
-1. **Default to `createServerSupabaseClient()`** — it's auth-aware and RLS-enforced.
-2. **Every use of `supabaseAdmin` requires `requireAdmin()` BEFORE it** — no exceptions.
-3. **Never import `supabaseAdmin` in client components** — it would expose the service role key.
-4. **Never pass `supabaseAdmin` to client code** — not as a prop, not via context, never.
-
----
-
-## Input Validation
-
-### Server Functions
-
-Every POST server function must validate its input:
-
-```typescript
-// Preferred: Zod schema
-createServerFn({ method: "POST" })
-  .inputValidator(myZodSchema)
-  .handler(async ({ data }) => { ... })
-
-// Acceptable: Manual type validator
-createServerFn({ method: "POST" })
-  .inputValidator((input: { id: string; name: string }) => input)
-  .handler(async ({ data }) => { ... })
-```
-
-### Validation Rules
-
-1. **All strings must be trimmed** — `.trim()` in Zod schemas.
-2. **All strings must have max length** — prevent payload abuse.
-3. **Enums must use `z.enum()`** — never accept arbitrary strings for status/type fields.
-4. **IDs must be non-empty strings** — `z.string().min(1)`.
-5. **File sizes validated on both client AND server** — Supabase Storage `file_size_limit` in bucket config.
-6. **Never trust `submitted_content` JSONB blindly** — always cast through typed interfaces and validate structure.
-
-### What to Validate
-
-| Data | Validation |
-|------|------------|
-| User names | Unicode regex, 2-50 chars, no consecutive spaces |
-| Emails | Zod `.email()`, lowercased, max 100 chars |
-| Passwords | 6+ chars, uppercase + lowercase + digit, no spaces |
-| Content text | Min 10, max 2000 chars, trimmed |
-| Codes | Uppercase + numbers + hyphens, 2-15 chars |
-| File uploads | Extension whitelist (.pdf, .docx), max 10 MB |
-| Question options | 2-6 items, non-empty strings |
-
----
-
-## XSS Prevention
-
-### Markdown Rendering
-
-User-generated content (questions, explanations) is rendered via `react-markdown`:
-
-```tsx
-<ReactMarkdown
-  remarkPlugins={[remarkGfm, remarkMath]}
-  rehypePlugins={[rehypeKatex]}
->
-  {content}
-</ReactMarkdown>
-```
-
-`react-markdown` is safe by default — it does NOT render raw HTML. It converts markdown to React elements.
-
-### Rules
-
-1. **Never use `dangerouslySetInnerHTML`** — use `react-markdown` or plain text.
-2. **Never interpolate user content into HTML attributes** — use React's JSX which auto-escapes.
-3. **Sanitize URLs** — if displaying user-provided URLs, validate the protocol (`http://` or `https://` only).
-4. **Consider adding `rehype-sanitize`** — for extra protection on markdown output:
-   ```tsx
-   import rehypeSanitize from 'rehype-sanitize'
-   rehypePlugins={[rehypeKatex, rehypeSanitize]}
-   ```
-
----
-
-## Environment Variables
-
-### Server-Only (NEVER expose to client)
-
-```
-SUPABASE_SERVICE_ROLE_KEY    # Full DB access, bypasses RLS
-INFISICAL_CLIENT_ID          # Secrets management
-INFISICAL_CLIENT_SECRET      # Secrets management
-GITHUB_CLIENT_SECRET         # OAuth (managed by Supabase Auth)
-GOOGLE_CLIENT_SECRET         # OAuth (managed by Supabase Auth)
-```
-
-These have NO `VITE_` prefix — Vite strips them from client bundles.
-
-### Client-Exposed (by design)
-
-```
-VITE_SUPABASE_URL            # Public Supabase endpoint
-VITE_SUPABASE_ANON_KEY       # Public key, RLS-enforced
-VITE_SITE_URL                # Site URL for SEO/metadata
-VITE_APP_URL                 # App URL for OAuth redirects
-```
-
-### Rules
-
-1. **Never add `VITE_` prefix to secrets** — they become visible in the client bundle.
-2. **Use Infisical** for all secrets in production — `infisical run --` wraps all commands.
-3. **Never commit `.env` files** — ensure `.gitignore` includes all `.env*` patterns.
-4. **Rotate secrets immediately** if accidentally exposed.
-5. **OAuth secrets are managed by Supabase** — configured in the Supabase dashboard, not in app code.
-
----
-
-## File Upload Security
-
-### Client-Side Validation
-
-```typescript
-const ACCEPTED_EXTENSIONS = ".pdf,.docx"
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
-
-// Validate before upload
-if (file.size > MAX_FILE_SIZE) {
-  toast.error("Il file supera il limite di 10 MB")
-  return
-}
-```
-
-### Server-Side Validation
-
-Supabase Storage bucket enforces:
-```sql
-INSERT INTO storage.buckets (id, name, public, file_size_limit)
-VALUES ('contributions', 'contributions', false, 10485760); -- 10 MB
-```
-
-### Storage RLS
-
-```sql
--- Users upload to their own folder only
-(storage.foldername(name))[1] = auth.uid()::text
-
--- Users read their own files only
--- Admins (non-STUDENT) read all files
-```
-
-### Signed URLs
-
-Admin file downloads use signed URLs with 1-hour expiry:
-```typescript
-supabaseAdmin.storage.from("contributions").createSignedUrl(path, 3600)
-```
-
-### Rules
-
-1. **Always validate file type on the client** — `accept` attribute on `<input type="file">`.
-2. **Always enforce size limits on both client AND server** — bucket `file_size_limit`.
-3. **Use signed URLs** — never expose raw storage paths to the client.
-4. **Path isolation** — user files stored under `{user_id}/` prefix, enforced by RLS.
-5. **Download via blob** — fetch signed URL → create blob → trigger download (avoids popup blockers and CORS issues).
-
----
-
-## Security Headers
-
-### Recommended Headers (implement in Nitro/Vite config)
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
-
-### Status: Not yet implemented
-
-This is a priority hardening task. Can be added via Nitro server middleware or Vercel `vercel.json` headers.
-
----
-
-## Rate Limiting
-
-### Status: Not yet implemented
-
-### Priority Endpoints
-
-| Endpoint | Risk | Recommended Limit |
-|----------|------|-------------------|
-| Login | Brute force | 5 attempts / 15 min per email |
-| Signup | Bot registration | 3 registrations / hour per IP |
-| File upload | Storage abuse | 10 uploads / hour per user |
-| Content submission | Spam | 20 submissions / hour per user |
-
-### Implementation Options
-
-1. **Supabase Edge Functions** — rate limit at the edge before hitting the DB
-2. **Nitro middleware** — in-memory counter per IP/user (stateless, resets on deploy)
-3. **Database-backed** — `rate_limits` table with cleanup cron
-
----
-
-## Common Vulnerabilities & Mitigations
-
-### SQL Injection
-- **Mitigated:** Supabase client uses parameterized queries. Never construct raw SQL in server functions.
-- **Rule:** Always use `.eq()`, `.in()`, `.select()` — never string interpolation.
-
-### CSRF
-- **Mitigated:** TanStack Start server functions include CSRF protection by default.
-- **Rule:** Always use `createServerFn` for mutations, never raw fetch to your own API.
-
-### Privilege Escalation
-- **Mitigated:** Triple-layer protection (server guard + RLS + trigger).
-- **Rule:** Never modify the `protect_profile_role` trigger without security review.
-
-### Insecure Direct Object References (IDOR)
-- **Mitigated:** RLS policies filter by `auth.uid()` — users can only access their own data.
-- **Rule:** Always rely on RLS, not just server-side checks. A forgotten filter in a server function is caught by RLS.
-
-### Mass Assignment
-- **Mitigated:** `.inputValidator()` on every server function restricts which fields are accepted.
-- **Rule:** Never spread raw user input into a database insert/update. Always pick specific fields.
-
-### Sensitive Data Exposure
-- **Mitigated:** Profiles RLS restricts cross-user visibility. Service role key is server-only.
-- **Rule:** When showing other users' data (comments, requests), use branded labels ("TriviaMore Team") instead of real admin profiles.
-
----
-
-## Security Checklist for New Features
-
-Before merging any feature:
-
-- [ ] All server functions have auth guards (`requireAuth` or `requireAdmin`)
-- [ ] All POST functions have `.inputValidator()`
-- [ ] All new tables have RLS enabled with appropriate policies
-- [ ] `supabaseAdmin` usage is justified and guarded by `requireAdmin()`
-- [ ] No `VITE_` prefix on new secrets
-- [ ] File uploads validated (type + size) on client AND server
-- [ ] User-generated content rendered safely (no `dangerouslySetInnerHTML`)
-- [ ] Error messages don't expose internal details (stack traces, DB schema)
-- [ ] No `any` types that bypass TypeScript safety
-- [ ] Tested: student can't access admin data, admin can't access other departments
+Better Auth runs inside the app, configured in `src/lib/auth/server.ts`, on the `users`, `sessions`,
+`accounts` and `verifications` tables.
+
+- **Sessions** are rows in `sessions`, referenced by an `httpOnly`, `SameSite=Lax` cookie that Better Auth
+  sets and rotates. `readSession()` reads a signed cookie cache first, valid for 5 minutes, so a revoked session
+  keeps working for up to 5 minutes on a device that already has the cache.
+- **Passwords** are bcrypt hashes (cost 10) in `accounts.password`, checked by `src/lib/auth/rules.ts`. The
+  policy is in `src/lib/auth/schemas.ts`: 6 to 100 characters, a lowercase letter, an uppercase letter and a
+  digit, no spaces. A password reset revokes every other session.
+- **Email verification** is required before a password sign-in works. The verification and reset links expire
+  after an hour. They are sent without awaiting the mail server, so the response time does not reveal whether
+  an address has an account.
+- **OAuth:** Google and GitHub, each enabled only when both its client id and secret are set. `oauthSignInFn`
+  asks Better Auth for the provider URL; the provider returns to `<BETTER_AUTH_URL>/api/auth/callback/<provider>`,
+  the only callback registered in its console. A new account lands on `/onboarding`.
+- **Profiles:** a Better Auth hook creates the `profiles` row when a user is created. The role lives on the
+  profile, not on the Better Auth user.
+- **Staging:** `AUTH_ALLOWED_EMAIL_DOMAIN` turns off password sign-up and rejects any user who is not a
+  verified address of that domain. Production leaves it unset.
+- **Anonymized accounts:** `getAuthUser()` returns `null` for a profile with `anonymizedAt` set, and the
+  anonymization deletes the user's sessions and accounts.
+
+## Authorization
+
+### Guards and middleware
+
+Guards are plain functions in `src/lib/auth/guards.ts`. They redirect rather than throw an `AppError`, because
+they are also what route `beforeLoad` calls (through the server-function wrappers in `src/lib/auth/api/`).
+
+| Guard | Lets through | Otherwise |
+|---|---|---|
+| `requireAuth()` | any signed-in user with a live profile | redirect to `/auth/login` |
+| `requireAdmin()` | MAINTAINER, ADMIN, SUPERADMIN | redirect to `/user` |
+| `requireSuperadmin()` | SUPERADMIN | redirect to `/user` |
+| `requireGuest()` | no session | redirect to `/user` |
+
+The middleware in `src/lib/server/middleware/auth.ts` is what an endpoint declares:
+
+- `authMiddleware` reads the session and puts `{ id, email }` in `context.user`, or throws `Unauthorized`. It
+  does not load the profile, so it does not know the role.
+- `optionalAuthMiddleware` does the same with `context.user` possibly `null`, for public reads that change
+  with the user (section access, bookmarks).
+- `adminMiddleware` and `superadminMiddleware` wrap the guards and put the full `AuthUser` in the context.
+
+The admin endpoints in `src/lib/admin/api/` call the guard inside the service instead (`requireSuperadmin()`
+at the top of `updateUserRole`, `requireContentManagerForQuestion(id)` at the top of `updateQuestion`).
+Either is fine; what is not fine is neither.
+
+### Content scope
+
+`src/lib/admin/access.ts` holds the checks that depend on what is being touched:
+
+- **MAINTAINER** may manage sections and questions only of classes taught in a course it maintains
+  (`course_maintainers`), and never a private section. `requireContentManagerForClass`, `…ForSection` and
+  `…ForQuestion` throw `Forbidden` for anything outside that; the `require…Access` variants redirect to `/admin`
+  and are for route loaders. `requireStructureManager()` keeps MAINTAINER away from departments, courses and
+  classes.
+- **ADMIN** passes every content check. Its `department_admins` rows decide which notifications it receives and
+  what its dashboard shows; they do not restrict what it may change.
+- **SUPERADMIN** is the only role for platform features (changelogs, news, user roles, department admins).
+- **Requests:** `requireRequestAdmin()` in `src/lib/requests/service/shared.ts` returns a MAINTAINER's course
+  ids; `requestScope()` narrows the list queries and `assertInScope()` checks a single request. A request aimed
+  at a private section stays with ADMIN and SUPERADMIN.
+
+A role changes only through `updateUserRoleFn`, which requires SUPERADMIN and removes the department and
+course assignments the new role no longer has. No other endpoint accepts a `role` field.
+
+### Section access
+
+Private sections are gated by `src/lib/auth/checks.ts`. A section is readable when it is public, when the
+user is ADMIN or SUPERADMIN, or when `section_access` grants it to the user. MAINTAINER gets no implicit access
+to private sections.
+
+- `assertSectionAccess(db, userId, sectionId)` throws `Forbidden`; quiz and flashcard sessions call it before
+  they read any question.
+- `filterAccessibleSections()` and `accessibleSectionsSql()` narrow lists and search.
+
+Any new path from a section id or a question id to question content has to go through one of these.
+
+## Data access
+
+Every table has RLS enabled and no policy. That denies every role that does not bypass RLS, and filters
+nothing for `trivia_app`. The consequences:
+
+- **A read narrowed to the user says so:** `.where(eq(bookmarks.userId, userId))`. The `userId` comes from
+  `context.user.id`, never from the input.
+- **A write to a user's row names the user in the `where`,** so an id from another user matches nothing:
+  `and(eq(bookmarks.userId, userId), eq(bookmarks.questionId, questionId))`.
+- **Code written before the move off RLS** may have relied on a policy that no longer exists. Its condition
+  has to be in the `where` clause.
+
+Drizzle parameterizes every value. A `sql` template interpolates values as parameters too; never build SQL
+with string concatenation or `sql.raw` on input.
+
+## Input validation
+
+Every server function that takes input has `.inputValidator()` with a zod schema from the domain's
+`schemas.ts`. Strings are trimmed and have a maximum length, ids are `z.uuid()` / `z.string().uuid()`,
+enumerations are `z.enum`. Pick the fields a write sets one by one; never spread the input into
+`.set()` or `.values()`.
+
+`submitted_content` on a content request is jsonb from the user. It goes through `parseSubmittedContent()`
+before use, and `assertOwnAttachment()` rejects a `file_path` that is not under the user's own prefix or
+contains `..`.
+
+## Errors
+
+`errorMiddleware` (registered in `src/start.ts`) lets an `AppError` from `src/lib/server/errors.ts` through
+with its message, and replaces anything else with a generic Italian message plus the first 8 characters of
+the trace id, after logging it. A Postgres error, a stack trace or an S3 response body therefore never reaches
+the browser. A message meant for the user is an `AppError`; `rethrowUniqueViolation()` turns a unique-key
+violation into a `Conflict`.
+
+The attachment route maps `AppError` codes to HTTP statuses itself, since it is not a server function.
+
+## Files
+
+There are two buckets, both reached only from the server:
+
+| Bucket | Served | Holds |
+|---|---|---|
+| `public` | as is, on `S3_PUBLIC_URL` | generated avatars (`avatars/<userId>/…`), uploaded photos (`avatar-uploads/<userId>/…`) |
+| `contributions` | only through the app | request attachments (`<userId>/<uuid>.<ext>`) |
+
+Bytes reach the server as `FormData` in a server function. `formFileSchema()` in `src/lib/storage/schemas.ts`
+rejects a missing file and enforces the size limit before the handler runs. The service then checks the bytes
+and chooses the key; the client never names a path.
+
+- **Avatar photos** (`uploadAvatar` in `src/lib/avatar/service.ts`): at most 2 MB; the type is read from the
+  magic bytes (JPEG, PNG, WebP), never from the browser, so the public bucket serves raster images only. The
+  browser downscales to 512 px first; its own type and 20 MB checks are a convenience.
+- **Generated avatars** are SVGs rendered on the server from a seed. An SVG from the browser is never stored.
+- **Attachments** (`uploadAttachment` in `src/lib/requests/service/user-requests.ts`): at most 10 MB, extension
+  `pdf` or `docx`, and the first four bytes must match that format.
+- **Reading an attachment:** `/api/requests/$requestId/attachment` calls `readAttachment()`, which applies the
+  same `requireRequestAdmin()` and `assertInScope()` as the request itself, then streams the object with
+  `content-disposition: attachment` and `cache-control: private, no-store`. There are no signed URLs.
+
+## Secrets
+
+Secrets come from Infisical; the variables and how they are injected are in `docs/SECRETS.md`, the local
+fallback in `.env.example`. Anything prefixed `VITE_` is inlined into the client bundle, so a secret never
+gets that prefix. Server-only values are read from `process.env` in server-only modules (`src/lib/auth/server.ts`,
+`src/lib/storage/server.ts`, `src/db/`), which `createServerFn` keeps out of the browser bundle. `.env` and
+`.env.*` are gitignored, and the pre-push hook (`scripts/check-public.sh`) blocks secrets in pushed lines.
+
+## Rendering user content
+
+Questions, explanations and request text are rendered with `MarkdownRenderer`
+(`src/components/ui/markdown-renderer.tsx`), built on `react-markdown`, which does not render raw HTML.
+`dangerouslySetInnerHTML` appears only for the theme init script in `src/routes/__root.tsx` and the chart
+styles in `src/components/ui/chart.tsx`, neither of which takes user input. Keep it that way.
+
+## Logs
+
+Logs go to Seq (`docs/OBSERVABILITY.md`). The context carries the user id, never the email. Property keys that
+contain `password`, `token`, `secret`, `apikey` and the like are replaced with `[redacted]`, and query spans
+carry the statement text without its parameters. Never pass a whole object to `log`.
+
+## Not in place
+
+- **Security headers:** the app sets none. There is no CSP, `X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy` or HSTS from `src/start.ts`, the middleware or `vite.config.ts`. Whatever Cloudflare or
+  Coolify add is outside this repository.
+- **CSRF tokens:** there are none. Cross-site writes are stopped by the session cookie being `SameSite=Lax`,
+  which a cross-site POST does not carry, and by Better Auth's origin check on `/api/auth/*`. A GET server
+  function is reachable by top-level navigation with the cookie, so a GET server function never writes.
+- **Rate limiting:** Better Auth's built-in limiter is on in production, in memory per process, keyed on
+  `cf-connecting-ip`: 100 requests per 10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on
+  reset and verification emails. It applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and
+  the other auth server functions call `getAuth().api` directly and are not limited. `/api/log` has its own
+  limit of 60 batches a minute per IP. Nothing else is limited, uploads and request submissions included.
+
+## Checklist for a new feature
+
+- [ ] Every new server function declares `authMiddleware`, `optionalAuthMiddleware` or an admin middleware, or
+      its service calls a guard first. A public one is public on purpose.
+- [ ] The user id comes from `context.user` or the guard's return value, never from the input.
+- [ ] Every read of per-user data has the user in its `where`; every write to a user's row too.
+- [ ] Content managed by MAINTAINER goes through `src/lib/admin/access.ts`; platform features require
+      SUPERADMIN.
+- [ ] Any path to question content goes through `src/lib/auth/checks.ts`.
+- [ ] Every input has a zod schema with maximum lengths; writes pick fields one by one.
+- [ ] Messages for the user are `AppError`s; nothing else carries detail to the browser.
+- [ ] Uploads go through a server function with `formFileSchema`, a check on the bytes and a key chosen by the
+      server; private files are read through a route that repeats the owning record's check.
+- [ ] A new table has `.enableRLS()` and no policy.
+- [ ] No new secret has a `VITE_` prefix; new variables are added to Infisical, `docs/SECRETS.md` and
+      `.env.example`.
+- [ ] User text is rendered through `MarkdownRenderer` or as plain text.
+- [ ] Logs carry ids, not objects or emails.
+- [ ] GET server functions do not write.
