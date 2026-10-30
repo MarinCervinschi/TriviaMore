@@ -46,7 +46,9 @@ follow your classes, bookmark questions, and track where you stand course by cou
 - <img src="https://api.iconify.design/simple-icons:shadcnui.svg" height="16" /> **[shadcn/ui](https://ui.shadcn.com)** — New York style components on Radix UI primitives.
 - <img src="https://api.iconify.design/logos:tanstack.svg" height="16" /> **[TanStack Query](https://tanstack.com/query)** — Server-state cache.
 - <img src="https://api.iconify.design/simple-icons:drizzle.svg" height="16" /> **[Drizzle ORM](https://orm.drizzle.team)** — Schema, queries and migrations, over a direct Postgres connection.
-- <img src="https://api.iconify.design/logos:supabase-icon.svg" height="16" /> **[Supabase](https://supabase.com)** — Self-hosted Postgres, auth and storage.
+- <img src="https://api.iconify.design/logos:postgresql.svg" height="16" /> **[PostgreSQL](https://www.postgresql.org)** — Self-hosted, one database per environment.
+- <img src="https://api.iconify.design/simple-icons:betterauth.svg" height="16" /> **[Better Auth](https://www.better-auth.com)** — Email and password, and OAuth, inside the app.
+- **[Garage](https://garagehq.deuxfleurs.fr)** — Self-hosted S3 store for uploaded files.
 - <img src="https://api.iconify.design/simple-icons:infisical.svg" height="16" /> **[Infisical](https://infisical.com)** — Secrets, injected by the CLI in dev and in the container entrypoint.
 - <img src="https://api.iconify.design/logos:vitest.svg" height="16" /> **[Vitest](https://vitest.dev)** — Unit and integration tests.
 - <img src="https://api.iconify.design/logos:storybook-icon.svg" height="16" /> **[Storybook](https://storybook.js.org)** — Component workbench.
@@ -55,21 +57,20 @@ follow your classes, bookmark questions, and track where you stand course by cou
 
 ```bash
 pnpm install
-supabase start        # local Postgres, auth and storage (requires Docker)
 infisical login       # first time only
-infisical init
 pnpm dev
 ```
 
+`pnpm dev` reads Infisical's `dev` environment, which points at the staging database, files and mail
+on the staging server, so it needs the tailnet.
+
 For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisical steps.
 
-| Local service | URL |
+| Service | URL |
 |---|---|
 | App | http://127.0.0.1:3000 |
-| Supabase Studio | http://127.0.0.1:54323 |
-| Supabase API | http://127.0.0.1:54321 |
-| Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
-| Mailpit | http://127.0.0.1:54324 |
+| Staging | https://pr.trivia-more.it, behind Cloudflare Access |
+| Staging mail | https://mail-pr.trivia-more.it, behind Cloudflare Access |
 
 ## Scripts
 
@@ -101,6 +102,10 @@ Secrets are managed with [Infisical](https://infisical.com), self-hosted. Every 
 them wraps `infisical run`, so there is no `.env` to maintain — contributors without access use the
 `:no-secrets` variants. The full variable list and the production setup are in
 [`docs/SECRETS.md`](./docs/SECRETS.md).
+
+The scripts that reach production or the shared infrastructure project (`*:prod`, `db:migrate:staging`,
+`db:reset-staging`) take the project ids from the shell, never from the repo: export
+`TRIVIAMORE_INFISICAL_PROJECT_ID` (production) and `INFISICAL_INFRA_PROJECT_ID` (`cervinschi-infra`).
 
 ## Database
 
@@ -135,21 +140,22 @@ pnpm db:migrate:prod --apply       # and apply it, before the release is merged
 Both read the admin URL of their database from Infisical. CI applies every migration to an empty
 Postgres on each pull request, and applies nothing anywhere else.
 
-The app connects through `DATABASE_URL`; `drizzle-kit` and the Supabase CLI connect as the admin
-role through `SUPABASE_DB_URL`.
+The app connects through `DATABASE_URL`, as `trivia_app`; `drizzle-kit` and the migration scripts
+connect as the admin role through `SUPABASE_DB_URL`, a name kept from before the move.
 
-`supabase/migrations/` is a frozen archive from before the cut-over, still what `supabase start` uses to
-build the local database. `drizzle/archive/` holds the Drizzle migrations up to `0069`, squashed on
+`drizzle/archive/` holds the Drizzle migrations up to `0069`, squashed on
 2026-10-11 into `drizzle/0000_baseline.sql`. The baseline builds the whole schema on an empty Postgres:
-where Supabase is absent it creates a minimal `auth.users`, until Better Auth replaces it (#211). On a
+it creates a minimal `auth.users` where none exists, which nothing reads since Better Auth (#211). On a
 database that already ran the old chain it counts as applied, since its timestamp is the one of `0069`.
 
-Conventions for entities, relations, enums and row types are in
-[`.claude/skills/drizzle-schema`](./.claude/skills/drizzle-schema/SKILL.md).
+Conventions for entities, relations, enums and row types are in the
+[`drizzle-schema`](https://github.com/MarinCervinschi/claude-kit/tree/main/plugins/stack-web-ts/skills/drizzle-schema)
+skill of the `stack-web-ts` plugin, and TriviaMore's own rules in [`CLAUDE.md`](./CLAUDE.md#database).
 
 ## Authentication
 
-Supabase Auth with email/password and OAuth (GitHub, Google). Routes are protected by guards in
+Better Auth inside the app (`src/lib/auth/server.ts`): email and password with a verified
+address, and OAuth (GitHub, Google). Routes are protected by guards in
 `beforeLoad`, from `src/lib/auth/guards.ts`:
 
 ```typescript
@@ -166,12 +172,9 @@ Server functions declare their own middleware and authorize inside the service l
 ## Deployment
 
 The app runs on a self-hosted VPS: Coolify builds the `Dockerfile` and deploys on push, behind
-Cloudflare, co-located with the Supabase stack. `prod` is production, `staging` is the integration
+Cloudflare, next to its Postgres. `prod` is production, `staging` is the integration
 branch and its instance. Secrets come from Infisical at container start — an unreachable Infisical fails the start
 rather than leaving a container serving errors.
-
-Auth emails are served as static assets from `public/email-templates/`, so both the local CLI and the
-self-hosted GoTrue can fetch them.
 
 ## Documentation
 

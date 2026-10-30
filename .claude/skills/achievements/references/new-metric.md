@@ -31,13 +31,13 @@ thing to keep in sync, and one less class of drift.
 
 - Add the value to `achievementMetricEnum` in `src/db/schema/entities/public/enums.ts`, then
   `pnpm db:generate --name add_<metric>_metric`. Adding an enum value is a plain schema edit;
-  **removing one is not** — see the `drizzle-schema` skill.
+  **removing one is not**: see `stack-web-ts:drizzle-schema`.
 - Any threshold the metric needs goes in `src/lib/achievements/constants.ts`, never inline. Both
   computations import it.
 - If the raw number does not read well to a human, extend `formatMetricValue` in `format.ts` —
   today only `TOTAL_TIME_MS` needs it, and it has a unit test.
-- New tables or columns follow the `drizzle-schema` skill in full: `.enableRLS()`, explicit FK
-  names, `mode: "string"` timestamps.
+- New tables or columns follow `stack-web-ts:drizzle-schema` and the Database rules in `CLAUDE.md`:
+  `.enableRLS()`, explicit FK names, `mode: "string"` timestamps.
 
 ## 3. The incremental write
 
@@ -91,7 +91,7 @@ Only then insert badges that use it (`references/catalogue.md`) and `pnpm achiev
 
 - [ ] value added to `achievementMetricEnum`, migration generated and read
 - [ ] thresholds in `constants.ts`, imported by both computations
-- [ ] rollup column/table, following `drizzle-schema`
+- [ ] rollup column/table, following `stack-web-ts:drizzle-schema`
 - [ ] incremental write in `db/rollups.ts`, inside the event's transaction
 - [ ] CTE in `db/recompute.ts`
 - [ ] statement in `db/backfill.ts`

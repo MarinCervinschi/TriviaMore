@@ -1,0 +1,21 @@
+{
+  "enabledPlugins": {
+    "method@claude-kit": true,
+    "stack-web-ts@claude-kit": true,
+    "platform@cervinschi-infra": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-kit": {
+      "source": {
+        "source": "github",
+        "repo": "MarinCervinschi/claude-kit"
+      }
+    },
+    "cervinschi-infra": {
+      "source": {
+        "source": "github",
+        "repo": "MarinCervinschi/cervinschi-infra"
+      }
+    }
+  }
+}

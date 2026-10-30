@@ -21,6 +21,11 @@ variable "cloudflare_account_id" {
   type = string
 }
 
+variable "server_ip" {
+  type        = string
+  description = "The VPS's public address, where Cloudflare's proxy sends the traffic it lets through."
+}
+
 variable "console_owner_email" {
   type        = string
   description = "The one address Cloudflare Access lets into the console."
@@ -34,4 +39,15 @@ variable "console_seq_api_key" {
 variable "console_worker_seq_api_key" {
   type      = string
   sensitive = true
+}
+
+variable "postgres_password" {
+  type        = string
+  sensitive   = true
+  description = "The postgres user of the production database."
+}
+
+variable "savvy_tailnet_host" {
+  type        = string
+  description = "savvy's address on the tailnet, the only one the database's forwarder listens on."
 }

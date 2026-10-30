@@ -4,11 +4,12 @@ set -euo pipefail
 # Rebuilds the staging database from nothing: the migrations, the catalogue from CINECA, then made-up content and accounts.
 : "${STAGING_DATABASE_URL:?run through pnpm db:reset-staging, so Infisical injects cervinschi-infra → /trivia-more/staging}"
 : "${STAGING_APP_DB_PASSWORD:?add STAGING_APP_DB_PASSWORD to cervinschi-infra → /trivia-more/staging}"
+: "${RIETI_TAILNET_HOST:?add RIETI_TAILNET_HOST to cervinschi-infra → /trivia-more/staging}"
 : "${STAGING_SEED_PASSWORD:?run through pnpm db:reset-staging, so Infisical injects trivia-more-staging → staging → /database}"
 
 host="$(node -e 'console.log(new URL(process.argv[1]).hostname)' "$STAGING_DATABASE_URL")"
 case "$host" in
-  rieti | <rieti-tailnet-ip>) ;;
+  rieti | "$RIETI_TAILNET_HOST") ;;
   *) echo "Refusing to reset $host: only the staging database on rieti can be rebuilt." >&2; exit 1 ;;
 esac
 

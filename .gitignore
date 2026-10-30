@@ -6,6 +6,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+.infisical.json
 .nitro
 .tanstack
 .wrangler
@@ -18,7 +19,6 @@ public/sitemap.xml
 
 
 data/
-supabase/snippets/
 .vercel
 pending-questions/
 backups/

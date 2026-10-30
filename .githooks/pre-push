@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs the public scan on the lines a push adds. Enable it once per clone: git config core.hooksPath .githooks
+exec scripts/check-public.sh --pushed

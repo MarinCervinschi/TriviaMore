@@ -174,7 +174,7 @@ Use the variants in `src/lib/motion.ts`; do not write inline ones.
 ## Where the primitives are
 
 `src/components/ui/` for primitives, `src/components/data-table/` for **every** table (TanStack Table
-**v9** — use the `data-tables` skill), `src/components/icons/` for what Solar does not carry.
+**v9**; use `stack-web-ts:data-tables` and the Tables rules in `CLAUDE.md`), `src/components/icons/` for what Solar does not carry.
 
 Reach for `EmptyState` / `InlineEmpty`, `Badge` (state, not attributes — D6), `Card`, `Spinner`,
 `toastUndo`, `useMutationWithToast` before writing the recipe by hand. **Undo for the frequent and

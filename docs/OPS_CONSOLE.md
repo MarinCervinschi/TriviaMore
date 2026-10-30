@@ -3,6 +3,8 @@
 **Status:** accepted (#193, part of #188). The points marked *to verify* are checked in #194.
 **Amended 2026-10-10:** no staging instance and no promotion. The deployed console works on production, with a
 simulation before every write; the local Supabase is where a job is developed and tried.
+**Amended 2026-10-30:** there is no local Supabase any more. Infisical `dev` points at staging, which
+is where a job is developed and tried.
 
 The ops console is a second app, deployed on its own, from which the owner runs and watches the jobs that keep
 TriviaMore's official data current: catalog, syllabi, plans, and later timetables and exam sittings. It is not

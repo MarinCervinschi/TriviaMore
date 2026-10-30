@@ -6,7 +6,7 @@
 # Informativa sulla Privacy
 
 **Versione:** 2026-04-24
-**Ultimo aggiornamento:** 13 giugno 2026
+**Ultimo aggiornamento:** 30 ottobre 2026
 
 La presente informativa descrive le modalità di trattamento dei dati personali degli utenti che visitano o utilizzano il sito **TriviaMore** (di seguito, "il Servizio"), ai sensi del Regolamento (UE) 2016/679 ("GDPR") e del D.lgs. 196/2003 ("Codice Privacy") come modificato dal D.lgs. 101/2018.
 
@@ -24,7 +24,7 @@ Al momento della registrazione con email e password, l'utente fornisce:
 
 - **nome** (obbligatorio);
 - **indirizzo email** (obbligatorio);
-- **password** (conservata in forma cifrata tramite Supabase Auth, non accessibile al Titolare).
+- **password** (conservata dall'applicazione solo in forma cifrata, non accessibile al Titolare).
 
 Se la registrazione avviene tramite provider OAuth (GitHub, Google), il Titolare riceve dal provider:
 
@@ -76,7 +76,7 @@ Per erogare il Servizio il Titolare si avvale dei seguenti responsabili esterni,
 
 | Fornitore | Ruolo | Dati trattati | Sede |
 |---|---|---|---|
-| **Supabase (self-hosted)** | Database e autenticazione (software self-hosted) | Tutti i dati personali dell'account e dell'utilizzo | Istanza self-hosted sotto il controllo del Titolare |
+| **PostgreSQL e Garage (self-hosted)** | Database e archiviazione dei file caricati (software self-hosted) | Tutti i dati personali dell'account e dell'utilizzo, e i file caricati | Istanza self-hosted sotto il controllo del Titolare |
 | **Vercel Inc.** | Hosting dell'applicazione | Log di richiesta, dati tecnici di navigazione | Stati Uniti (SCC) |
 | **GitHub, Inc.** | Provider OAuth opzionale | Identificativo e email dell'account collegato | Stati Uniti (SCC) |
 | **Google LLC** | Provider OAuth opzionale | Identificativo e email dell'account collegato | Stati Uniti (SCC) |

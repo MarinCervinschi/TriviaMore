@@ -19,7 +19,6 @@ import { PlatformStatsSection } from "./platform-stats";
 import {
 	PostgreSQLIcon,
 	ReactIcon,
-	SupabaseIcon,
 	TailwindIcon,
 	TanStackIcon,
 	TypeScriptIcon,
@@ -93,7 +92,6 @@ export const TechIcons: Story = {
 					["React", ReactIcon],
 					["TypeScript", TypeScriptIcon],
 					["Tailwind", TailwindIcon],
-					["Supabase", SupabaseIcon],
 					["PostgreSQL", PostgreSQLIcon],
 					["TanStack", TanStackIcon],
 				] as const

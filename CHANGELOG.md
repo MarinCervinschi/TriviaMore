@@ -12,6 +12,38 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.5.1 — 2026-10-30
+
+The last phase of leaving Supabase (#212). Production moved to its own Postgres on 2026-10-29, while
+3.5.0 was running, and Supabase was deleted the next day. This release removes what was left of it from
+the code and the documentation. Nothing changes for students.
+
+### Added
+
+- **The production Postgres in Terraform** (`infra/envs/prod/database.tf`): a standalone Coolify
+  database, dumped every night to the backup store on the staging server, and reached from the tailnet
+  through a forwarder bound to the tailnet address only. (#212)
+- `pnpm db:transfer:prod [--replace]` rebuilds a database from the migrations, copies the app's data
+  into it and checks every table's row count against the source. It moved production. (#212)
+
+### Changed
+
+- `pnpm db:dump` and `pnpm db:dump:prod` write a full `pg_dump` in custom format, from the
+  `postgres:17` image instead of the Supabase CLI. (#212)
+- The privacy policy names self-hosted Postgres and Garage instead of Supabase. (#212)
+- `docs/SECURITY.md` and `docs/DEVELOPMENT_GUIDE.md` are rewritten for the app as it is: Drizzle as
+  `trivia_app`, Better Auth, guards in TypeScript, uploads through server functions. (#212)
+- Skills come from the `method`, `stack-web-ts` and `platform` plugins, and every push runs
+  `scripts/check-public.sh`. (#206)
+
+### Removed
+
+- `@supabase/supabase-js`, the `supabase/` folder, the GoTrue email template, the one-off
+  `auth:migrate-users:prod` and `storage:migrate-files:prod` scripts, and `scripts/db/dedicated-role.sql`.
+  `VITE_SUPABASE_*` and `SUPABASE_SERVICE_ROLE_KEY` are gone from Infisical. (#212)
+
+No migrations.
+
 ## 3.5.0 — 2026-10-29
 
 TriviaMore stops relying on Supabase for sign-in and files (#206). Authentication runs inside the

@@ -26,12 +26,10 @@ resource "random_password" "seed" {
 }
 
 locals {
-  # rieti's address on the tailnet, where local runs reach the database; the app reaches it by container name.
-  rieti_tailnet_host = "<rieti-tailnet-ip>"
-
+  # Local runs reach the database at rieti's tailnet address; the app reaches it by container name.
   database_url = {
     staging = "postgresql://trivia_app:${urlencode(var.app_db_password)}@${coolify_database_postgresql.staging.uuid}:5432/postgres"
-    dev     = "postgresql://trivia_app:${urlencode(var.app_db_password)}@${local.rieti_tailnet_host}:5432/postgres"
+    dev     = "postgresql://trivia_app:${urlencode(var.app_db_password)}@${var.rieti_tailnet_host}:5432/postgres"
   }
 
   published = {

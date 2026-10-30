@@ -111,11 +111,9 @@ exception and **no `Status` at all**. `Status: 500` therefore only ever means a 
 
 ### Where the time actually goes
 
-`supabase.auth.getUser()` validates the JWT against the auth API **over HTTP**, so every
-authenticated call pays a network round trip. Measured on preview: `toggleBookmarkFn` takes ~61 ms
-of which ~2.5 ms is SQL, while `getMaintenanceModeFn` — no middleware, no database — returns in
-0.44 ms. Auth is the dominant cost of an authenticated request by an order of magnitude, and it
-would be invisible without `AuthMs`.
+Better Auth reads the session from a signed cookie cache and goes to the database only when the cache
+has expired, so `AuthMs` is small on most requests and jumps on the ones that refresh it. Before #211 the
+check was an HTTP round trip to GoTrue on every call, about 55 ms, and `AuthMs` is how that was seen.
 
 That makes `AppMs` the number to watch: a request that is slow with a low `AppMs` is waiting on
 something else, and optimising our code would achieve nothing.
@@ -160,8 +158,8 @@ Rules, in order of how much damage breaking them does:
    interpolated string throws that away and leaves you grepping.
 2. **Never a whole object.** `log.info("…", { user })` is how emails leak. Pass `userId`. The
    serializer redacts on a key denylist as a safety net, not as a licence.
-3. **Log at boundaries.** Requests, database queries, external calls (Supabase auth, nodemailer,
-   Storage). Inside a service, log a genuine decision or an anomaly — nothing that can be
+3. **Log at boundaries.** Requests, database queries, external calls (nodemailer,
+   S3). Inside a service, log a genuine decision or an anomaly — nothing that can be
    reconstructed from the boundary events.
 4. **Do not log and rethrow.** `errorMiddleware` logs once, at the boundary. A service that also
    logs produces duplicates and inflates the error count.
@@ -278,5 +276,5 @@ request's trace id when one is known, otherwise a fresh one.
 
 ## Not built yet
 
-**Spans.** Nothing writes `@sp` today. The database, Supabase auth and nodemailer are the three
+**Spans.** Nothing writes `@sp` today. The database, S3 and nodemailer are the three
 call sites that would justify it.

@@ -12,7 +12,7 @@ esac
 [ -d "$root" ] || { echo "no Terraform root for $root_name" >&2; exit 1; }
 
 if [ "${TRIVIAMORE_TF_INJECTED:-}" != 1 ]; then
-  project="${INFISICAL_INFRA_PROJECT_ID:-<infisical-infra-project-id>}"
+  project="${INFISICAL_INFRA_PROJECT_ID:?export INFISICAL_INFRA_PROJECT_ID, the id of cervinschi-infra in Infisical}"
 
   cmd=(env TRIVIAMORE_TF_INJECTED=1 bash "$0" "$root_name" "$@")
   for path in "${paths[@]}"; do

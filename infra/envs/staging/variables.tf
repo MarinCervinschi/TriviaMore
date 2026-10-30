@@ -23,3 +23,8 @@ variable "infisical_site_url" {
   type        = string
   description = "Where the app signs in to Infisical; a public address, which the containers on rieti resolve."
 }
+
+variable "rieti_tailnet_host" {
+  type        = string
+  description = "rieti's address on the tailnet, where local runs reach the database and the tunnel reaches Garage's web port."
+}

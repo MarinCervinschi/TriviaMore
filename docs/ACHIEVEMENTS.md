@@ -34,11 +34,9 @@ da assegnare` against an environment you have never replayed means you are talki
 database.
 
 `PGSSLMODE=disable` is **not** needed here. The pool is built with no `ssl` option, so node-postgres
-never negotiates TLS and there is nothing to disable. It is still needed for `pnpm db:dump`, which
-runs the Supabase CLI — that bundles its own client and ignores `?sslmode=` in the URL
-([supabase/cli#4142](https://github.com/supabase/cli/issues/4142)).
+never negotiates TLS and there is nothing to disable.
 
-Remote databases are **tailnet-only** (`savvy:54322` is production). Tailscale has to be up, and up
+Remote databases are **tailnet-only** (production listens on port 5432 of its server). Tailscale has to be up, and up
 to date.
 
 ## The commands
@@ -91,7 +89,7 @@ code bug — start from `src/lib/achievements/rollups.itest.ts`, which asserts t
 Order matters, and two of these steps are load-bearing.
 
 ```bash
-export URL='postgresql://postgres:<...>@savvy:54322/postgres'
+export URL='postgresql://postgres:<...>@<prod-host>:5432/postgres'
 
 pnpm db:dump                                                  # 1. backup first
 SUPABASE_DB_URL="$URL" pnpm exec tsx scripts/db/migrations.ts --apply   # 2. before the code deploy
