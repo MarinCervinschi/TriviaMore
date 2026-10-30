@@ -100,7 +100,7 @@ The limit accepted: staging depends on the power and the connection of the place
 
 Infisical `dev` points at staging, so local work reads and writes realistic data. Migrations may be applied to
 staging straight from a local checkout. That is safe because every migration is backward compatible (the
-`safe-changes` skill), and because staging is rebuilt when a migration under development diverges from what
+`method:safe-changes` skill), and because staging is rebuilt when a migration under development diverges from what
 was applied. A disposable local Postgres, filled from staging, is the place for anything destructive.
 
 ### Migrations are applied by hand, and CI checks them

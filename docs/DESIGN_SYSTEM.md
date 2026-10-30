@@ -319,7 +319,7 @@ Reach for the primitive before writing the recipe.
 
 | Job | Component | Note |
 |---|---|---|
-| any table | `src/components/data-table/` | The one table. TanStack Table **v9** — v8 snippets do not transfer. Use the `data-tables` skill |
+| any table | `src/components/data-table/` | The one table. TanStack Table **v9**: v8 snippets do not transfer. Use `stack-web-ts:data-tables` |
 | a surface | `Card`, `Card level="panel"`, `CardTexture` | see Surfaces |
 | nothing to show | `EmptyState` | `InlineEmpty` for the one-line case inside a table or chart |
 | state on a row | `Badge` | **state, not attributes** (D6). `size="sm"` for the dense case |

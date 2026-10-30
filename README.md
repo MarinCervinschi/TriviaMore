@@ -148,8 +148,9 @@ build the local database. `drizzle/archive/` holds the Drizzle migrations up to 
 where Supabase is absent it creates a minimal `auth.users`, until Better Auth replaces it (#211). On a
 database that already ran the old chain it counts as applied, since its timestamp is the one of `0069`.
 
-Conventions for entities, relations, enums and row types are in
-[`.claude/skills/drizzle-schema`](./.claude/skills/drizzle-schema/SKILL.md).
+Conventions for entities, relations, enums and row types are in the
+[`drizzle-schema`](https://github.com/MarinCervinschi/claude-kit/tree/main/plugins/stack-web-ts/skills/drizzle-schema)
+skill of the `stack-web-ts` plugin, and TriviaMore's own rules in [`CLAUDE.md`](./CLAUDE.md#database).
 
 ## Authentication
 
