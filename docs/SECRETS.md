@@ -6,9 +6,9 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 
 | Variable | Scope | Where to find it |
 |---|---|---|
-| `VITE_SUPABASE_URL` | Client + Server | `supabase status` → Project URL (local: `http://127.0.0.1:54321`) |
-| `VITE_SUPABASE_ANON_KEY` | Client + Server | `supabase status` → Publishable key (`sb_publishable_...`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server only | `supabase status` → Secret key (`sb_secret_...`) |
+| `DATABASE_URL` | Server only | The runtime role, `trivia_app` |
+| `SUPABASE_DB_URL` | Scripts only | The admin role, `postgres`, for `drizzle-kit` and the migration scripts; the name is kept from before the move |
+| `S3_*` | Server only | The Garage bucket names, key and endpoint, and `S3_PUBLIC_URL`, where public files are served |
 | `BETTER_AUTH_URL` | Server only | The app's own origin, used in the links Better Auth emails and in the OAuth callbacks (local: `http://localhost:3000`) |
 | `BETTER_AUTH_SECRET` | Server only | Signs the session cookies; at least 32 random characters, one per environment (`openssl rand -base64 32`) |
 | `AUTH_ALLOWED_EMAIL_DOMAIN` | Server only | Staging only: `trivia-more.it`. Turns off password sign-up and admits only verified addresses of that domain |
@@ -36,11 +36,10 @@ The `pnpm dev` / `pnpm build:dev` / etc. scripts already wrap the underlying too
 
 ## Without Infisical (fallback)
 
-Copy the example file, fill in values from `supabase status`, run the no-secrets variants:
+Copy the example file, point it at a Postgres you run yourself, and run the no-secrets variant:
 
 ```bash
 cp .env.example .env
-supabase status
 pnpm dev:no-secrets
 ```
 

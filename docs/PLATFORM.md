@@ -1,7 +1,8 @@
 # Platform — leaving Supabase, a staging environment, and migrations applied by hand
 
 **Status:** accepted, 2026-10-11; epic #206. **Amended 2026-10-24:** migrations are applied by hand, not by a
-pipeline; CI only checks them (#209).
+pipeline; CI only checks them (#209). **Done 2026-10-30:** production moved to its own Postgres on 2026-10-29
+and Supabase was deleted the day after (#212).
 
 TriviaMore stops depending on Supabase. Production keeps a plain Postgres, a self-hosted S3 store and an
 authentication library inside the app. A staging environment on its own server becomes the place where the new

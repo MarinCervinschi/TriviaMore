@@ -1,10 +1,10 @@
 # TriviaMore
 
 Open source study platform for UniMore. TanStack Start (React 19, Vite, Nitro) on a self-hosted
-Supabase stack. Content is a five-level hierarchy: departments → courses → classes → sections →
+Postgres, with Better Auth and files on Garage. Content is a five-level hierarchy: departments → courses → classes → sections →
 questions.
 
-Stack: web-ts 3 (the `stack-web-ts` plugin); `docs/PLATFORM.md` says where Supabase is still in use.
+Stack: web-ts 3 (the `stack-web-ts` plugin); `docs/PLATFORM.md` records how the app left Supabase.
 Skills come from the plugins enabled in `.claude/settings.json` (`method`, `stack-web-ts`,
 `platform`), called as `plugin:skill`, and from `.claude/skills/` for what only TriviaMore has. Each
 machine installs each plugin once: `claude plugin install <plugin>@<marketplace> --scope project`.
@@ -108,10 +108,9 @@ ported from the old code. Authentication is Better Auth inside the app (`src/lib
 Files are on Garage, an S3 store reached only from the tailnet, through `src/lib/storage/server.ts`;
 public ones are served on `S3_PUBLIC_URL`.
 
-**Supabase is on its way out** (`docs/PLATFORM.md`): plain Postgres, a self-hosted S3 store, Better Auth
-inside the app, and a staging environment on the `rieti` server where every change lands first. Read
-that ADR before touching auth, storage, the infrastructure or how migrations are applied; until its
-phases land, the current setup described here still holds.
+**Supabase is gone** (`docs/PLATFORM.md`, #206): production runs on a plain Postgres on the VPS, backed
+up every night to the staging server, and staging is where every change lands first. Read that ADR before
+touching auth, storage, the infrastructure or how migrations are applied.
 
 Issue #87 holds the plan and the decisions. Every phase of it is closed except #93, which is future
 work — browser-direct reads with Realtime. Hosting is **self-hosted on the VPS** (Coolify behind
@@ -192,10 +191,10 @@ Rules that are not negotiable:
   `--apply`). CI only checks them, on an empty Postgres. A migration that changes after it reached
   staging means `pnpm db:reset-staging`, not a repair: staging is the only place an applied
   migration may still change, and only until it is merged.
-- **No `psql` on the host.** Query the local database through the container:
-  `docker exec supabase_db_TriviaMore psql -U postgres -d postgres -c "..."`.
+- **No `psql` on the host.** Run it from the image, as the scripts do:
+  `docker run --rm -i postgres:17 psql "$URL" -c "..."`.
 
-`supabase/migrations/` and `drizzle/archive/` are frozen archives. Nothing new goes there. The chain
+`drizzle/archive/` is a frozen archive. Nothing new goes there. The chain
 starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty Postgres.
 
 ## Conventions

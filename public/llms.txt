@@ -54,7 +54,7 @@ TriviaMore e un progetto open source, sviluppato da studenti per la community un
 ## Informazioni tecniche
 
 - Lingua: Italiano
-- Stack: TanStack Start, React 19, Tailwind CSS v4, Supabase
+- Stack: TanStack Start, React 19, Tailwind CSS v4, PostgreSQL
 - PWA installabile su mobile e desktop, dark mode integrata
 - Accesso: contenuti pubblici esplorabili senza autenticazione, quiz e flashcard disponibili anche come ospite
 - Autenticazione: email/password e OAuth (Google, GitHub)
