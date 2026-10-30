@@ -18,7 +18,31 @@ type Events = {
 	registrazione: { metodo: AuthMethod };
 	accesso: { metodo: AuthMethod };
 	ricerca_vuota: { ambito: "tutto" | "corsi" | "insegnamenti"; filtri: number };
+	richiesta_inviata: { tipo: "section" | "questions" | "report" | "file_upload" };
+	segnalibro: { azione: Toggle };
+	preferito: { azione: Toggle };
+	insegnamento: { azione: Toggle };
+	onboarding: { esito: "completato" | "saltato"; avatar: boolean };
+	corso_di_studi: { curriculum: boolean };
+	libretto_precompilato: { esami: number };
+	esame_aggiunto: { origine: "catalogo" | "manuale" | "esterno" | "scelta" };
+	/** The grade is left out on purpose: only that it was passed, and whether with honours. */
+	esame_superato: { lode: boolean };
+	scelte_piano: { aggiunti: number; tolti: number };
+	regole_media: Record<string, never>;
+	appello_aggiunto: { importanza: number; scelto: boolean };
+	appello_scelto: Record<string, never>;
+	evento_creato: {
+		orario: boolean;
+		piu_giorni: boolean;
+		ricorrente: boolean;
+		esame: boolean;
+	};
+	task_creata: { orario: boolean; esame: boolean };
+	task_completata: Record<string, never>;
 };
+
+type Toggle = "aggiunto" | "tolto";
 
 type Grade = "<18" | "18-23" | "24-27" | "28-30" | "lode";
 
@@ -37,6 +61,18 @@ declare global {
 	interface Window {
 		umami?: { track: (name: string, data?: Record<string, unknown>) => void };
 	}
+}
+
+/** Wraps a mutation function so `after` runs only once the server has accepted the change. */
+export function tracked<I, O>(
+	fn: (input: I) => Promise<O>,
+	after: (input: I, output: O) => void
+) {
+	return async (input: I) => {
+		const output = await fn(input);
+		after(input, output);
+		return output;
+	};
 }
 
 /** Does nothing where the script isn't loaded: on the server, in local dev, behind a blocker. */

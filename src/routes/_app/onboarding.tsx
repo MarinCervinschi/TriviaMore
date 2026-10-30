@@ -22,6 +22,7 @@ import { useAvatarChoice } from "@/components/onboarding/use-avatar-choice";
 import { OnboardingSkeleton } from "@/components/skeletons";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { track } from "@/lib/analytics/track";
 import { useSetGeneratedAvatar, useUploadAvatar } from "@/lib/avatar/mutations";
 import { COURSE_TYPE_CONFIG } from "@/lib/browse/constants";
 import { browseQueries } from "@/lib/browse/queries";
@@ -130,6 +131,7 @@ function OnboardingPage() {
 			return;
 		}
 
+		track("onboarding", { esito: "completato", avatar: Boolean(avatar.chosen) });
 		navigate({ to: "/user" });
 	}
 
@@ -148,7 +150,10 @@ function OnboardingPage() {
 					nextLabel={isLast ? "Conferma" : "Avanti"}
 					nextDisabled={!chosen}
 					isSubmitting={isSaving}
-					onSkip={() => navigate({ to: "/user" })}
+					onSkip={() => {
+						track("onboarding", { esito: "saltato", avatar: false });
+						navigate({ to: "/user" });
+					}}
 				>
 					{step === 0 && (
 						<OnboardingPicker
