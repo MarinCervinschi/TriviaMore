@@ -196,9 +196,18 @@ layer cache, and this build already costs enough. Confirm it is arriving with
 
 One API key per environment and service, **Data → Ingestion → Add API key**:
 
-- **Attached properties**: `Environment` = `Staging` / `Production`, and `Application` = `TriviaMore`
-  for the app; the console and its worker have keys of their own. Setting them on the key rather than in
-  code means a service cannot mislabel itself.
+| Key | `Environment` | `Application` | Infisical |
+|---|---|---|---|
+| `triviamore-production` | `Production` | `TriviaMore` | `TriviaMore` → `prod` → `/app/SEQ_API_KEY` |
+| `triviamore-staging` | `Staging` | `TriviaMore` | `trivia-more-staging` → `staging` → `/app/SEQ_API_KEY` |
+| `triviamore-console` | `Production` | `TriviaMore Console` | `cervinschi-infra` → `ops` → `/trivia-more/prod/CONSOLE_SEQ_API_KEY` |
+| `triviamore-console-worker` | `Production` | `TriviaMore Worker` | `cervinschi-infra` → `ops` → `/trivia-more/prod/CONSOLE_WORKER_SEQ_API_KEY` |
+
+The app reads its key from Infisical when the container starts, so a new key needs only a restart. The
+console's two keys reach Coolify through Terraform: `pnpm infra:apply`, then a redeploy.
+
+- **Attached properties**: `Environment` and `Application`, as in the table. Setting them on the key
+  rather than in code means a service cannot mislabel itself.
 - **Permissions**: `Ingest` only.
 - **Server timestamps**: leave unchecked — it would overwrite `@t` with arrival time and hide the
   real latency inside a batch.
