@@ -39,6 +39,18 @@ function isDisconnect(error: unknown, request: Request): boolean {
 	);
 }
 
+/** TanStack Start answers a page request whose Accept excludes HTML with this 500; bots send them by the hundred. */
+async function isNotAcceptable(response: Response): Promise<boolean> {
+	if (response.status !== 500) return false;
+	if (!response.headers.get("content-type")?.startsWith("application/json"))
+		return false;
+	const body = await response
+		.clone()
+		.text()
+		.catch(() => "");
+	return body.includes("Only HTML requests are supported here");
+}
+
 function levelFor(status: number | undefined, disconnected: boolean): LogLevel {
 	if (status === undefined) return disconnected ? "Warning" : "Error";
 	if (status >= 500) return "Error";
@@ -67,7 +79,10 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 			let failure: unknown;
 
 			try {
-				const result = await next();
+				let result = await next();
+				if (await isNotAcceptable(result.response)) {
+					result = { ...result, response: new Response(null, { status: 406 }) };
+				}
 				status = result.response.status;
 				// Some responses carry immutable headers, and a log line is never worth failing a request.
 				try {
