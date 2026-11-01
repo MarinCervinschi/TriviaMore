@@ -20,11 +20,11 @@ DATABASE_URL='<prod>' pnpm achievements:backfill   # runs against LOCAL, and say
 
 | What you run | Reads | Remote form |
 |---|---|---|
-| migrations | `SUPABASE_DB_URL` ?? `DATABASE_URL` | `SUPABASE_DB_URL='<url>' pnpm exec drizzle-kit migrate` |
+| migrations | `ADMIN_DATABASE_URL` ?? `DATABASE_URL` | `ADMIN_DATABASE_URL='<url>' pnpm db:migrate --apply` |
 | `scripts/**` (achievements, smoke) | `DATABASE_URL` | `DATABASE_URL='<url>' pnpm exec tsx scripts/achievements/replay.ts` |
 
 The two names are not interchangeable: the scripts go through `getDb()`, which reads `DATABASE_URL`
-and nothing else, so `SUPABASE_DB_URL` set in front of a script is simply ignored — and Infisical's
+and nothing else, so `ADMIN_DATABASE_URL` set in front of a script is simply ignored, and Infisical's
 `DATABASE_URL` wins. That combination puts a command you believed was remote onto your laptop's
 database, with a plausible-looking result. It has happened.
 
@@ -91,8 +91,8 @@ Order matters, and two of these steps are load-bearing.
 ```bash
 export URL='postgresql://postgres:<...>@<prod-host>:5432/postgres'
 
-pnpm db:dump                                                  # 1. backup first
-SUPABASE_DB_URL="$URL" pnpm exec tsx scripts/db/migrations.ts --apply   # 2. before the code deploy
+ADMIN_DATABASE_URL="$URL" pnpm db:dump                        # 1. backup first
+ADMIN_DATABASE_URL="$URL" pnpm db:migrate --apply             # 2. before the code deploy
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/backfill-rollups.ts
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/reconcile.ts
 DATABASE_URL="$URL" pnpm exec tsx scripts/achievements/replay.ts --dry-run

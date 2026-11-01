@@ -17,7 +17,7 @@ secrets and buckets.
 | | |
 |---|---|
 | `pnpm dev` | dev server (Infisical injects secrets) |
-| `pnpm build:dev` | production build with secrets |
+| `pnpm build` | production build; it reads no secrets |
 | `pnpm test` | Vitest — unit tier only (`*.test.ts`, offline) |
 | `pnpm db:test:up` | an empty Postgres on :54329 with the migrations applied, for `pnpm test:db` |
 | `pnpm test:db` | Vitest — integration tier (`*.itest.ts`, on the database `db:test:up` starts) |
@@ -25,10 +25,10 @@ secrets and buckets.
 | `pnpm storybook` | component workbench on :6006 |
 | `pnpm build-storybook` | verify every story compiles |
 | `pnpm format` | Prettier — the house style is tabs + semicolons |
-| `pnpm db:generate --name x` | generate a migration from the Drizzle schema |
-| `pnpm db:migrate` | apply pending migrations to the local database |
-| `pnpm db:migrate:staging [--apply]` | read, then apply, what staging lacks |
-| `pnpm db:dump:prod` · `pnpm db:migrate:prod [--apply]` | back up production, then read and apply what it lacks, before merging a release |
+| `pnpm db:generate --name x` | generate a migration from the Drizzle schema, with no database or secrets |
+| `pnpm db:migrate [--apply]` | read, then apply, what the database at `ADMIN_DATABASE_URL` lacks |
+| `pnpm db:dump [label]` | back up the database at `ADMIN_DATABASE_URL` under `backups/` |
+| `pnpm db:reset [--syllabi]` | rebuild the database at `ADMIN_DATABASE_URL` from nothing; it refuses any host but `RESET_ALLOWED_HOST` |
 | `pnpm smoke:reads` | run every migrated read path against the live database |
 | `pnpm smoke:writes` | run the quiz write paths in a transaction, then roll back |
 
@@ -165,7 +165,7 @@ from it, in the rules below; where the two disagree, these win.
 - A new table with `updated_at` gets a `set_<table>_updated_at` trigger on the existing
   `public.handle_updated_at()`, in a `--custom` migration; never a second trigger function. The
   Better Auth tables have no trigger, on purpose.
-- `drizzle-kit` reads `SUPABASE_DB_URL ?? DATABASE_URL` (the admin role, for DDL); `getDb()` and
+- `drizzle-kit` reads `ADMIN_DATABASE_URL ?? DATABASE_URL` (the admin role, for DDL); `getDb()` and
   `scripts/**` read only `DATABASE_URL` (the runtime role).
 - Staging, production, the test database and CI apply migrations through `scripts/db/migrations.ts`,
   which runs each file in its own transaction and prints the failing statement. A
@@ -185,11 +185,12 @@ Rules that are not negotiable:
   across releases. **For any migration, use `method:safe-changes`; for a change to a server
   function's input or behaviour, `stack-web-ts:server-functions`.**
 - **Migrations are applied by hand, never from a container start command, an entrypoint, a deploy
-  hook or a pipeline.** To staging while the change is developed (`pnpm db:migrate:staging --apply`);
-  to production before its release is merged, after `pnpm db:dump:prod` (`pnpm db:migrate:prod`, then
-  `--apply`). CI only checks them, on an empty Postgres. A migration that changes after it reached
-  staging means `pnpm db:reset-staging`, not a repair: staging is the only place an applied
-  migration may still change, and only until it is merged.
+  hook or a pipeline.** `pnpm db:migrate`, then `--apply`: to staging while the change is developed;
+  to production before its release is merged, after a `pnpm db:dump` of it. CI only checks them, on
+  an empty Postgres. A migration that changes after it reached staging means rebuilding staging with
+  `pnpm db:reset`, not a repair: staging is the only place an applied migration may still change,
+  and only until it is merged. The maintainer reaches staging and production with commands kept
+  outside this repo, which set these variables.
 - **No `psql` on the host.** Run it from the image, as the scripts do:
   `docker run --rm -i postgres:17 psql "$URL" -c "..."`.
 
@@ -219,7 +220,7 @@ starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty
   `src/components/skeletons/` whenever you change the page layout.
 - **Content outside production comes from scripts:** the catalogue from CINECA (`catalog:populate`, then
   `catalog:sync`), the departments and their sites from `scripts/catalog/departments.json`, and made-up
-  sections and questions from `scripts/db/seed-content.ts`. `pnpm db:reset-staging` runs them all.
+  sections and questions from `scripts/db/seed-content.ts`. `pnpm db:reset` runs them all.
   Production content is still written through the admin and the SQL console.
 
 ## Verification

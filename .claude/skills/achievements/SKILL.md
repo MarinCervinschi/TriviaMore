@@ -76,7 +76,7 @@ environment; three things there are easy to get wrong and quiet when you do:
 
 - **`pnpm <script>` always talks to the local database.** Infisical injects `dev` on top of the
   process environment, so an inline `DATABASE_URL` is discarded. `pnpm exec` is what bypasses it,
-  and the scripts read `DATABASE_URL` while migrations read `SUPABASE_DB_URL`.
+  and the scripts read `DATABASE_URL` while migrations read `ADMIN_DATABASE_URL`.
 - **Backfill before anything reads**, or every counter is zero and the catalogue renders locked.
 - **Replay after the backfill**, never before: on zeroed counters it awards nothing and reports a
   confident `0`.

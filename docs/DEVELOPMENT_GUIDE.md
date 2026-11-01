@@ -329,7 +329,7 @@ Code and comments are in English; UI copy is in Italian. Comments follow the rul
 
 ## Before calling a feature done
 
-- [ ] `pnpm exec tsc --noEmit`, `pnpm test` and `pnpm build:dev` pass; a UI change also passes
+- [ ] `pnpm exec tsc --noEmit`, `pnpm test` and `pnpm build` pass; a UI change also passes
       `pnpm build-storybook`.
 - [ ] A server-function change passes `pnpm smoke:reads` and `pnpm smoke:writes`.
 - [ ] The `SECURITY.md` checklist holds.

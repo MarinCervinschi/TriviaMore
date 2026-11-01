@@ -34,7 +34,7 @@ jobs:
 
     env:
       TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54329/postgres
-      SUPABASE_DB_URL: postgresql://postgres:postgres@127.0.0.1:54329/postgres
+      ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54329/postgres
 
     steps:
       - uses: actions/checkout@v4

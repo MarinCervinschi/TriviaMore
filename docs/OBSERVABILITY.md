@@ -243,7 +243,7 @@ for scripts. The signal is re-raised after the flush so the default disposition 
 The one check worth automating in your head: server-only code must not reach the browser bundle.
 
 ```bash
-pnpm build:dev
+pnpm build
 grep -rl "async_hooks\|ingest/clef\|SEQ_API_KEY" .output/public   # must print nothing
 ```
 

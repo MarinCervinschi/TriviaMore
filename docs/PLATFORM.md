@@ -92,7 +92,7 @@ VPS to a home connection, at 10 to 40 ms each.
   come from a versioned seed script, which replaces seeding from the SQL console.
 - **Email:** captured by Mailpit, never delivered.
 - **Separate everything:** OAuth clients, bucket, Seq key (`Environment = staging`), Infisical `staging`.
-- **Rebuildable:** `db:reset-staging` drops the database, applies the migrations of `staging`, synchronises the
+- **Rebuildable:** `db:reset` drops the database, applies the migrations of `staging`, synchronises the
   catalogue and runs the seed. A staging whose schema drifted is rebuilt from scratch.
 
 The limit accepted: staging depends on the power and the connection of the place `rieti` is in.
@@ -112,8 +112,8 @@ author still has the context. A pipeline step would find nothing left to apply.
 
 | Where | How |
 |---|---|
-| Staging | `pnpm db:migrate:staging --apply`, while the change is developed. A migration changed after that is fixed by rebuilding staging with `db:reset-staging` |
-| Production | before the release is merged: `pnpm db:dump:prod`, then `pnpm db:migrate:prod` to read what is pending, then `pnpm db:migrate:prod --apply`. The merge comes last, so the code never runs on a schema it does not know |
+| Staging | `pnpm db:migrate --apply` on staging's URL, while the change is developed. A migration changed after that is fixed by rebuilding staging with `db:reset` |
+| Production | before the release is merged: `pnpm db:dump`, then `pnpm db:migrate` to read what is pending, then `pnpm db:migrate --apply`, all on production's URL. The merge comes last, so the code never runs on a schema it does not know |
 | Every pull request and push | `.github/workflows/ci.yml`: `drizzle-kit check`, a schema with no change missing its migration, every migration on an empty Postgres, the integration tests on it, the builds. It applies nothing and holds no secret, since the repository is public |
 
 `scripts/db/migrations.ts` applies each migration in its own transaction and prints the statement that failed.
@@ -140,7 +140,7 @@ one environment per target (`dev` points at staging, `staging`, `prod`) and one 
   they are wanted later.
 - Authentication security becomes ours to configure and update: rate limits, hashing, session rotation, CSRF.
   Better Auth implements them; keeping it current is on us.
-- Studio's table browser. The SQL console moves to a client on the tailnet or to `pnpm db:studio`.
+- Studio's table browser. The SQL console moves to a client on the tailnet.
 - Supabase Realtime, which #93 planned to use. Realtime is postponed; when it returns, Postgres `LISTEN` /
   `NOTIFY` with server-sent events from the Node process is the first option.
 
