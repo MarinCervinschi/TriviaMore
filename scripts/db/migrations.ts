@@ -7,10 +7,10 @@ import pg from "pg";
 type Entry = { idx: number; when: number; tag: string };
 
 const DIR = join(import.meta.dirname, "../../drizzle");
-const url = process.env.SUPABASE_DB_URL ?? process.env.DATABASE_URL;
+const url = process.env.ADMIN_DATABASE_URL ?? process.env.DATABASE_URL;
 if (!url)
 	throw new Error(
-		"Set SUPABASE_DB_URL to the admin (postgres) connection of the database."
+		"Set ADMIN_DATABASE_URL to the admin (postgres) connection of the database."
 	);
 
 const apply = process.argv.includes("--apply");

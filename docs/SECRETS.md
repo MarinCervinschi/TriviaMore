@@ -7,7 +7,7 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 | Variable | Scope | Where to find it |
 |---|---|---|
 | `DATABASE_URL` | Server only | The runtime role, `trivia_app` |
-| `SUPABASE_DB_URL` | Scripts only | The admin role, `postgres`, for `drizzle-kit` and the migration scripts; the name is kept from before the move |
+| `ADMIN_DATABASE_URL` | Scripts only | The admin role, `postgres`, for `drizzle-kit` and the `db:migrate`, `db:dump` and `db:reset` scripts |
 | `S3_*` | Server only | The Garage bucket names, key and endpoint, and `S3_PUBLIC_URL`, where public files are served |
 | `BETTER_AUTH_URL` | Server only | The app's own origin, used in the links Better Auth emails and in the OAuth callbacks (local: `http://localhost:3000`) |
 | `BETTER_AUTH_SECRET` | Server only | Signs the session cookies; at least 32 random characters, one per environment (`openssl rand -base64 32`) |
@@ -32,7 +32,7 @@ infisical init     # link this folder to the Infisical project
 pnpm dev           # already wraps the dev server with infisical run
 ```
 
-The `pnpm dev` / `pnpm build:dev` / etc. scripts already wrap the underlying tool with `infisical run --recursive --`. Run them as-is.
+`pnpm dev` and the other scripts that need secrets already wrap the underlying tool with `infisical run --recursive --`. Run them as-is.
 
 ## Without Infisical (fallback)
 

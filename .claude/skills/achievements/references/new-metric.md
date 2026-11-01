@@ -80,7 +80,7 @@ Run it with `pnpm db:test:up` then `pnpm test:db` (each test runs in a rolled-ba
 ## 6. Ship it
 
 ```
-pnpm db:migrate                      # by hand, never from a deploy hook
+pnpm db:migrate --apply              # by hand, on staging first; never from a deploy hook
 pnpm achievements:backfill           # or the new column is zero for everyone
 pnpm achievements:reconcile          # expect: nessuna deriva
 ```

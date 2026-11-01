@@ -78,21 +78,20 @@ For UI-only work without secrets, run `pnpm dev:no-secrets` and skip the Infisic
 |---|---|
 | `pnpm dev` | Dev server with Infisical secrets |
 | `pnpm dev:no-secrets` | Dev server without Infisical |
-| `pnpm build` / `pnpm build:dev` | Production build, without / with secrets |
+| `pnpm build` | Production build; it reads no secrets |
 | `pnpm start` | Serve the production build |
 | `pnpm test` | Unit tests — offline, no database |
 | `pnpm db:test:up` / `pnpm db:test:down` | An empty Postgres on :54329 with the migrations applied, and its removal |
 | `pnpm test:db` | Integration tests, on the database `db:test:up` starts |
 | `pnpm storybook` / `pnpm build-storybook` | Component workbench, and the build that proves stories compile |
 | `pnpm format` | Prettier — tabs and semicolons |
-| `pnpm db:generate --name x` | Generate a migration from the schema |
-| `pnpm db:migrate` | Apply pending migrations |
-| `pnpm db:studio` | Drizzle Studio |
-| `pnpm db:dump` | Back up schema + data under `backups/` |
+| `pnpm db:generate --name x` | Generate a migration from the schema, with no database or secrets |
+| `pnpm db:migrate [--apply]` | Read, then apply, the pending migrations on the database at `ADMIN_DATABASE_URL` |
+| `pnpm db:dump [label]` | Back up schema + data of the database at `ADMIN_DATABASE_URL` under `backups/` |
 | `pnpm smoke:reads` / `pnpm smoke:writes` | Run every read path, and the write paths in a rolled-back transaction |
 | `pnpm catalog:sync [--anno 2025] [--apply]` | Plan, then with `--apply` write, the changes from the official catalogue; `--anno` targets another academic year |
 | `pnpm catalog:populate [--apply]` | Create the departments of `scripts/catalog/departments.json` and the degree courses of the official catalogue they lack; `catalog:sync` then adds the classes and plans |
-| `pnpm db:reset-staging [--syllabi]` | Rebuild the staging database on `rieti`: migrations, the catalogue from CINECA, made-up sections and questions |
+| `pnpm db:reset [--syllabi]` | Rebuild the database at `ADMIN_DATABASE_URL` from nothing: migrations, the catalogue from CINECA, made-up sections and questions. It refuses any host but `RESET_ALLOWED_HOST` |
 | `pnpm catalog:syllabi [--apply]` | Plan, then with `--apply` write, the official syllabi and the class descriptions taken from them |
 | `pnpm catalog:recover-names [--apply]` | Name the curricula the catalogue labels only with a code |
 
@@ -103,9 +102,9 @@ them wraps `infisical run`, so there is no `.env` to maintain — contributors w
 `:no-secrets` variants. The full variable list and the production setup are in
 [`docs/SECRETS.md`](./docs/SECRETS.md).
 
-The scripts that reach production or the shared infrastructure project (`*:prod`, `db:migrate:staging`,
-`db:reset-staging`) take the project ids from the shell, never from the repo: export
-`TRIVIAMORE_INFISICAL_PROJECT_ID` (production) and `INFISICAL_INFRA_PROJECT_ID` (`cervinschi-infra`).
+The `db:migrate`, `db:dump` and `db:reset` scripts read the database they act on from the environment
+(`ADMIN_DATABASE_URL`), so they work on any Postgres you point them at. The maintainer's commands for
+staging and production set these variables from Infisical and live outside this repo.
 
 ## Database
 
@@ -116,7 +115,6 @@ together. There is deliberately no `db:push` — every change leaves a reviewabl
 ```bash
 pnpm db:generate --name add_something   # diff the schema into drizzle/*.sql
 pnpm db:generate --custom --name grants # an empty file for raw SQL
-pnpm db:migrate                         # apply what is pending
 ```
 
 **Migrations are always applied by hand.** Never on container start, in an entrypoint, or in a
@@ -124,24 +122,22 @@ deploy hook, in any environment. Apply the migration first and deploy the code s
 expand/contract for destructive changes, because rolling back a deploy does not roll back the schema.
 Take a `pnpm db:dump` before touching a shared database.
 
-For a shared database, use `scripts/db/migrations.ts` instead of `pnpm db:migrate`. drizzle-kit runs
+Migrations are applied with `scripts/db/migrations.ts`, never with `drizzle-kit migrate`. drizzle-kit runs
 every pending migration in one transaction and hides the SQL error when one fails, so a migration that
 adds an enum value next to one that uses it fails with no message. The script applies each migration
 in its own transaction, records it the way drizzle does, and prints the statement that broke:
 
 ```bash
-pnpm db:migrate:staging            # staging: the last one applied, and what is pending
-pnpm db:migrate:staging --apply    # apply them, one transaction each
-pnpm db:dump:prod                  # production: back up first
-pnpm db:migrate:prod               # then read what is pending
-pnpm db:migrate:prod --apply       # and apply it, before the release is merged
+pnpm db:dump                # a shared database: back up first
+pnpm db:migrate             # the last one applied, and what is pending
+pnpm db:migrate --apply     # apply them, one transaction each
 ```
 
-Both read the admin URL of their database from Infisical. CI applies every migration to an empty
-Postgres on each pull request, and applies nothing anywhere else.
+Staging gets them while the change is developed, production before its release is merged. CI applies
+every migration to an empty Postgres on each pull request, and applies nothing anywhere else.
 
 The app connects through `DATABASE_URL`, as `trivia_app`; `drizzle-kit` and the migration scripts
-connect as the admin role through `SUPABASE_DB_URL`, a name kept from before the move.
+connect as the admin role through `ADMIN_DATABASE_URL`.
 
 `drizzle/archive/` holds the Drizzle migrations up to `0069`, squashed on
 2026-10-11 into `drizzle/0000_baseline.sql`. The baseline builds the whole schema on an empty Postgres:
