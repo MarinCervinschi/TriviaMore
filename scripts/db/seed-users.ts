@@ -20,7 +20,7 @@ import {
 
 const password = process.env.STAGING_SEED_PASSWORD;
 if (!password) {
-	console.error("STAGING_SEED_PASSWORD is not set: infra/envs/staging publishes it to trivia-more-staging → staging → /database.");
+	console.error("STAGING_SEED_PASSWORD is not set: export the password of the made-up accounts.");
 	process.exit(1);
 }
 

@@ -196,15 +196,15 @@ layer cache, and this build already costs enough. Confirm it is arriving with
 
 One API key per environment and service, **Data → Ingestion → Add API key**:
 
-| Key | `Environment` | `Application` | Infisical |
+| Key | `Environment` | `Application` | Where the service reads it |
 |---|---|---|---|
-| `triviamore-production` | `Production` | `TriviaMore` | `TriviaMore` → `prod` → `/app/SEQ_API_KEY` |
-| `triviamore-staging` | `Staging` | `TriviaMore` | `trivia-more-staging` → `staging` → `/app/SEQ_API_KEY` |
-| `triviamore-console` | `Production` | `TriviaMore Console` | `cervinschi-infra` → `ops` → `/trivia-more/prod/CONSOLE_SEQ_API_KEY` |
-| `triviamore-console-worker` | `Production` | `TriviaMore Worker` | `cervinschi-infra` → `ops` → `/trivia-more/prod/CONSOLE_WORKER_SEQ_API_KEY` |
+| `triviamore-production` | `Production` | `TriviaMore` | production's `/app/SEQ_API_KEY` |
+| `triviamore-staging` | `Staging` | `TriviaMore` | staging's `/app/SEQ_API_KEY` |
+| `triviamore-console` | `Production` | `TriviaMore Console` | `SEQ_SERVICE_API_KEY` on the console's container, set by Terraform |
+| `triviamore-console-worker` | `Production` | `TriviaMore Worker` | `SEQ_SERVICE_API_KEY` on the worker's container, set by Terraform |
 
 The app reads its key from Infisical when the container starts, so a new key needs only a restart. The
-console's two keys reach Coolify through Terraform: `pnpm infra:apply`, then a redeploy.
+console's two keys reach Coolify through Terraform, in the private infrastructure repository: an apply, then a redeploy.
 
 - **Attached properties**: `Environment` and `Application`, as in the table. Setting them on the key
   rather than in code means a service cannot mislabel itself.
@@ -220,9 +220,9 @@ The `datalust/seq` container listens on **80** for the full API and UI and on **
 over the shared Docker network: a compromised app container can then submit logs but neither read
 them nor reach the admin API.
 
-Staging runs on `rieti`, outside that network, so it sends to Seq's public address,
-`https://seq.cervinschi.site`, which serves the full API behind Seq's own login. Its key is `Ingest`
-only, so the app can still only write; the address is set by `infra/infisical`.
+Staging runs on the home server, outside that network, so it sends to Seq's public address,
+which serves the full API behind Seq's own login. Its key is `Ingest`
+only, so the app can still only write; the address is set in the private infrastructure repository.
 
 Set a retention policy. 30 days is plenty.
 

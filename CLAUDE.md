@@ -5,12 +5,11 @@ Postgres, with Better Auth and files on Garage. Content is a five-level hierarch
 questions.
 
 Stack: web-ts 3 (the `stack-web-ts` plugin); `docs/PLATFORM.md` records how the app left Supabase.
-Skills come from the plugins enabled in `.claude/settings.json` (`method`, `stack-web-ts`,
-`platform`), called as `plugin:skill`, and from `.claude/skills/` for what only TriviaMore has. Each
-machine installs each plugin once: `claude plugin install <plugin>@<marketplace> --scope project`.
-Beyond the routing below: `method:spec-interview` to decide a large feature, `method:feature-review`
-after a UI change, `method:pre-pr-checklist` before a PR, and the `platform:*` skills for staging,
-secrets and buckets.
+Skills come from the plugins enabled in `.claude/settings.json` (`method`, `stack-web-ts`), called
+as `plugin:skill`, and from `.claude/skills/` for what only TriviaMore has. Each machine installs
+each plugin once: `claude plugin install <plugin>@<marketplace> --scope project`. Beyond the routing
+below: `method:spec-interview` to decide a large feature, `method:feature-review` after a UI change,
+`method:pre-pr-checklist` before a PR.
 
 ## Commands
 

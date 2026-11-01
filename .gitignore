@@ -32,8 +32,3 @@ storybook-static/
 .cache/
 catalog-diff.md
 
-# Terraform: providers and local state stay out; the lock file is committed.
-infra/**/.terraform/
-*.tfstate
-*.tfstate.*
-*.tfplan

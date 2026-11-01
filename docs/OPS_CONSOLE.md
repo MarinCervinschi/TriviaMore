@@ -111,7 +111,7 @@ apart:
 inside the app, and a second instance on the console's domain would have been one more thing to keep in
 step for no gain: Access already admits only the owner, and the console verifies its token. The identity
 is the email in that token; the owner's TriviaMore profile is looked up by it for the name and photo. The domain, the DNS record and the Access application are in
-Terraform (`infra/access.tf`, #203).
+Terraform (#203).
 
 ## Connections
 
