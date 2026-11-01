@@ -12,6 +12,9 @@
 # Repo settings: an optional .check-public file at the top of the repo, one directive per line:
 #   ignore <glob>        never scan matching paths (lockfiles, seed data)
 #   allow-name <regex>   skip the deny-list line that is exactly <regex> (a name this repo publishes on purpose)
+#   allow <regex> [in <glob>]
+#                        never report a match that <regex> covers, of any check, optionally only in matching paths
+#                        (the project's own email domain, a word that collides with a deny-list name in one file)
 #   warn <label>         report this check without failing the scan (for example: warn em dash)
 # A line that contains "check-public: allow" is never reported.
 # Exit codes: 0 clean or warnings only, 1 findings, 2 the deny list is missing.
@@ -31,20 +34,21 @@ for arg in "$@"; do
 	esac
 done
 
-ignores="" allowed_names="" warns=""
+ignores="" allowed_names="" allows="" warns=""
 if [ -f .check-public ]; then
 	while IFS= read -r line || [ -n "$line" ]; do
 		case "$line" in
 		'ignore '*) ignores="$ignores${line#ignore }"$'\n' ;;
 		'allow-name '*) allowed_names="$allowed_names${line#allow-name }"$'\n' ;;
+		'allow '*) allows="$allows${line#allow }"$'\n' ;;
 		'warn '*) warns="$warns${line#warn }"$'\n' ;;
 		esac
 	done <.check-public
 fi
 
-skipped() { # <path>: the scanner, the deny list and the repo's ignore globs
+skipped() { # <path>: the scanner, the deny list, the repo's settings (which name what it allows) and its ignore globs
 	local glob
-	if [ "$1" = "$self" ] || [ "$1" = "$denylist" ]; then return 0; fi
+	if [ "$1" = "$self" ] || [ "$1" = "$denylist" ] || [ "$1" = ".check-public" ]; then return 0; fi
 	while IFS= read -r glob; do
 		[ -n "$glob" ] || continue
 		# shellcheck disable=SC2254
@@ -102,17 +106,38 @@ fi
 
 found=0
 warned=0
+allowed() { # <path> <match> <grep -E flags>: an "allow" line of .check-public covers this match in this path
+	local rule regex glob
+	while IFS= read -r rule; do
+		[ -n "$rule" ] || continue
+		regex="$rule" glob=""
+		case "$rule" in *' in '*) regex="${rule% in *}" glob="${rule##* in }" ;; esac
+		if [ -n "$glob" ]; then
+			# shellcheck disable=SC2254
+			case "$1" in $glob) ;; *) continue ;; esac
+		fi
+		# shellcheck disable=SC2086
+		if printf '%s\n' "$2" | grep -qE $3 -- "$regex"; then return 0; fi
+	done <<<"$allows"
+	return 1
+}
+
 report() { # <label> <grep -E flags> <pattern> [exclude pattern, applied to each match]
 	local label="$1" flags="$2" pattern="$3" exclude="${4:-}" hits
 	# The pattern has to match after the path:line: prefix, so a path alone never counts as a finding.
 	# shellcheck disable=SC2086
 	hits=$(grep -E $flags -- "^[^:]+:[0-9]+:.*($pattern)" "$lines" | grep -v 'check-public: allow' || true)
-	if [ -n "$exclude" ] && [ -n "$hits" ]; then
-		# Keep a line only if one of its matches is not excluded: a loopback address next to a real one still counts.
+	if { [ -n "$exclude" ] || [ -n "$allows" ]; } && [ -n "$hits" ]; then
+		# Keep a line only if one of its matches is neither excluded nor allowed: a loopback address next to a real
+		# one still counts.
 		hits=$(printf '%s\n' "$hits" | while IFS= read -r line; do
-			if printf '%s\n' "${line#*:*:}" | grep -oE $flags -- "$pattern" | grep -vqE -- "$exclude"; then
+			# shellcheck disable=SC2086
+			printf '%s\n' "${line#*:*:}" | grep -oE $flags -- "$pattern" | while IFS= read -r match; do
+				if [ -n "$exclude" ] && printf '%s\n' "$match" | grep -qE $flags -- "$exclude"; then continue; fi
+				if allowed "${line%%:*}" "$match" "$flags"; then continue; fi
 				printf '%s\n' "$line"
-			fi
+				break
+			done
 		done)
 	fi
 	[ -n "$hits" ] || return 0
@@ -134,13 +159,22 @@ report "Google API key" "" 'AIza[0-9A-Za-z_-]{35}'
 report "JWT" "" 'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.'
 report "Infisical token" "" 'st\.[0-9a-f-]{36}\.'
 report "Garage key id" "" '\bGK[0-9a-f]{24}\b'
-report "long hex secret" "" '\b[0-9a-f]{40,}\b'
-report "secret assignment" "-i" '(password|passwd|secret|token|api[_-]?key)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{12,}["'"'"']'
-report "UUID (project or resource id)" "-i" '\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b'
-report "IPv4 address" "" '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' '\b(127\.0\.0\.1|0\.0\.0\.0)\b'
+# Image digests (sha256:<hex>) pin a public image, they are not secrets.
+report "long hex secret" "" '(sha256:)?\b[0-9a-f]{40,}\b' '^sha256:'
+# A value that is a shell variable ("$VAR", "${VAR}") names a secret without holding it.
+report "secret assignment" "-i" '(password|passwd|secret|token|api[_-]?key)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{12,}["'"'"']' \
+	'[:=][[:space:]]*["'"'"']\$'
+# The nil UUID and fixtures that start like it are made up.
+report "UUID (project or resource id)" "-i" '\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b' '^0{8}-0{4}-'
+# A match that runs on past four parts, or has a part above 255, is a version or SVG path data; loopback and the
+# documentation ranges (RFC 5737) are not anyone's address.
+report "IPv4 address" "" '\b([0-9]{1,3}\.){3}[0-9]{1,3}(\.[0-9]+)*\b' \
+	'^([0-9]+\.){4}|(^|\.)(25[6-9]|2[6-9][0-9]|[3-9][0-9]{2})(\.|$)|^(127\.0\.0\.1|0\.0\.0\.0)$|^(192\.0\.2|198\.51\.100|203\.0\.113)\.'
 report "tailnet name" "-i" '\.ts\.net\b|\btail[0-9a-f]{5,}\b'
 report "machine path" "" '/Users/[A-Za-z]|/home/[a-z]'
-report "email address" "-i" '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}' '@example\.(com|org|net)|noreply@'
+# The reserved example domains and top-level domains (RFC 2606) reach no one.
+report "email address" "-i" '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}' \
+	'@example\.(com|org|net)$|\.(test|example|invalid|localhost)$|noreply@'
 report "em dash" "" '—'
 
 if [ -f "$denylist" ]; then
