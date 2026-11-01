@@ -234,11 +234,11 @@ goes into `scripts/smoke/read-endpoints.ts`, unless `requireAdmin()` guards it (
 request's cookies). `pnpm test` is the offline tier only; the database-backed tests are
 `pnpm test:db`.
 
-Every push runs `scripts/check-public.sh --pushed` from `.githooks/pre-push` (enable it once per
-clone: `git config core.hooksPath .githooks`). It blocks secrets, addresses, ids and private names in
-the lines the push adds, and stops with exit code 2 unless `CLAUDE_KIT_DENYLIST` points at the private
-deny list. Its settings are in `.check-public`; the script is a copy of the one in `claude-kit`, and
-changes go there first.
+Every push runs `scripts/check-public.sh` from `.githooks/pre-push` (enable it once per clone:
+`git config core.hooksPath .githooks`). It blocks secrets, addresses, ids and private names in every
+file the push carries, and stops with exit code 2 unless `CLAUDE_KIT_DENYLIST` points at the private
+deny list. Its settings are in `.check-public`, where an `allow` line covers a value the repo publishes
+on purpose; the script is a copy of the one in `claude-kit`, and changes go there first.
 
 Components live in Storybook: every `ui/` primitive has a story, and so does every shared component.
 **For writing or fixing a story, or anything under `.storybook/`, use the `storybook` skill** — it

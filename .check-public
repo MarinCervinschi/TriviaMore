@@ -1,7 +1,20 @@
 # Settings for scripts/check-public.sh, a copy of the scan in MarinCervinschi/claude-kit (edit it there).
-# The pre-push hook in .githooks/ runs it on the lines a push adds.
+# The pre-push hook in .githooks/ runs it on every file a push carries.
 ignore drizzle/meta/*.json
 ignore drizzle/archive/meta/*.json
 ignore pnpm-lock.yaml
 allow-name trivia-more\.it
 warn em dash
+# The project's own domain (seed accounts, the privacy contact, tests), the university's domains in fixtures,
+# and the forms' example address.
+allow @trivia-more\.it$
+allow @(studenti\.)?unimore\.it$
+allow @esempio\.com$
+allow @(evil-trivia-more\.it|gmail\.com)$ in src/lib/auth/rules.test.ts
+# The landing's CSS animation, not the deny-list name.
+allow ^orbit$ in src/components/landing/orbiting-tech-stack.tsx
+allow ^orbit$ in src/styles/globals.css
+# The two evaluation modes the baseline seeds.
+allow ^(e90fbf12-88c8-422a-9a5c-7ad376e1fbfc|6c1fe591-a4ae-42ca-b998-63b4b6622c5c)$ in drizzle/0000_baseline.sql
+# Path data of the GitHub logo that happens to look like an address.
+allow ^3\.176\.77\.84$ in src/components/auth/oauth-buttons.tsx
