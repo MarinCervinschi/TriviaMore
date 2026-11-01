@@ -37,8 +37,8 @@ already sends its own mail with `nodemailer`; GoTrue uses the same SMTP for its 
 - **Upkeep:** the Coolify template lags Supabase by months. Kong 3.9.1 is the last open-source image, Supabase's
   own compose moved to Envoy, and MinIO was archived in April 2026, which already broke a restart once.
 
-**What there is.** The production VPS (`savvy`, 4 Ampere cores, 24 GB) runs Coolify behind Cloudflare. A second
-server, `rieti` (AMD FX-770K, 4 cores, 7.7 GB, 500 GB disk), is on the same tailnet and attached to Coolify.
+**What there is.** The production VPS runs Coolify behind Cloudflare. A second, smaller server at home is on
+the same tailnet and attached to Coolify.
 Terraform already manages the ops console, its DNS record and its Cloudflare Access application (#203), with
 the secrets in Infisical.
 
@@ -48,7 +48,7 @@ the secrets in Infisical.
 
 A plain `postgres:17` container, managed by Coolify and declared in Terraform. Its port is bound to the tailnet
 address only. The schema stays in Drizzle; a new baseline replaces `0000` so the migrations rebuild an empty
-database, without the `auth` schema and without Supabase's roles. Backups run on a schedule to `rieti`, off the
+database, without the `auth` schema and without Supabase's roles. Backups run on a schedule to the home server, off the
 VPS.
 
 ### Authentication in the app, with Better Auth
@@ -71,16 +71,16 @@ images, same 14 containers).
 
 ### A self-hosted S3 store
 
-Garage: one binary, sized for small installations. Production uses the shared Garage on savvy, staging the backup
-Garage on rieti, and both expose their S3 API on the tailnet only. So the browser never talks to S3: uploads go
+Garage: one binary, sized for small installations. Production uses a Garage shared with other apps, staging the backup
+Garage on the home server, and both expose their S3 API on the tailnet only. So the browser never talks to S3: uploads go
 through a server function, which checks the bytes and chooses the key, and private attachments are streamed by the
 app after the same scope check as the request they belong to. Public files are served by Garage's web endpoint on
 `media.trivia-more.it` (`media-pr.trivia-more.it` on staging).
 
-### A staging environment on `rieti`
+### A staging environment on the home server
 
-Staging is a full copy of the stack on `rieti`: the app, Postgres, the S3 store and Mailpit. The preview app
-moves there, and its branch `preview` becomes `staging`. Keeping only the database on `rieti` was set aside, because every query would then cross from the
+Staging is a full copy of the stack on the home server: the app, Postgres, the S3 store and Mailpit. The preview app
+moves there, and its branch `preview` becomes `staging`. Keeping only the database at home was set aside, because every query would then cross from the
 VPS to a home connection, at 10 to 40 ms each.
 
 - **Exposure:** a Cloudflare Tunnel, so no port opens at home, with Cloudflare Access in front.
@@ -95,7 +95,7 @@ VPS to a home connection, at 10 to 40 ms each.
 - **Rebuildable:** `db:reset` drops the database, applies the migrations of `staging`, synchronises the
   catalogue and runs the seed. A staging whose schema drifted is rebuilt from scratch.
 
-The limit accepted: staging depends on the power and the connection of the place `rieti` is in.
+The limit accepted: staging depends on the power and the connection of the place the home server is in.
 
 ### Local development works on staging
 
@@ -121,8 +121,9 @@ Regular backups of production come with its new Postgres (#212), from Coolify's 
 
 ### Infrastructure as code for every service
 
-Terraform holds shared modules (`app`, `database`, `storage`, `access`) and one root per environment,
-`infra/envs/staging` on `rieti` and `infra/envs/prod` on the VPS, each with its own state on R2. Infisical keeps
+Terraform, in a private infrastructure repository since 2026-11-01, holds shared modules (`app`, `database`,
+`storage`, `access`) and one root per environment, staging at home and production on the VPS, each with its own
+state on R2. Infisical keeps
 one environment per target (`dev` points at staging, `staging`, `prod`) and one folder per concern:
 
 | Folder | Holds |
@@ -150,7 +151,7 @@ Each phase ships on its own, and Supabase keeps running until the last one.
 
 1. **This ADR**, the `safe-changes` skill, and `CLAUDE.md` updated.
 2. **A baseline without Supabase:** the migrations rebuild an empty Postgres. Every later phase needs it.
-3. **Staging on `rieti`**, in Terraform: Postgres, the S3 store, the app, Mailpit, the tunnel and Access; the
+3. **Staging on the home server**, in Terraform: Postgres, the S3 store, the app, Mailpit, the tunnel and Access; the
    catalogue synchronised, the seed written.
 4. **Migrations:** CI checks on every pull request, and the scripts that apply them by hand to staging and to
    production.

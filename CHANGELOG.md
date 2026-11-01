@@ -70,12 +70,12 @@ No migrations.
 TriviaMore stops relying on Supabase for sign-in and files (#206). Authentication runs inside the
 app on Better Auth, and files live on the self-hosted Garage, served on `media.trivia-more.it`.
 Existing passwords and Google and GitHub accounts keep working, but every open session ends once.
-The release also brings the staging environment on `rieti` and migrations applied by hand.
+The release also brings a staging environment on a server of its own and migrations applied by hand.
 
 ### Added
 
 - **Password reset**, from the login page, with a link sent by email. (#211)
-- **Staging on `rieti`**: the app, Postgres, Mailpit and the tunnel behind Cloudflare Access, rebuilt
+- **Staging on its own server**: the app, Postgres, Mailpit and the tunnel behind Cloudflare Access, rebuilt
   from scripts with `pnpm db:reset-staging`. Password sign-up is off there, and OAuth accepts only a
   verified `@trivia-more.it` email. (#208, #211)
 - `scripts/db/migrations.ts` applies each migration in its own transaction and prints the statement
