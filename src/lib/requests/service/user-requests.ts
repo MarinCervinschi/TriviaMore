@@ -76,13 +76,16 @@ async function resolveTarget(
 		if (question) sectionId = question.sectionId;
 	}
 
-	if (sectionId && !classId) {
+	if (sectionId) {
 		const [section] = await db
 			.select({ classId: sections.classId })
 			.from(sections)
 			.where(eq(sections.id, sectionId))
 			.limit(1);
 		if (!section) throw new NotFound("Sezione non trovata");
+		if (classId && classId !== section.classId) {
+			throw new Invalid("La sezione non appartiene a questo insegnamento");
+		}
 		classId = section.classId;
 	}
 
