@@ -58,3 +58,26 @@ export async function withRollback<T>(body: (tx: TestTx) => Promise<T>): Promise
 	}
 	return result!;
 }
+
+let bound: TestTx | null = null;
+
+/** What a test that mocks `@/db` returns from `getDb()`: every call reaches the transaction of `withBoundRollback`. */
+export const boundTx = new Proxy({} as TestTx, {
+	get(_, property) {
+		if (!bound) throw new Error("boundTx used outside withBoundRollback");
+		const value = Reflect.get(bound, property);
+		return typeof value === "function" ? value.bind(bound) : value;
+	},
+});
+
+/** `withRollback`, with `boundTx` pointing at its transaction while the body runs. */
+export function withBoundRollback<T>(body: (tx: TestTx) => Promise<T>): Promise<T> {
+	return withRollback(async tx => {
+		bound = tx;
+		try {
+			return await body(tx);
+		} finally {
+			bound = null;
+		}
+	});
+}

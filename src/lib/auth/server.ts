@@ -120,6 +120,8 @@ function createAuth() {
 				},
 			},
 		},
+		// Profile edits go through updateProfile, so nothing calls this route.
+		disabledPaths: ["/update-user"],
 		plugins: [tanstackStartCookies()],
 	});
 }
