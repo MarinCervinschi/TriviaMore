@@ -11,6 +11,9 @@ const HEALTH_PATH = "/api/health";
 
 const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
 
+// Better Auth's reset-password link carries its live token as a path segment.
+const RESET_LINK = /(\/reset-password\/)[^/]+/gi;
+
 const DISCONNECT_CODES = new Set([
 	"ABORT_ERR",
 	"AbortError",
@@ -27,6 +30,10 @@ function isAsset(pathname: string): boolean {
 		pathname.startsWith("/@") ||
 		ASSET_PATTERN.test(pathname)
 	);
+}
+
+function loggedPath(pathname: string): string {
+	return pathname.replace(RESET_LINK, "$1:token");
 }
 
 function isDisconnect(error: unknown, request: Request): boolean {
@@ -67,9 +74,10 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 	async ({ pathname, request, next }) => {
 		if (isAsset(pathname) || pathname === HEALTH_PATH) return next();
 
+		const path = loggedPath(pathname);
 		const context = createContext({
 			source: pathname.startsWith(SERVER_FN_BASE) ? "fn" : "ssr",
-			path: pathname,
+			path,
 		});
 
 		return runWithContext(context, async () => {
@@ -98,7 +106,7 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 				const disconnected = status === undefined && isDisconnect(failure, request);
 				const properties = {
 					Method: request.method,
-					Path: pathname,
+					Path: path,
 					...(status === undefined ? {} : { Status: status }),
 					Elapsed: elapsed,
 					Outcome: context.outcome ?? outcomeFor(status, disconnected),
