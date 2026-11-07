@@ -197,6 +197,9 @@ Logs go to Seq (`docs/OBSERVABILITY.md`). The context carries the user id, never
 contain `password`, `token`, `secret`, `apikey` and the like are replaced with `[redacted]`, and query spans
 carry the statement text without its parameters. Never pass a whole object to `log`.
 
+The Umami tracker loads with `data-exclude-search`, so it records page URLs and referrers without their query
+string. The auth pages carry the reset token and the sign-up email there.
+
 ## Not in place
 
 - **Security headers:** the app sets none. There is no CSP, `X-Frame-Options`, `X-Content-Type-Options`,
