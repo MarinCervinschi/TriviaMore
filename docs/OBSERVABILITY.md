@@ -173,6 +173,10 @@ Emails, passwords, tokens, cookies, `Authorization` headers, service keys, quest
 and **query parameter values** — the pool wrapper logs SQL text only. A Postgres error contributes
 its `code` and `constraint`; `detail` is dropped because it quotes the offending row.
 
+`Path` is the pathname without the query string. The canonical line logs the password-reset link as
+`/api/auth/reset-password/:token`, because Better Auth puts the live token in that path segment. The
+exception text in `@x` keeps at most 4 000 characters of each error in the cause chain.
+
 Users are identified by uuid. IP addresses are personal data: they are not logged today, and adding
 them would mean saying so in the privacy policy.
 
@@ -228,12 +232,15 @@ Set a retention policy. 30 days is plenty.
 
 ## Operational behaviour
 
-Batches flush on **100 events / 256 KB / 2 s**, whichever comes first.
+Batches flush on **100 events / 256 KB / 2 s**, whichever comes first. A flush sends the queue in as
+many requests as it takes, each holding at most 100 events and 256 KB. An event larger than 256 KB
+goes out in a request of its own.
 
 Seq being unreachable costs log lines and nothing else. A failed batch is **discarded, not
 requeued** — retrying a backlog against a dead Seq grows the queue until the process dies — and the
-failure is reported to the console at most once every 30 s. Beyond 10 000 queued events the shipper
-drops and counts.
+batches after it are still sent. A request gives up after 10 s. The failure is reported to the
+console at most once every 30 s, with the number of events lost since the last report. Beyond
+10 000 queued events or 10 MB the shipper drops and counts.
 
 Flushes are hooked to `SIGTERM`/`SIGINT`, which Coolify sends on every redeploy, and to `beforeExit`
 for scripts. The signal is re-raised after the flush so the default disposition still applies.
@@ -266,8 +273,11 @@ When a user reports an error, the toast carries the first 8 characters of the tr
 The API key can never reach the bundle, so the browser cannot POST to Seq. `src/lib/logging/browser.ts`
 is the client entry point — the *only* logging module a component may import — and it POSTs to the
 `/api/log` server route, which holds the key, validates against a strict schema
-(`src/lib/logging/schemas.ts`), rate-limits per IP, and re-stamps `Source=browser` so the client
-cannot forge it. The IP is a rate-limit key only; it is never logged.
+(`src/lib/logging/schemas.ts`), rate-limits per IP, and stamps `Source=browser` and `Version` after
+the client's properties. The schema rejects an event whose properties use a name the server, the Seq
+API key or the canonical line sets (`Source`, `Version`, `UserId`, `Environment`, `Fn`, `Outcome`,
+`Status` and the rest of the list in the schema), compared without case. The IP is a rate-limit key
+only; it is never logged.
 
 Three sources feed it, and nothing else — navigation breadcrumbs and clicks are product analytics and
 would multiply the volume:
