@@ -1,9 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 
-import { requireAdmin, requireSuperadmin } from "@/lib/auth/guards";
-import { readSession } from "@/lib/auth/server";
-import { attachUser } from "@/lib/logging/context";
-import { timeAuthCheck } from "@/lib/logging/server";
+import { readActiveSession, requireAdmin, requireSuperadmin } from "@/lib/auth/guards";
 
 import { Unauthorized } from "../errors";
 
@@ -13,11 +10,10 @@ type SessionUser = {
 };
 
 async function readSessionUser(): Promise<SessionUser | null> {
-	const session = await timeAuthCheck(readSession);
-	if (!session) return null;
-	// Only the id, so no email reaches Seq.
-	attachUser(session.user.id);
-	return { id: session.user.id, email: session.user.email };
+	const active = await readActiveSession();
+	if (!active) return null;
+	const { user } = active.session;
+	return { id: user.id, email: user.email };
 }
 
 export const authMiddleware = createMiddleware({ type: "function" }).server(

@@ -5,9 +5,9 @@ import { getDb } from "@/db";
 import { insertLegalAcceptances } from "@/lib/legal/service";
 
 import { findProfile } from "./db/profiles";
-import { toAuthUser } from "./guards";
+import { getAuthUser, toAuthUser } from "./guards";
 import type { LoginInput, OAuthProvider, RegisterInput } from "./schemas";
-import { getAuth, readSession } from "./server";
+import { getAuth } from "./server";
 import type { AuthResult, AuthSession, SignupResult } from "./types";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -36,13 +36,8 @@ function confirmUrl(from: "signup" | "login") {
 }
 
 export async function getSession(): Promise<AuthSession | null> {
-	const session = await readSession();
-	if (!session) return null;
-
-	const profile = await findProfile(getDb(), session.user.id);
-	if (!profile) return null;
-
-	return { user: toAuthUser(profile) };
+	const user = await getAuthUser();
+	return user ? { user } : null;
 }
 
 export async function login(input: LoginInput): Promise<AuthResult> {
