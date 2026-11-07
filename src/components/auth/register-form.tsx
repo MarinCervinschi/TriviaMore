@@ -15,7 +15,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/useAuth";
 import { track } from "@/lib/analytics/track";
 import { type RegisterInput, registerSchema } from "@/lib/auth/schemas";
@@ -29,8 +28,6 @@ export function RegisterForm() {
 		defaultValues: {
 			name: "",
 			email: "",
-			password: "",
-			password_confirm: "",
 			terms_accepted: false,
 			privacy_accepted: false,
 		},
@@ -81,40 +78,6 @@ export function RegisterForm() {
 									type="email"
 									placeholder="nome@esempio.com"
 									autoComplete="email"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="password"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Password</FormLabel>
-							<FormControl>
-								<PasswordInput
-									placeholder="Min. 6 caratteri, maiuscola e numero"
-									autoComplete="new-password"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="password_confirm"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Conferma password</FormLabel>
-							<FormControl>
-								<PasswordInput
-									placeholder="Ripeti la password"
-									autoComplete="new-password"
 									{...field}
 								/>
 							</FormControl>

@@ -1,5 +1,5 @@
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -18,9 +18,35 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { resetPasswordFn } from "@/lib/auth/api";
 import { type ResetPasswordInput, resetPasswordSchema } from "@/lib/auth/schemas";
 
-export function ResetPasswordForm({ token }: { token: string }) {
+export type PasswordFormVariant = "signup" | "reset";
+
+const COPY: Record<
+	PasswordFormVariant,
+	{ password: string; confirm: string; submit: string }
+> = {
+	signup: {
+		password: "Password",
+		confirm: "Conferma la password",
+		submit: "Salva e accedi",
+	},
+	reset: {
+		password: "Nuova password",
+		confirm: "Conferma la nuova password",
+		submit: "Cambia password",
+	},
+};
+
+export function ResetPasswordForm({
+	token,
+	variant = "reset",
+}: {
+	token: string;
+	variant?: PasswordFormVariant;
+}) {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const reset = useMutation({ mutationFn: resetPasswordFn });
+	const copy = COPY[variant];
 
 	const form = useForm<ResetPasswordInput>({
 		resolver: standardSchemaResolver(resetPasswordSchema),
@@ -33,8 +59,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
 			toast.error(result.error);
 			return;
 		}
-		toast.success("Password cambiata. Accedi con la nuova password.");
-		navigate({ to: "/auth/login" });
+		if (!result.signedIn) {
+			toast.success("Password salvata. Accedi con la nuova password.");
+			navigate({ to: "/auth/login" });
+			return;
+		}
+		await queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+		toast.success(result.newAccount ? "Account attivato" : "Password cambiata");
+		navigate({ to: result.newAccount ? "/onboarding" : "/" });
 	}
 
 	return (
@@ -45,9 +77,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Nuova password</FormLabel>
+							<FormLabel>{copy.password}</FormLabel>
 							<FormControl>
-								<PasswordInput autoComplete="new-password" {...field} />
+								<PasswordInput
+									placeholder="Min. 6 caratteri, maiuscola e numero"
+									autoComplete="new-password"
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -58,9 +94,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
 					name="password_confirm"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Conferma la nuova password</FormLabel>
+							<FormLabel>{copy.confirm}</FormLabel>
 							<FormControl>
-								<PasswordInput autoComplete="new-password" {...field} />
+								<PasswordInput
+									placeholder="Ripeti la password"
+									autoComplete="new-password"
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -78,7 +118,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 							Salvataggio...
 						</>
 					) : (
-						"Cambia password"
+						copy.submit
 					)}
 				</Button>
 			</form>

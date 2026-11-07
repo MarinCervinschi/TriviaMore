@@ -17,6 +17,8 @@ import { hashPassword, isAllowedEmail, verifyPassword } from "./rules";
 
 const LINK_EXPIRES_IN_SECONDS = 60 * 60;
 const SESSION_CACHE_SECONDS = 5 * 60;
+const PASSWORD_PAGE = "/auth/reset-password";
+const OAUTH_SIGN_UP_PATHS = new Set(["/callback/:id", "/sign-in/social"]);
 
 function sendAuthLink(to: string, purpose: AuthLinkPurpose, url: string) {
 	const email = renderAuthLinkEmail({
@@ -28,6 +30,20 @@ function sendAuthLink(to: string, purpose: AuthLinkPurpose, url: string) {
 	void sendMail({ to, ...email }).catch(error =>
 		log.error("Auth email {Purpose} not sent", { Purpose: purpose }, error)
 	);
+}
+
+/** The same link, landing on the sign-up variant of the password page. */
+function signupLink(url: string) {
+	const link = new URL(url);
+	link.searchParams.set("callbackURL", `${PASSWORD_PAGE}?from=signup`);
+	return link.href;
+}
+
+/** Mails a link to choose the password; the address is confirmed once it is used. */
+export async function sendPasswordLink(email: string) {
+	await getAuth().api.requestPasswordReset({
+		body: { email, redirectTo: PASSWORD_PAGE },
+	});
 }
 
 function socialProviders() {
@@ -80,16 +96,23 @@ function createAuth() {
 			resetPasswordTokenExpiresIn: LINK_EXPIRES_IN_SECONDS,
 			revokeSessionsOnPasswordReset: true,
 			password: { hash: hashPassword, verify: verifyPassword },
-			sendResetPassword: async ({ user, url }) =>
-				sendAuthLink(user.email, "reset-password", url),
+			sendResetPassword: async ({ user, url }) => {
+				if (user.emailVerified) sendAuthLink(user.email, "reset-password", url);
+				else sendAuthLink(user.email, "set-password", signupLink(url));
+			},
+			onPasswordReset: async ({ user }) => {
+				if (user.emailVerified) return;
+				const context = await getAuth().$context;
+				await context.internalAdapter.updateUser(user.id, { emailVerified: true });
+			},
+			onExistingUserSignUp: async ({ user }) => {
+				if (!user.emailVerified) await sendPasswordLink(user.email);
+			},
 		},
 		emailVerification: {
-			sendOnSignUp: true,
-			sendOnSignIn: true,
-			autoSignInAfterVerification: true,
-			expiresIn: LINK_EXPIRES_IN_SECONDS,
-			sendVerificationEmail: async ({ user, url }) =>
-				sendAuthLink(user.email, "verify-email", url),
+			sendOnSignUp: false,
+			sendOnSignIn: false,
+			autoSignInAfterVerification: false,
 		},
 		socialProviders: socialProviders(),
 		session: {
@@ -112,14 +135,15 @@ function createAuth() {
 		databaseHooks: {
 			user: {
 				create: {
-					after: async user => {
+					after: async (user, context) => {
+						const oauth = OAUTH_SIGN_UP_PATHS.has(context?.path ?? "");
 						await getDb()
 							.insert(profiles)
 							.values({
 								id: user.id,
 								name: user.name || null,
 								email: user.email,
-								image: user.image ?? null,
+								image: oauth ? (user.image ?? null) : null,
 							})
 							.onConflictDoNothing();
 					},
@@ -132,8 +156,13 @@ function createAuth() {
 				create: { before: async account => !(await isAnonymized(account.userId)) },
 			},
 		},
-		// Profile edits go through updateProfile, so nothing calls this route.
-		disabledPaths: ["/update-user"],
+		// A server function or the password link does each of these instead.
+		disabledPaths: [
+			"/update-user",
+			"/sign-up/email",
+			"/verify-email",
+			"/send-verification-email",
+		],
 		plugins: [tanstackStartCookies()],
 	});
 }

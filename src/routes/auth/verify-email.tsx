@@ -35,13 +35,9 @@ function VerifyEmailPage() {
 
 	const resend = useMutation({
 		mutationFn: resendConfirmationFn,
-		onSuccess: result => {
-			if (result.success) {
-				toast.success("Email inviata di nuovo. Controlla la tua casella di posta.");
-				setCooldown(RESEND_COOLDOWN_SECONDS);
-			} else {
-				toast.error(result.error);
-			}
+		onSuccess: () => {
+			toast.success("Se l'account è ancora da attivare, riceverai un nuovo link.");
+			setCooldown(RESEND_COOLDOWN_SECONDS);
 		},
 		onError: () => {
 			toast.error("Impossibile inviare l'email. Riprova più tardi.");
@@ -61,7 +57,7 @@ function VerifyEmailPage() {
 	return (
 		<AuthCard
 			title="Controlla la tua casella di posta"
-			description="Ti abbiamo inviato un link di conferma"
+			description="Ti abbiamo inviato un link per confermare l'email e scegliere la password"
 		>
 			<div className="grid gap-6">
 				<div className="flex justify-center">
@@ -73,14 +69,14 @@ function VerifyEmailPage() {
 				<div className="text-muted-foreground text-center text-sm">
 					{email ? (
 						<>
-							Abbiamo inviato un link di conferma a{" "}
-							<span className="text-foreground font-semibold">{email}</span>. Clicca sul
-							link per attivare il tuo account.
+							Abbiamo inviato il link a{" "}
+							<span className="text-foreground font-semibold">{email}</span>. Aprilo e
+							scegli la password: l'account si attiva quando la salvi.
 						</>
 					) : (
 						<>
-							Clicca sul link che ti abbiamo inviato via email per attivare il tuo
-							account.
+							Apri il link che ti abbiamo inviato e scegli la password: l'account si
+							attiva quando la salvi.
 						</>
 					)}
 				</div>
