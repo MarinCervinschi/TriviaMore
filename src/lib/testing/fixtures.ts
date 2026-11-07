@@ -6,6 +6,7 @@ import {
 	departments,
 	evaluationModes,
 	profiles,
+	questions,
 	sectionAccess,
 	sections,
 	users,
@@ -65,7 +66,7 @@ async function linkClassToCourse(
 		.values({ courseId, classId, code: `CC-${shortId()}`, classYear: 1 });
 }
 
-async function createSection(
+export async function createSection(
 	tx: TestTx,
 	classId: string,
 	isPublic: boolean,
@@ -76,6 +77,25 @@ async function createSection(
 		.insert(sections)
 		.values({ name, classId, isPublic })
 		.returning({ id: sections.id });
+	return row.id;
+}
+
+export async function createQuestion(
+	tx: TestTx,
+	sectionId: string,
+	questionType: "MULTIPLE_CHOICE" | "SHORT_ANSWER" = "MULTIPLE_CHOICE"
+): Promise<string> {
+	const [row] = await tx
+		.insert(questions)
+		.values({
+			sectionId,
+			content: `Domanda ${shortId()}`,
+			questionType,
+			options: questionType === "MULTIPLE_CHOICE" ? ["A", "B"] : null,
+			correctAnswer: ["A"],
+			explanation: "Spiegazione",
+		})
+		.returning({ id: questions.id });
 	return row.id;
 }
 
