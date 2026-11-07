@@ -80,9 +80,11 @@ Either is fine; what is not fine is neither.
 - **ADMIN** passes every content check. Its `department_admins` rows decide which notifications it receives and
   what its dashboard shows; they do not restrict what it may change.
 - **SUPERADMIN** is the only role for platform features (changelogs, news, user roles, department admins).
-- **Requests:** `requireRequestAdmin()` in `src/lib/requests/service/shared.ts` returns a MAINTAINER's course
-  ids; `requestScope()` narrows the list queries and `assertInScope()` checks a single request. A request aimed
-  at a private section stays with ADMIN and SUPERADMIN.
+- **Requests:** `createRequest` takes a request's class from its section and refuses a different one.
+  `assertInScope()` in `src/lib/requests/service/shared.ts` checks a single request's stored section with
+  `sectionScope()` and its class with `classInMaintainedScope()`, the checks of the direct content paths.
+  `requireRequestAdmin()` returns a MAINTAINER's course ids, and `requestScope()` narrows the list queries with
+  them. A request aimed at a private section stays with ADMIN and SUPERADMIN.
 
 A role changes only through `updateUserRoleFn`, which requires SUPERADMIN and removes the department and
 course assignments the new role no longer has. No other endpoint accepts a `role` field.
@@ -155,7 +157,7 @@ and chooses the key; the client never names a path.
 - **Attachments** (`uploadAttachment` in `src/lib/requests/service/user-requests.ts`): at most 10 MB, extension
   `pdf` or `docx`, and the first four bytes must match that format.
 - **Reading an attachment:** `/api/requests/$requestId/attachment` calls `readAttachment()`, which applies the
-  same `requireRequestAdmin()` and `assertInScope()` as the request itself, then streams the object with
+  same `assertInScope()` as the request itself, then streams the object with
   `content-disposition: attachment` and `cache-control: private, no-store`. There are no signed URLs.
 
 ## Secrets

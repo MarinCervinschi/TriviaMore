@@ -10,7 +10,11 @@ import {
 	profiles,
 	sections,
 } from "@/db/schema";
-import { maintainedCourseIds } from "@/lib/admin/access";
+import {
+	classInMaintainedScope,
+	maintainedCourseIds,
+	sectionScope,
+} from "@/lib/admin/access";
 import { requireAdmin } from "@/lib/auth/guards";
 import type { AuthUser } from "@/lib/auth/types";
 import { Forbidden, Invalid, NotFound } from "@/lib/server/errors";
@@ -20,15 +24,12 @@ import type { ContentRequest, RequestUser, SubmittedContent } from "../types";
 
 /** A `null` scope means ADMIN or SUPERADMIN, who are unscoped. */
 export async function requireRequestAdmin(): Promise<{
-	user: AuthUser;
 	scopeCourseIds: Set<string> | null;
 }> {
 	const user = await requireAdmin();
-	if (user.role !== "MAINTAINER") return { user, scopeCourseIds: null };
-	return { user, scopeCourseIds: await maintainedCourseIds(getDb(), user.id) };
+	if (user.role !== "MAINTAINER") return { scopeCourseIds: null };
+	return { scopeCourseIds: await maintainedCourseIds(getDb(), user.id) };
 }
-
-type RequestTarget = Pick<ContentRequest, "targetCourseId" | "targetSectionId">;
 
 // A request aimed at a private section stays with ADMIN and SUPERADMIN, whatever its course.
 export function requestScope(db: DbOrTx, scopeCourseIds: Set<string> | null) {
@@ -49,27 +50,28 @@ export function requestScope(db: DbOrTx, scopeCourseIds: Set<string> | null) {
 	);
 }
 
+type RequestTarget = Pick<ContentRequest, "targetClassId" | "targetSectionId">;
+
 export async function assertInScope(
 	db: DbOrTx,
-	scopeCourseIds: Set<string> | null,
+	user: AuthUser,
 	target: RequestTarget
 ): Promise<void> {
+	if (user.role !== "MAINTAINER") return;
+
 	const denied = () => {
 		throw new Forbidden("Non hai i permessi per gestire questa richiesta.");
 	};
+	const { targetClassId, targetSectionId } = target;
 
-	if (!scopeCourseIds) return;
-	if (!target.targetCourseId || !scopeCourseIds.has(target.targetCourseId)) {
+	if (!targetClassId && !targetSectionId) denied();
+	if (targetSectionId) {
+		const scope = await sectionScope(db, user.id, targetSectionId);
+		if (!scope?.isPublic || !scope.inScope) denied();
+	}
+	if (targetClassId && !(await classInMaintainedScope(db, user.id, targetClassId))) {
 		denied();
 	}
-	if (!target.targetSectionId) return;
-
-	const [section] = await db
-		.select({ isPublic: sections.isPublic })
-		.from(sections)
-		.where(eq(sections.id, target.targetSectionId))
-		.limit(1);
-	if (section && !section.isPublic) denied();
 }
 
 // jsonb is only checked at write time, so every read re-validates it.

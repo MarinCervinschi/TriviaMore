@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
 import { applyApprovedRequest } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
+import { requireAdmin } from "@/lib/auth/guards";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
 import { getObject } from "@/lib/storage/server";
@@ -83,8 +84,8 @@ export async function getRequestDetail(
 	let author = null;
 	let handledByUser = null;
 	if (request.userId !== userId) {
-		const { scopeCourseIds } = await requireRequestAdmin();
-		await assertInScope(db, scopeCourseIds, request);
+		const admin = await requireAdmin();
+		await assertInScope(db, admin, request);
 
 		const users = await findRequestUsers(
 			db,
@@ -131,11 +132,11 @@ export async function handleRequest(input: {
 	status: "REJECTED" | "NEEDS_REVISION";
 	admin_note?: string;
 }) {
-	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
+	const admin = await requireAdmin();
 
 	await getDb().transaction(async tx => {
 		const request = await findRequestOrThrow(tx, input.id);
-		await assertInScope(tx, scopeCourseIds, request);
+		await assertInScope(tx, admin, request);
 
 		await tx
 			.update(contentRequests)
@@ -167,11 +168,11 @@ export async function handleRequest(input: {
 }
 
 export async function approveRequest(id: string) {
-	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
+	const admin = await requireAdmin();
 
 	const authorId = await getDb().transaction(async tx => {
 		const target = await findRequestOrThrow(tx, id);
-		await assertInScope(tx, scopeCourseIds, target);
+		await assertInScope(tx, admin, target);
 
 		// Atomic claim, so two concurrent approvals cannot both insert content.
 		const [claimed] = await tx
@@ -240,11 +241,11 @@ export async function approveRequest(id: string) {
 }
 
 export async function acknowledgeRequest(input: { id: string; admin_note?: string }) {
-	const { user: admin, scopeCourseIds } = await requireRequestAdmin();
+	const admin = await requireAdmin();
 
 	const authorId = await getDb().transaction(async tx => {
 		const request = await findRequestOrThrow(tx, input.id);
-		await assertInScope(tx, scopeCourseIds, request);
+		await assertInScope(tx, admin, request);
 
 		const note = input.admin_note?.trim() || null;
 
@@ -291,9 +292,9 @@ export async function readAttachment(
 	id: string
 ): Promise<{ body: ReadableStream | null; contentType: string; fileName: string }> {
 	const db = getDb();
-	const { scopeCourseIds } = await requireRequestAdmin();
+	const admin = await requireAdmin();
 	const request = await findRequestOrThrow(db, id);
-	await assertInScope(db, scopeCourseIds, request);
+	await assertInScope(db, admin, request);
 
 	const submitted = parseSubmittedContent(request.submittedContent);
 	if (submitted.type !== "file_upload")
