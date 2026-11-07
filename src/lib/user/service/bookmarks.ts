@@ -2,13 +2,20 @@ import { and, desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { bookmarks, classes, questions, sections } from "@/db/schema";
+import {
+	accessibleSectionsSql,
+	assertSectionAccess,
+	readsPrivateSections,
+} from "@/lib/auth/checks";
 import { sectionLocation } from "@/lib/catalog/db/section-location";
+import { NotFound } from "@/lib/server/errors";
 
 import type { UserBookmark } from "../types";
 
 export async function getUserBookmarks(userId: string): Promise<UserBookmark[]> {
 	const db = getDb();
 	const { primaryCourse, columns } = sectionLocation(db);
+	const readsPrivate = await readsPrivateSections(db, userId);
 
 	return db
 		.select({
@@ -27,7 +34,9 @@ export async function getUserBookmarks(userId: string): Promise<UserBookmark[]> 
 		.innerJoin(sections, eq(sections.id, questions.sectionId))
 		.innerJoin(classes, eq(classes.id, sections.classId))
 		.leftJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
-		.where(eq(bookmarks.userId, userId))
+		.where(
+			and(eq(bookmarks.userId, userId), accessibleSectionsSql(db, userId, readsPrivate))
+		)
 		.orderBy(desc(bookmarks.createdAt));
 }
 
@@ -43,7 +52,16 @@ export async function toggleBookmark(
 	userId: string,
 	questionId: string
 ): Promise<{ action: "added" | "removed" }> {
-	const inserted = await getDb()
+	const db = getDb();
+	const [question] = await db
+		.select({ sectionId: questions.sectionId })
+		.from(questions)
+		.where(eq(questions.id, questionId))
+		.limit(1);
+	if (!question) throw new NotFound("Domanda non trovata");
+	await assertSectionAccess(db, userId, question.sectionId);
+
+	const inserted = await db
 		.insert(bookmarks)
 		.values({ userId, questionId })
 		.onConflictDoNothing()
@@ -51,7 +69,7 @@ export async function toggleBookmark(
 
 	if (inserted.length > 0) return { action: "added" };
 
-	await getDb()
+	await db
 		.delete(bookmarks)
 		.where(and(eq(bookmarks.userId, userId), eq(bookmarks.questionId, questionId)));
 	return { action: "removed" };
