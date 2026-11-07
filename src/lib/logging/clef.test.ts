@@ -63,4 +63,32 @@ describe("toClef", () => {
 
 		expect(payload["@@weird"]).toBe("value");
 	});
+
+	it("bounds the exception text, however long the message", () => {
+		const exception = parse({ ...base(), error: new Error("x".repeat(500_000)) })[
+			"@x"
+		] as string;
+
+		expect(exception.startsWith("Error: xxx")).toBe(true);
+		expect(exception.length).toBeLessThanOrEqual(5_000);
+	});
+
+	it("keeps every cause in the chain, each one bounded", () => {
+		const root = new Error("root ".repeat(100_000));
+		const middle = new Error("middle ".repeat(100_000), { cause: root });
+		const top = new Error("top ".repeat(100_000), { cause: middle });
+
+		const exception = parse({ ...base(), error: top })["@x"] as string;
+
+		expect(exception).toContain("Error: top");
+		expect(exception).toContain("Caused by: Error: middle");
+		expect(exception).toContain("Caused by: Error: root");
+		expect(exception.length).toBeLessThanOrEqual(15_000);
+	});
+
+	it("bounds a thrown value that is not an Error", () => {
+		const exception = parse({ ...base(), error: "y".repeat(100_000) })["@x"] as string;
+
+		expect(exception.length).toBeLessThanOrEqual(5_000);
+	});
 });
