@@ -9,11 +9,39 @@ const propertyValue = z.union([
 	z.null(),
 ]);
 
+// Set by the server, by the Seq API key or on the canonical request line, never by the browser.
+const RESERVED = new Set(
+	[
+		"Source",
+		"Version",
+		"UserId",
+		"Environment",
+		"Application",
+		"Method",
+		"Status",
+		"Elapsed",
+		"Outcome",
+		"Fn",
+		"ErrorCode",
+		"ErrorConstraint",
+		"DbQueries",
+		"DbMs",
+		"AuthChecks",
+		"AuthMs",
+		"AppMs",
+	].map(name => name.toLowerCase())
+);
+
+const propertyName = z
+	.string()
+	.max(40)
+	.refine(name => !RESERVED.has(name.toLowerCase()), "reserved property");
+
 const browserEvent = z.object({
 	level: browserLevel,
 	template: z.string().min(1).max(300),
 	properties: z
-		.record(z.string().max(40), propertyValue)
+		.record(propertyName, propertyValue)
 		.refine(props => Object.keys(props).length <= 20, "too many properties")
 		.optional(),
 	error: z.string().max(4_000).optional(),
