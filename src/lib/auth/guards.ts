@@ -26,16 +26,21 @@ export function toAuthUser(profile: {
 	};
 }
 
-export async function getAuthUser(): Promise<AuthUser | null> {
+/** The request's session with its profile, or null when there is none or the account is anonymized. */
+export async function readActiveSession() {
 	const session = await timeAuthCheck(readSession);
 	if (!session) return null;
-	const { user } = session;
 
 	// Only the id, so no email reaches Seq.
-	attachUser(user.id);
+	attachUser(session.user.id);
 
-	const profile = await findProfile(getDb(), user.id);
-	return profile && !profile.anonymizedAt ? toAuthUser(profile) : null;
+	const profile = await findProfile(getDb(), session.user.id);
+	return profile && !profile.anonymizedAt ? { session, profile } : null;
+}
+
+export async function getAuthUser(): Promise<AuthUser | null> {
+	const active = await readActiveSession();
+	return active ? toAuthUser(active.profile) : null;
 }
 
 export async function requireAuth(): Promise<AuthUser> {

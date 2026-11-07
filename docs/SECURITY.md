@@ -38,8 +38,9 @@ Better Auth runs inside the app, configured in `src/lib/auth/server.ts`, on the 
   profile, not on the Better Auth user.
 - **Staging:** `AUTH_ALLOWED_EMAIL_DOMAIN` turns off password sign-up and rejects any user who is not a
   verified address of that domain. Production leaves it unset.
-- **Anonymized accounts:** `getAuthUser()` returns `null` for a profile with `anonymizedAt` set, and the
-  anonymization deletes the user's sessions and accounts.
+- **Anonymized accounts:** the anonymization deletes the user's sessions and accounts. `getAuthUser()` and the
+  auth middleware treat a profile with `anonymizedAt` set as no session, and Better Auth refuses to create a
+  session or an account for it.
 
 ## Authorization
 
@@ -57,8 +58,8 @@ they are also what route `beforeLoad` calls (through the server-function wrapper
 
 The middleware in `src/lib/server/middleware/auth.ts` is what an endpoint declares:
 
-- `authMiddleware` reads the session and puts `{ id, email }` in `context.user`, or throws `Unauthorized`. It
-  does not load the profile, so it does not know the role.
+- `authMiddleware` reads the session, checks that the profile is not anonymized and puts `{ id, email }` in
+  `context.user`, or throws `Unauthorized`. The context carries no role.
 - `optionalAuthMiddleware` does the same with `context.user` possibly `null`, for public reads that change
   with the user (section access, bookmarks).
 - `adminMiddleware` and `superadminMiddleware` wrap the guards and put the full `AuthUser` in the context.
