@@ -1,14 +1,15 @@
-export type AuthLinkPurpose = "verify-email" | "reset-password";
+export type AuthLinkPurpose = "set-password" | "reset-password";
 
 const COPY: Record<
 	AuthLinkPurpose,
 	{ subject: string; label: string; intro: string; button: string; outro: string }
 > = {
-	"verify-email": {
+	"set-password": {
 		subject: "Conferma la tua email su TriviaMore",
 		label: "conferma email",
-		intro: "Apri il link per confermare il tuo indirizzo email e attivare l'account.",
-		button: "Conferma email",
+		intro:
+			"Apri il link per confermare il tuo indirizzo email e scegliere la password. L'account si attiva quando salvi la password.",
+		button: "Conferma e scegli la password",
 		outro: "Se non hai creato un account su TriviaMore, ignora questa email.",
 	},
 	"reset-password": {

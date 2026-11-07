@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { renderAuthLinkEmail } from "@/lib/email/templates/auth-link";
 
 const URL_WITH_QUERY =
-	"https://trivia-more.it/api/auth/verify-email?token=abc&callbackURL=/auth/confirm";
+	"https://trivia-more.it/api/auth/reset-password/abc?callbackURL=/auth/reset-password&from=signup";
 
 describe("renderAuthLinkEmail", () => {
 	it("puts the link and its expiry in both parts", () => {
 		const email = renderAuthLinkEmail({
-			purpose: "verify-email",
+			purpose: "set-password",
 			url: URL_WITH_QUERY,
 			expiresInMinutes: 60,
 		});
@@ -18,8 +18,8 @@ describe("renderAuthLinkEmail", () => {
 	});
 
 	it("words each purpose differently", () => {
-		const verify = renderAuthLinkEmail({
-			purpose: "verify-email",
+		const confirm = renderAuthLinkEmail({
+			purpose: "set-password",
 			url: "u",
 			expiresInMinutes: 5,
 		});
@@ -28,7 +28,7 @@ describe("renderAuthLinkEmail", () => {
 			url: "u",
 			expiresInMinutes: 5,
 		});
-		expect(verify.subject).not.toBe(reset.subject);
+		expect(confirm.subject).not.toBe(reset.subject);
 		expect(reset.text).toContain("password");
 	});
 });

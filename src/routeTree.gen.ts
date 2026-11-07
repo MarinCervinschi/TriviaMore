@@ -20,7 +20,6 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-passw
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as AuthConfirmRouteImport } from './routes/auth/confirm'
 import { Route as AuthAuthCodeErrorRouteImport } from './routes/auth/auth-code-error'
 import { Route as ApiLogRouteImport } from './routes/api/log'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
@@ -135,11 +134,6 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/auth/forgot-password',
   path: '/auth/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthConfirmRoute = AuthConfirmRouteImport.update({
-  id: '/auth/confirm',
-  path: '/auth/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAuthCodeErrorRoute = AuthAuthCodeErrorRouteImport.update({
@@ -478,7 +472,6 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -549,7 +542,6 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -624,7 +616,6 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/log': typeof ApiLogRoute
   '/auth/auth-code-error': typeof AuthAuthCodeErrorRoute
-  '/auth/confirm': typeof AuthConfirmRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -701,7 +692,6 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/confirm'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -772,7 +762,6 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/confirm'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -846,7 +835,6 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/log'
     | '/auth/auth-code-error'
-    | '/auth/confirm'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -915,7 +903,6 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiLogRoute: typeof ApiLogRoute
   AuthAuthCodeErrorRoute: typeof AuthAuthCodeErrorRoute
-  AuthConfirmRoute: typeof AuthConfirmRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
@@ -1004,13 +991,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/forgot-password'
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/confirm': {
-      id: '/auth/confirm'
-      path: '/auth/confirm'
-      fullPath: '/auth/confirm'
-      preLoaderRoute: typeof AuthConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/auth-code-error': {
@@ -1616,7 +1596,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiLogRoute: ApiLogRoute,
   AuthAuthCodeErrorRoute: AuthAuthCodeErrorRoute,
-  AuthConfirmRoute: AuthConfirmRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,

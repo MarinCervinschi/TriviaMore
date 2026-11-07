@@ -15,7 +15,7 @@ function RegisterPage() {
 	return (
 		<AuthCard
 			title="Crea un account"
-			description="Registrati per iniziare a usare TriviaMore"
+			description="Ti mandiamo un link per confermare l'email e scegliere la password"
 		>
 			<div className="grid gap-6">
 				<RegisterForm />
