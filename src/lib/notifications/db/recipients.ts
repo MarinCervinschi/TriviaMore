@@ -20,6 +20,7 @@ export type NotificationTarget = {
 export type NotificationScope = {
 	courseIds: string[];
 	departmentIds: string[];
+	privateSection: boolean;
 };
 
 // Every course of the class, because a maintainer of any of them has authority over it.
@@ -45,13 +46,15 @@ export async function findNotificationScope(
 	if (target.departmentId) departmentIds.add(target.departmentId);
 
 	let classId = target.classId;
-	if (!classId && target.sectionId) {
+	let privateSection = false;
+	if (target.sectionId) {
 		const [section] = await db
-			.select({ classId: sections.classId })
+			.select({ classId: sections.classId, isPublic: sections.isPublic })
 			.from(sections)
 			.where(eq(sections.id, target.sectionId))
 			.limit(1);
-		classId = section?.classId ?? null;
+		classId ??= section?.classId ?? null;
+		privateSection = section?.isPublic === false;
 	}
 
 	if (classId) {
@@ -68,47 +71,56 @@ export async function findNotificationScope(
 		if (course) departmentIds.add(course.departmentId);
 	}
 
-	return { courseIds: [...courseIds], departmentIds: [...departmentIds] };
+	return {
+		courseIds: [...courseIds],
+		departmentIds: [...departmentIds],
+		privateSection,
+	};
 }
 
 export async function findNotificationRecipients(
 	db: DbOrTx,
 	scope: NotificationScope
 ): Promise<string[]> {
+	const inScope = or(
+		scope.courseIds.length > 0
+			? exists(
+					db
+						.select({ one: courseMaintainers.userId })
+						.from(courseMaintainers)
+						.where(
+							and(
+								eq(courseMaintainers.userId, profiles.id),
+								inArray(courseMaintainers.courseId, scope.courseIds)
+							)
+						)
+				)
+			: undefined,
+		scope.departmentIds.length > 0
+			? exists(
+					db
+						.select({ one: departmentAdmins.userId })
+						.from(departmentAdmins)
+						.where(
+							and(
+								eq(departmentAdmins.userId, profiles.id),
+								inArray(departmentAdmins.departmentId, scope.departmentIds)
+							)
+						)
+				)
+			: undefined
+	);
+
+	// A request aimed at a private section stays with ADMIN and SUPERADMIN.
+	const scoped =
+		inScope && scope.privateSection
+			? and(eq(profiles.role, "ADMIN"), inScope)
+			: inScope;
+
 	const rows = await db
 		.select({ id: profiles.id })
 		.from(profiles)
-		.where(
-			or(
-				eq(profiles.role, "SUPERADMIN"),
-				scope.courseIds.length > 0
-					? exists(
-							db
-								.select({ one: courseMaintainers.userId })
-								.from(courseMaintainers)
-								.where(
-									and(
-										eq(courseMaintainers.userId, profiles.id),
-										inArray(courseMaintainers.courseId, scope.courseIds)
-									)
-								)
-						)
-					: undefined,
-				scope.departmentIds.length > 0
-					? exists(
-							db
-								.select({ one: departmentAdmins.userId })
-								.from(departmentAdmins)
-								.where(
-									and(
-										eq(departmentAdmins.userId, profiles.id),
-										inArray(departmentAdmins.departmentId, scope.departmentIds)
-									)
-								)
-						)
-					: undefined
-			)
-		);
+		.where(or(eq(profiles.role, "SUPERADMIN"), scoped));
 
 	return rows.map(row => row.id);
 }
