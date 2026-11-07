@@ -12,6 +12,7 @@ import {
 } from "@/lib/email/templates/auth-link";
 import { log } from "@/lib/logging/server";
 
+import { findProfile } from "./db/profiles";
 import { hashPassword, isAllowedEmail, verifyPassword } from "./rules";
 
 const LINK_EXPIRES_IN_SECONDS = 60 * 60;
@@ -44,6 +45,11 @@ function socialProviders() {
 		};
 	}
 	return providers;
+}
+
+async function isAnonymized(userId: string) {
+	const profile = await findProfile(getDb(), userId);
+	return !!profile?.anonymizedAt;
 }
 
 function createAuth() {
@@ -118,6 +124,12 @@ function createAuth() {
 							.onConflictDoNothing();
 					},
 				},
+			},
+			session: {
+				create: { before: async session => !(await isAnonymized(session.userId)) },
+			},
+			account: {
+				create: { before: async account => !(await isAnonymized(account.userId)) },
 			},
 		},
 		// Profile edits go through updateProfile, so nothing calls this route.
