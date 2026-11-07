@@ -84,7 +84,7 @@ Either is fine; what is not fine is neither.
   `assertInScope()` in `src/lib/requests/service/shared.ts` checks a single request's stored section with
   `sectionScope()` and its class with `classInMaintainedScope()`, the checks of the direct content paths.
   `requireRequestAdmin()` returns a MAINTAINER's course ids, and `requestScope()` narrows the list queries with
-  them. A request aimed at a private section stays with ADMIN and SUPERADMIN.
+  them. A request aimed at a private section stays with ADMIN and SUPERADMIN, and so do its notifications.
 
 A role changes only through `updateUserRoleFn`, which requires SUPERADMIN and removes the department and
 course assignments the new role no longer has. No other endpoint accepts a `role` field.
@@ -96,10 +96,21 @@ user is ADMIN or SUPERADMIN, or when `section_access` grants it to the user. MAI
 to private sections.
 
 - `assertSectionAccess(db, userId, sectionId)` throws `Forbidden`; quiz and flashcard sessions call it before
-  they read any question.
+  they read any question. `createRequest` and `toggleBookmark` call it on the section they target.
+- `assertSectionsAccess()` throws unless every section is readable. `getQuiz` calls it with the section of each
+  question it serves, because an exam simulation stores the public sentinel section.
 - `filterAccessibleSections()` and `accessibleSectionsSql()` narrow lists and search.
+- `canAccessSection()` decides whether `getRequestDetail` returns the reported question.
+- Counts shown to every visitor (the browse overview, the platform totals, whether a class has content) count
+  public sections only.
 
 Any new path from a section id or a question id to question content has to go through one of these.
+
+`getQuizResults` is the one exception. It returns the questions of the user's own completed attempt without a
+section check, because the user saw them while taking the quiz. A revoked grant, a section made private later or
+a demotion does not hide them. The questions are read live, so the results also show edits made after the
+attempt. `getUserBookmarks` follows current access. It leaves out a bookmark whose section the user can no
+longer read; the row stays in the table and shows again if the grant comes back.
 
 ## Data access
 
