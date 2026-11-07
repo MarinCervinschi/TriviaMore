@@ -6,7 +6,7 @@ import { evaluationModes, questions } from "@/db/schema";
 import { applyQuizActivity } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsSafely } from "@/lib/achievements/service";
 import type { UnlockedAchievement } from "@/lib/achievements/types";
-import { assertSectionAccess } from "@/lib/auth/checks";
+import { assertSectionAccess, assertSectionsAccess } from "@/lib/auth/checks";
 import { QUIZ_QUESTION_TYPES } from "@/lib/catalog/db/questions";
 import { findSectionById } from "@/lib/catalog/db/sections";
 import { sectionBrowsePath } from "@/lib/catalog/paths";
@@ -222,15 +222,22 @@ export async function getQuiz(
 	const order = await findQuizQuestionOrder(db, quizId);
 	if (order.length === 0) return null;
 
-	const [rows, attemptId, evaluationMode] = await Promise.all([
+	const [rows, evaluationMode] = await Promise.all([
 		findQuestionsByIds(
 			db,
 			order.map(entry => entry.questionId)
 		),
-		touchOpenAttempt(db, userId, quizId),
 		findEvaluationMode(db, quiz.evaluationModeId),
 	]);
 	if (!evaluationMode) return null;
+
+	// An exam stores the public sentinel, so each question's own section is checked too.
+	await assertSectionsAccess(
+		db,
+		userId,
+		rows.map(question => question.sectionId)
+	);
+	const attemptId = await touchOpenAttempt(db, userId, quizId);
 
 	const byId = new Map(rows.map(question => [question.id, question]));
 	const questionList: QuizQuestion[] = order.flatMap(entry => {

@@ -82,6 +82,19 @@ export async function assertSectionAccess(
 	}
 }
 
+/** Throws `Forbidden` unless the user can read every one of the sections. */
+export async function assertSectionsAccess(
+	db: DbOrTx,
+	userId: string | null,
+	sectionIds: string[]
+): Promise<void> {
+	const unique = [...new Set(sectionIds)];
+	const allowed = await filterAccessibleSections(db, userId, unique);
+	if (unique.some(sectionId => !allowed.has(sectionId))) {
+		throw new Forbidden("Non hai accesso a questa sezione");
+	}
+}
+
 export async function filterAccessibleSections(
 	db: DbOrTx,
 	userId: string | null,
