@@ -138,17 +138,31 @@ describe("a MAINTAINER approving its own questions request", () => {
 			expect(await questionsIn(tx, scope.sectionOutOfScope)).toHaveLength(0);
 		}));
 
-	it("cannot approve a request aimed at a private section of a class it maintains", () =>
+	it("cannot request or approve questions for a private section of a class it maintains", () =>
 		withBoundRollback(async tx => {
 			const scope = await seedMaintainerScope(tx);
 			actAs(scope);
 
-			const { id } = await createRequest(
-				scope.maintainer,
-				questionsRequest({ target_section_id: scope.privateSection })
-			);
+			await expect(
+				createRequest(
+					scope.maintainer,
+					questionsRequest({ target_section_id: scope.privateSection })
+				)
+			).rejects.toBeInstanceOf(Forbidden);
 
-			await expect(approveRequest(id)).rejects.toBeInstanceOf(Forbidden);
+			const [request] = await tx
+				.insert(contentRequests)
+				.values({
+					userId: scope.maintainer,
+					requestType: "NEW_QUESTIONS",
+					submittedContent: SUBMITTED,
+					targetCourseId: scope.maintainedCourse,
+					targetClassId: scope.classInScope,
+					targetSectionId: scope.privateSection,
+				})
+				.returning({ id: contentRequests.id });
+
+			await expect(approveRequest(request.id)).rejects.toBeInstanceOf(Forbidden);
 			expect(await questionsIn(tx, scope.privateSection)).toHaveLength(0);
 		}));
 });

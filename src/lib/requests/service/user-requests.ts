@@ -9,6 +9,7 @@ import {
 	questions,
 	sections,
 } from "@/db/schema";
+import { assertSectionAccess } from "@/lib/auth/checks";
 import { log } from "@/lib/logging/server";
 import { createNotification, notifyAdminsInScope } from "@/lib/notifications/service";
 import {
@@ -59,6 +60,7 @@ export async function getUserRequests(
 }
 
 async function resolveTarget(
+	userId: string,
 	input: CreateRequestInput,
 	reportedQuestionId: string | null
 ) {
@@ -86,6 +88,7 @@ async function resolveTarget(
 		if (classId && classId !== section.classId) {
 			throw new Invalid("La sezione non appartiene a questo insegnamento");
 		}
+		await assertSectionAccess(db, userId, sectionId);
 		classId = section.classId;
 	}
 
@@ -144,6 +147,7 @@ export async function createRequest(
 	const submitted = parseSubmittedContent(input.submitted_content);
 	assertOwnAttachment(userId, submitted);
 	const target = await resolveTarget(
+		userId,
 		input,
 		submitted.type === "report" ? submitted.question_id : null
 	);

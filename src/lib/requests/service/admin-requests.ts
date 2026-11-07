@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
 import { applyApprovedRequest } from "@/lib/achievements/db/rollups";
 import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
+import { canAccessSection } from "@/lib/auth/checks";
 import { requireAdmin } from "@/lib/auth/guards";
 import { createNotification } from "@/lib/notifications/service";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
@@ -100,7 +101,7 @@ export async function getRequestDetail(
 
 	let reportedQuestion: ReportedQuestion | null = null;
 	if (submitted.type === "report") {
-		const [question] = await db
+		const [row] = await db
 			.select({
 				id: questions.id,
 				content: questions.content,
@@ -109,11 +110,15 @@ export async function getRequestDetail(
 				correctAnswer: questions.correctAnswer,
 				explanation: questions.explanation,
 				difficulty: questions.difficulty,
+				sectionId: questions.sectionId,
 			})
 			.from(questions)
 			.where(eq(questions.id, submitted.question_id))
 			.limit(1);
-		reportedQuestion = question ?? null;
+		if (row) {
+			const { sectionId, ...question } = row;
+			if (await canAccessSection(db, userId, sectionId)) reportedQuestion = question;
+		}
 	}
 
 	const { submittedContent, ...wire } = request;
