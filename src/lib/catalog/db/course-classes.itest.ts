@@ -93,6 +93,19 @@ describe("offeredCourseClassSql", () => {
 			expect(await offered(tx, courseId)).toEqual(new Set([current, retired]));
 		}));
 
+	it("drops a retired class whose only content is private", () =>
+		withRollback(async tx => {
+			const courseId = await createCourse(tx, await createDepartment(tx));
+			const current = await addClass(tx, courseId, 1);
+			const retired = await addClass(tx, courseId, 2);
+			await plan(tx, courseId, current, YEAR, 1);
+			await tx
+				.insert(sections)
+				.values({ name: "Appunti", classId: retired, isPublic: false });
+
+			expect(await offered(tx, courseId)).toEqual(new Set([current]));
+		}));
+
 	it("keeps every row of a course with no plan for the year", () =>
 		withRollback(async tx => {
 			const courseId = await createCourse(tx, await createDepartment(tx));

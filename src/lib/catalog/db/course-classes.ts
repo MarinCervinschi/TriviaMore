@@ -46,14 +46,18 @@ export function primaryCourseByClass(db: DbOrTx, classIds?: string[]) {
 		.as("primary_course");
 }
 
-/** Whether the class `classId` points at has a section other than the exam simulation. */
+/** Whether the class `classId` points at has a public section other than the exam simulation. */
 export function classHasContentSql(db: DbOrTx, classId: AnyPgColumn): SQL {
 	return exists(
 		db
 			.select({ one: sql`1` })
 			.from(sections)
 			.where(
-				and(eq(sections.classId, classId), ne(sections.name, EXAM_SIMULATION_SECTION))
+				and(
+					eq(sections.classId, classId),
+					eq(sections.isPublic, true),
+					ne(sections.name, EXAM_SIMULATION_SECTION)
+				)
 			)
 	);
 }
