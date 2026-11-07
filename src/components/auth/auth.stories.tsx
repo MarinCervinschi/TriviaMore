@@ -78,7 +78,7 @@ export const Register: Story = {
 	render: () => (
 		<AuthCard
 			title="Crea un account"
-			description="Registrati per iniziare a usare TriviaMore"
+			description="Ti mandiamo un link per confermare l'email e scegliere la password"
 		>
 			<div className="grid gap-6">
 				<RegisterForm />
@@ -117,6 +117,18 @@ export const ResetPassword: Story = {
 			description="Dopo il cambio, le sessioni aperte sugli altri dispositivi vengono chiuse"
 		>
 			<ResetPasswordForm token="story" />
+		</AuthCard>
+	),
+};
+
+export const SetPassword: Story = {
+	name: "Scegli la password",
+	render: () => (
+		<AuthCard
+			title="Scegli la password"
+			description="Salvandola confermi la tua email e attivi l'account"
+		>
+			<ResetPasswordForm token="story" variant="signup" />
 		</AuthCard>
 	),
 };

@@ -32,21 +32,14 @@ const userBaseSchema = z.object({
 	email: emailSchema,
 });
 
-export const registerSchema = userBaseSchema
-	.extend({
-		password: passwordSchema,
-		password_confirm: z.string().min(1, "Conferma la password"),
-		terms_accepted: z.boolean().refine(v => v === true, {
-			message: "Devi accettare i Termini e Condizioni per registrarti",
-		}),
-		privacy_accepted: z.boolean().refine(v => v === true, {
-			message: "Devi accettare l'Informativa sulla Privacy per registrarti",
-		}),
-	})
-	.refine(data => data.password === data.password_confirm, {
-		message: "Le password non coincidono",
-		path: ["password_confirm"],
-	});
+export const registerSchema = userBaseSchema.extend({
+	terms_accepted: z.boolean().refine(v => v === true, {
+		message: "Devi accettare i Termini e Condizioni per registrarti",
+	}),
+	privacy_accepted: z.boolean().refine(v => v === true, {
+		message: "Devi accettare l'Informativa sulla Privacy per registrarti",
+	}),
+});
 
 export const loginSchema = z.object({
 	email: emailSchema,
