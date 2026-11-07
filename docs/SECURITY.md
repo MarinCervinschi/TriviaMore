@@ -27,15 +27,20 @@ Better Auth runs inside the app, configured in `src/lib/auth/server.ts`, on the 
   keeps working for up to 5 minutes on a device that already has the cache.
 - **Passwords** are bcrypt hashes (cost 10) in `accounts.password`, checked by `src/lib/auth/rules.ts`. The
   policy is in `src/lib/auth/schemas.ts`: 6 to 100 characters, a lowercase letter, an uppercase letter and a
-  digit, no spaces. A password reset revokes every other session.
-- **Email verification** is required before a password sign-in works. The verification and reset links expire
-  after an hour. They are sent without awaiting the mail server, so the response time does not reveal whether
-  an address has an account.
+  digit, no spaces. A password reset revokes every session, then signs the user in on the device that set it.
+- **Sign-up** asks for a name and an email only. The server creates the user with a random password nobody
+  knows and mails a link to choose one, a reset-password token on `/auth/reset-password`. Choosing the
+  password marks the address verified. A password sign-in needs a verified address. Resend, a repeat
+  sign-up of an unverified address and a sign-in with the password of an unverified account each mail a new
+  link; a repeat sign-up of a verified address mails nothing. Better Auth's own `/sign-up/email`,
+  `/verify-email` and `/send-verification-email` answer 404.
+- **Links** expire after an hour. They are sent without awaiting the mail server, so the response time does
+  not reveal whether an address has an account.
 - **OAuth:** Google and GitHub, each enabled only when both its client id and secret are set. `oauthSignInFn`
   asks Better Auth for the provider URL; the provider returns to `<BETTER_AUTH_URL>/api/auth/callback/<provider>`,
   the only callback registered in its console. A new account lands on `/onboarding`.
-- **Profiles:** a Better Auth hook creates the `profiles` row when a user is created. The role lives on the
-  profile, not on the Better Auth user.
+- **Profiles:** a Better Auth hook creates the `profiles` row when a user is created, and copies the image
+  only from an OAuth provider. The role lives on the profile, not on the Better Auth user.
 - **Staging:** `AUTH_ALLOWED_EMAIL_DOMAIN` turns off password sign-up and rejects any user who is not a
   verified address of that domain. Production leaves it unset.
 - **Anonymized accounts:** the anonymization deletes the user's sessions and accounts. `getAuthUser()` and the
