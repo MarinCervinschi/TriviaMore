@@ -16,6 +16,7 @@ export function UmamiAnalytics() {
 		script.src = UMAMI_SRC;
 		script.defer = true;
 		script.dataset.websiteId = UMAMI_WEBSITE_ID;
+		script.dataset.excludeSearch = "true";
 		document.head.appendChild(script);
 	}, []);
 
