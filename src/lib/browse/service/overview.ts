@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import type { DbOrTx } from "@/db";
@@ -32,8 +32,15 @@ async function countCatalogEntities(db: DbOrTx): Promise<PlatformStats> {
 				.select({ n: sql`count(distinct ${courseClasses.classId})` })
 				.from(courseClasses)
 				.where(studiableCourseClassSql(db))})`.mapWith(Number),
-			sections: sql<number>`(select count(*) from ${sections})`.mapWith(Number),
-			questions: sql<number>`(select count(*) from ${questions})`.mapWith(Number),
+			sections: sql<number>`(${db
+				.select({ n: count() })
+				.from(sections)
+				.where(eq(sections.isPublic, true))})`.mapWith(Number),
+			questions: sql<number>`(${db
+				.select({ n: count() })
+				.from(questions)
+				.innerJoin(sections, eq(sections.id, questions.sectionId))
+				.where(eq(sections.isPublic, true))})`.mapWith(Number),
 		})
 		.from(sql`(select 1) as one`);
 
@@ -42,7 +49,7 @@ async function countCatalogEntities(db: DbOrTx): Promise<PlatformStats> {
 
 // Leaderboard of the best covered classes. The exam-simulation sentinel is
 // excluded: it holds no questions and would inflate every class by one section.
-function listTopContributedClasses(db: DbOrTx, limit: number) {
+export function listTopContributedClasses(db: DbOrTx, limit: number) {
 	const primaryCourse = primaryCourseByClass(db);
 
 	return db
@@ -60,7 +67,11 @@ function listTopContributedClasses(db: DbOrTx, limit: number) {
 		.innerJoin(primaryCourse, eq(primaryCourse.classId, classes.id))
 		.innerJoin(
 			sections,
-			and(eq(sections.classId, classes.id), ne(sections.name, EXAM_SIMULATION_SECTION))
+			and(
+				eq(sections.classId, classes.id),
+				eq(sections.isPublic, true),
+				ne(sections.name, EXAM_SIMULATION_SECTION)
+			)
 		)
 		.leftJoin(questions, eq(questions.sectionId, sections.id))
 		.groupBy(
@@ -140,6 +151,8 @@ export async function getBrowseOverview(): Promise<BrowseOverview> {
 					),
 			})
 			.from(questions)
+			.innerJoin(sections, eq(sections.id, questions.sectionId))
+			.where(eq(sections.isPublic, true))
 			.then(rows => rows[0]),
 	]);
 
