@@ -12,6 +12,51 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.6.0 — 2026-11-07
+
+Sign-up now asks only for a name and an email: the password is chosen from the emailed link, which also
+confirms the address, and a password reset signs the user in. The release also tightens access checks
+around sessions, content requests, private sections and Better Auth's own routes. No migrations.
+
+### Changed
+
+- **Sign-up chooses the password from the emailed link.** The register form asks for name and email. The
+  server creates the user with a random password and mails a link to `/auth/reset-password?from=signup`;
+  saving the password marks the address verified and signs the user in on `/onboarding`. Resend, a repeat
+  sign-up of an unverified address and a sign-in with the password of an unverified account each mail a
+  new link; a verified address gets nothing. Verification links sent before this release stop working, and
+  their owners ask for a new link. (#225)
+- **A password reset signs the user in** on the device that set it, after revoking every session. (#225)
+- **Totals shown to every visitor count public sections only**: the browse overview, the platform totals and
+  whether a class has content. (#224)
+- Notifications about a request aimed at a private section go to ADMIN and SUPERADMIN only. (#224)
+- `db:migrate`, `db:dump` and `db:reset` act on the database in `ADMIN_DATABASE_URL`, and the maintainer's
+  commands for staging and production live outside the repo. Removed `dev:prod`, `build:dev`, `preview`,
+  `db:studio`, `db:check`, drizzle-kit's `db:migrate`, `db:transfer:prod` and the logo script. (e02aed11)
+- The deploy configuration moved out of the repo. (98276d21)
+- The pre-push public scan checks every file a push carries. (68d4d2a1)
+
+### Fixed
+
+- A page request that refuses HTML gets 406 instead of 500. (92395886)
+
+### Removed
+
+- `/auth/confirm`, which only received verification links. (#225)
+
+### Security
+
+- `/api/auth/update-user` is disabled; profile edits go through `updateProfile`. (#222)
+- An anonymized account can no longer open a session or link a new account, and `authMiddleware`,
+  `optionalAuthMiddleware` and `getSession` reject it as `getAuthUser` does. (#222)
+- A content request takes its class from its section, and a MAINTAINER handling a request is checked against
+  the stored section and class. (#223)
+- Section access is checked on every question a quiz serves, on request targets and reported questions, and
+  on bookmarks; a bookmark in a section the user can no longer read is hidden, not deleted.
+  `getQuizResults` keeps showing the user's own completed attempts. (#224)
+- Better Auth's `/sign-up/email`, `/verify-email` and `/send-verification-email` are disabled, and a new
+  profile copies its image only from an OAuth provider. (#225)
+
 ## 3.5.2 — 2026-10-30
 
 Health checks for the production apps on Coolify, and the first Umami custom events: what students do
