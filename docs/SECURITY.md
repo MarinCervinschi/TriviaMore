@@ -191,6 +191,14 @@ Questions, explanations and request text are rendered with `MarkdownRenderer`
 `dangerouslySetInnerHTML` appears only for the theme init script in `src/routes/__root.tsx` and the chart
 styles in `src/components/ui/chart.tsx`, neither of which takes user input. Keep it that way.
 
+## Caching
+
+`cacheControlMiddleware` (`src/lib/server/middleware/cache-control.ts`) sends `Cache-Control: private, no-store`
+on every response the app renders: pages, server-function results, redirects and `/api/*`. A route that sets
+its own `Cache-Control` keeps it, as `/sitemap.xml` and `/api/health` do. Pages embed the signed-in user's
+account in the HTML. Anonymous pages get the same header, so the rule never depends on reading the session.
+Nitro serves the files in `public/` and the built assets before the app, with their own headers.
+
 ## Logs
 
 Logs go to Seq (`docs/OBSERVABILITY.md`). The context carries the user id, never the email. Property keys that
