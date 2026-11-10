@@ -100,7 +100,7 @@ export function logSpan(params: {
 	});
 }
 
-// Stamped here, so the client cannot forge `Source`.
+// Stamped last, so the client cannot forge `Source` or `Version`.
 export function shipBrowserEvent(event: {
 	level: LogLevel;
 	template: string;
@@ -119,9 +119,9 @@ export function shipBrowserEvent(event: {
 		traceId: event.traceId ?? newTraceId(),
 		error: event.error,
 		properties: {
+			...event.properties,
 			Source: "browser",
 			...(release ? { Version: release } : {}),
-			...event.properties,
 		},
 	});
 }

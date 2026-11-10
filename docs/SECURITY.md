@@ -197,6 +197,9 @@ Logs go to Seq (`docs/OBSERVABILITY.md`). The context carries the user id, never
 contain `password`, `token`, `secret`, `apikey` and the like are replaced with `[redacted]`, and query spans
 carry the statement text without its parameters. Never pass a whole object to `log`.
 
+The Umami tracker loads with `data-exclude-search`, so it records page URLs and referrers without their query
+string. The auth pages carry the reset token and the sign-up email there.
+
 ## Not in place
 
 - **Security headers:** the app sets none. There is no CSP, `X-Frame-Options`, `X-Content-Type-Options`,
@@ -206,10 +209,11 @@ carry the statement text without its parameters. Never pass a whole object to `l
   which a cross-site POST does not carry, and by Better Auth's origin check on `/api/auth/*`. A GET server
   function is reachable by top-level navigation with the cookie, so a GET server function never writes.
 - **Rate limiting:** Better Auth's built-in limiter is on in production, in memory per process, keyed on
-  `cf-connecting-ip`: 100 requests per 10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on
-  reset and verification emails. It applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and
-  the other auth server functions call `getAuth().api` directly and are not limited. `/api/log` has its own
-  limit of 60 batches a minute per IP. Nothing else is limited, uploads and request submissions included.
+  the client IP from the header that `CLIENT_IP_HEADER` names (default `cf-connecting-ip`): 100 requests per
+  10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on reset and verification emails. It
+  applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and the other auth server functions
+  call `getAuth().api` directly and are not limited. `/api/log` has its own limit of 60 batches a minute per
+  IP, read from the same header. Nothing else is limited, uploads and request submissions included.
 
 ## Checklist for a new feature
 

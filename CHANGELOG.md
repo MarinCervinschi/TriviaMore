@@ -12,6 +12,29 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.6.1 — 2026-11-10
+
+A fix-only release. The logs and the analytics record less, and the client IP comes from one configured
+header, so the app can run behind a proxy other than Cloudflare. No migrations.
+
+### Fixed
+
+- The Seq shipper sends at most 100 events and 256 KB per request and keeps sending after a failed batch. Its
+  queue is capped at 10 MB, a request gives up after 10 s, and `@x` keeps at most 4 000 characters of each error
+  in the cause chain. (#227)
+- `/api/log` stamps `Source` and `Version` after the client's properties and rejects the property names the
+  server sets. (#227)
+
+### Security
+
+- The password-reset callback is logged as `/api/auth/reset-password/:token`, so the token stays out of the
+  request log. (#227)
+- Umami loads with `data-exclude-search`: pageviews and referrers carry no query string. (#227)
+- **The client IP comes from the one header `CLIENT_IP_HEADER` names**, `cf-connecting-ip` by default. Better
+  Auth's rate limiter, the `/api/log` limit and the legal acceptances read no other header: the
+  `X-Forwarded-For` and socket-address fallbacks are gone, and a value that is not a single IP counts as
+  missing. Behind Traefik the setting is `x-real-ip`; a new value takes a restart. (#229)
+
 ## 3.6.0 — 2026-11-07
 
 Sign-up now asks only for a name and an email: the password is chosen from the emailed link, which also

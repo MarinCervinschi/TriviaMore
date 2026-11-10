@@ -60,6 +60,7 @@ const REDACTED = [
 const MAX_DEPTH = 4;
 const MAX_STRING = 2_000;
 const MAX_ARRAY = 50;
+const MAX_EXCEPTION = 4_000;
 
 function isRedacted(key: string): boolean {
 	const lower = key.toLowerCase();
@@ -109,14 +110,18 @@ function sanitize(value: unknown, depth: number, seen: WeakSet<object>): unknown
 	return String(value);
 }
 
-export function formatError(error: unknown): string {
-	if (!(error instanceof Error)) return String(error);
+function stackOf(error: Error): string {
+	return truncate(error.stack ?? `${error.name}: ${error.message}`, MAX_EXCEPTION);
+}
 
-	const parts = [error.stack ?? `${error.name}: ${error.message}`];
+export function formatError(error: unknown): string {
+	if (!(error instanceof Error)) return truncate(String(error), MAX_EXCEPTION);
+
+	const parts = [stackOf(error)];
 	let cause: unknown = error.cause;
 	let depth = 0;
 	while (cause instanceof Error && depth < 3) {
-		parts.push(`Caused by: ${cause.stack ?? `${cause.name}: ${cause.message}`}`);
+		parts.push(`Caused by: ${stackOf(cause)}`);
 		cause = cause.cause;
 		depth += 1;
 	}

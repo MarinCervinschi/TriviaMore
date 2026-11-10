@@ -11,6 +11,7 @@ import {
 	renderAuthLinkEmail,
 } from "@/lib/email/templates/auth-link";
 import { log } from "@/lib/logging/server";
+import { clientIpHeader } from "@/lib/server/client-ip";
 
 import { findProfile } from "./db/profiles";
 import { hashPassword, isAllowedEmail, verifyPassword } from "./rules";
@@ -85,7 +86,7 @@ function createAuth() {
 		}),
 		advanced: {
 			database: { generateId: "uuid" },
-			ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] },
+			ipAddress: { ipAddressHeaders: [clientIpHeader()] },
 		},
 		emailAndPassword: {
 			enabled: true,
