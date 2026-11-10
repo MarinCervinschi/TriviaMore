@@ -4,6 +4,8 @@ import { randomBytes } from "node:crypto";
 
 import { getDb } from "@/db";
 import { insertLegalAcceptances } from "@/lib/legal/service";
+import { log } from "@/lib/logging/server";
+import { emailKey, rateLimiter, requestIp } from "@/lib/server/rate-limits";
 
 import { findProfile } from "./db/profiles";
 import { getAuthUser, toAuthUser } from "./guards";
@@ -21,6 +23,9 @@ const ERROR_MESSAGES: Record<string, string> = {
 	PASSWORD_TOO_LONG: "La password è troppo lunga",
 };
 
+const TOO_MANY_SIGN_INS = "Troppi tentativi di accesso. Riprova più tardi.";
+const TOO_MANY_LINKS = "Troppe richieste di link. Riprova più tardi.";
+
 function errorCode(error: unknown): string {
 	return error instanceof APIError && typeof error.body?.code === "string"
 		? error.body.code
@@ -28,11 +33,16 @@ function errorCode(error: unknown): string {
 }
 
 function errorMessage(error: unknown, fallback: string): string {
-	const message = ERROR_MESSAGES[errorCode(error)];
-	if (message) return message;
-	if (error instanceof APIError && error.status === "TOO_MANY_REQUESTS")
-		return "Troppi tentativi. Riprova tra poco.";
-	return fallback;
+	return ERROR_MESSAGES[errorCode(error)] ?? fallback;
+}
+
+function limitKeys(email: string) {
+	return { email: emailKey(email), ip: requestIp() };
+}
+
+/** Counts the request even when no link goes out, so every address gets the same answer. */
+function allowAuthMail(email: string) {
+	return rateLimiter().checkAndReport("auth-mail", limitKeys(email));
 }
 
 /** A password nobody knows, replaced when the owner chooses one from the mailed link. */
@@ -46,6 +56,11 @@ export async function getSession(): Promise<AuthSession | null> {
 }
 
 export async function login(input: LoginInput): Promise<AuthResult> {
+	const keys = limitKeys(input.email);
+	if (!(await rateLimiter().check("login-fail", keys))) {
+		return { success: false, error: TOO_MANY_SIGN_INS };
+	}
+
 	let userId: string;
 	try {
 		const result = await getAuth().api.signInEmail({
@@ -54,7 +69,12 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 		});
 		userId = result.user.id;
 	} catch (error) {
-		if (errorCode(error) === "EMAIL_NOT_VERIFIED") await sendPasswordLink(input.email);
+		const code = errorCode(error);
+		if (code === "INVALID_EMAIL_OR_PASSWORD")
+			await rateLimiter().report("login-fail", keys);
+		if (code === "EMAIL_NOT_VERIFIED" && (await allowAuthMail(input.email))) {
+			await sendPasswordLink(input.email);
+		}
 		return { success: false, error: errorMessage(error, "Accesso non riuscito") };
 	}
 
@@ -65,6 +85,9 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 }
 
 export async function signup(input: RegisterInput): Promise<SignupResult> {
+	if (!(await allowAuthMail(input.email)))
+		return { success: false, error: TOO_MANY_LINKS };
+
 	let userId: string;
 	try {
 		const result = await getAuth().api.signUpEmail({
@@ -121,22 +144,24 @@ export async function logout() {
 	}
 }
 
-/** Always succeeds, so the answer does not tell whether the address has an account. */
+/** Answers the same for every address, so it does not tell whether one has an account. */
 export async function resendConfirmation(email: string) {
+	if (!(await allowAuthMail(email)))
+		return { success: false as const, error: TOO_MANY_LINKS };
 	const { internalAdapter } = await getAuth().$context;
 	const found = await internalAdapter.findUserByEmail(email);
 	if (found && !found.user.emailVerified) await sendPasswordLink(email);
 	return { success: true as const };
 }
 
-/** Always succeeds, so the answer does not tell whether the address has an account. */
+/** Answers the same for every address, so it does not tell whether one has an account. */
 export async function requestPasswordReset(email: string) {
+	if (!(await allowAuthMail(email)))
+		return { success: false as const, error: TOO_MANY_LINKS };
 	try {
 		await sendPasswordLink(email);
 	} catch (error) {
-		if (error instanceof APIError && error.status === "TOO_MANY_REQUESTS") {
-			return { success: false as const, error: errorMessage(error, "") };
-		}
+		log.error("Password link not requested", {}, error);
 	}
 	return { success: true as const };
 }

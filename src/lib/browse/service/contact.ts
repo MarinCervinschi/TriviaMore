@@ -1,5 +1,7 @@
 import type { z } from "zod";
 
+import { rateLimiter, requestIp } from "@/lib/server/rate-limits";
+
 import type { contactSchema } from "../contact-schema";
 
 type ContactInput = z.infer<typeof contactSchema>;
@@ -16,6 +18,13 @@ export async function submitContact(
 	if (!recipient) {
 		console.error("CONTACT_RECIPIENT env var not configured");
 		return { success: false, error: "Servizio non configurato" };
+	}
+
+	if (!(await rateLimiter().checkAndReport("contact", { ip: requestIp() }))) {
+		return {
+			success: false,
+			error: "Troppi messaggi inviati di recente. Riprova più tardi.",
+		};
 	}
 
 	const { renderContactEmailHtml, renderContactEmailText } =
