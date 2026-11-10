@@ -16,6 +16,7 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Server only | GitHub OAuth app, callback `<BETTER_AUTH_URL>/api/auth/callback/github` — optional locally |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth client, redirect URI `<BETTER_AUTH_URL>/api/auth/callback/google` — optional locally |
 | `MAINTENANCE_MODE` | Server only | `true` to redirect every route to the Coming Soon page |
+| `CLIENT_IP_HEADER` | Server only | The one request header that holds the client's IP, written by the proxy in front of the app (default `cf-connecting-ip`; `x-real-ip` behind Traefik). The rate limits and the legal acceptances read no other header |
 | `SEQ_URL` | Server only | Seq ingestion base URL — **unset means logs go to the console** |
 | `SEQ_API_KEY` | Server only | Seq API key, one per environment — see `docs/OBSERVABILITY.md` |
 | `LOG_LEVEL` | Server only | `debug` \| `info` \| `warn` \| `error` (default `info`) |

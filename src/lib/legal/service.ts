@@ -1,8 +1,9 @@
-import { getRequestHeader, getRequestIP } from "@tanstack/react-start/server";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import { desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { legalAcceptances } from "@/db/schema";
+import { clientIp } from "@/lib/server/client-ip";
 
 import { findLatestAcceptedVersions } from "./db/legal-acceptances";
 import type { LegalAcceptance, LegalAcceptanceStatus } from "./types";
@@ -34,12 +35,9 @@ export async function insertLegalAcceptances(
 	let ipAddress: string | null = null;
 	let userAgent: string | null = null;
 	try {
-		userAgent = getRequestHeader("user-agent") ?? null;
-		// Cloudflare's header first, because the first X-Forwarded-For entry is whatever the client sent.
-		ipAddress =
-			getRequestHeader("cf-connecting-ip") ??
-			getRequestIP({ xForwardedFor: true }) ??
-			null;
+		const headers = getRequestHeaders();
+		userAgent = headers.get("user-agent");
+		ipAddress = clientIp(headers);
 	} catch {
 		// Request helpers throw outside a request context.
 	}

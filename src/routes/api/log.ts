@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { browserLogBatch } from "@/lib/logging/schemas";
 import { shipBrowserEvent } from "@/lib/logging/server";
+import { clientIp } from "@/lib/server/client-ip";
 
 // Proxies to Seq, so the ingestion key never reaches the bundle.
 
@@ -32,19 +33,11 @@ function rateLimited(ip: string, now: number): boolean {
 	return bucket.count > MAX_PER_WINDOW;
 }
 
-function clientIp(request: Request): string {
-	const cf = request.headers.get("cf-connecting-ip");
-	if (cf) return cf;
-	const forwarded = request.headers.get("x-forwarded-for");
-	if (forwarded) return forwarded.split(",")[0]!.trim();
-	return "unknown";
-}
-
 export const Route = createFileRoute("/api/log")({
 	server: {
 		handlers: {
 			POST: async ({ request }) => {
-				if (rateLimited(clientIp(request), Date.now())) {
+				if (rateLimited(clientIp(request.headers) ?? "unknown", Date.now())) {
 					return new Response(null, { status: 429 });
 				}
 

@@ -209,10 +209,11 @@ string. The auth pages carry the reset token and the sign-up email there.
   which a cross-site POST does not carry, and by Better Auth's origin check on `/api/auth/*`. A GET server
   function is reachable by top-level navigation with the cookie, so a GET server function never writes.
 - **Rate limiting:** Better Auth's built-in limiter is on in production, in memory per process, keyed on
-  `cf-connecting-ip`: 100 requests per 10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on
-  reset and verification emails. It applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and
-  the other auth server functions call `getAuth().api` directly and are not limited. `/api/log` has its own
-  limit of 60 batches a minute per IP. Nothing else is limited, uploads and request submissions included.
+  the client IP from the header that `CLIENT_IP_HEADER` names (default `cf-connecting-ip`): 100 requests per
+  10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on reset and verification emails. It
+  applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and the other auth server functions
+  call `getAuth().api` directly and are not limited. `/api/log` has its own limit of 60 batches a minute per
+  IP, read from the same header. Nothing else is limited, uploads and request submissions included.
 
 ## Checklist for a new feature
 
