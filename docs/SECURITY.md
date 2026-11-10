@@ -200,6 +200,43 @@ carry the statement text without its parameters. Never pass a whole object to `l
 The Umami tracker loads with `data-exclude-search`, so it records page URLs and referrers without their query
 string. The auth pages carry the reset token and the sign-up email there.
 
+## Rate limiting
+
+`src/lib/server/rate-limits.ts` limits the auth server functions and the contact form through Limitador, a rate
+limiter shared with other apps. Limitador and its limits are configured with the infrastructure, outside this
+repository; the app keeps a copy of the values in `RULES`.
+
+| Rule | Server functions | Limits | What counts |
+|---|---|---|---|
+| `login-fail` | `loginFn` | 5 per 15 min per email, 20 per 15 min per IP | a wrong password, for an address with or without an account; checked before the password is verified |
+| `auth-mail` | `signupFn`, `resendConfirmationFn`, `requestPasswordResetFn`, and `loginFn` on an unverified account | 3 per hour per email, 10 per hour per IP, 200 per hour in total | a request that may mail a link, whether a link goes out or not |
+| `contact` | `submitContactFn` | 3 per hour per IP, 30 per hour in total | a message that passes the honeypot |
+
+- **Keys.** The IP comes from `clientIp()`, the header that `CLIENT_IP_HEADER` names. Requests without that
+  header share the key `unknown`. The email is lowercased and hashed with SHA-256, so Limitador never stores an
+  address.
+- **Accounts stay hidden.** `auth-mail` counts requests for addresses without an account too, and a refused
+  request gets the same message for every address.
+- **Messages.** A refused request answers *Troppi tentativi di accesso*, *Troppe richieste di link* or *Troppi
+  messaggi inviati di recente*, each followed by *Riprova più tardi*.
+- **Limitador down.** A call waits at most 50 ms, or `LIMITADOR_TIMEOUT_MS`. Without an answer, or with a
+  status other than 200 or 429, counters kept in the process decide, and the app stops asking Limitador for
+  30 seconds. Those counters count every event even while Limitador answers, so an outage starts from the
+  same counts. They hold up to 50,000 keys and start from zero when the process restarts.
+- **Settings.** Without `LIMITADOR_URL`, as in a local run, only the in-process counters decide. With the URL
+  and no `LIMITADOR_NAMESPACE`, the same, and an error is logged.
+- **Startup check.** `src/entry-server.tsx` reads Limitador's limits for the namespace. Limitador answers 200
+  for a rule it has no limit for, and skips a limit whose key the call lacks. So a rule with no limit, or with
+  a limit counted per a key the app does not send, is logged as an error and decided in process from then on.
+  Values that differ from `RULES` are a warning.
+- **A new rule** is added to Limitador's limits first, then to `RULES`, with every key its limits count per.
+
+Better Auth's own limiter is on in production, in memory per process, keyed on the same IP: 100 requests per
+10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on reset and verification emails. It runs
+only for requests through `/api/auth/*`. A direct `getAuth().api` call skips it, as
+`src/lib/auth/better-auth-limiter.test.ts` shows, which is why the server functions need the limits above.
+`/api/log` has its own in-process limit of 60 batches a minute per IP.
+
 ## Not in place
 
 - **Security headers:** the app sets none. There is no CSP, `X-Frame-Options`, `X-Content-Type-Options`,
@@ -208,12 +245,8 @@ string. The auth pages carry the reset token and the sign-up email there.
 - **CSRF tokens:** there are none. Cross-site writes are stopped by the session cookie being `SameSite=Lax`,
   which a cross-site POST does not carry, and by Better Auth's origin check on `/api/auth/*`. A GET server
   function is reachable by top-level navigation with the cookie, so a GET server function never writes.
-- **Rate limiting:** Better Auth's built-in limiter is on in production, in memory per process, keyed on
-  the client IP from the header that `CLIENT_IP_HEADER` names (default `cf-connecting-ip`): 100 requests per
-  10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on reset and verification emails. It
-  applies only to requests through `/api/auth/*`; `loginFn`, `signupFn` and the other auth server functions
-  call `getAuth().api` directly and are not limited. `/api/log` has its own limit of 60 batches a minute per
-  IP, read from the same header. Nothing else is limited, uploads and request submissions included.
+- **Rate limiting** covers the auth server functions, the contact form and `/api/log` only. Uploads, request
+  submissions and every other server function have no limit.
 
 ## Checklist for a new feature
 
@@ -234,3 +267,4 @@ string. The auth pages carry the reset token and the sign-up email there.
 - [ ] User text is rendered through `MarkdownRenderer` or as plain text.
 - [ ] Logs carry ids, not objects or emails.
 - [ ] GET server functions do not write.
+- [ ] A public server function that sends mail or checks a secret goes through `rateLimiter()`.
