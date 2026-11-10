@@ -24,6 +24,7 @@ import {
 const mail = vi.hoisted(() => ({
 	sent: [] as { to: string; subject: string; text: string }[],
 }));
+const request = vi.hoisted(() => ({ ip: "" }));
 
 vi.mock("@/db", async () => {
 	const { boundTx } = await import("@/lib/testing/db");
@@ -38,15 +39,20 @@ vi.mock("@/lib/email/server", () => ({
 
 vi.mock("@tanstack/react-start/server", async importOriginal => ({
 	...(await importOriginal<typeof import("@tanstack/react-start/server")>()),
-	getRequestHeaders: () => new Headers(),
+	getRequestHeaders: () => new Headers({ "cf-connecting-ip": request.ip }),
 }));
 
 setAuthEnv();
+vi.stubEnv("CLIENT_IP_HEADER", undefined);
 
 const SQUATTER_PASSWORD = "Squat1234";
 const OWNER_PASSWORD = "Owner1234";
 
+let lastOctet = 0;
+
 beforeEach(() => {
+	lastOctet += 1;
+	request.ip = `192.0.2.${lastOctet}`;
 	mail.sent.length = 0;
 });
 
