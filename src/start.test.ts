@@ -17,10 +17,12 @@ const SESSION_COOKIES =
 async function serve(
 	path: string,
 	handler: () => Response,
-	cookie: string | null = SESSION_COOKIES
+	cookie: string | null = SESSION_COOKIES,
+	init: RequestInit = {}
 ): Promise<Response> {
 	const request = new Request(`http://localhost${path}`, {
 		headers: cookie ? { accept: "text/html", cookie } : { accept: "text/html" },
+		...init,
 	});
 	const { requestMiddleware = [] } = await startInstance.getOptions();
 	const chain = requestMiddleware.map(middleware => middleware.options.server!);
@@ -28,12 +30,14 @@ async function serve(
 	const run = async (index: number): Promise<{ response: Response }> => {
 		const server = chain[index];
 		if (!server) return { response: handler() };
-		return server({
+		const result = (await server({
 			request,
 			pathname: new URL(request.url).pathname,
 			context: {},
 			next: () => run(index + 1),
-		} as never) as Promise<{ response: Response }>;
+		} as never)) as Response | { response: Response };
+		// Start turns a Response a middleware returns into its result, as here.
+		return result instanceof Response ? { response: result } : result;
 	};
 
 	return (await run(0)).response;
@@ -114,6 +118,23 @@ describe("response caching", () => {
 
 		expect(response.status).toBe(308);
 		expect(response.headers.get("location")).toBe("http://localhost/new-path");
+		expect(response.headers.get("cache-control")).toBe("private, no-store");
+	});
+});
+
+describe("request bodies", () => {
+	it("refuses an oversized server-function body before the handler runs", async () => {
+		const handler = vi.fn(() => new Response(null, { status: 204 }));
+		const response = await serve("/_serverFn/dummy-fn-id", handler, null, {
+			method: "POST",
+			headers: {
+				"content-type": "application/json",
+				"content-length": String(64 * 1024 * 1024),
+			},
+		});
+
+		expect(response.status).toBe(413);
+		expect(handler).not.toHaveBeenCalled();
 		expect(response.headers.get("cache-control")).toBe("private, no-store");
 	});
 });
