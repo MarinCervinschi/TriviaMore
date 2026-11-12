@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ne, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, ne, notInArray, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
 import { contentRequests, questions, sections } from "@/db/schema";
@@ -13,6 +13,7 @@ import { getObject } from "@/lib/storage/server";
 import type {
 	AdminContentRequest,
 	ContentRequestDetail,
+	ContentRequestStatus,
 	ReportedQuestion,
 } from "../types";
 import {
@@ -28,17 +29,33 @@ import {
 	unknownUser,
 } from "./shared";
 
+const OPEN_STATUSES: ContentRequestStatus[] = ["PENDING", "NEEDS_REVISION"];
+
+/** Every open request is listed; of the handled ones, only the most recently handled. */
+export const MAX_HANDLED_REQUESTS = 500;
+
 export async function getAdminRequests(): Promise<AdminContentRequest[]> {
 	const { scopeCourseIds } = await requireRequestAdmin();
 	const db = getDb();
 
 	if (scopeCourseIds && scopeCourseIds.size === 0) return [];
 
-	const rows = await db
-		.select()
-		.from(contentRequests)
-		.where(requestScope(db, scopeCourseIds))
-		.orderBy(desc(contentRequests.createdAt));
+	const scope = requestScope(db, scopeCourseIds);
+	const [open, handled] = await Promise.all([
+		db
+			.select()
+			.from(contentRequests)
+			.where(and(scope, inArray(contentRequests.status, OPEN_STATUSES))),
+		db
+			.select()
+			.from(contentRequests)
+			.where(and(scope, notInArray(contentRequests.status, OPEN_STATUSES)))
+			.orderBy(desc(contentRequests.handledAt), desc(contentRequests.createdAt))
+			.limit(MAX_HANDLED_REQUESTS),
+	]);
+	const rows = [...open, ...handled].sort(
+		(a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+	);
 
 	const [labels, users] = await Promise.all([
 		resolveTargetLabels(db, rows),

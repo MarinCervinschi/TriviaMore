@@ -1,5 +1,6 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 
+import type { DbOrTx } from "@/db";
 import { getDb } from "@/db";
 import {
 	contentRequests,
@@ -19,6 +20,7 @@ import {
 	NotFound,
 	Unavailable,
 } from "@/lib/server/errors";
+import { rateLimiter } from "@/lib/server/rate-limits";
 import { putObject } from "@/lib/storage/server";
 
 import type { CreateRequestInput, UpdateReportInput } from "../schemas";
@@ -27,10 +29,13 @@ import {
 	assertOwnAttachment,
 	findRequestOrThrow,
 	generateTitle,
+	parseSubmission,
 	parseSubmittedContent,
 	resolveTargetLabels,
 	targetKey,
 } from "./shared";
+
+export const MAX_OPEN_REQUESTS_PER_USER = 30;
 
 const REQUEST_TYPE: Record<CreateRequestInput["type"], ContentRequestType> = {
 	section: "NEW_SECTION",
@@ -110,6 +115,23 @@ async function resolveTarget(
 	};
 }
 
+async function assertBelowOpenCap(db: DbOrTx, userId: string) {
+	const [open] = await db
+		.select({ value: count() })
+		.from(contentRequests)
+		.where(
+			and(
+				eq(contentRequests.userId, userId),
+				inArray(contentRequests.status, ["PENDING", "NEEDS_REVISION"])
+			)
+		);
+	if (open.value >= MAX_OPEN_REQUESTS_PER_USER) {
+		throw new Conflict(
+			`Hai già ${MAX_OPEN_REQUESTS_PER_USER} richieste in attesa. Potrai inviarne altre quando saranno gestite.`
+		);
+	}
+}
+
 const ATTACHMENT_TYPES: Record<string, { type: string; magic: number[] }> = {
 	pdf: { type: "application/pdf", magic: [0x25, 0x50, 0x44, 0x46] },
 	docx: {
@@ -123,6 +145,11 @@ export async function uploadAttachment(
 	userId: string,
 	file: File
 ): Promise<{ filePath: string }> {
+	await assertBelowOpenCap(getDb(), userId);
+	if (!(await rateLimiter().checkAndReport("upload", { user: userId }))) {
+		throw new Conflict("Hai caricato troppi file di recente. Riprova più tardi.");
+	}
+
 	const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
 	const accepted = ATTACHMENT_TYPES[extension];
 	const bytes = new Uint8Array(await file.arrayBuffer());
@@ -144,7 +171,7 @@ export async function createRequest(
 	userId: string,
 	input: CreateRequestInput
 ): Promise<{ id: string }> {
-	const submitted = parseSubmittedContent(input.submitted_content);
+	const submitted = parseSubmission(input.submitted_content);
 	assertOwnAttachment(userId, submitted);
 	const target = await resolveTarget(
 		userId,
@@ -154,6 +181,10 @@ export async function createRequest(
 
 	// One transaction, so no admin is notified about a request that failed to insert.
 	return getDb().transaction(async tx => {
+		// Serializes one user's submissions, so two at once cannot both pass the cap.
+		await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${userId}, 0))`);
+		await assertBelowOpenCap(tx, userId);
+
 		const [request] = await tx
 			.insert(contentRequests)
 			.values({
@@ -184,7 +215,7 @@ export async function reviseRequest(
 	userId: string,
 	input: { id: string; submitted_content: unknown }
 ) {
-	const submitted = parseSubmittedContent(input.submitted_content);
+	const submitted = parseSubmission(input.submitted_content);
 	assertOwnAttachment(userId, submitted);
 
 	await getDb().transaction(async tx => {

@@ -81,3 +81,51 @@ export async function deleteObjects(bucket: Bucket, keys: string[]): Promise<voi
 		if (response.status !== 404) await check(response, "DELETE", key);
 	}
 }
+
+export type StoredObject = { key: string; lastModified: Date; size: number };
+
+function xmlText(xml: string, tag: string): string | undefined {
+	const match = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
+	return match?.[1];
+}
+
+function unescapeXml(value: string): string {
+	return value
+		.replace(/&lt;/g, "<")
+		.replace(/&gt;/g, ">")
+		.replace(/&quot;/g, '"')
+		.replace(/&apos;/g, "'")
+		.replace(/&amp;/g, "&");
+}
+
+/** Parses one page of a ListObjectsV2 answer. */
+export function parseListPage(xml: string): {
+	objects: StoredObject[];
+	next: string | undefined;
+} {
+	const objects = [...xml.matchAll(/<Contents>([\s\S]*?)<\/Contents>/g)].map(
+		([, entry]) => ({
+			key: unescapeXml(xmlText(entry, "Key") ?? ""),
+			lastModified: new Date(xmlText(entry, "LastModified") ?? 0),
+			size: Number(xmlText(entry, "Size") ?? 0),
+		})
+	);
+	const truncated = xmlText(xml, "IsTruncated") === "true";
+	const token = xmlText(xml, "NextContinuationToken");
+	return { objects, next: truncated && token ? unescapeXml(token) : undefined };
+}
+
+export async function* listObjects(bucket: Bucket): AsyncGenerator<StoredObject> {
+	let token: string | undefined;
+	do {
+		const url = new URL(
+			`${env("S3_ENDPOINT").replace(/\/$/, "")}/${bucketName(bucket)}`
+		);
+		url.searchParams.set("list-type", "2");
+		if (token) url.searchParams.set("continuation-token", token);
+		const response = await check(await s3().fetch(url.toString()), "LIST", bucket);
+		const page = parseListPage(await response.text());
+		yield* page.objects;
+		token = page.next;
+	} while (token);
+}
