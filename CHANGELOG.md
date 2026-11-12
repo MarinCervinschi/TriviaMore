@@ -12,6 +12,28 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.7.0 — 2026-11-12
+
+Sign-in, the emails that carry an auth link and the contact form now have rate limits of their own, counted in
+Limitador and, while it does not answer, in the app's process. Every rendered response is marked private and
+uncacheable. No migrations.
+
+### Added
+
+- **Rate limits on the auth server functions and the contact form**, through a limiter that asks Limitador and
+  falls back to in-process counters after 50 ms (`LIMITADOR_TIMEOUT_MS`), then stops asking for 30 s.
+  `login-fail` allows 5 wrong passwords per email and 20 per IP every 15 minutes; `auth-mail` allows 3 link
+  requests per email, 10 per IP and 200 in total every hour; `contact` allows 3 messages per IP and 30 in total
+  every hour. Emails are hashed before they become a key. A refused request gets the same Italian message for
+  every address. The settings are `LIMITADOR_URL` and `LIMITADOR_NAMESPACE`; without them only the in-process
+  counters decide. At startup the app checks Limitador's limits against its own rules and logs any rule
+  Limitador cannot enforce. (#231)
+
+### Security
+
+- **Rendered responses carry `Cache-Control: private, no-store`** — pages, server-function results, redirects and
+  `/api/*` — unless the route sets its own, as `/sitemap.xml` and `/api/health` do. (#228)
+
 ## 3.6.1 — 2026-11-10
 
 A fix-only release. The logs and the analytics record less, and the client IP comes from one configured
