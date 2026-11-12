@@ -25,6 +25,8 @@ const DEPLOYED = [
 	limit("auth-mail-total", "auth-mail", 200, 3600),
 	limit("contact-per-ip", "contact", 3, 3600, "ip"),
 	limit("contact-total", "contact", 30, 3600),
+	limit("upload-per-user", "upload", 20, 3600, "user"),
+	limit("upload-total", "upload", 300, 3600),
 ];
 
 async function load() {

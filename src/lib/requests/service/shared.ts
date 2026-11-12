@@ -19,7 +19,7 @@ import { requireAdmin } from "@/lib/auth/guards";
 import type { AuthUser } from "@/lib/auth/types";
 import { Forbidden, Invalid, NotFound } from "@/lib/server/errors";
 
-import { storedContentSchema } from "../schemas";
+import { storedContentSchema, submissionSchema } from "../schemas";
 import type { ContentRequest, RequestUser, SubmittedContent } from "../types";
 
 /** A `null` scope means ADMIN or SUPERADMIN, who are unscoped. */
@@ -79,6 +79,16 @@ export function parseSubmittedContent(raw: unknown): SubmittedContent {
 	const result = storedContentSchema.safeParse(raw);
 	if (!result.success) throw new Invalid("Contenuto della proposta non valido");
 	return result.data as SubmittedContent;
+}
+
+/** Validates what a user submits, against tighter limits than a stored row is read with. */
+export function parseSubmission(raw: unknown): SubmittedContent {
+	const result = submissionSchema.safeParse(raw);
+	if (!result.success) {
+		const tooBig = result.error.issues.find(issue => issue.code === "too_big");
+		throw new Invalid(tooBig?.message ?? "Contenuto della proposta non valido");
+	}
+	return result.data;
 }
 
 /** An attachment is stored under its author's folder, so a request cannot point at someone else's file. */

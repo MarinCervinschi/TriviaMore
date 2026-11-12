@@ -12,12 +12,14 @@ export const startQuizSchema = z.object({
 
 export const completeQuizSchema = z.object({
 	quizAttemptId: z.string().uuid(),
-	answers: z.array(
-		z.object({
-			questionId: z.string().uuid(),
-			userAnswer: z.array(z.string()),
-		})
-	),
+	answers: z
+		.array(
+			z.object({
+				questionId: z.string().uuid(),
+				userAnswer: z.array(z.string().max(2000)).max(40),
+			})
+		)
+		.max(MAX_SESSION_ITEMS),
 	timeSpent: z.number(),
 });
 

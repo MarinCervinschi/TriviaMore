@@ -1,5 +1,6 @@
 import { achievementsReplay, achievementsRollups } from "./achievements";
 import { catalogSyllabi, catalogSync } from "./catalog";
+import { storageReapAttachments } from "./storage";
 import type { JobDefinition } from "./types";
 
 /** Every job the worker serves; the worker creates a missing queue when it starts. */
@@ -8,6 +9,7 @@ export const JOBS: JobDefinition[] = [
 	catalogSyllabi,
 	achievementsRollups,
 	achievementsReplay,
+	storageReapAttachments,
 ];
 
 export function jobByName(name: string): JobDefinition | undefined {

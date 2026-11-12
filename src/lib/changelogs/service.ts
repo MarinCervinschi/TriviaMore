@@ -23,10 +23,13 @@ export async function getUnreadVersions(userId: string): Promise<string[]> {
 }
 
 export async function markVersionsRead(userId: string, versions: string[]) {
-	if (versions.length === 0) return;
+	const known = [...new Set(versions)].filter(version =>
+		CHANGELOG_VERSIONS.includes(version)
+	);
+	if (known.length === 0) return;
 
 	await getDb()
 		.insert(userChangelogReads)
-		.values(versions.map(version => ({ userId, version })))
+		.values(known.map(version => ({ userId, version })))
 		.onConflictDoNothing();
 }

@@ -45,6 +45,62 @@ export const storedContentSchema = z.discriminatedUnion("type", [
 	fileUploadSubmissionSchema,
 ]);
 
+const MAX_QUESTIONS_PER_REQUEST = 100;
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+const text = (max: number, message: string) => z.string().max(max, message);
+
+const submittedQuestionSchema = z.object({
+	content: text(2000, "Il testo di una domanda supera i 2000 caratteri").min(1),
+	question_type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"]),
+	options: z
+		.array(text(500, "Un'opzione supera i 500 caratteri"))
+		.max(40, "Una domanda ha più di 40 opzioni")
+		.nullable(),
+	correct_answer: z
+		.array(text(500, "Una risposta corretta supera i 500 caratteri"))
+		.max(6, "Una domanda ha più di 6 risposte corrette"),
+	explanation: text(1000, "Una spiegazione supera i 1000 caratteri").nullable(),
+	difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+});
+
+/** What a user may submit; stored rows are read back with the looser `storedContentSchema`. */
+export const submissionSchema = z.discriminatedUnion("type", [
+	z.object({
+		type: z.literal("section"),
+		name: text(100, "Il nome della sezione supera i 100 caratteri").min(1),
+		description: text(500, "La descrizione supera i 500 caratteri"),
+	}),
+	z.object({
+		type: z.literal("questions"),
+		questions: z
+			.array(submittedQuestionSchema)
+			.max(
+				MAX_QUESTIONS_PER_REQUEST,
+				`Una proposta può contenere al massimo ${MAX_QUESTIONS_PER_REQUEST} domande`
+			),
+	}),
+	z.object({
+		type: z.literal("report"),
+		question_id: z.string().uuid(),
+		question_content: text(5000, "Il testo della domanda segnalata è troppo lungo"),
+		reasons: z
+			.array(z.enum(["errata", "imprecisa", "fuori_contesto", "altro"]))
+			.min(1)
+			.max(4, "Troppi motivi di segnalazione"),
+		comment: text(1000, "Il commento supera i 1000 caratteri").nullable(),
+	}),
+	fileUploadSubmissionSchema.extend({
+		file_name: text(255, "Il nome del file è troppo lungo").min(1).trim(),
+		file_path: z.string().min(1).max(200, "Percorso file non valido"),
+		file_size: z
+			.number()
+			.int()
+			.min(0)
+			.max(MAX_ATTACHMENT_BYTES, "Il file supera il limite di 10 MB"),
+	}),
+]);
+
 export const handleRequestSchema = z.object({
 	id: z.string().uuid(),
 	status: z.enum(["REJECTED", "NEEDS_REVISION"]),

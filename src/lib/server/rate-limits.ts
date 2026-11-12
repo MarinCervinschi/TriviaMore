@@ -23,6 +23,10 @@ const RULES = {
 		{ per: ["ip"], max: 3, seconds: 60 * 60 },
 		{ per: [], max: 30, seconds: 60 * 60 },
 	],
+	upload: [
+		{ per: ["user"], max: 20, seconds: 60 * 60 },
+		{ per: [], max: 300, seconds: 60 * 60 },
+	],
 } as const satisfies Rules;
 
 type Settings =
