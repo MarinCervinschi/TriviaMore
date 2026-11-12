@@ -17,6 +17,9 @@ Two modes: **with Infisical** (default) and **without** (fallback for contributo
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Server only | Google OAuth client, redirect URI `<BETTER_AUTH_URL>/api/auth/callback/google` — optional locally |
 | `MAINTENANCE_MODE` | Server only | `true` to redirect every route to the Coming Soon page |
 | `CLIENT_IP_HEADER` | Server only | The one request header that holds the client's IP, written by the proxy in front of the app (default `cf-connecting-ip`; `x-real-ip` behind Traefik). The rate limits and the legal acceptances read no other header |
+| `LIMITADOR_URL` | Server only | Limitador's base URL, for the rate limits in `docs/SECURITY.md`. Unset means the limits are counted in the app's process only |
+| `LIMITADOR_NAMESPACE` | Server only | The namespace of the app's limits in Limitador, one per environment; without it the URL is ignored and an error is logged |
+| `LIMITADOR_TIMEOUT_MS` | Server only | How long a rate-limit call waits for Limitador before the in-process counters decide (default `50`). Raise it where Limitador is reached over the tailnet |
 | `SEQ_URL` | Server only | Seq ingestion base URL — **unset means logs go to the console** |
 | `SEQ_API_KEY` | Server only | Seq API key, one per environment — see `docs/OBSERVABILITY.md` |
 | `LOG_LEVEL` | Server only | `debug` \| `info` \| `warn` \| `error` (default `info`) |

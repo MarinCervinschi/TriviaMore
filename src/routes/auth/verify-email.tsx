@@ -35,7 +35,11 @@ function VerifyEmailPage() {
 
 	const resend = useMutation({
 		mutationFn: resendConfirmationFn,
-		onSuccess: () => {
+		onSuccess: result => {
+			if (!result.success) {
+				toast.error(result.error);
+				return;
+			}
 			toast.success("Se l'account è ancora da attivare, riceverai un nuovo link.");
 			setCooldown(RESEND_COOLDOWN_SECONDS);
 		},
