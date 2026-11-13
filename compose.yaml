@@ -1,13 +1,14 @@
-# A plain Postgres, empty on every start, for the integration tests and for rebuilding the schema from the migrations.
+# The production image, empty on every start and without ParadeDB's bootstrap extensions, for the integration tests and for rebuilding the schema from the migrations.
 services:
   test-db:
-    image: postgres:17
+    image: paradedb/paradedb:0.26.6-pg17
     environment:
       POSTGRES_PASSWORD: postgres
     ports:
       - "127.0.0.1:54329:5432"
     tmpfs:
       - /var/lib/postgresql/data
+      - /docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 1s

@@ -191,7 +191,7 @@ Rules that are not negotiable:
   and only until it is merged. The maintainer reaches staging and production with commands kept
   outside this repo, which set these variables.
 - **No `psql` on the host.** Run it from the image, as the scripts do:
-  `docker run --rm -i postgres:17 psql "$URL" -c "..."`.
+  `docker run --rm -i paradedb/paradedb:0.26.6-pg17 psql "$URL" -c "..."`.
 
 `drizzle/archive/` is a frozen archive. Nothing new goes there. The chain
 starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty Postgres.
