@@ -68,22 +68,15 @@ export async function findDepartmentByCode(code: string) {
 	return department;
 }
 
-// Browse URLs address the catalog by code, not by id, so every detail page
-// starts by walking department → course → class.
+// Browse URLs address the catalog by code, so each detail page resolves its whole chain in one query.
 export async function resolveCourseByCodes(deptCode: string, courseCode: string) {
-	const department = await findDepartmentByCode(deptCode);
-	if (!department) return null;
-
-	const [course] = await getDb()
-		.select(courseColumns)
+	const [row] = await getDb()
+		.select({ department: departmentColumns, course: courseColumns })
 		.from(courses)
-		.where(
-			and(eq(courses.departmentId, department.id), ilike(courses.code, courseCode))
-		)
+		.innerJoin(departments, eq(departments.id, courses.departmentId))
+		.where(and(ilike(departments.code, deptCode), ilike(courses.code, courseCode)))
 		.limit(1);
-	if (!course) return null;
-
-	return { department, course };
+	return row ?? null;
 }
 
 export async function resolveClassByCodes(
@@ -91,24 +84,27 @@ export async function resolveClassByCodes(
 	courseCode: string,
 	classCode: string
 ) {
-	const parent = await resolveCourseByCodes(deptCode, courseCode);
-	if (!parent) return null;
-
 	// Nested on purpose: `position` exists on both sides and means different
 	// things — the class's own order, and its order inside this course.
 	const [row] = await getDb()
-		.select({ class: classColumns, courseClass: courseClassColumns })
+		.select({
+			department: departmentColumns,
+			course: courseColumns,
+			class: classColumns,
+			courseClass: courseClassColumns,
+		})
 		.from(courseClasses)
+		.innerJoin(courses, eq(courses.id, courseClasses.courseId))
+		.innerJoin(departments, eq(departments.id, courses.departmentId))
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
 		.where(
 			and(
-				eq(courseClasses.courseId, parent.course.id),
+				ilike(departments.code, deptCode),
+				ilike(courses.code, courseCode),
 				// `ilike` reads `_` as a wildcard, and 418 codes contain one.
 				sql`lower(${courseClasses.code}) = ${normaliseCatalogueCode(classCode).toLowerCase()}`
 			)
 		)
 		.limit(1);
-	if (!row) return null;
-
-	return { ...parent, ...row };
+	return row ?? null;
 }
