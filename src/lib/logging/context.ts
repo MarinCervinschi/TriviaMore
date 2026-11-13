@@ -11,6 +11,7 @@ export type RequestContext = {
 	userId?: string;
 	dbQueries: number;
 	dbMs: number;
+	dbWaitMs: number;
 	authChecks: number;
 	authMs: number;
 	outcome?: string;
@@ -35,6 +36,7 @@ export function createContext(
 		spanId: newSpanId(),
 		dbQueries: 0,
 		dbMs: 0,
+		dbWaitMs: 0,
 		authChecks: 0,
 		authMs: 0,
 		...init,

@@ -104,10 +104,14 @@ exception and **no `Status` at all**. `Status: 500` therefore only ever means a 
 | `Status` | the response status — **absent** when the request was never served |
 | `Outcome` | `ok` \| `rejected` (an AppError) \| `failed` (a bug) \| `aborted` (the client hung up) |
 | `ErrorCode` | the AppError code, or the Postgres SQLSTATE |
-| `DbQueries` / `DbMs` | accumulated by the pool wrapper |
+| `DbQueries` / `DbMs` | accumulated by the pool wrapper; `DbMs` includes the wait for a connection |
+| `DbWaitMs` | the part of `DbMs` spent waiting for a connection |
+| `UserAgent` | the request's `User-Agent`, cut at 256 characters — how a crawler burst is told from real users |
 | `AuthChecks` / `AuthMs` | accumulated by the auth guards — see below |
 | `AppMs` | `Elapsed - DbMs - AuthMs`: the part that is our own code |
 | `PoolIdle` / `PoolTotal` | pool state when a query started — see below |
+| `Waited` | on a query: ms spent getting a connection, before the query was sent |
+| `LoopBusy` | on a query: how much of its `Elapsed` the event loop was busy, in percent |
 
 ### Where the time actually goes
 
@@ -118,11 +122,21 @@ check was an HTTP round trip to GoTrue on every call, about 55 ms, and `AuthMs` 
 That makes `AppMs` the number to watch: a request that is slow with a low `AppMs` is waiting on
 something else, and optimising our code would achieve nothing.
 
-`Elapsed` on a query event is **checkout plus execution**, the latency the caller actually pays.
-Opening a connection costs a TCP round trip, TLS and a SCRAM exchange, and that lands inside
-whichever query triggered it — a trivial `count(*)` can read as 200 ms at cold start while Postgres
-executed it in 0.1 ms. `PoolIdle: 0` on a slow query means it was paying for a connection, not
-waiting on the database; the `Database connection opened` events alongside it confirm the ramp-up.
+`Elapsed` on a query event is **execution only**, and the span starts when the query is sent. The
+checkout before it is `Waited`: queueing for a busy pool, or opening a connection, which costs a TCP
+round trip, TLS and a SCRAM exchange. The pool keeps all `POOL_MAX` connections open once it has
+opened them (`min`), because pg's default closes them after 10 s idle and a burst after a quiet spell
+then paid to reopen every one.
+
+`Elapsed` is still measured from Node, so it ends when the event loop gets round to the result. During
+a burst of server renders a 2 ms query can read as 500 ms. `LoopBusy` tells the two apart, and a query
+past `SLOW_QUERY_MS` gets one of three templates:
+
+| Template | Meaning |
+|---|---|
+| `Slow query took …` | the loop was mostly idle: Postgres was slow — look at the plan |
+| `Query took … on a busy event loop …` | the loop was busy at least half the time: our own CPU, usually SSR |
+| `Query waited … for a connection …` | the query was fast but the checkout was not: the pool was full or cold |
 
 A `Connection pool starved` warning requires `waitingCount > 0` **and** the pool to be at its
 maximum. `waitingCount` alone is not a signal: pg queues a checkout whenever it cannot hand a client
