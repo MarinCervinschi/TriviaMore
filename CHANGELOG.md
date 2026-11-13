@@ -12,6 +12,25 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.8.1 — 2026-11-13
+
+The slow-query warnings seen during bursts of page renders were a measuring error: the queries run in a few
+milliseconds, and the time came from waiting for a connection and for a busy event loop. No migrations.
+
+### Changed
+
+- **Query events separate the wait from the query.** `Elapsed` and the query span now cover execution only;
+  `Waited` is the connection checkout, and `LoopBusy` is how busy the event loop was meanwhile. A query past
+  200 ms is logged as `Slow query`, `Query took … on a busy event loop` or `Query waited … for a connection`.
+  (#235)
+- **The request line carries `UserAgent` and `DbWaitMs`**, to tell a crawler burst from real users. (#235)
+
+### Fixed
+
+- **The pool keeps its connections open** instead of closing them after 10 s idle, so a burst after a quiet
+  spell no longer reopens all ten. (#235)
+- **Course and class pages resolve their codes in one query** instead of two and three. (#235)
+
 ## 3.8.0 — 2026-11-13
 
 Request bodies, submitted content and attachment uploads now have upper bounds, and attachments that no request
