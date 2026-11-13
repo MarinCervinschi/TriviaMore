@@ -10,7 +10,10 @@ export const changelogFrontmatterSchema = z.object({
 });
 
 export const markChangelogsReadSchema = z.object({
-	versions: z.array(z.string()).min(1),
+	versions: z
+		.array(z.string().regex(/^\d+\.\d+\.\d+$/))
+		.min(1)
+		.max(500),
 });
 
 export type MarkChangelogsReadInput = z.infer<typeof markChangelogsReadSchema>;

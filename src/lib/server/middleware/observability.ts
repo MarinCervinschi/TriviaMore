@@ -9,7 +9,7 @@ const ASSET_PATTERN = /\.(js|mjs|css|map|ico|png|jpe?g|gif|svg|webp|avif|woff2?)
 // Polled by Coolify every few seconds; a line per poll would bury the requests worth reading.
 const HEALTH_PATH = "/api/health";
 
-const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
+export const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
 
 // Better Auth's reset-password link carries its live token as a path segment.
 const RESET_LINK = /(\/reset-password\/)[^/]+/gi;

@@ -139,9 +139,25 @@ Every server function that takes input has `.inputValidator()` with a zod schema
 enumerations are `z.enum`. Pick the fields a write sets one by one; never spread the input into
 `.set()` or `.values()`.
 
-`submitted_content` on a content request is jsonb from the user. It goes through `parseSubmittedContent()`
-before use, and `assertOwnAttachment()` rejects a `file_path` that is not under the user's own prefix or
-contains `..`.
+`submitted_content` on a content request is jsonb from the user. `createRequest` and `reviseRequest` check it
+with `parseSubmission()`, which caps every string and array (100 questions, 40 options, 2,000 characters a
+question, 1,000 a comment) and answers the first limit exceeded in Italian. A stored row is read back through
+`parseSubmittedContent()`, which has no caps, so a row written before them still opens. `assertOwnAttachment()`
+rejects a `file_path` that is not under the user's own prefix or contains `..`.
+
+A user has at most 30 requests `PENDING` or `NEEDS_REVISION`. `createRequest` counts them under a per-user
+advisory lock in its transaction, and `uploadAttachment` checks the same cap before storing a file. The admin list
+(`getAdminRequests`) returns every open request and the 500 most recently handled ones, so its size does not grow
+with the history.
+
+### Request bodies
+
+`bodyLimitMiddleware` (`src/lib/server/middleware/body-limit.ts`, registered in `src/start.ts`) runs before any
+handler reads a body. It refuses with 411 a body sent with `Transfer-Encoding`, or with a `Content-Type` and no
+`Content-Length`, and with 413 a `Content-Length` over the route's cap: 11 MB for a multipart server-function
+call, 2 MB for any other server-function call (the bulk question import is the largest), and 256 KB everywhere
+else (`/api/auth/*`, `/api/log`). Node stops reading a body at its declared length, so the header bounds what a
+handler can read. A GET server function carries its payload in the URL, which Node caps with the headers.
 
 ## Errors
 
@@ -172,6 +188,11 @@ and chooses the key; the client never names a path.
 - **Generated avatars** are SVGs rendered on the server from a seed. An SVG from the browser is never stored.
 - **Attachments** (`uploadAttachment` in `src/lib/requests/service/user-requests.ts`): at most 10 MB, extension
   `pdf` or `docx`, and the first four bytes must match that format.
+- **Upload quota:** the `upload` rate limit below, and the open-request cap above.
+- **Orphans:** an attachment is stored before its request exists. `reapOrphanAttachments()` in
+  `src/lib/requests/service/attachments.ts` deletes every object in `contributions` that no request names and
+  that is older than a day. It runs as `pnpm storage:reap-attachments` (`--apply` to delete) and as the console
+  job *Cancella gli allegati orfani*.
 - **Reading an attachment:** `/api/requests/$requestId/attachment` calls `readAttachment()`, which applies the
   same `assertInScope()` as the request itself, then streams the object with
   `content-disposition: attachment` and `cache-control: private, no-store`. There are no signed URLs.
@@ -210,7 +231,7 @@ string. The auth pages carry the reset token and the sign-up email there.
 
 ## Rate limiting
 
-`src/lib/server/rate-limits.ts` limits the auth server functions and the contact form through Limitador, a rate
+`src/lib/server/rate-limits.ts` limits the auth server functions, the contact form and attachment uploads through Limitador, a rate
 limiter shared with other apps. Limitador and its limits are configured with the infrastructure, outside this
 repository; the app keeps a copy of the values in `RULES`.
 
@@ -219,14 +240,15 @@ repository; the app keeps a copy of the values in `RULES`.
 | `login-fail` | `loginFn` | 5 per 15 min per email, 20 per 15 min per IP | a wrong password, for an address with or without an account; checked before the password is verified |
 | `auth-mail` | `signupFn`, `resendConfirmationFn`, `requestPasswordResetFn`, and `loginFn` on an unverified account | 3 per hour per email, 10 per hour per IP, 200 per hour in total | a request that may mail a link, whether a link goes out or not |
 | `contact` | `submitContactFn` | 3 per hour per IP, 30 per hour in total | a message that passes the honeypot |
+| `upload` | `uploadAttachmentFn` | 20 per hour per user, 300 per hour in total | an attachment upload, counted before its bytes are checked |
 
 - **Keys.** The IP comes from `clientIp()`, the header that `CLIENT_IP_HEADER` names. Requests without that
   header share the key `unknown`. The email is lowercased and hashed with SHA-256, so Limitador never stores an
   address.
 - **Accounts stay hidden.** `auth-mail` counts requests for addresses without an account too, and a refused
   request gets the same message for every address.
-- **Messages.** A refused request answers *Troppi tentativi di accesso*, *Troppe richieste di link* or *Troppi
-  messaggi inviati di recente*, each followed by *Riprova più tardi*.
+- **Messages.** A refused request answers *Troppi tentativi di accesso*, *Troppe richieste di link*, *Troppi
+  messaggi inviati di recente* or *Hai caricato troppi file di recente*, each followed by *Riprova più tardi*.
 - **Limitador down.** A call waits at most 50 ms, or `LIMITADOR_TIMEOUT_MS`. Without an answer, or with a
   status other than 200 or 429, counters kept in the process decide, and the app stops asking Limitador for
   30 seconds. Those counters count every event even while Limitador answers, so an outage starts from the
@@ -243,7 +265,8 @@ Better Auth's own limiter is on in production, in memory per process, keyed on t
 10 seconds, 3 per 10 seconds on sign-in and sign-up, 3 per minute on reset and verification emails. It runs
 only for requests through `/api/auth/*`. A direct `getAuth().api` call skips it, as
 `src/lib/auth/better-auth-limiter.test.ts` shows, which is why the server functions need the limits above.
-`/api/log` has its own in-process limit of 60 batches a minute per IP.
+`/api/log` has its own in-process budget (`src/lib/logging/intake.ts`), each over one minute: 60 batches and 512 KB
+per IP, 3,000 batches and 16 MB in total.
 
 ## Not in place
 
@@ -253,8 +276,9 @@ only for requests through `/api/auth/*`. A direct `getAuth().api` call skips it,
 - **CSRF tokens:** there are none. Cross-site writes are stopped by the session cookie being `SameSite=Lax`,
   which a cross-site POST does not carry, and by Better Auth's origin check on `/api/auth/*`. A GET server
   function is reachable by top-level navigation with the cookie, so a GET server function never writes.
-- **Rate limiting** covers the auth server functions, the contact form and `/api/log` only. Uploads, request
-  submissions and every other server function have no limit.
+- **Rate limiting** covers the auth server functions, the contact form, attachment uploads and `/api/log`
+  only. Request submissions are capped by the open-request count, not by a rate; every other server function
+  is bounded only by the body caps.
 
 ## Checklist for a new feature
 

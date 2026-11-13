@@ -12,6 +12,36 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.8.0 — 2026-11-13
+
+Request bodies, submitted content and attachment uploads now have upper bounds, and attachments that no request
+names are cleaned up. No migrations.
+
+### Added
+
+- **A rate limit on attachment uploads**, `upload`: 20 per hour per user and 300 per hour in total, in Limitador
+  with the in-process fallback. (#233)
+- **`pnpm storage:reap-attachments`** and the console job *Cancella gli allegati orfani* delete attachments older
+  than a day that no request names; without `--apply` the script only lists them. (#233)
+
+### Changed
+
+- **A user has at most 30 requests `PENDING` or `NEEDS_REVISION`.** `createRequest` counts them under a per-user
+  advisory lock, and `uploadAttachment` checks the same cap before storing a file. (#233)
+- **The admin request list returns every open request and the 500 most recently handled**, instead of the whole
+  history. (#233)
+
+### Security
+
+- **Bodies are checked before they are read.** A body sent with `Transfer-Encoding`, or with a `Content-Type` and
+  no `Content-Length`, gets 411; one over its route's cap gets 413: 11 MB for a multipart server-function call,
+  2 MB for any other, 256 KB on `/api/auth/*` and `/api/log`. (#233)
+- **Submitted request content is capped** by `submissionSchema`, which answers the first limit exceeded in
+  Italian; stored rows are still read without caps. Quiz answers are capped at `MAX_SESSION_ITEMS`, and changelog
+  read marks keep known versions only. (#233)
+- **`/api/log` has a byte budget**: 512 KB per IP and 3,000 batches or 16 MB in total each minute, beside the
+  60 batches per IP. (#233)
+
 ## 3.7.0 — 2026-11-12
 
 Sign-in, the emails that carry an auth link and the contact form now have rate limits of their own, counted in
