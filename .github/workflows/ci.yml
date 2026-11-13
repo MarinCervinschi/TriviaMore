@@ -21,12 +21,13 @@ jobs:
     # The same empty Postgres as `pnpm db:test:up`, so the migrations prove they build a database from nothing.
     services:
       postgres:
-        image: postgres:17
+        image: paradedb/paradedb:0.26.6-pg17
         env:
           POSTGRES_PASSWORD: postgres
         ports:
           - 54329:5432
         options: >-
+          --tmpfs /docker-entrypoint-initdb.d
           --health-cmd "pg_isready -U postgres"
           --health-interval 2s
           --health-timeout 3s

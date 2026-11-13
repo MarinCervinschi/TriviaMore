@@ -14,7 +14,7 @@ if [ "$host" != "$RESET_ALLOWED_HOST" ]; then
 fi
 
 # psql and pg_dump from the image, never from the host.
-pg() { docker run --rm -i postgres:17 "$@"; }
+pg() { docker run --rm -i paradedb/paradedb:0.26.6-pg17 "$@"; }
 
 echo "→ dropping every schema on $host"
 pg psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 -q <<'SQL'
