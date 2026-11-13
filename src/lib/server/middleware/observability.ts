@@ -14,6 +14,8 @@ export const SERVER_FN_BASE = process.env.TSS_SERVER_FN_BASE ?? "/_serverFn/";
 // Better Auth's reset-password link carries its live token as a path segment.
 const RESET_LINK = /(\/reset-password\/)[^/]+/gi;
 
+const USER_AGENT_MAX = 256;
+
 const DISCONNECT_CODES = new Set([
 	"ABORT_ERR",
 	"AbortError",
@@ -75,6 +77,7 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 		if (isAsset(pathname) || pathname === HEALTH_PATH) return next();
 
 		const path = loggedPath(pathname);
+		const userAgent = request.headers.get("user-agent")?.slice(0, USER_AGENT_MAX);
 		const context = createContext({
 			source: pathname.startsWith(SERVER_FN_BASE) ? "fn" : "ssr",
 			path,
@@ -107,6 +110,7 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 				const properties = {
 					Method: request.method,
 					Path: path,
+					...(userAgent ? { UserAgent: userAgent } : {}),
 					...(status === undefined ? {} : { Status: status }),
 					Elapsed: elapsed,
 					Outcome: context.outcome ?? outcomeFor(status, disconnected),
@@ -114,6 +118,7 @@ export const observabilityMiddleware = createMiddleware({ type: "request" }).ser
 					...(context.errorCode ? { ErrorCode: context.errorCode } : {}),
 					DbQueries: context.dbQueries,
 					DbMs: context.dbMs,
+					DbWaitMs: context.dbWaitMs,
 					AuthChecks: context.authChecks,
 					AuthMs: context.authMs,
 					AppMs: Math.max(0, elapsed - context.dbMs - context.authMs),

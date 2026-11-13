@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
+import { performance } from "node:perf_hooks";
 import { Pool, type PoolClient } from "pg";
 
 import { currentContext, newSpanId } from "@/lib/logging/context";
@@ -13,6 +14,7 @@ export type DbOrTx = Db | Tx;
 
 const POOL_MAX = 10;
 const SLOW_QUERY_MS = 200;
+const BUSY_LOOP_SHARE = 0.5;
 const SATURATION_REPORT_MS = 10_000;
 
 let _pool: Pool | null = null;
@@ -33,37 +35,56 @@ function statementText(statement: unknown): string {
 	return text.length > 500 ? `${text.slice(0, 500)}…` : text;
 }
 
+const QUERY_TOOK = "Query took {Elapsed:0.0}ms — {Statement}";
+
+// Elapsed is measured from Node, so a query that finished while the event loop was busy rendering reads as slow.
+function templateFor(elapsed: number, waited: number, loopBusy: number): string {
+	if (elapsed >= SLOW_QUERY_MS) {
+		return loopBusy >= BUSY_LOOP_SHARE
+			? "Query took {Elapsed:0.0}ms on a busy event loop ({LoopBusy}% busy) — {Statement}"
+			: "Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}";
+	}
+	if (waited >= SLOW_QUERY_MS)
+		return "Query waited {Waited:0.0}ms for a connection ({PoolIdle} idle) — {Statement}";
+	return QUERY_TOOK;
+}
+
+type Checkout = { waited: number; idleBefore: number };
+
 async function track<T>(
 	pool: Pool,
 	statement: unknown,
-	run: () => Promise<T>
+	run: () => Promise<T>,
+	checkout: Checkout = { waited: 0, idleBefore: pool.idleCount }
 ): Promise<T> {
 	const context = currentContext();
-	const idleBefore = pool.idleCount;
 	const startedAt = performance.now();
 	const startedEpoch = Date.now();
+	const loopBefore = performance.eventLoopUtilization();
 	try {
 		return await run();
 	} finally {
 		const elapsed = performance.now() - startedAt;
+		const loopBusy = performance.eventLoopUtilization(loopBefore).utilization;
 		if (context) {
 			context.dbQueries += 1;
-			context.dbMs += elapsed;
+			context.dbMs += checkout.waited + elapsed;
+			context.dbWaitMs += checkout.waited;
 		}
 		const properties = {
 			Elapsed: elapsed,
+			Waited: checkout.waited,
+			LoopBusy: Math.round(loopBusy * 100),
 			Statement: statementText(statement),
-			PoolIdle: idleBefore,
+			PoolIdle: checkout.idleBefore,
 			PoolTotal: pool.totalCount,
 		};
-		const slow = elapsed >= SLOW_QUERY_MS;
-		const template = slow
-			? "Slow query took {Elapsed:0.0}ms ({PoolIdle} idle) — {Statement}"
-			: "Query took {Elapsed:0.0}ms — {Statement}";
+		const template = templateFor(elapsed, checkout.waited, loopBusy);
+		const warn = template !== QUERY_TOOK;
 
 		if (context) {
 			logSpan({
-				level: slow ? "Warning" : "Debug",
+				level: warn ? "Warning" : "Debug",
 				template,
 				properties,
 				spanId: newSpanId(),
@@ -71,7 +92,7 @@ async function track<T>(
 				startedAt: new Date(startedEpoch).toISOString(),
 				kind: "Client",
 			});
-		} else if (slow) {
+		} else if (warn) {
 			log.warn(template, properties);
 		} else {
 			log.debug(template, properties);
@@ -79,14 +100,26 @@ async function track<T>(
 	}
 }
 
-const INSTRUMENTED = Symbol("triviamore.instrumented");
+const RAW_QUERY = Symbol("triviamore.rawQuery");
+
+type MarkedClient = PoolClient & {
+	[RAW_QUERY]?: (...args: unknown[]) => Promise<unknown>;
+};
+
+function rawQuery(client: PoolClient) {
+	const marked = client as MarkedClient;
+	return (
+		marked[RAW_QUERY] ??
+		(client.query.bind(client) as (...a: unknown[]) => Promise<unknown>)
+	);
+}
 
 function instrumentClient(pool: Pool, client: PoolClient): PoolClient {
-	const marked = client as PoolClient & { [INSTRUMENTED]?: true };
-	if (marked[INSTRUMENTED]) return client;
-	marked[INSTRUMENTED] = true;
+	const marked = client as MarkedClient;
+	if (marked[RAW_QUERY]) return client;
 
 	const query = client.query.bind(client);
+	marked[RAW_QUERY] = query as (...a: unknown[]) => Promise<unknown>;
 	client.query = ((...args: unknown[]) =>
 		track(pool, args[0], () =>
 			(query as (...a: unknown[]) => Promise<unknown>)(...args)
@@ -116,16 +149,34 @@ function instrument(pool: Pool): Pool {
 		});
 	});
 
+	const connect = pool.connect.bind(pool) as () => Promise<PoolClient>;
+
+	// Checks out by hand, as pg's own pool.query does, so the wait for a connection is timed apart from the query.
+	const checkedOutQuery = async (args: unknown[]) => {
+		const checkout = { waited: 0, idleBefore: pool.idleCount };
+		const waitStart = performance.now();
+		const client = await connect();
+		checkout.waited = performance.now() - waitStart;
+		let failure: Error | undefined;
+		try {
+			return await track(pool, args[0], () => rawQuery(client)(...args), checkout);
+		} catch (error) {
+			failure = error instanceof Error ? error : new Error(String(error));
+			throw error;
+		} finally {
+			client.release(failure);
+		}
+	};
+
 	const query = pool.query.bind(pool);
-	// Only the promise form is instrumented, because Drizzle never uses the callback form.
 	pool.query = ((...args: unknown[]) => {
 		reportSaturation();
-		return track(pool, args[0], () =>
-			(query as (...a: unknown[]) => Promise<unknown>)(...args)
-		);
+		// Drizzle never uses the callback form, so it keeps pg's own path, untimed.
+		if (typeof args[args.length - 1] === "function")
+			return (query as (...a: unknown[]) => unknown)(...args);
+		return checkedOutQuery(args);
 	}) as typeof pool.query;
 
-	const connect = pool.connect.bind(pool);
 	pool.connect = ((...args: unknown[]) => {
 		reportSaturation();
 		const result = (connect as (...a: unknown[]) => unknown)(...args);
@@ -142,7 +193,8 @@ export function getDb(): Db {
 	const connectionString = process.env.DATABASE_URL;
 	if (!connectionString) throw new Error("DATABASE_URL is not set");
 
-	_pool = new Pool({ connectionString, max: POOL_MAX });
+	// pg closes a connection idle for 10 s by default, so a burst after a quiet spell paid to reopen the whole pool.
+	_pool = new Pool({ connectionString, max: POOL_MAX, min: POOL_MAX });
 
 	_pool.on("error", err => {
 		log.error("Idle database client failed", {}, err);
