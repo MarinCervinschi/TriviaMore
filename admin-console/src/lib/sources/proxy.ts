@@ -6,7 +6,14 @@ const MAX_BYTES = 25 * 1024 * 1024;
 const TIMEOUT_MS = 30_000;
 const FORWARDED_HEADERS = ["accept", "content-type"];
 
-const refuse = (status: number, error: string) => Response.json({ error }, { status });
+const INERT_HEADERS = {
+	"content-security-policy": "sandbox; default-src 'none'",
+	"x-content-type-options": "nosniff",
+	"content-disposition": "attachment",
+};
+
+const refuse = (status: number, error: string) =>
+	Response.json({ error }, { status, headers: INERT_HEADERS });
 
 /** Forwards a request from the endpoint explorer to a data source, which the browser cannot reach across origins. */
 export async function forwardToSource(request: Request): Promise<Response> {
@@ -18,6 +25,11 @@ export async function forwardToSource(request: Request): Promise<Response> {
 
 /** The forwarding alone, for a caller already known to be the owner. */
 async function relay(request: Request): Promise<Response> {
+	const dest = request.headers.get("sec-fetch-dest");
+	if (dest !== null && dest !== "empty") {
+		return refuse(403, "Il proxy risponde solo alle richieste dell'esploratore.");
+	}
+
 	let target: URL;
 	try {
 		target = new URL(new URL(request.url).searchParams.get("scalar_url") ?? "");
@@ -68,6 +80,7 @@ async function relay(request: Request): Promise<Response> {
 
 	const responseHeaders = new Headers({
 		"x-source-duration-ms": String(Math.round(performance.now() - started)),
+		...INERT_HEADERS,
 	});
 	for (const name of ["content-type", "location", "last-modified", "etag"]) {
 		const value = upstream.headers.get(name);
