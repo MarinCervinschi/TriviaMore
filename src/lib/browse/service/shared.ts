@@ -17,18 +17,6 @@ import { type CatalogChain, classBrowsePath } from "@/lib/catalog/paths";
 
 const DEFAULT_PAGE_SIZE = 10;
 
-// Turns free text into a prefix tsquery. Anything that is not a letter or a
-// digit is dropped, so a stray quote cannot break the query.
-export function toFtsQuery(input: string): string {
-	return input
-		.trim()
-		.split(/\s+/)
-		.map(term => term.replace(/[^a-zA-Z0-9À-ɏ]/g, ""))
-		.filter(Boolean)
-		.map(term => `${term}:*`)
-		.join(" & ");
-}
-
 /** Sections of each class this viewer could open, keyed by class id. */
 export async function countVisibleSectionsByClass(
 	db: DbOrTx,

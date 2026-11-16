@@ -145,11 +145,25 @@ await check("browse.getSectionDetail", () =>
 		sectionSlug: sample.section_slug ?? "",
 	})
 );
-await check("browse.searchCourses (fts)", () =>
-	searchCourses({ query: "ingegneria", page: 1, pageSize: 5 })
+async function found<T extends { total: number }>(search: Promise<T>): Promise<T> {
+	const result = await search;
+	if (result.total === 0) throw new Error("the search found nothing");
+	return result;
+}
+await check("browse.searchCourses (bm25)", () =>
+	found(searchCourses({ query: "ingegneria", page: 1, pageSize: 5 }))
 );
-await check("browse.searchClasses (fts)", () =>
-	searchClasses(userId, { query: "analisi", page: 1, pageSize: 5 })
+await check("browse.searchCourses (bm25, typo)", () =>
+	found(searchCourses({ query: "ingegnria", page: 1, pageSize: 5 }))
+);
+await check("browse.searchCourses (bm25, code prefix)", () =>
+	found(searchCourses({ query: sample.course_code.slice(0, -1), page: 1, pageSize: 5 }))
+);
+await check("browse.searchClasses (bm25)", () =>
+	found(searchClasses(userId, { query: "analisi", page: 1, pageSize: 5 }))
+);
+await check("browse.searchClasses (bm25, typo)", () =>
+	found(searchClasses(userId, { query: "anailsi", page: 1, pageSize: 5 }))
 );
 await check("browse.getAvailableClassYears", () => getAvailableClassYears({}));
 await check("browse.getDepartmentCourseList", async () => {

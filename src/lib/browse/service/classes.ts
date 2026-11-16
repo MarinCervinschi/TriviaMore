@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
@@ -23,12 +23,12 @@ import type {
 	SearchClassesResponse,
 } from "../types";
 import { isCampus } from "./courses";
+import { matchingClasses } from "./search";
 import {
 	countVisibleSectionsByClass,
 	findPrimaryClassPath,
 	paginationOf,
 	resolveClassByCodes,
-	toFtsQuery,
 } from "./shared";
 
 async function findSyllabus(classId: string) {
@@ -147,10 +147,7 @@ export async function searchClasses(
 	const db = getDb();
 	const filters: SQL[] = [studiableCourseClassSql(db)];
 
-	const ftsQuery = params.query?.trim() ? toFtsQuery(params.query) : "";
-	if (ftsQuery) {
-		filters.push(sql`${classes.fts} @@ to_tsquery('italian', ${ftsQuery})`);
-	}
+	const matches = params.query ? matchingClasses(db, params.query) : null;
 	if (params.courseId) filters.push(eq(courseClasses.courseId, params.courseId));
 	if (params.departmentId) {
 		filters.push(eq(courses.departmentId, params.departmentId));
@@ -171,7 +168,7 @@ export async function searchClasses(
 
 	const { limit, offset } = paginationOf(params);
 
-	const rows = await db
+	let query = db
 		.select({
 			id: classes.id,
 			name: classes.name,
@@ -191,8 +188,16 @@ export async function searchClasses(
 		.innerJoin(classes, eq(classes.id, courseClasses.classId))
 		.innerJoin(courses, eq(courses.id, courseClasses.courseId))
 		.innerJoin(departments, eq(departments.id, courses.departmentId))
+		.$dynamic();
+	if (matches) query = query.innerJoin(matches, eq(matches.id, classes.id));
+
+	const rows = await query
 		.where(filters.length > 0 ? and(...filters) : undefined)
-		.orderBy(asc(courseClasses.classYear), asc(courseClasses.code))
+		.orderBy(
+			...(matches ? [desc(matches.score)] : []),
+			asc(courseClasses.classYear),
+			asc(courseClasses.code)
+		)
 		.limit(limit)
 		.offset(offset);
 
