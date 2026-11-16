@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
@@ -8,6 +9,13 @@ import { defineConfig } from "vitest/config";
 //   *.itest.ts  integration  DB-backed          — `pnpm test:db`
 export default defineConfig({
 	plugins: [tsconfigPaths({ projects: ["./tsconfig.json"] })],
+	// The root tsconfig leaves the console out, so its own aliases are spelled out here.
+	resolve: {
+		alias: {
+			"~": fileURLToPath(new URL("./admin-console/src", import.meta.url)),
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+		},
+	},
 	test: {
 		projects: [
 			{
@@ -15,7 +23,7 @@ export default defineConfig({
 				test: {
 					name: "unit",
 					environment: "node",
-					include: ["src/**/*.test.ts"],
+					include: ["src/**/*.test.ts", "admin-console/src/**/*.test.ts"],
 				},
 			},
 			{

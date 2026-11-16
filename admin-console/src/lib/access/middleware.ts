@@ -36,10 +36,36 @@ const denied = (status: number, reason: string) =>
 		headers: { "content-type": "text/plain; charset=utf-8" },
 	});
 
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+/** True when a state-changing request was sent by a page of the console itself. */
+function isSameOriginWrite(request: Request): boolean {
+	if (SAFE_METHODS.has(request.method)) return true;
+	const site = request.headers.get("sec-fetch-site");
+	if (site !== null && site !== "same-origin") return false;
+	const origin = request.headers.get("origin");
+	if (!origin) return false;
+	try {
+		return (
+			new URL(origin).host ===
+			(request.headers.get("host") ?? new URL(request.url).host)
+		);
+	} catch {
+		return false;
+	}
+}
+
 export const accessMiddleware = createMiddleware({ type: "request" }).server(
 	async ({ request, pathname, next }) => {
 		// Coolify's health check reaches the container directly, without an Access token.
 		if (pathname === "/api/health") return next();
+		if (!isSameOriginWrite(request)) {
+			log.warn("Cross-origin {Method} refused on {Path}", {
+				Method: request.method,
+				Path: pathname,
+			});
+			return denied(403, "Richiesta non partita dalla console.");
+		}
 		if (!ACCESS_CONFIGURED) {
 			// Locally there is no Access in front; a deployed console without it refuses everything.
 			return IS_PRODUCTION
