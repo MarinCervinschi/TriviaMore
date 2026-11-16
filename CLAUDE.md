@@ -9,7 +9,9 @@ Skills come from the plugins enabled in `.claude/settings.json` (`method`, `stac
 as `plugin:skill`, and from `.claude/skills/` for what only TriviaMore has. Each machine installs
 each plugin once: `claude plugin install <plugin>@<marketplace> --scope project`. Beyond the routing
 below: `method:spec-interview` to decide a large feature, `method:feature-review` after a UI change,
-`method:pre-pr-checklist` before a PR.
+`method:pre-pr-checklist` before a PR, together with the `seo` skill's checks when the PR touches a
+public route, its head, a path, the sitemap or robots.txt. **A fix that goes straight to production
+follows the `hotfix` skill.**
 
 ## Commands
 
