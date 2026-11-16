@@ -7,6 +7,7 @@ import { evaluateAchievementsInBackground } from "@/lib/achievements/service";
 import { canAccessSection } from "@/lib/auth/checks";
 import { requireAdmin } from "@/lib/auth/guards";
 import { createNotification } from "@/lib/notifications/service";
+import { attachmentFileName } from "@/lib/requests/attachment-name";
 import { Conflict, Invalid, NotFound } from "@/lib/server/errors";
 import { getObject } from "@/lib/storage/server";
 
@@ -326,6 +327,6 @@ export async function readAttachment(
 	return {
 		body: object.body,
 		contentType: object.headers.get("content-type") ?? "application/octet-stream",
-		fileName: submitted.file_name,
+		fileName: attachmentFileName(submitted.file_name, submitted.file_path),
 	};
 }

@@ -31,6 +31,7 @@ import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { isCorrectOption, parseOptions } from "@/lib/quiz/options";
+import { attachmentFileName } from "@/lib/requests/attachment-name";
 import { useAcknowledgeRequest, useApproveRequest } from "@/lib/requests/mutations";
 import { requestQueries } from "@/lib/requests/queries";
 import type {
@@ -559,6 +560,7 @@ function FileUploadPreview({
 	file: SubmittedFileUpload;
 }) {
 	const [downloading, setDownloading] = useState(false);
+	const fileName = attachmentFileName(file.file_name, file.file_path);
 
 	async function handleDownload() {
 		setDownloading(true);
@@ -569,7 +571,7 @@ function FileUploadPreview({
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = file.file_name;
+			a.download = fileName;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
@@ -588,7 +590,7 @@ function FileUploadPreview({
 					<CloudUploadIcon className="size-6 text-emerald-500" />
 				</div>
 				<div className="flex-1">
-					<p className="font-medium">{file.file_name}</p>
+					<p className="font-medium">{fileName}</p>
 					<p className="text-muted-foreground text-sm">
 						{formatFileSize(file.file_size)}
 					</p>
