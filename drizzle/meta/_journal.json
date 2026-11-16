@@ -43,6 +43,13 @@
       "when": 1794855134334,
       "tag": "0005_bm25_unstemmed_words",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794857959194,
+      "tag": "0006_drop_fts",
+      "breakpoints": true
     }
   ]
 }

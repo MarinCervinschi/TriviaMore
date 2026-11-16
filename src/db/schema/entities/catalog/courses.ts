@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import {
 	boolean,
 	foreignKey,
@@ -10,7 +9,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 
-import { catalogSchema, tsvector } from "../../common";
+import { catalogSchema } from "../../common";
 import { departments } from "./departments";
 import { campusLocationEnum, courseTypeEnum } from "./enums";
 
@@ -38,15 +37,8 @@ export const courses = catalogSchema
 			updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
 				.defaultNow()
 				.notNull(),
-			fts: tsvector("fts").generatedAlwaysAs(
-				sql`to_tsvector('italian'::regconfig, ((COALESCE(name, ''::text) || ' '::text) || COALESCE(code, ''::text)))`
-			),
 		},
 		table => [
-			index("courses_fts_idx").using(
-				"gin",
-				table.fts.asc().nullsLast().op("tsvector_ops")
-			),
 			index("idx_courses_position").using(
 				"btree",
 				table.position.asc().nullsLast().op("int4_ops")

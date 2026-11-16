@@ -6,8 +6,6 @@ import {
 	departments,
 } from "@/db/schema";
 
-// Explicit column maps keep the generated `fts` tsvector out of every payload.
-
 export const departmentColumns = {
 	id: departments.id,
 	name: departments.name,

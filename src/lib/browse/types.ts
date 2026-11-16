@@ -7,11 +7,9 @@ import type {
 	sections,
 } from "@/db/schema";
 
-// `fts` is a generated tsvector: it drives search server-side and has no
-// business crossing the wire, so it is stripped from every browse view model.
 export type Department = typeof departments.$inferSelect;
-export type Course = Omit<typeof courses.$inferSelect, "fts">;
-export type Class = Omit<typeof classes.$inferSelect, "fts">;
+export type Course = typeof courses.$inferSelect;
+export type Class = typeof classes.$inferSelect;
 export type Section = typeof sections.$inferSelect;
 
 export type DepartmentArea = NonNullable<Department["area"]>;

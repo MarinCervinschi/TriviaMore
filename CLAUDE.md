@@ -160,7 +160,7 @@ from it, in the rules below; where the two disagree, these win.
 
 - `src/db/schema/entities/` has one folder per Postgres schema (`public`, `catalog`, `quiz`,
   `internal`, `crm`, `ops`), each with its own `enums.ts` and, where needed, `relations.ts`. Tables
-  outside `public` use the schema handles in `common.ts`, which also holds the `tsvector` type.
+  outside `public` use the schema handles in `common.ts`.
 - Timestamps are `mode: "string"`, except in the Better Auth tables (`users`, `sessions`,
   `accounts`, `verifications`), which are Dates because Better Auth reads and writes them.
 - A new table with `updated_at` gets a `set_<table>_updated_at` trigger on the existing
