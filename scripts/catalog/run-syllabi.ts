@@ -17,6 +17,7 @@ import {
 	planSyllabi,
 	readSyllabus,
 } from "../../src/lib/catalog/sync/syllabi.ts";
+import { log } from "../../src/lib/logging/server.ts";
 import { fetchSyllabus, fetchYear, fetchYears } from "./source.ts";
 
 const FIRST_COHORT = 2021;
@@ -104,16 +105,20 @@ async function readSyllabi(candidates: Map<string, Candidate[]>, progress: Progr
 	let done = 0;
 	for (const [classId, list] of candidates) {
 		list.sort((a, b) => b.ref.offerYear - a.ref.offerYear);
-		for (const { ref, catalogueUrl } of list.slice(0, MAX_TRIES)) {
-			const syllabus = readSyllabus(
-				await fetchSyllabus(ref),
-				ref.offerYear,
-				catalogueUrl
-			);
-			if (syllabus) {
-				found.set(classId, syllabus);
-				break;
+		try {
+			for (const { ref, catalogueUrl } of list.slice(0, MAX_TRIES)) {
+				const syllabus = readSyllabus(
+					await fetchSyllabus(ref),
+					ref.offerYear,
+					catalogueUrl
+				);
+				if (syllabus) {
+					found.set(classId, syllabus);
+					break;
+				}
 			}
+		} catch (error) {
+			log.error("Syllabus of class {ClassId} skipped", { ClassId: classId }, error);
 		}
 		progress(`syllabi ${++done}/${candidates.size}`);
 	}

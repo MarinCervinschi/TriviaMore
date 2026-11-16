@@ -46,6 +46,12 @@ const ENTITIES: Record<string, string> = {
 	ugrave: "ù",
 };
 
+/** The character of a numeric reference, or U+FFFD when the number is not a Unicode scalar value. */
+function fromCodePoint(code: number): string {
+	const valid = code <= 0x10ffff && (code < 0xd800 || code > 0xdfff);
+	return valid ? String.fromCodePoint(code) : "\ufffd";
+}
+
 /** Plain text from the catalogue's HTML, keeping paragraphs and list items as lines. */
 export function htmlToText(value: string | null | undefined): string | null {
 	if (!value) return null;
@@ -54,9 +60,9 @@ export function htmlToText(value: string | null | undefined): string | null {
 		.replace(/<\s*li[^>]*>/gi, "\n• ")
 		.replace(/<\s*\/\s*(p|div|ul|ol|h[1-6]|tr)\s*>/gi, "\n")
 		.replace(/<[^>]+>/g, "")
-		.replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
+		.replace(/&#(\d+);/g, (_, code: string) => fromCodePoint(Number(code)))
 		.replace(/&#x([0-9a-f]+);/gi, (_, code: string) =>
-			String.fromCodePoint(parseInt(code, 16))
+			fromCodePoint(parseInt(code, 16))
 		)
 		.replace(
 			/&([a-z]+);/gi,
