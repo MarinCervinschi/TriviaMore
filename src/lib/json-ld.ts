@@ -3,6 +3,11 @@ const SITE_NAME = "TriviaMore";
 
 export type JsonLd = Record<string, unknown>;
 
+/** Absolute URL for a path, without the trailing slash index routes carry in `match.pathname`. */
+export function siteUrl(path: string) {
+	return `${SITE_URL}${path.length > 1 ? path.replace(/\/+$/, "") : path}`;
+}
+
 export function websiteJsonLd(): JsonLd {
 	return {
 		"@context": "https://schema.org",
@@ -23,7 +28,7 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>): 
 			"@type": "ListItem",
 			position: index + 1,
 			name: item.name,
-			item: `${SITE_URL}${item.path}`,
+			item: siteUrl(item.path),
 		})),
 	};
 }
@@ -44,7 +49,7 @@ export function courseJsonLd({
 		"@type": "Course",
 		name,
 		description: description ?? `Corso ${name} su ${SITE_NAME}`,
-		url: `${SITE_URL}${path}`,
+		url: siteUrl(path),
 		provider: {
 			"@type": "Organization",
 			name: provider ?? SITE_NAME,

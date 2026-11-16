@@ -1,4 +1,4 @@
-import type { JsonLd } from "./json-ld";
+import { type JsonLd, siteUrl } from "./json-ld";
 
 const SITE_NAME = "TriviaMore";
 const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://www.trivia-more.it";
@@ -26,7 +26,7 @@ export function seoHead({
 	jsonLd,
 }: SeoHeadOptions) {
 	const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
-	const canonicalUrl = path ? `${SITE_URL}${path}` : undefined;
+	const canonicalUrl = path ? siteUrl(path) : undefined;
 	const ogImage = image ?? DEFAULT_OG_IMAGE;
 
 	const meta: MetaEntry[] = [{ title: fullTitle }];
