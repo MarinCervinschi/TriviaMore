@@ -113,6 +113,8 @@ export type ClassWithSections = Class & {
 		totalFlashcardQuestions: number;
 	};
 	syllabus: ClassSyllabus | null;
+	/** The class's path under its primary course, which every copy declares as canonical. */
+	canonicalPath: string;
 };
 
 export type SectionDetail = Section & {
@@ -123,6 +125,8 @@ export type SectionDetail = Section & {
 	questionCount: number;
 	quizQuestionCount: number;
 	flashcardQuestionCount: number;
+	/** The section's path under its class's primary course, which every copy declares as canonical. */
+	canonicalPath: string;
 };
 
 // Overview (the /browse showcase page)

@@ -25,6 +25,7 @@ import type {
 import { isCampus } from "./courses";
 import {
 	countVisibleSectionsByClass,
+	findPrimaryClassPath,
 	paginationOf,
 	resolveClassByCodes,
 	toFtsQuery,
@@ -119,13 +120,23 @@ export async function getClassWithSections(
 		}
 	}
 
+	const [syllabus, primaryPath] = await Promise.all([
+		findSyllabus(cls.id),
+		findPrimaryClassPath(cls.id, {
+			departmentCode: department.code,
+			courseCode: course.code,
+			classCode: courseClass.code,
+		}),
+	]);
+
 	return {
 		...cls,
 		courseClass,
 		course: { ...course, department },
 		sections: sectionList,
 		examSimulation,
-		syllabus: await findSyllabus(cls.id),
+		syllabus,
+		canonicalPath: primaryPath,
 	};
 }
 

@@ -48,7 +48,7 @@ export const Route = createFileRoute(
 		return seoHead({
 			title: `${sectionName}${titleSuffix}`,
 			description: loaderData?.description ?? fallbackDesc,
-			path: match.pathname,
+			path: loaderData?.canonicalPath ?? match.pathname,
 			jsonLd: breadcrumbJsonLd([
 				{ name: "Esplora", path: "/browse" },
 				{
