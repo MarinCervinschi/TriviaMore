@@ -112,6 +112,17 @@ describe("matchingCourses", () => {
 });
 
 describe("matchingClasses", () => {
+	it("does not let a stem one edit from a short word match it", () =>
+		withRollback(async tx => {
+			await tx
+				.insert(classes)
+				.values([
+					{ name: "Sistemi Operativi" },
+					{ name: "Sistemi Manageriali per la Performance" },
+				]);
+			expect(await classNames(tx, "sistema operativo")).toEqual(["Sistemi Operativi"]);
+		}));
+
 	it("ranks an exact match above a typo and keeps the typo", () =>
 		withRollback(async tx => {
 			await tx

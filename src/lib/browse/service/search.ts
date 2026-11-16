@@ -5,7 +5,7 @@ import type { DbOrTx } from "@/db";
 import { classes, courses } from "@/db/schema";
 import { normaliseCatalogueCode } from "@/lib/catalog/codes";
 
-// The only module that knows search runs on ParadeDB: the indexes are in drizzle/0004_bm25_search.sql.
+// The only module that knows search runs on ParadeDB: the indexes are in drizzle/0005_bm25_unstemmed_words.sql.
 
 /** Words of the query with anything but letters and digits dropped, so `"analisi,` reads `analisi`. */
 export function searchTerms(input: string): string[] {
@@ -19,12 +19,12 @@ export function searchTerms(input: string): string[] {
 // One edit forgives a typo; on a word of three letters or fewer it would match nearly everything.
 const fuzzyDistance = (term: string) => (term.length > 3 ? 1 : 0);
 
-/** Every term matches a word of the column, by prefix and with a typo allowed. */
+/** Every term matches an unstemmed word of the column, by prefix and with a typo allowed. */
 function allTermsFuzzy(column: PgColumn, terms: string[]): SQL {
 	return and(
 		...terms.map(
 			term =>
-				sql`${column} ||| ${term}::pdb.fuzzy(${sql.raw(String(fuzzyDistance(term)))}, t, t)`
+				sql`${column}::pdb.alias('name_words') ||| ${term}::pdb.fuzzy(${sql.raw(String(fuzzyDistance(term)))}, t, t)`
 		)
 	)!;
 }
