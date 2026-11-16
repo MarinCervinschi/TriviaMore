@@ -10,5 +10,5 @@ mkdir -p backups
 # A local database is reached from the container through the host.
 url="$(node -e 'const u = new URL(process.argv[1]); if (["localhost", "127.0.0.1"].includes(u.hostname)) u.hostname = "host.docker.internal"; console.log(u.href)' "$ADMIN_DATABASE_URL")"
 
-docker run --rm -v "$PWD/backups:/out" postgres:17 pg_dump "$url" -Fc -f "/out/${ts}-${label}.dump"
+docker run --rm -v "$PWD/backups:/out" paradedb/paradedb:0.26.6-pg17 pg_dump "$url" -Fc -f "/out/${ts}-${label}.dump"
 echo "✓ backups/${ts}-${label}.dump; restore with pg_restore --no-owner -d <url>"

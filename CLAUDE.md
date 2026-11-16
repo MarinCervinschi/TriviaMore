@@ -9,7 +9,9 @@ Skills come from the plugins enabled in `.claude/settings.json` (`method`, `stac
 as `plugin:skill`, and from `.claude/skills/` for what only TriviaMore has. Each machine installs
 each plugin once: `claude plugin install <plugin>@<marketplace> --scope project`. Beyond the routing
 below: `method:spec-interview` to decide a large feature, `method:feature-review` after a UI change,
-`method:pre-pr-checklist` before a PR.
+`method:pre-pr-checklist` before a PR, together with the `seo` skill's checks when the PR touches a
+public route, its head, a path, the sitemap or robots.txt. **A fix that goes straight to production
+follows the `hotfix` skill.**
 
 ## Commands
 
@@ -191,7 +193,7 @@ Rules that are not negotiable:
   and only until it is merged. The maintainer reaches staging and production with commands kept
   outside this repo, which set these variables.
 - **No `psql` on the host.** Run it from the image, as the scripts do:
-  `docker run --rm -i postgres:17 psql "$URL" -c "..."`.
+  `docker run --rm -i paradedb/paradedb:0.26.6-pg17 psql "$URL" -c "..."`.
 
 `drizzle/archive/` is a frozen archive. Nothing new goes there. The chain
 starts at `drizzle/0000_baseline.sql`, which builds the whole schema on an empty Postgres.

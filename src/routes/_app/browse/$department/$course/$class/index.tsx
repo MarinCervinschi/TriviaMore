@@ -74,7 +74,7 @@ export const Route = createFileRoute("/_app/browse/$department/$course/$class/")
 			description:
 				loaderData?.description ??
 				`Sezioni, quiz e flashcard per l'esame di ${loaderData?.name ?? "questo insegnamento"} a UniMore. Catalogo curato dalla community con modalità studio e simulazione esame.`,
-			path: match.pathname,
+			path: loaderData?.canonicalPath ?? match.pathname,
 			jsonLd: breadcrumbJsonLd([
 				{ name: "Esplora", path: "/browse" },
 				{

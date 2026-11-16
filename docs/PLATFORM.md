@@ -3,6 +3,7 @@
 **Status:** accepted, 2026-10-11; epic #206. **Amended 2026-10-24:** migrations are applied by hand, not by a
 pipeline; CI only checks them (#209). **Done 2026-10-30:** production moved to its own Postgres on 2026-10-29
 and Supabase was deleted the day after (#212).
+**Amended 2026-11-13:** Postgres runs on ParadeDB's image, `paradedb/paradedb:0.26.6-pg17`, everywhere (#236).
 
 TriviaMore stops depending on Supabase. Production keeps a plain Postgres, a self-hosted S3 store and an
 authentication library inside the app. A staging environment on its own server becomes the place where the new
@@ -50,6 +51,14 @@ A plain `postgres:17` container, managed by Coolify and declared in Terraform. I
 address only. The schema stays in Drizzle; a new baseline replaces `0000` so the migrations rebuild an empty
 database, without the `auth` schema and without Supabase's roles. Backups run on a schedule to the home server, off the
 VPS.
+
+Since 2026-11-13 the image is ParadeDB's (#236), pinned to one tag in Coolify, CI, `compose.yaml` and the
+`db:*` scripts. It is Postgres 17.11 on the same Debian and glibc as `postgres:17.11`, so it runs on the existing
+volume with no dump and no reindex. The 18 images expect the volume at `/var/lib/postgresql`, where Coolify mounts
+`/var/lib/postgresql/data`. On staging and production `pg_stat_statements` is preloaded through `ALTER SYSTEM`.
+The test databases skip the image's bootstrap script, which would create `pg_search`, `vector` and PostGIS, so they
+hold only what the migrations create. Until a migration creates a `pg_search` object, putting `postgres:17.11` back on
+the same volume undoes the switch.
 
 ### Authentication in the app, with Better Auth
 

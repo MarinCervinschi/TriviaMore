@@ -12,6 +12,37 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.9.0 — 2026-11-16
+
+Course and class search moves to BM25 on ParadeDB's `pg_search`: it forgives typos and accents, matches
+plural and singular, and ranks by relevance instead of by name. The database now runs on ParadeDB.
+
+### Added
+
+- **BM25 search for courses and classes.** Every word must match, by prefix and with one typo allowed;
+  accents are folded and Italian stems match plural and singular. Exact matches rank first, and a course
+  code matches exactly or by prefix, in any case. Results are ordered by relevance. The server functions
+  take the same input (#236, #239).
+
+### Changed
+
+- Postgres runs on `paradedb/paradedb:0.26.6-pg17` in production, staging, the test database and CI.
+  `pg_search` must be in `shared_preload_libraries` (#236).
+
+### Fixed
+
+- A class shared by several courses is served and listed in the sitemap once, under its primary
+  course, and the sitemap takes `lastmod` from `updated_at` instead of today's date (follows #238).
+
+### Migrations
+
+- `0004_bm25_search`: creates the `vector` and `pg_search` extensions and the `USING paradedb` indexes
+  `courses_search_idx` and `classes_search_idx`. Not destructive, but `pg_search` objects stop
+  `postgres:17.11` from starting on the volume (#239).
+- `0005_bm25_unstemmed_words`: recreates both indexes with an unstemmed copy of `name` for the fuzzy
+  match (#239).
+- The `fts` columns and their indexes are no longer read; the next release drops them.
+
 ## 3.8.2 — 2026-11-16
 
 Hotfix for the browse pages dropping out of Google's index.

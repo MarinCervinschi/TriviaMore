@@ -1,13 +1,25 @@
-import { eq } from "drizzle-orm";
+import { and, eq, exists, sql } from "drizzle-orm";
 
 import { getDb } from "@/db";
-import { classes, courseClasses, courses, departments, sections } from "@/db/schema";
-import { studiableCourseClassSql } from "@/lib/catalog/db/course-classes";
+import {
+	classes,
+	courseClasses,
+	courses,
+	departments,
+	questions,
+	sections,
+} from "@/db/schema";
+import {
+	primaryCourseByClass,
+	studiableCourseClassSql,
+} from "@/lib/catalog/db/course-classes";
+import { classBrowsePath } from "@/lib/catalog/paths";
 
 type SitemapEntry = {
 	loc: string;
 	changefreq: string;
 	priority: string;
+	lastmod?: string;
 };
 
 // The sitemap spec requires entity encoding inside <loc>.
@@ -25,6 +37,12 @@ export async function buildSitemap(): Promise<string> {
 	if (!siteUrl) throw new Error("VITE_SITE_URL is not set");
 
 	const db = getDb();
+	const primary = primaryCourseByClass(db);
+	const primaryChain = {
+		departmentCode: primary.departmentCode,
+		courseCode: primary.courseCode,
+		classCode: primary.classCode,
+	};
 
 	const entries: SitemapEntry[] = [
 		{ loc: "/", changefreq: "weekly", priority: "1.0" },
@@ -34,36 +52,44 @@ export async function buildSitemap(): Promise<string> {
 	];
 
 	const [departmentRows, courseRows, classRows, sectionRows] = await Promise.all([
-		db.select({ code: departments.code }).from(departments),
 		db
-			.select({ code: courses.code, departmentCode: departments.code })
+			.select({ code: departments.code, updatedAt: departments.updatedAt })
+			.from(departments),
+		db
+			.select({
+				code: courses.code,
+				departmentCode: departments.code,
+				updatedAt: courses.updatedAt,
+			})
 			.from(courses)
 			.innerJoin(departments, eq(departments.id, courses.departmentId)),
+		// One entry per class, under its primary course: the path every copy declares as canonical.
+		db
+			.select({ ...primaryChain, updatedAt: classes.updatedAt })
+			.from(primary)
+			.innerJoin(classes, eq(classes.id, primary.classId))
+			.where(
+				exists(
+					db
+						.select({ one: sql`1` })
+						.from(courseClasses)
+						.where(
+							and(
+								eq(courseClasses.classId, primary.classId),
+								studiableCourseClassSql(db)
+							)
+						)
+				)
+			),
 		db
 			.select({
-				code: courseClasses.code,
-				courseCode: courses.code,
-				departmentCode: departments.code,
-			})
-			.from(courseClasses)
-			.innerJoin(courses, eq(courses.id, courseClasses.courseId))
-			.innerJoin(departments, eq(departments.id, courses.departmentId))
-			.where(studiableCourseClassSql(db)),
-		// A section is listed under every course its class belongs to, so this
-		// joins through the junction rather than resolving a primary course.
-		db
-			.select({
+				...primaryChain,
 				name: sections.name,
 				slug: sections.slug,
-				classCode: courseClasses.code,
-				courseCode: courses.code,
-				departmentCode: departments.code,
+				updatedAt: sql<string>`to_char(greatest(${sections.updatedAt}, (select max(${questions.updatedAt}) from ${questions} where ${questions.sectionId} = ${sections.id})), 'YYYY-MM-DD')`,
 			})
 			.from(sections)
-			.innerJoin(classes, eq(classes.id, sections.classId))
-			.innerJoin(courseClasses, eq(courseClasses.classId, classes.id))
-			.innerJoin(courses, eq(courses.id, courseClasses.courseId))
-			.innerJoin(departments, eq(departments.id, courses.departmentId))
+			.innerJoin(primary, eq(primary.classId, sections.classId))
 			.where(eq(sections.isPublic, true)),
 	]);
 
@@ -72,6 +98,7 @@ export async function buildSitemap(): Promise<string> {
 			loc: `/browse/${department.code.toLowerCase()}`,
 			changefreq: "weekly",
 			priority: "0.8",
+			lastmod: department.updatedAt,
 		});
 	}
 
@@ -80,27 +107,28 @@ export async function buildSitemap(): Promise<string> {
 			loc: `/browse/${course.departmentCode.toLowerCase()}/${course.code.toLowerCase()}`,
 			changefreq: "weekly",
 			priority: "0.7",
+			lastmod: course.updatedAt,
 		});
 	}
 
 	for (const cls of classRows) {
 		entries.push({
-			loc: `/browse/${cls.departmentCode.toLowerCase()}/${cls.courseCode.toLowerCase()}/${cls.code.toLowerCase()}`,
+			loc: classBrowsePath(cls)!,
 			changefreq: "weekly",
 			priority: "0.6",
+			lastmod: cls.updatedAt,
 		});
 	}
 
 	for (const section of sectionRows) {
 		if (/exam/i.test(section.name) || !section.slug) continue;
 		entries.push({
-			loc: `/browse/${section.departmentCode.toLowerCase()}/${section.courseCode.toLowerCase()}/${section.classCode.toLowerCase()}/${section.slug}`,
+			loc: `${classBrowsePath(section)}/${section.slug}`,
 			changefreq: "weekly",
 			priority: "0.6",
+			lastmod: section.updatedAt,
 		});
 	}
-
-	const today = new Date().toISOString().split("T")[0];
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -108,8 +136,7 @@ ${entries
 	.map(
 		entry => `  <url>
     <loc>${xmlEscape(`${siteUrl}${entry.loc}`)}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${entry.changefreq}</changefreq>
+${entry.lastmod ? `    <lastmod>${entry.lastmod.slice(0, 10)}</lastmod>\n` : ""}    <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority}</priority>
   </url>`
 	)

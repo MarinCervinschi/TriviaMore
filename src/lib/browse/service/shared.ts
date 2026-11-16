@@ -12,20 +12,10 @@ import {
 	departmentColumns,
 } from "@/lib/catalog/columns";
 import { EXAM_SIMULATION_SECTION } from "@/lib/catalog/constants";
+import { primaryCourseByClass } from "@/lib/catalog/db/course-classes";
+import { type CatalogChain, classBrowsePath } from "@/lib/catalog/paths";
 
 const DEFAULT_PAGE_SIZE = 10;
-
-// Turns free text into a prefix tsquery. Anything that is not a letter or a
-// digit is dropped, so a stray quote cannot break the query.
-export function toFtsQuery(input: string): string {
-	return input
-		.trim()
-		.split(/\s+/)
-		.map(term => term.replace(/[^a-zA-Z0-9À-ɏ]/g, ""))
-		.filter(Boolean)
-		.map(term => `${term}:*`)
-		.join(" & ");
-}
 
 /** Sections of each class this viewer could open, keyed by class id. */
 export async function countVisibleSectionsByClass(
@@ -107,4 +97,19 @@ export async function resolveClassByCodes(
 		)
 		.limit(1);
 	return row ?? null;
+}
+
+/** The class's browse path under its primary course, or under `fallback` if it has none. */
+export async function findPrimaryClassPath(classId: string, fallback: CatalogChain) {
+	const db = getDb();
+	const primary = primaryCourseByClass(db, [classId]);
+	const [row] = await db
+		.select({
+			departmentCode: primary.departmentCode,
+			courseCode: primary.courseCode,
+			classCode: primary.classCode,
+		})
+		.from(primary)
+		.limit(1);
+	return classBrowsePath(row ?? fallback)!;
 }

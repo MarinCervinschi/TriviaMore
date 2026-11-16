@@ -6,7 +6,7 @@ import { canAccessSection } from "@/lib/auth/checks";
 import { countQuestionsBySection } from "@/lib/catalog/db/questions";
 
 import type { SectionDetail } from "../types";
-import { resolveClassByCodes } from "./shared";
+import { findPrimaryClassPath, resolveClassByCodes } from "./shared";
 
 export async function getSectionDetail(
 	userId: string | null,
@@ -42,7 +42,15 @@ export async function getSectionDetail(
 	// A private section reads as missing, so the URL does not confirm it exists.
 	if (!(await canAccessSection(db, userId, section.id))) return null;
 
-	const counts = (await countQuestionsBySection(db, [section.id])).get(section.id);
+	const [countsBySection, classPath] = await Promise.all([
+		countQuestionsBySection(db, [section.id]),
+		findPrimaryClassPath(cls.id, {
+			departmentCode: department.code,
+			courseCode: course.code,
+			classCode: courseClass.code,
+		}),
+	]);
+	const counts = countsBySection.get(section.id);
 
 	return {
 		...section,
@@ -54,5 +62,6 @@ export async function getSectionDetail(
 		questionCount: counts?.total ?? 0,
 		quizQuestionCount: counts?.quiz ?? 0,
 		flashcardQuestionCount: counts?.flashcard ?? 0,
+		canonicalPath: `${classPath}/${section.slug}`,
 	};
 }
