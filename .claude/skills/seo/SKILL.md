@@ -8,7 +8,7 @@ description: The rules that keep TriviaMore's public pages in Google's index - s
 The catalogue under `/browse` is most of the traffic Google sends. Its pages leave the index
 quietly: nothing breaks for a user, and Search Console shows the damage weeks later. Until 3.8.2
 every browse page declared a canonical ending in `/`, that URL redirected back to the page, and the
-indexed pages fell from about 3,100 to 1,900 before anyone noticed (#238). The rules below exist so that does
+indexed pages fell from about 3,100 to 1,900 before anyone noticed (#238). These rules exist so that does
 not happen again.
 
 ## The rules
@@ -24,11 +24,16 @@ not happen again.
 4. **One page, one URL.** Lowercase codes, no trailing slash, no query string in the canonical. The
    router answers a trailing slash with a 307 to the bare path; that is the redirect, so the canonical
    must be the bare path.
-5. **The sitemap lists only canonical URLs**, the same strings the pages declare. A URL in the sitemap
-   that redirects or carries a different canonical wastes crawl budget and shows up as an error.
-6. **Changing a path or a slug is a redirect, not a rename.** A URL Google already indexed answers
+5. **A class in several courses has one canonical: its primary course** (`primaryCourseByClass`, the
+   lowest `position`). Class and section pages take it from `canonicalPath` in their loader data, so
+   every copy names the same URL.
+6. **The sitemap lists only canonical URLs**, the same strings the pages declare, each once. A URL in
+   the sitemap that redirects or carries a different canonical wastes crawl budget and shows up as an
+   error. `lastmod` is the entity's own `updated_at` (a section's also counts its questions), never
+   today's date.
+7. **Changing a path or a slug is a redirect, not a rename.** A URL Google already indexed answers
    301 to its new home, or it becomes a 404 in Search Console.
-7. **Private paths stay out twice**: `noindex` in the head and a `Disallow` in `public/robots.txt`.
+8. **Private paths stay out twice**: `noindex` in the head and a `Disallow` in `public/robots.txt`.
    A new private area needs both.
 
 ## Before a PR
@@ -58,9 +63,3 @@ The Page indexing report lags by days. After a fix, open each affected reason an
 | Alternative page with proper canonical tag | the page names another URL as canonical; harmless for query strings, a bug for the bare path |
 | Not found (404) | a renamed path or slug without a redirect |
 | Crawled, currently not indexed | Google judged the page thin or a duplicate |
-
-## Known open points
-
-- A section is listed under every course its class belongs to, and each copy names itself as
-  canonical. Google sees duplicates and picks one.
-- Every sitemap entry has today's date as `lastmod`, so Google ignores the field.
