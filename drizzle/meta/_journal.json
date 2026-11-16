@@ -29,6 +29,13 @@
       "when": 1792850998903,
       "tag": "0003_profiles_anonymized_at",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794853199712,
+      "tag": "0004_bm25_search",
+      "breakpoints": true
     }
   ]
 }

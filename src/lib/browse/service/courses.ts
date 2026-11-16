@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import { getDb } from "@/db";
@@ -28,11 +28,11 @@ import type {
 	SearchCoursesParams,
 	SearchCoursesResponse,
 } from "../types";
+import { matchingCourses } from "./search";
 import {
 	countVisibleSectionsByClass,
 	paginationOf,
 	resolveCourseByCodes,
-	toFtsQuery,
 } from "./shared";
 
 export async function getCourseWithClasses(
@@ -153,12 +153,10 @@ async function currentCatalogue(userId: string | null, courseId: string) {
 export async function searchCourses(
 	params: SearchCoursesParams
 ): Promise<SearchCoursesResponse> {
+	const db = getDb();
 	const filters: SQL[] = [];
 
-	const ftsQuery = params.query?.trim() ? toFtsQuery(params.query) : "";
-	if (ftsQuery) {
-		filters.push(sql`${courses.fts} @@ to_tsquery('italian', ${ftsQuery})`);
-	}
+	const matches = params.query ? matchingCourses(db, params.query) : null;
 	if (params.departmentId) {
 		filters.push(eq(courses.departmentId, params.departmentId));
 	}
@@ -173,7 +171,7 @@ export async function searchCourses(
 
 	const { limit, offset } = paginationOf(params);
 
-	const rows = await getDb()
+	let query = db
 		.select({
 			id: courses.id,
 			name: courses.name,
@@ -184,7 +182,7 @@ export async function searchCourses(
 			departmentCode: departments.code,
 			departmentName: departments.name,
 			classCount:
-				sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(getDb())})`.mapWith(
+				sql<number>`count(${courseClasses.classId}) filter (where ${studiableCourseClassSql(db)})`.mapWith(
 					Number
 				),
 			// Window function over the filtered set: the total comes back with the
@@ -194,9 +192,18 @@ export async function searchCourses(
 		.from(courses)
 		.innerJoin(departments, eq(departments.id, courses.departmentId))
 		.leftJoin(courseClasses, eq(courseClasses.courseId, courses.id))
+		.$dynamic();
+	if (matches) query = query.innerJoin(matches, eq(matches.id, courses.id));
+
+	const rows = await query
 		.where(filters.length > 0 ? and(...filters) : undefined)
-		.groupBy(courses.id, departments.code, departments.name)
-		.orderBy(asc(courses.name))
+		.groupBy(
+			courses.id,
+			departments.code,
+			departments.name,
+			...(matches ? [matches.score] : [])
+		)
+		.orderBy(...(matches ? [desc(matches.score)] : []), asc(courses.name))
 		.limit(limit)
 		.offset(offset);
 
