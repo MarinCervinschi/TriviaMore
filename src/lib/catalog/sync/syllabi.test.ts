@@ -37,6 +37,13 @@ describe("htmlToText", () => {
 		);
 	});
 
+	it("replaces references that are not Unicode scalar values", () => {
+		expect(htmlToText("a&#x110000;b&#xD800;c&#57343;d&#99999999999999999999;e")).toBe(
+			"a�b�c�d�e"
+		);
+		expect(htmlToText("&#x10FFFF;&#xE000;")).toBe("\u{10ffff}");
+	});
+
 	it("spells out typographic ligatures", () => {
 		expect(htmlToText("processi ﬁsiologici e ﬂussi")).toBe(
 			"processi fisiologici e flussi"
