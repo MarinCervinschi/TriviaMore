@@ -12,6 +12,17 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.8.2 — 2026-11-16
+
+Hotfix for the browse pages dropping out of Google's index.
+
+### Fixed
+
+- Department, course, class and section pages declare their canonical URL, `og:url` and JSON-LD
+  without a trailing slash. Index routes carry one in `match.pathname`, so every canonical pointed at
+  a URL that redirects back to the page, and Search Console reported them as redirects or as
+  alternates of that redirect instead of indexing them (#238).
+
 ## 3.8.1 — 2026-11-13
 
 The slow-query warnings seen during bursts of page renders were a measuring error: the queries run in a few
