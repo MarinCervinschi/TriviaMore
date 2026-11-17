@@ -18,3 +18,5 @@ allow ^orbit$ in src/styles/globals.css
 allow ^(e90fbf12-88c8-422a-9a5c-7ad376e1fbfc|6c1fe591-a4ae-42ca-b998-63b4b6622c5c)$ in drizzle/0000_baseline.sql
 # Path data of the GitHub logo that happens to look like an address.
 allow ^3\.176\.77\.84$ in src/components/auth/oauth-buttons.tsx
+# The published SHA-256 of the Infisical CLI release the images install.
+allow ^(23501dafd482d3b3921a9a8b03c97aa1dfbbbe09b6408c4d73c012e0a088a23b|866de9fa01c2b71de5ae1cdd6a66d09dfa8abb7d4369ee5efc94a65b775ec3ad)$ in *Dockerfile

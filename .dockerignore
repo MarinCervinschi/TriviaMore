@@ -30,3 +30,5 @@ public/sitemap.xml
 
 **/*.local
 **/.DS_Store
+backups
+CLAUDE.local.md

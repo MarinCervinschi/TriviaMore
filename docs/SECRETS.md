@@ -63,22 +63,28 @@ exchanges the machine-identity credentials for a short-lived token and execs the
 | `INFISICAL_SITE_URL` | ✅ | Self-hosted Infisical URL |
 | `INFISICAL_ENV` | — | Environment slug (default `prod`) |
 
-Everything else comes from Infisical. Those five are needed **at build time as well as at runtime**,
-because Vite inlines the `VITE_*` values into the client bundle — so each environment produces its
-own image and `INFISICAL_ENV` is what distinguishes them. The build reaches Infisical but not the
-database: the sitemap is served by a route at runtime, not written during the build.
+Everything else comes from Infisical, and only at runtime. The entrypoint passes the client secret
+to `infisical login` through the environment, never on the command line, and the server starts
+without the token or the Infisical credentials in its environment.
+
+The build holds no secret. Vite inlines three public values into the client bundle, so they are
+build arguments set on the Coolify application, with **build** ticked and **runtime** unticked. The
+five variables above are runtime only.
+
+| Build argument | Description |
+|---|---|
+| `VITE_SITE_URL` | The canonical origin (`https://www.trivia-more.it` in production) |
+| `VITE_UMAMI_SRC` | The Umami script URL; without it no analytics script is loaded |
+| `VITE_UMAMI_WEBSITE_ID` | The Umami website id |
 
 If Infisical is unreachable the entrypoint exits non-zero and the container never starts, so a failed
 deploy leaves the previous one running. It does not start and then serve errors.
 
-On Coolify, enable **Docker Build Secrets** in the application's environment settings: the five
-variables are then passed as BuildKit secret mounts instead of `--build-arg`, and never reach an
-image layer.
-
 ### CLI version pin
 
-`INFISICAL_CLI_VERSION` is pinned for reproducibility: an unpinned `apt-get install infisical` means
-the same commit builds a different image whenever a new CLI ships. Bump it deliberately.
+`INFISICAL_CLI_VERSION` is pinned, and the image installs the release's `.deb` from GitHub only if
+it matches the SHA-256 next to the version in both Dockerfiles. To bump it, take the new sums from the
+release's `checksums.txt` for `linux_amd64.deb` and `linux_arm64.deb`.
 
 It is **not** pinned for compatibility — every 0.43.x fetches secrets from `/api/v4/secrets`. What
 matters is the server: an Infisical without that route answers `404 Route not found`, and the build

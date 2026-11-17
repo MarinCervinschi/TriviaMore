@@ -5,17 +5,24 @@
 
 FROM node:22.23.4-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d AS base
 
+ARG TARGETARCH
 ARG INFISICAL_CLI_VERSION=0.43.101
+ARG INFISICAL_CLI_SHA256_AMD64=23501dafd482d3b3921a9a8b03c97aa1dfbbbe09b6408c4d73c012e0a088a23b
+ARG INFISICAL_CLI_SHA256_ARM64=866de9fa01c2b71de5ae1cdd6a66d09dfa8abb7d4369ee5efc94a65b775ec3ad
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl ca-certificates gnupg \
- && curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
- && apt-get update \
- && apt-get install -y --no-install-recommends "infisical=${INFISICAL_CLI_VERSION}" \
- && apt-get purge -y gnupg && apt-get autoremove -y \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install -y --no-install-recommends curl ca-certificates \
+ && case "$TARGETARCH" in \
+      amd64) sum="$INFISICAL_CLI_SHA256_AMD64" ;; \
+      arm64) sum="$INFISICAL_CLI_SHA256_ARM64" ;; \
+      *) echo "unsupported arch: $TARGETARCH" >&2; exit 1 ;; \
+    esac \
+ && curl -fsSL -o /tmp/infisical.deb "https://github.com/Infisical/cli/releases/download/v${INFISICAL_CLI_VERSION}/infisical_${INFISICAL_CLI_VERSION}_linux_${TARGETARCH}.deb" \
+ && echo "$sum  /tmp/infisical.deb" | sha256sum -c - \
+ && dpkg -i /tmp/infisical.deb \
+ && rm -rf /tmp/infisical.deb /var/lib/apt/lists/*
 WORKDIR /app
 
 FROM base AS deps
