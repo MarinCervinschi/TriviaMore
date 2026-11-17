@@ -70,10 +70,8 @@
 		"@radix-ui/react-visually-hidden": "^1.2.4",
 		"@solar-icons/react": "^2.0.0",
 		"@tailwindcss/vite": "^4.1.18",
-		"@tanstack/react-devtools": "0.10.0",
 		"@tanstack/react-query": "5.102.8",
 		"@tanstack/react-router": "1.170.42",
-		"@tanstack/react-router-devtools": "1.167.2",
 		"@tanstack/react-router-ssr-query": "1.167.2",
 		"@tanstack/react-start": "1.168.61",
 		"@tanstack/react-table": "^9.1.0",
@@ -115,9 +113,12 @@
 		"@storybook/react-vite": "10.5.7",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tanstack/devtools-vite": "0.6.0",
+		"@tanstack/react-devtools": "0.10.0",
+		"@tanstack/react-router-devtools": "1.167.2",
 		"@testing-library/dom": "^10.4.1",
 		"@testing-library/react": "^16.3.0",
 		"@trivago/prettier-plugin-sort-imports": "^6.0.2",
+		"@types/geojson": "^7946.0.16",
 		"@types/node": "^22.10.2",
 		"@types/nodemailer": "^8.0.0",
 		"@types/pg": "^8.20.3",
@@ -136,12 +137,19 @@
 		"typescript": "^5.7.2",
 		"vite": "^7.3.1",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^3.0.5"
+		"vitest": "^4.1.12"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild",
 			"lightningcss"
-		]
+		],
+		"auditConfig": {
+			"ignoreGhsas": [
+				"GHSA-jrc7-96c5-q579",
+				"GHSA-mv8w-475r-vwqw",
+				"GHSA-p6vx-979v-rg4c"
+			]
+		}
 	}
 }

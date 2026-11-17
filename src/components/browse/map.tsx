@@ -16,6 +16,7 @@ import {
 
 import { GpsIcon } from "@solar-icons/react/linear/gps";
 import { MaximizeIcon } from "@solar-icons/react/linear/maximize";
+import type * as GeoJSON from "geojson";
 import MapLibreGL, { type MarkerOptions, type PopupOptions } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { createPortal } from "react-dom";
