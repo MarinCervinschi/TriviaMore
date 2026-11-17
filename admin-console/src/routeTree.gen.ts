@@ -11,20 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ConsoleRouteRouteImport } from './routes/_console/route'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
-import { Route as ApiProxyRouteImport } from './routes/api/proxy'
-import { Route as ApiHealthRouteImport } from './routes/api/health'
-import { Route as ConsoleApisRouteImport } from './routes/_console/apis'
 import { Route as ConsoleActivityRouteImport } from './routes/_console/activity'
-import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
-import { Route as ConsoleSettingsIndexRouteImport } from './routes/_console/settings/index'
+import { Route as ConsoleApisRouteImport } from './routes/_console/apis'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as ApiProxyRouteImport } from './routes/api/proxy'
 import { Route as ConsoleJobsIndexRouteImport } from './routes/_console/jobs/index'
-import { Route as ConsoleSourcesTimetablesRouteImport } from './routes/_console/sources/timetables'
-import { Route as ConsoleSourcesExamsRouteImport } from './routes/_console/sources/exams'
-import { Route as ConsoleSourcesClassesRouteImport } from './routes/_console/sources/classes'
-import { Route as ConsoleSourcesCatalogRouteImport } from './routes/_console/sources/catalog'
-import { Route as ConsoleSettingsAccessRouteImport } from './routes/_console/settings/access'
-import { Route as ConsoleJobsSchedulesRouteImport } from './routes/_console/jobs/schedules'
 import { Route as ConsoleJobsRunsRouteImport } from './routes/_console/jobs/runs'
+import { Route as ConsoleJobsSchedulesRouteImport } from './routes/_console/jobs/schedules'
+import { Route as ConsoleSettingsIndexRouteImport } from './routes/_console/settings/index'
+import { Route as ConsoleSettingsAccessRouteImport } from './routes/_console/settings/access'
+import { Route as ConsoleSourcesIndexRouteImport } from './routes/_console/sources/index'
+import { Route as ConsoleSourcesCatalogRouteImport } from './routes/_console/sources/catalog'
+import { Route as ConsoleSourcesClassesRouteImport } from './routes/_console/sources/classes'
+import { Route as ConsoleSourcesExamsRouteImport } from './routes/_console/sources/exams'
+import { Route as ConsoleSourcesTimetablesRouteImport } from './routes/_console/sources/timetables'
 import { Route as ConsoleJobsJobIndexRouteImport } from './routes/_console/jobs/$job/index'
 import { Route as ConsoleJobsJobRunsRunIdRouteImport } from './routes/_console/jobs/$job/runs/$runId'
 
@@ -37,29 +37,39 @@ const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ApiProxyRoute = ApiProxyRouteImport.update({
-  id: '/api/proxy',
-  path: '/api/proxy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/health',
-  path: '/api/health',
-  getParentRoute: () => rootRouteImport,
+const ConsoleActivityRoute = ConsoleActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => ConsoleRouteRoute,
 } as any)
 const ConsoleApisRoute = ConsoleApisRouteImport.update({
   id: '/apis',
   path: '/apis',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ConsoleActivityRoute = ConsoleActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProxyRoute = ApiProxyRouteImport.update({
+  id: '/api/proxy',
+  path: '/api/proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsoleJobsIndexRoute = ConsoleJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ConsoleSourcesIndexRoute = ConsoleSourcesIndexRouteImport.update({
-  id: '/sources/',
-  path: '/sources/',
+const ConsoleJobsRunsRoute = ConsoleJobsRunsRouteImport.update({
+  id: '/jobs/runs',
+  path: '/jobs/runs',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleJobsSchedulesRoute = ConsoleJobsSchedulesRouteImport.update({
+  id: '/jobs/schedules',
+  path: '/jobs/schedules',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
 const ConsoleSettingsIndexRoute = ConsoleSettingsIndexRouteImport.update({
@@ -67,9 +77,29 @@ const ConsoleSettingsIndexRoute = ConsoleSettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
-const ConsoleJobsIndexRoute = ConsoleJobsIndexRouteImport.update({
-  id: '/jobs/',
-  path: '/jobs/',
+const ConsoleSettingsAccessRoute = ConsoleSettingsAccessRouteImport.update({
+  id: '/settings/access',
+  path: '/settings/access',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleSourcesIndexRoute = ConsoleSourcesIndexRouteImport.update({
+  id: '/sources/',
+  path: '/sources/',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleSourcesCatalogRoute = ConsoleSourcesCatalogRouteImport.update({
+  id: '/sources/catalog',
+  path: '/sources/catalog',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleSourcesClassesRoute = ConsoleSourcesClassesRouteImport.update({
+  id: '/sources/classes',
+  path: '/sources/classes',
+  getParentRoute: () => ConsoleRouteRoute,
+} as any)
+const ConsoleSourcesExamsRoute = ConsoleSourcesExamsRouteImport.update({
+  id: '/sources/exams',
+  path: '/sources/exams',
   getParentRoute: () => ConsoleRouteRoute,
 } as any)
 const ConsoleSourcesTimetablesRoute =
@@ -78,36 +108,6 @@ const ConsoleSourcesTimetablesRoute =
     path: '/sources/timetables',
     getParentRoute: () => ConsoleRouteRoute,
   } as any)
-const ConsoleSourcesExamsRoute = ConsoleSourcesExamsRouteImport.update({
-  id: '/sources/exams',
-  path: '/sources/exams',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const ConsoleSourcesClassesRoute = ConsoleSourcesClassesRouteImport.update({
-  id: '/sources/classes',
-  path: '/sources/classes',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const ConsoleSourcesCatalogRoute = ConsoleSourcesCatalogRouteImport.update({
-  id: '/sources/catalog',
-  path: '/sources/catalog',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const ConsoleSettingsAccessRoute = ConsoleSettingsAccessRouteImport.update({
-  id: '/settings/access',
-  path: '/settings/access',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const ConsoleJobsSchedulesRoute = ConsoleJobsSchedulesRouteImport.update({
-  id: '/jobs/schedules',
-  path: '/jobs/schedules',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
-const ConsoleJobsRunsRoute = ConsoleJobsRunsRouteImport.update({
-  id: '/jobs/runs',
-  path: '/jobs/runs',
-  getParentRoute: () => ConsoleRouteRoute,
-} as any)
 const ConsoleJobsJobIndexRoute = ConsoleJobsJobIndexRouteImport.update({
   id: '/jobs/$job/',
   path: '/jobs/$job/',
@@ -261,19 +261,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleIndexRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/api/proxy': {
-      id: '/api/proxy'
-      path: '/api/proxy'
-      fullPath: '/api/proxy'
-      preLoaderRoute: typeof ApiProxyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/health': {
-      id: '/api/health'
-      path: '/api/health'
-      fullPath: '/api/health'
-      preLoaderRoute: typeof ApiHealthRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_console/activity': {
+      id: '/_console/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ConsoleActivityRouteImport
+      parentRoute: typeof ConsoleRouteRoute
     }
     '/_console/apis': {
       id: '/_console/apis'
@@ -282,26 +275,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleApisRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/_console/activity': {
-      id: '/_console/activity'
-      path: '/activity'
-      fullPath: '/activity'
-      preLoaderRoute: typeof ConsoleActivityRouteImport
-      parentRoute: typeof ConsoleRouteRoute
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_console/sources/': {
-      id: '/_console/sources/'
-      path: '/sources'
-      fullPath: '/sources/'
-      preLoaderRoute: typeof ConsoleSourcesIndexRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/settings/': {
-      id: '/_console/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof ConsoleSettingsIndexRouteImport
-      parentRoute: typeof ConsoleRouteRoute
+    '/api/proxy': {
+      id: '/api/proxy'
+      path: '/api/proxy'
+      fullPath: '/api/proxy'
+      preLoaderRoute: typeof ApiProxyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_console/jobs/': {
       id: '/_console/jobs/'
@@ -310,39 +296,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleJobsIndexRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/_console/sources/timetables': {
-      id: '/_console/sources/timetables'
-      path: '/sources/timetables'
-      fullPath: '/sources/timetables'
-      preLoaderRoute: typeof ConsoleSourcesTimetablesRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/sources/exams': {
-      id: '/_console/sources/exams'
-      path: '/sources/exams'
-      fullPath: '/sources/exams'
-      preLoaderRoute: typeof ConsoleSourcesExamsRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/sources/classes': {
-      id: '/_console/sources/classes'
-      path: '/sources/classes'
-      fullPath: '/sources/classes'
-      preLoaderRoute: typeof ConsoleSourcesClassesRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/sources/catalog': {
-      id: '/_console/sources/catalog'
-      path: '/sources/catalog'
-      fullPath: '/sources/catalog'
-      preLoaderRoute: typeof ConsoleSourcesCatalogRouteImport
-      parentRoute: typeof ConsoleRouteRoute
-    }
-    '/_console/settings/access': {
-      id: '/_console/settings/access'
-      path: '/settings/access'
-      fullPath: '/settings/access'
-      preLoaderRoute: typeof ConsoleSettingsAccessRouteImport
+    '/_console/jobs/runs': {
+      id: '/_console/jobs/runs'
+      path: '/jobs/runs'
+      fullPath: '/jobs/runs'
+      preLoaderRoute: typeof ConsoleJobsRunsRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
     '/_console/jobs/schedules': {
@@ -352,11 +310,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleJobsSchedulesRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
-    '/_console/jobs/runs': {
-      id: '/_console/jobs/runs'
-      path: '/jobs/runs'
-      fullPath: '/jobs/runs'
-      preLoaderRoute: typeof ConsoleJobsRunsRouteImport
+    '/_console/settings/': {
+      id: '/_console/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof ConsoleSettingsIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/settings/access': {
+      id: '/_console/settings/access'
+      path: '/settings/access'
+      fullPath: '/settings/access'
+      preLoaderRoute: typeof ConsoleSettingsAccessRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/': {
+      id: '/_console/sources/'
+      path: '/sources'
+      fullPath: '/sources/'
+      preLoaderRoute: typeof ConsoleSourcesIndexRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/catalog': {
+      id: '/_console/sources/catalog'
+      path: '/sources/catalog'
+      fullPath: '/sources/catalog'
+      preLoaderRoute: typeof ConsoleSourcesCatalogRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/classes': {
+      id: '/_console/sources/classes'
+      path: '/sources/classes'
+      fullPath: '/sources/classes'
+      preLoaderRoute: typeof ConsoleSourcesClassesRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/exams': {
+      id: '/_console/sources/exams'
+      path: '/sources/exams'
+      fullPath: '/sources/exams'
+      preLoaderRoute: typeof ConsoleSourcesExamsRouteImport
+      parentRoute: typeof ConsoleRouteRoute
+    }
+    '/_console/sources/timetables': {
+      id: '/_console/sources/timetables'
+      path: '/sources/timetables'
+      fullPath: '/sources/timetables'
+      preLoaderRoute: typeof ConsoleSourcesTimetablesRouteImport
       parentRoute: typeof ConsoleRouteRoute
     }
     '/_console/jobs/$job/': {
