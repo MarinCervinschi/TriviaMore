@@ -12,6 +12,16 @@ reaches users, and the git history covers everything before that.
 
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## 3.9.1 — 2026-11-17
+
+A fix-only release that updates TanStack Start. No migrations.
+
+### Security
+
+- TanStack Start 1.168.61, the last release that runs on Vite 7, with Router 1.170.42, its plugin 1.168.43 and
+  React Query 5.102.8, which its SSR query integration needs. The dependencies on `latest` now name a version.
+  (#244)
+
 ## 3.9.0 — 2026-11-16
 
 Course and class search moves to BM25 on ParadeDB's `pg_search`: it forgives typos and accents, matches
