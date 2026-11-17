@@ -17,7 +17,7 @@ export function ErrorPage({
 	error,
 	withBand = true,
 }: {
-	error: Error;
+	error: unknown;
 	/** Off inside the `_app` shell, which already paints the band. */
 	withBand?: boolean;
 }) {
@@ -29,6 +29,7 @@ export function ErrorPage({
 			properties: { Path: window.location.pathname },
 		});
 	}, [error]);
+	const message = error instanceof Error ? error.message : null;
 	const container = withReducedMotion(staggerContainer, prefersReduced);
 	const item = withReducedMotion(staggerItem, prefersReduced);
 
@@ -56,12 +57,12 @@ export function ErrorPage({
 					Si è verificato un errore imprevisto. Riprova o torna alla home.
 				</motion.p>
 
-				{import.meta.env.DEV && error.message && (
+				{import.meta.env.DEV && message && (
 					<motion.pre
 						className="bg-muted/50 text-muted-foreground mt-6 max-w-lg overflow-auto rounded-2xl border p-4 text-left font-mono text-xs"
 						variants={item}
 					>
-						{error.message}
+						{message}
 					</motion.pre>
 				)}
 
